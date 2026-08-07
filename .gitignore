@@ -1,0 +1,13 @@
+# macOS
+.DS_Store
+
+# Debug credentials — contains a password, never publish
+DEV_CREDENTIALS.md
+
+# Local env / secrets (never commit the service_role key or SMTP passwords)
+.env
+.env.*
+
+# Node (only if you add a build step later)
+node_modules/
+dist/

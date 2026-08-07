@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Panalo</title>
+  <link rel="icon" type="image/svg+xml" href="logo.svg">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <div id="auth-screen" class="screen">
+    <div class="auth-box">
+      <div style="display:flex; align-items:center; justify-content:center; gap:10px; margin-bottom:20px;">
+        <img src="logo.svg" width="40" height="40" style="border-radius:10px;">
+        <h1 style="margin-bottom:0;">Panalo</h1>
+      </div>
+
+      <div id="login-form">
+        <h2>Log In</h2>
+        <input type="email" id="login-email" placeholder="Email" autocomplete="email" />
+        <input type="password" id="login-password" placeholder="Password" autocomplete="current-password" />
+        <label class="remember-row">
+          <input type="checkbox" id="remember-me" checked />
+          <span>Keep me logged in</span>
+        </label>
+        <button id="login-btn">Log In</button>
+        <p class="auth-switch">No account? <a href="#" id="show-signup">Sign up</a></p>
+      </div>
+
+      <div id="signup-form" class="hidden">
+        <h2>Sign Up</h2>
+
+        <div id="signup-step-1">
+          <input type="text" id="signup-username" placeholder="Username" autocomplete="username" />
+          <input type="email" id="signup-email" placeholder="Email" autocomplete="email" />
+          <input type="password" id="signup-password" placeholder="Password" autocomplete="new-password" />
+          <button id="signup-btn">Send OTP Code</button>
+        </div>
+
+        <div id="signup-step-2" class="hidden">
+          <p style="color: #00a884; font-size: 0.9rem;">OTP code sent to your email!</p>
+          <input type="text" id="otp-code-input" placeholder="Enter 6-digit OTP Code" maxlength="6" inputmode="numeric" autocomplete="one-time-code" style="text-align: center; letter-spacing: 4px; font-weight: bold;" />
+          <button id="verify-otp-btn">Verify & Create Account</button>
+        </div>
+
+        <p class="auth-switch">Have an account? <a href="#" id="show-login">Log in</a></p>
+      </div>
+
+      <p id="auth-message" aria-live="polite"></p>
+    </div>
+  </div>
+
+  <div id="chat-app" class="app-container hidden">
+
+    <div class="sidebar">
+      <div class="sidebar-header">
+        <div style="display:flex; align-items:center; gap:8px;">
+          <img src="logo.svg" width="24" height="24" style="border-radius:6px;">
+          <h2 id="my-profile-name">My Chats</h2>
+        </div>
+        <button id="logout-btn" class="danger-btn">Log Out</button>
+      </div>
+
+      <div class="sidebar-actions">
+        <button id="new-direct-btn">+ Direct Chat</button>
+        <button id="new-group-btn">+ New Group</button>
+      </div>
+
+      <div id="conversations-list" class="conversations-list"></div>
+    </div>
+
+    <div class="chat-main">
+      <div id="no-chat-selected" class="empty-chat-state">
+        <h3>Select a conversation to start chatting!</h3>
+      </div>
+
+      <div id="active-chat-window" class="chat-window hidden">
+        <div class="chat-header">
+          <h2 id="active-chat-title">Chat Title</h2>
+        </div>
+
+        <div id="messages-container">
+          <div id="messages-list"></div>
+        </div>
+
+        <form id="message-form">
+          <input type="file" id="file-input" accept="image/*" class="hidden" />
+          <button type="button" id="file-btn" title="Attach Image">📎</button>
+
+          <input type="text" id="message-input" placeholder="Type a message..." autocomplete="off" />
+          <button type="submit" id="send-btn">Send</button>
+        </form>
+        <div id="file-preview" class="file-preview-bar hidden">Selected image attached!</div>
+      </div>
+    </div>
+  </div>
+
+  <div id="direct-modal" class="modal hidden">
+    <div class="modal-content">
+      <h3>Start Direct Chat</h3>
+      <input type="text" id="direct-username" placeholder="Enter recipient's exact Username" />
+      <div class="modal-buttons">
+        <button id="create-direct-btn">Start Chat</button>
+        <button id="close-direct-modal" class="secondary-btn">Cancel</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="group-modal" class="modal hidden">
+    <div class="modal-content">
+      <h3>Create Group Chat</h3>
+      <input type="text" id="group-name-input" placeholder="Group Name" />
+      <input type="text" id="group-members-input" placeholder="Member Usernames (comma separated)" />
+      <div class="modal-buttons">
+        <button id="create-group-btn">Create Group</button>
+        <button id="close-group-modal" class="secondary-btn">Cancel</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="app.js"></script>
+</body>
+</html>
