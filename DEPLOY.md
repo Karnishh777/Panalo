@@ -61,6 +61,39 @@ redirects will break:
 - **Site URL:** your deployed URL (e.g. `https://your-site.netlify.app`)
 - **Redirect URLs:** add the same URL (and keep `http://127.0.0.1:5500` for local dev)
 
+## Auto-updates ("updates as we update here")
+With **GitHub + Netlify**, deployment is automatic:
+1. We change files locally.
+2. `git add -A && git commit -m "..." && git push`
+3. Netlify detects the push and **redeploys in under a minute** — your live URL
+   updates itself. No manual upload, ever.
+
+## Free domain options
+- **Default (works today):** Netlify gives you a free `https://<name>.netlify.app`
+  URL with HTTPS. This is a real, shareable domain — fine for all of India.
+- **Nicer free subdomain:** Cloudflare Pages `*.pages.dev`, or community domains
+  like `is-a.dev` / `js.org` (request via a PR to their repo).
+- **Custom domain (cheap, not free):** a `.in`/`.com` is ~₹150–800/year from a
+  registrar. Free real TLDs (Freenom, etc.) are no longer reliable — skip them.
+  Point it at Netlify and you get free auto-SSL.
+
+## Performance across India (make it smooth everywhere)
+Two separate things affect speed — handle both:
+
+1. **The app files (HTML/CSS/JS)** are served from a **global CDN** (Netlify, or
+   Cloudflare if you use Pages), which has edge locations across India — so the app
+   *loads* fast nationwide automatically. For maximum India coverage you can put
+   **Cloudflare** (free) in front; it has PoPs in Mumbai, Delhi, Chennai, Bengaluru,
+   Hyderabad, Kolkata.
+2. **The chat backend (Supabase)** is the bigger lever. Every message round-trips to
+   your Supabase project, so its **region** decides real-world latency. For India,
+   the best region is **Mumbai / South Asia (`ap-south-1`)**.
+   - Check yours: Supabase → **Project Settings → General → Region**.
+   - Region **can't be changed after creation.** If it's far from India (US/EU) and
+     feels laggy, the fix is to create a **new project in the Mumbai region**, re-run
+     both SQL files (`supabase-setup.sql` then `supabase-keys.sql`), and swap the URL
+     + anon key in `app.js`. (I can walk you through this migration if needed.)
+
 ## Security notes
 - The **anon / publishable key** in `app.js` is *meant* to be public — it's safe on
   GitHub because Row-Level Security controls all access. ✅

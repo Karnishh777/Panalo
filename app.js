@@ -114,6 +114,13 @@ let currentUsername = "";
 let currentConversationId = null;
 let realtimeChannel = null;
 let pendingSignupEmail = "";
+let pendingSignupPassword = "";
+let pendingUnlockSession = null;
+
+// Encryption state (see crypto.js)
+let myPrivateKey = null; // CryptoKey (RSA) used to unwrap conversation keys
+let myPublicKeyB64 = null;
+const conversationKeys = new Map(); // conversationId -> AES CryptoKey
 
 // ---- Safe DOM builder ----
 // Builds elements without ever parsing strings as HTML. `text` is assigned via
@@ -195,6 +202,209 @@ function setAuthMessage(text, ok = false) {
   authMessage.textContent = text;
 }
 
+// ---- Encryption integration (uses PanaloCrypto from crypto.js) ----
+// Keys are set up at login; the private key is cached in IndexedDB so reloads stay
+// unlocked, and recovered from the password on a fresh device. If any part is
+// unavailable, the app falls back to plaintext so messaging never breaks.
+
+function encryptionReady() {
+  return !!(myPrivateKey && myPublicKeyB64 && window.PanaloCrypto && PanaloCrypto.isSupported());
+}
+
+function openKeyDb() {
+  return new Promise((resolve, reject) => {
+    const req = indexedDB.open("panalo-keys", 1);
+    req.onupgradeneeded = () => req.result.createObjectStore("keys");
+    req.onsuccess = () => resolve(req.result);
+    req.onerror = () => reject(req.error);
+  });
+}
+async function idbGetKey(id) {
+  try {
+    const db = await openKeyDb();
+    return await new Promise((resolve) => {
+      const r = db.transaction("keys", "readonly").objectStore("keys").get(id);
+      r.onsuccess = () => resolve(r.result || null);
+      r.onerror = () => resolve(null);
+    });
+  } catch {
+    return null;
+  }
+}
+async function idbSetKey(id, value) {
+  try {
+    const db = await openKeyDb();
+    await new Promise((resolve) => {
+      const r = db.transaction("keys", "readwrite").objectStore("keys").put(value, id);
+      r.onsuccess = () => resolve();
+      r.onerror = () => resolve();
+    });
+  } catch {
+    /* ignore */
+  }
+}
+async function idbDelKey(id) {
+  try {
+    const db = await openKeyDb();
+    await new Promise((resolve) => {
+      const r = db.transaction("keys", "readwrite").objectStore("keys").delete(id);
+      r.onsuccess = () => resolve();
+      r.onerror = () => resolve();
+    });
+  } catch {
+    /* ignore */
+  }
+}
+
+// Ensure this user's keypair is ready in memory. With a password: generate on
+// first use, or recover from the server blob. Without a password (session
+// restore): succeed only if the private key is cached locally, else return false
+// so the caller can prompt to unlock.
+async function ensureUserKeys(password) {
+  if (!window.PanaloCrypto || !PanaloCrypto.isSupported()) return false;
+
+  const [{ data: keyRow }, { data: profileRow }] = await Promise.all([
+    supabaseClient.from("user_keys").select("enc_private_key, key_salt, key_iv").eq("user_id", currentUser.id).maybeSingle(),
+    supabaseClient.from("profiles").select("public_key").eq("id", currentUser.id).maybeSingle(),
+  ]);
+
+  const hasServerKeys = keyRow && profileRow && profileRow.public_key;
+
+  if (hasServerKeys) {
+    myPublicKeyB64 = profileRow.public_key;
+    const cached = await idbGetKey(currentUser.id);
+    if (cached) {
+      myPrivateKey = cached;
+      return true;
+    }
+    if (!password) return false; // needs the user to unlock on this device
+    try {
+      myPrivateKey = await PanaloCrypto.recoverPrivateKey(
+        { encPrivateKey: keyRow.enc_private_key, keySalt: keyRow.key_salt, keyIv: keyRow.key_iv },
+        password
+      );
+      await idbSetKey(currentUser.id, myPrivateKey);
+      return true;
+    } catch {
+      return false; // wrong password
+    }
+  }
+
+  // First time for this user — needs the password to protect the new private key.
+  if (!password) return false;
+  try {
+    const kp = await PanaloCrypto.generateUserKeypair();
+    myPublicKeyB64 = await PanaloCrypto.exportPublicKey(kp.publicKey);
+    const stored = await PanaloCrypto.protectPrivateKey(kp.privateKey, password);
+    await supabaseClient.from("profiles").update({ public_key: myPublicKeyB64 }).eq("id", currentUser.id);
+    await supabaseClient.from("user_keys").upsert({
+      user_id: currentUser.id,
+      enc_private_key: stored.encPrivateKey,
+      key_salt: stored.keySalt,
+      key_iv: stored.keyIv,
+    });
+    myPrivateKey = kp.privateKey;
+    await idbSetKey(currentUser.id, myPrivateKey);
+    return true;
+  } catch (e) {
+    console.error("Key setup failed:", e);
+    return false;
+  }
+}
+
+// Get (and cache) the AES key for a conversation by unwrapping our stored copy.
+async function getConversationKey(conversationId) {
+  if (conversationKeys.has(conversationId)) return conversationKeys.get(conversationId);
+  if (!myPrivateKey) return null;
+  const { data } = await supabaseClient
+    .from("conversation_keys")
+    .select("wrapped_key")
+    .eq("conversation_id", conversationId)
+    .eq("user_id", currentUser.id)
+    .maybeSingle();
+  if (!data) return null;
+  try {
+    const key = await PanaloCrypto.unwrapConversationKey(data.wrapped_key, myPrivateKey);
+    conversationKeys.set(conversationId, key);
+    return key;
+  } catch {
+    return null;
+  }
+}
+
+// On conversation creation, make a fresh AES key and wrap it to every member's
+// public key. Encrypt ONLY if every member already has a key, so nobody in the
+// conversation is ever locked out (otherwise the chat stays plaintext).
+async function provisionConversationKey(conversationId, memberIds) {
+  if (!encryptionReady()) return;
+  try {
+    const { data: profs } = await supabaseClient.from("profiles").select("id, public_key").in("id", memberIds);
+    const members = profs || [];
+    if (members.length < memberIds.length || members.some((p) => !p.public_key)) return;
+
+    const convKey = await PanaloCrypto.generateConversationKey();
+    const rows = [];
+    for (const p of members) {
+      const pub = await PanaloCrypto.importPublicKey(p.public_key);
+      rows.push({
+        conversation_id: conversationId,
+        user_id: p.id,
+        wrapped_key: await PanaloCrypto.wrapConversationKey(convKey, pub),
+      });
+    }
+    await supabaseClient.from("conversation_keys").insert(rows);
+    conversationKeys.set(conversationId, convKey);
+  } catch (e) {
+    console.error("Could not set up conversation encryption:", e);
+  }
+}
+
+// Resolve a message row to displayable plaintext (handles legacy unencrypted rows).
+async function messagePlaintext(msg) {
+  if (!msg.content) return "";
+  if (!msg.iv) return msg.content; // legacy / unencrypted message
+  const convKey = await getConversationKey(msg.conversation_id);
+  if (!convKey) return "🔒 Encrypted — unlock to read";
+  try {
+    return await PanaloCrypto.decryptMessage(msg.content, msg.iv, convKey);
+  } catch {
+    return "🔒 Unable to decrypt";
+  }
+}
+
+// Unlock screen (session restored but private key not cached on this device).
+function showUnlockModal(session) {
+  pendingUnlockSession = session;
+  const modal = document.getElementById("unlock-modal");
+  const input = document.getElementById("unlock-password");
+  input.value = "";
+  modal.classList.remove("hidden");
+  input.focus();
+}
+
+const unlockBtn = document.getElementById("unlock-btn");
+unlockBtn.addEventListener("click", () =>
+  withBusy(unlockBtn, "Unlocking…", async () => {
+    const password = document.getElementById("unlock-password").value;
+    if (!password) return;
+    const ok = await ensureUserKeys(password);
+    if (!ok) {
+      showToast("Wrong password — could not unlock.");
+      return;
+    }
+    document.getElementById("unlock-modal").classList.add("hidden");
+    const session = pendingUnlockSession;
+    pendingUnlockSession = null;
+    initApp(session);
+  })
+);
+
+document.getElementById("unlock-logout-btn").addEventListener("click", async () => {
+  document.getElementById("unlock-modal").classList.add("hidden");
+  await supabaseClient.auth.signOut();
+  location.reload();
+});
+
 // ---- Avatar helper: colored circle with initial, based on name ----
 const AVATAR_COLORS = ["#00d69b", "#6fd3ff", "#ffb86f", "#ff8888", "#c792ff", "#ffe066", "#7ef2c2", "#ff9ecb"];
 
@@ -252,12 +462,15 @@ signupBtn.addEventListener("click", () =>
 
     // Email confirmation disabled → session issued immediately.
     if (data.session) {
+      currentUser = data.session.user;
+      await ensureUserKeys(password);
       initApp(data.session);
       return;
     }
 
     // Email confirmation enabled → verify the 6-digit code in step 2.
     pendingSignupEmail = email;
+    pendingSignupPassword = password;
     signupStep1.classList.add("hidden");
     signupStep2.classList.remove("hidden");
     document.getElementById("otp-code-input").focus();
@@ -286,7 +499,12 @@ verifyOtpBtn.addEventListener("click", () =>
       setAuthMessage(error.message);
       return;
     }
-    if (data.session) initApp(data.session);
+    if (data.session) {
+      currentUser = data.session.user;
+      await ensureUserKeys(pendingSignupPassword);
+      pendingSignupPassword = "";
+      initApp(data.session);
+    }
   })
 );
 
@@ -302,6 +520,8 @@ loginBtn.addEventListener("click", () =>
     if (error) {
       setAuthMessage(error.message);
     } else {
+      currentUser = data.session.user;
+      await ensureUserKeys(password);
       initApp(data.session);
     }
   })
@@ -313,6 +533,11 @@ document.getElementById("logout-btn").addEventListener("click", async () => {
     supabaseClient.removeChannel(realtimeChannel);
     realtimeChannel = null;
   }
+  // Lock encryption: drop the cached private key + in-memory conversation keys.
+  if (currentUser) await idbDelKey(currentUser.id);
+  myPrivateKey = null;
+  myPublicKeyB64 = null;
+  conversationKeys.clear();
   await supabaseClient.auth.signOut();
   currentUser = null;
   currentUsername = "";
@@ -533,6 +758,8 @@ createDirectBtn.addEventListener("click", () =>
       return;
     }
 
+    await provisionConversationKey(newConv.id, [currentUser.id, targetUser.id]);
+
     directModal.classList.add("hidden");
     usernameField.value = "";
     await fetchConversations();
@@ -591,6 +818,8 @@ createGroupBtn.addEventListener("click", () =>
       return;
     }
 
+    await provisionConversationKey(newConv.id, [currentUser.id, ...foundProfiles.map((p) => p.id)]);
+
     groupModal.classList.add("hidden");
     nameField.value = "";
     membersField.value = "";
@@ -631,7 +860,13 @@ function renderMessage(msg) {
   messageEl.append(el("div", { class: "message-author", text: isMine ? "You" : (msg.username || "Unknown") }));
 
   if (msg.content) {
-    messageEl.append(el("div", { class: "message-text", text: msg.content }));
+    const textEl = el("div", { class: "message-text", text: msg.iv ? "…" : msg.content });
+    messageEl.append(textEl);
+    if (msg.iv) {
+      messagePlaintext(msg).then((plaintext) => {
+        textEl.textContent = plaintext;
+      });
+    }
   }
 
   const imageUrl = safeImageUrl(msg.file_url);
@@ -748,9 +983,23 @@ async function handleSend() {
     fileInput.value = "";
     filePreview.classList.add("hidden");
 
+    // Encrypt the text with the conversation key if this chat is encrypted;
+    // otherwise send plaintext (legacy conversations without keys).
+    let storedContent = content;
+    let storedIv = null;
+    if (content) {
+      const convKey = await getConversationKey(currentConversationId);
+      if (convKey) {
+        const encrypted = await PanaloCrypto.encryptMessage(content, convKey);
+        storedContent = encrypted.ciphertext;
+        storedIv = encrypted.iv;
+      }
+    }
+
     const { error: insertError } = await supabaseClient.from("messages").insert([
       {
-        content,
+        content: storedContent,
+        iv: storedIv,
         username: currentUsername,
         user_id: currentUser.id,
         conversation_id: currentConversationId,
@@ -794,6 +1043,14 @@ function scrollToBottom() {
   container.scrollTop = container.scrollHeight;
 }
 
-supabaseClient.auth.getSession().then(({ data: { session } }) => {
-  if (session) initApp(session);
+supabaseClient.auth.getSession().then(async ({ data: { session } }) => {
+  if (!session) return;
+  currentUser = session.user;
+  const ready = await ensureUserKeys(null);
+  if (ready) {
+    initApp(session);
+  } else {
+    // Session is valid but the private key isn't on this device — ask to unlock.
+    showUnlockModal(session);
+  }
 });
