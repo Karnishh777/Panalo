@@ -235,9 +235,14 @@ Pagination, virtualization, image compression (Phase 2); RLS (Phase 1).
 >   Fixes "asks login each time" (also: use a **consistent origin** — always Live
 >   Server `http://127.0.0.1:5500`, since storage is per-origin).
 >
-> **Still to do in this phase:** message pagination + virtualization, optimistic
-> send (with echo de-dup), lazy/progressive image loading in the viewer, and
-> trimming redundant sidebar re-renders on chat open.
+> **Also shipped (2026-08-08):** **optimistic send** — messages render instantly
+> with Sending/Failed(+Retry) states; `renderMessage` is idempotent and
+> `reconcileSend` dedupes the realtime echo in either arrival order; image blob
+> preview shows immediately. **Sidebar re-render trimmed** — `openConversation`
+> updates the active highlight in place instead of refetching the whole list.
+>
+> **Still to do in this phase:** message **pagination + virtualization** (currently
+> loads the whole history), and progressive/blur-up image loading in the viewer.
 
 ### In scope
 - **Message pagination + windowing.** Load the most recent N (e.g. 30), fetch older on

@@ -433,7 +433,7 @@ showLogin.addEventListener("click", (e) => {
 
 // ---- Sign Up (Step 1: create account, trigger email OTP) ----
 signupBtn.addEventListener("click", () =>
-  withBusy(signupBtn, "Sending…", async () => {
+  withBusy(signupBtn, "Creating account…", async () => {
     const username = document.getElementById("signup-username").value.trim();
     const email = document.getElementById("signup-email").value.trim();
     const password = document.getElementById("signup-password").value;
