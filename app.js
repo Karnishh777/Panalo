@@ -122,6 +122,12 @@ let myPrivateKey = null; // CryptoKey (RSA) used to unwrap conversation keys
 let myPublicKeyB64 = null;
 const conversationKeys = new Map(); // conversationId -> AES CryptoKey
 
+// Message pagination — load recent messages, fetch older ones on scroll-up.
+const MESSAGES_PAGE_SIZE = 30;
+let oldestLoadedAt = null;
+let hasMoreOlderMessages = false;
+let loadingOlder = false;
+
 // ---- Safe DOM builder ----
 // Builds elements without ever parsing strings as HTML. `text` is assigned via
 // textContent, so any user-controlled value is inert. This is the single choke
@@ -679,6 +685,14 @@ document.getElementById("back-btn").addEventListener("click", () => {
   chatApp.classList.remove("chat-open");
 });
 
+// Load earlier messages when the user scrolls near the top of the chat.
+document.getElementById("messages-container").addEventListener("scroll", () => {
+  const container = document.getElementById("messages-container");
+  if (container.scrollTop < 80 && hasMoreOlderMessages && !loadingOlder) {
+    loadOlderMessages();
+  }
+});
+
 // ---- Modals ----
 document.getElementById("new-direct-btn").addEventListener("click", () => directModal.classList.remove("hidden"));
 document.getElementById("close-direct-modal").addEventListener("click", () => directModal.classList.add("hidden"));
@@ -839,15 +853,20 @@ createGroupBtn.addEventListener("click", () =>
   })
 );
 
-// ---- Fetch Messages ----
+// ---- Fetch Messages (paginated: newest page first, older on scroll-up) ----
 async function fetchMessages() {
   if (!currentConversationId) return;
+
+  oldestLoadedAt = null;
+  hasMoreOlderMessages = false;
+  loadingOlder = false;
 
   const { data, error } = await supabaseClient
     .from("messages")
     .select("*")
     .eq("conversation_id", currentConversationId)
-    .order("created_at", { ascending: true });
+    .order("created_at", { ascending: false })
+    .limit(MESSAGES_PAGE_SIZE);
 
   if (error) {
     console.error("Error fetching messages:", error.message);
@@ -856,12 +875,49 @@ async function fetchMessages() {
   }
 
   messagesList.innerHTML = "";
-  if (data) data.forEach((msg) => renderMessage(msg));
+  // data is newest-first; render oldest-first so the newest lands at the bottom.
+  (data || []).slice().reverse().forEach((msg) => renderMessage(msg));
+
+  if (data && data.length) oldestLoadedAt = data[data.length - 1].created_at;
+  hasMoreOlderMessages = (data || []).length === MESSAGES_PAGE_SIZE;
   scrollToBottom();
 }
 
+// Load the previous page when the user scrolls near the top.
+async function loadOlderMessages() {
+  if (loadingOlder || !hasMoreOlderMessages || !oldestLoadedAt || !currentConversationId) return;
+  loadingOlder = true;
+
+  const container = document.getElementById("messages-container");
+  const prevHeight = container.scrollHeight;
+  const prevTop = container.scrollTop;
+
+  const { data, error } = await supabaseClient
+    .from("messages")
+    .select("*")
+    .eq("conversation_id", currentConversationId)
+    .lt("created_at", oldestLoadedAt)
+    .order("created_at", { ascending: false })
+    .limit(MESSAGES_PAGE_SIZE);
+
+  if (error) {
+    loadingOlder = false;
+    return;
+  }
+
+  // data is newest-of-batch first; prepend each so order stays ascending on top.
+  (data || []).forEach((msg) => renderMessage(msg, true));
+
+  if (data && data.length) oldestLoadedAt = data[data.length - 1].created_at;
+  hasMoreOlderMessages = (data || []).length === MESSAGES_PAGE_SIZE;
+
+  // Keep the viewport anchored where the user was (don't jump on prepend).
+  container.scrollTop = prevTop + (container.scrollHeight - prevHeight);
+  loadingOlder = false;
+}
+
 // ---- Render Message ----
-function renderMessage(msg) {
+function renderMessage(msg, prepend = false) {
   // Idempotent: if this id is already on screen, do nothing. This dedupes the
   // realtime echo of a message we already rendered optimistically.
   if (document.getElementById(`msg-${msg.id}`)) return;
@@ -908,7 +964,8 @@ function renderMessage(msg) {
   }
   messageEl.append(footer);
 
-  messagesList.append(messageEl);
+  if (prepend) messagesList.insertBefore(messageEl, messagesList.firstChild);
+  else messagesList.append(messageEl);
 }
 
 // ---- Delete Message ----
