@@ -474,7 +474,7 @@ signupBtn.addEventListener("click", () =>
     signupStep1.classList.add("hidden");
     signupStep2.classList.remove("hidden");
     document.getElementById("otp-code-input").focus();
-    setAuthMessage("We sent a 6-digit code to your email. Enter it below.", true);
+    authMessage.textContent = ""; // the step-2 hint already explains what to do
   })
 );
 
@@ -546,6 +546,7 @@ document.getElementById("logout-btn").addEventListener("click", async () => {
   messagesList.innerHTML = "";
   activeChatWindow.classList.add("hidden");
   noChatSelected.classList.remove("hidden");
+  chatApp.classList.remove("chat-open");
   chatApp.classList.add("hidden");
   authScreen.classList.remove("hidden");
 });
@@ -661,11 +662,17 @@ async function openConversation(conv, title) {
 
   noChatSelected.classList.add("hidden");
   activeChatWindow.classList.remove("hidden");
+  chatApp.classList.add("chat-open"); // mobile: switch from list to chat view
 
   fetchConversations();
   await fetchMessages();
   subscribeToMessages();
 }
+
+// Mobile: return from an open chat to the conversation list.
+document.getElementById("back-btn").addEventListener("click", () => {
+  chatApp.classList.remove("chat-open");
+});
 
 // ---- Modals ----
 document.getElementById("new-direct-btn").addEventListener("click", () => directModal.classList.remove("hidden"));

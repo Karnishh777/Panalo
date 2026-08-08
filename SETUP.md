@@ -73,9 +73,17 @@ realtime, and the storage bucket.
 
 The app already calls `verifyOtp({ type: 'signup' })`, so no code change is needed.
 
-> ⚠️ Supabase's built-in shared mailer is **rate-limited** (a few emails/hour) and
-> often lands in **Spam**. Fine for testing; add your own SMTP (**Authentication →
-> SMTP Settings**) before real use.
+**SMTP is required** to edit that template and reliably deliver codes. Using **Brevo**
+(free, 300/day):
+1. brevo.com → verify a sender under *Senders, Domains & Dedicated IPs*.
+2. *SMTP & API → SMTP* → generate an SMTP key.
+3. Supabase → *Project Settings → Authentication → SMTP Settings* → Enable custom SMTP:
+   - Host `smtp-relay.brevo.com`, Port `587`
+   - Username = Brevo login email, Password = SMTP key
+   - Sender email = the **verified** sender, Sender name `PANALO`
+
+> ⚠️ New senders often land in **Spam** the first few times. Brevo free tier is
+> 300 emails/day.
 
 *(Alternative for quick local testing: turn "Confirm email" **off** and signups log
 in instantly with no code.)*

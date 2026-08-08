@@ -39,9 +39,9 @@
         </div>
 
         <div id="signup-step-2" class="hidden">
-          <p style="color: #00a884; font-size: 0.9rem;">OTP code sent to your email!</p>
-          <input type="text" id="otp-code-input" placeholder="Enter 6-digit OTP Code" maxlength="6" inputmode="numeric" autocomplete="one-time-code" style="text-align: center; letter-spacing: 4px; font-weight: bold;" />
-          <button id="verify-otp-btn">Verify & Create Account</button>
+          <p class="otp-hint">Enter the 6-digit code we emailed you. Check your spam folder too.</p>
+          <input type="text" id="otp-code-input" class="otp-input" placeholder="000000" maxlength="6" inputmode="numeric" autocomplete="one-time-code" />
+          <button id="verify-otp-btn">Verify &amp; Create Account</button>
         </div>
 
         <p class="auth-switch">Have an account? <a href="#" id="show-login">Log in</a></p>
@@ -77,6 +77,7 @@
 
       <div id="active-chat-window" class="chat-window hidden">
         <div class="chat-header">
+          <button id="back-btn" class="back-btn" type="button" aria-label="Back to conversations">←</button>
           <h2 id="active-chat-title">Chat Title</h2>
         </div>
 

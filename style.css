@@ -75,6 +75,27 @@ body {
   background: rgba(0, 224, 168, 0.1);
 }
 
+/* OTP entry step */
+.otp-hint {
+  color: #9aa8b0;
+  font-size: 13.5px;
+  line-height: 1.45;
+  margin-bottom: 16px;
+}
+
+.otp-input {
+  text-align: center;
+  letter-spacing: 8px;
+  font-size: 22px;
+  font-weight: 700;
+}
+
+.otp-input::placeholder {
+  letter-spacing: 6px;
+  font-weight: 500;
+  color: #55666f;
+}
+
 input {
   width: 100%;
   padding: 13px 14px;
@@ -310,6 +331,23 @@ button:active {
   padding: 16px 20px;
   background: #131c22;
   border-bottom: 1px solid rgba(255,255,255,0.05);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+/* Back button — hidden on desktop, shown on mobile to return to the chat list */
+.back-btn {
+  display: none;
+  width: 38px;
+  height: 38px;
+  padding: 0;
+  border-radius: 50%;
+  background: #24333d;
+  color: #e9edef;
+  font-size: 20px;
+  line-height: 1;
+  flex-shrink: 0;
 }
 
 .chat-header h2 {
@@ -541,6 +579,47 @@ a:focus-visible {
 @keyframes fadeSlideUp {
   from { opacity: 0; transform: translateY(8px); }
   to { opacity: 1; transform: translateY(0); }
+}
+
+/* ---- Responsive: phones & portrait tablets (single-pane, full-screen) ---- */
+@media (max-width: 768px) {
+  .app-container {
+    width: 100%;
+    max-width: none;
+    height: 100vh;
+    height: 100dvh;
+    border-radius: 0;
+    border: none;
+  }
+
+  .sidebar {
+    width: 100%;
+  }
+
+  /* Show either the conversation list OR the open chat — never both */
+  .chat-main {
+    display: none;
+  }
+  .app-container.chat-open .sidebar {
+    display: none;
+  }
+  .app-container.chat-open .chat-main {
+    display: flex;
+  }
+
+  .back-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .message {
+    max-width: 85%;
+  }
+
+  .sidebar-header h2 {
+    max-width: 55vw;
+  }
 }
 
 /* Respect users who prefer reduced motion */
