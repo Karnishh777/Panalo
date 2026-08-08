@@ -241,8 +241,14 @@ Pagination, virtualization, image compression (Phase 2); RLS (Phase 1).
 > preview shows immediately. **Sidebar re-render trimmed** — `openConversation`
 > updates the active highlight in place instead of refetching the whole list.
 >
-> **Still to do in this phase:** message **pagination + virtualization** (currently
-> loads the whole history), and progressive/blur-up image loading in the viewer.
+> **Also shipped (2026-08-08):** **message pagination** — loads the most recent 30
+> and fetches older pages on scroll-up with scroll-position preserved (ordering
+> verified against 70 messages). Initial load is now bounded regardless of history
+> length.
+>
+> **Phase 2 remaining (optional polish):** DOM **virtualization** (recycle nodes so
+> node *count* stays bounded even after scrolling up through thousands), and
+> progressive/blur-up image loading. Both are refinements — the core perf wins are in.
 
 ### In scope
 - **Message pagination + windowing.** Load the most recent N (e.g. 30), fetch older on
@@ -283,6 +289,22 @@ Pagination, virtualization, image compression (Phase 2); RLS (Phase 1).
 codebase — *incrementally*, preserving behavior at each step.
 
 **Effort: M · Depends on: 🔷 build-tooling decision.**
+
+> **Modularization DONE (2026-08-08).** The ~1,200-line `app.js` was split into ES
+> modules under `src/`: `config` (all constants — no magic values), `state` (shared
+> mutable state), `client` (Supabase client + remember storage), `util` (DOM builder,
+> toast, image compression, helpers), `encryption` (key lifecycle), `chat`
+> (conversations/messages/send/realtime), `auth` (auth + bootstrap + unlock +
+> restore), `main` (entry). Cycle-free graph: config/state → client/util →
+> encryption → chat → auth → main. `crypto.js` stays a classic global script; the
+> Supabase SDK loads before the module. Verified: all modules parse, and the app
+> boots over http with **zero console errors** and working listeners. **No Supabase
+> or deployment change** — Netlify serves the module files as-is (native ES modules,
+> no build step).
+>
+> **Still to do (optional):** adopt Vite for tree-shaking + minification + a bundle
+> budget in CI, and code-split heavy features. Deferred because it would add a build
+> step and change the Netlify deploy — not worth it until bundle size demands it.
 
 ### In scope
 - Introduce **Vite** (or the chosen tool). Split `app.js` into modules: `auth`,
