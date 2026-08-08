@@ -443,6 +443,37 @@ button:active {
   box-shadow: none;
 }
 
+/* Optimistic send states */
+.message.pending {
+  opacity: 0.6;
+}
+
+.message.pending .message-time {
+  color: #9aa8b0;
+}
+
+.message.failed .message-time {
+  color: #ff8888;
+}
+
+.retry-btn {
+  background: none;
+  border: none;
+  color: #6fd3ff;
+  font-size: 11px;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 0;
+  width: auto;
+}
+
+.retry-btn:hover {
+  text-decoration: underline;
+  background: none;
+  transform: none;
+  box-shadow: none;
+}
+
 #message-form {
   display: flex;
   padding: 14px;

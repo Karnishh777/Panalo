@@ -631,6 +631,7 @@ function renderConversationItem(conv) {
     tabindex: "0",
     "aria-label": `Open ${isGroup ? "group chat" : "direct message"}: ${title}`,
   });
+  item.dataset.convId = conv.id;
 
   const avatar = el("div", { class: "avatar", text: (title || "?").trim().charAt(0).toUpperCase() });
   avatar.style.background = getAvatarColor(title || "?");
@@ -664,7 +665,11 @@ async function openConversation(conv, title) {
   activeChatWindow.classList.remove("hidden");
   chatApp.classList.add("chat-open"); // mobile: switch from list to chat view
 
-  fetchConversations();
+  // Update the active highlight in place instead of rebuilding the whole sidebar.
+  document.querySelectorAll(".conv-item").forEach((item) => {
+    item.classList.toggle("active", item.dataset.convId === String(conv.id));
+  });
+
   await fetchMessages();
   subscribeToMessages();
 }
@@ -857,10 +862,14 @@ async function fetchMessages() {
 
 // ---- Render Message ----
 function renderMessage(msg) {
+  // Idempotent: if this id is already on screen, do nothing. This dedupes the
+  // realtime echo of a message we already rendered optimistically.
+  if (document.getElementById(`msg-${msg.id}`)) return;
+
   const isMine = msg.user_id === currentUser.id;
 
   const messageEl = el("div", {
-    class: `message${isMine ? " my-message" : ""}`,
+    class: `message${isMine ? " my-message" : ""}${msg._pending ? " pending" : ""}`,
     id: `msg-${msg.id}`,
   });
 
@@ -876,14 +885,17 @@ function renderMessage(msg) {
     }
   }
 
-  const imageUrl = safeImageUrl(msg.file_url);
+  // _localPreview is a blob: URL we created ourselves for instant image preview.
+  const imageUrl = msg._localPreview || safeImageUrl(msg.file_url);
   if (imageUrl) {
     messageEl.append(el("img", { class: "chat-image", src: imageUrl, alt: "Shared image", loading: "lazy" }));
   }
 
   const time = new Date(msg.created_at || Date.now()).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
-  const footer = el("div", { class: "message-footer" }, [el("span", { class: "message-time", text: time })]);
-  if (isMine) {
+  const footer = el("div", { class: "message-footer" }, [
+    el("span", { class: "message-time", text: msg._pending ? "Sending…" : time }),
+  ]);
+  if (isMine && !msg._pending) {
     footer.append(
       el("button", {
         class: "delete-btn",
@@ -956,46 +968,63 @@ messageForm.addEventListener("submit", (e) => {
   handleSend();
 });
 
-async function handleSend() {
+// Optimistic send: show the message instantly, then upload/encrypt/insert in the
+// background. The composer clears immediately so you can keep typing.
+function handleSend() {
   const content = messageInput.value.trim();
   const file = fileInput.files[0];
 
   if (!content && !file) return;
   if (!currentConversationId) return;
 
-  await withBusy(sendBtn, "…", async () => {
-    let fileUrl = null;
+  const convId = currentConversationId;
+  messageInput.value = "";
+  fileInput.value = "";
+  filePreview.classList.add("hidden");
 
+  sendMessage(content, file, convId);
+}
+
+async function sendMessage(content, file, convId) {
+  const tempId = "temp-" + crypto.randomUUID();
+  const localPreview = file ? URL.createObjectURL(file) : null;
+  const retry = () => sendMessage(content, file, convId);
+
+  // 1. Optimistic bubble — appears instantly with a "Sending…" state.
+  renderMessage({
+    id: tempId,
+    user_id: currentUser.id,
+    username: currentUsername,
+    content,
+    iv: null, // show the plaintext we just typed
+    file_url: null,
+    _localPreview: localPreview,
+    created_at: new Date().toISOString(),
+    conversation_id: convId,
+    _pending: true,
+  });
+  scrollToBottom();
+
+  try {
+    // 2. Upload the image (if any).
+    let fileUrl = null;
     if (file) {
-      if (!file.type.startsWith("image/")) {
-        showToast("Only image files can be attached.");
-        return;
-      }
+      if (!file.type.startsWith("image/")) return markSendFailed(tempId, "Only images can be attached", retry);
       const toUpload = await compressImage(file);
       const ext = (toUpload.name.split(".").pop() || "img").toLowerCase();
       const fileName = `${Date.now()}_${crypto.randomUUID()}.${ext}`;
       const { error: uploadError } = await supabaseClient.storage
         .from("chat-files")
         .upload(fileName, toUpload, { contentType: toUpload.type || undefined });
-      if (uploadError) {
-        showToast("Image upload failed. Please try again.");
-        return;
-      }
-      const { data: publicUrlData } = supabaseClient.storage.from("chat-files").getPublicUrl(fileName);
-      fileUrl = publicUrlData.publicUrl;
+      if (uploadError) return markSendFailed(tempId, "Image upload failed", retry);
+      fileUrl = supabaseClient.storage.from("chat-files").getPublicUrl(fileName).data.publicUrl;
     }
 
-    // Clear the composer as soon as we commit to sending.
-    messageInput.value = "";
-    fileInput.value = "";
-    filePreview.classList.add("hidden");
-
-    // Encrypt the text with the conversation key if this chat is encrypted;
-    // otherwise send plaintext (legacy conversations without keys).
+    // 3. Encrypt the text if this chat has a key (else plaintext fallback).
     let storedContent = content;
     let storedIv = null;
     if (content) {
-      const convKey = await getConversationKey(currentConversationId);
+      const convKey = await getConversationKey(convId);
       if (convKey) {
         const encrypted = await PanaloCrypto.encryptMessage(content, convKey);
         storedContent = encrypted.ciphertext;
@@ -1003,22 +1032,89 @@ async function handleSend() {
       }
     }
 
-    const { error: insertError } = await supabaseClient.from("messages").insert([
-      {
-        content: storedContent,
-        iv: storedIv,
-        username: currentUsername,
-        user_id: currentUser.id,
-        conversation_id: currentConversationId,
-        file_url: fileUrl,
-      },
-    ]);
+    // 4. Persist and get the confirmed row back.
+    const { data: inserted, error: insertError } = await supabaseClient
+      .from("messages")
+      .insert([
+        {
+          content: storedContent,
+          iv: storedIv,
+          username: currentUsername,
+          user_id: currentUser.id,
+          conversation_id: convId,
+          file_url: fileUrl,
+        },
+      ])
+      .select()
+      .single();
 
-    if (insertError) {
-      messageInput.value = content; // restore text so it isn't lost
-      showToast("Message failed to send. Please try again.");
-    }
-  });
+    if (insertError || !inserted) return markSendFailed(tempId, "Message failed to send", retry);
+
+    reconcileSend(tempId, inserted, localPreview);
+  } catch (e) {
+    console.error("Send failed:", e);
+    markSendFailed(tempId, "Message failed to send", retry);
+  }
+}
+
+// Merge the confirmed server row with the optimistic bubble, handling either
+// order of arrival (insert response vs realtime echo).
+function reconcileSend(tempId, realMsg, localPreview) {
+  const tempEl = document.getElementById(`msg-${tempId}`);
+  const realEl = document.getElementById(`msg-${realMsg.id}`);
+
+  if (realEl) {
+    // The realtime echo already rendered the confirmed message → drop the temp.
+    if (tempEl) tempEl.remove();
+    if (localPreview) URL.revokeObjectURL(localPreview);
+    return;
+  }
+  if (!tempEl) return;
+
+  // Promote the optimistic bubble into the confirmed message.
+  tempEl.id = `msg-${realMsg.id}`;
+  tempEl.classList.remove("pending");
+  const footer = tempEl.querySelector(".message-footer");
+  if (footer) {
+    footer.innerHTML = "";
+    const time = new Date(realMsg.created_at || Date.now()).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
+    footer.append(el("span", { class: "message-time", text: time }));
+    footer.append(
+      el("button", {
+        class: "delete-btn",
+        type: "button",
+        text: "Delete",
+        "aria-label": "Delete message",
+        onClick: () => deleteMessage(realMsg.id),
+      })
+    );
+  }
+}
+
+function markSendFailed(tempId, reason, onRetry) {
+  const tempEl = document.getElementById(`msg-${tempId}`);
+  if (!tempEl) {
+    showToast(reason);
+    return;
+  }
+  tempEl.classList.remove("pending");
+  tempEl.classList.add("failed");
+  const footer = tempEl.querySelector(".message-footer");
+  if (footer) {
+    footer.innerHTML = "";
+    footer.append(el("span", { class: "message-time", text: reason }));
+    footer.append(
+      el("button", {
+        class: "retry-btn",
+        type: "button",
+        text: "Retry",
+        onClick: () => {
+          tempEl.remove();
+          onRetry();
+        },
+      })
+    );
+  }
 }
 
 // ---- Real-time Listener ----
