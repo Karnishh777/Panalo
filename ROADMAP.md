@@ -346,9 +346,10 @@ here is a rewrite — it's hardening + polish + differentiation.
 - [ ] **Progressive/blur-up image loading** in the message view.
 - [ ] **Message polish** — safely linkify URLs (via the DOM builder), date separators
   between days.
-- [ ] **First innovation (pick 1–2):** "Verified 🔒" trust badge (leverages the
-  existing key fingerprints), emoji quick-reactions, or premade greeting/sticker
-  quick-send (the brief's "premade image communication").
+- [x] **First innovation — quick-message bar** (2026-08-08): one-tap greeting/emoji
+  presets above the composer (👋 ❤️ 👍 😂 🎉 🙏 · Good morning · On my way · Thank you).
+  Lightweight, no-AI take on the brief's "premade communication". More to come:
+  "Verified 🔒" trust badge, image stickers.
 - [ ] **Housekeeping** — post-modularization regression check; confirm no dead code
   or TODOs; PBKDF2/keygen perf sanity on low-end.
 

@@ -575,4 +575,12 @@ export function initChatUI() {
     e.preventDefault();
     handleSend();
   });
+
+  // Quick-message bar: one tap sends a preset greeting/emoji.
+  document.getElementById("quick-bar").addEventListener("click", (e) => {
+    const btn = e.target.closest(".quick-btn");
+    if (!btn || !state.currentConversationId) return;
+    sendMessage(btn.dataset.msg, null, state.currentConversationId);
+    scrollToBottom();
+  });
 }

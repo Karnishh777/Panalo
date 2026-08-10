@@ -583,6 +583,42 @@ a:focus-visible {
   outline-offset: 2px;
 }
 
+/* Quick-message bar */
+.quick-bar {
+  display: flex;
+  gap: 6px;
+  padding: 8px 12px;
+  overflow-x: auto;
+  background: #131c22;
+  border-top: 1px solid rgba(255, 255, 255, 0.05);
+  scrollbar-width: none;
+}
+
+.quick-bar::-webkit-scrollbar {
+  display: none;
+}
+
+.quick-btn {
+  flex-shrink: 0;
+  width: auto;
+  margin: 0;
+  padding: 6px 13px;
+  border: none;
+  border-radius: 16px;
+  background: #24333d;
+  color: #e9edef;
+  font-size: 15px;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.quick-btn:hover {
+  background: #2a3942;
+  transform: none;
+  box-shadow: none;
+}
+
 /* Toasts */
 #toast-container {
   position: fixed;
