@@ -18,8 +18,8 @@
 
       <div id="login-form">
         <h2>Log In</h2>
-        <input type="email" id="login-email" placeholder="Email" autocomplete="email" />
-        <input type="password" id="login-password" placeholder="Password" autocomplete="current-password" />
+        <input type="email" id="login-email" placeholder="Email" autocomplete="email" aria-label="Email" />
+        <input type="password" id="login-password" placeholder="Password" autocomplete="current-password" aria-label="Password" />
         <label class="remember-row">
           <input type="checkbox" id="remember-me" checked />
           <span>Keep me logged in</span>
@@ -32,15 +32,15 @@
         <h2>Sign Up</h2>
 
         <div id="signup-step-1">
-          <input type="text" id="signup-username" placeholder="Username" autocomplete="username" />
-          <input type="email" id="signup-email" placeholder="Email" autocomplete="email" />
-          <input type="password" id="signup-password" placeholder="Password" autocomplete="new-password" />
+          <input type="text" id="signup-username" placeholder="Username" autocomplete="username" aria-label="Username" />
+          <input type="email" id="signup-email" placeholder="Email" autocomplete="email" aria-label="Email" />
+          <input type="password" id="signup-password" placeholder="Password" autocomplete="new-password" aria-label="Password" />
           <button id="signup-btn">Create Account</button>
         </div>
 
         <div id="signup-step-2" class="hidden">
           <p class="otp-hint">Enter the 6-digit code we emailed you. Check your spam folder too.</p>
-          <input type="text" id="otp-code-input" class="otp-input" placeholder="000000" maxlength="6" inputmode="numeric" autocomplete="one-time-code" />
+          <input type="text" id="otp-code-input" class="otp-input" placeholder="000000" maxlength="6" inputmode="numeric" autocomplete="one-time-code" aria-label="6-digit verification code" />
           <button id="verify-otp-btn">Verify &amp; Create Account</button>
         </div>
 
@@ -86,10 +86,10 @@
         </div>
 
         <form id="message-form">
-          <input type="file" id="file-input" accept="image/*" class="hidden" />
-          <button type="button" id="file-btn" title="Attach Image">📎</button>
+          <input type="file" id="file-input" accept="image/*" class="hidden" aria-label="Attach image" />
+          <button type="button" id="file-btn" title="Attach Image" aria-label="Attach image">📎</button>
 
-          <input type="text" id="message-input" placeholder="Type a message..." autocomplete="off" />
+          <input type="text" id="message-input" placeholder="Type a message..." autocomplete="off" aria-label="Type a message" />
           <button type="submit" id="send-btn">Send</button>
         </form>
         <div id="file-preview" class="file-preview-bar hidden">Selected image attached!</div>
@@ -97,10 +97,10 @@
     </div>
   </div>
 
-  <div id="direct-modal" class="modal hidden">
+  <div id="direct-modal" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="direct-modal-title">
     <div class="modal-content">
-      <h3>Start Direct Chat</h3>
-      <input type="text" id="direct-username" placeholder="Enter recipient's exact Username" />
+      <h3 id="direct-modal-title">Start Direct Chat</h3>
+      <input type="text" id="direct-username" placeholder="Enter recipient's exact Username" aria-label="Recipient's username" />
       <div class="modal-buttons">
         <button id="create-direct-btn">Start Chat</button>
         <button id="close-direct-modal" class="secondary-btn">Cancel</button>
@@ -108,11 +108,11 @@
     </div>
   </div>
 
-  <div id="group-modal" class="modal hidden">
+  <div id="group-modal" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="group-modal-title">
     <div class="modal-content">
-      <h3>Create Group Chat</h3>
-      <input type="text" id="group-name-input" placeholder="Group Name" />
-      <input type="text" id="group-members-input" placeholder="Member Usernames (comma separated)" />
+      <h3 id="group-modal-title">Create Group Chat</h3>
+      <input type="text" id="group-name-input" placeholder="Group Name" aria-label="Group name" />
+      <input type="text" id="group-members-input" placeholder="Member Usernames (comma separated)" aria-label="Member usernames, comma separated" />
       <div class="modal-buttons">
         <button id="create-group-btn">Create Group</button>
         <button id="close-group-modal" class="secondary-btn">Cancel</button>
@@ -120,17 +120,20 @@
     </div>
   </div>
 
-  <div id="unlock-modal" class="modal hidden">
+  <div id="unlock-modal" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="unlock-modal-title">
     <div class="modal-content">
-      <h3>Unlock your messages</h3>
+      <h3 id="unlock-modal-title">Unlock your messages</h3>
       <p style="color:#9aa8b0; font-size:13px; margin-bottom:14px;">Enter your password to decrypt your chats on this device.</p>
-      <input type="password" id="unlock-password" placeholder="Your password" autocomplete="current-password" />
+      <input type="password" id="unlock-password" placeholder="Your password" autocomplete="current-password" aria-label="Your password" />
       <div class="modal-buttons">
         <button id="unlock-btn">Unlock</button>
         <button id="unlock-logout-btn" class="secondary-btn">Log out</button>
       </div>
     </div>
   </div>
+
+  <!-- Screen-reader announcements (new messages, etc.) -->
+  <div id="sr-announcer" class="sr-only" aria-live="polite" aria-atomic="true"></div>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="crypto.js"></script>

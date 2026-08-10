@@ -89,6 +89,12 @@ export function scrollToBottom() {
   container.scrollTop = container.scrollHeight;
 }
 
+// Announce a message to screen readers via the aria-live region.
+export function announce(message) {
+  const region = document.getElementById("sr-announcer");
+  if (region) region.textContent = message;
+}
+
 // Downscale large photos and re-encode to WebP/JPEG before upload. Any failure
 // (or no real size gain) falls back to the original file untouched.
 export async function compressImage(file) {

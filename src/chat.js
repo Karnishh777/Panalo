@@ -1,7 +1,7 @@
 // Conversations, messages, sending, and realtime.
 import { supabaseClient } from "./client.js";
 import { state } from "./state.js";
-import { el, showToast, withBusy, getAvatarColor, safeImageUrl, scrollToBottom, compressImage } from "./util.js";
+import { el, showToast, withBusy, getAvatarColor, safeImageUrl, scrollToBottom, compressImage, announce } from "./util.js";
 import { getConversationKey, provisionConversationKey, messagePlaintext } from "./encryption.js";
 import { MESSAGES_PAGE_SIZE } from "./config.js";
 
@@ -521,6 +521,9 @@ function subscribeToMessages() {
       (payload) => {
         renderMessage(payload.new);
         scrollToBottom();
+        if (payload.new.user_id !== state.currentUser.id) {
+          announce(`New message from ${payload.new.username || "someone"}`);
+        }
       }
     )
     // DELETE payloads only carry the primary key, so we can't filter by
@@ -545,9 +548,15 @@ export function initChatUI() {
     }
   });
 
-  document.getElementById("new-direct-btn").addEventListener("click", () => directModal.classList.remove("hidden"));
+  document.getElementById("new-direct-btn").addEventListener("click", () => {
+    directModal.classList.remove("hidden");
+    document.getElementById("direct-username").focus();
+  });
   document.getElementById("close-direct-modal").addEventListener("click", () => directModal.classList.add("hidden"));
-  document.getElementById("new-group-btn").addEventListener("click", () => groupModal.classList.remove("hidden"));
+  document.getElementById("new-group-btn").addEventListener("click", () => {
+    groupModal.classList.remove("hidden");
+    document.getElementById("group-name-input").focus();
+  });
   document.getElementById("close-group-modal").addEventListener("click", () => groupModal.classList.add("hidden"));
 
   const createDirectBtn = document.getElementById("create-direct-btn");

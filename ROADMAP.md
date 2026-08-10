@@ -328,6 +328,32 @@ codebase — *incrementally*, preserving behavior at each step.
 
 ---
 
+## Phase 3.1 — Consolidation, polish & first innovations
+
+**Goal:** before the next big feature leap, close the loose ends discussed in build
+sessions, upgrade rough details, and land a couple of on-brand innovations. Nothing
+here is a rewrite — it's hardening + polish + differentiation.
+
+**Effort: M · Region confirmed `ap-south-1` (Mumbai) — latency already optimal.**
+
+### Checklist
+- [x] **Accessibility pass** — labels/aria on every input, modal focus + `Escape` to
+  close, screen-reader announcements for incoming messages. *(2026-08-08)*
+- [ ] **Unique usernames** (the deferred Phase 1.5) — case-insensitive unique index
+  (SQL) + availability check at signup. Removes "start chat by username" ambiguity.
+- [ ] **Image privacy** — attachments are currently a *public* bucket, unencrypted.
+  Encrypt image blobs with the conversation key (or private bucket + signed URLs).
+- [ ] **Progressive/blur-up image loading** in the message view.
+- [ ] **Message polish** — safely linkify URLs (via the DOM builder), date separators
+  between days.
+- [ ] **First innovation (pick 1–2):** "Verified 🔒" trust badge (leverages the
+  existing key fingerprints), emoji quick-reactions, or premade greeting/sticker
+  quick-send (the brief's "premade image communication").
+- [ ] **Housekeeping** — post-modularization regression check; confirm no dead code
+  or TODOs; PBKDF2/keygen perf sanity on low-end.
+
+---
+
 ## Phase 4 — Real-time social features
 
 **Goal:** the "feels alive" features, most of which map cleanly onto Supabase Realtime
