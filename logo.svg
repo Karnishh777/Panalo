@@ -1,11 +1,11 @@
 <svg width="140" height="140" viewBox="0 0 140 140" xmlns="http://www.w3.org/2000/svg">
 <defs>
-<linearGradient id="teal" x1="0" y1="0" x2="1" y2="1">
-<stop offset="0%" stop-color="#00c99a"/>
-<stop offset="100%" stop-color="#00a884"/>
+<linearGradient id="brand" x1="0" y1="0" x2="1" y2="1">
+<stop offset="0%" stop-color="#8b7cf6"/>
+<stop offset="100%" stop-color="#6c5ce7"/>
 </linearGradient>
 </defs>
-<rect x="0" y="0" width="140" height="140" rx="32" fill="url(#teal)"/>
-<path d="M35 55 Q35 40 50 40 L90 40 Q105 40 105 55 L105 85 Q105 100 90 100 L60 100 L42 116 L45 100 L50 100 Q35 100 35 85 Z" fill="#0b2620"/>
-<path d="M55 70 L67 82 L90 56" fill="none" stroke="#00c99a" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/>
+<rect x="0" y="0" width="140" height="140" rx="32" fill="url(#brand)"/>
+<path d="M35 55 Q35 40 50 40 L90 40 Q105 40 105 55 L105 85 Q105 100 90 100 L60 100 L42 116 L45 100 L50 100 Q35 100 35 85 Z" fill="#1a1533"/>
+<path d="M55 70 L67 82 L90 56" fill="none" stroke="#b9adff" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/>
 </svg>

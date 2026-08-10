@@ -106,6 +106,13 @@ async function openConversation(conv, title) {
   state.currentConversationId = conv.id;
   activeChatTitle.textContent = title;
 
+  // Header avatar + subtitle (matches the redesigned chat header).
+  const headerAvatar = document.getElementById("active-chat-avatar");
+  headerAvatar.textContent = (title || "?").trim().charAt(0).toUpperCase();
+  headerAvatar.style.background = getAvatarColor(title || "?");
+  document.getElementById("active-chat-subtitle").textContent =
+    conv.type === "group" ? "Group chat" : "Direct message";
+
   noChatSelected.classList.add("hidden");
   activeChatWindow.classList.remove("hidden");
   chatApp.classList.add("chat-open"); // mobile: switch from list to chat view
