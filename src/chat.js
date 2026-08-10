@@ -391,6 +391,7 @@ function handleSend() {
   messageInput.value = "";
   fileInput.value = "";
   filePreview.classList.add("hidden");
+  filePreview.innerHTML = "";
 
   sendMessage(content, file, convId);
 }
@@ -583,6 +584,40 @@ async function setChatTheme(themeId) {
   }
 }
 
+// ---- Image viewer (open, zoom, download) ----
+function openImageViewer(src) {
+  const viewer = document.getElementById("image-viewer");
+  const img = document.getElementById("viewer-img");
+  img.classList.remove("zoomed");
+  img.src = src;
+  viewer.classList.remove("hidden");
+}
+
+function closeImageViewer() {
+  document.getElementById("image-viewer").classList.add("hidden");
+  document.getElementById("viewer-img").classList.remove("zoomed");
+}
+
+// Cross-origin images ignore the <a download> attribute, so fetch the bytes and
+// save the blob directly. Falls back to opening in a new tab.
+async function downloadImage(src) {
+  try {
+    const res = await fetch(src);
+    if (!res.ok) throw new Error("fetch failed");
+    const blob = await res.blob();
+    const ext = ((blob.type.split("/")[1] || "jpg").split("+")[0]) || "jpg";
+    const url = URL.createObjectURL(blob);
+    const a = el("a", { href: url, download: `panalo-${Date.now()}.${ext}` });
+    document.body.append(a);
+    a.click();
+    a.remove();
+    setTimeout(() => URL.revokeObjectURL(url), 2000);
+  } catch {
+    window.open(src, "_blank", "noopener");
+    showToast("Opened in a new tab — long-press or right-click to save.", "");
+  }
+}
+
 // ---- Wire up all chat-related event listeners ----
 export function initChatUI() {
   document.getElementById("back-btn").addEventListener("click", () => {
@@ -615,8 +650,47 @@ export function initChatUI() {
 
   fileBtn.addEventListener("click", () => fileInput.click());
   fileInput.addEventListener("change", () => {
-    if (fileInput.files.length > 0) filePreview.classList.remove("hidden");
-    else filePreview.classList.add("hidden");
+    const file = fileInput.files[0];
+    filePreview.innerHTML = "";
+    if (!file) {
+      filePreview.classList.add("hidden");
+      return;
+    }
+    const previewUrl = URL.createObjectURL(file);
+    filePreview.append(
+      el("img", { src: previewUrl, class: "file-preview-thumb", alt: "Selected image" }),
+      el("span", { class: "file-preview-name", text: file.name }),
+      el("button", {
+        class: "file-preview-remove",
+        type: "button",
+        text: "Remove",
+        "aria-label": "Remove selected image",
+        onClick: () => {
+          fileInput.value = "";
+          filePreview.classList.add("hidden");
+          filePreview.innerHTML = "";
+          URL.revokeObjectURL(previewUrl);
+        },
+      })
+    );
+    filePreview.classList.remove("hidden");
+  });
+
+  // Image viewer: click a chat image to open; zoom, download, or close.
+  messagesList.addEventListener("click", (e) => {
+    const img = e.target.closest(".chat-image");
+    if (img) openImageViewer(img.src);
+  });
+  document.getElementById("viewer-close").addEventListener("click", closeImageViewer);
+  document.getElementById("image-viewer").addEventListener("click", (e) => {
+    if (e.target.id === "image-viewer") closeImageViewer();
+  });
+  document.getElementById("viewer-img").addEventListener("click", (e) => {
+    e.stopPropagation();
+    e.currentTarget.classList.toggle("zoomed");
+  });
+  document.getElementById("viewer-download").addEventListener("click", () => {
+    downloadImage(document.getElementById("viewer-img").src);
   });
 
   messageForm.addEventListener("submit", (e) => {

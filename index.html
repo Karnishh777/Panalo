@@ -113,7 +113,7 @@
           <input type="text" id="message-input" placeholder="Type a message..." autocomplete="off" aria-label="Type a message" />
           <button type="submit" id="send-btn">Send</button>
         </form>
-        <div id="file-preview" class="file-preview-bar hidden">Selected image attached!</div>
+        <div id="file-preview" class="file-preview-bar hidden"></div>
       </div>
     </div>
   </div>
@@ -189,6 +189,14 @@
         <button id="close-theme-modal" class="secondary-btn">Close</button>
       </div>
     </div>
+  </div>
+
+  <div id="image-viewer" class="image-viewer hidden" role="dialog" aria-modal="true" aria-label="Image viewer">
+    <div class="viewer-bar">
+      <button id="viewer-download" type="button">⬇ Download</button>
+      <button id="viewer-close" type="button" aria-label="Close image viewer">✕</button>
+    </div>
+    <img id="viewer-img" class="viewer-img" alt="Full-size image" />
   </div>
 
   <!-- Screen-reader announcements (new messages, etc.) -->

@@ -16,4 +16,5 @@ document.addEventListener("keydown", (e) => {
   document.getElementById("group-modal")?.classList.add("hidden");
   document.getElementById("theme-modal")?.classList.add("hidden");
   document.getElementById("settings-modal")?.classList.add("hidden");
+  document.getElementById("image-viewer")?.classList.add("hidden");
 });

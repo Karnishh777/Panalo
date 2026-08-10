@@ -98,7 +98,7 @@ body {
   border: 2px solid var(--primary);
   border-radius: 50%;
   pointer-events: none;
-  z-index: 6;
+  z-index: 9999;
   transition: transform 0.14s ease, background 0.14s ease, border-color 0.2s;
   display: none;
 }
@@ -808,12 +808,102 @@ button:active {
 }
 
 .file-preview-bar {
-  background: var(--grad);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: var(--panel-bg);
+  border-top: 1px solid var(--border);
+  padding: 8px 14px;
+}
+
+.file-preview-thumb {
+  width: 42px;
+  height: 42px;
+  border-radius: 8px;
+  object-fit: cover;
+  flex-shrink: 0;
+}
+
+.file-preview-name {
+  flex: 1;
+  font-size: 13px;
+  color: var(--text-muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.file-preview-remove {
+  width: auto;
+  padding: 5px 10px;
+  border-radius: 8px;
+  background: var(--surface-2);
+  color: var(--text);
+  font-size: 13px;
+}
+
+.file-preview-remove:hover {
+  background: var(--surface-3);
+  transform: none;
+  box-shadow: none;
+}
+
+.chat-image {
+  cursor: zoom-in;
+}
+
+/* Full-screen image viewer */
+.image-viewer {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  background: rgba(6, 4, 12, 0.92);
+  backdrop-filter: blur(6px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: auto;
+  padding: 24px;
+}
+
+.viewer-bar {
+  position: fixed;
+  top: 16px;
+  right: 16px;
+  display: flex;
+  gap: 10px;
+  z-index: 51;
+}
+
+.viewer-bar button {
+  width: auto;
+  padding: 10px 16px;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.14);
   color: #fff;
-  font-size: 12px;
+  font-size: 14px;
   font-weight: 600;
-  padding: 6px 14px;
-  text-align: center;
+  backdrop-filter: blur(4px);
+}
+
+.viewer-bar button:hover {
+  background: rgba(255, 255, 255, 0.24);
+  transform: none;
+  box-shadow: none;
+}
+
+.viewer-img {
+  max-width: 92vw;
+  max-height: 84vh;
+  border-radius: 12px;
+  box-shadow: 0 24px 70px rgba(0, 0, 0, 0.6);
+  cursor: zoom-in;
+  transition: transform 0.2s ease;
+}
+
+.viewer-img.zoomed {
+  transform: scale(2.2);
+  cursor: zoom-out;
 }
 
 /* Modals */
