@@ -548,8 +548,15 @@ function subscribeToMessages() {
 // ---- Per-chat theme ----
 const chatMainEl = document.querySelector(".chat-main");
 
+const THEME_VARS = ["--primary", "--primary-strong", "--grad", "--bubble-out"];
+
 function applyChatTheme(themeId) {
-  const preset = THEME_PRESETS.find((t) => t.id === themeId) || THEME_PRESETS[0];
+  // "default" (or none) → clear overrides so the chat uses the global accent.
+  const preset = themeId && themeId !== "default" ? THEME_PRESETS.find((t) => t.id === themeId) : null;
+  if (!preset) {
+    THEME_VARS.forEach((v) => chatMainEl.style.removeProperty(v));
+    return;
+  }
   const grad = `linear-gradient(135deg, ${preset.primary}, ${preset.strong})`;
   chatMainEl.style.setProperty("--primary", preset.primary);
   chatMainEl.style.setProperty("--primary-strong", preset.strong);

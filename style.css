@@ -47,6 +47,46 @@ body {
   display: none !important;
 }
 
+/* Animated aurora background (ambient glow behind everything) */
+#aurora {
+  position: fixed;
+  inset: -12%;
+  z-index: -1;
+  pointer-events: none;
+  background:
+    radial-gradient(35% 35% at 20% 25%, rgba(139, 124, 246, 0.40), transparent 70%),
+    radial-gradient(30% 30% at 82% 18%, rgba(255, 110, 174, 0.30), transparent 70%),
+    radial-gradient(40% 40% at 72% 82%, rgba(55, 194, 224, 0.28), transparent 70%),
+    radial-gradient(35% 35% at 28% 78%, rgba(255, 138, 91, 0.24), transparent 70%);
+  filter: blur(40px);
+  animation: auroraDrift 26s ease-in-out infinite alternate;
+}
+
+.no-aurora #aurora {
+  display: none;
+}
+
+@keyframes auroraDrift {
+  0%   { transform: translate3d(-3%, -2%, 0) scale(1.05) rotate(0deg); }
+  50%  { transform: translate3d(3%, 2%, 0) scale(1.15) rotate(4deg); }
+  100% { transform: translate3d(-2%, 3%, 0) scale(1.08) rotate(-3deg); }
+}
+
+/* Cursor glow (desktop; a light that trails the pointer) */
+#cursor-glow {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 380px;
+  height: 380px;
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 4;
+  background: radial-gradient(circle, rgba(139, 124, 246, 0.16), rgba(139, 124, 246, 0.05) 42%, transparent 66%);
+  mix-blend-mode: screen;
+  display: none;
+}
+
 /* Auth Screens */
 .screen {
   width: 100%;
@@ -325,8 +365,26 @@ button:active {
   display: flex;
   flex-direction: column;
   background: #120e1e;
-  background-image: radial-gradient(rgba(139, 124, 246, 0.05) 1px, transparent 1px);
+}
+
+/* Chat wallpaper presets (data-wallpaper) */
+.chat-main[data-wallpaper="dots"] {
+  background-image: radial-gradient(rgba(139, 124, 246, 0.06) 1px, transparent 1px);
   background-size: 22px 22px;
+}
+.chat-main[data-wallpaper="aurora"] {
+  background-image:
+    radial-gradient(60% 50% at 18% 18%, rgba(139, 124, 246, 0.14), transparent 70%),
+    radial-gradient(50% 50% at 85% 82%, rgba(255, 110, 174, 0.12), transparent 70%);
+}
+.chat-main[data-wallpaper="mesh"] {
+  background-image:
+    radial-gradient(40% 40% at 8% 8%, rgba(55, 194, 224, 0.14), transparent 70%),
+    radial-gradient(40% 40% at 92% 16%, rgba(255, 138, 91, 0.12), transparent 70%),
+    radial-gradient(55% 55% at 50% 100%, rgba(139, 124, 246, 0.14), transparent 70%);
+}
+.chat-main[data-wallpaper="plain"] {
+  background-image: none;
 }
 
 .empty-chat-state {
@@ -410,12 +468,15 @@ button:active {
   width: 40px;
   height: 40px;
   padding: 0;
-  margin-left: auto;
   border-radius: 50%;
   background: var(--surface-2);
   color: var(--text);
   font-size: 16px;
   flex-shrink: 0;
+}
+
+.chat-header .header-icon-btn {
+  margin-left: auto;
 }
 
 .header-icon-btn:hover {
@@ -449,6 +510,98 @@ button:active {
 
 .theme-swatch.selected {
   border-color: var(--text);
+}
+
+/* Settings panel */
+.settings-content {
+  max-width: 430px;
+}
+
+.settings-section {
+  margin-bottom: 22px;
+}
+
+.settings-label {
+  display: block;
+  font-size: 12px;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  margin-bottom: 12px;
+  font-weight: 700;
+}
+
+.wallpaper-options {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.wallpaper-chip {
+  width: auto;
+  padding: 8px 14px;
+  border-radius: 12px;
+  background: var(--surface-2);
+  color: var(--text);
+  font-size: 13px;
+  font-weight: 600;
+  border: 2px solid transparent;
+}
+
+.wallpaper-chip:hover {
+  background: var(--surface-3);
+  transform: none;
+  box-shadow: none;
+}
+
+.wallpaper-chip.selected {
+  border-color: var(--primary);
+}
+
+.settings-toggle {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 9px 0;
+  font-size: 14.5px;
+  color: var(--text);
+  cursor: pointer;
+}
+
+.switch {
+  appearance: none;
+  -webkit-appearance: none;
+  width: 46px;
+  height: 26px;
+  margin: 0;
+  padding: 0;
+  border: none;
+  border-radius: 26px;
+  background: var(--surface-3);
+  position: relative;
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: background 0.2s;
+}
+
+.switch:checked {
+  background: var(--primary);
+}
+
+.switch::after {
+  content: "";
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: #fff;
+  transition: transform 0.2s;
+}
+
+.switch:checked::after {
+  transform: translateX(20px);
 }
 
 #messages-container {

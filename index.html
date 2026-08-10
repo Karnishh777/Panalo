@@ -8,6 +8,7 @@
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
+  <div id="aurora" aria-hidden="true"></div>
 
   <div id="auth-screen" class="screen">
     <div class="auth-box">
@@ -59,7 +60,10 @@
           <img src="logo.svg" width="24" height="24" style="border-radius:6px;">
           <h2 id="my-profile-name">My Chats</h2>
         </div>
-        <button id="logout-btn" class="danger-btn">Log Out</button>
+        <div style="display:flex; align-items:center; gap:8px;">
+          <button id="settings-btn" class="header-icon-btn" type="button" aria-label="Settings">⚙️</button>
+          <button id="logout-btn" class="danger-btn">Log Out</button>
+        </div>
       </div>
 
       <div class="sidebar-actions">
@@ -70,7 +74,7 @@
       <div id="conversations-list" class="conversations-list"></div>
     </div>
 
-    <div class="chat-main">
+    <div class="chat-main" data-wallpaper="dots">
       <div id="no-chat-selected" class="empty-chat-state">
         <h3>Select a conversation to start chatting!</h3>
       </div>
@@ -145,6 +149,32 @@
       <div class="modal-buttons">
         <button id="unlock-btn">Unlock</button>
         <button id="unlock-logout-btn" class="secondary-btn">Log out</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="settings-modal" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="settings-modal-title">
+    <div class="modal-content settings-content">
+      <h3 id="settings-modal-title">Settings</h3>
+
+      <div class="settings-section">
+        <span class="settings-label">Accent</span>
+        <div id="accent-swatches" class="theme-swatches"></div>
+      </div>
+
+      <div class="settings-section">
+        <span class="settings-label">Chat wallpaper</span>
+        <div id="wallpaper-options" class="wallpaper-options"></div>
+      </div>
+
+      <div class="settings-section">
+        <span class="settings-label">Effects</span>
+        <label class="settings-toggle"><span>Animated background</span><input type="checkbox" id="setting-aurora" class="switch" /></label>
+        <label class="settings-toggle"><span>Cursor glow (desktop)</span><input type="checkbox" id="setting-cursor" class="switch" /></label>
+      </div>
+
+      <div class="modal-buttons">
+        <button id="close-settings-modal" class="secondary-btn">Done</button>
       </div>
     </div>
   </div>

@@ -36,3 +36,11 @@ export const THEME_PRESETS = [
   { id: "rose", name: "Rose", primary: "#ff6fae", strong: "#e0559a" },
   { id: "slate", name: "Slate", primary: "#9aa4b8", strong: "#6b7688" },
 ];
+
+// Chat background presets (applied to .chat-main via a data-wallpaper attribute).
+export const WALLPAPER_PRESETS = [
+  { id: "dots", name: "Dots" },
+  { id: "aurora", name: "Aurora" },
+  { id: "mesh", name: "Mesh" },
+  { id: "plain", name: "Plain" },
+];
