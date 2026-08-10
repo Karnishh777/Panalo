@@ -72,19 +72,46 @@ body {
   100% { transform: translate3d(-2%, 3%, 0) scale(1.08) rotate(-3deg); }
 }
 
-/* Cursor glow (desktop; a light that trails the pointer) */
+/* Cursor glow (desktop; a small light that trails the pointer) */
 #cursor-glow {
   position: fixed;
   top: 0;
   left: 0;
-  width: 380px;
-  height: 380px;
+  width: 200px;
+  height: 200px;
   border-radius: 50%;
   pointer-events: none;
   z-index: 4;
   background: radial-gradient(circle, rgba(139, 124, 246, 0.16), rgba(139, 124, 246, 0.05) 42%, transparent 66%);
   mix-blend-mode: screen;
   display: none;
+}
+
+/* Custom themed cursor — a ring that tracks the pointer and recolors with the theme */
+#cursor-dot {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 22px;
+  height: 22px;
+  margin: -11px 0 0 -11px;
+  border: 2px solid var(--primary);
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 6;
+  transition: transform 0.14s ease, background 0.14s ease, border-color 0.2s;
+  display: none;
+}
+
+#cursor-dot.big {
+  transform: scale(1.7);
+  background: color-mix(in srgb, var(--primary) 22%, transparent);
+}
+
+/* Hide the native cursor everywhere when the custom cursor is on */
+body.custom-cursor,
+body.custom-cursor * {
+  cursor: none !important;
 }
 
 /* Auth Screens */
@@ -369,22 +396,29 @@ button:active {
 
 /* Chat wallpaper presets (data-wallpaper) */
 .chat-main[data-wallpaper="dots"] {
-  background-image: radial-gradient(rgba(139, 124, 246, 0.06) 1px, transparent 1px);
-  background-size: 22px 22px;
+  background-image: radial-gradient(rgba(139, 124, 246, 0.11) 1.5px, transparent 1.5px);
+  background-size: 20px 20px;
 }
 .chat-main[data-wallpaper="aurora"] {
   background-image:
-    radial-gradient(60% 50% at 18% 18%, rgba(139, 124, 246, 0.14), transparent 70%),
-    radial-gradient(50% 50% at 85% 82%, rgba(255, 110, 174, 0.12), transparent 70%);
+    radial-gradient(50% 45% at 15% 12%, rgba(139, 124, 246, 0.30), transparent 62%),
+    radial-gradient(45% 45% at 88% 22%, rgba(255, 110, 174, 0.24), transparent 62%),
+    radial-gradient(52% 52% at 70% 95%, rgba(55, 194, 224, 0.22), transparent 62%);
 }
 .chat-main[data-wallpaper="mesh"] {
   background-image:
-    radial-gradient(40% 40% at 8% 8%, rgba(55, 194, 224, 0.14), transparent 70%),
-    radial-gradient(40% 40% at 92% 16%, rgba(255, 138, 91, 0.12), transparent 70%),
-    radial-gradient(55% 55% at 50% 100%, rgba(139, 124, 246, 0.14), transparent 70%);
+    radial-gradient(40% 40% at 4% 8%, rgba(55, 194, 224, 0.28), transparent 58%),
+    radial-gradient(40% 40% at 96% 14%, rgba(255, 138, 91, 0.24), transparent 58%),
+    radial-gradient(46% 46% at 50% 106%, rgba(139, 124, 246, 0.28), transparent 58%),
+    radial-gradient(34% 34% at 100% 92%, rgba(255, 110, 174, 0.20), transparent 58%);
 }
 .chat-main[data-wallpaper="plain"] {
   background-image: none;
+}
+.chat-main[data-wallpaper="custom"] {
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
 }
 
 .empty-chat-state {

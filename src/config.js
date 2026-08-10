@@ -43,4 +43,5 @@ export const WALLPAPER_PRESETS = [
   { id: "aurora", name: "Aurora" },
   { id: "mesh", name: "Mesh" },
   { id: "plain", name: "Plain" },
+  { id: "custom", name: "📷 Upload" },
 ];
