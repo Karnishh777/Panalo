@@ -3,7 +3,7 @@ import { supabaseClient } from "./client.js";
 import { state } from "./state.js";
 import { el, showToast, withBusy, getAvatarColor, safeImageUrl, scrollToBottom, compressImage, announce } from "./util.js";
 import { getConversationKey, provisionConversationKey, messagePlaintext } from "./encryption.js";
-import { MESSAGES_PAGE_SIZE } from "./config.js";
+import { MESSAGES_PAGE_SIZE, THEME_PRESETS } from "./config.js";
 
 const conversationsList = document.getElementById("conversations-list");
 const activeChatWindow = document.getElementById("active-chat-window");
@@ -104,6 +104,7 @@ function renderConversationItem(conv) {
 
 async function openConversation(conv, title) {
   state.currentConversationId = conv.id;
+  state.currentConversation = conv;
   activeChatTitle.textContent = title;
 
   // Header avatar + subtitle (matches the redesigned chat header).
@@ -112,6 +113,8 @@ async function openConversation(conv, title) {
   headerAvatar.style.background = getAvatarColor(title || "?");
   document.getElementById("active-chat-subtitle").textContent =
     conv.type === "group" ? "Group chat" : "Direct message";
+
+  applyChatTheme(conv.theme); // per-chat theme (falls back to default)
 
   noChatSelected.classList.add("hidden");
   activeChatWindow.classList.remove("hidden");
@@ -542,6 +545,37 @@ function subscribeToMessages() {
     .subscribe();
 }
 
+// ---- Per-chat theme ----
+const chatMainEl = document.querySelector(".chat-main");
+
+function applyChatTheme(themeId) {
+  const preset = THEME_PRESETS.find((t) => t.id === themeId) || THEME_PRESETS[0];
+  const grad = `linear-gradient(135deg, ${preset.primary}, ${preset.strong})`;
+  chatMainEl.style.setProperty("--primary", preset.primary);
+  chatMainEl.style.setProperty("--primary-strong", preset.strong);
+  chatMainEl.style.setProperty("--grad", grad);
+  chatMainEl.style.setProperty("--bubble-out", grad);
+}
+
+function updateSwatchSelection(themeId) {
+  document.querySelectorAll(".theme-swatch").forEach((s) => {
+    s.classList.toggle("selected", s.dataset.themeId === (themeId || "default"));
+  });
+}
+
+async function setChatTheme(themeId) {
+  applyChatTheme(themeId);
+  updateSwatchSelection(themeId);
+  if (state.currentConversation) {
+    state.currentConversation.theme = themeId;
+    // Persist for both members. No-ops gracefully until the backend is set up.
+    await supabaseClient.rpc("set_conversation_theme", {
+      conv: state.currentConversation.id,
+      new_theme: themeId,
+    });
+  }
+}
+
 // ---- Wire up all chat-related event listeners ----
 export function initChatUI() {
   document.getElementById("back-btn").addEventListener("click", () => {
@@ -589,5 +623,31 @@ export function initChatUI() {
     if (!btn || !state.currentConversationId) return;
     sendMessage(btn.dataset.msg, null, state.currentConversationId);
     scrollToBottom();
+  });
+
+  // Theme picker: build swatches once, then wire open/close.
+  const themeSwatches = document.getElementById("theme-swatches");
+  THEME_PRESETS.forEach((preset) => {
+    const swatch = el("button", {
+      class: "theme-swatch",
+      type: "button",
+      title: preset.name,
+      "aria-label": `${preset.name} theme`,
+      onClick: () => {
+        setChatTheme(preset.id);
+        document.getElementById("theme-modal").classList.add("hidden");
+      },
+    });
+    swatch.dataset.themeId = preset.id;
+    swatch.style.background = `linear-gradient(135deg, ${preset.primary}, ${preset.strong})`;
+    themeSwatches.append(swatch);
+  });
+
+  document.getElementById("theme-btn").addEventListener("click", () => {
+    updateSwatchSelection(state.currentConversation?.theme);
+    document.getElementById("theme-modal").classList.remove("hidden");
+  });
+  document.getElementById("close-theme-modal").addEventListener("click", () => {
+    document.getElementById("theme-modal").classList.add("hidden");
   });
 }

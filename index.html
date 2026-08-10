@@ -83,6 +83,7 @@
             <h2 id="active-chat-title">Chat Title</h2>
             <span id="active-chat-subtitle" class="chat-subtitle"></span>
           </div>
+          <button id="theme-btn" class="header-icon-btn" type="button" aria-label="Change chat theme">🎨</button>
         </div>
 
         <div id="messages-container">
@@ -144,6 +145,17 @@
       <div class="modal-buttons">
         <button id="unlock-btn">Unlock</button>
         <button id="unlock-logout-btn" class="secondary-btn">Log out</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="theme-modal" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="theme-modal-title">
+    <div class="modal-content">
+      <h3 id="theme-modal-title">Chat theme</h3>
+      <p style="color:var(--text-muted); font-size:13px; margin-bottom:16px;">Pick a vibe for this chat — both of you will see it.</p>
+      <div id="theme-swatches" class="theme-swatches"></div>
+      <div class="modal-buttons">
+        <button id="close-theme-modal" class="secondary-btn">Close</button>
       </div>
     </div>
   </div>

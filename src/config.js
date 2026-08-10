@@ -26,3 +26,13 @@ export const MESSAGES_PAGE_SIZE = 30;
 export const MAX_IMAGE_DIMENSION = 1600;
 export const IMAGE_QUALITY = 0.8;
 export const COMPRESS_MIN_BYTES = 200 * 1024;
+
+// Per-chat themes — each preset recolors the chat area (sent bubbles, accents).
+export const THEME_PRESETS = [
+  { id: "default", name: "Violet", primary: "#8b7cf6", strong: "#6c5ce7" },
+  { id: "sunset", name: "Sunset", primary: "#ff8a5b", strong: "#ff5e7e" },
+  { id: "ocean", name: "Ocean", primary: "#37c2e0", strong: "#3a7bd5" },
+  { id: "forest", name: "Forest", primary: "#4ecb71", strong: "#2fa060" },
+  { id: "rose", name: "Rose", primary: "#ff6fae", strong: "#e0559a" },
+  { id: "slate", name: "Slate", primary: "#9aa4b8", strong: "#6b7688" },
+];

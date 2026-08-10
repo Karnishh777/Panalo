@@ -4,6 +4,7 @@ export const state = {
   currentUser: null,
   currentUsername: "",
   currentConversationId: null,
+  currentConversation: null, // the full conversation row (for theme, etc.)
   realtimeChannel: null,
 
   // signup / unlock flow

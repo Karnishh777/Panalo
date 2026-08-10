@@ -12,4 +12,5 @@ document.addEventListener("keydown", (e) => {
   if (e.key !== "Escape") return;
   document.getElementById("direct-modal")?.classList.add("hidden");
   document.getElementById("group-modal")?.classList.add("hidden");
+  document.getElementById("theme-modal")?.classList.add("hidden");
 });
