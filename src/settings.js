@@ -5,7 +5,7 @@ import { THEME_PRESETS, WALLPAPER_PRESETS } from "./config.js";
 import { el, showToast } from "./util.js";
 
 const SETTINGS_KEY = "panalo.settings";
-const DEFAULTS = { accent: "default", wallpaper: "dots", customWallpaper: null, animatedBg: true, cursorGlow: true };
+const DEFAULTS = { accent: "default", wallpaper: "doodle", customWallpaper: null, animatedBg: true, cursorGlow: true };
 
 function load() {
   try {

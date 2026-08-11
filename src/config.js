@@ -39,6 +39,7 @@ export const THEME_PRESETS = [
 
 // Chat background presets (applied to .chat-main via a data-wallpaper attribute).
 export const WALLPAPER_PRESETS = [
+  { id: "doodle", name: "Doodle" },
   { id: "dots", name: "Dots" },
   { id: "aurora", name: "Aurora" },
   { id: "mesh", name: "Mesh" },

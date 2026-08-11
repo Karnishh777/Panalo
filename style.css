@@ -328,6 +328,43 @@ button:active {
   padding: 10px;
 }
 
+.sidebar-search {
+  padding: 0 14px 8px;
+}
+
+.sidebar-search input {
+  margin-bottom: 0;
+  padding: 10px 14px;
+  border-radius: 12px;
+  font-size: 14px;
+}
+
+.chat-filters {
+  display: flex;
+  gap: 6px;
+  padding: 0 14px 10px;
+}
+
+.filter-tab {
+  width: auto;
+  padding: 6px 14px;
+  border-radius: 16px;
+  background: var(--surface-2);
+  color: var(--text-muted);
+  font-size: 12.5px;
+  font-weight: 600;
+}
+
+.filter-tab.active {
+  background: var(--grad);
+  color: #fff;
+}
+
+.filter-tab:hover {
+  transform: none;
+  box-shadow: none;
+}
+
 .conversations-list {
   flex: 1;
   overflow-y: auto;
@@ -395,6 +432,11 @@ button:active {
 }
 
 /* Whole-app wallpaper presets (data-wallpaper on the app container) */
+.app-container[data-wallpaper="doodle"] {
+  background-image: url("doodle.svg");
+  background-size: 300px 300px;
+  background-repeat: repeat;
+}
 .app-container[data-wallpaper="dots"] {
   background-image: radial-gradient(rgba(139, 124, 246, 0.13) 1.5px, transparent 1.5px);
   background-size: 22px 22px;

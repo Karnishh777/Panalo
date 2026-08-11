@@ -52,7 +52,7 @@
     </div>
   </div>
 
-  <div id="chat-app" class="app-container hidden" data-wallpaper="dots">
+  <div id="chat-app" class="app-container hidden" data-wallpaper="doodle">
 
     <div class="sidebar">
       <div class="sidebar-header">
@@ -69,6 +69,15 @@
       <div class="sidebar-actions">
         <button id="new-direct-btn">+ Direct Chat</button>
         <button id="new-group-btn">+ New Group</button>
+      </div>
+
+      <div class="sidebar-search">
+        <input type="text" id="chat-search" placeholder="Search chats…" aria-label="Search chats" autocomplete="off" />
+      </div>
+      <div class="chat-filters">
+        <button class="filter-tab active" data-filter="all" type="button">All</button>
+        <button class="filter-tab" data-filter="direct" type="button">Direct</button>
+        <button class="filter-tab" data-filter="group" type="button">Groups</button>
       </div>
 
       <div id="conversations-list" class="conversations-list"></div>

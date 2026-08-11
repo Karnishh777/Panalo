@@ -61,8 +61,26 @@ export async function fetchConversations() {
   const conversations = (rows || []).map((row) => row.conversations).filter(Boolean);
   await resolveDirectTitles(conversations);
 
+  allConversations = conversations;
+  renderConversations();
+}
+
+// Search + filter (All / Direct / Groups) applied client-side over the cached list.
+let allConversations = [];
+let chatSearch = "";
+let chatFilter = "all";
+
+function renderConversations() {
+  const q = chatSearch.trim().toLowerCase();
   conversationsList.innerHTML = "";
-  conversations.forEach((conv) => renderConversationItem(conv));
+  allConversations
+    .filter((c) => chatFilter === "all" || c.type === chatFilter)
+    .filter((c) => {
+      if (!q) return true;
+      const title = (c.type === "group" ? c.name : c.displayTitle || c.name) || "";
+      return title.toLowerCase().includes(q);
+    })
+    .forEach((c) => renderConversationItem(c));
 }
 
 // For direct chats, the display title is the OTHER participant's username
@@ -786,4 +804,18 @@ export function initChatUI() {
 
   // Refresh the header status whenever anyone's online state changes.
   setPresenceListener(refreshChatSubtitle);
+
+  // Chat search + filter tabs.
+  const searchInput = document.getElementById("chat-search");
+  searchInput.addEventListener("input", () => {
+    chatSearch = searchInput.value;
+    renderConversations();
+  });
+  document.querySelectorAll(".filter-tab").forEach((tab) => {
+    tab.addEventListener("click", () => {
+      chatFilter = tab.dataset.filter;
+      document.querySelectorAll(".filter-tab").forEach((t) => t.classList.toggle("active", t === tab));
+      renderConversations();
+    });
+  });
 }
