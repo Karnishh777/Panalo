@@ -6,7 +6,10 @@ import { getConversationKey, provisionConversationKey, messagePlaintext } from "
 import { MESSAGES_PAGE_SIZE, THEME_PRESETS, FONT_PRESETS, MAX_FILE_BYTES } from "./config.js";
 import { isOnline, setPresenceListener } from "./presence.js";
 import { isMuted, toggleMute, setInboxListener, setOpenChatListener } from "./notifications.js";
-import { markRead, countUnread, isUnreadMessage, formatCount, updateTitleBadge, getLastRead } from "./unread.js";
+import {
+  markRead, countUnread, isUnreadMessage, formatCount, updateTitleBadge,
+  getLastRead, mergeServerMarkers,
+} from "./unread.js";
 import {
   getNickname, isPinned, togglePin,
   getStars, toggleStar, isStarred,
@@ -14,10 +17,43 @@ import {
   getChatFont, getChatWallpaper,
 } from "./prefs.js";
 import { icon } from "./icons.js";
+import {
+  REACTION_EMOJIS, groupedReactions, loadReactions, toggleReaction,
+  setReactionListener, startReactions,
+} from "./reactions.js";
+import {
+  markConversationRead, loadReadState, isReadByAll, subscribeReceipts,
+  setReceiptListener, loadMyReadMarkers,
+} from "./receipts.js";
 import { openChatInfo, closeChatInfo, setChatInfoCallbacks, displayTitle, initChatInfo } from "./chatinfo.js";
 
 // Message rows currently on screen (id → row) — powers the actions menu.
 const msgCache = new Map();
+// Members of the open conversation, needed to decide when a message is read.
+let currentMemberIds = [];
+// The message we're currently replying to, if any.
+let replyTarget = null;
+
+// Look a message up on screen first, then fall back to the server (for quoted
+// messages that scrolled out of the loaded page).
+async function resolveMessage(id) {
+  if (msgCache.has(id)) return msgCache.get(id);
+  const { data } = await supabaseClient.from("messages").select("*").eq("id", id).maybeSingle();
+  if (data) msgCache.set(id, data);
+  return data || null;
+}
+
+// Scroll to a message and flash it, if it's currently loaded.
+function jumpToMessage(id) {
+  const target = document.getElementById(`msg-${id}`);
+  if (!target) {
+    showToast("That message is further up — scroll to load it.", "");
+    return;
+  }
+  target.scrollIntoView({ behavior: "smooth", block: "center" });
+  target.classList.add("flash");
+  setTimeout(() => target.classList.remove("flash"), 1200);
+}
 
 // Typing indicator state (for the currently open conversation).
 let otherTyping = false;
@@ -75,6 +111,8 @@ export async function fetchConversations() {
   await resolveDirectTitles(conversations);
 
   allConversations = conversations;
+  // Read positions from your other devices win before unread is computed.
+  mergeServerMarkers(await loadMyReadMarkers());
   await hydrateConversationMeta();
   renderConversations();
 }
@@ -349,13 +387,25 @@ async function openConversation(conv) {
     item.classList.toggle("active", item.dataset.convId === String(conv.id));
   });
 
+  cancelReply();
+
+  // Who's in this chat + where everyone has read up to (drives the ✓✓ ticks).
+  const [{ data: parts }] = await Promise.all([
+    supabaseClient.from("conversation_participants").select("user_id").eq("conversation_id", conv.id),
+    loadReadState(conv.id),
+  ]);
+  currentMemberIds = (parts || []).map((p) => p.user_id);
+
   await fetchMessages();
-  // Everything on screen counts as read.
+
+  // Everything on screen counts as read — locally and for the other side.
   markRead(conv.id);
+  markConversationRead(conv.id);
   conv.unread = 0;
   refreshUnreadBadges();
   renderConversations();
   subscribeToMessages();
+  subscribeReceipts(conv.id);
 }
 
 // Find an existing 1:1 conversation shared with `targetUserId`, or null.
@@ -519,6 +569,8 @@ async function fetchMessages() {
   messagesList.innerHTML = "";
   msgCache.clear();
   const ordered = (data || []).slice().reverse();
+  // Reactions for this page arrive before rendering, so pills appear at once.
+  await loadReactions(ordered.map((m) => m.id));
   // "Unread messages" divider before the first message we haven't seen.
   const firstUnread = ordered.find((m) => isUnreadMessage(state.currentConversationId, m));
   ordered.forEach((msg) => {
@@ -554,6 +606,7 @@ async function loadOlderMessages() {
     return;
   }
 
+  await loadReactions((data || []).map((m) => m.id), { replace: false });
   (data || []).forEach((msg) => renderMessage(msg, true));
 
   if (data && data.length) state.oldestLoadedAt = data[data.length - 1].created_at;
@@ -651,6 +704,36 @@ function renderMessage(msg, prepend = false) {
 
   messageEl.append(el("div", { class: "message-author", text: isMine ? "You" : (msg.username || "Unknown") }));
 
+  // Quoted message being replied to (text resolved + decrypted lazily).
+  if (msg.reply_to) {
+    const quote = el("button", {
+      class: "reply-quote",
+      type: "button",
+      "aria-label": "Jump to the replied message",
+      onClick: (e) => {
+        e.stopPropagation();
+        jumpToMessage(msg.reply_to);
+      },
+    }, [
+      el("span", { class: "reply-quote-author", text: "…" }),
+      el("span", { class: "reply-quote-text", text: "…" }),
+    ]);
+    messageEl.append(quote);
+    resolveMessage(msg.reply_to).then(async (parent) => {
+      if (!parent) {
+        quote.querySelector(".reply-quote-author").textContent = "Message";
+        quote.querySelector(".reply-quote-text").textContent = "no longer available";
+        quote.classList.add("missing");
+        return;
+      }
+      quote.querySelector(".reply-quote-author").textContent =
+        parent.user_id === state.currentUser.id ? "You" : parent.username || "Unknown";
+      quote.querySelector(".reply-quote-text").textContent = parent.file_url
+        ? "📎 Attachment"
+        : await messagePlaintext(parent);
+    });
+  }
+
   if (msg.content) {
     const textEl = el("div", { class: "message-text", text: msg.iv ? "…" : msg.content });
     messageEl.append(textEl);
@@ -680,7 +763,13 @@ function renderMessage(msg, prepend = false) {
     el("span", { class: "message-time", text: msg._pending ? "Sending…" : time }),
   ]);
   if (msg.edited_at) footer.append(el("span", { class: "edited-tag", text: "edited" }));
+  // Delivery ticks live on our own messages only.
+  if (isMine && !msg._pending) footer.append(el("span", { class: "ticks", "aria-label": "Sent" }));
   messageEl.append(footer);
+
+  // Reactions sit under the bubble content, above the footer.
+  const reactionBar = el("div", { class: "reaction-bar" });
+  messageEl.insertBefore(reactionBar, footer);
 
   if (!msg._pending) {
     messageEl.append(
@@ -699,6 +788,80 @@ function renderMessage(msg, prepend = false) {
   if (prepend) messagesList.insertBefore(messageEl, messagesList.firstChild);
   else messagesList.append(messageEl);
   refreshMsgFlags(msg.id);
+  renderReactions(msg.id);
+  if (isMine && !msg._pending) refreshTicks(msg);
+}
+
+// ---- Reactions ----
+function renderReactions(msgId) {
+  const bar = document.querySelector(`#msg-${CSS.escape(String(msgId))} .reaction-bar`);
+  if (!bar) return;
+  const groups = groupedReactions(msgId);
+  bar.innerHTML = "";
+  bar.classList.toggle("empty", groups.length === 0);
+  groups.forEach((g) => {
+    bar.append(
+      el("button", {
+        class: `reaction-pill${g.mine ? " mine" : ""}`,
+        type: "button",
+        "aria-label": `${g.emoji} ${g.count}`,
+        onClick: (e) => {
+          e.stopPropagation();
+          toggleReaction(msgId, g.emoji);
+        },
+      }, [
+        el("span", { class: "reaction-emoji", text: g.emoji }),
+        el("span", { class: "reaction-count", text: String(g.count) }),
+      ])
+    );
+  });
+}
+
+// Quick emoji picker, opened from a message's actions menu.
+let pickerEl = null;
+
+function closeReactionPicker() {
+  pickerEl?.remove();
+  pickerEl = null;
+}
+
+function openReactionPicker(msgId, anchorRect) {
+  closeReactionPicker();
+  pickerEl = el("div", { class: "reaction-picker", role: "menu" });
+  REACTION_EMOJIS.forEach((emoji) => {
+    pickerEl.append(
+      el("button", {
+        class: "reaction-choice",
+        type: "button",
+        text: emoji,
+        "aria-label": `React with ${emoji}`,
+        onClick: (e) => {
+          e.stopPropagation();
+          toggleReaction(msgId, emoji);
+          closeReactionPicker();
+        },
+      })
+    );
+  });
+  document.body.append(pickerEl);
+  placePopup(pickerEl, anchorRect, "above");
+}
+
+// ---- Read receipts (✓ sent, ✓✓ read by everyone else) ----
+function refreshTicks(msg) {
+  const tickEl = document.querySelector(`#msg-${CSS.escape(String(msg.id))} .ticks`);
+  if (!tickEl) return;
+  const read = isReadByAll(msg.conversation_id, msg, currentMemberIds);
+  tickEl.innerHTML = "";
+  tickEl.append(icon(read ? "checkDouble" : "check", 14));
+  tickEl.classList.toggle("read", read);
+  tickEl.setAttribute("aria-label", read ? "Read" : "Sent");
+}
+
+function refreshAllTicks() {
+  for (const msg of msgCache.values()) {
+    if (msg.user_id === state.currentUser?.id && !msg._pending) refreshTicks(msg);
+  }
 }
 
 // ---- Per-message actions (star / pin / edit / delete) ----
@@ -715,6 +878,8 @@ function openMsgActions(msg, anchor) {
   const convId = state.currentConversationId;
 
   const items = [
+    { ico: "smile", label: "React", act: () => openReactionPicker(msg.id, anchor.getBoundingClientRect()) },
+    { ico: "reply", label: "Reply", act: () => startReply(msg) },
     { ico: "star", label: isStarred(msg.id) ? "Unstar" : "Star", act: () => {
       toggleStar(msg.id, convId);
       refreshMsgFlags(msg.id);
@@ -731,7 +896,10 @@ function openMsgActions(msg, anchor) {
 
   msgActionsEl = el("div", { class: "msg-actions", role: "menu" });
   items.forEach(({ ico, label, act, danger }) => {
-    const b = el("button", { class: "chat-menu-item", type: "button", role: "menuitem", onClick: () => {
+    const b = el("button", { class: "chat-menu-item", type: "button", role: "menuitem", onClick: (e) => {
+      // Without this the click reaches the document handler, which would close
+      // the reaction picker the moment "React" opens it.
+      e.stopPropagation();
       closeMsgActions();
       act();
     } }, [icon(ico, 16), label]);
@@ -739,13 +907,31 @@ function openMsgActions(msg, anchor) {
     msgActionsEl.append(b);
   });
   document.body.append(msgActionsEl);
+  placePopup(msgActionsEl, anchor.getBoundingClientRect(), "below");
+}
 
-  // Position beside the bubble, clamped to the viewport.
-  const r = anchor.getBoundingClientRect();
-  const mw = msgActionsEl.offsetWidth || 170;
-  const mh = msgActionsEl.offsetHeight || 150;
-  msgActionsEl.style.left = `${Math.min(Math.max(8, r.left - mw + r.width), window.innerWidth - mw - 8)}px`;
-  msgActionsEl.style.top = `${Math.min(r.bottom + 6, window.innerHeight - mh - 8)}px`;
+// Place a floating popup against an anchor, clamped to the viewport.
+// left/top are pinned before measuring: while they're `auto` the popup is laid
+// out by the body's flex rules, which can report a misleading size and leave a
+// non-finite result that silently drops the element off-screen.
+function placePopup(node, anchorRect, side) {
+  node.style.left = "0px";
+  node.style.top = "0px";
+  const w = node.offsetWidth || 260;
+  const h = node.offsetHeight || 150;
+  const anchorLeft = Number.isFinite(anchorRect?.left) ? anchorRect.left : 0;
+  const anchorTop = Number.isFinite(anchorRect?.top) ? anchorRect.top : 0;
+  const anchorW = Number.isFinite(anchorRect?.width) ? anchorRect.width : 0;
+  const anchorH = Number.isFinite(anchorRect?.height) ? anchorRect.height : 0;
+
+  const left = Math.min(Math.max(8, anchorLeft + anchorW / 2 - w / 2), Math.max(8, window.innerWidth - w - 8));
+  const top =
+    side === "above"
+      ? Math.max(8, anchorTop - h - 8)
+      : Math.min(anchorTop + anchorH + 6, Math.max(8, window.innerHeight - h - 8));
+
+  node.style.left = `${Math.round(Number.isFinite(left) ? left : 8)}px`;
+  node.style.top = `${Math.round(Number.isFinite(top) ? top : 8)}px`;
 }
 
 // ---- Edit message (encrypted like sending) ----
@@ -859,6 +1045,24 @@ async function deleteMessage(msgId) {
   if (error) showToast("Could not delete the message.");
 }
 
+// ---- Replying ----
+async function startReply(msg) {
+  replyTarget = msg;
+  const bar = document.getElementById("reply-bar");
+  document.getElementById("reply-bar-author").textContent =
+    msg.user_id === state.currentUser.id ? "You" : msg.username || "Unknown";
+  document.getElementById("reply-bar-text").textContent = msg.file_url
+    ? "📎 Attachment"
+    : await messagePlaintext(msg);
+  bar.classList.remove("hidden");
+  messageInput.focus();
+}
+
+function cancelReply() {
+  replyTarget = null;
+  document.getElementById("reply-bar").classList.add("hidden");
+}
+
 // ---- Sending (optimistic) ----
 function handleSend() {
   const content = messageInput.value.trim();
@@ -868,19 +1072,21 @@ function handleSend() {
   if (!state.currentConversationId) return;
 
   const convId = state.currentConversationId;
+  const replyToId = replyTarget?.id || null;
   messageInput.value = "";
   fileInput.value = "";
   filePreview.classList.add("hidden");
   filePreview.innerHTML = "";
+  cancelReply();
 
-  sendMessage(content, file, convId);
+  sendMessage(content, file, convId, replyToId);
 }
 
-async function sendMessage(content, file, convId) {
+async function sendMessage(content, file, convId, replyToId = null) {
   const tempId = "temp-" + crypto.randomUUID();
   const isImage = file && file.type.startsWith("image/");
   const localPreview = isImage ? URL.createObjectURL(file) : null;
-  const retry = () => sendMessage(content, file, convId);
+  const retry = () => sendMessage(content, file, convId, replyToId);
 
   renderMessage({
     id: tempId,
@@ -893,6 +1099,7 @@ async function sendMessage(content, file, convId) {
     _localFileMeta: file && !isImage ? { url: null, name: file.name, size: file.size } : null,
     created_at: new Date().toISOString(),
     conversation_id: convId,
+    reply_to: replyToId,
     _pending: true,
   });
   scrollToBottom();
@@ -931,20 +1138,27 @@ async function sendMessage(content, file, convId) {
       }
     }
 
-    const { data: inserted, error: insertError } = await supabaseClient
-      .from("messages")
-      .insert([
-        {
-          content: storedContent,
-          iv: storedIv,
-          username: state.currentUsername,
-          user_id: state.currentUser.id,
-          conversation_id: convId,
-          file_url: fileUrl,
-        },
-      ])
-      .select()
-      .single();
+    const row = {
+      content: storedContent,
+      iv: storedIv,
+      username: state.currentUsername,
+      user_id: state.currentUser.id,
+      conversation_id: convId,
+      file_url: fileUrl,
+    };
+    // Only send reply_to when there's a reply, so plain messages still work on
+    // a database where supabase-phase6.sql hasn't been run yet.
+    if (replyToId) row.reply_to = replyToId;
+
+    let { data: inserted, error: insertError } = await supabaseClient.from("messages").insert([row]).select().single();
+
+    // Replying before the column exists: send it as a normal message instead of
+    // losing what was typed.
+    if (insertError && replyToId && /reply_to|column/i.test(insertError.message)) {
+      delete row.reply_to;
+      ({ data: inserted, error: insertError } = await supabaseClient.from("messages").insert([row]).select().single());
+      if (!insertError) showToast("Sent — run supabase-phase6.sql to enable replies.", "");
+    }
 
     if (insertError || !inserted) return markSendFailed(tempId, "Message failed to send", retry);
 
@@ -1024,6 +1238,8 @@ function subscribeToMessages() {
         scrollToBottom();
         if (payload.new.user_id !== state.currentUser.id) {
           announce(`New message from ${payload.new.username || "someone"}`);
+          // We're looking at it, so tell the sender it's been read.
+          if (!document.hidden) markConversationRead(payload.new.conversation_id);
         }
       }
     )
@@ -1327,6 +1543,14 @@ export function initChatUI() {
     }
   });
 
+  // Reply bar dismissal.
+  document.getElementById("cancel-reply").addEventListener("click", cancelReply);
+
+  // Reactions + receipts keep themselves in sync in the background.
+  setReactionListener(renderReactions);
+  setReceiptListener(refreshAllTicks);
+  startReactions();
+
   // Refresh the header status whenever anyone's online state changes.
   setPresenceListener(refreshChatSubtitle);
 
@@ -1365,6 +1589,7 @@ export function initChatUI() {
     const conv = allConversations.find((c) => c.id === state.currentConversationId);
     if (!conv) return;
     markRead(conv.id);
+    markConversationRead(conv.id);
     conv.unread = 0;
     refreshUnreadBadges();
     renderConversations();
@@ -1464,6 +1689,7 @@ export function initChatUI() {
   document.addEventListener("click", (e) => {
     chatMenu.classList.add("hidden");
     closeMsgActions();
+    if (!e.target.closest(".reaction-picker")) closeReactionPicker();
     if (document.body.classList.contains("panel-out") && !e.target.closest(".sidebar, .focus-controls")) {
       document.body.classList.remove("panel-out");
     }

@@ -6,6 +6,8 @@ import { ensureUserKeys, idbDelKey } from "./encryption.js";
 import { fetchConversations } from "./chat.js";
 import { startPresence, stopPresence } from "./presence.js";
 import { startNotifications, stopNotifications } from "./notifications.js";
+import { stopReactions } from "./reactions.js";
+import { stopReceipts } from "./receipts.js";
 import { refreshMyProfile } from "./profile.js";
 import { MIN_PASSWORD_LENGTH, OTP_LENGTH } from "./config.js";
 
@@ -186,6 +188,8 @@ export function initAuth() {
     if (state.currentUser) await idbDelKey(state.currentUser.id);
     stopPresence();
     stopNotifications();
+    stopReactions();
+    stopReceipts();
     state.myPrivateKey = null;
     state.myPublicKeyB64 = null;
     conversationKeys.clear();

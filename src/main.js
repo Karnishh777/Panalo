@@ -28,6 +28,7 @@ document.addEventListener("keydown", (e) => {
   document.getElementById("edit-modal")?.classList.add("hidden");
   document.getElementById("pinned-modal")?.classList.add("hidden");
   document.getElementById("new-chat-modal")?.classList.add("hidden");
+  document.getElementById("cancel-reply")?.click();
   document.getElementById("chat-info")?.classList.remove("open");
   setFocusMode(false);
 });

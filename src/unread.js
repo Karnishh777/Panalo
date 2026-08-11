@@ -25,6 +25,20 @@ export function getLastRead(convId) {
   return readMap()[convId] || null;
 }
 
+// Merge the server's read markers in (written from your other devices), always
+// keeping whichever position is further along.
+export function mergeServerMarkers(markers) {
+  const map = readMap();
+  let changed = false;
+  for (const [convId, at] of Object.entries(markers || {})) {
+    if (!map[convId] || at > map[convId]) {
+      map[convId] = at;
+      changed = true;
+    }
+  }
+  if (changed) writeMap(map);
+}
+
 // Mark everything up to now as read. Returns true if the count actually changed.
 export function markRead(convId) {
   const map = readMap();

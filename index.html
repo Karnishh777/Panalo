@@ -135,6 +135,15 @@
           <button type="button" class="quick-btn" data-msg="Thank you! 🙏">Thank you</button>
         </div>
 
+        <div id="reply-bar" class="reply-bar hidden">
+          <span class="reply-bar-icon" data-icon="reply" data-icon-size="16"></span>
+          <div class="reply-bar-body">
+            <div id="reply-bar-author" class="reply-bar-author"></div>
+            <div id="reply-bar-text" class="reply-bar-text"></div>
+          </div>
+          <button id="cancel-reply" class="reply-cancel" type="button" aria-label="Cancel reply"><span data-icon="close" data-icon-size="14"></span></button>
+        </div>
+
         <form id="message-form">
           <input type="file" id="file-input" class="hidden" aria-label="Attach a file" />
           <button type="button" id="file-btn" title="Attach a file (up to 50 MB)" aria-label="Attach a file"><span data-icon="clip"></span></button>

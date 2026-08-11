@@ -2114,6 +2114,231 @@ body.focus-mode .chat-header {
   background-image: none;
 }
 
+/* ============================================================
+   Reactions, read receipts, replies
+   ============================================================ */
+
+/* ---- Reaction pills under a bubble ---- */
+.reaction-bar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin-top: 6px;
+}
+
+.reaction-bar.empty {
+  display: none;
+}
+
+.reaction-pill {
+  width: auto;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 8px;
+  border-radius: 12px;
+  background: rgba(0, 0, 0, 0.28);
+  border: 1px solid transparent;
+  color: var(--text);
+  font-size: 12px;
+  line-height: 1.6;
+}
+
+.reaction-pill:hover {
+  transform: none;
+  box-shadow: none;
+  border-color: var(--primary);
+}
+
+.reaction-pill.mine {
+  background: rgba(139, 124, 246, 0.28);
+  border-color: var(--primary);
+}
+
+.message.my-message .reaction-pill {
+  background: rgba(0, 0, 0, 0.22);
+}
+
+.message.my-message .reaction-pill.mine {
+  background: rgba(255, 255, 255, 0.26);
+  border-color: rgba(255, 255, 255, 0.7);
+}
+
+.reaction-emoji {
+  font-size: 13px;
+}
+
+.reaction-count {
+  font-weight: 700;
+  font-size: 11px;
+}
+
+/* ---- Emoji picker ---- */
+.reaction-picker {
+  position: fixed;
+  z-index: 70;
+  display: flex;
+  gap: 2px;
+  padding: 6px;
+  border-radius: 26px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  box-shadow: 0 14px 40px rgba(0, 0, 0, 0.55);
+  animation: fadeSlideUp 0.16s ease;
+}
+
+.reaction-choice {
+  width: 36px;
+  height: 36px;
+  padding: 0;
+  border-radius: 50%;
+  background: none;
+  font-size: 19px;
+  line-height: 1;
+  transition: transform 0.12s, background 0.12s;
+}
+
+.reaction-choice:hover {
+  background: var(--surface-2);
+  transform: scale(1.22);
+  box-shadow: none;
+}
+
+/* ---- Read receipts ---- */
+.ticks {
+  display: inline-flex;
+  align-items: center;
+  color: rgba(255, 255, 255, 0.65);
+}
+
+.ticks.read {
+  color: #6fe3ff; /* the "seen" blue, readable on the sent-bubble gradient */
+}
+
+.ticks .icon {
+  width: 14px;
+  height: 14px;
+  stroke-width: 2.4;
+}
+
+/* ---- Replies ---- */
+.reply-quote {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  text-align: left;
+  padding: 6px 10px;
+  margin-bottom: 6px;
+  border-radius: 8px;
+  border-left: 3px solid var(--primary);
+  background: rgba(0, 0, 0, 0.24);
+  color: var(--text);
+}
+
+.reply-quote:hover {
+  background: rgba(0, 0, 0, 0.34);
+  transform: none;
+  box-shadow: none;
+}
+
+.message.my-message .reply-quote {
+  border-left-color: rgba(255, 255, 255, 0.85);
+  background: rgba(255, 255, 255, 0.16);
+}
+
+.reply-quote-author {
+  font-size: 11.5px;
+  font-weight: 700;
+  color: var(--primary);
+}
+
+.message.my-message .reply-quote-author {
+  color: #fff;
+}
+
+.reply-quote-text {
+  font-size: 12.5px;
+  color: var(--text-muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
+}
+
+.message.my-message .reply-quote-text {
+  color: rgba(255, 255, 255, 0.85);
+}
+
+.reply-quote.missing {
+  opacity: 0.6;
+  font-style: italic;
+}
+
+/* Composer reply bar */
+.reply-bar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 9px 14px;
+  background: var(--panel-bg);
+  border-top: 1px solid var(--border);
+  border-left: 3px solid var(--primary);
+}
+
+.reply-bar-icon {
+  display: flex;
+  color: var(--primary);
+  flex-shrink: 0;
+}
+
+.reply-bar-body {
+  flex: 1;
+  min-width: 0;
+}
+
+.reply-bar-author {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--primary);
+}
+
+.reply-bar-text {
+  font-size: 12.5px;
+  color: var(--text-muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.reply-cancel {
+  width: 26px;
+  height: 26px;
+  padding: 0;
+  border-radius: 50%;
+  background: var(--surface-2);
+  color: var(--text-muted);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.reply-cancel:hover {
+  transform: none;
+  box-shadow: none;
+}
+
+/* Flash a message when you jump to it from a quote */
+.message.flash {
+  animation: flashHighlight 1.2s ease;
+}
+
+@keyframes flashHighlight {
+  0%, 100% { box-shadow: 0 1px 2px rgba(0, 0, 0, 0.15); }
+  30% { box-shadow: 0 0 0 3px var(--primary); }
+}
+
 /* ---- Responsive: phones & portrait tablets (single-pane, full-screen) ---- */
 @media (max-width: 768px) {
   .app-container {
