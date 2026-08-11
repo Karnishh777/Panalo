@@ -3,6 +3,7 @@
 export const state = {
   currentUser: null,
   currentUsername: "",
+  myProfile: null, // own profiles row: { username, bio, avatar_url }
   currentConversationId: null,
   currentConversation: null, // the full conversation row (for theme, etc.)
   realtimeChannel: null,

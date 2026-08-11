@@ -37,6 +37,30 @@ export const THEME_PRESETS = [
   { id: "slate", name: "Slate", primary: "#9aa4b8", strong: "#6b7688" },
 ];
 
+// Per-chat font presets (personal, stored locally). "stack" is the CSS value
+// applied to the chat area via the --chat-font custom property.
+export const FONT_PRESETS = [
+  { id: "default", name: "Classic", stack: "'Inter', 'Segoe UI', system-ui, sans-serif" },
+  { id: "rounded", name: "Rounded", stack: "'Quicksand', 'Segoe UI', sans-serif" },
+  { id: "elegant", name: "Elegant", stack: "'Lora', Georgia, serif" },
+  { id: "mono", name: "Hacker", stack: "'JetBrains Mono', Consolas, monospace" },
+  { id: "cyber", name: "Cyber", stack: "'Orbitron', 'Segoe UI', sans-serif" },
+  { id: "comic", name: "Comic", stack: "'Comic Neue', 'Comic Sans MS', cursive" },
+];
+
+// Ambient background effects (Settings → Effects). "aurora" is the CSS layer;
+// the rest render on the fx canvas (see effects.js).
+export const EFFECT_PRESETS = [
+  { id: "aurora", name: "🌌 Aurora" },
+  { id: "liquid", name: "💧 Liquid" },
+  { id: "bubbles", name: "🫧 Bubbles" },
+  { id: "tech", name: "⚡ Tech" },
+  { id: "none", name: "None" },
+];
+
+// Any-file attachments: hard cap (also Supabase free-tier per-file limit).
+export const MAX_FILE_BYTES = 50 * 1024 * 1024;
+
 // Chat background presets (applied to .chat-main via a data-wallpaper attribute).
 export const WALLPAPER_PRESETS = [
   { id: "doodle", name: "Doodle" },

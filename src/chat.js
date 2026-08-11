@@ -1,11 +1,21 @@
 // Conversations, messages, sending, and realtime.
 import { supabaseClient } from "./client.js";
 import { state } from "./state.js";
-import { el, showToast, withBusy, getAvatarColor, safeImageUrl, scrollToBottom, compressImage, announce } from "./util.js";
+import { el, showToast, withBusy, getAvatarColor, safeImageUrl, scrollToBottom, compressImage, announce, setAvatar } from "./util.js";
 import { getConversationKey, provisionConversationKey, messagePlaintext } from "./encryption.js";
-import { MESSAGES_PAGE_SIZE, THEME_PRESETS } from "./config.js";
+import { MESSAGES_PAGE_SIZE, THEME_PRESETS, FONT_PRESETS, MAX_FILE_BYTES } from "./config.js";
 import { isOnline, setPresenceListener } from "./presence.js";
 import { isMuted, toggleMute } from "./notifications.js";
+import {
+  getNickname, isPinned, togglePin,
+  getStars, toggleStar, isStarred,
+  getPinnedMessages, isMessagePinned, toggleMessagePin,
+  getChatFont,
+} from "./prefs.js";
+import { openChatInfo, closeChatInfo, setChatInfoCallbacks, displayTitle, initChatInfo } from "./chatinfo.js";
+
+// Message rows currently on screen (id → row) — powers the actions menu.
+const msgCache = new Map();
 
 // Typing indicator state (for the currently open conversation).
 let otherTyping = false;
@@ -72,16 +82,67 @@ let chatSearch = "";
 let chatFilter = "all";
 
 function renderConversations() {
-  const q = chatSearch.trim().toLowerCase();
   conversationsList.innerHTML = "";
-  allConversations
+  if (chatFilter === "starred") {
+    renderStarredList();
+    return;
+  }
+  const q = chatSearch.trim().toLowerCase();
+  const items = allConversations
     .filter((c) => chatFilter === "all" || c.type === chatFilter)
     .filter((c) => {
       if (!q) return true;
       const title = (c.type === "group" ? c.name : c.displayTitle || c.name) || "";
-      return title.toLowerCase().includes(q);
-    })
-    .forEach((c) => renderConversationItem(c));
+      return title.toLowerCase().includes(q) || getNickname(c.id).toLowerCase().includes(q);
+    });
+  // Pinned chats float to the top (stable order otherwise).
+  items.sort((a, b) => Number(isPinned(b.id)) - Number(isPinned(a.id)));
+  if (!items.length) {
+    conversationsList.append(el("div", { class: "list-empty", text: q ? "No chats match your search." : "No chats here yet." }));
+    return;
+  }
+  items.forEach((c) => renderConversationItem(c));
+}
+
+// ---- Starred messages view (⭐ in the rail) ----
+async function renderStarredList() {
+  const stars = getStars();
+  if (!stars.length) {
+    conversationsList.append(el("div", { class: "list-empty", text: "No starred messages yet.\nHover a message → ⋮ → Star." }));
+    return;
+  }
+  const { data } = await supabaseClient
+    .from("messages")
+    .select("*")
+    .in("id", stars.map((s) => s.id))
+    .order("created_at", { ascending: false });
+
+  const rows = data || [];
+  if (!rows.length) {
+    conversationsList.append(el("div", { class: "list-empty", text: "Starred messages are no longer available." }));
+    return;
+  }
+  const titleOf = (convId) => {
+    const conv = allConversations.find((c) => c.id === convId);
+    return conv ? displayTitle(conv) : "Chat";
+  };
+  for (const msg of rows) {
+    const when = new Date(msg.created_at).toLocaleDateString([], { month: "short", day: "numeric" });
+    const textEl = el("div", { class: "star-item-text", text: msg.file_url ? "📎 Attachment" : "…" });
+    if (msg.content) messagePlaintext(msg).then((t) => (textEl.textContent = t));
+    const item = el("div", { class: "star-item", role: "button", tabindex: "0" }, [
+      el("div", { class: "star-item-top" }, [
+        el("span", { text: `⭐ ${titleOf(msg.conversation_id)} · ${msg.username || "?"}` }),
+        el("span", { text: when }),
+      ]),
+      textEl,
+    ]);
+    item.addEventListener("click", () => {
+      const conv = allConversations.find((c) => c.id === msg.conversation_id);
+      if (conv) openConversation(conv, displayTitle(conv));
+    });
+    conversationsList.append(item);
+  }
 }
 
 // For direct chats, the display title is the OTHER participant's username
@@ -90,34 +151,41 @@ async function resolveDirectTitles(conversations) {
   const directIds = conversations.filter((c) => c.type === "direct").map((c) => c.id);
   if (!directIds.length) return;
 
-  const { data: parts, error } = await supabaseClient
+  let { data: parts, error } = await supabaseClient
     .from("conversation_participants")
-    .select("conversation_id, user_id, profiles(username)")
+    .select("conversation_id, user_id, profiles(username, avatar_url, bio)")
     .in("conversation_id", directIds);
 
+  // Graceful fallback until supabase-phase5.sql adds avatar_url/bio.
+  if (error && /column/i.test(error.message)) {
+    ({ data: parts, error } = await supabaseClient
+      .from("conversation_participants")
+      .select("conversation_id, user_id, profiles(username)")
+      .in("conversation_id", directIds));
+  }
   if (error || !parts) return;
 
-  const otherName = new Map();
-  const otherId = new Map();
+  const others = new Map();
   for (const p of parts) {
     if (p.user_id === state.currentUser.id) continue;
-    if (!otherName.has(p.conversation_id)) {
-      otherName.set(p.conversation_id, p.profiles?.username || null);
-      otherId.set(p.conversation_id, p.user_id);
-    }
+    if (!others.has(p.conversation_id)) others.set(p.conversation_id, p);
   }
 
   for (const conv of conversations) {
     if (conv.type === "direct") {
-      conv.displayTitle = otherName.get(conv.id) || conv.name || "Direct Message";
-      conv.otherUserId = otherId.get(conv.id) || null;
+      const other = others.get(conv.id);
+      conv.displayTitle = other?.profiles?.username || conv.name || "Direct Message";
+      conv.otherUserId = other?.user_id || null;
+      conv.otherAvatar = other?.profiles?.avatar_url || null;
+      conv.otherBio = other?.profiles?.bio || null;
     }
   }
 }
 
 function renderConversationItem(conv) {
   const isGroup = conv.type === "group";
-  const title = isGroup ? conv.name : (conv.displayTitle || conv.name || "Direct Message");
+  const baseTitle = isGroup ? conv.name : (conv.displayTitle || conv.name || "Direct Message");
+  const title = getNickname(conv.id) || baseTitle;
 
   const item = el("div", {
     class: `conv-item${conv.id === state.currentConversationId ? " active" : ""}`,
@@ -127,8 +195,8 @@ function renderConversationItem(conv) {
   });
   item.dataset.convId = conv.id;
 
-  const avatar = el("div", { class: "avatar", text: (title || "?").trim().charAt(0).toUpperCase() });
-  avatar.style.background = getAvatarColor(title || "?");
+  const avatar = el("div", { class: "avatar" });
+  setAvatar(avatar, baseTitle, isGroup ? null : conv.otherAvatar);
 
   item.append(
     avatar,
@@ -137,6 +205,7 @@ function renderConversationItem(conv) {
       el("div", { class: "conv-type", text: isGroup ? "Group Chat" : "Direct Message" }),
     ])
   );
+  if (isPinned(conv.id)) item.append(el("span", { class: "conv-pin", text: "📌", "aria-label": "Pinned" }));
 
   const open = () => openConversation(conv, title);
   item.addEventListener("click", open);
@@ -150,19 +219,23 @@ function renderConversationItem(conv) {
   conversationsList.append(item);
 }
 
-async function openConversation(conv, title) {
+async function openConversation(conv) {
   state.currentConversationId = conv.id;
   state.currentConversation = conv;
+  const title = displayTitle(conv); // nickname > resolved title
   activeChatTitle.textContent = title;
 
   // Header avatar + subtitle (matches the redesigned chat header).
   const headerAvatar = document.getElementById("active-chat-avatar");
-  headerAvatar.textContent = (title || "?").trim().charAt(0).toUpperCase();
-  headerAvatar.style.background = getAvatarColor(title || "?");
+  const baseTitle = conv.type === "group" ? conv.name : conv.displayTitle || conv.name;
+  setAvatar(headerAvatar, baseTitle, conv.type === "group" ? null : conv.otherAvatar);
   otherTyping = false;
   refreshChatSubtitle(); // live: typing / online / default
 
+  closeChatInfo(); // drawer belongs to the previous chat
   applyChatTheme(conv.theme); // per-chat theme (falls back to default)
+  applyChatFont(conv.id); // personal per-chat font
+  refreshPinnedBar(conv.id);
 
   noChatSelected.classList.add("hidden");
   activeChatWindow.classList.remove("hidden");
@@ -336,6 +409,7 @@ async function fetchMessages() {
   }
 
   messagesList.innerHTML = "";
+  msgCache.clear();
   (data || []).slice().reverse().forEach((msg) => renderMessage(msg));
 
   if (data && data.length) state.oldestLoadedAt = data[data.length - 1].created_at;
@@ -373,9 +447,88 @@ async function loadOlderMessages() {
   state.loadingOlder = false;
 }
 
+// Non-image attachments live under files/ with size + name encoded in the path:
+//   files/<ts>_<uuid>_s<bytes>__<original-name>
+function parseFileMeta(url) {
+  const safe = safeImageUrl(url); // same allow-list as images
+  if (!safe || !safe.includes("/chat-files/files/")) return null;
+  let base = safe.split("/").pop() || "";
+  try {
+    base = decodeURIComponent(base);
+  } catch {
+    /* keep raw */
+  }
+  const m = /_s(\d+)__(.+)$/.exec(base);
+  return { url: safe, size: m ? Number(m[1]) : 0, name: m ? m[2] : base };
+}
+
+function prettyBytes(n) {
+  if (!n) return "";
+  if (n < 1024) return `${n} B`;
+  if (n < 1024 * 1024) return `${(n / 1024).toFixed(1)} KB`;
+  return `${(n / (1024 * 1024)).toFixed(1)} MB`;
+}
+
+function fileIcon(name) {
+  const ext = (name.split(".").pop() || "").toLowerCase();
+  if (["mp3", "wav", "ogg", "m4a", "flac"].includes(ext)) return "🎵";
+  if (["mp4", "mov", "mkv", "webm", "avi"].includes(ext)) return "🎬";
+  if (["zip", "rar", "7z", "tar", "gz"].includes(ext)) return "📦";
+  if (ext === "pdf") return "📕";
+  if (["doc", "docx", "txt", "md", "rtf"].includes(ext)) return "📝";
+  if (["xls", "xlsx", "csv"].includes(ext)) return "📊";
+  if (["ppt", "pptx", "key"].includes(ext)) return "📽️";
+  if (["js", "ts", "py", "html", "css", "json", "c", "cpp", "java"].includes(ext)) return "💻";
+  return "📄";
+}
+
+// Save any storage file with its original name (blob fetch, like images).
+async function downloadFile(url, name) {
+  if (!url) return; // still uploading
+  try {
+    const res = await fetch(url);
+    if (!res.ok) throw new Error("fetch failed");
+    const blob = await res.blob();
+    const objUrl = URL.createObjectURL(blob);
+    const a = el("a", { href: objUrl, download: name || `panalo-${Date.now()}` });
+    document.body.append(a);
+    a.click();
+    a.remove();
+    setTimeout(() => URL.revokeObjectURL(objUrl), 2000);
+  } catch {
+    window.open(url, "_blank", "noopener");
+  }
+}
+
+function renderFileBubble(meta) {
+  return el("div", { class: "file-bubble" }, [
+    el("span", { class: "file-bubble-icon", text: fileIcon(meta.name) }),
+    el("div", { class: "file-bubble-meta" }, [
+      el("div", { class: "file-bubble-name", text: meta.name }),
+      el("div", { class: "file-bubble-size", text: prettyBytes(meta.size) }),
+    ]),
+    el("button", {
+      class: "file-download-btn",
+      type: "button",
+      text: "⬇",
+      "aria-label": `Download ${meta.name}`,
+      onClick: () => downloadFile(meta.url, meta.name),
+    }),
+  ]);
+}
+
+// Star/pin flags shown in the footer, refreshed after every toggle.
+function refreshMsgFlags(msgId) {
+  const flagEl = document.querySelector(`#msg-${CSS.escape(String(msgId))} .msg-flags`);
+  if (!flagEl) return;
+  const convId = state.currentConversationId;
+  flagEl.textContent = `${isStarred(msgId) ? "⭐" : ""}${isMessagePinned(convId, msgId) ? "📌" : ""}`;
+}
+
 function renderMessage(msg, prepend = false) {
   // Idempotent: dedupes the realtime echo of an optimistically-rendered message.
   if (document.getElementById(`msg-${msg.id}`)) return;
+  msgCache.set(msg.id, msg);
 
   const isMine = msg.user_id === state.currentUser.id;
 
@@ -392,34 +545,195 @@ function renderMessage(msg, prepend = false) {
     if (msg.iv) {
       messagePlaintext(msg).then((plaintext) => {
         textEl.textContent = plaintext;
+        msg._plain = plaintext; // cached for the edit flow
       });
+    } else {
+      msg._plain = msg.content;
     }
   }
 
-  const imageUrl = msg._localPreview || safeImageUrl(msg.file_url);
-  if (imageUrl) {
-    messageEl.append(el("img", { class: "chat-image", src: imageUrl, alt: "Shared image", loading: "lazy" }));
+  const fileMeta = msg._localFileMeta || parseFileMeta(msg.file_url);
+  if (fileMeta) {
+    messageEl.append(renderFileBubble(fileMeta));
+  } else {
+    const imageUrl = msg._localPreview || safeImageUrl(msg.file_url);
+    if (imageUrl) {
+      messageEl.append(el("img", { class: "chat-image", src: imageUrl, alt: "Shared image", loading: "lazy" }));
+    }
   }
 
   const time = new Date(msg.created_at || Date.now()).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
   const footer = el("div", { class: "message-footer" }, [
+    el("span", { class: "msg-flags", "aria-hidden": "true" }),
     el("span", { class: "message-time", text: msg._pending ? "Sending…" : time }),
   ]);
-  if (isMine && !msg._pending) {
-    footer.append(
+  if (msg.edited_at) footer.append(el("span", { class: "edited-tag", text: "edited" }));
+  messageEl.append(footer);
+
+  if (!msg._pending) {
+    messageEl.append(
       el("button", {
-        class: "delete-btn",
+        class: "msg-menu-btn",
         type: "button",
-        text: "Delete",
-        "aria-label": "Delete message",
-        onClick: () => deleteMessage(msg.id),
+        text: "⌄",
+        "aria-label": "Message actions",
+        onClick: (e) => {
+          e.stopPropagation();
+          openMsgActions(msg, e.currentTarget);
+        },
       })
     );
   }
-  messageEl.append(footer);
 
   if (prepend) messagesList.insertBefore(messageEl, messagesList.firstChild);
   else messagesList.append(messageEl);
+  refreshMsgFlags(msg.id);
+}
+
+// ---- Per-message actions (star / pin / edit / delete) ----
+let msgActionsEl = null;
+
+function closeMsgActions() {
+  msgActionsEl?.remove();
+  msgActionsEl = null;
+}
+
+function openMsgActions(msg, anchor) {
+  closeMsgActions();
+  const isMine = msg.user_id === state.currentUser.id;
+  const convId = state.currentConversationId;
+
+  const items = [
+    { label: isStarred(msg.id) ? "⭐ Unstar" : "⭐ Star", act: () => {
+      toggleStar(msg.id, convId);
+      refreshMsgFlags(msg.id);
+      if (chatFilter === "starred") renderConversations();
+    } },
+    { label: isMessagePinned(convId, msg.id) ? "📌 Unpin" : "📌 Pin", act: () => {
+      toggleMessagePin(convId, msg.id);
+      refreshMsgFlags(msg.id);
+      refreshPinnedBar(convId);
+    } },
+  ];
+  if (isMine && msg.content) items.push({ label: "✏️ Edit", act: () => openEditModal(msg) });
+  if (isMine) items.push({ label: "🗑 Delete", act: () => deleteMessage(msg.id), danger: true });
+
+  msgActionsEl = el("div", { class: "msg-actions", role: "menu" });
+  items.forEach(({ label, act, danger }) => {
+    const b = el("button", { class: "chat-menu-item", type: "button", text: label, role: "menuitem", onClick: () => {
+      closeMsgActions();
+      act();
+    } });
+    if (danger) b.style.color = "var(--danger)";
+    msgActionsEl.append(b);
+  });
+  document.body.append(msgActionsEl);
+
+  // Position beside the bubble, clamped to the viewport.
+  const r = anchor.getBoundingClientRect();
+  const mw = msgActionsEl.offsetWidth || 170;
+  const mh = msgActionsEl.offsetHeight || 150;
+  msgActionsEl.style.left = `${Math.min(Math.max(8, r.left - mw + r.width), window.innerWidth - mw - 8)}px`;
+  msgActionsEl.style.top = `${Math.min(r.bottom + 6, window.innerHeight - mh - 8)}px`;
+}
+
+// ---- Edit message (encrypted like sending) ----
+let editingMsg = null;
+
+function openEditModal(msg) {
+  editingMsg = msg;
+  const input = document.getElementById("edit-message-input");
+  input.value = msg._plain || "";
+  document.getElementById("edit-modal").classList.remove("hidden");
+  input.focus();
+}
+
+async function saveEdit() {
+  const msg = editingMsg;
+  const newText = document.getElementById("edit-message-input").value.trim();
+  if (!msg || !newText || newText === msg._plain) {
+    document.getElementById("edit-modal").classList.add("hidden");
+    return;
+  }
+
+  let content = newText;
+  let iv = null;
+  const convKey = await getConversationKey(msg.conversation_id);
+  if (convKey) {
+    const enc = await window.PanaloCrypto.encryptMessage(newText, convKey);
+    content = enc.ciphertext;
+    iv = enc.iv;
+  }
+
+  // .select() so an RLS-filtered (silent) no-op is detectable as 0 rows.
+  const { data, error } = await supabaseClient
+    .from("messages")
+    .update({ content, iv, edited_at: new Date().toISOString() })
+    .eq("id", msg.id)
+    .select("id");
+
+  if (error || !data || !data.length) {
+    showToast(error && !/column/i.test(error.message) ? "Could not edit the message." : "Run supabase-phase5.sql to enable editing.");
+    return;
+  }
+
+  // Update in place (the realtime UPDATE echo is deduped by content).
+  msg._plain = newText;
+  msg.edited_at = new Date().toISOString();
+  const rowEl = document.getElementById(`msg-${msg.id}`);
+  if (rowEl) {
+    const textEl = rowEl.querySelector(".message-text");
+    if (textEl) textEl.textContent = newText;
+    if (!rowEl.querySelector(".edited-tag")) {
+      rowEl.querySelector(".message-footer")?.append(el("span", { class: "edited-tag", text: "edited" }));
+    }
+  }
+  document.getElementById("edit-modal").classList.add("hidden");
+  editingMsg = null;
+}
+
+// ---- Pinned messages bar + modal ----
+function refreshPinnedBar(convId) {
+  const bar = document.getElementById("pinned-bar");
+  const count = getPinnedMessages(convId).length;
+  document.getElementById("pinned-count").textContent = `${count} pinned message${count === 1 ? "" : "s"}`;
+  bar.classList.toggle("hidden", count === 0);
+}
+
+async function openPinnedModal() {
+  const convId = state.currentConversationId;
+  const ids = getPinnedMessages(convId);
+  if (!ids.length) return;
+  const listEl = document.getElementById("pinned-list");
+  listEl.innerHTML = "";
+
+  const { data } = await supabaseClient.from("messages").select("*").in("id", ids).order("created_at");
+  (data || []).forEach((msg) => {
+    const textEl = el("div", { class: "star-item-text", text: msg.file_url ? "📎 Attachment" : "…" });
+    if (msg.content) messagePlaintext(msg).then((t) => (textEl.textContent = t));
+    listEl.append(
+      el("div", { class: "star-item" }, [
+        el("div", { class: "star-item-top" }, [
+          el("span", { text: `${msg.username || "?"}` }),
+          el("button", { class: "member-remove", type: "button", text: "Unpin", onClick: (e) => {
+            e.stopPropagation();
+            toggleMessagePin(convId, msg.id);
+            refreshMsgFlags(msg.id);
+            refreshPinnedBar(convId);
+            e.target.closest(".star-item").remove();
+          } }),
+        ]),
+        textEl,
+      ])
+    );
+  });
+  document.getElementById("pinned-modal").classList.remove("hidden");
+}
+
+// ---- Per-chat font (personal) ----
+function applyChatFont(convId) {
+  const font = FONT_PRESETS.find((f) => f.id === getChatFont(convId)) || FONT_PRESETS[0];
+  chatMainEl.style.setProperty("--chat-font", font.stack);
 }
 
 async function deleteMessage(msgId) {
@@ -446,7 +760,8 @@ function handleSend() {
 
 async function sendMessage(content, file, convId) {
   const tempId = "temp-" + crypto.randomUUID();
-  const localPreview = file ? URL.createObjectURL(file) : null;
+  const isImage = file && file.type.startsWith("image/");
+  const localPreview = isImage ? URL.createObjectURL(file) : null;
   const retry = () => sendMessage(content, file, convId);
 
   renderMessage({
@@ -457,6 +772,7 @@ async function sendMessage(content, file, convId) {
     iv: null,
     file_url: null,
     _localPreview: localPreview,
+    _localFileMeta: file && !isImage ? { url: null, name: file.name, size: file.size } : null,
     created_at: new Date().toISOString(),
     conversation_id: convId,
     _pending: true,
@@ -466,15 +782,24 @@ async function sendMessage(content, file, convId) {
   try {
     let fileUrl = null;
     if (file) {
-      if (!file.type.startsWith("image/")) return markSendFailed(tempId, "Only images can be attached", retry);
-      const toUpload = await compressImage(file);
-      const ext = (toUpload.name.split(".").pop() || "img").toLowerCase();
-      const fileName = `${Date.now()}_${crypto.randomUUID()}.${ext}`;
+      if (file.size > MAX_FILE_BYTES) return markSendFailed(tempId, "File too large (max 50 MB)", retry);
+      let path;
+      let toUpload;
+      if (file.type.startsWith("image/")) {
+        toUpload = await compressImage(file);
+        const ext = (toUpload.name.split(".").pop() || "img").toLowerCase();
+        path = `${Date.now()}_${crypto.randomUUID()}.${ext}`;
+      } else {
+        // Any other file type: raw upload with size + name encoded in the path.
+        toUpload = file;
+        const safeName = (file.name || "file").replace(/[^\w.\- ]+/g, "_").slice(-80);
+        path = `files/${Date.now()}_${crypto.randomUUID()}_s${file.size}__${safeName}`;
+      }
       const { error: uploadError } = await supabaseClient.storage
         .from("chat-files")
-        .upload(fileName, toUpload, { contentType: toUpload.type || undefined });
-      if (uploadError) return markSendFailed(tempId, "Image upload failed", retry);
-      fileUrl = supabaseClient.storage.from("chat-files").getPublicUrl(fileName).data.publicUrl;
+        .upload(path, toUpload, { contentType: toUpload.type || undefined });
+      if (uploadError) return markSendFailed(tempId, "Upload failed", retry);
+      fileUrl = supabaseClient.storage.from("chat-files").getPublicUrl(path).data.publicUrl;
     }
 
     let storedContent = content;
@@ -513,33 +838,14 @@ async function sendMessage(content, file, convId) {
 }
 
 function reconcileSend(tempId, realMsg, localPreview) {
+  // Replace the optimistic row with the real one (renderMessage brings the
+  // actions menu, flags, and file card along for free).
   const tempEl = document.getElementById(`msg-${tempId}`);
-  const realEl = document.getElementById(`msg-${realMsg.id}`);
-
-  if (realEl) {
-    if (tempEl) tempEl.remove();
-    if (localPreview) URL.revokeObjectURL(localPreview);
-    return;
-  }
-  if (!tempEl) return;
-
-  tempEl.id = `msg-${realMsg.id}`;
-  tempEl.classList.remove("pending");
-  const footer = tempEl.querySelector(".message-footer");
-  if (footer) {
-    footer.innerHTML = "";
-    const time = new Date(realMsg.created_at || Date.now()).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
-    footer.append(el("span", { class: "message-time", text: time }));
-    footer.append(
-      el("button", {
-        class: "delete-btn",
-        type: "button",
-        text: "Delete",
-        "aria-label": "Delete message",
-        onClick: () => deleteMessage(realMsg.id),
-      })
-    );
-  }
+  msgCache.delete(tempId);
+  if (tempEl) tempEl.remove();
+  renderMessage(realMsg);
+  scrollToBottom();
+  if (localPreview) URL.revokeObjectURL(localPreview);
 }
 
 function markSendFailed(tempId, reason, onRetry) {
@@ -595,11 +901,33 @@ function subscribeToMessages() {
         }
       }
     )
+    // Edits: refresh the text + "edited" tag in place.
+    .on(
+      "postgres_changes",
+      { event: "UPDATE", schema: "public", table: "messages", filter: `conversation_id=eq.${state.currentConversationId}` },
+      (payload) => {
+        const m = payload.new;
+        const rowEl = document.getElementById(`msg-${m.id}`);
+        if (!rowEl) return;
+        msgCache.set(m.id, m);
+        const textEl = rowEl.querySelector(".message-text");
+        if (textEl && m.content) {
+          messagePlaintext(m).then((t) => {
+            textEl.textContent = t;
+            m._plain = t;
+          });
+        }
+        if (m.edited_at && !rowEl.querySelector(".edited-tag")) {
+          rowEl.querySelector(".message-footer")?.append(el("span", { class: "edited-tag", text: "edited" }));
+        }
+      }
+    )
     // DELETE payloads only carry the primary key, so we can't filter by
     // conversation here. The handler is a no-op unless the id is on screen.
     .on("postgres_changes", { event: "DELETE", schema: "public", table: "messages" }, (payload) => {
       const targetEl = document.getElementById(`msg-${payload.old.id}`);
       if (targetEl) targetEl.remove();
+      msgCache.delete(payload.old.id);
     })
     .subscribe();
 }
@@ -703,9 +1031,13 @@ function openChatMenu() {
   const menu = document.getElementById("chat-menu");
   // "View members" only makes sense for groups.
   document.getElementById("menu-members").style.display = conv && conv.type === "group" ? "block" : "none";
-  // Reflect current mute state.
+  // Reflect current mute + pin state.
   const muteItem = menu.querySelector('[data-action="mute"]');
-  if (conv) muteItem.textContent = isMuted(conv.id) ? "🔔 Unmute notifications" : "🔕 Mute notifications";
+  const pinItem = menu.querySelector('[data-action="pin"]');
+  if (conv) {
+    muteItem.textContent = isMuted(conv.id) ? "🔔 Unmute notifications" : "🔕 Mute notifications";
+    pinItem.textContent = isPinned(conv.id) ? "📌 Unpin chat" : "📌 Pin chat";
+  }
   menu.classList.remove("hidden");
 }
 
@@ -747,10 +1079,19 @@ export function initChatUI() {
       filePreview.classList.add("hidden");
       return;
     }
-    const previewUrl = URL.createObjectURL(file);
+    const isImage = file.type.startsWith("image/");
+    if (file.size > MAX_FILE_BYTES) {
+      showToast("That file is over the 50 MB limit.");
+      fileInput.value = "";
+      filePreview.classList.add("hidden");
+      return;
+    }
+    const previewUrl = isImage ? URL.createObjectURL(file) : null;
     filePreview.append(
-      el("img", { src: previewUrl, class: "file-preview-thumb", alt: "Selected image" }),
-      el("span", { class: "file-preview-name", text: file.name }),
+      isImage
+        ? el("img", { src: previewUrl, class: "file-preview-thumb", alt: "Selected image" })
+        : el("span", { class: "file-bubble-icon", text: fileIcon(file.name) }),
+      el("span", { class: "file-preview-name", text: `${file.name} · ${prettyBytes(file.size)}` }),
       el("button", {
         class: "file-preview-remove",
         type: "button",
@@ -839,18 +1180,65 @@ export function initChatUI() {
   // Refresh the header status whenever anyone's online state changes.
   setPresenceListener(refreshChatSubtitle);
 
-  // Chat search + filter tabs.
+  // Chat search + rail view switcher (All / Direct / Groups / Starred).
   const searchInput = document.getElementById("chat-search");
   searchInput.addEventListener("input", () => {
     chatSearch = searchInput.value;
     renderConversations();
   });
-  document.querySelectorAll(".filter-tab").forEach((tab) => {
-    tab.addEventListener("click", () => {
-      chatFilter = tab.dataset.filter;
-      document.querySelectorAll(".filter-tab").forEach((t) => t.classList.toggle("active", t === tab));
+  document.querySelectorAll(".rail-btn[data-view]").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      chatFilter = btn.dataset.view;
+      document.querySelectorAll(".rail-btn[data-view]").forEach((b) => b.classList.toggle("active", b === btn));
       renderConversations();
     });
+  });
+
+  // Chat info drawer: click the header identity (or ⋮ → Chat info).
+  const headerMain = document.getElementById("chat-header-main");
+  headerMain.addEventListener("click", openChatInfo);
+  headerMain.addEventListener("keydown", (e) => {
+    if (e.key === "Enter" || e.key === " ") {
+      e.preventDefault();
+      openChatInfo();
+    }
+  });
+  setChatInfoCallbacks({
+    onListChanged: renderConversations,
+    onTitleChanged: (conv) => {
+      if (conv.id === state.currentConversationId) activeChatTitle.textContent = displayTitle(conv);
+    },
+    onOpenTheme: () => {
+      updateSwatchSelection(state.currentConversation?.theme);
+      document.getElementById("theme-modal").classList.remove("hidden");
+    },
+    onLeftChat: async (convId) => {
+      if (state.currentConversationId === convId) {
+        state.currentConversationId = null;
+        state.currentConversation = null;
+        activeChatWindow.classList.add("hidden");
+        noChatSelected.classList.remove("hidden");
+        chatApp.classList.remove("chat-open");
+      }
+      await fetchConversations();
+    },
+  });
+  initChatInfo();
+
+  // Pinned messages bar + modal.
+  document.getElementById("pinned-bar").addEventListener("click", openPinnedModal);
+  document.getElementById("close-pinned-modal").addEventListener("click", () => {
+    document.getElementById("pinned-modal").classList.add("hidden");
+  });
+
+  // Edit-message modal.
+  document.getElementById("save-edit-btn").addEventListener("click", saveEdit);
+  document.getElementById("close-edit-modal").addEventListener("click", () => {
+    document.getElementById("edit-modal").classList.add("hidden");
+    editingMsg = null;
+  });
+  document.getElementById("edit-message-input").addEventListener("keydown", (e) => {
+    if (e.key === "Enter") saveEdit();
   });
 
   // Chat options menu.
@@ -865,9 +1253,15 @@ export function initChatUI() {
     if (!item) return;
     chatMenu.classList.add("hidden");
     const conv = state.currentConversation;
-    if (item.dataset.action === "mute" && conv) {
+    if (item.dataset.action === "info") {
+      openChatInfo();
+    } else if (item.dataset.action === "mute" && conv) {
       const muted = toggleMute(conv.id);
       showToast(muted ? "Chat muted" : "Chat unmuted", "success");
+    } else if (item.dataset.action === "pin" && conv) {
+      const pinned = togglePin(conv.id);
+      showToast(pinned ? "Chat pinned" : "Chat unpinned", "success");
+      renderConversations();
     } else if (item.dataset.action === "theme") {
       updateSwatchSelection(conv?.theme);
       document.getElementById("theme-modal").classList.remove("hidden");
@@ -875,8 +1269,11 @@ export function initChatUI() {
       viewMembers();
     }
   });
-  // Close the menu when clicking elsewhere.
-  document.addEventListener("click", () => chatMenu.classList.add("hidden"));
+  // Close menus when clicking elsewhere.
+  document.addEventListener("click", () => {
+    chatMenu.classList.add("hidden");
+    closeMsgActions();
+  });
   document.getElementById("close-members-modal").addEventListener("click", () => {
     document.getElementById("members-modal").classList.add("hidden");
   });

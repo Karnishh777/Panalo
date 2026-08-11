@@ -4,10 +4,12 @@
 import { initChatUI } from "./chat.js";
 import { initAuth } from "./auth.js";
 import { initSettings } from "./settings.js";
+import { initProfile } from "./profile.js";
 
 initChatUI();
 initAuth();
 initSettings();
+initProfile();
 
 // Accessibility: Escape closes the dismissable modals (not the unlock modal).
 document.addEventListener("keydown", (e) => {
@@ -19,4 +21,8 @@ document.addEventListener("keydown", (e) => {
   document.getElementById("image-viewer")?.classList.add("hidden");
   document.getElementById("members-modal")?.classList.add("hidden");
   document.getElementById("chat-menu")?.classList.add("hidden");
+  document.getElementById("profile-modal")?.classList.add("hidden");
+  document.getElementById("edit-modal")?.classList.add("hidden");
+  document.getElementById("pinned-modal")?.classList.add("hidden");
+  document.getElementById("chat-info")?.classList.remove("open");
 });

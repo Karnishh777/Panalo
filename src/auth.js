@@ -6,6 +6,7 @@ import { ensureUserKeys, idbDelKey } from "./encryption.js";
 import { fetchConversations } from "./chat.js";
 import { startPresence, stopPresence } from "./presence.js";
 import { startNotifications, stopNotifications } from "./notifications.js";
+import { refreshMyProfile } from "./profile.js";
 import { MIN_PASSWORD_LENGTH, OTP_LENGTH } from "./config.js";
 
 const authScreen = document.getElementById("auth-screen");
@@ -50,7 +51,7 @@ async function initApp(session) {
 
   startPresence(state.currentUser); // go online
   startNotifications();
-  await fetchConversations();
+  await Promise.all([refreshMyProfile(), fetchConversations()]);
 }
 
 // ---- Unlock screen (session restored but private key not cached here) ----

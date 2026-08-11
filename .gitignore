@@ -11,3 +11,6 @@ DEV_CREDENTIALS.md
 # Node (only if you add a build step later)
 node_modules/
 dist/
+
+# Claude Code local config
+.claude/

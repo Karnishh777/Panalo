@@ -77,6 +77,20 @@ export function showToast(message, type = "error") {
   }, 4000);
 }
 
+// Fill an avatar element: profile photo if there's a safe URL, else the
+// colored-initial fallback.
+export function setAvatar(node, name, url) {
+  node.innerHTML = "";
+  const safe = safeImageUrl(url);
+  if (safe) {
+    node.style.background = "var(--surface-2)";
+    node.append(el("img", { src: safe, alt: "", loading: "lazy" }));
+  } else {
+    node.textContent = (name || "?").trim().charAt(0).toUpperCase();
+    node.style.background = getAvatarColor(name || "?");
+  }
+}
+
 // Deterministic avatar color from a name.
 export function getAvatarColor(name) {
   let hash = 0;

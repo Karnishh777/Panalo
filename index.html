@@ -5,10 +5,14 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Panalo</title>
   <link rel="icon" type="image/svg+xml" href="logo.svg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Sora:wght@600;700;800&family=Quicksand:wght@500;700&family=Lora:ital,wght@0,500;0,700&family=JetBrains+Mono:wght@400;700&family=Orbitron:wght@500;700&family=Comic+Neue:wght@400;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
   <div id="aurora" aria-hidden="true"></div>
+  <canvas id="fx-canvas" aria-hidden="true"></canvas>
 
   <div id="auth-screen" class="screen">
     <div class="auth-box">
@@ -54,16 +58,25 @@
 
   <div id="chat-app" class="app-container hidden" data-wallpaper="doodle">
 
+    <nav class="nav-rail" aria-label="Views">
+      <button class="rail-btn active" data-view="all" type="button" title="All chats" aria-label="All chats">💬</button>
+      <button class="rail-btn" data-view="direct" type="button" title="Direct chats" aria-label="Direct chats">👤</button>
+      <button class="rail-btn" data-view="group" type="button" title="Groups" aria-label="Groups">👥</button>
+      <button class="rail-btn" data-view="starred" type="button" title="Starred messages" aria-label="Starred messages">⭐</button>
+      <div class="rail-spacer"></div>
+      <button class="rail-btn rail-profile-btn" id="rail-profile" type="button" title="My profile" aria-label="My profile">
+        <span id="rail-avatar" class="rail-avatar">?</span>
+      </button>
+      <button class="rail-btn" id="settings-btn" type="button" title="Settings" aria-label="Settings">⚙️</button>
+    </nav>
+
     <div class="sidebar">
       <div class="sidebar-header">
         <div style="display:flex; align-items:center; gap:8px;">
           <img src="logo.svg" width="24" height="24" style="border-radius:6px;">
           <h2 id="my-profile-name">My Chats</h2>
         </div>
-        <div style="display:flex; align-items:center; gap:8px;">
-          <button id="settings-btn" class="header-icon-btn" type="button" aria-label="Settings">⚙️</button>
-          <button id="logout-btn" class="danger-btn">Log Out</button>
-        </div>
+        <button id="logout-btn" class="danger-btn">Log Out</button>
       </div>
 
       <div class="sidebar-actions">
@@ -73,11 +86,6 @@
 
       <div class="sidebar-search">
         <input type="text" id="chat-search" placeholder="Search chats…" aria-label="Search chats" autocomplete="off" />
-      </div>
-      <div class="chat-filters">
-        <button class="filter-tab active" data-filter="all" type="button">All</button>
-        <button class="filter-tab" data-filter="direct" type="button">Direct</button>
-        <button class="filter-tab" data-filter="group" type="button">Groups</button>
       </div>
 
       <div id="conversations-list" class="conversations-list"></div>
@@ -91,19 +99,27 @@
       <div id="active-chat-window" class="chat-window hidden">
         <div class="chat-header">
           <button id="back-btn" class="back-btn" type="button" aria-label="Back to conversations">←</button>
-          <div id="active-chat-avatar" class="avatar chat-header-avatar" aria-hidden="true"></div>
-          <div class="chat-header-info">
-            <h2 id="active-chat-title">Chat Title</h2>
-            <span id="active-chat-subtitle" class="chat-subtitle"></span>
+          <div id="chat-header-main" class="chat-header-main" role="button" tabindex="0" aria-label="Open chat info">
+            <div id="active-chat-avatar" class="avatar chat-header-avatar" aria-hidden="true"></div>
+            <div class="chat-header-info">
+              <h2 id="active-chat-title">Chat Title</h2>
+              <span id="active-chat-subtitle" class="chat-subtitle"></span>
+            </div>
           </div>
           <button id="theme-btn" class="header-icon-btn" type="button" aria-label="Change chat theme">🎨</button>
           <button id="chat-menu-btn" class="header-icon-btn" type="button" aria-label="Chat options">⋮</button>
           <div id="chat-menu" class="chat-menu hidden" role="menu">
+            <button class="chat-menu-item" data-action="info" type="button" role="menuitem">ℹ️ Chat info</button>
             <button class="chat-menu-item" data-action="mute" type="button" role="menuitem">🔕 Mute notifications</button>
+            <button class="chat-menu-item" data-action="pin" type="button" role="menuitem">📌 Pin chat</button>
             <button class="chat-menu-item" data-action="theme" type="button" role="menuitem">🎨 Chat theme</button>
             <button id="menu-members" class="chat-menu-item" data-action="members" type="button" role="menuitem">👥 View members</button>
           </div>
         </div>
+
+        <button id="pinned-bar" class="pinned-bar hidden" type="button" aria-label="View pinned messages">
+          📌 <span id="pinned-count">0 pinned</span>
+        </button>
 
         <div id="messages-container">
           <div id="messages-list"></div>
@@ -122,8 +138,8 @@
         </div>
 
         <form id="message-form">
-          <input type="file" id="file-input" accept="image/*" class="hidden" aria-label="Attach image" />
-          <button type="button" id="file-btn" title="Attach Image" aria-label="Attach image">📎</button>
+          <input type="file" id="file-input" class="hidden" aria-label="Attach a file" />
+          <button type="button" id="file-btn" title="Attach a file (up to 50 MB)" aria-label="Attach a file">📎</button>
 
           <input type="text" id="message-input" placeholder="Type a message..." autocomplete="off" aria-label="Type a message" />
           <button type="submit" id="send-btn">Send</button>
@@ -131,6 +147,73 @@
         <div id="file-preview" class="file-preview-bar hidden"></div>
       </div>
     </div>
+
+    <!-- WhatsApp-style chat info drawer (slides in from the right) -->
+    <aside id="chat-info" class="chat-info" aria-label="Chat info">
+      <div class="chat-info-header">
+        <button id="close-chat-info" class="header-icon-btn" type="button" aria-label="Close chat info">✕</button>
+        <h3>Chat info</h3>
+      </div>
+      <div class="chat-info-body">
+        <div class="info-hero">
+          <div id="info-avatar" class="avatar info-avatar"></div>
+          <h2 id="info-title"></h2>
+          <span id="info-sub" class="chat-subtitle"></span>
+        </div>
+
+        <div class="info-section">
+          <span class="settings-label">Nickname (only you see this)</span>
+          <div class="info-row-inline">
+            <input type="text" id="info-nickname" placeholder="Add a nickname…" maxlength="40" aria-label="Nickname" />
+            <button id="save-nickname" class="mini-btn" type="button">Save</button>
+          </div>
+        </div>
+
+        <div class="info-section" id="info-group-section">
+          <span class="settings-label">Group name</span>
+          <div class="info-row-inline">
+            <input type="text" id="info-group-name" maxlength="60" aria-label="Group name" />
+            <button id="save-group-name" class="mini-btn" type="button">Save</button>
+          </div>
+          <span class="settings-label" style="margin-top:14px;">Group bio</span>
+          <div class="info-row-inline">
+            <input type="text" id="info-group-bio" placeholder="What's this group about?" maxlength="140" aria-label="Group bio" />
+            <button id="save-group-bio" class="mini-btn" type="button">Save</button>
+          </div>
+        </div>
+
+        <div class="info-section" id="info-bio-section">
+          <span class="settings-label">Bio</span>
+          <p id="info-bio-view" class="info-bio-view"></p>
+        </div>
+
+        <div class="info-section">
+          <span class="settings-label">Quick actions</span>
+          <div class="info-actions">
+            <button id="info-mute" class="info-chip" type="button">🔕 Mute</button>
+            <button id="info-pin" class="info-chip" type="button">📌 Pin chat</button>
+            <button id="info-theme" class="info-chip" type="button">🎨 Theme</button>
+          </div>
+        </div>
+
+        <div class="info-section">
+          <span class="settings-label">Chat font (only for you)</span>
+          <div id="info-font-chips" class="info-actions"></div>
+        </div>
+
+        <div class="info-section" id="info-members-section">
+          <span class="settings-label">Members</span>
+          <div id="info-members-list" class="members-list"></div>
+          <div class="info-row-inline">
+            <input type="text" id="add-member-input" placeholder="Add by username…" aria-label="Add member by username" />
+            <button id="add-member-btn" class="mini-btn" type="button">Add</button>
+          </div>
+          <button id="leave-group-btn" class="danger-btn" type="button" style="margin-top:12px;">🚪 Leave group</button>
+        </div>
+
+        <p id="info-encryption" class="info-encryption">🔒 Messages are encrypted</p>
+      </div>
+    </aside>
   </div>
 
   <div id="direct-modal" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="direct-modal-title">
@@ -184,9 +267,13 @@
       </div>
 
       <div class="settings-section">
+        <span class="settings-label">Ambient effect</span>
+        <div id="effect-options" class="wallpaper-options"></div>
+      </div>
+
+      <div class="settings-section">
         <span class="settings-label">Effects</span>
         <label class="settings-toggle"><span>Notifications</span><input type="checkbox" id="setting-notify" class="switch" /></label>
-        <label class="settings-toggle"><span>Animated background</span><input type="checkbox" id="setting-aurora" class="switch" /></label>
         <label class="settings-toggle"><span>Custom cursor (desktop)</span><input type="checkbox" id="setting-cursor" class="switch" /></label>
       </div>
 
@@ -213,6 +300,46 @@
       <div id="members-list" class="members-list"></div>
       <div class="modal-buttons">
         <button id="close-members-modal" class="secondary-btn">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="profile-modal" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="profile-modal-title">
+    <div class="modal-content">
+      <h3 id="profile-modal-title">My profile</h3>
+      <div class="profile-avatar-row">
+        <div id="profile-avatar-preview" class="avatar profile-avatar"></div>
+        <button id="change-dp-btn" class="mini-btn" type="button">📷 Change photo</button>
+        <input type="file" id="dp-input" accept="image/*" class="hidden" aria-label="Upload a profile photo" />
+      </div>
+      <span class="settings-label">Name</span>
+      <input type="text" id="profile-name-input" maxlength="30" aria-label="Your name" />
+      <span class="settings-label">Bio</span>
+      <input type="text" id="profile-bio-input" placeholder="Say something about yourself…" maxlength="140" aria-label="Your bio" />
+      <div class="modal-buttons">
+        <button id="save-profile-btn">Save</button>
+        <button id="close-profile-modal" class="secondary-btn">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="edit-modal" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="edit-modal-title">
+    <div class="modal-content">
+      <h3 id="edit-modal-title">Edit message</h3>
+      <input type="text" id="edit-message-input" aria-label="Edited message text" />
+      <div class="modal-buttons">
+        <button id="save-edit-btn">Save</button>
+        <button id="close-edit-modal" class="secondary-btn">Cancel</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="pinned-modal" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="pinned-modal-title">
+    <div class="modal-content">
+      <h3 id="pinned-modal-title">📌 Pinned messages</h3>
+      <div id="pinned-list" class="members-list"></div>
+      <div class="modal-buttons">
+        <button id="close-pinned-modal" class="secondary-btn">Close</button>
       </div>
     </div>
   </div>

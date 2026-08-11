@@ -1,23 +1,28 @@
 // Per-device "vibe" settings: global accent, chat wallpaper (presets or your own
 // image), animated background, and a themed custom cursor. Stored in localStorage
 // (UI preferences, no backend needed).
-import { THEME_PRESETS, WALLPAPER_PRESETS } from "./config.js";
+import { THEME_PRESETS, WALLPAPER_PRESETS, EFFECT_PRESETS } from "./config.js";
 import { el, showToast } from "./util.js";
 import { setNotificationsEnabled } from "./notifications.js";
+import { applyEffect } from "./effects.js";
 
 const SETTINGS_KEY = "panalo.settings";
 const DEFAULTS = {
   accent: "default",
   wallpaper: "doodle",
   customWallpaper: null,
-  animatedBg: true,
+  effect: "aurora",
   cursorGlow: true,
   notifications: false,
 };
 
 function load() {
   try {
-    return { ...DEFAULTS, ...JSON.parse(localStorage.getItem(SETTINGS_KEY) || "{}") };
+    const stored = JSON.parse(localStorage.getItem(SETTINGS_KEY) || "{}");
+    // Migrate the old boolean "animatedBg" toggle to the effect selector.
+    if (stored.animatedBg === false && !stored.effect) stored.effect = "none";
+    delete stored.animatedBg;
+    return { ...DEFAULTS, ...stored };
   } catch {
     return { ...DEFAULTS };
   }
@@ -71,11 +76,6 @@ async function imageToWallpaperDataUrl(file) {
   canvas.getContext("2d").drawImage(bitmap, 0, 0, w, h);
   bitmap.close?.();
   return canvas.toDataURL("image/jpeg", 0.72);
-}
-
-// ---- Animated background ----
-function applyAnimatedBg(on) {
-  document.body.classList.toggle("no-aurora", !on);
 }
 
 // ---- Custom cursor (themed ring + soft glow trail; desktop only) ----
@@ -155,7 +155,7 @@ export function initSettings() {
   // Apply saved prefs on load.
   applyAccent(settings.accent);
   applyWallpaper(settings.wallpaper);
-  applyAnimatedBg(settings.animatedBg);
+  applyEffect(settings.effect);
   applyCursor(settings.cursorGlow);
   setNotificationsEnabled(settings.notifications);
 
@@ -219,22 +219,34 @@ export function initSettings() {
     }
   });
 
+  // Ambient effect chips (Aurora / Liquid / Bubbles / Tech / None).
+  const fxBox = document.getElementById("effect-options");
+  EFFECT_PRESETS.forEach((f) => {
+    const chip = el("button", {
+      class: "wallpaper-chip",
+      type: "button",
+      text: f.name,
+      onClick: () => {
+        settings.effect = f.id;
+        save();
+        applyEffect(f.id);
+        markSelected(fxBox, ".wallpaper-chip", f.id);
+      },
+    });
+    chip.dataset.id = f.id;
+    fxBox.append(chip);
+  });
+  markSelected(fxBox, ".wallpaper-chip", settings.effect);
+
   // Effect toggles.
   const notifyToggle = document.getElementById("setting-notify");
-  const auroraToggle = document.getElementById("setting-aurora");
   const cursorToggle = document.getElementById("setting-cursor");
   notifyToggle.checked = settings.notifications;
-  auroraToggle.checked = settings.animatedBg;
   cursorToggle.checked = settings.cursorGlow;
   notifyToggle.addEventListener("change", () => {
     settings.notifications = notifyToggle.checked;
     save();
     setNotificationsEnabled(settings.notifications);
-  });
-  auroraToggle.addEventListener("change", () => {
-    settings.animatedBg = auroraToggle.checked;
-    save();
-    applyAnimatedBg(settings.animatedBg);
   });
   cursorToggle.addEventListener("change", () => {
     settings.cursorGlow = cursorToggle.checked;
