@@ -285,7 +285,7 @@ button:active {
 /* Sidebar */
 .sidebar {
   width: 320px;
-  background: var(--sidebar-bg);
+  background: rgba(18, 14, 30, 0.68); /* translucent so the wallpaper shows through */
   border-right: 1px solid var(--border);
   display: flex;
   flex-direction: column;
@@ -391,31 +391,31 @@ button:active {
   flex: 1;
   display: flex;
   flex-direction: column;
-  background: #120e1e;
+  background: transparent; /* the wallpaper lives on .app-container now */
 }
 
-/* Chat wallpaper presets (data-wallpaper) */
-.chat-main[data-wallpaper="dots"] {
-  background-image: radial-gradient(rgba(139, 124, 246, 0.11) 1.5px, transparent 1.5px);
-  background-size: 20px 20px;
+/* Whole-app wallpaper presets (data-wallpaper on the app container) */
+.app-container[data-wallpaper="dots"] {
+  background-image: radial-gradient(rgba(139, 124, 246, 0.13) 1.5px, transparent 1.5px);
+  background-size: 22px 22px;
 }
-.chat-main[data-wallpaper="aurora"] {
+.app-container[data-wallpaper="aurora"] {
   background-image:
-    radial-gradient(50% 45% at 15% 12%, rgba(139, 124, 246, 0.30), transparent 62%),
-    radial-gradient(45% 45% at 88% 22%, rgba(255, 110, 174, 0.24), transparent 62%),
-    radial-gradient(52% 52% at 70% 95%, rgba(55, 194, 224, 0.22), transparent 62%);
+    radial-gradient(45% 40% at 12% 12%, rgba(139, 124, 246, 0.32), transparent 60%),
+    radial-gradient(42% 42% at 88% 20%, rgba(255, 110, 174, 0.26), transparent 60%),
+    radial-gradient(50% 50% at 72% 96%, rgba(55, 194, 224, 0.24), transparent 60%);
 }
-.chat-main[data-wallpaper="mesh"] {
+.app-container[data-wallpaper="mesh"] {
   background-image:
-    radial-gradient(40% 40% at 4% 8%, rgba(55, 194, 224, 0.28), transparent 58%),
-    radial-gradient(40% 40% at 96% 14%, rgba(255, 138, 91, 0.24), transparent 58%),
-    radial-gradient(46% 46% at 50% 106%, rgba(139, 124, 246, 0.28), transparent 58%),
-    radial-gradient(34% 34% at 100% 92%, rgba(255, 110, 174, 0.20), transparent 58%);
+    radial-gradient(38% 38% at 4% 8%, rgba(55, 194, 224, 0.30), transparent 56%),
+    radial-gradient(38% 38% at 96% 12%, rgba(255, 138, 91, 0.26), transparent 56%),
+    radial-gradient(44% 44% at 50% 104%, rgba(139, 124, 246, 0.30), transparent 56%),
+    radial-gradient(32% 32% at 100% 90%, rgba(255, 110, 174, 0.22), transparent 56%);
 }
-.chat-main[data-wallpaper="plain"] {
+.app-container[data-wallpaper="plain"] {
   background-image: none;
 }
-.chat-main[data-wallpaper="custom"] {
+.app-container[data-wallpaper="custom"] {
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;

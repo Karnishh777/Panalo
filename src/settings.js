@@ -38,15 +38,15 @@ function applyAccent(id) {
 
 // ---- Wallpaper ----
 function applyWallpaper(id) {
-  const chatMain = document.querySelector(".chat-main");
-  if (!chatMain) return;
-  chatMain.dataset.wallpaper = id;
+  const container = document.querySelector(".app-container");
+  if (!container) return;
+  container.dataset.wallpaper = id;
   if (id === "custom" && settings.customWallpaper) {
-    // Dark overlay keeps message text readable over any photo.
-    chatMain.style.backgroundImage =
-      `linear-gradient(rgba(18,14,30,0.5), rgba(18,14,30,0.66)), url(${settings.customWallpaper})`;
+    // Dark overlay keeps text readable over any photo.
+    container.style.backgroundImage =
+      `linear-gradient(rgba(18,14,30,0.55), rgba(18,14,30,0.7)), url(${settings.customWallpaper})`;
   } else {
-    chatMain.style.removeProperty("background-image"); // let the CSS preset apply
+    container.style.removeProperty("background-image"); // let the CSS preset apply
   }
 }
 
