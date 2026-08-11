@@ -4,6 +4,32 @@ import { state } from "./state.js";
 import { el, showToast, withBusy, getAvatarColor, safeImageUrl, scrollToBottom, compressImage, announce } from "./util.js";
 import { getConversationKey, provisionConversationKey, messagePlaintext } from "./encryption.js";
 import { MESSAGES_PAGE_SIZE, THEME_PRESETS } from "./config.js";
+import { isOnline, setPresenceListener } from "./presence.js";
+
+// Typing indicator state (for the currently open conversation).
+let otherTyping = false;
+let typingTimer = null;
+let lastTypingSent = 0;
+
+// Compute the header subtitle: typing > online > default.
+function refreshChatSubtitle() {
+  const conv = state.currentConversation;
+  const sub = document.getElementById("active-chat-subtitle");
+  if (!conv || !sub) return;
+  if (otherTyping) {
+    sub.textContent = "typing…";
+    sub.className = "chat-subtitle typing";
+  } else if (conv.type === "group") {
+    sub.textContent = "Group chat";
+    sub.className = "chat-subtitle";
+  } else if (conv.otherUserId && isOnline(conv.otherUserId)) {
+    sub.textContent = "● online";
+    sub.className = "chat-subtitle online";
+  } else {
+    sub.textContent = "Direct message";
+    sub.className = "chat-subtitle";
+  }
+}
 
 const conversationsList = document.getElementById("conversations-list");
 const activeChatWindow = document.getElementById("active-chat-window");
@@ -53,16 +79,19 @@ async function resolveDirectTitles(conversations) {
   if (error || !parts) return;
 
   const otherName = new Map();
+  const otherId = new Map();
   for (const p of parts) {
     if (p.user_id === state.currentUser.id) continue;
     if (!otherName.has(p.conversation_id)) {
       otherName.set(p.conversation_id, p.profiles?.username || null);
+      otherId.set(p.conversation_id, p.user_id);
     }
   }
 
   for (const conv of conversations) {
     if (conv.type === "direct") {
       conv.displayTitle = otherName.get(conv.id) || conv.name || "Direct Message";
+      conv.otherUserId = otherId.get(conv.id) || null;
     }
   }
 }
@@ -111,8 +140,8 @@ async function openConversation(conv, title) {
   const headerAvatar = document.getElementById("active-chat-avatar");
   headerAvatar.textContent = (title || "?").trim().charAt(0).toUpperCase();
   headerAvatar.style.background = getAvatarColor(title || "?");
-  document.getElementById("active-chat-subtitle").textContent =
-    conv.type === "group" ? "Group chat" : "Direct message";
+  otherTyping = false;
+  refreshChatSubtitle(); // live: typing / online / default
 
   applyChatTheme(conv.theme); // per-chat theme (falls back to default)
 
@@ -523,9 +552,19 @@ function markSendFailed(tempId, reason, onRetry) {
 // ---- Realtime ----
 function subscribeToMessages() {
   if (state.realtimeChannel) supabaseClient.removeChannel(state.realtimeChannel);
+  otherTyping = false;
 
   state.realtimeChannel = supabaseClient
-    .channel(`room:${state.currentConversationId}`)
+    .channel(`room:${state.currentConversationId}`, { config: { broadcast: { self: false } } })
+    .on("broadcast", { event: "typing" }, () => {
+      otherTyping = true;
+      refreshChatSubtitle();
+      clearTimeout(typingTimer);
+      typingTimer = setTimeout(() => {
+        otherTyping = false;
+        refreshChatSubtitle();
+      }, 2500);
+    })
     .on(
       "postgres_changes",
       { event: "INSERT", schema: "public", table: "messages", filter: `conversation_id=eq.${state.currentConversationId}` },
@@ -731,4 +770,20 @@ export function initChatUI() {
   document.getElementById("close-theme-modal").addEventListener("click", () => {
     document.getElementById("theme-modal").classList.add("hidden");
   });
+
+  // Typing: broadcast (debounced) that we're typing so the other side sees it.
+  messageInput.addEventListener("input", () => {
+    const now = Date.now();
+    if (now - lastTypingSent > 1500 && state.realtimeChannel && state.currentConversationId) {
+      lastTypingSent = now;
+      try {
+        state.realtimeChannel.send({ type: "broadcast", event: "typing", payload: {} });
+      } catch {
+        /* ignore */
+      }
+    }
+  });
+
+  // Refresh the header status whenever anyone's online state changes.
+  setPresenceListener(refreshChatSubtitle);
 }

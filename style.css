@@ -81,7 +81,7 @@ body {
   height: 200px;
   border-radius: 50%;
   pointer-events: none;
-  z-index: 4;
+  z-index: 9998;
   background: radial-gradient(circle, rgba(139, 124, 246, 0.16), rgba(139, 124, 246, 0.05) 42%, transparent 66%);
   mix-blend-mode: screen;
   display: none;
@@ -496,6 +496,14 @@ button:active {
   font-size: 12px;
   color: var(--text-muted);
   margin-top: 1px;
+}
+
+.chat-subtitle.online {
+  color: #4ecb71;
+}
+
+.chat-subtitle.typing {
+  color: var(--primary);
 }
 
 .header-icon-btn {
