@@ -59,15 +59,17 @@
   <div id="chat-app" class="app-container hidden" data-wallpaper="doodle">
 
     <nav class="nav-rail" aria-label="Views">
-      <button class="rail-btn active" data-view="all" type="button" title="All chats" aria-label="All chats">💬</button>
-      <button class="rail-btn" data-view="direct" type="button" title="Direct chats" aria-label="Direct chats">👤</button>
-      <button class="rail-btn" data-view="group" type="button" title="Groups" aria-label="Groups">👥</button>
-      <button class="rail-btn" data-view="starred" type="button" title="Starred messages" aria-label="Starred messages">⭐</button>
+      <button class="rail-btn rail-new" id="new-chat-btn" type="button" title="New chat" aria-label="New chat"><span data-icon="plus" data-icon-size="20"></span></button>
+      <div class="rail-divider"></div>
+      <button class="rail-btn active" data-view="all" type="button" title="All chats" aria-label="All chats"><span data-icon="chat" data-icon-size="20"></span></button>
+      <button class="rail-btn" data-view="direct" type="button" title="Direct chats" aria-label="Direct chats"><span data-icon="user" data-icon-size="20"></span></button>
+      <button class="rail-btn" data-view="group" type="button" title="Groups" aria-label="Groups"><span data-icon="users" data-icon-size="20"></span></button>
+      <button class="rail-btn" data-view="starred" type="button" title="Starred messages" aria-label="Starred messages"><span data-icon="star" data-icon-size="20"></span></button>
       <div class="rail-spacer"></div>
       <button class="rail-btn rail-profile-btn" id="rail-profile" type="button" title="My profile" aria-label="My profile">
         <span id="rail-avatar" class="rail-avatar">?</span>
       </button>
-      <button class="rail-btn" id="settings-btn" type="button" title="Settings" aria-label="Settings">⚙️</button>
+      <button class="rail-btn" id="settings-btn" type="button" title="Settings" aria-label="Settings"><span data-icon="settings" data-icon-size="20"></span></button>
     </nav>
 
     <div class="sidebar">
@@ -76,15 +78,10 @@
           <img src="logo.svg" width="24" height="24" style="border-radius:6px;">
           <h2 id="my-profile-name">My Chats</h2>
         </div>
-        <button id="logout-btn" class="danger-btn">Log Out</button>
-      </div>
-
-      <div class="sidebar-actions">
-        <button id="new-direct-btn">+ Direct Chat</button>
-        <button id="new-group-btn">+ New Group</button>
       </div>
 
       <div class="sidebar-search">
+        <span class="search-icon" data-icon="search" data-icon-size="16"></span>
         <input type="text" id="chat-search" placeholder="Search chats…" aria-label="Search chats" autocomplete="off" />
       </div>
 
@@ -98,7 +95,7 @@
 
       <div id="active-chat-window" class="chat-window hidden">
         <div class="chat-header">
-          <button id="back-btn" class="back-btn" type="button" aria-label="Back to conversations">←</button>
+          <button id="back-btn" class="back-btn" type="button" aria-label="Back to conversations"><span data-icon="back"></span></button>
           <div id="chat-header-main" class="chat-header-main" role="button" tabindex="0" aria-label="Open chat info">
             <div id="active-chat-avatar" class="avatar chat-header-avatar" aria-hidden="true"></div>
             <div class="chat-header-info">
@@ -106,19 +103,20 @@
               <span id="active-chat-subtitle" class="chat-subtitle"></span>
             </div>
           </div>
-          <button id="theme-btn" class="header-icon-btn" type="button" aria-label="Change chat theme">🎨</button>
-          <button id="chat-menu-btn" class="header-icon-btn" type="button" aria-label="Chat options">⋮</button>
+          <button id="focus-btn" class="header-icon-btn" type="button" title="Focus mode" aria-label="Focus mode"><span data-icon="expand"></span></button>
+          <button id="theme-btn" class="header-icon-btn" type="button" title="Chat theme" aria-label="Change chat theme"><span data-icon="palette"></span></button>
+          <button id="chat-menu-btn" class="header-icon-btn" type="button" title="Chat options" aria-label="Chat options"><span data-icon="more"></span></button>
           <div id="chat-menu" class="chat-menu hidden" role="menu">
-            <button class="chat-menu-item" data-action="info" type="button" role="menuitem">ℹ️ Chat info</button>
-            <button class="chat-menu-item" data-action="mute" type="button" role="menuitem">🔕 Mute notifications</button>
-            <button class="chat-menu-item" data-action="pin" type="button" role="menuitem">📌 Pin chat</button>
-            <button class="chat-menu-item" data-action="theme" type="button" role="menuitem">🎨 Chat theme</button>
-            <button id="menu-members" class="chat-menu-item" data-action="members" type="button" role="menuitem">👥 View members</button>
+            <button class="chat-menu-item" data-action="info" type="button" role="menuitem"><span data-icon="info" data-icon-size="16"></span>Chat info</button>
+            <button class="chat-menu-item" data-action="mute" type="button" role="menuitem"><span data-icon="bellOff" data-icon-size="16"></span><span class="menu-label">Mute notifications</span></button>
+            <button class="chat-menu-item" data-action="pin" type="button" role="menuitem"><span data-icon="pin" data-icon-size="16"></span><span class="menu-label">Pin chat</span></button>
+            <button class="chat-menu-item" data-action="theme" type="button" role="menuitem"><span data-icon="palette" data-icon-size="16"></span>Chat theme</button>
+            <button id="menu-members" class="chat-menu-item" data-action="members" type="button" role="menuitem"><span data-icon="users" data-icon-size="16"></span>View members</button>
           </div>
         </div>
 
         <button id="pinned-bar" class="pinned-bar hidden" type="button" aria-label="View pinned messages">
-          📌 <span id="pinned-count">0 pinned</span>
+          <span data-icon="pin" data-icon-size="14"></span> <span id="pinned-count">0 pinned</span>
         </button>
 
         <div id="messages-container">
@@ -139,10 +137,10 @@
 
         <form id="message-form">
           <input type="file" id="file-input" class="hidden" aria-label="Attach a file" />
-          <button type="button" id="file-btn" title="Attach a file (up to 50 MB)" aria-label="Attach a file">📎</button>
+          <button type="button" id="file-btn" title="Attach a file (up to 50 MB)" aria-label="Attach a file"><span data-icon="clip"></span></button>
 
           <input type="text" id="message-input" placeholder="Type a message..." autocomplete="off" aria-label="Type a message" />
-          <button type="submit" id="send-btn">Send</button>
+          <button type="submit" id="send-btn" aria-label="Send"><span data-icon="send" data-icon-size="17"></span><span class="send-label">Send</span></button>
         </form>
         <div id="file-preview" class="file-preview-bar hidden"></div>
       </div>
@@ -151,7 +149,7 @@
     <!-- WhatsApp-style chat info drawer (slides in from the right) -->
     <aside id="chat-info" class="chat-info" aria-label="Chat info">
       <div class="chat-info-header">
-        <button id="close-chat-info" class="header-icon-btn" type="button" aria-label="Close chat info">✕</button>
+        <button id="close-chat-info" class="header-icon-btn" type="button" aria-label="Close chat info"><span data-icon="close"></span></button>
         <h3>Chat info</h3>
       </div>
       <div class="chat-info-body">
@@ -190,15 +188,20 @@
         <div class="info-section">
           <span class="settings-label">Quick actions</span>
           <div class="info-actions">
-            <button id="info-mute" class="info-chip" type="button">🔕 Mute</button>
-            <button id="info-pin" class="info-chip" type="button">📌 Pin chat</button>
-            <button id="info-theme" class="info-chip" type="button">🎨 Theme</button>
+            <button id="info-mute" class="info-chip" type="button">Mute</button>
+            <button id="info-pin" class="info-chip" type="button">Pin chat</button>
+            <button id="info-theme" class="info-chip" type="button"><span data-icon="palette" data-icon-size="14"></span>Theme</button>
           </div>
         </div>
 
         <div class="info-section">
           <span class="settings-label">Chat font (only for you)</span>
           <div id="info-font-chips" class="info-actions"></div>
+        </div>
+
+        <div class="info-section">
+          <span class="settings-label">Chat wallpaper (only for you)</span>
+          <div id="info-wallpaper-chips" class="info-actions"></div>
         </div>
 
         <div class="info-section" id="info-members-section">
@@ -208,12 +211,39 @@
             <input type="text" id="add-member-input" placeholder="Add by username…" aria-label="Add member by username" />
             <button id="add-member-btn" class="mini-btn" type="button">Add</button>
           </div>
-          <button id="leave-group-btn" class="danger-btn" type="button" style="margin-top:12px;">🚪 Leave group</button>
+          <button id="leave-group-btn" class="danger-btn" type="button" style="margin-top:12px;"><span data-icon="logout" data-icon-size="15"></span>Leave group</button>
         </div>
 
-        <p id="info-encryption" class="info-encryption">🔒 Messages are encrypted</p>
+        <p id="info-encryption" class="info-encryption">Messages are encrypted</p>
       </div>
     </aside>
+
+    <!-- Focus mode controls (only visible in focus mode) -->
+    <div id="focus-controls" class="focus-controls">
+      <button id="focus-panel-btn" class="focus-ctl" type="button" title="Show chat list" aria-label="Show chat list"><span data-icon="menu"></span></button>
+      <button id="focus-exit-btn" class="focus-ctl" type="button" title="Exit focus mode" aria-label="Exit focus mode"><span data-icon="collapse"></span></button>
+    </div>
+  </div>
+
+  <div id="new-chat-modal" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="new-chat-title">
+    <div class="modal-content">
+      <h3 id="new-chat-title">Start something new</h3>
+      <div class="choice-row">
+        <button id="choose-direct" class="choice-card" type="button">
+          <span class="choice-icon" data-icon="user" data-icon-size="26"></span>
+          <span class="choice-name">Direct chat</span>
+          <span class="choice-sub">Message one person</span>
+        </button>
+        <button id="choose-group" class="choice-card" type="button">
+          <span class="choice-icon" data-icon="users" data-icon-size="26"></span>
+          <span class="choice-name">New group</span>
+          <span class="choice-sub">Chat with many</span>
+        </button>
+      </div>
+      <div class="modal-buttons">
+        <button id="close-new-chat-modal" class="secondary-btn">Cancel</button>
+      </div>
+    </div>
   </div>
 
   <div id="direct-modal" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="direct-modal-title">
@@ -267,8 +297,14 @@
       </div>
 
       <div class="settings-section">
+        <span class="settings-label">App font</span>
+        <div id="app-font-options" class="wallpaper-options"></div>
+      </div>
+
+      <div class="settings-section">
         <span class="settings-label">Ambient effect</span>
         <div id="effect-options" class="wallpaper-options"></div>
+        <input type="file" id="ambient-input" accept="image/*" class="hidden" aria-label="Upload an ambient image" />
       </div>
 
       <div class="settings-section">
@@ -283,6 +319,11 @@
       <div class="settings-section">
         <span class="settings-label">Effects</span>
         <label class="settings-toggle"><span>Custom cursor (desktop)</span><input type="checkbox" id="setting-cursor" class="switch" /></label>
+      </div>
+
+      <div class="settings-section">
+        <span class="settings-label">Account</span>
+        <button id="logout-btn" class="danger-btn" type="button"><span data-icon="logout" data-icon-size="16"></span>Log Out</button>
       </div>
 
       <div class="modal-buttons">
@@ -317,7 +358,7 @@
       <h3 id="profile-modal-title">My profile</h3>
       <div class="profile-avatar-row">
         <div id="profile-avatar-preview" class="avatar profile-avatar"></div>
-        <button id="change-dp-btn" class="mini-btn" type="button">📷 Change photo</button>
+        <button id="change-dp-btn" class="mini-btn" type="button"><span data-icon="camera" data-icon-size="15"></span>Change photo</button>
         <input type="file" id="dp-input" accept="image/*" class="hidden" aria-label="Upload a profile photo" />
       </div>
       <span class="settings-label">Name</span>
@@ -354,8 +395,8 @@
 
   <div id="image-viewer" class="image-viewer hidden" role="dialog" aria-modal="true" aria-label="Image viewer">
     <div class="viewer-bar">
-      <button id="viewer-download" type="button">⬇ Download</button>
-      <button id="viewer-close" type="button" aria-label="Close image viewer">✕</button>
+      <button id="viewer-download" type="button"><span data-icon="download" data-icon-size="16"></span>Download</button>
+      <button id="viewer-close" type="button" aria-label="Close image viewer"><span data-icon="close" data-icon-size="16"></span></button>
     </div>
     <img id="viewer-img" class="viewer-img" alt="Full-size image" />
   </div>

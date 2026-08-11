@@ -5,7 +5,10 @@ import { initChatUI } from "./chat.js";
 import { initAuth } from "./auth.js";
 import { initSettings } from "./settings.js";
 import { initProfile } from "./profile.js";
+import { hydrateIcons } from "./icons.js";
+import { setFocusMode } from "./chat.js";
 
+hydrateIcons(); // swap every <span data-icon> for its themed vector icon
 initChatUI();
 initAuth();
 initSettings();
@@ -24,5 +27,7 @@ document.addEventListener("keydown", (e) => {
   document.getElementById("profile-modal")?.classList.add("hidden");
   document.getElementById("edit-modal")?.classList.add("hidden");
   document.getElementById("pinned-modal")?.classList.add("hidden");
+  document.getElementById("new-chat-modal")?.classList.add("hidden");
   document.getElementById("chat-info")?.classList.remove("open");
+  setFocusMode(false);
 });

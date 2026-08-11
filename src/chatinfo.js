@@ -5,12 +5,16 @@
 import { supabaseClient } from "./client.js";
 import { state } from "./state.js";
 import { el, showToast, withBusy, setAvatar } from "./util.js";
-import { FONT_PRESETS } from "./config.js";
-import { getNickname, setNickname, isPinned, togglePin, getChatFont, setChatFont } from "./prefs.js";
+import { FONT_PRESETS, WALLPAPER_PRESETS } from "./config.js";
+import {
+  getNickname, setNickname, isPinned, togglePin,
+  getChatFont, setChatFont, getChatWallpaper, setChatWallpaper,
+} from "./prefs.js";
+import { icon } from "./icons.js";
 import { isMuted, toggleMute } from "./notifications.js";
 import { getConversationKey } from "./encryption.js";
 
-let cb = {}; // { onListChanged, onTitleChanged, onOpenTheme, onLeftChat }
+let cb = {}; // { onListChanged, onTitleChanged, onOpenTheme, onLeftChat, onWallpaperChanged }
 export function setChatInfoCallbacks(callbacks) {
   cb = callbacks;
 }
@@ -35,9 +39,9 @@ function refreshChips(conv) {
   const pinChip = document.getElementById("info-pin");
   const muted = isMuted(conv.id);
   const pinned = isPinned(conv.id);
-  muteChip.textContent = muted ? "🔔 Unmute" : "🔕 Mute";
+  muteChip.replaceChildren(icon(muted ? "bell" : "bellOff", 14), document.createTextNode(muted ? "Unmute" : "Mute"));
   muteChip.classList.toggle("on", muted);
-  pinChip.textContent = pinned ? "📌 Unpin chat" : "📌 Pin chat";
+  pinChip.replaceChildren(icon("pin", 14), document.createTextNode(pinned ? "Unpin chat" : "Pin chat"));
   pinChip.classList.toggle("on", pinned);
 }
 
@@ -57,6 +61,29 @@ function renderFontChips(conv) {
       },
     });
     chip.style.fontFamily = f.stack;
+    box.append(chip);
+  });
+}
+
+// Per-chat wallpaper — personal, so each conversation can look different
+// without changing anything for the other person.
+function renderWallpaperChips(conv) {
+  const box = document.getElementById("info-wallpaper-chips");
+  box.innerHTML = "";
+  const current = getChatWallpaper(conv.id);
+  const options = [{ id: "app", name: "Same as app" }, ...WALLPAPER_PRESETS.filter((w) => w.id !== "custom")];
+  options.forEach((w) => {
+    const chip = el("button", {
+      class: `info-chip${w.id === current ? " selected" : ""}`,
+      type: "button",
+      text: w.name,
+      onClick: () => {
+        setChatWallpaper(conv.id, w.id);
+        cb.onWallpaperChanged?.(conv.id);
+        box.querySelectorAll(".info-chip").forEach((c) => c.classList.toggle("selected", c === chip));
+      },
+    });
+    if (w.icon) chip.prepend(icon(w.icon, 13));
     box.append(chip);
   });
 }
@@ -227,11 +254,14 @@ export async function openChatInfo() {
 
   refreshChips(conv);
   renderFontChips(conv);
+  renderWallpaperChips(conv);
 
   const encEl = document.getElementById("info-encryption");
   encEl.textContent = "…";
   getConversationKey(conv.id).then((k) => {
-    encEl.textContent = k ? "🔒 Messages in this chat are encrypted" : "🔓 Older chat — messages not encrypted";
+    encEl.textContent = k
+      ? "Messages in this chat are encrypted"
+      : "Older chat — messages not encrypted";
   });
 
   drawer().classList.add("open");

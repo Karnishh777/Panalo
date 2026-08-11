@@ -1,8 +1,9 @@
 // Per-device "vibe" settings: global accent, chat wallpaper (presets or your own
 // image), animated background, and a themed custom cursor. Stored in localStorage
 // (UI preferences, no backend needed).
-import { THEME_PRESETS, WALLPAPER_PRESETS, EFFECT_PRESETS } from "./config.js";
+import { THEME_PRESETS, WALLPAPER_PRESETS, EFFECT_PRESETS, FONT_PRESETS } from "./config.js";
 import { el, showToast } from "./util.js";
+import { icon } from "./icons.js";
 import {
   setAlertPrefs,
   requestDesktopPermission,
@@ -17,6 +18,8 @@ const DEFAULTS = {
   wallpaper: "doodle",
   customWallpaper: null,
   effect: "aurora",
+  ambientImage: null,
+  appFont: "default",
   cursorGlow: true,
   notifications: false, // desktop (needs browser permission)
   inAppAlerts: true, // always works
@@ -54,6 +57,21 @@ function applyAccent(id) {
   root.setProperty("--primary-strong", p.strong);
   root.setProperty("--grad", grad);
   root.setProperty("--bubble-out", grad);
+}
+
+// ---- App font ----
+// "default" restores the Sora + Inter mix; any preset takes over app-wide,
+// so all existing text (headers, buttons, chats) follows the choice.
+function applyAppFont(id) {
+  const root = document.documentElement.style;
+  const preset = FONT_PRESETS.find((f) => f.id === id);
+  if (!preset || id === "default") {
+    root.removeProperty("--font-ui");
+    root.removeProperty("--font-display");
+    return;
+  }
+  root.setProperty("--font-ui", preset.stack);
+  root.setProperty("--font-display", preset.stack);
 }
 
 // ---- Wallpaper ----
@@ -194,8 +212,9 @@ function markSelected(container, selector, id) {
 export function initSettings() {
   // Apply saved prefs on load.
   applyAccent(settings.accent);
+  applyAppFont(settings.appFont);
   applyWallpaper(settings.wallpaper);
-  applyEffect(settings.effect);
+  applyEffect(settings.effect, settings.ambientImage);
   applyCursor(settings.cursorGlow);
   syncAlertPrefs();
 
@@ -220,6 +239,26 @@ export function initSettings() {
   });
   markSelected(accentBox, ".theme-swatch", settings.accent);
 
+  // App font chips — these restyle every bit of text in the app.
+  const fontBox = document.getElementById("app-font-options");
+  FONT_PRESETS.forEach((f) => {
+    const chip = el("button", {
+      class: "wallpaper-chip",
+      type: "button",
+      text: f.id === "default" ? "Default mix" : f.name,
+      onClick: () => {
+        settings.appFont = f.id;
+        save();
+        applyAppFont(f.id);
+        markSelected(fontBox, ".wallpaper-chip", f.id);
+      },
+    });
+    chip.dataset.id = f.id;
+    if (f.id !== "default") chip.style.fontFamily = f.stack;
+    fontBox.append(chip);
+  });
+  markSelected(fontBox, ".wallpaper-chip", settings.appFont);
+
   // Wallpaper chips ("custom" opens the file picker).
   const wpBox = document.getElementById("wallpaper-options");
   const wpInput = document.getElementById("wallpaper-input");
@@ -240,6 +279,7 @@ export function initSettings() {
       },
     });
     chip.dataset.id = w.id;
+    if (w.icon) chip.prepend(icon(w.icon, 14));
     wpBox.append(chip);
   });
   markSelected(wpBox, ".wallpaper-chip", settings.wallpaper);
@@ -259,24 +299,45 @@ export function initSettings() {
     }
   });
 
-  // Ambient effect chips (Aurora / Liquid / Bubbles / Tech / None).
+  // Ambient effect chips (Aurora / Liquid / Bubbles / Tech / Upload / None).
   const fxBox = document.getElementById("effect-options");
+  const ambientInput = document.getElementById("ambient-input");
   EFFECT_PRESETS.forEach((f) => {
     const chip = el("button", {
       class: "wallpaper-chip",
       type: "button",
       text: f.name,
       onClick: () => {
+        if (f.id === "image") {
+          ambientInput.click();
+          return;
+        }
         settings.effect = f.id;
         save();
-        applyEffect(f.id);
+        applyEffect(f.id, settings.ambientImage);
         markSelected(fxBox, ".wallpaper-chip", f.id);
       },
     });
     chip.dataset.id = f.id;
+    if (f.icon) chip.prepend(icon(f.icon, 14));
     fxBox.append(chip);
   });
   markSelected(fxBox, ".wallpaper-chip", settings.effect);
+
+  ambientInput.addEventListener("change", async () => {
+    const file = ambientInput.files[0];
+    ambientInput.value = "";
+    if (!file) return;
+    try {
+      settings.ambientImage = await imageToWallpaperDataUrl(file);
+      settings.effect = "image";
+      save();
+      applyEffect("image", settings.ambientImage);
+      markSelected(fxBox, ".wallpaper-chip", "image");
+    } catch {
+      showToast("Could not use that image.");
+    }
+  });
 
   // Alert toggles (desktop / in-app / sound) + the test button.
   const notifyToggle = document.getElementById("setting-notify");

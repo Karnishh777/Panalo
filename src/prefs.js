@@ -82,6 +82,18 @@ export function toggleMessagePin(convId, msgId) {
   return list.includes(msgId);
 }
 
+// ---- Per-chat wallpaper: { convId: wallpaperId } ("app" = follow the app) ----
+const CHAT_WP_KEY = "panalo.chatWallpapers";
+export function getChatWallpaper(convId) {
+  return read(CHAT_WP_KEY, {})[convId] || "app";
+}
+export function setChatWallpaper(convId, id) {
+  const map = read(CHAT_WP_KEY, {});
+  if (id && id !== "app") map[convId] = id;
+  else delete map[convId];
+  write(CHAT_WP_KEY, map);
+}
+
 // ---- Per-chat font: { convId: fontId } ----
 const FONT_KEY = "panalo.chatFonts";
 export function getChatFont(convId) {

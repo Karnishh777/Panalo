@@ -11,8 +11,9 @@ import {
   getNickname, isPinned, togglePin,
   getStars, toggleStar, isStarred,
   getPinnedMessages, isMessagePinned, toggleMessagePin,
-  getChatFont,
+  getChatFont, getChatWallpaper,
 } from "./prefs.js";
+import { icon } from "./icons.js";
 import { openChatInfo, closeChatInfo, setChatInfoCallbacks, displayTitle, initChatInfo } from "./chatinfo.js";
 
 // Message rows currently on screen (id → row) — powers the actions menu.
@@ -301,8 +302,8 @@ function renderConversationItem(conv) {
       ]),
       el("div", { class: "conv-row-bottom" }, [
         previewEl,
-        isPinned(conv.id) ? el("span", { class: "conv-pin", text: "📌", "aria-label": "Pinned" }) : null,
-        isMuted(conv.id) ? el("span", { class: "conv-pin", text: "🔕", "aria-label": "Muted" }) : null,
+        isPinned(conv.id) ? el("span", { class: "conv-pin", "aria-label": "Pinned" }, [icon("pin", 13)]) : null,
+        isMuted(conv.id) ? el("span", { class: "conv-pin", "aria-label": "Muted" }, [icon("bellOff", 13)]) : null,
         unread > 0 ? el("span", { class: "conv-badge", text: formatCount(unread), "aria-label": `${unread} unread` }) : null,
       ]),
     ])
@@ -336,6 +337,7 @@ async function openConversation(conv) {
   closeChatInfo(); // drawer belongs to the previous chat
   applyChatTheme(conv.theme); // per-chat theme (falls back to default)
   applyChatFont(conv.id); // personal per-chat font
+  applyChatWallpaper(conv.id); // personal per-chat wallpaper
   refreshPinnedBar(conv.id);
 
   noChatSelected.classList.add("hidden");
@@ -583,17 +585,12 @@ function prettyBytes(n) {
   return `${(n / (1024 * 1024)).toFixed(1)} MB`;
 }
 
+// Broad file-type icon (vector, so it recolors with the theme).
 function fileIcon(name) {
   const ext = (name.split(".").pop() || "").toLowerCase();
-  if (["mp3", "wav", "ogg", "m4a", "flac"].includes(ext)) return "🎵";
-  if (["mp4", "mov", "mkv", "webm", "avi"].includes(ext)) return "🎬";
-  if (["zip", "rar", "7z", "tar", "gz"].includes(ext)) return "📦";
-  if (ext === "pdf") return "📕";
-  if (["doc", "docx", "txt", "md", "rtf"].includes(ext)) return "📝";
-  if (["xls", "xlsx", "csv"].includes(ext)) return "📊";
-  if (["ppt", "pptx", "key"].includes(ext)) return "📽️";
-  if (["js", "ts", "py", "html", "css", "json", "c", "cpp", "java"].includes(ext)) return "💻";
-  return "📄";
+  if (["mp3", "wav", "ogg", "m4a", "flac"].includes(ext)) return "sound";
+  if (["png", "jpg", "jpeg", "gif", "webp", "svg", "heic"].includes(ext)) return "image";
+  return "file";
 }
 
 // Save any storage file with its original name (blob fetch, like images).
@@ -616,7 +613,7 @@ async function downloadFile(url, name) {
 
 function renderFileBubble(meta) {
   return el("div", { class: "file-bubble" }, [
-    el("span", { class: "file-bubble-icon", text: fileIcon(meta.name) }),
+    el("span", { class: "file-bubble-icon" }, [icon(fileIcon(meta.name), 26)]),
     el("div", { class: "file-bubble-meta" }, [
       el("div", { class: "file-bubble-name", text: meta.name }),
       el("div", { class: "file-bubble-size", text: prettyBytes(meta.size) }),
@@ -624,10 +621,9 @@ function renderFileBubble(meta) {
     el("button", {
       class: "file-download-btn",
       type: "button",
-      text: "⬇",
       "aria-label": `Download ${meta.name}`,
       onClick: () => downloadFile(meta.url, meta.name),
-    }),
+    }, [icon("download", 16)]),
   ]);
 }
 
@@ -636,7 +632,9 @@ function refreshMsgFlags(msgId) {
   const flagEl = document.querySelector(`#msg-${CSS.escape(String(msgId))} .msg-flags`);
   if (!flagEl) return;
   const convId = state.currentConversationId;
-  flagEl.textContent = `${isStarred(msgId) ? "⭐" : ""}${isMessagePinned(convId, msgId) ? "📌" : ""}`;
+  flagEl.innerHTML = "";
+  if (isStarred(msgId)) flagEl.append(icon("star", 12));
+  if (isMessagePinned(convId, msgId)) flagEl.append(icon("pin", 12));
 }
 
 function renderMessage(msg, prepend = false) {
@@ -689,13 +687,12 @@ function renderMessage(msg, prepend = false) {
       el("button", {
         class: "msg-menu-btn",
         type: "button",
-        text: "⌄",
         "aria-label": "Message actions",
         onClick: (e) => {
           e.stopPropagation();
           openMsgActions(msg, e.currentTarget);
         },
-      })
+      }, [icon("more", 13)])
     );
   }
 
@@ -718,26 +715,26 @@ function openMsgActions(msg, anchor) {
   const convId = state.currentConversationId;
 
   const items = [
-    { label: isStarred(msg.id) ? "⭐ Unstar" : "⭐ Star", act: () => {
+    { ico: "star", label: isStarred(msg.id) ? "Unstar" : "Star", act: () => {
       toggleStar(msg.id, convId);
       refreshMsgFlags(msg.id);
       if (chatFilter === "starred") renderConversations();
     } },
-    { label: isMessagePinned(convId, msg.id) ? "📌 Unpin" : "📌 Pin", act: () => {
+    { ico: "pin", label: isMessagePinned(convId, msg.id) ? "Unpin" : "Pin", act: () => {
       toggleMessagePin(convId, msg.id);
       refreshMsgFlags(msg.id);
       refreshPinnedBar(convId);
     } },
   ];
-  if (isMine && msg.content) items.push({ label: "✏️ Edit", act: () => openEditModal(msg) });
-  if (isMine) items.push({ label: "🗑 Delete", act: () => deleteMessage(msg.id), danger: true });
+  if (isMine && msg.content) items.push({ ico: "edit", label: "Edit", act: () => openEditModal(msg) });
+  if (isMine) items.push({ ico: "trash", label: "Delete", act: () => deleteMessage(msg.id), danger: true });
 
   msgActionsEl = el("div", { class: "msg-actions", role: "menu" });
-  items.forEach(({ label, act, danger }) => {
-    const b = el("button", { class: "chat-menu-item", type: "button", text: label, role: "menuitem", onClick: () => {
+  items.forEach(({ ico, label, act, danger }) => {
+    const b = el("button", { class: "chat-menu-item", type: "button", role: "menuitem", onClick: () => {
       closeMsgActions();
       act();
-    } });
+    } }, [icon(ico, 16), label]);
     if (danger) b.style.color = "var(--danger)";
     msgActionsEl.append(b);
   });
@@ -844,10 +841,17 @@ async function openPinnedModal() {
   document.getElementById("pinned-modal").classList.remove("hidden");
 }
 
-// ---- Per-chat font (personal) ----
+// ---- Per-chat font + wallpaper (personal) ----
 function applyChatFont(convId) {
   const font = FONT_PRESETS.find((f) => f.id === getChatFont(convId)) || FONT_PRESETS[0];
   chatMainEl.style.setProperty("--chat-font", font.stack);
+}
+
+// "app" means inherit whatever the app-wide wallpaper is.
+export function applyChatWallpaper(convId) {
+  const id = getChatWallpaper(convId);
+  if (id === "app") delete chatMainEl.dataset.wp;
+  else chatMainEl.dataset.wp = id;
 }
 
 async function deleteMessage(msgId) {
@@ -1154,13 +1158,19 @@ function openChatMenu() {
   // "View members" only makes sense for groups.
   document.getElementById("menu-members").style.display = conv && conv.type === "group" ? "block" : "none";
   // Reflect current mute + pin state.
-  const muteItem = menu.querySelector('[data-action="mute"]');
-  const pinItem = menu.querySelector('[data-action="pin"]');
+  const muteLabel = menu.querySelector('[data-action="mute"] .menu-label');
+  const pinLabel = menu.querySelector('[data-action="pin"] .menu-label');
   if (conv) {
-    muteItem.textContent = isMuted(conv.id) ? "🔔 Unmute notifications" : "🔕 Mute notifications";
-    pinItem.textContent = isPinned(conv.id) ? "📌 Unpin chat" : "📌 Pin chat";
+    muteLabel.textContent = isMuted(conv.id) ? "Unmute notifications" : "Mute notifications";
+    pinLabel.textContent = isPinned(conv.id) ? "Unpin chat" : "Pin chat";
   }
   menu.classList.remove("hidden");
+}
+
+// ---- Focus mode (distraction-free: no rail, no list, no ambient) ----
+export function setFocusMode(on) {
+  document.body.classList.toggle("focus-mode", on);
+  if (!on) document.body.classList.remove("panel-out");
 }
 
 // ---- Wire up all chat-related event listeners ----
@@ -1176,16 +1186,34 @@ export function initChatUI() {
     }
   });
 
-  document.getElementById("new-direct-btn").addEventListener("click", () => {
+  // One "+" in the rail opens a chooser: direct chat or group.
+  const newChatModal = document.getElementById("new-chat-modal");
+  document.getElementById("new-chat-btn").addEventListener("click", () => {
+    newChatModal.classList.remove("hidden");
+  });
+  document.getElementById("close-new-chat-modal").addEventListener("click", () => newChatModal.classList.add("hidden"));
+  document.getElementById("choose-direct").addEventListener("click", () => {
+    newChatModal.classList.add("hidden");
     directModal.classList.remove("hidden");
     document.getElementById("direct-username").focus();
   });
-  document.getElementById("close-direct-modal").addEventListener("click", () => directModal.classList.add("hidden"));
-  document.getElementById("new-group-btn").addEventListener("click", () => {
+  document.getElementById("choose-group").addEventListener("click", () => {
+    newChatModal.classList.add("hidden");
     groupModal.classList.remove("hidden");
     document.getElementById("group-name-input").focus();
   });
+  document.getElementById("close-direct-modal").addEventListener("click", () => directModal.classList.add("hidden"));
   document.getElementById("close-group-modal").addEventListener("click", () => groupModal.classList.add("hidden"));
+
+  // Focus mode: hide the rail + list + ambient, and give back a floating
+  // control to pop the chat list out again.
+  const focusBtn = document.getElementById("focus-btn");
+  focusBtn.addEventListener("click", () => setFocusMode(!document.body.classList.contains("focus-mode")));
+  document.getElementById("focus-exit-btn").addEventListener("click", () => setFocusMode(false));
+  document.getElementById("focus-panel-btn").addEventListener("click", (e) => {
+    e.stopPropagation();
+    document.body.classList.toggle("panel-out");
+  });
 
   const createDirectBtn = document.getElementById("create-direct-btn");
   createDirectBtn.addEventListener("click", () => withBusy(createDirectBtn, "Starting…", createDirect));
@@ -1374,6 +1402,7 @@ export function initChatUI() {
       updateSwatchSelection(state.currentConversation?.theme);
       document.getElementById("theme-modal").classList.remove("hidden");
     },
+    onWallpaperChanged: (convId) => applyChatWallpaper(convId),
     onLeftChat: async (convId) => {
       if (state.currentConversationId === convId) {
         state.currentConversationId = null;
@@ -1431,10 +1460,13 @@ export function initChatUI() {
       viewMembers();
     }
   });
-  // Close menus when clicking elsewhere.
-  document.addEventListener("click", () => {
+  // Close menus (and the popped-out focus panel) when clicking elsewhere.
+  document.addEventListener("click", (e) => {
     chatMenu.classList.add("hidden");
     closeMsgActions();
+    if (document.body.classList.contains("panel-out") && !e.target.closest(".sidebar, .focus-controls")) {
+      document.body.classList.remove("panel-out");
+    }
   });
   document.getElementById("close-members-modal").addEventListener("click", () => {
     document.getElementById("members-modal").classList.add("hidden");

@@ -309,11 +309,25 @@ function stopLoop() {
   raf = 0;
 }
 
-// Switch the ambient effect. "aurora" uses the CSS layer; canvas modes render here.
-export function applyEffect(id) {
+// Switch the ambient effect. "aurora" uses the CSS layer, "image" paints an
+// uploaded photo behind the app, and the rest render on the canvas.
+export function applyEffect(id, imageUrl = null) {
   ensureCanvas();
   mode = id;
   document.body.classList.toggle("no-aurora", id !== "aurora");
+
+  // Uploaded ambient photo sits behind everything (dimmed for readability).
+  if (id === "image" && imageUrl) {
+    document.body.style.backgroundImage = `linear-gradient(rgba(10,7,20,0.62), rgba(10,7,20,0.72)), url(${imageUrl})`;
+    document.body.style.backgroundSize = "cover";
+    document.body.style.backgroundPosition = "center";
+    document.body.style.backgroundAttachment = "fixed";
+  } else {
+    document.body.style.removeProperty("background-image");
+    document.body.style.removeProperty("background-size");
+    document.body.style.removeProperty("background-position");
+    document.body.style.removeProperty("background-attachment");
+  }
 
   const canvasMode = id === "liquid" || id === "bubbles" || id === "tech";
   canvas.style.display = canvasMode ? "block" : "none";

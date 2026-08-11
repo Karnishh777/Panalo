@@ -51,10 +51,11 @@ export const FONT_PRESETS = [
 // Ambient background effects (Settings → Effects). "aurora" is the CSS layer;
 // the rest render on the fx canvas (see effects.js).
 export const EFFECT_PRESETS = [
-  { id: "aurora", name: "🌌 Aurora" },
-  { id: "liquid", name: "💧 Liquid" },
-  { id: "bubbles", name: "🫧 Bubbles" },
-  { id: "tech", name: "⚡ Tech" },
+  { id: "aurora", name: "Aurora" },
+  { id: "liquid", name: "Liquid" },
+  { id: "bubbles", name: "Bubbles" },
+  { id: "tech", name: "Tech" },
+  { id: "image", name: "Upload", icon: "upload" },
   { id: "none", name: "None" },
 ];
 
@@ -64,9 +65,11 @@ export const MAX_FILE_BYTES = 50 * 1024 * 1024;
 // Chat background presets (applied to .chat-main via a data-wallpaper attribute).
 export const WALLPAPER_PRESETS = [
   { id: "doodle", name: "Doodle" },
+  // "Ambient" makes the app translucent so the ambient effect shows through it.
+  { id: "ambient", name: "Ambient", icon: "sparkle" },
   { id: "dots", name: "Dots" },
   { id: "aurora", name: "Aurora" },
   { id: "mesh", name: "Mesh" },
   { id: "plain", name: "Plain" },
-  { id: "custom", name: "📷 Upload" },
+  { id: "custom", name: "Upload", icon: "upload" },
 ];

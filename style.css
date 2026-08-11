@@ -337,20 +337,8 @@ button:active {
   font-size: 12px;
 }
 
-.sidebar-actions {
-  display: flex;
-  gap: 8px;
-  padding: 14px;
-  background: var(--sidebar-bg);
-}
-
-.sidebar-actions button {
-  font-size: 12px;
-  padding: 10px;
-}
-
 .sidebar-search {
-  padding: 0 14px 8px;
+  padding: 14px 14px 8px;
 }
 
 .sidebar-search input {
@@ -489,10 +477,15 @@ button:active {
   gap: 12px;
 }
 
+/* Masked vector so the empty-state mark takes the accent color too */
 .empty-chat-state::before {
-  content: "💬";
-  font-size: 52px;
-  opacity: 0.5;
+  content: "";
+  width: 62px;
+  height: 62px;
+  background: var(--primary);
+  opacity: 0.45;
+  -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='1.4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M21 11.5a8.5 8.5 0 0 1-8.5 8.5 8.4 8.4 0 0 1-3.8-.9L3 21l1.9-5.7A8.4 8.4 0 0 1 4 11.5 8.5 8.5 0 0 1 12.5 3 8.5 8.5 0 0 1 21 11.5z'/%3E%3C/svg%3E") center / contain no-repeat;
+  mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='1.4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M21 11.5a8.5 8.5 0 0 1-8.5 8.5 8.4 8.4 0 0 1-3.8-.9L3 21l1.9-5.7A8.4 8.4 0 0 1 4 11.5 8.5 8.5 0 0 1 12.5 3 8.5 8.5 0 0 1 21 11.5z'/%3E%3C/svg%3E") center / contain no-repeat;
 }
 
 .empty-chat-state h3 {
@@ -1833,6 +1826,293 @@ a:focus-visible {
 
 .notify-status.ok { color: #4ecb71; }
 .notify-status.warn { color: #ffb86f; }
+
+/* ============================================================
+   Vector icons, new-chat chooser, focus mode, per-chat wallpaper
+   ============================================================ */
+
+/* Icons are stroked with currentColor on a transparent background, so they
+   inherit their button's color — and recolor with the theme automatically. */
+.icon {
+  width: 18px;
+  height: 18px;
+  display: block;
+  flex-shrink: 0;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.9;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+/* Buttons that mix an icon with a label */
+.chat-menu-item,
+.info-chip,
+.mini-btn,
+.wallpaper-chip,
+.viewer-bar button,
+.danger-btn,
+#send-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.chat-menu-item {
+  justify-content: flex-start;
+}
+
+.rail-btn .icon {
+  width: 20px;
+  height: 20px;
+}
+
+/* Active rail view glows in the accent color */
+.rail-btn.active {
+  color: var(--primary);
+}
+
+/* The "+" that starts a new chat sits above the views */
+.rail-new {
+  background: var(--grad);
+  color: #fff;
+  box-shadow: 0 6px 18px rgba(108, 92, 231, 0.35);
+}
+
+.rail-new:hover {
+  background: var(--grad);
+  filter: brightness(1.12);
+}
+
+.rail-divider {
+  width: 26px;
+  height: 1px;
+  background: var(--border);
+  margin: 4px 0 6px;
+  flex-shrink: 0;
+}
+
+/* Search field with a leading icon */
+.sidebar-search {
+  position: relative;
+}
+
+.sidebar-search .search-icon {
+  position: absolute;
+  left: 26px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--text-faint);
+  pointer-events: none;
+}
+
+.sidebar-search input {
+  padding-left: 38px;
+}
+
+.msg-menu-btn .icon {
+  width: 13px;
+  height: 13px;
+}
+
+.msg-flags {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  color: var(--primary);
+}
+
+.message.my-message .msg-flags {
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.conv-pin {
+  display: inline-flex;
+  color: var(--text-faint);
+}
+
+.file-bubble-icon {
+  display: flex;
+  color: var(--primary);
+}
+
+.message.my-message .file-bubble-icon {
+  color: #fff;
+}
+
+/* Send button keeps its label on desktop, icon-only when tight */
+#send-btn .icon {
+  width: 17px;
+  height: 17px;
+}
+
+/* ---- New chat chooser ---- */
+.choice-row {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 18px;
+}
+
+.choice-card {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  padding: 22px 12px;
+  border-radius: 16px;
+  background: var(--surface-2);
+  color: var(--text);
+  border: 2px solid transparent;
+}
+
+.choice-card:hover {
+  background: var(--surface-3);
+  border-color: var(--primary);
+  transform: translateY(-2px);
+  box-shadow: 0 10px 26px rgba(0, 0, 0, 0.35);
+}
+
+.choice-icon {
+  display: flex;
+  color: var(--primary);
+}
+
+.choice-name {
+  font-weight: 700;
+  font-size: 14.5px;
+}
+
+.choice-sub {
+  font-size: 12px;
+  color: var(--text-muted);
+  font-weight: 500;
+}
+
+/* ---- Focus mode ---- */
+.focus-controls {
+  position: absolute;
+  top: 14px;
+  left: 14px;
+  z-index: 30;
+  display: none;
+  gap: 8px;
+}
+
+body.focus-mode .focus-controls {
+  display: flex;
+}
+
+.focus-ctl {
+  width: 38px;
+  height: 38px;
+  padding: 0;
+  border-radius: 12px;
+  background: rgba(32, 27, 51, 0.85);
+  color: var(--text);
+  backdrop-filter: blur(6px);
+  border: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.focus-ctl:hover {
+  background: var(--surface-3);
+  transform: none;
+  box-shadow: none;
+}
+
+body.focus-mode .app-container {
+  width: 100vw;
+  max-width: none;
+  height: 100vh;
+  height: 100dvh;
+  border-radius: 0;
+  border: none;
+}
+
+body.focus-mode .nav-rail,
+body.focus-mode .sidebar {
+  display: none;
+}
+
+/* The chat list pops back out over the conversation on demand */
+body.focus-mode.panel-out .sidebar {
+  display: flex;
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 320px;
+  z-index: 12;
+  background: var(--sidebar-bg);
+  box-shadow: 18px 0 48px rgba(0, 0, 0, 0.45);
+}
+
+/* Focus mode means focus: no ambient motion at all */
+body.focus-mode #aurora,
+body.focus-mode #fx-canvas {
+  display: none !important;
+}
+
+body.focus-mode .chat-header {
+  padding-left: 108px; /* clear the floating controls */
+}
+
+/* ---- "Ambient" wallpaper: let the ambient effect show through the app ---- */
+.app-container[data-wallpaper="ambient"] {
+  background-color: rgba(25, 21, 38, 0.42);
+  background-image: none;
+  backdrop-filter: blur(3px);
+}
+
+.app-container[data-wallpaper="ambient"] .sidebar,
+.app-container[data-wallpaper="ambient"] .nav-rail {
+  background: rgba(18, 14, 30, 0.45);
+}
+
+.app-container[data-wallpaper="ambient"] .sidebar-header,
+.app-container[data-wallpaper="ambient"] .chat-header,
+.app-container[data-wallpaper="ambient"] #message-form,
+.app-container[data-wallpaper="ambient"] .quick-bar {
+  background: rgba(28, 23, 48, 0.55);
+}
+
+/* ---- Per-chat wallpaper (personal; overrides the app wallpaper) ---- */
+.chat-main[data-wp="doodle"] {
+  background-image: url("doodle.svg");
+  background-size: 300px 300px;
+  background-repeat: repeat;
+}
+.chat-main[data-wp="dots"] {
+  background-color: var(--app-bg);
+  background-image: radial-gradient(rgba(139, 124, 246, 0.13) 1.5px, transparent 1.5px);
+  background-size: 22px 22px;
+}
+.chat-main[data-wp="aurora"] {
+  background-color: var(--app-bg);
+  background-image:
+    radial-gradient(45% 40% at 12% 12%, rgba(139, 124, 246, 0.32), transparent 60%),
+    radial-gradient(42% 42% at 88% 20%, rgba(255, 110, 174, 0.26), transparent 60%),
+    radial-gradient(50% 50% at 72% 96%, rgba(55, 194, 224, 0.24), transparent 60%);
+}
+.chat-main[data-wp="mesh"] {
+  background-color: var(--app-bg);
+  background-image:
+    radial-gradient(38% 38% at 4% 8%, rgba(55, 194, 224, 0.30), transparent 56%),
+    radial-gradient(38% 38% at 96% 12%, rgba(255, 138, 91, 0.26), transparent 56%),
+    radial-gradient(44% 44% at 50% 104%, rgba(139, 124, 246, 0.30), transparent 56%);
+}
+.chat-main[data-wp="plain"] {
+  background-color: var(--app-bg);
+  background-image: none;
+}
+.chat-main[data-wp="ambient"] {
+  background-color: rgba(25, 21, 38, 0.35);
+  background-image: none;
+}
 
 /* ---- Responsive: phones & portrait tablets (single-pane, full-screen) ---- */
 @media (max-width: 768px) {
