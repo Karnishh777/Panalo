@@ -3,7 +3,12 @@
 // (UI preferences, no backend needed).
 import { THEME_PRESETS, WALLPAPER_PRESETS, EFFECT_PRESETS } from "./config.js";
 import { el, showToast } from "./util.js";
-import { setNotificationsEnabled } from "./notifications.js";
+import {
+  setAlertPrefs,
+  requestDesktopPermission,
+  sendTestAlert,
+  notificationPermission,
+} from "./notifications.js";
 import { applyEffect } from "./effects.js";
 
 const SETTINGS_KEY = "panalo.settings";
@@ -13,7 +18,9 @@ const DEFAULTS = {
   customWallpaper: null,
   effect: "aurora",
   cursorGlow: true,
-  notifications: false,
+  notifications: false, // desktop (needs browser permission)
+  inAppAlerts: true, // always works
+  alertSound: true,
 };
 
 function load() {
@@ -145,6 +152,39 @@ function applyCursor(on) {
   }
 }
 
+// ---- Alerts ----
+function syncAlertPrefs() {
+  setAlertPrefs({
+    desktop: settings.notifications,
+    inApp: settings.inAppAlerts,
+    sound: settings.alertSound,
+  });
+}
+
+// Tell the user exactly where desktop notifications stand — the old UI gave no
+// feedback at all, so a blocked permission looked like a broken feature.
+function refreshNotifyStatus() {
+  const box = document.getElementById("notify-status");
+  if (!box) return;
+  const perm = notificationPermission();
+  if (!settings.notifications) {
+    box.textContent = "In-app alerts still work with desktop notifications off.";
+    box.className = "notify-status";
+  } else if (perm === "granted") {
+    box.textContent = "✅ Desktop notifications are allowed.";
+    box.className = "notify-status ok";
+  } else if (perm === "denied") {
+    box.textContent = "⚠️ Blocked by your browser. Click the 🔒 icon next to the web address → Notifications → Allow.";
+    box.className = "notify-status warn";
+  } else if (perm === "unsupported") {
+    box.textContent = "⚠️ This browser has no desktop notifications — in-app alerts will be used.";
+    box.className = "notify-status warn";
+  } else {
+    box.textContent = "Permission not granted yet — toggle this on and accept the browser prompt.";
+    box.className = "notify-status warn";
+  }
+}
+
 function markSelected(container, selector, id) {
   container.querySelectorAll(selector).forEach((n) => {
     n.classList.toggle("selected", n.dataset.id === id);
@@ -157,7 +197,7 @@ export function initSettings() {
   applyWallpaper(settings.wallpaper);
   applyEffect(settings.effect);
   applyCursor(settings.cursorGlow);
-  setNotificationsEnabled(settings.notifications);
+  syncAlertPrefs();
 
   // Accent swatches.
   const accentBox = document.getElementById("accent-swatches");
@@ -238,15 +278,46 @@ export function initSettings() {
   });
   markSelected(fxBox, ".wallpaper-chip", settings.effect);
 
-  // Effect toggles.
+  // Alert toggles (desktop / in-app / sound) + the test button.
   const notifyToggle = document.getElementById("setting-notify");
+  const inAppToggle = document.getElementById("setting-inapp");
+  const soundToggle = document.getElementById("setting-sound");
   const cursorToggle = document.getElementById("setting-cursor");
   notifyToggle.checked = settings.notifications;
+  inAppToggle.checked = settings.inAppAlerts;
+  soundToggle.checked = settings.alertSound;
   cursorToggle.checked = settings.cursorGlow;
-  notifyToggle.addEventListener("change", () => {
+  refreshNotifyStatus();
+
+  notifyToggle.addEventListener("change", async () => {
     settings.notifications = notifyToggle.checked;
     save();
-    setNotificationsEnabled(settings.notifications);
+    syncAlertPrefs();
+    if (settings.notifications) {
+      const result = await requestDesktopPermission();
+      // A blocked browser can't be overridden from here — reflect reality.
+      if (result !== "granted") {
+        settings.notifications = false;
+        notifyToggle.checked = false;
+        save();
+        syncAlertPrefs();
+      }
+    }
+    refreshNotifyStatus();
+  });
+  inAppToggle.addEventListener("change", () => {
+    settings.inAppAlerts = inAppToggle.checked;
+    save();
+    syncAlertPrefs();
+  });
+  soundToggle.addEventListener("change", () => {
+    settings.alertSound = soundToggle.checked;
+    save();
+    syncAlertPrefs();
+  });
+  document.getElementById("test-alert-btn").addEventListener("click", () => {
+    sendTestAlert();
+    refreshNotifyStatus();
   });
   cursorToggle.addEventListener("change", () => {
     settings.cursorGlow = cursorToggle.checked;

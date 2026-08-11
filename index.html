@@ -272,8 +272,16 @@
       </div>
 
       <div class="settings-section">
+        <span class="settings-label">Notifications</span>
+        <label class="settings-toggle"><span>Desktop notifications</span><input type="checkbox" id="setting-notify" class="switch" /></label>
+        <label class="settings-toggle"><span>In-app alerts</span><input type="checkbox" id="setting-inapp" class="switch" /></label>
+        <label class="settings-toggle"><span>Sound</span><input type="checkbox" id="setting-sound" class="switch" /></label>
+        <p id="notify-status" class="notify-status"></p>
+        <button id="test-alert-btn" class="mini-btn" type="button">🔔 Send a test alert</button>
+      </div>
+
+      <div class="settings-section">
         <span class="settings-label">Effects</span>
-        <label class="settings-toggle"><span>Notifications</span><input type="checkbox" id="setting-notify" class="switch" /></label>
         <label class="settings-toggle"><span>Custom cursor (desktop)</span><input type="checkbox" id="setting-cursor" class="switch" /></label>
       </div>
 

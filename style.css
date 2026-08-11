@@ -438,11 +438,6 @@ button:active {
   text-overflow: ellipsis;
 }
 
-.conv-type {
-  font-size: 12px;
-  color: var(--text-faint);
-  margin-top: 2px;
-}
 
 /* Main Chat Area */
 .chat-main {
@@ -1047,6 +1042,8 @@ button:active {
   border-radius: 18px;
   width: 90%;
   max-width: 400px;
+  max-height: 88vh;
+  overflow-y: auto;
   box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
   border: 1px solid var(--border);
   animation: fadeSlideUp 0.25s ease;
@@ -1632,13 +1629,210 @@ a:focus-visible {
   line-height: 1.5;
 }
 
-/* Pin marker on pinned conversations */
+/* ---- Chat list rows: preview, time, unread badge ---- */
+.conv-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.conv-row-top {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+}
+
+.conv-row-top .conv-title {
+  flex: 1;
+  min-width: 0;
+}
+
+.conv-time {
+  font-size: 11px;
+  color: var(--text-faint);
+  flex-shrink: 0;
+}
+
+.conv-row-bottom {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 3px;
+}
+
+.conv-preview {
+  flex: 1;
+  min-width: 0;
+  font-size: 12.5px;
+  color: var(--text-faint);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
 .conv-pin {
-  margin-left: auto;
-  font-size: 12px;
+  font-size: 11px;
   opacity: 0.8;
   flex-shrink: 0;
 }
+
+.conv-badge {
+  flex-shrink: 0;
+  min-width: 20px;
+  height: 20px;
+  padding: 0 6px;
+  border-radius: 10px;
+  background: var(--grad);
+  color: #fff;
+  font-size: 11px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Unread chats read stronger than read ones */
+.conv-item.has-unread .conv-title {
+  font-weight: 700;
+}
+
+.conv-item.has-unread .conv-preview {
+  color: var(--text);
+  font-weight: 600;
+}
+
+.conv-item.has-unread .conv-time {
+  color: var(--primary);
+  font-weight: 700;
+}
+
+/* Unread count on the rail icons */
+.rail-badge {
+  position: absolute;
+  top: 3px;
+  right: 3px;
+  min-width: 17px;
+  height: 17px;
+  padding: 0 4px;
+  border-radius: 9px;
+  background: var(--danger);
+  color: #fff;
+  font-size: 10px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid var(--sidebar-bg);
+}
+
+.unread-divider {
+  background: rgba(139, 124, 246, 0.18);
+  color: var(--primary);
+  align-self: stretch;
+  text-align: center;
+}
+
+/* ---- In-app alert banners (work without any browser permission) ---- */
+#alert-host {
+  position: fixed;
+  top: 16px;
+  right: 16px;
+  z-index: 120;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  max-width: min(340px, calc(100vw - 32px));
+}
+
+.alert-card {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 14px;
+  border-radius: 14px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-left: 3px solid var(--primary);
+  box-shadow: 0 14px 40px rgba(0, 0, 0, 0.5);
+  cursor: pointer;
+  animation: alertIn 0.28s ease;
+  transition: opacity 0.3s, transform 0.3s;
+}
+
+.alert-card:hover {
+  background: var(--surface-2);
+}
+
+.alert-avatar {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background: var(--grad);
+  color: #fff;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.alert-body {
+  min-width: 0;
+  flex: 1;
+}
+
+.alert-title {
+  font-size: 13.5px;
+  font-weight: 700;
+  color: var(--text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.alert-text {
+  font-size: 12.5px;
+  color: var(--text-muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.alert-close {
+  width: 24px;
+  height: 24px;
+  padding: 0;
+  border-radius: 50%;
+  background: var(--surface-2);
+  color: var(--text-muted);
+  font-size: 11px;
+  flex-shrink: 0;
+}
+
+.alert-close:hover {
+  transform: none;
+  box-shadow: none;
+}
+
+.alert-hide {
+  opacity: 0;
+  transform: translateX(12px);
+}
+
+@keyframes alertIn {
+  from { opacity: 0; transform: translateX(24px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
+/* Notification status line in Settings */
+.notify-status {
+  font-size: 12.5px;
+  line-height: 1.45;
+  color: var(--text-faint);
+  margin: 6px 0 12px;
+}
+
+.notify-status.ok { color: #4ecb71; }
+.notify-status.warn { color: #ffb86f; }
 
 /* ---- Responsive: phones & portrait tablets (single-pane, full-screen) ---- */
 @media (max-width: 768px) {

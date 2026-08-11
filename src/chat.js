@@ -5,7 +5,8 @@ import { el, showToast, withBusy, getAvatarColor, safeImageUrl, scrollToBottom, 
 import { getConversationKey, provisionConversationKey, messagePlaintext } from "./encryption.js";
 import { MESSAGES_PAGE_SIZE, THEME_PRESETS, FONT_PRESETS, MAX_FILE_BYTES } from "./config.js";
 import { isOnline, setPresenceListener } from "./presence.js";
-import { isMuted, toggleMute } from "./notifications.js";
+import { isMuted, toggleMute, setInboxListener, setOpenChatListener } from "./notifications.js";
+import { markRead, countUnread, isUnreadMessage, formatCount, updateTitleBadge, getLastRead } from "./unread.js";
 import {
   getNickname, isPinned, togglePin,
   getStars, toggleStar, isStarred,
@@ -73,7 +74,77 @@ export async function fetchConversations() {
   await resolveDirectTitles(conversations);
 
   allConversations = conversations;
+  await hydrateConversationMeta();
   renderConversations();
+}
+
+// One query gives us, for every chat: the latest message (preview + ordering)
+// and the unread count. RLS already limits this to the user's own chats.
+const META_SCAN_LIMIT = 500;
+
+async function hydrateConversationMeta() {
+  if (!allConversations.length) {
+    refreshUnreadBadges();
+    return;
+  }
+  const { data } = await supabaseClient
+    .from("messages")
+    .select("id, conversation_id, user_id, username, content, iv, file_url, created_at")
+    .order("created_at", { ascending: false })
+    .limit(META_SCAN_LIMIT);
+
+  const byConv = new Map();
+  for (const m of data || []) {
+    if (!byConv.has(m.conversation_id)) byConv.set(m.conversation_id, []);
+    byConv.get(m.conversation_id).push(m);
+  }
+
+  for (const conv of allConversations) {
+    const msgs = byConv.get(conv.id) || [];
+    conv.lastMessage = msgs[0] || null;
+    conv.lastAt = msgs[0]?.created_at || conv.created_at || null;
+    conv.unread = countUnread(conv.id, msgs);
+  }
+  refreshUnreadBadges();
+}
+
+// Short, human timestamp for the chat list ("09:42", "Mon", "3 Aug").
+function listTime(iso) {
+  if (!iso) return "";
+  const d = new Date(iso);
+  const now = new Date();
+  const sameDay = d.toDateString() === now.toDateString();
+  if (sameDay) return d.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
+  const daysAgo = (now - d) / 86400000;
+  if (daysAgo < 7) return d.toLocaleDateString([], { weekday: "short" });
+  return d.toLocaleDateString([], { day: "numeric", month: "short" });
+}
+
+// Total unread on the rail icons + the browser tab title.
+function refreshUnreadBadges() {
+  const totals = { all: 0, direct: 0, group: 0 };
+  for (const c of allConversations) {
+    const n = c.unread || 0;
+    if (!n) continue;
+    totals.all += n;
+    if (c.type === "direct") totals.direct += n;
+    if (c.type === "group") totals.group += n;
+  }
+  document.querySelectorAll(".rail-btn[data-view]").forEach((btn) => {
+    const view = btn.dataset.view;
+    const count = totals[view] || 0;
+    let dot = btn.querySelector(".rail-badge");
+    if (count > 0) {
+      if (!dot) {
+        dot = el("span", { class: "rail-badge" });
+        btn.append(dot);
+      }
+      dot.textContent = formatCount(count);
+    } else if (dot) {
+      dot.remove();
+    }
+  });
+  updateTitleBadge(totals.all);
 }
 
 // Search + filter (All / Direct / Groups) applied client-side over the cached list.
@@ -95,8 +166,12 @@ function renderConversations() {
       const title = (c.type === "group" ? c.name : c.displayTitle || c.name) || "";
       return title.toLowerCase().includes(q) || getNickname(c.id).toLowerCase().includes(q);
     });
-  // Pinned chats float to the top (stable order otherwise).
-  items.sort((a, b) => Number(isPinned(b.id)) - Number(isPinned(a.id)));
+  // Pinned chats first, then most recent activity — like every messenger.
+  items.sort((a, b) => {
+    const pin = Number(isPinned(b.id)) - Number(isPinned(a.id));
+    if (pin) return pin;
+    return String(b.lastAt || "").localeCompare(String(a.lastAt || ""));
+  });
   if (!items.length) {
     conversationsList.append(el("div", { class: "list-empty", text: q ? "No chats match your search." : "No chats here yet." }));
     return;
@@ -198,14 +273,40 @@ function renderConversationItem(conv) {
   const avatar = el("div", { class: "avatar" });
   setAvatar(avatar, baseTitle, isGroup ? null : conv.otherAvatar);
 
+  // Preview line: the last message, decrypted, with the sender's name in groups.
+  const last = conv.lastMessage;
+  const previewEl = el("div", { class: "conv-preview" });
+  if (!last) {
+    previewEl.textContent = isGroup ? "Group Chat" : "Direct Message";
+  } else if (last.file_url) {
+    previewEl.textContent = "📎 Attachment";
+  } else {
+    previewEl.textContent = "…";
+    messagePlaintext(last).then((text) => {
+      const mine = last.user_id === state.currentUser.id;
+      const who = mine ? "You: " : isGroup ? `${last.username || "?"}: ` : "";
+      previewEl.textContent = who + text;
+    });
+  }
+
+  const unread = conv.unread || 0;
+  if (unread > 0) item.classList.add("has-unread");
+
   item.append(
     avatar,
     el("div", { class: "conv-info" }, [
-      el("div", { class: "conv-title", text: title }),
-      el("div", { class: "conv-type", text: isGroup ? "Group Chat" : "Direct Message" }),
+      el("div", { class: "conv-row-top" }, [
+        el("div", { class: "conv-title", text: title }),
+        el("span", { class: "conv-time", text: listTime(conv.lastAt) }),
+      ]),
+      el("div", { class: "conv-row-bottom" }, [
+        previewEl,
+        isPinned(conv.id) ? el("span", { class: "conv-pin", text: "📌", "aria-label": "Pinned" }) : null,
+        isMuted(conv.id) ? el("span", { class: "conv-pin", text: "🔕", "aria-label": "Muted" }) : null,
+        unread > 0 ? el("span", { class: "conv-badge", text: formatCount(unread), "aria-label": `${unread} unread` }) : null,
+      ]),
     ])
   );
-  if (isPinned(conv.id)) item.append(el("span", { class: "conv-pin", text: "📌", "aria-label": "Pinned" }));
 
   const open = () => openConversation(conv, title);
   item.addEventListener("click", open);
@@ -247,6 +348,11 @@ async function openConversation(conv) {
   });
 
   await fetchMessages();
+  // Everything on screen counts as read.
+  markRead(conv.id);
+  conv.unread = 0;
+  refreshUnreadBadges();
+  renderConversations();
   subscribeToMessages();
 }
 
@@ -410,7 +516,15 @@ async function fetchMessages() {
 
   messagesList.innerHTML = "";
   msgCache.clear();
-  (data || []).slice().reverse().forEach((msg) => renderMessage(msg));
+  const ordered = (data || []).slice().reverse();
+  // "Unread messages" divider before the first message we haven't seen.
+  const firstUnread = ordered.find((m) => isUnreadMessage(state.currentConversationId, m));
+  ordered.forEach((msg) => {
+    if (firstUnread && msg.id === firstUnread.id) {
+      messagesList.append(el("div", { class: "day-separator unread-divider", text: "Unread messages" }));
+    }
+    renderMessage(msg);
+  });
 
   if (data && data.length) state.oldestLoadedAt = data[data.length - 1].created_at;
   state.hasMoreOlderMessages = (data || []).length === MESSAGES_PAGE_SIZE;
@@ -846,6 +960,14 @@ function reconcileSend(tempId, realMsg, localPreview) {
   renderMessage(realMsg);
   scrollToBottom();
   if (localPreview) URL.revokeObjectURL(localPreview);
+
+  // Our own message updates the chat list preview + ordering too.
+  const conv = allConversations.find((c) => c.id === realMsg.conversation_id);
+  if (conv) {
+    conv.lastMessage = realMsg;
+    conv.lastAt = realMsg.created_at;
+    renderConversations();
+  }
 }
 
 function markSendFailed(tempId, reason, onRetry) {
@@ -1179,6 +1301,46 @@ export function initChatUI() {
 
   // Refresh the header status whenever anyone's online state changes.
   setPresenceListener(refreshChatSubtitle);
+
+  // Live inbox: every incoming message updates previews, ordering, and unread
+  // counts — even for chats that aren't open.
+  setInboxListener(async (msg) => {
+    const conv = allConversations.find((c) => c.id === msg.conversation_id);
+    if (!conv) {
+      // A chat someone just added us to — pull the list fresh.
+      await fetchConversations();
+      return;
+    }
+    conv.lastMessage = msg;
+    conv.lastAt = msg.created_at;
+
+    const watching = msg.conversation_id === state.currentConversationId && !document.hidden;
+    if (watching) {
+      markRead(conv.id);
+      conv.unread = 0;
+    } else {
+      conv.unread = (conv.unread || 0) + 1;
+    }
+    refreshUnreadBadges();
+    renderConversations();
+  });
+
+  // Clicking an alert banner (or a desktop notification) jumps to that chat.
+  setOpenChatListener((convId) => {
+    const conv = allConversations.find((c) => c.id === convId);
+    if (conv) openConversation(conv);
+  });
+
+  // Coming back to the tab marks the open chat as read.
+  document.addEventListener("visibilitychange", () => {
+    if (document.hidden || !state.currentConversationId) return;
+    const conv = allConversations.find((c) => c.id === state.currentConversationId);
+    if (!conv) return;
+    markRead(conv.id);
+    conv.unread = 0;
+    refreshUnreadBadges();
+    renderConversations();
+  });
 
   // Chat search + rail view switcher (All / Direct / Groups / Starred).
   const searchInput = document.getElementById("chat-search");

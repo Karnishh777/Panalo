@@ -1,0 +1,56 @@
+// Unread tracking. A per-device "last read" timestamp per conversation is all
+// the state we need — unread counts are then derived from message timestamps,
+// so this works without any extra backend table.
+import { state } from "./state.js";
+
+const LAST_READ_KEY = "panalo.lastRead";
+const BASE_TITLE = "Panalo";
+
+function readMap() {
+  try {
+    return JSON.parse(localStorage.getItem(LAST_READ_KEY) || "{}");
+  } catch {
+    return {};
+  }
+}
+function writeMap(map) {
+  try {
+    localStorage.setItem(LAST_READ_KEY, JSON.stringify(map));
+  } catch {
+    /* quota — ignore */
+  }
+}
+
+export function getLastRead(convId) {
+  return readMap()[convId] || null;
+}
+
+// Mark everything up to now as read. Returns true if the count actually changed.
+export function markRead(convId) {
+  const map = readMap();
+  map[convId] = new Date().toISOString();
+  writeMap(map);
+}
+
+// Count messages in `messages` that arrived after the last read and weren't ours.
+export function countUnread(convId, messages) {
+  const since = getLastRead(convId);
+  return messages.filter(
+    (m) => m.user_id !== state.currentUser?.id && (!since || m.created_at > since)
+  ).length;
+}
+
+// Is this message unread? (used for the "unread messages" divider)
+export function isUnreadMessage(convId, msg) {
+  const since = getLastRead(convId);
+  return msg.user_id !== state.currentUser?.id && (!since || msg.created_at > since);
+}
+
+export function formatCount(n) {
+  return n > 99 ? "99+" : String(n);
+}
+
+// Tab title reflects the total, like every other messenger: "(3) Panalo".
+export function updateTitleBadge(total) {
+  document.title = total > 0 ? `(${formatCount(total)}) ${BASE_TITLE}` : BASE_TITLE;
+}
