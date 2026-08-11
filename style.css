@@ -497,6 +497,58 @@ button:active {
   display: flex;
   align-items: center;
   gap: 12px;
+  position: relative;
+}
+
+/* Chat options dropdown */
+.chat-menu {
+  position: absolute;
+  top: calc(100% + 6px);
+  right: 14px;
+  z-index: 20;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  box-shadow: 0 12px 34px rgba(0, 0, 0, 0.5);
+  padding: 6px;
+  min-width: 210px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.chat-menu-item {
+  width: 100%;
+  text-align: left;
+  background: none;
+  color: var(--text);
+  font-size: 14px;
+  font-weight: 500;
+  padding: 10px 12px;
+  border-radius: 8px;
+}
+
+.chat-menu-item:hover {
+  background: var(--surface-2);
+  transform: none;
+  box-shadow: none;
+}
+
+.members-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 16px;
+  max-height: 320px;
+  overflow-y: auto;
+}
+
+.member-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 14.5px;
+  color: var(--text);
 }
 
 /* Back button — hidden on desktop, shown on mobile to return to the chat list */

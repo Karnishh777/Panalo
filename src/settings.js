@@ -3,9 +3,17 @@
 // (UI preferences, no backend needed).
 import { THEME_PRESETS, WALLPAPER_PRESETS } from "./config.js";
 import { el, showToast } from "./util.js";
+import { setNotificationsEnabled } from "./notifications.js";
 
 const SETTINGS_KEY = "panalo.settings";
-const DEFAULTS = { accent: "default", wallpaper: "doodle", customWallpaper: null, animatedBg: true, cursorGlow: true };
+const DEFAULTS = {
+  accent: "default",
+  wallpaper: "doodle",
+  customWallpaper: null,
+  animatedBg: true,
+  cursorGlow: true,
+  notifications: false,
+};
 
 function load() {
   try {
@@ -149,6 +157,7 @@ export function initSettings() {
   applyWallpaper(settings.wallpaper);
   applyAnimatedBg(settings.animatedBg);
   applyCursor(settings.cursorGlow);
+  setNotificationsEnabled(settings.notifications);
 
   // Accent swatches.
   const accentBox = document.getElementById("accent-swatches");
@@ -211,10 +220,17 @@ export function initSettings() {
   });
 
   // Effect toggles.
+  const notifyToggle = document.getElementById("setting-notify");
   const auroraToggle = document.getElementById("setting-aurora");
   const cursorToggle = document.getElementById("setting-cursor");
+  notifyToggle.checked = settings.notifications;
   auroraToggle.checked = settings.animatedBg;
   cursorToggle.checked = settings.cursorGlow;
+  notifyToggle.addEventListener("change", () => {
+    settings.notifications = notifyToggle.checked;
+    save();
+    setNotificationsEnabled(settings.notifications);
+  });
   auroraToggle.addEventListener("change", () => {
     settings.animatedBg = auroraToggle.checked;
     save();

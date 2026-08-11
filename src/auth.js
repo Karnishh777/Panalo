@@ -5,6 +5,7 @@ import { withBusy, showToast, redirectUrl } from "./util.js";
 import { ensureUserKeys, idbDelKey } from "./encryption.js";
 import { fetchConversations } from "./chat.js";
 import { startPresence, stopPresence } from "./presence.js";
+import { startNotifications, stopNotifications } from "./notifications.js";
 import { MIN_PASSWORD_LENGTH, OTP_LENGTH } from "./config.js";
 
 const authScreen = document.getElementById("auth-screen");
@@ -48,6 +49,7 @@ async function initApp(session) {
   chatApp.classList.remove("hidden");
 
   startPresence(state.currentUser); // go online
+  startNotifications();
   await fetchConversations();
 }
 
@@ -182,6 +184,7 @@ export function initAuth() {
     // Lock encryption: drop the cached private key + in-memory conversation keys.
     if (state.currentUser) await idbDelKey(state.currentUser.id);
     stopPresence();
+    stopNotifications();
     state.myPrivateKey = null;
     state.myPublicKeyB64 = null;
     conversationKeys.clear();

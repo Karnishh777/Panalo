@@ -5,6 +5,7 @@ import { el, showToast, withBusy, getAvatarColor, safeImageUrl, scrollToBottom, 
 import { getConversationKey, provisionConversationKey, messagePlaintext } from "./encryption.js";
 import { MESSAGES_PAGE_SIZE, THEME_PRESETS } from "./config.js";
 import { isOnline, setPresenceListener } from "./presence.js";
+import { isMuted, toggleMute } from "./notifications.js";
 
 // Typing indicator state (for the currently open conversation).
 let otherTyping = false;
@@ -675,6 +676,39 @@ async function downloadImage(src) {
   }
 }
 
+// ---- Chat options menu (mute, theme, members) ----
+async function viewMembers() {
+  const conv = state.currentConversation;
+  if (!conv) return;
+  const listEl = document.getElementById("members-list");
+  listEl.innerHTML = "";
+  const { data } = await supabaseClient
+    .from("conversation_participants")
+    .select("user_id, profiles(username)")
+    .eq("conversation_id", conv.id);
+  (data || []).forEach((p) => {
+    const name = (p.user_id === state.currentUser.id ? "You" : p.profiles?.username) || "Unknown";
+    const avatar = el("div", { class: "avatar", text: name.trim().charAt(0).toUpperCase() });
+    avatar.style.background = getAvatarColor(name);
+    avatar.style.width = "34px";
+    avatar.style.height = "34px";
+    avatar.style.fontSize = "13px";
+    listEl.append(el("div", { class: "member-row" }, [avatar, el("span", { text: name })]));
+  });
+  document.getElementById("members-modal").classList.remove("hidden");
+}
+
+function openChatMenu() {
+  const conv = state.currentConversation;
+  const menu = document.getElementById("chat-menu");
+  // "View members" only makes sense for groups.
+  document.getElementById("menu-members").style.display = conv && conv.type === "group" ? "block" : "none";
+  // Reflect current mute state.
+  const muteItem = menu.querySelector('[data-action="mute"]');
+  if (conv) muteItem.textContent = isMuted(conv.id) ? "🔔 Unmute notifications" : "🔕 Mute notifications";
+  menu.classList.remove("hidden");
+}
+
 // ---- Wire up all chat-related event listeners ----
 export function initChatUI() {
   document.getElementById("back-btn").addEventListener("click", () => {
@@ -817,5 +851,33 @@ export function initChatUI() {
       document.querySelectorAll(".filter-tab").forEach((t) => t.classList.toggle("active", t === tab));
       renderConversations();
     });
+  });
+
+  // Chat options menu.
+  const chatMenu = document.getElementById("chat-menu");
+  document.getElementById("chat-menu-btn").addEventListener("click", (e) => {
+    e.stopPropagation();
+    if (chatMenu.classList.contains("hidden")) openChatMenu();
+    else chatMenu.classList.add("hidden");
+  });
+  chatMenu.addEventListener("click", (e) => {
+    const item = e.target.closest(".chat-menu-item");
+    if (!item) return;
+    chatMenu.classList.add("hidden");
+    const conv = state.currentConversation;
+    if (item.dataset.action === "mute" && conv) {
+      const muted = toggleMute(conv.id);
+      showToast(muted ? "Chat muted" : "Chat unmuted", "success");
+    } else if (item.dataset.action === "theme") {
+      updateSwatchSelection(conv?.theme);
+      document.getElementById("theme-modal").classList.remove("hidden");
+    } else if (item.dataset.action === "members") {
+      viewMembers();
+    }
+  });
+  // Close the menu when clicking elsewhere.
+  document.addEventListener("click", () => chatMenu.classList.add("hidden"));
+  document.getElementById("close-members-modal").addEventListener("click", () => {
+    document.getElementById("members-modal").classList.add("hidden");
   });
 }

@@ -17,4 +17,6 @@ document.addEventListener("keydown", (e) => {
   document.getElementById("theme-modal")?.classList.add("hidden");
   document.getElementById("settings-modal")?.classList.add("hidden");
   document.getElementById("image-viewer")?.classList.add("hidden");
+  document.getElementById("members-modal")?.classList.add("hidden");
+  document.getElementById("chat-menu")?.classList.add("hidden");
 });

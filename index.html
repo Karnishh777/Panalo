@@ -97,6 +97,12 @@
             <span id="active-chat-subtitle" class="chat-subtitle"></span>
           </div>
           <button id="theme-btn" class="header-icon-btn" type="button" aria-label="Change chat theme">🎨</button>
+          <button id="chat-menu-btn" class="header-icon-btn" type="button" aria-label="Chat options">⋮</button>
+          <div id="chat-menu" class="chat-menu hidden" role="menu">
+            <button class="chat-menu-item" data-action="mute" type="button" role="menuitem">🔕 Mute notifications</button>
+            <button class="chat-menu-item" data-action="theme" type="button" role="menuitem">🎨 Chat theme</button>
+            <button id="menu-members" class="chat-menu-item" data-action="members" type="button" role="menuitem">👥 View members</button>
+          </div>
         </div>
 
         <div id="messages-container">
@@ -179,6 +185,7 @@
 
       <div class="settings-section">
         <span class="settings-label">Effects</span>
+        <label class="settings-toggle"><span>Notifications</span><input type="checkbox" id="setting-notify" class="switch" /></label>
         <label class="settings-toggle"><span>Animated background</span><input type="checkbox" id="setting-aurora" class="switch" /></label>
         <label class="settings-toggle"><span>Custom cursor (desktop)</span><input type="checkbox" id="setting-cursor" class="switch" /></label>
       </div>
@@ -196,6 +203,16 @@
       <div id="theme-swatches" class="theme-swatches"></div>
       <div class="modal-buttons">
         <button id="close-theme-modal" class="secondary-btn">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="members-modal" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="members-modal-title">
+    <div class="modal-content">
+      <h3 id="members-modal-title">Members</h3>
+      <div id="members-list" class="members-list"></div>
+      <div class="modal-buttons">
+        <button id="close-members-modal" class="secondary-btn">Close</button>
       </div>
     </div>
   </div>
