@@ -28,6 +28,7 @@ import {
 } from "./receipts.js";
 import { searchMessages, invalidateSearchIndex } from "./search.js";
 import { parseSticker, stickerMarker, stickerSvg, describeText, initStickerPicker } from "./stickers.js";
+import { initCalls, startCall } from "./calls.js";
 import { openChatInfo, closeChatInfo, setChatInfoCallbacks, displayTitle, initChatInfo } from "./chatinfo.js";
 
 // Message rows currently on screen (id → row) — powers the actions menu.
@@ -422,6 +423,10 @@ async function openConversation(conv) {
   setAvatar(headerAvatar, baseTitle, conv.type === "group" ? null : conv.otherAvatar);
   otherTyping = false;
   refreshChatSubtitle(); // live: typing / online / default
+
+  // Calls are 1:1 only (group calls need an SFU — a separate initiative).
+  const callable = conv.type === "direct" && !!conv.otherUserId;
+  document.querySelectorAll(".direct-only").forEach((b) => b.classList.toggle("hidden", !callable));
 
   closeChatInfo(); // drawer belongs to the previous chat
   applyChatTheme(conv.theme); // per-chat theme (falls back to default)
@@ -1804,6 +1809,16 @@ export function initChatUI() {
     e.preventDefault();
     handleSend();
   });
+
+  // Calls (direct chats only).
+  initCalls();
+  const callPeer = () => ({
+    id: state.currentConversation?.otherUserId,
+    name: displayTitle(state.currentConversation || {}),
+    avatar: state.currentConversation?.otherAvatar,
+  });
+  document.getElementById("voice-call-btn").addEventListener("click", () => startCall(callPeer(), false));
+  document.getElementById("video-call-btn").addEventListener("click", () => startCall(callPeer(), true));
 
   // Stickers: one tap sends the card as an (encrypted) marker message.
   initStickerPicker((id) => {

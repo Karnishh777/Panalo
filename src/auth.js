@@ -8,6 +8,7 @@ import { startPresence, stopPresence } from "./presence.js";
 import { startNotifications, stopNotifications } from "./notifications.js";
 import { stopReactions } from "./reactions.js";
 import { stopReceipts } from "./receipts.js";
+import { startCalls, stopCalls } from "./calls.js";
 import { refreshMyProfile } from "./profile.js";
 import { MIN_PASSWORD_LENGTH, OTP_LENGTH } from "./config.js";
 
@@ -53,6 +54,7 @@ async function initApp(session) {
 
   startPresence(state.currentUser); // go online
   startNotifications();
+  startCalls(); // listen for incoming calls anywhere in the app
   await Promise.all([refreshMyProfile(), fetchConversations()]);
 }
 
@@ -190,6 +192,7 @@ export function initAuth() {
     stopNotifications();
     stopReactions();
     stopReceipts();
+    stopCalls();
     state.myPrivateKey = null;
     state.myPublicKeyB64 = null;
     conversationKeys.clear();

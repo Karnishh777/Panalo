@@ -105,6 +105,8 @@
               <span id="active-chat-subtitle" class="chat-subtitle"></span>
             </div>
           </div>
+          <button id="voice-call-btn" class="header-icon-btn direct-only hidden" type="button" title="Voice call" aria-label="Start a voice call"><span data-icon="phone"></span></button>
+          <button id="video-call-btn" class="header-icon-btn direct-only hidden" type="button" title="Video call" aria-label="Start a video call"><span data-icon="video"></span></button>
           <button id="focus-btn" class="header-icon-btn" type="button" title="Focus mode" aria-label="Focus mode"><span data-icon="expand"></span></button>
           <button id="theme-btn" class="header-icon-btn" type="button" title="Chat theme" aria-label="Change chat theme"><span data-icon="palette"></span></button>
           <button id="chat-menu-btn" class="header-icon-btn" type="button" title="Chat options" aria-label="Chat options"><span data-icon="more"></span></button>
@@ -450,6 +452,28 @@
       <button id="viewer-close" type="button" aria-label="Close image viewer"><span data-icon="close" data-icon-size="16"></span></button>
     </div>
     <img id="viewer-img" class="viewer-img" alt="Full-size image" />
+  </div>
+
+  <div id="call-overlay" class="call-overlay hidden" role="dialog" aria-modal="true" aria-label="Call">
+    <video id="call-remote" class="call-remote" autoplay playsinline></video>
+    <video id="call-local" class="call-local hidden" autoplay playsinline muted></video>
+
+    <div class="call-identity">
+      <div id="call-avatar" class="avatar call-avatar"></div>
+      <h2 id="call-name">Call</h2>
+      <span id="call-status" class="call-status">Calling…</span>
+    </div>
+
+    <div id="call-answer-row" class="call-answer-row hidden">
+      <button id="call-decline" class="call-btn danger" type="button" aria-label="Decline call"></button>
+      <button id="call-accept" class="call-btn accept" type="button" aria-label="Accept call"></button>
+    </div>
+
+    <div id="call-controls" class="call-controls">
+      <button id="call-mute" class="call-btn" type="button" aria-label="Mute microphone"></button>
+      <button id="call-camera" class="call-btn" type="button" aria-label="Toggle camera"></button>
+      <button id="call-hangup" class="call-btn danger" type="button" aria-label="End call"></button>
+    </div>
   </div>
 
   <!-- Screen-reader announcements (new messages, etc.) -->

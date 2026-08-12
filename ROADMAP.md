@@ -415,9 +415,31 @@ here is a rewrite — it's hardening + polish + differentiation.
 
 ---
 
-## Phase 6 — Voice & video calling (WebRTC)
+## Phase 6 — Voice & video calling (WebRTC)  ✅ SHIPPED (2026-08-12, STUN-only)
 
 **Goal:** low-latency 1:1 calls with connection recovery.
+
+> **Shipped:** `src/calls.js`. 1:1 voice + video; signaling over Supabase Realtime
+> Broadcast on a per-user channel (`call:<userId>`), so incoming calls reach you
+> anywhere in the app. Ringing / in-call / ended UI, mute + camera toggles on the
+> live tracks, 35 s ring timeout, busy + decline + missed states, one automatic
+> ICE restart on a dropped connection, and full teardown (tracks stopped, peer
+> closed, channel removed).
+>
+> **Verified:** incoming-call signaling delivered through a genuinely separate
+> Supabase client; a two-peer RTCPeerConnection loopback reached
+> `connectionState: "connected"` with a succeeded ICE candidate pair and the
+> remote track arriving; blocked-microphone path fails cleanly with an
+> actionable message instead of hanging on "Calling…".
+>
+> **Known limitation — TURN is not configured.** Public STUN only, which covers
+> most home/office networks. Connections that need a *relay* (symmetric NAT —
+> common on some mobile carriers) will fail; the UI says so plainly after one
+> ICE restart rather than spinning forever. Adding TURN is a paid-service
+> decision (see decision #4), and is the remaining work for the original
+> "connects across NATs" acceptance criterion.
+>
+> **Still out of scope:** group calls (needs an SFU).
 
 **Effort: XL · Depends on: 🔷 scope + TURN decision; Phases 1,3.**
 
