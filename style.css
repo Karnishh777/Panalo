@@ -145,7 +145,7 @@ body.custom-cursor * {
 .auth-box {
   background: var(--surface);
   padding: 40px 32px;
-  border-radius: 22px;
+  border-radius: 26px;
   text-align: center;
   box-shadow: 0 24px 70px rgba(0, 0, 0, 0.45);
   border: 1px solid var(--border);
@@ -183,7 +183,7 @@ body.custom-cursor * {
   text-decoration: none;
   margin-left: 6px;
   padding: 2px 4px;
-  border-radius: 6px;
+  border-radius: 8px;
   transition: color 0.15s, background 0.15s;
 }
 
@@ -218,7 +218,7 @@ input {
   padding: 13px 15px;
   margin-bottom: 12px;
   border: 1px solid transparent;
-  border-radius: 12px;
+  border-radius: 14px;
   background: var(--surface-2);
   color: var(--text);
   font-size: 15px;
@@ -261,7 +261,7 @@ button {
   width: 100%;
   padding: 13px;
   border: none;
-  border-radius: 12px;
+  border-radius: 14px;
   background: var(--grad);
   color: var(--on-primary);
   font-size: 15px;
@@ -296,7 +296,7 @@ button:active {
   max-width: 1150px;
   height: 88vh;
   background: var(--app-bg);
-  border-radius: 22px;
+  border-radius: 26px;
   overflow: hidden;
   box-shadow: 0 25px 70px rgba(0, 0, 0, 0.5);
   border: 1px solid var(--border);
@@ -344,7 +344,7 @@ button:active {
 .sidebar-search input {
   margin-bottom: 0;
   padding: 10px 14px;
-  border-radius: 12px;
+  border-radius: 14px;
   font-size: 14px;
 }
 
@@ -357,7 +357,7 @@ button:active {
 .filter-tab {
   width: auto;
   padding: 6px 14px;
-  border-radius: 16px;
+  border-radius: 18px;
   background: var(--surface-2);
   color: var(--text-muted);
   font-size: 12.5px;
@@ -385,7 +385,7 @@ button:active {
   align-items: center;
   gap: 12px;
   padding: 12px;
-  border-radius: 14px;
+  border-radius: 16px;
   cursor: pointer;
   transition: background 0.15s;
   margin-bottom: 3px;
@@ -518,7 +518,7 @@ button:active {
   z-index: 20;
   background: var(--surface);
   border: 1px solid var(--border);
-  border-radius: 12px;
+  border-radius: 14px;
   box-shadow: 0 12px 34px rgba(0, 0, 0, 0.5);
   padding: 6px;
   min-width: 210px;
@@ -535,7 +535,7 @@ button:active {
   font-size: 14px;
   font-weight: 500;
   padding: 10px 12px;
-  border-radius: 8px;
+  border-radius: 10px;
 }
 
 .chat-menu-item:hover {
@@ -683,9 +683,32 @@ button:active {
   border-color: var(--text);
 }
 
-/* Settings panel */
+/* Settings panel — a wide, landscape sheet rather than a narrow column, so the
+   many option groups read as one calm panel instead of a long scroll. */
 .settings-content {
-  max-width: 430px;
+  max-width: 460px;
+}
+
+@media (min-width: 820px) {
+  /* Both class names, so this outranks the generic .modal-content width that
+     is declared later in the file. */
+  .modal-content.settings-content {
+    width: min(92vw, 720px);
+    max-width: 720px;
+    column-count: 2;
+    column-gap: 34px;
+  }
+
+  /* Keep a group whole rather than letting it split across the fold */
+  .settings-content .settings-section {
+    break-inside: avoid;
+  }
+
+  /* Title and footer stay full width across both columns */
+  .settings-content h3,
+  .settings-content .modal-buttons {
+    column-span: all;
+  }
 }
 
 .settings-section {
@@ -711,7 +734,7 @@ button:active {
 .wallpaper-chip {
   width: auto;
   padding: 8px 14px;
-  border-radius: 12px;
+  border-radius: 14px;
   background: var(--surface-2);
   color: var(--text);
   font-size: 13px;
@@ -747,7 +770,7 @@ button:active {
   margin: 0;
   padding: 0;
   border: none;
-  border-radius: 26px;
+  border-radius: 30px;
   background: var(--surface-3);
   position: relative;
   cursor: pointer;
@@ -792,7 +815,7 @@ button:active {
 .message {
   max-width: 68%;
   padding: 9px 14px;
-  border-radius: 18px;
+  border-radius: 22px;
   background: var(--bubble-in);
   align-self: flex-start;
   word-wrap: break-word;
@@ -829,7 +852,7 @@ button:active {
 .chat-image {
   max-width: 100%;
   max-height: 260px;
-  border-radius: 12px;
+  border-radius: 14px;
   margin-top: 6px;
   display: block;
 }
@@ -859,7 +882,7 @@ button:active {
   font-size: 11px;
   font-weight: 600;
   padding: 4px 12px;
-  border-radius: 12px;
+  border-radius: 14px;
   margin: 6px 0;
 }
 
@@ -923,14 +946,14 @@ button:active {
 #message-form input[type="text"] {
   margin-bottom: 0;
   flex: 1;
-  border-radius: 24px;
+  border-radius: 28px;
   padding: 12px 18px;
 }
 
 #message-form button {
   width: auto;
   padding: 0 22px;
-  border-radius: 24px;
+  border-radius: 28px;
 }
 
 #file-btn {
@@ -956,7 +979,7 @@ button:active {
 .file-preview-thumb {
   width: 42px;
   height: 42px;
-  border-radius: 8px;
+  border-radius: 10px;
   object-fit: cover;
   flex-shrink: 0;
 }
@@ -973,7 +996,7 @@ button:active {
 .file-preview-remove {
   width: auto;
   padding: 5px 10px;
-  border-radius: 8px;
+  border-radius: 10px;
   background: var(--surface-2);
   color: var(--text);
   font-size: 13px;
@@ -1015,7 +1038,7 @@ button:active {
 .viewer-bar button {
   width: auto;
   padding: 10px 16px;
-  border-radius: 12px;
+  border-radius: 14px;
   background: rgba(255, 255, 255, 0.14);
   color: #fff;
   font-size: 14px;
@@ -1032,7 +1055,7 @@ button:active {
 .viewer-img {
   max-width: 92vw;
   max-height: 84vh;
-  border-radius: 12px;
+  border-radius: 14px;
   box-shadow: 0 24px 70px rgba(0, 0, 0, 0.6);
   cursor: zoom-in;
   transition: transform 0.2s ease;
@@ -1058,7 +1081,7 @@ button:active {
 .modal-content {
   background: var(--surface);
   padding: 28px;
-  border-radius: 18px;
+  border-radius: 22px;
   width: 90%;
   max-width: 400px;
   max-height: 88vh;
@@ -1086,7 +1109,7 @@ button:active {
 }
 ::-webkit-scrollbar-thumb {
   background: var(--surface-3);
-  border-radius: 8px;
+  border-radius: 10px;
 }
 ::-webkit-scrollbar-track {
   background: transparent;
@@ -1135,7 +1158,7 @@ a:focus-visible {
   margin: 0;
   padding: 6px 13px;
   border: none;
-  border-radius: 16px;
+  border-radius: 18px;
   background: var(--surface-2);
   color: var(--text);
   font-size: 15px;
@@ -1169,7 +1192,7 @@ a:focus-visible {
   background: var(--surface-2);
   color: var(--text);
   padding: 12px 18px;
-  border-radius: 12px;
+  border-radius: 14px;
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
   font-size: 14px;
   max-width: 90vw;
@@ -1227,7 +1250,7 @@ a:focus-visible {
   width: 44px;
   height: 44px;
   padding: 0;
-  border-radius: 14px;
+  border-radius: 16px;
   background: transparent;
   color: var(--text-muted);
   font-size: 19px;
@@ -1254,7 +1277,7 @@ a:focus-visible {
   top: 10px;
   bottom: 10px;
   width: 3px;
-  border-radius: 3px;
+  border-radius: 4px;
   background: var(--grad);
 }
 
@@ -1293,7 +1316,7 @@ a:focus-visible {
   flex: 1;
   min-width: 0;
   cursor: pointer;
-  border-radius: 12px;
+  border-radius: 14px;
   padding: 2px 6px;
   margin: -2px 0;
   transition: background 0.15s;
@@ -1407,7 +1430,7 @@ a:focus-visible {
   width: auto;
   padding: 9px 16px;
   font-size: 13px;
-  border-radius: 12px;
+  border-radius: 14px;
   flex-shrink: 0;
 }
 
@@ -1451,7 +1474,7 @@ a.mini-btn:hover {
 .info-chip {
   width: auto;
   padding: 8px 14px;
-  border-radius: 12px;
+  border-radius: 14px;
   background: var(--surface-2);
   color: var(--text);
   font-size: 13px;
@@ -1492,7 +1515,7 @@ a.mini-btn:hover {
 .member-remove {
   width: auto;
   padding: 4px 10px;
-  border-radius: 8px;
+  border-radius: 10px;
   background: var(--surface-2);
   color: var(--danger);
   font-size: 12px;
@@ -1556,7 +1579,7 @@ a.mini-btn:hover {
   z-index: 60;
   background: var(--surface);
   border: 1px solid var(--border);
-  border-radius: 12px;
+  border-radius: 14px;
   box-shadow: 0 12px 34px rgba(0, 0, 0, 0.5);
   padding: 6px;
   min-width: 170px;
@@ -1586,7 +1609,7 @@ a.mini-btn:hover {
   align-items: center;
   gap: 10px;
   background: rgba(0, 0, 0, 0.18);
-  border-radius: 12px;
+  border-radius: 14px;
   padding: 10px 12px;
   margin-top: 6px;
   max-width: 280px;
@@ -1636,7 +1659,7 @@ a.mini-btn:hover {
   flex-direction: column;
   gap: 4px;
   padding: 12px;
-  border-radius: 14px;
+  border-radius: 16px;
   cursor: pointer;
   transition: background 0.15s;
   margin-bottom: 3px;
@@ -1722,7 +1745,7 @@ a.mini-btn:hover {
   min-width: 20px;
   height: 20px;
   padding: 0 6px;
-  border-radius: 10px;
+  border-radius: 12px;
   background: var(--grad);
   color: #fff;
   font-size: 11px;
@@ -1755,7 +1778,7 @@ a.mini-btn:hover {
   min-width: 17px;
   height: 17px;
   padding: 0 4px;
-  border-radius: 9px;
+  border-radius: 10px;
   background: var(--danger);
   color: #fff;
   font-size: 10px;
@@ -1790,7 +1813,7 @@ a.mini-btn:hover {
   align-items: center;
   gap: 12px;
   padding: 12px 14px;
-  border-radius: 14px;
+  border-radius: 16px;
   background: var(--surface);
   border: 1px solid var(--border);
   border-left: 3px solid var(--primary);
@@ -1892,6 +1915,54 @@ a.mini-btn:hover {
   stroke-width: 1.9;
   stroke-linecap: round;
   stroke-linejoin: round;
+}
+
+/* Every button that carries an icon centres it. Declared once, in one place,
+   rather than remembering to add three lines to each new button — which is how
+   the download button ended up with its glyph sitting off-centre. */
+button:has(.icon),
+a:has(.icon),
+.header-icon-btn,
+.rail-btn,
+.call-btn,
+.focus-ctl,
+.back-btn,
+.msg-menu-btn,
+.file-download-btn,
+.reply-cancel,
+.alert-close,
+.member-remove,
+.viewer-bar button,
+#file-btn,
+#sticker-btn,
+#location-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  line-height: 1;
+}
+
+/* Icon buttons hold only a glyph, so they need no gap eating into the circle */
+.header-icon-btn,
+.rail-btn,
+.call-btn,
+.back-btn,
+.msg-menu-btn,
+.file-download-btn,
+.reply-cancel,
+.alert-close,
+#file-btn,
+#sticker-btn,
+#location-btn {
+  gap: 0;
+}
+
+/* The icon slots are plain spans; make them lay out as the glyph itself */
+[data-icon] {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
 }
 
 /* Buttons that mix an icon with a label */
@@ -2013,7 +2084,7 @@ a.mini-btn:hover {
   align-items: center;
   gap: 6px;
   padding: 22px 12px;
-  border-radius: 16px;
+  border-radius: 18px;
   background: var(--surface-2);
   color: var(--text);
   border: 2px solid transparent;
@@ -2162,7 +2233,7 @@ body.focus-mode #fx-canvas {
   align-items: center;
   gap: 4px;
   padding: 2px 8px;
-  border-radius: 12px;
+  border-radius: 14px;
   background: rgba(0, 0, 0, 0.28);
   border: 1px solid transparent;
   color: var(--text);
@@ -2206,7 +2277,7 @@ body.focus-mode #fx-canvas {
   display: flex;
   gap: 2px;
   padding: 6px;
-  border-radius: 26px;
+  border-radius: 30px;
   background: var(--surface);
   border: 1px solid var(--border);
   box-shadow: 0 14px 40px rgba(0, 0, 0, 0.55);
@@ -2297,7 +2368,7 @@ body.focus-mode #fx-canvas {
   text-align: left;
   padding: 6px 10px;
   margin-bottom: 6px;
-  border-radius: 8px;
+  border-radius: 10px;
   border-left: 3px solid var(--primary);
   background: rgba(0, 0, 0, 0.24);
   color: var(--text);
@@ -2432,7 +2503,7 @@ body.focus-mode #fx-canvas {
 }
 
 .rail-folder .folder-img {
-  border-radius: 6px;
+  border-radius: 8px;
   object-fit: cover;
   display: block;
 }
@@ -2448,7 +2519,7 @@ body.focus-mode #fx-canvas {
   width: 100%;
   aspect-ratio: 1;
   padding: 0;
-  border-radius: 10px;
+  border-radius: 12px;
   background: var(--surface-2);
   color: var(--text);
   border: 2px solid transparent;
@@ -2517,7 +2588,7 @@ body.focus-mode #fx-canvas {
   max-height: 340px;
   overflow-y: auto;
   padding: 12px;
-  border-radius: 18px;
+  border-radius: 22px;
   background: var(--surface);
   border: 1px solid var(--border);
   box-shadow: 0 18px 50px rgba(0, 0, 0, 0.55);
@@ -2540,7 +2611,7 @@ body.focus-mode #fx-canvas {
 .sticker-cell {
   width: 100%;
   padding: 4px;
-  border-radius: 14px;
+  border-radius: 16px;
   background: none;
   display: flex;
   align-items: center;
@@ -2559,7 +2630,7 @@ body.focus-mode #fx-canvas {
   display: block;
   max-width: 100%;
   height: auto;
-  border-radius: 16px;
+  border-radius: 18px;
 }
 
 /* Your own sticker images keep their transparency — no card behind them */
@@ -2612,7 +2683,7 @@ body.focus-mode #fx-canvas {
 /* ---- Progressive image loading ---- */
 .image-frame {
   margin-top: 6px;
-  border-radius: 12px;
+  border-radius: 14px;
   overflow: hidden;
   position: relative;
 }
@@ -2692,7 +2763,7 @@ body.focus-mode #fx-canvas {
   max-width: 34vw;
   aspect-ratio: 3 / 4;
   object-fit: cover;
-  border-radius: 16px;
+  border-radius: 18px;
   border: 2px solid rgba(255, 255, 255, 0.22);
   box-shadow: 0 12px 34px rgba(0, 0, 0, 0.55);
   background: #15112a;
@@ -2708,7 +2779,7 @@ body.focus-mode #fx-canvas {
   gap: 10px;
   text-align: center;
   padding: 18px 24px;
-  border-radius: 22px;
+  border-radius: 26px;
 }
 
 /* Over live video the name needs a scrim to stay readable */
@@ -2820,7 +2891,7 @@ body.focus-mode #fx-canvas {
   align-items: center;
   gap: 10px;
   padding: 10px 12px;
-  border-radius: 12px;
+  border-radius: 14px;
   background: rgba(0, 0, 0, 0.2);
   cursor: pointer;
   min-width: 200px;
@@ -2863,7 +2934,7 @@ body.focus-mode #fx-canvas {
 .map-canvas {
   width: 100%;
   height: 320px;
-  border-radius: 14px;
+  border-radius: 16px;
   overflow: hidden;
   margin-bottom: 10px;
   background: var(--surface-2);
@@ -2938,7 +3009,7 @@ body.focus-mode #fx-canvas {
     flex-shrink: 0;
     width: 38px;
     height: 38px;
-    border-radius: 11px;
+    border-radius: 12px;
   }
 
   .nav-rail .rail-avatar {
@@ -3016,7 +3087,7 @@ body.focus-mode #fx-canvas {
   .reaction-picker {
     flex-wrap: wrap;
     justify-content: center;
-    border-radius: 18px;
+    border-radius: 22px;
   }
 
   .modal-content {

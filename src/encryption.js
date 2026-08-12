@@ -55,12 +55,18 @@ export async function idbDelKey(id) {
   }
 }
 
-// Ensure this user's keypair is ready in memory. With a password: generate on
-// first use, or recover from the server blob. Without a password (session
-// restore): succeed only if the private key is cached locally, else return false
-// so the caller can prompt to unlock.
+// Ensure this user's keypair is ready in memory.
+//
+// Returns a status rather than a bare boolean, because "the password was
+// wrong" and "we couldn't create your keys" need different words in front of
+// the user — conflating them is what made a correct password look rejected:
+//   "ready"        · keys are in memory, encryption works
+//   "needs-unlock" · keys exist on the server but not on this device
+//   "wrong-password"
+//   "setup-failed" · couldn't create or store keys
+//   "unsupported"  · this browser has no Web Crypto
 export async function ensureUserKeys(password) {
-  if (!window.PanaloCrypto || !window.PanaloCrypto.isSupported()) return false;
+  if (!window.PanaloCrypto || !window.PanaloCrypto.isSupported()) return "unsupported";
 
   const [{ data: keyRow }, { data: profileRow }] = await Promise.all([
     supabaseClient.from("user_keys").select("enc_private_key, key_salt, key_iv").eq("user_id", state.currentUser.id).maybeSingle(),
@@ -74,40 +80,61 @@ export async function ensureUserKeys(password) {
     const cached = await idbGetKey(state.currentUser.id);
     if (cached) {
       state.myPrivateKey = cached;
-      return true;
+      return "ready";
     }
-    if (!password) return false; // needs the user to unlock on this device
+    if (!password) return "needs-unlock";
     try {
       state.myPrivateKey = await window.PanaloCrypto.recoverPrivateKey(
         { encPrivateKey: keyRow.enc_private_key, keySalt: keyRow.key_salt, keyIv: keyRow.key_iv },
         password
       );
       await idbSetKey(state.currentUser.id, state.myPrivateKey);
-      return true;
+      return "ready";
     } catch {
-      return false; // wrong password
+      return "wrong-password";
     }
   }
 
   // First time for this user — needs the password to protect the new private key.
-  if (!password) return false;
+  if (!password) return "needs-unlock";
   try {
+    // The profile row must exist first: user_keys.user_id references it, and an
+    // UPDATE against a missing row silently matches nothing. Getting this order
+    // wrong left brand-new accounts with no keys at all — so encryption stayed
+    // off for them and the unlock screen blamed their password.
+    const username = state.currentUser.user_metadata?.username || state.currentUser.email?.split("@")[0] || "user";
+    const { error: profileError } = await supabaseClient
+      .from("profiles")
+      .upsert({ id: state.currentUser.id, username }, { onConflict: "id" });
+    if (profileError) throw profileError;
+
     const kp = await window.PanaloCrypto.generateUserKeypair();
     state.myPublicKeyB64 = await window.PanaloCrypto.exportPublicKey(kp.publicKey);
     const stored = await window.PanaloCrypto.protectPrivateKey(kp.privateKey, password);
-    await supabaseClient.from("profiles").update({ public_key: state.myPublicKeyB64 }).eq("id", state.currentUser.id);
-    await supabaseClient.from("user_keys").upsert({
+
+    // .select() so a write that matched no rows is detectable instead of silent.
+    const { data: updated, error: pubError } = await supabaseClient
+      .from("profiles")
+      .update({ public_key: state.myPublicKeyB64 })
+      .eq("id", state.currentUser.id)
+      .select("id");
+    if (pubError) throw pubError;
+    if (!updated || !updated.length) throw new Error("public key was not saved");
+
+    const { error: keyError } = await supabaseClient.from("user_keys").upsert({
       user_id: state.currentUser.id,
       enc_private_key: stored.encPrivateKey,
       key_salt: stored.keySalt,
       key_iv: stored.keyIv,
     });
+    if (keyError) throw keyError;
+
     state.myPrivateKey = kp.privateKey;
     await idbSetKey(state.currentUser.id, state.myPrivateKey);
-    return true;
+    return "ready";
   } catch (e) {
     console.error("Key setup failed:", e);
-    return false;
+    return "setup-failed";
   }
 }
 

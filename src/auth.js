@@ -36,6 +36,18 @@ function setAuthMessage(text, ok = false) {
   authMessage.textContent = text;
 }
 
+// Encryption is meant to be invisible when it works — but silence when it
+// fails is how a chat ends up unencrypted without anyone noticing.
+function reportKeyStatus(status) {
+  if (status === "ready") return true;
+  if (status === "unsupported") {
+    showToast("This browser can't encrypt messages — chats will be unencrypted.", "");
+  } else if (status === "setup-failed") {
+    showToast("Couldn't set up your encryption keys. Messages won't be encrypted until this is fixed.");
+  }
+  return false;
+}
+
 // ---- App bootstrap ----
 async function initApp(session) {
   state.currentUser = session.user;
@@ -117,7 +129,7 @@ export function initAuth() {
 
       if (data.session) {
         state.currentUser = data.session.user;
-        await ensureUserKeys(password);
+        reportKeyStatus(await ensureUserKeys(password));
         initApp(data.session);
         return;
       }
@@ -154,7 +166,7 @@ export function initAuth() {
       }
       if (data.session) {
         state.currentUser = data.session.user;
-        await ensureUserKeys(state.pendingSignupPassword);
+        reportKeyStatus(await ensureUserKeys(state.pendingSignupPassword));
         state.pendingSignupPassword = "";
         initApp(data.session);
       }
@@ -174,7 +186,7 @@ export function initAuth() {
         setAuthMessage(error.message);
       } else {
         state.currentUser = data.session.user;
-        await ensureUserKeys(password);
+        reportKeyStatus(await ensureUserKeys(password));
         initApp(data.session);
       }
     })
@@ -215,9 +227,12 @@ export function initAuth() {
     withBusy(unlockBtn, "Unlocking…", async () => {
       const password = document.getElementById("unlock-password").value;
       if (!password) return;
-      const ok = await ensureUserKeys(password);
-      if (!ok) {
-        showToast("Wrong password — could not unlock.");
+      const status = await ensureUserKeys(password);
+      if (status !== "ready") {
+        // Say what actually went wrong. Reporting every failure as a bad
+        // password is what made correct passwords look rejected.
+        if (status === "wrong-password") showToast("That password doesn't match — your messages stay locked.");
+        else reportKeyStatus(status);
         return;
       }
       document.getElementById("unlock-modal").classList.add("hidden");
@@ -237,8 +252,12 @@ export function initAuth() {
   supabaseClient.auth.getSession().then(async ({ data: { session } }) => {
     if (!session) return;
     state.currentUser = session.user;
-    const ready = await ensureUserKeys(null);
-    if (ready) {
+    const status = await ensureUserKeys(null);
+    if (status === "ready") {
+      initApp(session);
+    } else if (status === "unsupported") {
+      // No Web Crypto here — asking for a password would achieve nothing.
+      reportKeyStatus(status);
       initApp(session);
     } else {
       showUnlockModal(session);
