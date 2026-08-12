@@ -33,6 +33,7 @@ import {
 } from "./receipts.js";
 import { searchMessages, invalidateSearchIndex } from "./search.js";
 import { parseSticker, stickerSvg, stickerImg, describeText, initStickerPicker } from "./stickers.js";
+import { getMemories, isDismissed as isMemoryDismissed, dismiss as dismissMemory } from "./memories.js";
 import { initCalls, startCall, setCallLogger, parseCall, describeCall } from "./calls.js";
 import { parseLocation, locationCard, locationMarker, getCurrentPosition, initLocation, describeLocation } from "./location.js";
 import { openChatInfo, closeChatInfo, setChatInfoCallbacks, displayTitle, initChatInfo } from "./chatinfo.js";
@@ -475,6 +476,9 @@ async function openConversation(conv) {
   currentMemberIds = (parts || []).map((p) => p.user_id);
 
   await fetchMessages();
+  // "On this day" — fired after messages render, before subscribing, so the
+  // banner appears above the historical thread rather than jumping in later.
+  renderMemoriesBanner(conv.id);
 
   // Everything on screen counts as read — locally and for the other side.
   markRead(conv.id);
@@ -484,6 +488,49 @@ async function openConversation(conv) {
   renderConversations();
   subscribeToMessages();
   subscribeReceipts(conv.id);
+}
+
+// Fire and forget: the banner appears if there's any anniversary data, stays
+// silent otherwise. Never blocks the chat from opening.
+async function renderMemoriesBanner(convId) {
+  if (isMemoryDismissed(convId)) return;
+  let groups = [];
+  try {
+    groups = await getMemories(convId, state.currentUser.id);
+  } catch {
+    return; // never let a memories query break a chat open
+  }
+  if (!groups.length) return;
+  // Guard against a race: the user opened another chat while we were querying.
+  if (convId !== state.currentConversationId) return;
+
+  const banner = el("div", { class: "memories-banner" }, [
+    el("button", {
+      class: "memories-close",
+      type: "button",
+      "aria-label": "Hide these memories for today",
+      onClick: () => {
+        dismissMemory(convId);
+        banner.remove();
+      },
+    }, [icon("close", 14)]),
+    el("div", { class: "memories-head" }, [
+      icon("sparkle", 15),
+      el("span", { class: "memories-title", text: "On this day" }),
+    ]),
+    ...groups.map((g) =>
+      el("div", { class: "memory-group" }, [
+        el("div", { class: "memory-when", text: g.label + (g.count > g.samples.length ? ` · ${g.count} messages` : "") }),
+        ...g.samples.map((s) =>
+          el("div", { class: `memory-line${s.mine ? " mine" : ""}` }, [
+            el("span", { class: "memory-who", text: s.mine ? "You" : (s.username || "?") + ":" }),
+            el("span", { class: "memory-text", text: " " + (s.text || "…") }),
+          ])
+        ),
+      ])
+    ),
+  ]);
+  messagesList.insertBefore(banner, messagesList.firstChild);
 }
 
 // Find an existing 1:1 conversation shared with `targetUserId`, or null.

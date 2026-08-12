@@ -607,6 +607,86 @@ services that would leak user content.
 
 ---
 
+## Phase 10 — Innovation layer (post-parity differentiators)
+
+**Goal:** the features that make PANALO *not just another chat app.* Each solves a
+real problem that WhatsApp/Telegram/iMessage ignore, and each fits the app's
+existing architecture (Supabase realtime + client-side crypto, no server code,
+no AI). Built and shipped **one at a time**, in order of impact-per-hour.
+
+**Effort: ranges from S (a day) to L (a week).** Depends on: all prior phases.
+
+### Sub-phases, in build order
+
+**10.1 — On This Day memories.** Chat surfaces the messages you exchanged with
+this person on this date in previous years/months. Free win: no schema, no
+server logic. `S`
+
+**10.2 — Snooze a message.** Long-press → "remind me at 6pm." The chat re-marks
+it unread and bumps it back to the top of the list then. Real solve for reply
+guilt. `S`
+
+**10.3 — Timezone whisper.** When you type to someone whose local time is
+between midnight and 6am, a small hint asks "they're probably asleep — send
+anyway?" No new APIs, uses timezone data already on the device. `S`
+
+**10.4 — Time Capsule messages.** Seal a message until a future date. "Open on
+your 18th birthday." Adds `unlock_at` to messages; the client hides the row
+until the server clock passes it. `M`
+
+**10.5 — Chat Rewind.** End-of-year / on-demand story reel of a friendship:
+first message, most-reacted, most-used emoji, longest gap. Pure client-side
+stats over your own chat history. Shareable image. `M`
+
+**10.6 — Doodle reply.** Finger-scribble instead of a sticker. Canvas-drawn PNG
+sent through the existing file pipeline. Fresh, expressive, Gen-Z bait. `S`
+
+**10.7 — Silent typing bar.** A shared line at the bottom of a chat where
+anyone can type but not send — everyone sees the text as it's being written,
+then it vanishes. Ephemeral by design. Genuinely new. Uses realtime broadcast.
+`M`
+
+**10.8 — Co-listen.** Send a YouTube/Spotify link → "listen together" → both
+play in sync, both see each other's reactions live. Uses realtime broadcast for
+the sync ticks. `M`
+
+**10.9 — Anonymous question box.** Group-chat mode where anyone can drop a
+question anonymously (identity known only to the app, not to other members).
+Enables shy folks, awkward asks, honest feedback within a *trusted* circle —
+the difference from NGL is that the sender is a real, verified account, just
+hidden from readers. Schema addition. `M`
+
+**10.10 — Study Room.** A chat mode with a shared Pomodoro timer and soft
+silhouettes of who else is "here"; typing shows up as a whisper indicator
+instead of a sent message. For students. Uses existing realtime presence. `M`
+
+**10.11 — Split-the-bill inline.** "₹1,240 for pizza, 4 of us" → each person
+sees their share, taps to open UPI, message updates live as people mark paid.
+Killer India feature, no chat app has it native. Schema addition. `L`
+
+**10.12 — Panic PIN (duress mode).** A second PIN opens PANALO into a fake set
+of chats — for airport border control, coercive relationships, controlling
+parents. Extends the existing 3-PIN system. Design-sensitive: needs careful
+UX so the fake mode is *plausibly the real one.* `L`
+
+**10.13 — Silent SOS.** With mutual opt-in, one designated friend can send an
+alert that bypasses your device's DND/silent mode and includes your location.
+Real safety value; needs Web Push (which itself needs a small push endpoint —
+first thing this phase needs that isn't just Supabase). `L`
+
+**10.14 — Per-message screenshot fade.** Mark a specific message "no
+screenshots"; the reader sees it with an animated watermark carrying their
+username. Prevention isn't possible in the browser; the goal is making
+screenshots socially costly. `S`
+
+### Acceptance criteria for each
+
+Ships one at a time. Each has: a testable behaviour, graceful degradation if
+its optional DB column/table isn't there yet, and a working demo path on the
+deployed site.
+
+---
+
 ## Sequencing summary
 
 ```
