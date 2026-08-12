@@ -27,6 +27,7 @@ import {
   setReceiptListener, loadMyReadMarkers,
 } from "./receipts.js";
 import { searchMessages, invalidateSearchIndex } from "./search.js";
+import { parseSticker, stickerMarker, stickerSvg, describeText, initStickerPicker } from "./stickers.js";
 import { openChatInfo, closeChatInfo, setChatInfoCallbacks, displayTitle, initChatInfo } from "./chatinfo.js";
 
 // Message rows currently on screen (id → row) — powers the actions menu.
@@ -374,7 +375,7 @@ function renderConversationItem(conv) {
     messagePlaintext(last).then((text) => {
       const mine = last.user_id === state.currentUser.id;
       const who = mine ? "You: " : isGroup ? `${last.username || "?"}: ` : "";
-      previewEl.textContent = who + text;
+      previewEl.textContent = who + describeText(text);
     });
   }
 
@@ -788,14 +789,20 @@ function renderMessage(msg, prepend = false) {
   if (msg.content) {
     const textEl = el("div", { class: "message-text", text: msg.iv ? "…" : msg.content });
     messageEl.append(textEl);
-    if (msg.iv) {
-      messagePlaintext(msg).then((plaintext) => {
+    // A sticker arrives as a marker in the text; swap it for the artwork.
+    const showText = (plaintext) => {
+      msg._plain = plaintext;
+      const sticker = parseSticker(plaintext);
+      if (sticker) {
+        textEl.innerHTML = "";
+        textEl.append(stickerSvg(sticker, 132));
+        messageEl.classList.add("sticker-message");
+      } else {
         textEl.textContent = plaintext;
-        msg._plain = plaintext; // cached for the edit flow
-      });
-    } else {
-      msg._plain = msg.content;
-    }
+      }
+    };
+    if (msg.iv) messagePlaintext(msg).then(showText);
+    else showText(msg.content);
   }
 
   const fileMeta = msg._localFileMeta || parseFileMeta(msg.file_url);
@@ -804,7 +811,24 @@ function renderMessage(msg, prepend = false) {
   } else {
     const imageUrl = msg._localPreview || safeImageUrl(msg.file_url);
     if (imageUrl) {
-      messageEl.append(el("img", { class: "chat-image", src: imageUrl, alt: "Shared image", loading: "lazy" }));
+      // Shimmering frame holds the space until the bytes land, so a slow
+      // connection can't shove the rest of the conversation around.
+      const frame = el("div", { class: "image-frame loading" });
+      const img = el("img", {
+        class: "chat-image",
+        src: imageUrl,
+        alt: "Shared image",
+        loading: "lazy",
+        decoding: "async",
+      });
+      const reveal = () => frame.classList.remove("loading");
+      img.addEventListener("load", reveal);
+      img.addEventListener("error", reveal);
+      if (img.complete) reveal();
+      // Never let a placeholder outlive the thing it stands in for.
+      setTimeout(reveal, 10000);
+      frame.append(img);
+      messageEl.append(frame);
     }
   }
 
@@ -1779,6 +1803,16 @@ export function initChatUI() {
   messageForm.addEventListener("submit", (e) => {
     e.preventDefault();
     handleSend();
+  });
+
+  // Stickers: one tap sends the card as an (encrypted) marker message.
+  initStickerPicker((id) => {
+    if (!state.currentConversationId) {
+      showToast("Open a chat first.");
+      return;
+    }
+    sendMessage(stickerMarker(id), null, state.currentConversationId);
+    scrollToBottom();
   });
 
   // Quick-message bar: one tap sends a preset greeting/emoji.

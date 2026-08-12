@@ -137,6 +137,11 @@
           <button type="button" class="quick-btn" data-msg="Thank you! 🙏">Thank you</button>
         </div>
 
+        <div id="sticker-panel" class="sticker-panel hidden" role="dialog" aria-label="Stickers">
+          <div id="sticker-tabs" class="chat-filters"></div>
+          <div id="sticker-grid" class="sticker-grid"></div>
+        </div>
+
         <div id="reply-bar" class="reply-bar hidden">
           <span class="reply-bar-icon" data-icon="reply" data-icon-size="16"></span>
           <div class="reply-bar-body">
@@ -149,6 +154,7 @@
         <form id="message-form">
           <input type="file" id="file-input" class="hidden" aria-label="Attach a file" />
           <button type="button" id="file-btn" title="Attach a file (up to 50 MB)" aria-label="Attach a file"><span data-icon="clip"></span></button>
+          <button type="button" id="sticker-btn" title="Stickers &amp; greetings" aria-label="Stickers and greetings"><span data-icon="smile"></span></button>
 
           <input type="text" id="message-input" placeholder="Type a message..." autocomplete="off" aria-label="Type a message" />
           <button type="submit" id="send-btn" aria-label="Send"><span data-icon="send" data-icon-size="17"></span><span class="send-label">Send</span></button>

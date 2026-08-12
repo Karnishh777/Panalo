@@ -12,6 +12,7 @@ import { supabaseClient } from "./client.js";
 import { state } from "./state.js";
 import { el, showToast } from "./util.js";
 import { messagePlaintext } from "./encryption.js";
+import { describeText } from "./stickers.js";
 
 const MUTED_KEY = "panalo.muted";
 let channel = null;
@@ -207,7 +208,9 @@ export async function sendTestAlert() {
 
 // ---- Realtime inbox ----
 async function alertFor(msg) {
-  const body = msg.file_url ? "📎 Sent an attachment" : (await messagePlaintext(msg)) || "New message";
+  const body = msg.file_url
+    ? "📎 Sent an attachment"
+    : describeText(await messagePlaintext(msg)) || "New message";
   const title = msg.username || "New message";
   showBanner(title, body, msg.conversation_id);
   playChime();
