@@ -1411,6 +1411,29 @@ a:focus-visible {
   flex-shrink: 0;
 }
 
+/* The base button styles only match <button>, so links styled as buttons
+   (e.g. "Open in maps") need the same treatment explicitly. */
+a.mini-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  border: none;
+  background: var(--grad);
+  color: var(--on-primary);
+  font-weight: 700;
+  text-decoration: none;
+  cursor: pointer;
+  transition: transform 0.15s, box-shadow 0.15s;
+}
+
+a.mini-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 20px rgba(108, 92, 231, 0.4);
+  color: var(--on-primary);
+  background: var(--grad);
+}
+
 .info-bio-view {
   color: var(--text-muted);
   font-size: 14px;
@@ -2531,11 +2554,18 @@ body.focus-mode #fx-canvas {
   box-shadow: none;
 }
 
-.sticker-svg {
+.sticker-svg,
+.sticker-img {
   display: block;
   max-width: 100%;
   height: auto;
   border-radius: 16px;
+}
+
+/* Your own sticker images keep their transparency — no card behind them */
+.sticker-img {
+  object-fit: contain;
+  background: none;
 }
 
 /* A sticker is the message — no bubble around it */
@@ -2780,6 +2810,92 @@ body.focus-mode #fx-canvas {
   .call-avatar {
     animation: none;
   }
+}
+
+/* ============================================================
+   Location sharing
+   ============================================================ */
+.location-card {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  border-radius: 12px;
+  background: rgba(0, 0, 0, 0.2);
+  cursor: pointer;
+  min-width: 200px;
+  transition: background 0.15s;
+}
+
+.location-card:hover {
+  background: rgba(0, 0, 0, 0.3);
+}
+
+.location-pin {
+  display: flex;
+  color: var(--primary);
+  flex-shrink: 0;
+}
+
+.message.my-message .location-pin {
+  color: #fff;
+}
+
+.location-title {
+  font-size: 13.5px;
+  font-weight: 600;
+}
+
+.location-coords {
+  font-size: 11.5px;
+  color: var(--text-faint);
+  font-variant-numeric: tabular-nums;
+}
+
+.message.my-message .location-coords {
+  color: rgba(255, 255, 255, 0.75);
+}
+
+.map-content {
+  max-width: 560px;
+}
+
+.map-canvas {
+  width: 100%;
+  height: 320px;
+  border-radius: 14px;
+  overflow: hidden;
+  margin-bottom: 10px;
+  background: var(--surface-2);
+}
+
+/* Leaflet paints its own controls; keep them legible on the dark surface */
+.map-canvas .leaflet-control-attribution {
+  background: rgba(0, 0, 0, 0.6);
+  color: var(--text-muted);
+}
+
+.map-canvas .leaflet-control-attribution a {
+  color: var(--primary);
+}
+
+#location-btn {
+  background: var(--surface-2);
+  color: var(--text);
+  padding: 0;
+  border-radius: 50%;
+  width: 44px;
+  height: 44px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+#location-btn:hover {
+  background: var(--surface-3);
+  transform: none;
+  box-shadow: none;
 }
 
 /* ---- Responsive: phones & portrait tablets (single-pane, full-screen) ---- */

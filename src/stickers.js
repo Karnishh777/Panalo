@@ -11,21 +11,87 @@
 import { el } from "./util.js";
 
 const MARKER = /^\[\[sticker:([a-z0-9-]+)\]\]$/i;
+const IMG_MARKER = /^\[\[sticker-img:(.+)\]\]$/;
 
 export function stickerMarker(id) {
   return `[[sticker:${id}]]`;
 }
+export function imageStickerMarker(file) {
+  return `[[sticker-img:${encodeURI(file)}]]`;
+}
 
-// Returns the sticker for a message body, or null if it isn't a sticker.
+// Sticker paths arrive inside messages, so they're untrusted. Only accept a
+// plain relative path under stickers/ — no traversal, no absolute or remote
+// URLs, no protocol tricks.
+function safeStickerPath(raw) {
+  let path;
+  try {
+    path = decodeURI(raw).trim();
+  } catch {
+    return null;
+  }
+  if (!/^[A-Za-z0-9 _\-./]+$/.test(path)) return null;
+  if (path.includes("..") || path.startsWith("/") || path.startsWith(".")) return null;
+  if (!/\.(webp|png|gif|svg|jpe?g)$/i.test(path)) return null;
+  return path;
+}
+
+// Returns { kind: "vector", sticker } | { kind: "image", path, name } | null
 export function parseSticker(text) {
-  const m = typeof text === "string" ? text.trim().match(MARKER) : null;
-  return m ? STICKERS.find((s) => s.id === m[1]) || null : null;
+  if (typeof text !== "string") return null;
+  const trimmed = text.trim();
+
+  const vector = trimmed.match(MARKER);
+  if (vector) {
+    const sticker = STICKERS.find((s) => s.id === vector[1]);
+    return sticker ? { kind: "vector", sticker, name: sticker.name } : null;
+  }
+
+  const image = trimmed.match(IMG_MARKER);
+  if (image) {
+    const path = safeStickerPath(image[1]);
+    if (!path) return null;
+    const known = customStickers.find((s) => s.file === path);
+    return { kind: "image", path, name: known?.name || "Sticker" };
+  }
+  return null;
 }
 
 // What to show for a sticker in previews and notifications.
 export function describeText(text) {
-  const sticker = parseSticker(text);
-  return sticker ? `Sticker · ${sticker.name}` : text;
+  const found = parseSticker(text);
+  return found ? `Sticker · ${found.name}` : text;
+}
+
+// ---- Your own stickers (the stickers/ folder) ----
+// Static hosting can't list a directory, so the folder ships a manifest built
+// by tools/build-stickers.mjs. Missing or empty is fine — the built-in vector
+// cards always work on their own.
+let customStickers = [];
+
+export async function loadCustomStickers() {
+  try {
+    const res = await fetch("stickers/manifest.json", { cache: "no-cache" });
+    if (!res.ok) return [];
+    const data = await res.json();
+    customStickers = (data.stickers || [])
+      .map((s) => ({ ...s, file: safeStickerPath(s.file) }))
+      .filter((s) => s.file);
+  } catch {
+    customStickers = [];
+  }
+  return customStickers;
+}
+
+export function stickerImg(path, size = 120) {
+  return el("img", {
+    src: `stickers/${path}`,
+    class: "sticker-img",
+    alt: "Sticker",
+    loading: "lazy",
+    width: size,
+    height: size,
+  });
 }
 
 // Emblems are 24×24 stroke paths, scaled up onto the card.
@@ -156,14 +222,19 @@ export function stickerSvg(sticker, size = 120) {
 
 // ---- Picker ----
 // Built once, then shown/hidden. `onPick` receives the sticker id.
-export function initStickerPicker(onPick) {
+export async function initStickerPicker(onPick) {
   const panel = document.getElementById("sticker-panel");
   const tabs = document.getElementById("sticker-tabs");
   const grid = document.getElementById("sticker-grid");
-  let active = STICKER_CATEGORIES[0];
+
+  await loadCustomStickers();
+  const customCats = [...new Set(customStickers.map((s) => s.cat))];
+  const categories = [...STICKER_CATEGORIES, ...customCats];
+  let active = categories[0];
 
   function renderGrid() {
     grid.innerHTML = "";
+    // Built-in vector cards…
     STICKERS.filter((s) => s.cat === active).forEach((s) => {
       const btn = el("button", {
         class: "sticker-cell",
@@ -171,16 +242,31 @@ export function initStickerPicker(onPick) {
         title: s.name,
         "aria-label": s.name,
         onClick: () => {
-          onPick(s.id);
+          onPick(stickerMarker(s.id));
           panel.classList.add("hidden");
         },
       });
       btn.append(stickerSvg(s, 76));
       grid.append(btn);
     });
+    // …then anything from the stickers/ folder.
+    customStickers.filter((s) => s.cat === active).forEach((s) => {
+      const btn = el("button", {
+        class: "sticker-cell",
+        type: "button",
+        title: s.name,
+        "aria-label": s.name,
+        onClick: () => {
+          onPick(imageStickerMarker(s.file));
+          panel.classList.add("hidden");
+        },
+      });
+      btn.append(stickerImg(s.file, 76));
+      grid.append(btn);
+    });
   }
 
-  STICKER_CATEGORIES.forEach((cat) => {
+  categories.forEach((cat) => {
     const tab = el("button", {
       class: `filter-tab${cat === active ? " active" : ""}`,
       type: "button",

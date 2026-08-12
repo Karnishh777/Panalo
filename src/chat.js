@@ -27,8 +27,9 @@ import {
   setReceiptListener, loadMyReadMarkers,
 } from "./receipts.js";
 import { searchMessages, invalidateSearchIndex } from "./search.js";
-import { parseSticker, stickerMarker, stickerSvg, describeText, initStickerPicker } from "./stickers.js";
+import { parseSticker, stickerSvg, stickerImg, describeText, initStickerPicker } from "./stickers.js";
 import { initCalls, startCall } from "./calls.js";
+import { parseLocation, locationCard, locationMarker, getCurrentPosition, initLocation, describeLocation } from "./location.js";
 import { openChatInfo, closeChatInfo, setChatInfoCallbacks, displayTitle, initChatInfo } from "./chatinfo.js";
 
 // Message rows currently on screen (id → row) — powers the actions menu.
@@ -376,7 +377,7 @@ function renderConversationItem(conv) {
     messagePlaintext(last).then((text) => {
       const mine = last.user_id === state.currentUser.id;
       const who = mine ? "You: " : isGroup ? `${last.username || "?"}: ` : "";
-      previewEl.textContent = who + describeText(text);
+      previewEl.textContent = who + describeLocation(describeText(text));
     });
   }
 
@@ -797,11 +798,15 @@ function renderMessage(msg, prepend = false) {
     // A sticker arrives as a marker in the text; swap it for the artwork.
     const showText = (plaintext) => {
       msg._plain = plaintext;
-      const sticker = parseSticker(plaintext);
-      if (sticker) {
+      const found = parseSticker(plaintext);
+      const place = found ? null : parseLocation(plaintext);
+      if (found) {
         textEl.innerHTML = "";
-        textEl.append(stickerSvg(sticker, 132));
+        textEl.append(found.kind === "vector" ? stickerSvg(found.sticker, 132) : stickerImg(found.path, 132));
         messageEl.classList.add("sticker-message");
+      } else if (place) {
+        textEl.innerHTML = "";
+        textEl.append(locationCard(place));
       } else {
         textEl.textContent = plaintext;
       }
@@ -1820,13 +1825,29 @@ export function initChatUI() {
   document.getElementById("voice-call-btn").addEventListener("click", () => startCall(callPeer(), false));
   document.getElementById("video-call-btn").addEventListener("click", () => startCall(callPeer(), true));
 
+  // Location sharing (coordinates are encrypted like any other message).
+  initLocation();
+  const locationBtn = document.getElementById("location-btn");
+  locationBtn.addEventListener("click", () =>
+    withBusy(locationBtn, "…", async () => {
+      if (!state.currentConversationId) {
+        showToast("Open a chat first.");
+        return;
+      }
+      const pos = await getCurrentPosition();
+      if (!pos) return;
+      sendMessage(locationMarker(pos.lat, pos.lng), null, state.currentConversationId);
+      scrollToBottom();
+    })
+  );
+
   // Stickers: one tap sends the card as an (encrypted) marker message.
-  initStickerPicker((id) => {
+  initStickerPicker((marker) => {
     if (!state.currentConversationId) {
       showToast("Open a chat first.");
       return;
     }
-    sendMessage(stickerMarker(id), null, state.currentConversationId);
+    sendMessage(marker, null, state.currentConversationId);
     scrollToBottom();
   });
 

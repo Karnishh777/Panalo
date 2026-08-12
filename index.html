@@ -157,6 +157,7 @@
           <input type="file" id="file-input" class="hidden" aria-label="Attach a file" />
           <button type="button" id="file-btn" title="Attach a file (up to 50 MB)" aria-label="Attach a file"><span data-icon="clip"></span></button>
           <button type="button" id="sticker-btn" title="Stickers &amp; greetings" aria-label="Stickers and greetings"><span data-icon="smile"></span></button>
+          <button type="button" id="location-btn" title="Share your location" aria-label="Share your location"><span data-icon="pin"></span></button>
 
           <input type="text" id="message-input" placeholder="Type a message..." autocomplete="off" aria-label="Type a message" />
           <button type="submit" id="send-btn" aria-label="Send"><span data-icon="send" data-icon-size="17"></span><span class="send-label">Send</span></button>
@@ -452,6 +453,18 @@
       <button id="viewer-close" type="button" aria-label="Close image viewer"><span data-icon="close" data-icon-size="16"></span></button>
     </div>
     <img id="viewer-img" class="viewer-img" alt="Full-size image" />
+  </div>
+
+  <div id="map-modal" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="map-modal-title">
+    <div class="modal-content map-content">
+      <h3 id="map-modal-title">Location</h3>
+      <div id="map-canvas" class="map-canvas"></div>
+      <p id="map-coords" class="location-coords"></p>
+      <div class="modal-buttons">
+        <a id="map-open-external" class="mini-btn" href="#" target="_blank" rel="noopener noreferrer">Open in maps</a>
+        <button id="close-map-modal" class="secondary-btn">Close</button>
+      </div>
+    </div>
   </div>
 
   <div id="call-overlay" class="call-overlay hidden" role="dialog" aria-modal="true" aria-label="Call">

@@ -39,10 +39,24 @@ check and Lighthouse CI so regressions fail the build.
 
 ---
 
-## Open decisions (need your input)
+## Open decisions — status as of 2026-08-12
 
-These are genuine forks where the answer changes the work. I've given a recommendation
-for each.
+Five of the seven are now settled by what actually got built. **Two still need you,
+and both are the same kind of decision: they cost money.**
+
+| # | Decision | Status |
+|---|---|---|
+| 1 | Build tooling (Vite) | **Settled: stayed build-less.** 20 ES modules load natively; no bundler. Revisit only if load time regresses. |
+| 2 | Framework | **Settled: no framework.** Everything is vanilla + native Web APIs. |
+| 3 | Server layer | **Deferred, not blocking.** No Edge Function has been needed yet. Only becomes relevant for real OTP email (see #7 below / SETUP.md SMTP). |
+| 4 | Voice/video scope | **Settled: 1:1 shipped** (Phase 6). Group calls stay out of scope (needs an SFU). |
+| 5 | Sticker library hosting | **Settled: two sources, no hosting cost.** 24 built-in vector cards drawn in code, plus your own images in `stickers/` (see `stickers/README.md`). |
+| 6 | Grammar correction depth | **Still open — but free.** Phase 8 ships the deterministic layer only; full grammar checking would send text off-device, which the privacy principle forbids without self-hosting. |
+| 7 | Map tiles | **⚠️ NEEDS YOU (costs money at scale).** Currently OSM's public tiles — fine now, but their policy forbids production traffic. Swap `TILE_URL` in `src/location.js` for MapTiler/Stadia (both have free tiers) before this gets busy. |
+| — | **TURN for calls** | **⚠️ NEEDS YOU (costs money).** Calls use free public STUN only. Networks needing a relay (symmetric NAT, common on Indian mobile carriers) can't connect. See Phase 6. |
+
+**What that means practically:** nothing is blocked today. Both open items are
+"works now at your scale, needs a paid service before it's popular."
 
 1. **🔷 Build tooling.** The brief wants tree-shaking, lazy-loading, and compressed
    assets — none of which are practical with today's "load two files from a CDN"
@@ -466,9 +480,23 @@ here is a rewrite — it's hardening + polish + differentiation.
 
 ---
 
-## Phase 7 — Maps & location sharing
+## Phase 7 — Maps & location sharing  ✅ SHIPPED (2026-08-12)
 
 **Goal:** share location without a Google dependency.
+
+> **Shipped:** `src/location.js`. A 📍 button in the composer shares your current
+> position; coordinates travel inside an ordinary (encrypted) message, so the
+> server never sees them in the clear. Received locations render as a card that
+> opens a Leaflet + OpenStreetMap map, **loaded lazily on first open** so a normal
+> chat load pays nothing for it. "Open in maps" always works even if tiles fail.
+> Coordinates arriving in messages are validated (range-checked, junk and
+> injection rejected) rather than trusted.
+>
+> **Tile provider (decision #7) is the open item:** swap `TILE_URL` in
+> `src/location.js` before production traffic.
+>
+> **Not built:** live/continuous location sharing (a separate feature with real
+> battery and privacy implications).
 
 **Effort: S–M · Depends on: 🔷 tile-provider decision; Phase 3 (lazy chunk).**
 
