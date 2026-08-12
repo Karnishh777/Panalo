@@ -21,6 +21,7 @@ import { icon } from "./icons.js";
 import {
   isChatLocked, toggleChatLock, isChatUnlocked, markChatUnlocked,
   isChatHidden, toggleChatHidden, hiddenVisible, askPin, hasPin, setPin,
+  initHiddenShortcut, hiddenCount,
 } from "./lock.js";
 import {
   REACTION_EMOJIS, groupedReactions, loadReactions, toggleReaction,
@@ -421,9 +422,13 @@ function renderConversationItem(conv) {
 }
 
 async function openConversation(conv) {
-  // A locked chat asks for the PIN once per session before it opens.
+  // A locked chat asks for the chat-lock PIN once per session before it opens.
   if (!isChatUnlocked(conv.id)) {
-    const ok = await askPin({ title: "This chat is locked", subtitle: "Enter your PIN to open it" });
+    const ok = await askPin({
+      purpose: "chat",
+      title: "This chat is locked",
+      subtitle: "Enter your chat-lock PIN",
+    });
     if (!ok) return;
     markChatUnlocked(conv.id);
   }
@@ -1786,6 +1791,26 @@ export function initChatUI() {
   createGroupBtn.addEventListener("click", () => withBusy(createGroupBtn, "Creating…", createGroup));
 
   fileBtn.addEventListener("click", () => fileInput.click());
+
+  // Paste a screenshot straight into the chat. The clipboard hands us a File
+  // with no useful name, so it gets one, then it goes through the very same
+  // attach → preview → send path as a picked file.
+  document.addEventListener("paste", (e) => {
+    if (!state.currentConversationId) return;
+    const item = [...(e.clipboardData?.items || [])].find((i) => i.type.startsWith("image/"));
+    if (!item) return;
+    const blob = item.getAsFile();
+    if (!blob) return;
+    e.preventDefault();
+
+    const ext = (blob.type.split("/")[1] || "png").split("+")[0];
+    const named = new File([blob], `pasted-${Date.now()}.${ext}`, { type: blob.type });
+    const dt = new DataTransfer();
+    dt.items.add(named);
+    fileInput.files = dt.files;
+    fileInput.dispatchEvent(new Event("change"));
+    showToast("Image pasted — press Send.", "success");
+  });
   fileInput.addEventListener("change", () => {
     const file = fileInput.files[0];
     filePreview.innerHTML = "";
@@ -1972,8 +1997,15 @@ export function initChatUI() {
   setOpenChatListener(jumpToChat);
   // Same journey, but arriving from a service-worker notification click.
   document.addEventListener("panalo:open-chat", (e) => jumpToChat(e.detail.conversationId));
-  // Revealing or re-hiding chats in Settings redraws the list.
+  // Revealing or re-hiding chats redraws the list.
   document.addEventListener("panalo:refresh-chats", renderConversations);
+
+  // The hidden-chats gesture: ⌘/Ctrl+Shift+H, or a two-finger tap on a phone.
+  initHiddenShortcut((visible) => {
+    renderConversations();
+    if (visible) showToast(`${hiddenCount()} hidden chat(s) shown.`, "success");
+    else showToast("Hidden chats tucked away.", "");
+  });
 
   // Coming back to the tab marks the open chat as read.
   document.addEventListener("visibilitychange", () => {
@@ -2114,9 +2146,9 @@ export function initChatUI() {
     } else if (item.dataset.action === "lock" && conv) {
       // A lock is only a lock if there's a PIN behind it.
       (async () => {
-        if (!hasPin()) {
+        if (!hasPin("chat")) {
           const pin = window.prompt("Choose a 4–8 digit PIN for locking chats:");
-          if (!pin || !(await setPin(pin))) return;
+          if (!pin || !(await setPin("chat", pin))) return;
         }
         const locked = toggleChatLock(conv.id);
         if (!locked) markChatUnlocked(conv.id);

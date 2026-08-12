@@ -356,14 +356,18 @@
       <div class="settings-section">
         <span class="settings-label">Privacy &amp; lock</span>
         <label class="settings-toggle"><span>App lock (PIN)</span><input type="checkbox" id="setting-app-lock" class="switch" /></label>
-        <button id="change-pin-btn" class="mini-btn" type="button">Set / change PIN</button>
-        <label class="settings-toggle" style="margin-top:10px;"><span>Show hidden chats</span><input type="checkbox" id="setting-show-hidden" class="switch" /></label>
-        <p class="notify-status">Locks this device only — they don't change who can read messages on the server.</p>
+        <div class="info-actions" style="margin-top:8px;">
+          <button id="pin-app-btn" class="info-chip" type="button">App PIN</button>
+          <button id="pin-chat-btn" class="info-chip" type="button">Chat-lock PIN</button>
+          <button id="pin-hidden-btn" class="info-chip" type="button">Hidden-chats PIN</button>
+        </div>
+        <p class="notify-status">Three separate PINs, so one doesn't unlock the others. Hidden chats have no switch here on purpose — use the shortcut in <strong>About &amp; shortcuts</strong>. Locks this device only; they don't change who can read messages on the server.</p>
       </div>
 
       <div class="settings-section">
         <span class="settings-label">Account</span>
         <button id="change-password-btn" class="mini-btn" type="button"><span data-icon="lock" data-icon-size="15"></span>Change password</button>
+        <button id="about-btn" class="mini-btn" type="button" style="margin-top:8px;"><span data-icon="info" data-icon-size="15"></span>About &amp; shortcuts</button>
         <p class="notify-status">Your messages are unlocked with this password, so changing it re-protects your encryption key at the same time.</p>
       </div>
       </div>
@@ -471,6 +475,35 @@
       <button id="viewer-close" type="button" aria-label="Close image viewer"><span data-icon="close" data-icon-size="16"></span></button>
     </div>
     <img id="viewer-img" class="viewer-img" alt="Full-size image" />
+  </div>
+
+  <div id="about-modal" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="about-modal-title">
+    <div class="modal-content about-content">
+      <h3 id="about-modal-title">About Panalo</h3>
+      <div class="settings-body">
+        <p class="info-bio-view">Encrypted chat, built for people who like their apps to look good. Your messages are scrambled on your device before they're sent — the server only ever stores gibberish.</p>
+
+        <span class="settings-label" style="margin-top:18px;">Shortcuts</span>
+        <div class="shortcut-row"><span>Show / hide hidden chats</span><kbd id="about-hidden-shortcut">Ctrl + Shift + H</kbd></div>
+        <div class="shortcut-row"><span>Same, on a phone</span><kbd>Two-finger tap</kbd></div>
+        <div class="shortcut-row"><span>Paste a screenshot into a chat</span><kbd id="about-paste-shortcut">Ctrl + V</kbd></div>
+        <div class="shortcut-row"><span>Close any panel</span><kbd>Esc</kbd></div>
+        <div class="shortcut-row"><span>Send</span><kbd>Enter</kbd></div>
+
+        <span class="settings-label" style="margin-top:18px;">Good to know</span>
+        <ul class="about-list">
+          <li><strong>Lock a single chat</strong> from that chat's ⋮ menu — not here.</li>
+          <li><strong>Hide a chat</strong> from the same ⋮ menu. Hidden chats have no switch in Settings on purpose: a visible toggle would tell anyone holding your phone that there's something to find.</li>
+          <li><strong>Three separate PINs</strong> — app, chat lock, hidden chats — so one never unlocks the others.</li>
+          <li>PINs guard <em>this device</em>. What keeps messages private on the server is the encryption, which is always on.</li>
+          <li><strong>Calls</strong> work on most Wi-Fi. Some mobile networks block the connection type calls need.</li>
+        </ul>
+      </div>
+      <div class="modal-buttons">
+        <button id="replay-tour-btn" class="mini-btn" type="button">Replay the tour</button>
+        <button id="close-about-modal" class="secondary-btn">Close</button>
+      </div>
+    </div>
   </div>
 
   <div id="password-modal" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="password-modal-title">

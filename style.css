@@ -1940,22 +1940,27 @@ a.mini-btn:hover {
 /* Every button that carries an icon centres it. Declared once, in one place,
    rather than remembering to add three lines to each new button — which is how
    the download button ended up with its glyph sitting off-centre. */
-button:has(.icon),
-a:has(.icon),
-.header-icon-btn,
-.rail-btn,
-.call-btn,
-.focus-ctl,
-.back-btn,
-.msg-menu-btn,
-.file-download-btn,
-.reply-cancel,
-.alert-close,
-.member-remove,
-.viewer-bar button,
-#file-btn,
-#sticker-btn,
-#location-btn {
+/* :where() keeps this at zero specificity, so a rule that deliberately hides a
+   button (.back-btn on desktop, .focus-only outside focus mode) still wins.
+   Without that, this centring rule quietly un-hid them. */
+:where(
+  button:has(.icon),
+  a:has(.icon),
+  .header-icon-btn,
+  .rail-btn,
+  .call-btn,
+  .focus-ctl,
+  .back-btn,
+  .msg-menu-btn,
+  .file-download-btn,
+  .reply-cancel,
+  .alert-close,
+  .member-remove,
+  .viewer-bar button,
+  #file-btn,
+  #sticker-btn,
+  #location-btn
+) {
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -2993,6 +2998,176 @@ body.focus-mode #fx-canvas {
   background: var(--surface-3);
   transform: none;
   box-shadow: none;
+}
+
+/* ---- Welcome tour ---- */
+.tour-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 300;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  background: rgba(8, 5, 16, 0.78);
+  backdrop-filter: blur(10px);
+  animation: fadeIn 0.25s ease;
+}
+
+.tour-overlay.tour-out {
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.tour-card {
+  width: min(94vw, 420px);
+  padding: 34px 30px 24px;
+  border-radius: 26px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  box-shadow: 0 26px 70px rgba(0, 0, 0, 0.6);
+  text-align: center;
+  position: relative;
+}
+
+.tour-pop {
+  animation: tourPop 0.32s cubic-bezier(0.22, 1.2, 0.36, 1);
+}
+
+@keyframes tourPop {
+  from { opacity: 0; transform: translateY(10px) scale(0.97); }
+  to { opacity: 1; transform: none; }
+}
+
+.tour-icon {
+  width: 66px;
+  height: 66px;
+  margin: 0 auto 16px;
+  border-radius: 22px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--grad);
+  color: #fff;
+  box-shadow: 0 10px 30px rgba(108, 92, 231, 0.45);
+}
+
+.tour-title {
+  font-family: var(--font-display);
+  font-size: 23px;
+  margin-bottom: 10px;
+  color: var(--text);
+}
+
+.tour-body {
+  font-size: 14.5px;
+  line-height: 1.6;
+  color: var(--text-muted);
+  margin-bottom: 20px;
+}
+
+.tour-dots {
+  display: flex;
+  justify-content: center;
+  gap: 6px;
+  margin-bottom: 20px;
+}
+
+.tour-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--surface-3);
+  transition: width 0.2s, background 0.2s;
+}
+
+.tour-dot.on {
+  width: 20px;
+  border-radius: 4px;
+  background: var(--primary);
+}
+
+.tour-buttons {
+  display: flex;
+  gap: 10px;
+}
+
+.tour-buttons .tour-back {
+  flex: 0 0 92px;
+}
+
+.tour-next {
+  flex: 1;
+}
+
+.tour-skip {
+  width: auto;
+  margin: 12px auto 0;
+  padding: 4px 10px;
+  background: none;
+  color: var(--text-faint);
+  font-size: 12.5px;
+  font-weight: 500;
+}
+
+.tour-skip:hover {
+  background: none;
+  color: var(--text-muted);
+  transform: none;
+  box-shadow: none;
+}
+
+/* ---- About & shortcuts ---- */
+.about-content {
+  max-width: 520px;
+  display: flex;
+  flex-direction: column;
+  max-height: 86vh;
+  overflow: hidden;
+  padding-bottom: 0;
+}
+
+.shortcut-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 8px 0;
+  font-size: 14px;
+  color: var(--text);
+  border-bottom: 1px solid var(--border);
+}
+
+kbd {
+  font-family: 'JetBrains Mono', Consolas, monospace;
+  font-size: 11.5px;
+  padding: 4px 9px;
+  border-radius: 8px;
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  color: var(--text-muted);
+  white-space: nowrap;
+}
+
+.about-list {
+  margin: 0;
+  padding-left: 18px;
+  color: var(--text-muted);
+  font-size: 13.5px;
+  line-height: 1.65;
+}
+
+.about-list li {
+  margin-bottom: 7px;
+}
+
+.about-list strong {
+  color: var(--text);
 }
 
 /* ---- PIN / lock ---- */

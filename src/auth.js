@@ -9,6 +9,7 @@ import { startNotifications, stopNotifications } from "./notifications.js";
 import { stopReactions } from "./reactions.js";
 import { stopReceipts } from "./receipts.js";
 import { startCalls, stopCalls } from "./calls.js";
+import { startTour } from "./tour.js";
 import { refreshMyProfile } from "./profile.js";
 import { MIN_PASSWORD_LENGTH, OTP_LENGTH } from "./config.js";
 
@@ -131,6 +132,7 @@ export function initAuth() {
         state.currentUser = data.session.user;
         reportKeyStatus(await ensureUserKeys(password));
         initApp(data.session);
+        startTour(); // brand-new account: show the welcome tour once
         return;
       }
 
@@ -169,6 +171,7 @@ export function initAuth() {
         reportKeyStatus(await ensureUserKeys(state.pendingSignupPassword));
         state.pendingSignupPassword = "";
         initApp(data.session);
+        startTour(); // account verified for the first time
       }
     })
   );

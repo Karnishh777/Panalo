@@ -11,7 +11,8 @@ import {
   notificationPermission,
 } from "./notifications.js";
 import { applyEffect } from "./effects.js";
-import { hasPin, setPin, verifyPin, appLockEnabled, setAppLock, askPin, setHiddenVisible, hiddenCount } from "./lock.js";
+import { hasPin, setPin, appLockEnabled, setAppLock, askPin, SHORTCUT_LABEL } from "./lock.js";
+import { startTour } from "./tour.js";
 import { supabaseClient } from "./client.js";
 import { state } from "./state.js";
 import { rewrapPrivateKey } from "./encryption.js";
@@ -441,27 +442,36 @@ export function initSettings() {
 
   // ---- Privacy & lock ----
   const appLockToggle = document.getElementById("setting-app-lock");
-  const showHiddenToggle = document.getElementById("setting-show-hidden");
   appLockToggle.checked = appLockEnabled();
 
-  async function ensurePin() {
-    if (hasPin()) return true;
-    const pin = window.prompt("Choose a 4–8 digit PIN:");
+  // Setting or changing one of the three PINs. Changing an existing one asks
+  // for the old one first.
+  async function managePin(purpose, label) {
+    if (hasPin(purpose) && !(await askPin({ purpose, title: `Change ${label}`, subtitle: "Enter your current PIN first" }))) {
+      return false;
+    }
+    const pin = window.prompt(`New 4–8 digit ${label}:`);
     if (!pin) return false;
-    return setPin(pin);
+    if (!(await setPin(purpose, pin))) return false;
+    showToast(`${label[0].toUpperCase() + label.slice(1)} saved.`, "success");
+    return true;
   }
+
+  document.getElementById("pin-app-btn").addEventListener("click", () => managePin("app", "app PIN"));
+  document.getElementById("pin-chat-btn").addEventListener("click", () => managePin("chat", "chat-lock PIN"));
+  document.getElementById("pin-hidden-btn").addEventListener("click", () => managePin("hidden", "hidden-chats PIN"));
 
   appLockToggle.addEventListener("change", async () => {
     if (appLockToggle.checked) {
-      if (!(await ensurePin())) {
+      if (!hasPin("app") && !(await managePin("app", "app PIN"))) {
         appLockToggle.checked = false;
         return;
       }
       setAppLock(true);
-      showToast("App lock is on — you'll be asked for your PIN when you open Panalo.", "success");
+      showToast("App lock is on — Panalo will ask for your PIN when it opens.", "success");
     } else {
       // Turning protection off should itself be protected.
-      if (hasPin() && !(await askPin({ title: "Turn off app lock", subtitle: "Enter your PIN to confirm" }))) {
+      if (hasPin("app") && !(await askPin({ purpose: "app", title: "Turn off app lock", subtitle: "Enter your app PIN" }))) {
         appLockToggle.checked = true;
         return;
       }
@@ -469,25 +479,17 @@ export function initSettings() {
     }
   });
 
-  document.getElementById("change-pin-btn").addEventListener("click", async () => {
-    if (hasPin() && !(await askPin({ title: "Change PIN", subtitle: "Enter your current PIN first" }))) return;
-    const pin = window.prompt("New 4–8 digit PIN:");
-    if (!pin) return;
-    if (await setPin(pin)) showToast("PIN updated.", "success");
-  });
-
-  showHiddenToggle.addEventListener("change", async () => {
-    if (showHiddenToggle.checked) {
-      if (hasPin() && !(await askPin({ title: "Show hidden chats", subtitle: "Enter your PIN" }))) {
-        showHiddenToggle.checked = false;
-        return;
-      }
-      setHiddenVisible(true);
-      showToast(`${hiddenCount()} hidden chat(s) now visible.`, "success");
-    } else {
-      setHiddenVisible(false);
-    }
-    document.dispatchEvent(new CustomEvent("panalo:refresh-chats"));
+  // ---- About & shortcuts ----
+  const aboutModal = document.getElementById("about-modal");
+  const isMac = navigator.platform?.toLowerCase().includes("mac");
+  document.getElementById("about-hidden-shortcut").textContent = SHORTCUT_LABEL;
+  document.getElementById("about-paste-shortcut").textContent = isMac ? "⌘ + V" : "Ctrl + V";
+  document.getElementById("about-btn").addEventListener("click", () => aboutModal.classList.remove("hidden"));
+  document.getElementById("close-about-modal").addEventListener("click", () => aboutModal.classList.add("hidden"));
+  document.getElementById("replay-tour-btn").addEventListener("click", () => {
+    aboutModal.classList.add("hidden");
+    document.getElementById("settings-modal").classList.add("hidden");
+    startTour({ force: true });
   });
   cursorToggle.addEventListener("change", () => {
     settings.cursorGlow = cursorToggle.checked;

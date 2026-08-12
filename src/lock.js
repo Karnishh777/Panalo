@@ -10,7 +10,10 @@
 // doesn't reveal it.
 import { showToast } from "./util.js";
 
-const PIN_KEY = "panalo.lock.pin";       // { salt, hash }
+// Three independent PINs, so unlocking the app doesn't reveal hidden chats and
+// knowing one PIN doesn't grant the others.
+export const PIN_PURPOSES = ["app", "chat", "hidden"];
+const pinKey = (purpose) => `panalo.lock.pin.${purpose}`;
 const APP_LOCK_KEY = "panalo.lock.app";  // "1" when the app itself is locked
 const LOCKED_CHATS_KEY = "panalo.lock.chats";
 const HIDDEN_CHATS_KEY = "panalo.lock.hidden";
@@ -38,28 +41,32 @@ async function hashPin(pin, salt) {
   return toHex(await crypto.subtle.digest("SHA-256", data));
 }
 
-export function hasPin() {
-  return !!read(PIN_KEY, null);
+export function hasPin(purpose = "app") {
+  return !!read(pinKey(purpose), null);
 }
 
-export async function setPin(pin) {
-  if (!/^\d{4,8}$/.test(pin)) {
+export async function setPin(purpose, pin) {
+  if (!/^\d{4,8}$/.test(pin || "")) {
     showToast("Use a PIN of 4–8 digits.");
     return false;
   }
   const salt = toHex(crypto.getRandomValues(new Uint8Array(8)));
-  write(PIN_KEY, { salt, hash: await hashPin(pin, salt) });
+  write(pinKey(purpose), { salt, hash: await hashPin(pin, salt) });
   return true;
 }
 
-export async function verifyPin(pin) {
-  const stored = read(PIN_KEY, null);
+export async function verifyPin(purpose, pin) {
+  const stored = read(pinKey(purpose), null);
   if (!stored) return false;
   return (await hashPin(pin, stored.salt)) === stored.hash;
 }
 
-export function clearPin() {
-  localStorage.removeItem(PIN_KEY);
+export function clearPin(purpose) {
+  if (purpose) {
+    localStorage.removeItem(pinKey(purpose));
+    return;
+  }
+  PIN_PURPOSES.forEach((p) => localStorage.removeItem(pinKey(p)));
   localStorage.removeItem(APP_LOCK_KEY);
   write(LOCKED_CHATS_KEY, []);
   write(HIDDEN_CHATS_KEY, []);
@@ -127,7 +134,7 @@ export function setHiddenVisible(on) {
 
 // ---- PIN prompt ----
 // One prompt used for every case, so unlocking always looks the same.
-export function askPin({ title = "Enter your PIN", subtitle = "", allowCancel = true } = {}) {
+export function askPin({ purpose = "app", title = "Enter your PIN", subtitle = "", allowCancel = true } = {}) {
   return new Promise((resolve) => {
     const modal = document.getElementById("pin-modal");
     const input = document.getElementById("pin-input");
@@ -149,7 +156,7 @@ export function askPin({ title = "Enter your PIN", subtitle = "", allowCancel = 
     const onSubmit = async () => {
       const pin = input.value.trim();
       if (!pin) return;
-      if (await verifyPin(pin)) return done(true);
+      if (await verifyPin(purpose, pin)) return done(true);
       input.value = "";
       input.classList.add("shake");
       setTimeout(() => input.classList.remove("shake"), 400);
@@ -169,8 +176,64 @@ export function askPin({ title = "Enter your PIN", subtitle = "", allowCancel = 
 
 // Gate the whole app behind the PIN on startup.
 export async function enforceAppLock() {
-  if (!appLockEnabled() || !hasPin()) return;
+  if (!appLockEnabled() || !hasPin("app")) return;
   document.body.classList.add("app-locked");
-  await askPin({ title: "Panalo is locked", subtitle: "Enter your PIN to continue", allowCancel: false });
+  await askPin({
+    purpose: "app",
+    title: "Panalo is locked",
+    subtitle: "Enter your PIN to continue",
+    allowCancel: false,
+  });
   document.body.classList.remove("app-locked");
+}
+
+// ---- The hidden-chats shortcut ----
+// Deliberately not a switch in Settings: a visible "show hidden chats" control
+// tells anyone holding your phone that there's something to look for. The
+// gesture leaves no trace in the interface.
+export const SHORTCUT_LABEL = navigator.platform?.toLowerCase().includes("mac")
+  ? "⌘ + Shift + H"
+  : "Ctrl + Shift + H";
+
+export function initHiddenShortcut(onToggle) {
+  const reveal = async () => {
+    if (hiddenVisible()) {
+      setHiddenVisible(false);
+      onToggle(false);
+      return;
+    }
+    if (!hiddenCount()) {
+      // Nothing hidden: stay silent rather than confirm the gesture exists.
+      return;
+    }
+    if (hasPin("hidden") && !(await askPin({
+      purpose: "hidden",
+      title: "Hidden chats",
+      subtitle: "Enter your hidden-chats PIN",
+    }))) {
+      return;
+    }
+    setHiddenVisible(true);
+    onToggle(true);
+  };
+
+  document.addEventListener("keydown", (e) => {
+    // ⌘⇧H on a Mac, Ctrl+Shift+H elsewhere.
+    if ((e.metaKey || e.ctrlKey) && e.shiftKey && (e.key === "h" || e.key === "H")) {
+      e.preventDefault();
+      reveal();
+    }
+  });
+
+  // Two-finger tap on touch devices — a quick tap, not a scroll or a pinch.
+  let twoFingerStart = 0;
+  document.addEventListener("touchstart", (e) => {
+    twoFingerStart = e.touches.length === 2 ? Date.now() : 0;
+  }, { passive: true });
+  document.addEventListener("touchend", (e) => {
+    if (!twoFingerStart || e.touches.length) return;
+    const quick = Date.now() - twoFingerStart < 400;
+    twoFingerStart = 0;
+    if (quick) reveal();
+  }, { passive: true });
 }
