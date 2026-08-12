@@ -1,0 +1,19 @@
+# Cloudflare config.
+#
+# Only needed if PANALO is deployed as a Worker (the "Create a Worker" flow,
+# which runs `npx wrangler deploy`). If it's deployed through Cloudflare
+# **Pages** instead, this file is simply ignored — Pages serves the repo
+# directly with no build and no config.
+#
+# There is no Worker script here on purpose: the whole app is static files, so
+# Cloudflare just serves the assets.
+
+name = "panalo"
+compatibility_date = "2025-01-01"
+
+[assets]
+directory = "./"
+
+# A URL that doesn't match a file falls back to the app itself, so a refresh on
+# any path still loads PANALO rather than a Cloudflare 404.
+not_found_handling = "single-page-application"
