@@ -1,8 +1,8 @@
 // Per-device "vibe" settings: global accent, chat wallpaper (presets or your own
 // image), animated background, and a themed custom cursor. Stored in localStorage
 // (UI preferences, no backend needed).
-import { THEME_PRESETS, WALLPAPER_PRESETS, EFFECT_PRESETS, FONT_PRESETS } from "./config.js";
-import { el, showToast } from "./util.js";
+import { THEME_PRESETS, WALLPAPER_PRESETS, EFFECT_PRESETS, FONT_PRESETS, MIN_PASSWORD_LENGTH } from "./config.js";
+import { el, showToast, withBusy } from "./util.js";
 import { icon } from "./icons.js";
 import {
   setAlertPrefs,
@@ -12,6 +12,9 @@ import {
 } from "./notifications.js";
 import { applyEffect } from "./effects.js";
 import { hasPin, setPin, verifyPin, appLockEnabled, setAppLock, askPin, setHiddenVisible, hiddenCount } from "./lock.js";
+import { supabaseClient } from "./client.js";
+import { state } from "./state.js";
+import { rewrapPrivateKey } from "./encryption.js";
 
 const SETTINGS_KEY = "panalo.settings";
 const DEFAULTS = {
@@ -381,6 +384,60 @@ export function initSettings() {
     sendTestAlert();
     refreshNotifyStatus();
   });
+
+  // ---- Change password ----
+  const passwordModal = document.getElementById("password-modal");
+  document.getElementById("change-password-btn").addEventListener("click", () => {
+    ["current-password", "new-password", "confirm-password"].forEach((id) => {
+      document.getElementById(id).value = "";
+    });
+    passwordModal.classList.remove("hidden");
+    document.getElementById("current-password").focus();
+  });
+  document.getElementById("close-password-modal").addEventListener("click", () => {
+    passwordModal.classList.add("hidden");
+  });
+
+  const savePasswordBtn = document.getElementById("save-password-btn");
+  savePasswordBtn.addEventListener("click", () =>
+    withBusy(savePasswordBtn, "Changing…", async () => {
+      const current = document.getElementById("current-password").value;
+      const next = document.getElementById("new-password").value;
+      const confirm = document.getElementById("confirm-password").value;
+
+      if (!current || !next) return showToast("Fill in every field.");
+      if (next.length < MIN_PASSWORD_LENGTH) return showToast(`New password must be at least ${MIN_PASSWORD_LENGTH} characters.`);
+      if (next !== confirm) return showToast("The new passwords don't match.");
+      if (next === current) return showToast("That's already your password.");
+
+      // Refuse while messages are locked: without the private key in memory we
+      // can't re-protect it, and changing the password would strand every
+      // message behind a key nothing can open.
+      if (!state.myPrivateKey) {
+        return showToast("Unlock your messages first — otherwise changing your password would lock them permanently.");
+      }
+
+      // Confirm the current password really is theirs.
+      const { error: authError } = await supabaseClient.auth.signInWithPassword({
+        email: state.currentUser.email,
+        password: current,
+      });
+      if (authError) return showToast("Your current password isn't right.");
+
+      const { error: updateError } = await supabaseClient.auth.updateUser({ password: next });
+      if (updateError) return showToast(updateError.message);
+
+      // The password is changed; now the key must follow it.
+      const rewrap = await rewrapPrivateKey(next);
+      if (rewrap !== "ready") {
+        showToast("Password changed, but your encryption key didn't update. Try Change password again now, while you're still signed in.");
+        return;
+      }
+
+      passwordModal.classList.add("hidden");
+      showToast("Password changed, and your encryption key moved with it.", "success");
+    })
+  );
 
   // ---- Privacy & lock ----
   const appLockToggle = document.getElementById("setting-app-lock");

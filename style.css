@@ -689,26 +689,46 @@ button:active {
   max-width: 460px;
 }
 
-@media (min-width: 820px) {
-  /* Both class names, so this outranks the generic .modal-content width that
-     is declared later in the file. */
-  .modal-content.settings-content {
-    width: min(92vw, 720px);
-    max-width: 720px;
-    column-count: 2;
-    column-gap: 34px;
-  }
+/* One column, a little roomier than before. Both class names so this outranks
+   the generic .modal-content width declared later in the file. */
+.modal-content.settings-content {
+  width: min(94vw, 520px);
+  max-width: 520px;
+  /* The body scrolls; the header and footer don't. */
+  display: flex;
+  flex-direction: column;
+  max-height: 88vh;
+  overflow: hidden;
+  padding-bottom: 0;
+}
 
-  /* Keep a group whole rather than letting it split across the fold */
-  .settings-content .settings-section {
-    break-inside: avoid;
-  }
+/* Everything scrollable lives here, so Done and Log Out never scroll away. */
+.settings-body {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  /* Bleed to the sheet's edge so the scrollbar sits at the edge, not inset. */
+  margin: 0 -28px;
+  padding: 2px 28px 8px;
+}
 
-  /* Title and footer stay full width across both columns */
-  .settings-content h3,
-  .settings-content .modal-buttons {
-    column-span: all;
-  }
+.settings-footer {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  padding: 14px 0 18px;
+  border-top: 1px solid var(--border);
+  background: var(--surface);
+}
+
+.settings-footer .danger-btn {
+  width: auto;
+  padding: 12px 18px;
+  flex-shrink: 0;
+}
+
+.settings-footer #close-settings-modal {
+  flex: 1;
 }
 
 .settings-section {

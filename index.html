@@ -316,6 +316,7 @@
     <div class="modal-content settings-content">
       <h3 id="settings-modal-title">Settings</h3>
 
+      <div class="settings-body">
       <div class="settings-section">
         <span class="settings-label">Accent</span>
         <div id="accent-swatches" class="theme-swatches"></div>
@@ -362,10 +363,13 @@
 
       <div class="settings-section">
         <span class="settings-label">Account</span>
-        <button id="logout-btn" class="danger-btn" type="button"><span data-icon="logout" data-icon-size="16"></span>Log Out</button>
+        <button id="change-password-btn" class="mini-btn" type="button"><span data-icon="lock" data-icon-size="15"></span>Change password</button>
+        <p class="notify-status">Your messages are unlocked with this password, so changing it re-protects your encryption key at the same time.</p>
+      </div>
       </div>
 
-      <div class="modal-buttons">
+      <div class="settings-footer">
+        <button id="logout-btn" class="danger-btn" type="button"><span data-icon="logout" data-icon-size="16"></span>Log Out</button>
         <button id="close-settings-modal" class="secondary-btn">Done</button>
       </div>
     </div>
@@ -467,6 +471,20 @@
       <button id="viewer-close" type="button" aria-label="Close image viewer"><span data-icon="close" data-icon-size="16"></span></button>
     </div>
     <img id="viewer-img" class="viewer-img" alt="Full-size image" />
+  </div>
+
+  <div id="password-modal" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="password-modal-title">
+    <div class="modal-content">
+      <h3 id="password-modal-title">Change password</h3>
+      <p class="otp-hint">Your encryption key is protected by this password, so it gets re-protected with the new one automatically. Stay online until it finishes.</p>
+      <input type="password" id="current-password" placeholder="Current password" autocomplete="current-password" aria-label="Current password" />
+      <input type="password" id="new-password" placeholder="New password" autocomplete="new-password" aria-label="New password" />
+      <input type="password" id="confirm-password" placeholder="Repeat new password" autocomplete="new-password" aria-label="Repeat new password" />
+      <div class="modal-buttons">
+        <button id="save-password-btn">Change password</button>
+        <button id="close-password-modal" class="secondary-btn">Cancel</button>
+      </div>
+    </div>
   </div>
 
   <div id="pin-modal" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="pin-title">

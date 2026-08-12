@@ -138,6 +138,30 @@ export async function ensureUserKeys(password) {
   }
 }
 
+// Re-protect the private key with a new password.
+//
+// This MUST happen whenever the account password changes: the stored private
+// key is encrypted with a key derived from the password, so a changed password
+// without this leaves the blob unopenable — every message unreadable on any
+// device that doesn't already have the key cached.
+export async function rewrapPrivateKey(newPassword) {
+  if (!state.myPrivateKey) return "no-key";
+  try {
+    const stored = await window.PanaloCrypto.protectPrivateKey(state.myPrivateKey, newPassword);
+    const { error } = await supabaseClient.from("user_keys").upsert({
+      user_id: state.currentUser.id,
+      enc_private_key: stored.encPrivateKey,
+      key_salt: stored.keySalt,
+      key_iv: stored.keyIv,
+    });
+    if (error) throw error;
+    return "ready";
+  } catch (e) {
+    console.error("Could not re-protect the private key:", e);
+    return "failed";
+  }
+}
+
 // Get (and cache) the AES key for a conversation by unwrapping our stored copy.
 export async function getConversationKey(conversationId) {
   if (conversationKeys.has(conversationId)) return conversationKeys.get(conversationId);
