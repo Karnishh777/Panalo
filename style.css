@@ -620,8 +620,21 @@ button:active {
   flex-shrink: 0;
 }
 
+/* The header's identity block already takes the slack (flex: 1), so the action
+   buttons group tightly on the right. Giving each of them margin-left:auto
+   splits the free space *between* them and spreads them unevenly instead. */
 .chat-header .header-icon-btn {
-  margin-left: auto;
+  margin-left: 0;
+}
+
+/* Keep the trailing action icons closer to each other than to the title. */
+.chat-header #focus-btn {
+  margin-left: 4px;
+}
+
+.chat-header #theme-btn,
+.chat-header #chat-menu-btn {
+  margin-left: -4px;
 }
 
 .header-icon-btn:hover {
