@@ -1,0 +1,24 @@
+# Response headers for Cloudflare Pages (Netlify reads this file too, so the
+# site behaves the same on either host).
+
+/*
+  # Don't let a browser second-guess a file's type.
+  X-Content-Type-Options: nosniff
+  # A chat app should never be embeddable in someone else's page.
+  X-Frame-Options: DENY
+  # Send the full URL only to ourselves.
+  Referrer-Policy: strict-origin-when-cross-origin
+  # Calls and location sharing need these for our own origin — and nobody else's.
+  Permissions-Policy: geolocation=(self), microphone=(self), camera=(self), interest-cohort=()
+
+# A stale service worker is worse than none: it can keep serving an old app
+# long after a deploy. Always revalidate this one.
+/sw.js
+  Cache-Control: no-cache
+
+/manifest.webmanifest
+  Cache-Control: no-cache
+
+# The manifest lists your stickers, so it must not go stale after you add some.
+/stickers/manifest.json
+  Cache-Control: no-cache
