@@ -610,14 +610,26 @@ button:active {
 }
 
 .header-icon-btn {
-  width: 40px;
-  height: 40px;
+  width: 38px;
+  height: 38px;
   padding: 0;
   border-radius: 50%;
   background: var(--surface-2);
   color: var(--text);
   font-size: 16px;
   flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* An 18px glyph in a 40px circle only fills ~45% and reads as a speck adrift
+   in the button. These sit at ~55%, which is where a circular icon button
+   looks deliberate. */
+.header-icon-btn .icon {
+  width: 21px;
+  height: 21px;
+  stroke-width: 2;
 }
 
 /* The header's identity block already takes the slack (flex: 1), so the action
@@ -1876,9 +1888,12 @@ a:focus-visible {
   justify-content: flex-start;
 }
 
+/* Same proportion as the header buttons (~53%), so the whole chrome reads as
+   one set rather than small glyphs adrift in large circles. */
 .rail-btn .icon {
-  width: 20px;
-  height: 20px;
+  width: 23px;
+  height: 23px;
+  stroke-width: 2;
 }
 
 /* Active rail view glows in the accent color */
