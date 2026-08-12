@@ -21,12 +21,53 @@ const ICE_SERVERS = [
 ];
 
 const RING_TIMEOUT_MS = 35000;
+// How often the caller re-announces while ringing, so a callee who comes online
+// mid-ring still receives the offer.
+const RING_REANNOUNCE_MS = 3000;
+
+// ---- Call history ----
+// A finished call is written into the conversation as an ordinary (encrypted)
+// message, so history lives with the chat it belongs to and needs no new table.
+// Only the caller writes it, so a call never appears twice.
+const CALL_MARKER = /^\[\[call:(voice|video):(completed|missed|declined|failed):(\d+)\]\]$/;
+
+export function callMarker(kind, status, seconds) {
+  return `[[call:${kind}:${status}:${Math.max(0, Math.round(seconds))}]]`;
+}
+
+export function parseCall(text) {
+  const m = typeof text === "string" ? text.trim().match(CALL_MARKER) : null;
+  if (!m) return null;
+  return { kind: m[1], status: m[2], seconds: Number(m[3]) };
+}
+
+export function describeCall(text) {
+  const c = parseCall(text);
+  if (!c) return text;
+  const kind = c.kind === "video" ? "Video call" : "Voice call";
+  if (c.status === "completed") return `${kind} · ${formatDuration(c.seconds)}`;
+  if (c.status === "missed") return `Missed ${kind.toLowerCase()}`;
+  if (c.status === "declined") return `Declined ${kind.toLowerCase()}`;
+  return `${kind} failed`;
+}
+
+export function formatDuration(secs) {
+  const mm = Math.floor(secs / 60);
+  const ss = secs % 60;
+  return `${mm}:${String(ss).padStart(2, "0")}`;
+}
+
+let logger = null;
+export function setCallLogger(fn) {
+  logger = fn;
+}
 
 let myChannel = null;
 let pc = null;
 let localStream = null;
 let remoteStream = null;
 let ringTimer = null;
+let ringRepeat = null;
 let durationTimer = null;
 let callStartedAt = 0;
 // Candidates can arrive before the remote description is set; hold them.
@@ -156,7 +197,14 @@ export async function startCall(peer, wantVideo) {
     showToast("Calls are for direct chats only.");
     return;
   }
-  call = { peerId: peer.id, peerName: peer.name, peerAvatar: peer.avatar, video: wantVideo, incoming: false };
+  call = {
+    peerId: peer.id,
+    peerName: peer.name,
+    peerAvatar: peer.avatar,
+    video: wantVideo,
+    incoming: false,
+    conversationId: peer.conversationId || null,
+  };
   openOverlay("Calling…");
 
   localStream = await getMedia(wantVideo);
@@ -168,7 +216,16 @@ export async function startCall(peer, wantVideo) {
 
   const offer = await pc.createOffer();
   await pc.setLocalDescription(offer);
-  await signal(peer.id, "offer", { sdp: offer, video: wantVideo, name: state.currentUsername });
+  const payload = { sdp: offer, video: wantVideo, name: state.currentUsername };
+  await signal(peer.id, "offer", payload);
+
+  // Signaling is a live broadcast: someone who isn't connected yet simply never
+  // hears it. Re-announcing while the phone rings means a person who opens the
+  // app mid-call still sees it, instead of the call ringing into nothing.
+  ringRepeat = setInterval(() => {
+    if (!call || call.answered) return;
+    signal(peer.id, "offer", payload);
+  }, RING_REANNOUNCE_MS);
 
   ringTimer = setTimeout(() => endCall(true, "No answer"), RING_TIMEOUT_MS);
 }
@@ -183,6 +240,11 @@ async function onOffer(payload) {
     signal(call.peerId, "answer", { sdp: answer });
     return;
   }
+  // The caller re-announces every few seconds while ringing; a repeat from the
+  // peer we're already ringing with is that, not a second caller. Treating it
+  // as "busy" would hang up the very call being announced.
+  if (call && call.peerId === payload.from) return;
+
   if (call) {
     signal(payload.from, "busy", {});
     return;
@@ -203,6 +265,10 @@ async function acceptCall() {
   if (!call?.incoming) return;
   clearTimeout(ringTimer);
   $("call-answer-row").classList.add("hidden");
+  // Swap the ring buttons for the in-call ones. Without this the person who
+  // answered has no controls at all — no mute, no camera, and no way to hang
+  // up, so only the caller could ever end the call.
+  $("call-controls").classList.remove("hidden");
   setStatus("Connecting…");
 
   localStream = await getMedia(call.video);
@@ -224,7 +290,10 @@ async function acceptCall() {
 
 async function onAnswer(payload) {
   if (!pc || !call) return;
+  call.answered = true;
   clearTimeout(ringTimer);
+  clearInterval(ringRepeat);
+  ringRepeat = null;
   await pc.setRemoteDescription(new RTCSessionDescription(payload.sdp));
   await flushCandidates();
   setStatus("Connecting…");
@@ -259,10 +328,24 @@ export function endCall(notifyPeer = true, reason = "") {
   if (notifyPeer && call?.peerId) {
     signal(call.peerId, call.incoming && $("call-answer-row") && !$("call-answer-row").classList.contains("hidden") ? "decline" : "end", {});
   }
+  // Write the call into the conversation before state is cleared. Only the
+  // caller logs, so one call produces one history entry, not two.
+  if (call && !call.incoming && call.conversationId && logger) {
+    const seconds = callStartedAt ? Math.round((Date.now() - callStartedAt) / 1000) : 0;
+    let status = "failed";
+    if (callStartedAt) status = "completed";
+    else if (/declin/i.test(reason)) status = "declined";
+    else if (/no answer|missed/i.test(reason)) status = "missed";
+    logger(call.conversationId, callMarker(call.video ? "video" : "voice", status, seconds));
+  }
+
   clearTimeout(ringTimer);
+  clearInterval(ringRepeat);
   clearInterval(durationTimer);
   ringTimer = null;
+  ringRepeat = null;
   durationTimer = null;
+  callStartedAt = 0;
 
   if (pc) {
     pc.onicecandidate = null;

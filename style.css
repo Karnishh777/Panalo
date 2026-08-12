@@ -2337,16 +2337,22 @@ body.focus-mode #fx-canvas {
 
 /* Word label under the newest of your messages, so the brightness scale is
    never something the reader has to guess at. */
+/* A quiet footnote, not a label. Uppercase bold at 10px shouted louder than the
+   message it belonged to. */
 .msg-status {
-  font-size: 10px;
-  font-weight: 700;
-  letter-spacing: 0.03em;
-  text-transform: uppercase;
-  color: rgba(255, 255, 255, 0.72);
+  font-size: 9px;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  color: rgba(255, 255, 255, 0.55);
 }
 
 .message.my-message[data-state="seen"] .msg-status {
-  color: #fff;
+  color: rgba(255, 255, 255, 0.9);
+}
+
+/* Timestamps sit beside the status, so they should read at the same weight */
+.message-time {
+  font-variant-numeric: tabular-nums;
 }
 
 .message.my-message[data-state="failed"] .msg-status {
@@ -2967,6 +2973,63 @@ body.focus-mode #fx-canvas {
   background: var(--surface-3);
   transform: none;
   box-shadow: none;
+}
+
+/* ---- PIN / lock ---- */
+.pin-content {
+  max-width: 340px;
+  text-align: center;
+}
+
+#pin-input {
+  letter-spacing: 10px;
+  text-align: center;
+  font-size: 24px;
+}
+
+.shake {
+  animation: shakeX 0.36s ease;
+}
+
+@keyframes shakeX {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-7px); }
+  75% { transform: translateX(7px); }
+}
+
+/* While the app is locked nothing behind the prompt is legible */
+body.app-locked .app-container,
+body.app-locked #auth-screen {
+  filter: blur(18px);
+  pointer-events: none;
+}
+
+.conv-lock {
+  font-size: 11px;
+  opacity: 0.75;
+  flex-shrink: 0;
+  display: inline-flex;
+}
+
+/* ---- Call history entries in a conversation ---- */
+.call-log {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  font-size: 13.5px;
+}
+
+.call-log-icon {
+  display: flex;
+  color: var(--primary);
+}
+
+.message.my-message .call-log-icon {
+  color: #fff;
+}
+
+.call-log.missed .call-log-icon {
+  color: var(--danger);
 }
 
 /* ---- Responsive: phones & portrait tablets (single-pane, full-screen) ---- */

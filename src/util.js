@@ -98,6 +98,16 @@ export function getAvatarColor(name) {
   return AVATAR_COLORS[Math.abs(hash) % AVATAR_COLORS.length];
 }
 
+// Clock times are shown 12-hour with am/pm ("9:41 pm"). The locale is pinned so
+// the app reads the same everywhere rather than flipping to 24-hour on some
+// devices and not others.
+export function formatTime(value) {
+  const d = value instanceof Date ? value : new Date(value || Date.now());
+  return d
+    .toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit", hour12: true })
+    .toLowerCase();
+}
+
 export function scrollToBottom() {
   const container = document.getElementById("messages-container");
   container.scrollTop = container.scrollHeight;

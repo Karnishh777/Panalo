@@ -107,8 +107,34 @@ function notificationIcon() {
   return iconDataUrl;
 }
 
+// Registered service worker, if any. Notifications raised through it land in
+// the OS notification centre and survive the tab losing focus, which a
+// page-created Notification does not reliably do.
+let swRegistration = null;
+export function setServiceWorker(reg) {
+  swRegistration = reg;
+}
+
 function showDesktop(title, body, convId) {
   if (!prefs.desktop || notificationPermission() !== "granted") return;
+
+  // Preferred path: let the service worker raise it.
+  if (swRegistration?.active) {
+    try {
+      swRegistration.active.postMessage({
+        type: "notify",
+        title,
+        body,
+        icon: notificationIcon() || undefined,
+        tag: convId,
+        conversationId: convId,
+      });
+      return;
+    } catch {
+      /* fall through to the page notification */
+    }
+  }
+
   try {
     const n = new Notification(title, { body, icon: notificationIcon() || undefined, tag: convId });
     n.onclick = () => {

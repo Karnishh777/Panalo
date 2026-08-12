@@ -11,6 +11,7 @@ import {
   notificationPermission,
 } from "./notifications.js";
 import { applyEffect } from "./effects.js";
+import { hasPin, setPin, verifyPin, appLockEnabled, setAppLock, askPin, setHiddenVisible, hiddenCount } from "./lock.js";
 
 const SETTINGS_KEY = "panalo.settings";
 const DEFAULTS = {
@@ -379,6 +380,57 @@ export function initSettings() {
   document.getElementById("test-alert-btn").addEventListener("click", () => {
     sendTestAlert();
     refreshNotifyStatus();
+  });
+
+  // ---- Privacy & lock ----
+  const appLockToggle = document.getElementById("setting-app-lock");
+  const showHiddenToggle = document.getElementById("setting-show-hidden");
+  appLockToggle.checked = appLockEnabled();
+
+  async function ensurePin() {
+    if (hasPin()) return true;
+    const pin = window.prompt("Choose a 4–8 digit PIN:");
+    if (!pin) return false;
+    return setPin(pin);
+  }
+
+  appLockToggle.addEventListener("change", async () => {
+    if (appLockToggle.checked) {
+      if (!(await ensurePin())) {
+        appLockToggle.checked = false;
+        return;
+      }
+      setAppLock(true);
+      showToast("App lock is on — you'll be asked for your PIN when you open Panalo.", "success");
+    } else {
+      // Turning protection off should itself be protected.
+      if (hasPin() && !(await askPin({ title: "Turn off app lock", subtitle: "Enter your PIN to confirm" }))) {
+        appLockToggle.checked = true;
+        return;
+      }
+      setAppLock(false);
+    }
+  });
+
+  document.getElementById("change-pin-btn").addEventListener("click", async () => {
+    if (hasPin() && !(await askPin({ title: "Change PIN", subtitle: "Enter your current PIN first" }))) return;
+    const pin = window.prompt("New 4–8 digit PIN:");
+    if (!pin) return;
+    if (await setPin(pin)) showToast("PIN updated.", "success");
+  });
+
+  showHiddenToggle.addEventListener("change", async () => {
+    if (showHiddenToggle.checked) {
+      if (hasPin() && !(await askPin({ title: "Show hidden chats", subtitle: "Enter your PIN" }))) {
+        showHiddenToggle.checked = false;
+        return;
+      }
+      setHiddenVisible(true);
+      showToast(`${hiddenCount()} hidden chat(s) now visible.`, "success");
+    } else {
+      setHiddenVisible(false);
+    }
+    document.dispatchEvent(new CustomEvent("panalo:refresh-chats"));
   });
   cursorToggle.addEventListener("change", () => {
     settings.cursorGlow = cursorToggle.checked;

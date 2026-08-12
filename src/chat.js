@@ -1,7 +1,7 @@
 // Conversations, messages, sending, and realtime.
 import { supabaseClient } from "./client.js";
 import { state } from "./state.js";
-import { el, showToast, withBusy, getAvatarColor, safeImageUrl, scrollToBottom, compressImage, announce, setAvatar } from "./util.js";
+import { el, showToast, withBusy, getAvatarColor, safeImageUrl, scrollToBottom, compressImage, announce, setAvatar, formatTime } from "./util.js";
 import { getConversationKey, provisionConversationKey, messagePlaintext } from "./encryption.js";
 import { MESSAGES_PAGE_SIZE, THEME_PRESETS, FONT_PRESETS, MAX_FILE_BYTES } from "./config.js";
 import { isOnline, setPresenceListener } from "./presence.js";
@@ -19,6 +19,10 @@ import {
 } from "./prefs.js";
 import { icon } from "./icons.js";
 import {
+  isChatLocked, toggleChatLock, isChatUnlocked, markChatUnlocked,
+  isChatHidden, toggleChatHidden, hiddenVisible, askPin, hasPin, setPin,
+} from "./lock.js";
+import {
   REACTION_EMOJIS, groupedReactions, loadReactions, toggleReaction,
   setReactionListener, startReactions,
 } from "./reactions.js";
@@ -28,7 +32,7 @@ import {
 } from "./receipts.js";
 import { searchMessages, invalidateSearchIndex } from "./search.js";
 import { parseSticker, stickerSvg, stickerImg, describeText, initStickerPicker } from "./stickers.js";
-import { initCalls, startCall } from "./calls.js";
+import { initCalls, startCall, setCallLogger, parseCall, describeCall } from "./calls.js";
 import { parseLocation, locationCard, locationMarker, getCurrentPosition, initLocation, describeLocation } from "./location.js";
 import { openChatInfo, closeChatInfo, setChatInfoCallbacks, displayTitle, initChatInfo } from "./chatinfo.js";
 
@@ -160,7 +164,7 @@ function listTime(iso) {
   const d = new Date(iso);
   const now = new Date();
   const sameDay = d.toDateString() === now.toDateString();
-  if (sameDay) return d.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
+  if (sameDay) return formatTime(d);
   const daysAgo = (now - d) / 86400000;
   if (daysAgo < 7) return d.toLocaleDateString([], { weekday: "short" });
   return d.toLocaleDateString([], { day: "numeric", month: "short" });
@@ -208,6 +212,8 @@ function renderConversations() {
   if (q.length >= 2) renderMessageHits(q);
   const folderIds = chatFilter.startsWith("folder:") ? folderChatIds(chatFilter.slice(7)) : null;
   const items = allConversations
+    // Hidden chats stay out of the list until revealed in Settings.
+    .filter((c) => hiddenVisible() || !isChatHidden(c.id))
     .filter((c) => (folderIds ? folderIds.includes(c.id) : chatFilter === "all" || c.type === chatFilter))
     .filter((c) => {
       if (!q) return true;
@@ -377,7 +383,7 @@ function renderConversationItem(conv) {
     messagePlaintext(last).then((text) => {
       const mine = last.user_id === state.currentUser.id;
       const who = mine ? "You: " : isGroup ? `${last.username || "?"}: ` : "";
-      previewEl.textContent = who + describeLocation(describeText(text));
+      previewEl.textContent = who + describeCall(describeLocation(describeText(text)));
     });
   }
 
@@ -393,6 +399,8 @@ function renderConversationItem(conv) {
       ]),
       el("div", { class: "conv-row-bottom" }, [
         previewEl,
+        isChatLocked(conv.id) ? el("span", { class: "conv-lock", "aria-label": "Locked" }, [icon("lock", 13)]) : null,
+        isChatHidden(conv.id) ? el("span", { class: "conv-lock", "aria-label": "Hidden" }, [icon("eyeOff", 13)]) : null,
         isPinned(conv.id) ? el("span", { class: "conv-pin", "aria-label": "Pinned" }, [icon("pin", 13)]) : null,
         isMuted(conv.id) ? el("span", { class: "conv-pin", "aria-label": "Muted" }, [icon("bellOff", 13)]) : null,
         unread > 0 ? el("span", { class: "conv-badge", text: formatCount(unread), "aria-label": `${unread} unread` }) : null,
@@ -413,6 +421,13 @@ function renderConversationItem(conv) {
 }
 
 async function openConversation(conv) {
+  // A locked chat asks for the PIN once per session before it opens.
+  if (!isChatUnlocked(conv.id)) {
+    const ok = await askPin({ title: "This chat is locked", subtitle: "Enter your PIN to open it" });
+    if (!ok) return;
+    markChatUnlocked(conv.id);
+  }
+
   state.currentConversationId = conv.id;
   state.currentConversation = conv;
   const title = displayTitle(conv); // nickname > resolved title
@@ -800,7 +815,17 @@ function renderMessage(msg, prepend = false) {
       msg._plain = plaintext;
       const found = parseSticker(plaintext);
       const place = found ? null : parseLocation(plaintext);
-      if (found) {
+      const callLog = found || place ? null : parseCall(plaintext);
+      if (callLog) {
+        textEl.innerHTML = "";
+        const failed = callLog.status !== "completed";
+        textEl.append(
+          el("div", { class: `call-log${failed ? " missed" : ""}` }, [
+            el("span", { class: "call-log-icon" }, [icon(callLog.kind === "video" ? "video" : "phone", 18)]),
+            el("span", { text: describeCall(plaintext) }),
+          ])
+        );
+      } else if (found) {
         textEl.innerHTML = "";
         textEl.append(found.kind === "vector" ? stickerSvg(found.sticker, 132) : stickerImg(found.path, 132));
         messageEl.classList.add("sticker-message");
@@ -842,7 +867,7 @@ function renderMessage(msg, prepend = false) {
     }
   }
 
-  const time = new Date(msg.created_at || Date.now()).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
+  const time = formatTime(msg.created_at);
   const footer = el("div", { class: "message-footer" }, [
     el("span", { class: "msg-flags", "aria-hidden": "true" }),
     el("span", { class: "message-time", text: msg._pending ? "Sending…" : time }),
@@ -1581,9 +1606,13 @@ function openChatMenu() {
   // Reflect current mute + pin state.
   const muteLabel = menu.querySelector('[data-action="mute"] .menu-label');
   const pinLabel = menu.querySelector('[data-action="pin"] .menu-label');
+  const lockLabel = menu.querySelector('[data-action="lock"] .menu-label');
+  const hideLabel = menu.querySelector('[data-action="hide"] .menu-label');
   if (conv) {
     muteLabel.textContent = isMuted(conv.id) ? "Unmute notifications" : "Mute notifications";
     pinLabel.textContent = isPinned(conv.id) ? "Unpin chat" : "Pin chat";
+    lockLabel.textContent = isChatLocked(conv.id) ? "Unlock chat" : "Lock chat";
+    hideLabel.textContent = isChatHidden(conv.id) ? "Unhide chat" : "Hide chat";
   }
   menu.classList.remove("hidden");
 }
@@ -1817,10 +1846,13 @@ export function initChatUI() {
 
   // Calls (direct chats only).
   initCalls();
+  // A finished call writes itself into the conversation as a normal message.
+  setCallLogger((convId, marker) => sendMessage(marker, null, convId));
   const callPeer = () => ({
     id: state.currentConversation?.otherUserId,
     name: displayTitle(state.currentConversation || {}),
     avatar: state.currentConversation?.otherAvatar,
+    conversationId: state.currentConversation?.id,
   });
   document.getElementById("voice-call-btn").addEventListener("click", () => startCall(callPeer(), false));
   document.getElementById("video-call-btn").addEventListener("click", () => startCall(callPeer(), true));
@@ -1933,10 +1965,15 @@ export function initChatUI() {
   });
 
   // Clicking an alert banner (or a desktop notification) jumps to that chat.
-  setOpenChatListener((convId) => {
+  const jumpToChat = (convId) => {
     const conv = allConversations.find((c) => c.id === convId);
     if (conv) openConversation(conv);
-  });
+  };
+  setOpenChatListener(jumpToChat);
+  // Same journey, but arriving from a service-worker notification click.
+  document.addEventListener("panalo:open-chat", (e) => jumpToChat(e.detail.conversationId));
+  // Revealing or re-hiding chats in Settings redraws the list.
+  document.addEventListener("panalo:refresh-chats", renderConversations);
 
   // Coming back to the tab marks the open chat as read.
   document.addEventListener("visibilitychange", () => {
@@ -2073,6 +2110,22 @@ export function initChatUI() {
     } else if (item.dataset.action === "pin" && conv) {
       const pinned = togglePin(conv.id);
       showToast(pinned ? "Chat pinned" : "Chat unpinned", "success");
+      renderConversations();
+    } else if (item.dataset.action === "lock" && conv) {
+      // A lock is only a lock if there's a PIN behind it.
+      (async () => {
+        if (!hasPin()) {
+          const pin = window.prompt("Choose a 4–8 digit PIN for locking chats:");
+          if (!pin || !(await setPin(pin))) return;
+        }
+        const locked = toggleChatLock(conv.id);
+        if (!locked) markChatUnlocked(conv.id);
+        showToast(locked ? "Chat locked" : "Chat unlocked", "success");
+        renderConversations();
+      })();
+    } else if (item.dataset.action === "hide" && conv) {
+      const hidden = toggleChatHidden(conv.id);
+      showToast(hidden ? "Chat hidden — reveal it in Settings" : "Chat is visible again", "success");
       renderConversations();
     } else if (item.dataset.action === "theme") {
       updateSwatchSelection(conv?.theme);

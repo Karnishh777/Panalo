@@ -1,0 +1,20 @@
+{
+  "name": "Panalo",
+  "short_name": "Panalo",
+  "description": "Encrypted chat with friends.",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "background_color": "#0e0b18",
+  "theme_color": "#8b7cf6",
+  "categories": ["social", "communication"],
+  "icons": [
+    {
+      "src": "logo.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
