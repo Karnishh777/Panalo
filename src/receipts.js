@@ -57,12 +57,15 @@ export async function loadMyReadMarkers() {
 }
 
 // Has every other member read this message?
+// Timestamps are parsed rather than string-compared: Postgres returns
+// "…+00:00" while the browser writes "…Z", and those don't sort together.
 export function isReadByAll(convId, msg, memberIds) {
   const map = readState.get(convId);
   if (!map) return false;
   const others = (memberIds || []).filter((id) => id !== state.currentUser?.id);
   if (!others.length) return false;
-  return others.every((id) => map[id] && map[id] >= msg.created_at);
+  const sentAt = Date.parse(msg.created_at);
+  return others.every((id) => map[id] && Date.parse(map[id]) >= sentAt);
 }
 
 // Live ticks: someone opening the chat updates their marker.

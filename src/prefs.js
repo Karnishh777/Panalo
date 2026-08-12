@@ -82,6 +82,54 @@ export function toggleMessagePin(convId, msgId) {
   return list.includes(msgId);
 }
 
+// ---- Custom sidebar folders ----
+// [{ id, name, icon }] where icon is either a preset icon name ("star") or a
+// "img:<data-url>" for an uploaded picture. Membership is a list of chat ids.
+const FOLDERS_KEY = "panalo.folders";
+
+export function getFolders() {
+  return read(FOLDERS_KEY, []);
+}
+
+export function addFolder(name, icon) {
+  const folders = getFolders();
+  const folder = { id: `f_${Date.now().toString(36)}`, name: name.trim() || "Folder", icon: icon || "star", convIds: [] };
+  folders.push(folder);
+  write(FOLDERS_KEY, folders);
+  return folder;
+}
+
+export function deleteFolder(id) {
+  write(FOLDERS_KEY, getFolders().filter((f) => f.id !== id));
+}
+
+export function renameFolder(id, name) {
+  const folders = getFolders();
+  const f = folders.find((x) => x.id === id);
+  if (!f) return;
+  f.name = name.trim() || f.name;
+  write(FOLDERS_KEY, folders);
+}
+
+export function isChatInFolder(folderId, convId) {
+  return (getFolders().find((f) => f.id === folderId)?.convIds || []).includes(convId);
+}
+
+export function toggleChatInFolder(folderId, convId) {
+  const folders = getFolders();
+  const f = folders.find((x) => x.id === folderId);
+  if (!f) return false;
+  const i = f.convIds.indexOf(convId);
+  if (i >= 0) f.convIds.splice(i, 1);
+  else f.convIds.push(convId);
+  write(FOLDERS_KEY, folders);
+  return f.convIds.includes(convId);
+}
+
+export function folderChatIds(folderId) {
+  return getFolders().find((f) => f.id === folderId)?.convIds || [];
+}
+
 // ---- Per-chat wallpaper: { convId: wallpaperId } ("app" = follow the app) ----
 const CHAT_WP_KEY = "panalo.chatWallpapers";
 export function getChatWallpaper(convId) {

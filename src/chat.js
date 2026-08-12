@@ -15,6 +15,7 @@ import {
   getStars, toggleStar, isStarred,
   getPinnedMessages, isMessagePinned, toggleMessagePin,
   getChatFont, getChatWallpaper,
+  getFolders, addFolder, deleteFolder, folderChatIds,
 } from "./prefs.js";
 import { icon } from "./icons.js";
 import {
@@ -25,12 +26,15 @@ import {
   markConversationRead, loadReadState, isReadByAll, subscribeReceipts,
   setReceiptListener, loadMyReadMarkers,
 } from "./receipts.js";
+import { searchMessages, invalidateSearchIndex } from "./search.js";
 import { openChatInfo, closeChatInfo, setChatInfoCallbacks, displayTitle, initChatInfo } from "./chatinfo.js";
 
 // Message rows currently on screen (id → row) — powers the actions menu.
 const msgCache = new Map();
 // Members of the open conversation, needed to decide when a message is read.
 let currentMemberIds = [];
+// Newest message from anyone else in the open chat (drives the 1:1 "Seen").
+let lastOtherMessageAt = null;
 // The message we're currently replying to, if any.
 let replyTarget = null;
 
@@ -198,8 +202,10 @@ function renderConversations() {
     return;
   }
   const q = chatSearch.trim().toLowerCase();
+  if (q.length >= 2) renderMessageHits(q);
+  const folderIds = chatFilter.startsWith("folder:") ? folderChatIds(chatFilter.slice(7)) : null;
   const items = allConversations
-    .filter((c) => chatFilter === "all" || c.type === chatFilter)
+    .filter((c) => (folderIds ? folderIds.includes(c.id) : chatFilter === "all" || c.type === chatFilter))
     .filter((c) => {
       if (!q) return true;
       const title = (c.type === "group" ? c.name : c.displayTitle || c.name) || "";
@@ -211,11 +217,55 @@ function renderConversations() {
     if (pin) return pin;
     return String(b.lastAt || "").localeCompare(String(a.lastAt || ""));
   });
-  if (!items.length) {
+  if (!items.length && q.length < 2) {
     conversationsList.append(el("div", { class: "list-empty", text: q ? "No chats match your search." : "No chats here yet." }));
     return;
   }
   items.forEach((c) => renderConversationItem(c));
+}
+
+// Message hits are appended under the matching chats, newest first. Searching
+// happens on this device because the server only ever sees ciphertext.
+let searchToken = 0;
+
+async function renderMessageHits(q) {
+  const token = ++searchToken;
+  const section = el("div", { class: "search-section" }, [
+    el("div", { class: "search-heading", text: "Messages" }),
+    el("div", { class: "list-empty", text: "Searching…" }),
+  ]);
+  conversationsList.append(section);
+
+  const hits = await searchMessages(q);
+  if (token !== searchToken) return; // a newer keystroke won
+  // The list may have been rebuilt while we were decrypting.
+  if (!section.isConnected) return;
+
+  section.innerHTML = "";
+  section.append(el("div", { class: "search-heading", text: `Messages (${hits.length})` }));
+  if (!hits.length) {
+    section.append(el("div", { class: "list-empty", text: "No messages match." }));
+    return;
+  }
+
+  for (const hit of hits) {
+    const conv = allConversations.find((c) => c.id === hit.conversation_id);
+    const when = new Date(hit.created_at).toLocaleDateString([], { day: "numeric", month: "short" });
+    const who = hit.user_id === state.currentUser.id ? "You" : hit.username || "?";
+    const item = el("div", { class: "star-item", role: "button", tabindex: "0" }, [
+      el("div", { class: "star-item-top" }, [
+        el("span", { text: `${conv ? displayTitle(conv) : "Chat"} · ${who}` }),
+        el("span", { text: when }),
+      ]),
+      el("div", { class: "star-item-text", text: hit.text || "📎 Attachment" }),
+    ]);
+    item.addEventListener("click", async () => {
+      if (!conv) return;
+      await openConversation(conv);
+      jumpToMessage(hit.id);
+    });
+    section.append(item);
+  }
 }
 
 // ---- Starred messages view (⭐ in the rail) ----
@@ -388,8 +438,9 @@ async function openConversation(conv) {
   });
 
   cancelReply();
+  lastOtherMessageAt = null;
 
-  // Who's in this chat + where everyone has read up to (drives the ✓✓ ticks).
+  // Who's in this chat + where everyone has read up to (drives "Seen").
   const [{ data: parts }] = await Promise.all([
     supabaseClient.from("conversation_participants").select("user_id").eq("conversation_id", conv.id),
     loadReadState(conv.id),
@@ -763,8 +814,6 @@ function renderMessage(msg, prepend = false) {
     el("span", { class: "message-time", text: msg._pending ? "Sending…" : time }),
   ]);
   if (msg.edited_at) footer.append(el("span", { class: "edited-tag", text: "edited" }));
-  // Delivery ticks live on our own messages only.
-  if (isMine && !msg._pending) footer.append(el("span", { class: "ticks", "aria-label": "Sent" }));
   messageEl.append(footer);
 
   // Reactions sit under the bubble content, above the footer.
@@ -789,7 +838,12 @@ function renderMessage(msg, prepend = false) {
   else messagesList.append(messageEl);
   refreshMsgFlags(msg.id);
   renderReactions(msg.id);
-  if (isMine && !msg._pending) refreshTicks(msg);
+
+  // Track the other side's latest message — it's what proves a 1:1 "Seen".
+  if (!isMine && msg.created_at && (!lastOtherMessageAt || msg.created_at > lastOtherMessageAt)) {
+    lastOtherMessageAt = msg.created_at;
+  }
+  if (isMine) refreshMessageStates();
 }
 
 // ---- Reactions ----
@@ -825,7 +879,7 @@ function closeReactionPicker() {
   pickerEl = null;
 }
 
-function openReactionPicker(msgId, anchorRect) {
+function openReactionPicker(msgId, anchorEl) {
   closeReactionPicker();
   pickerEl = el("div", { class: "reaction-picker", role: "menu" });
   REACTION_EMOJIS.forEach((emoji) => {
@@ -844,24 +898,55 @@ function openReactionPicker(msgId, anchorRect) {
     );
   });
   document.body.append(pickerEl);
-  placePopup(pickerEl, anchorRect, "above");
+  placePopup(pickerEl, anchorEl, "above");
 }
 
-// ---- Read receipts (✓ sent, ✓✓ read by everyone else) ----
-function refreshTicks(msg) {
-  const tickEl = document.querySelector(`#msg-${CSS.escape(String(msg.id))} .ticks`);
-  if (!tickEl) return;
-  const read = isReadByAll(msg.conversation_id, msg, currentMemberIds);
-  tickEl.innerHTML = "";
-  tickEl.append(icon(read ? "checkDouble" : "check", 14));
-  tickEl.classList.toggle("read", read);
-  tickEl.setAttribute("aria-label", read ? "Read" : "Sent");
-}
+// ---- Delivery state, shown by the bubble itself ----
+// Instead of tick glyphs the bubble is dimmed while a message is in flight,
+// stays slightly muted once it's on the server, and lifts to full brightness
+// with a soft glow when the other side has seen it.
+const STATE_LABEL = { sending: "Sending…", failed: "Not sent", sent: "Sent", seen: "Seen" };
 
-function refreshAllTicks() {
-  for (const msg of msgCache.values()) {
-    if (msg.user_id === state.currentUser?.id && !msg._pending) refreshTicks(msg);
+function messageState(msg) {
+  if (msg._pending) return "sending";
+  if (msg._failed) return "failed";
+  if (isReadByAll(msg.conversation_id, msg, currentMemberIds)) return "seen";
+  // In a 1:1 chat, a reply that arrived after our message proves it was seen —
+  // this keeps "Seen" working even if the other device never wrote a marker.
+  // Not applied to groups, where one person replying says nothing about the rest.
+  if (
+    state.currentConversation?.type === "direct" &&
+    lastOtherMessageAt &&
+    Date.parse(lastOtherMessageAt) > Date.parse(msg.created_at)
+  ) {
+    return "seen";
   }
+  return "sent";
+}
+
+function applyMessageState(msg) {
+  const row = document.getElementById(`msg-${msg.id}`);
+  if (!row) return;
+  const st = messageState(msg);
+  row.dataset.state = st;
+  row.setAttribute("aria-label", STATE_LABEL[st]);
+}
+
+// Recompute every own message, and label only the newest one (like the
+// "Delivered / Read" line under the last message in other messengers).
+function refreshMessageStates() {
+  const mine = [...msgCache.values()].filter((m) => m.user_id === state.currentUser?.id);
+  mine.forEach(applyMessageState);
+  document.querySelectorAll(".msg-status").forEach((n) => n.remove());
+
+  const newest = mine
+    .filter((m) => !m._pending)
+    .sort((a, b) => Date.parse(a.created_at) - Date.parse(b.created_at))
+    .pop();
+  if (!newest) return;
+  const row = document.getElementById(`msg-${newest.id}`);
+  const footer = row?.querySelector(".message-footer");
+  if (footer) footer.append(el("span", { class: "msg-status", text: STATE_LABEL[messageState(newest)] }));
 }
 
 // ---- Per-message actions (star / pin / edit / delete) ----
@@ -878,7 +963,7 @@ function openMsgActions(msg, anchor) {
   const convId = state.currentConversationId;
 
   const items = [
-    { ico: "smile", label: "React", act: () => openReactionPicker(msg.id, anchor.getBoundingClientRect()) },
+    { ico: "smile", label: "React", act: () => openReactionPicker(msg.id, anchor.closest(".message") || anchor) },
     { ico: "reply", label: "Reply", act: () => startReply(msg) },
     { ico: "star", label: isStarred(msg.id) ? "Unstar" : "Star", act: () => {
       toggleStar(msg.id, convId);
@@ -891,6 +976,7 @@ function openMsgActions(msg, anchor) {
       refreshPinnedBar(convId);
     } },
   ];
+  items.push({ ico: "send", label: "Forward", act: () => openForwardModal(msg) });
   if (isMine && msg.content) items.push({ ico: "edit", label: "Edit", act: () => openEditModal(msg) });
   if (isMine) items.push({ ico: "trash", label: "Delete", act: () => deleteMessage(msg.id), danger: true });
 
@@ -907,31 +993,45 @@ function openMsgActions(msg, anchor) {
     msgActionsEl.append(b);
   });
   document.body.append(msgActionsEl);
-  placePopup(msgActionsEl, anchor.getBoundingClientRect(), "below");
+  placePopup(msgActionsEl, anchor.closest(".message") || anchor, "below");
 }
 
-// Place a floating popup against an anchor, clamped to the viewport.
-// left/top are pinned before measuring: while they're `auto` the popup is laid
-// out by the body's flex rules, which can report a misleading size and leave a
-// non-finite result that silently drops the element off-screen.
-function placePopup(node, anchorRect, side) {
+// Place a floating popup against a message bubble.
+//
+// It aligns to the bubble's edge (right for your messages, left for theirs) so
+// popups always appear in the same place relative to what you clicked, and
+// flips above/below depending on the room available. left/top are pinned before
+// measuring: while they're `auto` the popup is laid out by the body's flex
+// rules, which reports a misleading size.
+const POPUP_PAD = 8;
+
+function placePopup(node, anchorEl, prefer = "below") {
   node.style.left = "0px";
   node.style.top = "0px";
-  const w = node.offsetWidth || 260;
+
+  const r = anchorEl.getBoundingClientRect();
+  const w = node.offsetWidth || 240;
   const h = node.offsetHeight || 150;
-  const anchorLeft = Number.isFinite(anchorRect?.left) ? anchorRect.left : 0;
-  const anchorTop = Number.isFinite(anchorRect?.top) ? anchorRect.top : 0;
-  const anchorW = Number.isFinite(anchorRect?.width) ? anchorRect.width : 0;
-  const anchorH = Number.isFinite(anchorRect?.height) ? anchorRect.height : 0;
+  const vw = window.innerWidth || document.documentElement.clientWidth || 0;
+  const vh = window.innerHeight || document.documentElement.clientHeight || 0;
+  const maxLeft = Math.max(POPUP_PAD, vw - w - POPUP_PAD);
+  const maxTop = Math.max(POPUP_PAD, vh - h - POPUP_PAD);
 
-  const left = Math.min(Math.max(8, anchorLeft + anchorW / 2 - w / 2), Math.max(8, window.innerWidth - w - 8));
-  const top =
-    side === "above"
-      ? Math.max(8, anchorTop - h - 8)
-      : Math.min(anchorTop + anchorH + 6, Math.max(8, window.innerHeight - h - 8));
+  // Hug the side of the bubble the message is aligned to.
+  const mine = anchorEl.classList.contains("my-message");
+  let left = mine ? r.right - w : r.left;
+  left = Math.min(Math.max(POPUP_PAD, left), maxLeft);
 
-  node.style.left = `${Math.round(Number.isFinite(left) ? left : 8)}px`;
-  node.style.top = `${Math.round(Number.isFinite(top) ? top : 8)}px`;
+  // Flip to whichever side actually has room.
+  const above = r.top - h - 6;
+  const below = r.bottom + 6;
+  let top = prefer === "above" ? above : below;
+  if (prefer === "above" && above < POPUP_PAD) top = below;
+  if (prefer !== "above" && below > maxTop) top = above;
+  top = Math.min(Math.max(POPUP_PAD, top), maxTop);
+
+  node.style.left = `${Math.round(Number.isFinite(left) ? left : POPUP_PAD)}px`;
+  node.style.top = `${Math.round(Number.isFinite(top) ? top : POPUP_PAD)}px`;
 }
 
 // ---- Edit message (encrypted like sending) ----
@@ -987,6 +1087,76 @@ async function saveEdit() {
   }
   document.getElementById("edit-modal").classList.add("hidden");
   editingMsg = null;
+}
+
+// ---- Forwarding ----
+// The text is re-encrypted with the destination chat's own key — a message can
+// never be readable in a conversation it wasn't encrypted for.
+async function forwardMessage(msg, targetConvId) {
+  const plain = msg.file_url && !msg.content ? "" : await messagePlaintext(msg);
+
+  let content = plain;
+  let iv = null;
+  if (plain) {
+    const key = await getConversationKey(targetConvId);
+    if (key) {
+      const enc = await window.PanaloCrypto.encryptMessage(plain, key);
+      content = enc.ciphertext;
+      iv = enc.iv;
+    }
+  }
+
+  const { error } = await supabaseClient.from("messages").insert([
+    {
+      content: content || null,
+      iv,
+      username: state.currentUsername,
+      user_id: state.currentUser.id,
+      conversation_id: targetConvId,
+      file_url: msg.file_url || null,
+    },
+  ]);
+  if (error) {
+    showToast("Could not forward that message.");
+    return false;
+  }
+  return true;
+}
+
+function openForwardModal(msg) {
+  const modal = document.getElementById("forward-modal");
+  const list = document.getElementById("forward-list");
+  list.innerHTML = "";
+
+  const targets = allConversations.filter((c) => c.id !== msg.conversation_id);
+  if (!targets.length) {
+    list.append(el("div", { class: "list-empty", text: "No other chats to forward to yet." }));
+  }
+
+  targets.forEach((conv) => {
+    const title = displayTitle(conv);
+    const avatar = el("div", { class: "avatar" });
+    avatar.style.width = "34px";
+    avatar.style.height = "34px";
+    avatar.style.fontSize = "13px";
+    setAvatar(avatar, conv.type === "group" ? conv.name : conv.displayTitle || conv.name, conv.type === "group" ? null : conv.otherAvatar);
+
+    const row = el("div", { class: "member-row", role: "button", tabindex: "0" }, [
+      el("div", { class: "member-id" }, [avatar, el("span", { text: title })]),
+      el("button", { class: "mini-btn", type: "button", text: "Send" }),
+    ]);
+    const doForward = async () => {
+      row.style.opacity = "0.5";
+      const ok = await forwardMessage(msg, conv.id);
+      modal.classList.add("hidden");
+      if (ok) showToast(`Forwarded to ${title}`, "success");
+      row.style.opacity = "";
+    };
+    row.addEventListener("click", doForward);
+    list.append(row);
+  });
+
+  modal.classList.remove("hidden");
 }
 
 // ---- Pinned messages bar + modal ----
@@ -1196,6 +1366,7 @@ function markSendFailed(tempId, reason, onRetry) {
   }
   tempEl.classList.remove("pending");
   tempEl.classList.add("failed");
+  tempEl.dataset.state = "failed";
   const footer = tempEl.querySelector(".message-footer");
   if (footer) {
     footer.innerHTML = "";
@@ -1383,6 +1554,120 @@ function openChatMenu() {
   menu.classList.remove("hidden");
 }
 
+// ---- Custom sidebar folders ----
+const FOLDER_ICON_CHOICES = ["star", "users", "user", "chat", "sparkle", "pin", "smile", "image", "sound", "file", "palette", "check"];
+let pendingFolderIcon = "star";
+
+// Render a folder's icon: either one of our vectors or an uploaded picture.
+function folderIconNode(iconValue, size = 20) {
+  if (typeof iconValue === "string" && iconValue.startsWith("img:")) {
+    const img = el("img", { src: iconValue.slice(4), alt: "", class: "folder-img" });
+    img.style.width = `${size}px`;
+    img.style.height = `${size}px`;
+    return img;
+  }
+  return icon(iconValue || "star", size);
+}
+
+// Folder buttons sit in the rail under the built-in views.
+function renderRailFolders() {
+  const rail = document.querySelector(".nav-rail");
+  const spacer = rail.querySelector(".rail-spacer");
+  rail.querySelectorAll(".rail-folder").forEach((n) => n.remove());
+
+  getFolders().forEach((folder) => {
+    const btn = el("button", {
+      class: `rail-btn rail-folder${chatFilter === `folder:${folder.id}` ? " active" : ""}`,
+      type: "button",
+      title: folder.name,
+      "aria-label": `${folder.name} folder`,
+      onClick: () => selectView(`folder:${folder.id}`, btn),
+    });
+    btn.dataset.view = `folder:${folder.id}`;
+    btn.append(folderIconNode(folder.icon, 20));
+    rail.insertBefore(btn, spacer);
+  });
+}
+
+function selectView(view, btn) {
+  chatFilter = view;
+  document.querySelectorAll(".rail-btn[data-view]").forEach((b) => b.classList.toggle("active", b === btn));
+  renderConversations();
+}
+
+// Shrink an uploaded picture right down — a rail icon is only ~20px.
+async function iconDataUrl(file) {
+  const bitmap = await createImageBitmap(file);
+  const size = 64;
+  const canvas = document.createElement("canvas");
+  canvas.width = size;
+  canvas.height = size;
+  const side = Math.min(bitmap.width, bitmap.height);
+  canvas
+    .getContext("2d")
+    .drawImage(bitmap, (bitmap.width - side) / 2, (bitmap.height - side) / 2, side, side, 0, 0, size, size);
+  bitmap.close?.();
+  return canvas.toDataURL("image/png");
+}
+
+function renderFolderModal() {
+  const list = document.getElementById("folder-list");
+  list.innerHTML = "";
+  const folders = getFolders();
+  if (!folders.length) {
+    list.append(el("div", { class: "list-empty", text: "No folders yet — make one below." }));
+  }
+  folders.forEach((folder) => {
+    list.append(
+      el("div", { class: "member-row" }, [
+        el("div", { class: "member-id" }, [
+          el("span", { class: "folder-chip-icon" }, [folderIconNode(folder.icon, 18)]),
+          el("span", { text: `${folder.name} · ${folder.convIds.length} chat${folder.convIds.length === 1 ? "" : "s"}` }),
+        ]),
+        el("button", {
+          class: "member-remove",
+          type: "button",
+          text: "Delete",
+          onClick: () => {
+            deleteFolder(folder.id);
+            if (chatFilter === `folder:${folder.id}`) {
+              chatFilter = "all";
+              document.querySelectorAll(".rail-btn[data-view]").forEach((b) => b.classList.toggle("active", b.dataset.view === "all"));
+            }
+            renderFolderModal();
+            renderRailFolders();
+            renderConversations();
+          },
+        }),
+      ])
+    );
+  });
+
+  // Icon choices
+  const grid = document.getElementById("folder-icon-grid");
+  grid.innerHTML = "";
+  FOLDER_ICON_CHOICES.forEach((name) => {
+    const b = el("button", {
+      class: `folder-icon-choice${pendingFolderIcon === name ? " selected" : ""}`,
+      type: "button",
+      "aria-label": name,
+      onClick: () => {
+        pendingFolderIcon = name;
+        renderFolderModal();
+      },
+    }, [icon(name, 18)]);
+    grid.append(b);
+  });
+  if (typeof pendingFolderIcon === "string" && pendingFolderIcon.startsWith("img:")) {
+    grid.append(el("span", { class: "folder-icon-choice selected" }, [folderIconNode(pendingFolderIcon, 18)]));
+  }
+}
+
+function openFolderModal() {
+  renderFolderModal();
+  document.getElementById("folder-modal").classList.remove("hidden");
+}
+
 // ---- Focus mode (distraction-free: no rail, no list, no ambient) ----
 export function setFocusMode(on) {
   document.body.classList.toggle("focus-mode", on);
@@ -1548,7 +1833,7 @@ export function initChatUI() {
 
   // Reactions + receipts keep themselves in sync in the background.
   setReactionListener(renderReactions);
-  setReceiptListener(refreshAllTicks);
+  setReceiptListener(refreshMessageStates);
   startReactions();
 
   // Refresh the header status whenever anyone's online state changes.
@@ -1602,11 +1887,49 @@ export function initChatUI() {
     renderConversations();
   });
   document.querySelectorAll(".rail-btn[data-view]").forEach((btn) => {
-    btn.addEventListener("click", () => {
-      chatFilter = btn.dataset.view;
-      document.querySelectorAll(".rail-btn[data-view]").forEach((b) => b.classList.toggle("active", b === btn));
-      renderConversations();
-    });
+    btn.addEventListener("click", () => selectView(btn.dataset.view, btn));
+  });
+  renderRailFolders();
+
+  // Folder management (create with a preset vector icon or your own picture).
+  document.getElementById("choose-folder").addEventListener("click", () => {
+    newChatModal.classList.add("hidden");
+    openFolderModal();
+  });
+  document.getElementById("close-folder-modal").addEventListener("click", () => {
+    document.getElementById("folder-modal").classList.add("hidden");
+  });
+  const folderIconInput = document.getElementById("folder-icon-input");
+  document.getElementById("folder-upload-btn").addEventListener("click", () => folderIconInput.click());
+  folderIconInput.addEventListener("change", async () => {
+    const file = folderIconInput.files[0];
+    folderIconInput.value = "";
+    if (!file) return;
+    try {
+      pendingFolderIcon = `img:${await iconDataUrl(file)}`;
+      renderFolderModal();
+    } catch {
+      showToast("Could not use that image.");
+    }
+  });
+  document.getElementById("create-folder-btn").addEventListener("click", () => {
+    const input = document.getElementById("folder-name-input");
+    const name = input.value.trim();
+    if (!name) {
+      showToast("Give the folder a name first.");
+      return;
+    }
+    addFolder(name, pendingFolderIcon);
+    input.value = "";
+    pendingFolderIcon = "star";
+    renderFolderModal();
+    renderRailFolders();
+    showToast(`Folder "${name}" created`, "success");
+  });
+
+  // Forwarding.
+  document.getElementById("close-forward-modal").addEventListener("click", () => {
+    document.getElementById("forward-modal").classList.add("hidden");
   });
 
   // Chat info drawer: click the header identity (or ⋮ → Chat info).
@@ -1628,6 +1951,9 @@ export function initChatUI() {
       document.getElementById("theme-modal").classList.remove("hidden");
     },
     onWallpaperChanged: (convId) => applyChatWallpaper(convId),
+    onWallpaperChanged: (convId) => {
+      if (convId === state.currentConversationId) applyChatWallpaper(convId);
+    },
     onLeftChat: async (convId) => {
       if (state.currentConversationId === convId) {
         state.currentConversationId = null;

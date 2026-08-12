@@ -9,6 +9,7 @@ import { FONT_PRESETS, WALLPAPER_PRESETS } from "./config.js";
 import {
   getNickname, setNickname, isPinned, togglePin,
   getChatFont, setChatFont, getChatWallpaper, setChatWallpaper,
+  getFolders, isChatInFolder, toggleChatInFolder,
 } from "./prefs.js";
 import { icon } from "./icons.js";
 import { isMuted, toggleMute } from "./notifications.js";
@@ -84,6 +85,30 @@ function renderWallpaperChips(conv) {
       },
     });
     if (w.icon) chip.prepend(icon(w.icon, 13));
+    box.append(chip);
+  });
+}
+
+// Folder membership for this chat.
+function renderFolderChips(conv) {
+  const box = document.getElementById("info-folder-chips");
+  box.innerHTML = "";
+  const folders = getFolders();
+  if (!folders.length) {
+    box.append(el("span", { class: "info-bio-view", text: "No folders yet — make one from the + button." }));
+    return;
+  }
+  folders.forEach((folder) => {
+    const chip = el("button", {
+      class: `info-chip${isChatInFolder(folder.id, conv.id) ? " selected" : ""}`,
+      type: "button",
+      text: folder.name,
+      onClick: () => {
+        const inFolder = toggleChatInFolder(folder.id, conv.id);
+        chip.classList.toggle("selected", inFolder);
+        cb.onListChanged?.();
+      },
+    });
     box.append(chip);
   });
 }
@@ -254,6 +279,8 @@ export async function openChatInfo() {
 
   refreshChips(conv);
   renderFontChips(conv);
+  renderWallpaperChips(conv);
+  renderFolderChips(conv);
   renderWallpaperChips(conv);
 
   const encEl = document.getElementById("info-encryption");

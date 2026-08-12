@@ -1990,38 +1990,18 @@ a:focus-visible {
   font-weight: 500;
 }
 
-/* ---- Focus mode ---- */
-.focus-controls {
-  position: absolute;
-  top: 14px;
-  left: 14px;
-  z-index: 30;
+/* ---- Focus mode ----
+   The controls live inside the chat header rather than floating over it, so
+   they're laid out by the header's own flex row and can never overlap the
+   title, the avatar, or the chat list. */
+.focus-only {
   display: none;
-  gap: 8px;
 }
 
-body.focus-mode .focus-controls {
-  display: flex;
-}
-
-.focus-ctl {
-  width: 38px;
-  height: 38px;
-  padding: 0;
-  border-radius: 12px;
-  background: rgba(32, 27, 51, 0.85);
-  color: var(--text);
-  backdrop-filter: blur(6px);
-  border: 1px solid var(--border);
-  display: flex;
+body.focus-mode .focus-only {
+  display: inline-flex;
   align-items: center;
   justify-content: center;
-}
-
-.focus-ctl:hover {
-  background: var(--surface-3);
-  transform: none;
-  box-shadow: none;
 }
 
 body.focus-mode .app-container {
@@ -2031,6 +2011,7 @@ body.focus-mode .app-container {
   height: 100dvh;
   border-radius: 0;
   border: none;
+  box-shadow: none;
 }
 
 body.focus-mode .nav-rail,
@@ -2038,27 +2019,20 @@ body.focus-mode .sidebar {
   display: none;
 }
 
-/* The chat list pops back out over the conversation on demand */
+/* Popping the panel out restores the rail AND the list, in normal flow — so
+   the view switcher (all / direct / groups / starred) comes back with it. */
+body.focus-mode.panel-out .nav-rail {
+  display: flex;
+}
+
 body.focus-mode.panel-out .sidebar {
   display: flex;
-  position: absolute;
-  left: 0;
-  top: 0;
-  bottom: 0;
-  width: 320px;
-  z-index: 12;
-  background: var(--sidebar-bg);
-  box-shadow: 18px 0 48px rgba(0, 0, 0, 0.45);
 }
 
 /* Focus mode means focus: no ambient motion at all */
 body.focus-mode #aurora,
 body.focus-mode #fx-canvas {
   display: none !important;
-}
-
-body.focus-mode .chat-header {
-  padding-left: 108px; /* clear the floating controls */
 }
 
 /* ---- "Ambient" wallpaper: let the ambient effect show through the app ---- */
@@ -2204,21 +2178,62 @@ body.focus-mode .chat-header {
   box-shadow: none;
 }
 
-/* ---- Read receipts ---- */
-.ticks {
-  display: inline-flex;
-  align-items: center;
-  color: rgba(255, 255, 255, 0.65);
+/* ---- Delivery state, expressed by the bubble's own brightness ----
+   sending → faded and pulsing · failed → faded, red edge ·
+   sent → slightly held back · seen → full brightness with a soft glow  */
+.message.my-message[data-state] {
+  transition: opacity 0.35s ease, box-shadow 0.35s ease, filter 0.35s ease;
 }
 
-.ticks.read {
-  color: #6fe3ff; /* the "seen" blue, readable on the sent-bubble gradient */
+.message.my-message[data-state="sending"] {
+  opacity: 0.45;
+  animation: sendingPulse 1.4s ease-in-out infinite;
 }
 
-.ticks .icon {
-  width: 14px;
-  height: 14px;
-  stroke-width: 2.4;
+.message.my-message[data-state="failed"] {
+  opacity: 0.6;
+  box-shadow: inset 0 0 0 1.5px var(--danger);
+}
+
+.message.my-message[data-state="sent"] {
+  opacity: 0.74;
+  filter: saturate(0.85);
+}
+
+.message.my-message[data-state="seen"] {
+  opacity: 1;
+  filter: saturate(1.06) brightness(1.05);
+  box-shadow: 0 0 0 1px color-mix(in srgb, var(--primary) 55%, transparent),
+              0 6px 22px color-mix(in srgb, var(--primary) 32%, transparent);
+}
+
+@keyframes sendingPulse {
+  0%, 100% { opacity: 0.42; }
+  50% { opacity: 0.62; }
+}
+
+/* Word label under the newest of your messages, so the brightness scale is
+   never something the reader has to guess at. */
+.msg-status {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.72);
+}
+
+.message.my-message[data-state="seen"] .msg-status {
+  color: #fff;
+}
+
+.message.my-message[data-state="failed"] .msg-status {
+  color: #ffd0d0;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .message.my-message[data-state="sending"] {
+    animation: none;
+  }
 }
 
 /* ---- Replies ---- */
@@ -2339,6 +2354,105 @@ body.focus-mode .chat-header {
   30% { box-shadow: 0 0 0 3px var(--primary); }
 }
 
+/* ---- Message search results ---- */
+.search-section {
+  margin-top: 10px;
+  border-top: 1px solid var(--border);
+  padding-top: 8px;
+}
+
+.search-heading {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--text-faint);
+  padding: 4px 12px 6px;
+}
+
+/* ---- Custom sidebar folders ---- */
+.rail-divider {
+  width: 26px;
+  height: 1px;
+  background: var(--border);
+  margin: 2px 0 4px;
+  flex-shrink: 0;
+}
+
+.rail-folder .folder-img {
+  border-radius: 6px;
+  object-fit: cover;
+  display: block;
+}
+
+.folder-icon-grid {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 6px;
+  margin-bottom: 12px;
+}
+
+.folder-icon-choice {
+  width: 100%;
+  aspect-ratio: 1;
+  padding: 0;
+  border-radius: 10px;
+  background: var(--surface-2);
+  color: var(--text);
+  border: 2px solid transparent;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.folder-icon-choice:hover {
+  background: var(--surface-3);
+  transform: none;
+  box-shadow: none;
+}
+
+.folder-icon-choice.selected {
+  border-color: var(--primary);
+  background: rgba(139, 124, 246, 0.16);
+}
+
+.folder-chip-icon {
+  display: flex;
+  align-items: center;
+  color: var(--primary);
+}
+
+/* ---- Per-chat wallpapers (override the app-wide one for one chat) ---- */
+.chat-main[data-wp="doodle"] {
+  background-image: url("doodle.svg");
+  background-size: 300px 300px;
+  background-repeat: repeat;
+}
+.chat-main[data-wp="dots"] {
+  background-image: radial-gradient(rgba(139, 124, 246, 0.13) 1.5px, transparent 1.5px);
+  background-size: 22px 22px;
+}
+.chat-main[data-wp="aurora"] {
+  background-image:
+    radial-gradient(45% 40% at 12% 12%, rgba(139, 124, 246, 0.32), transparent 60%),
+    radial-gradient(42% 42% at 88% 20%, rgba(255, 110, 174, 0.26), transparent 60%),
+    radial-gradient(50% 50% at 72% 96%, rgba(55, 194, 224, 0.24), transparent 60%);
+}
+.chat-main[data-wp="mesh"] {
+  background-image:
+    radial-gradient(38% 38% at 4% 8%, rgba(55, 194, 224, 0.30), transparent 56%),
+    radial-gradient(38% 38% at 96% 12%, rgba(255, 138, 91, 0.26), transparent 56%),
+    radial-gradient(44% 44% at 50% 104%, rgba(139, 124, 246, 0.30), transparent 56%);
+}
+.chat-main[data-wp="plain"] {
+  background-image: none;
+  background-color: var(--app-bg);
+}
+.chat-main[data-wp="ambient"] {
+  background-image: none;
+  background-color: transparent;
+}
+
 /* ---- Responsive: phones & portrait tablets (single-pane, full-screen) ---- */
 @media (max-width: 768px) {
   .app-container {
@@ -2351,16 +2465,53 @@ body.focus-mode .chat-header {
     flex-direction: column;
   }
 
-  /* The rail becomes a WhatsApp-style bottom bar on phones */
+  /* The rail becomes a WhatsApp-style bottom bar on phones. It scrolls
+     sideways so custom folders never squash the built-in views. */
   .nav-rail {
     order: 2;
     width: 100%;
-    height: 58px;
+    height: 62px;
     flex-direction: row;
-    justify-content: space-around;
+    justify-content: flex-start;
+    gap: 4px;
     padding: 0 10px;
     border-right: none;
     border-top: 1px solid var(--border);
+    overflow-x: auto;
+    overflow-y: hidden;
+    scrollbar-width: none;
+    flex-shrink: 0;
+  }
+
+  .nav-rail::-webkit-scrollbar {
+    display: none;
+  }
+
+  /* Slightly smaller so the built-in views, folders, profile and settings all
+     fit across a 375px phone without needing to scroll. */
+  .nav-rail .rail-btn {
+    flex-shrink: 0;
+    width: 38px;
+    height: 38px;
+    border-radius: 11px;
+  }
+
+  .nav-rail .rail-avatar {
+    width: 30px;
+    height: 30px;
+    font-size: 12px;
+  }
+
+  .rail-divider {
+    width: 1px;
+    height: 26px;
+    margin: 0 2px;
+    align-self: center;
+  }
+
+  /* Keep "new chat" and the profile/settings pinned to the ends */
+  .rail-new {
+    order: -1;
   }
 
   .rail-btn.active::before {
@@ -2398,6 +2549,37 @@ body.focus-mode .chat-header {
 
   .chat-info {
     width: 100%;
+  }
+
+  /* Focus mode on a phone: the panel takes the whole screen when popped out */
+  body.focus-mode.panel-out .sidebar {
+    order: 1;
+  }
+  body.focus-mode.panel-out .chat-main {
+    display: none;
+  }
+  body.focus-mode.panel-out .nav-rail {
+    order: 2;
+  }
+
+  /* Popups must never be wider than the phone */
+  .msg-actions,
+  .reaction-picker {
+    max-width: calc(100vw - 16px);
+  }
+
+  .reaction-picker {
+    flex-wrap: wrap;
+    justify-content: center;
+    border-radius: 18px;
+  }
+
+  .modal-content {
+    max-height: 84vh;
+  }
+
+  .folder-icon-grid {
+    grid-template-columns: repeat(5, 1fr);
   }
 
   .back-btn {

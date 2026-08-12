@@ -96,6 +96,8 @@
       <div id="active-chat-window" class="chat-window hidden">
         <div class="chat-header">
           <button id="back-btn" class="back-btn" type="button" aria-label="Back to conversations"><span data-icon="back"></span></button>
+          <button id="focus-panel-btn" class="header-icon-btn focus-only" type="button" title="Show chat list" aria-label="Show chat list"><span data-icon="menu"></span></button>
+          <button id="focus-exit-btn" class="header-icon-btn focus-only" type="button" title="Exit focus mode" aria-label="Exit focus mode"><span data-icon="collapse"></span></button>
           <div id="chat-header-main" class="chat-header-main" role="button" tabindex="0" aria-label="Open chat info">
             <div id="active-chat-avatar" class="avatar chat-header-avatar" aria-hidden="true"></div>
             <div class="chat-header-info">
@@ -213,6 +215,11 @@
           <div id="info-wallpaper-chips" class="info-actions"></div>
         </div>
 
+        <div class="info-section">
+          <span class="settings-label">Folders</span>
+          <div id="info-folder-chips" class="info-actions"></div>
+        </div>
+
         <div class="info-section" id="info-members-section">
           <span class="settings-label">Members</span>
           <div id="info-members-list" class="members-list"></div>
@@ -227,11 +234,6 @@
       </div>
     </aside>
 
-    <!-- Focus mode controls (only visible in focus mode) -->
-    <div id="focus-controls" class="focus-controls">
-      <button id="focus-panel-btn" class="focus-ctl" type="button" title="Show chat list" aria-label="Show chat list"><span data-icon="menu"></span></button>
-      <button id="focus-exit-btn" class="focus-ctl" type="button" title="Exit focus mode" aria-label="Exit focus mode"><span data-icon="collapse"></span></button>
-    </div>
   </div>
 
   <div id="new-chat-modal" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="new-chat-title">
@@ -247,6 +249,11 @@
           <span class="choice-icon" data-icon="users" data-icon-size="26"></span>
           <span class="choice-name">New group</span>
           <span class="choice-sub">Chat with many</span>
+        </button>
+        <button id="choose-folder" class="choice-card" type="button">
+          <span class="choice-icon" data-icon="star" data-icon-size="26"></span>
+          <span class="choice-name">New folder</span>
+          <span class="choice-sub">Sort chats your way</span>
         </button>
       </div>
       <div class="modal-buttons">
@@ -398,6 +405,35 @@
       <div id="pinned-list" class="members-list"></div>
       <div class="modal-buttons">
         <button id="close-pinned-modal" class="secondary-btn">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="forward-modal" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="forward-modal-title">
+    <div class="modal-content">
+      <h3 id="forward-modal-title">Forward to…</h3>
+      <div id="forward-list" class="members-list"></div>
+      <div class="modal-buttons">
+        <button id="close-forward-modal" class="secondary-btn">Cancel</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="folder-modal" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="folder-modal-title">
+    <div class="modal-content">
+      <h3 id="folder-modal-title">Sidebar folders</h3>
+      <span class="settings-label">Your folders</span>
+      <div id="folder-list" class="members-list"></div>
+
+      <span class="settings-label">New folder</span>
+      <input type="text" id="folder-name-input" placeholder="Folder name (e.g. Friends)" maxlength="24" aria-label="Folder name" />
+      <span class="settings-label">Pick an icon</span>
+      <div id="folder-icon-grid" class="folder-icon-grid"></div>
+      <button id="folder-upload-btn" class="mini-btn" type="button"><span data-icon="upload" data-icon-size="14"></span>Upload your own</button>
+      <input type="file" id="folder-icon-input" accept="image/*" class="hidden" aria-label="Upload a folder icon" />
+      <div class="modal-buttons">
+        <button id="create-folder-btn">Create folder</button>
+        <button id="close-folder-modal" class="secondary-btn">Done</button>
       </div>
     </div>
   </div>
