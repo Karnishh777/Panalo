@@ -9,6 +9,8 @@
 // The PIN is stored only as a salted SHA-256 hash, so reading localStorage
 // doesn't reveal it.
 import { showToast } from "./util.js";
+import { supabaseClient } from "./client.js";
+import { state } from "./state.js";
 
 // Three independent PINs, so unlocking the app doesn't reveal hidden chats and
 // knowing one PIN doesn't grant the others.
@@ -139,9 +141,13 @@ export function askPin({ purpose = "app", title = "Enter your PIN", subtitle = "
     const modal = document.getElementById("pin-modal");
     const input = document.getElementById("pin-input");
     const cancel = document.getElementById("pin-cancel");
+    const forgot = document.getElementById("pin-forgot");
     document.getElementById("pin-title").textContent = title;
     document.getElementById("pin-subtitle").textContent = subtitle;
     cancel.style.display = allowCancel ? "" : "none";
+    // "Forgot?" is only meaningful once the user is signed in — the account
+    // password is what proves identity to clear a PIN.
+    forgot.parentElement.style.display = state.currentUser ? "" : "none";
     input.value = "";
     modal.classList.remove("hidden");
     setTimeout(() => input.focus(), 50);
@@ -150,6 +156,7 @@ export function askPin({ purpose = "app", title = "Enter your PIN", subtitle = "
       modal.classList.add("hidden");
       submit.removeEventListener("click", onSubmit);
       cancel.removeEventListener("click", onCancel);
+      forgot.removeEventListener("click", onForgot);
       input.removeEventListener("keydown", onKey);
       resolve(value);
     };
@@ -163,6 +170,34 @@ export function askPin({ purpose = "app", title = "Enter your PIN", subtitle = "
       showToast("Wrong PIN.");
     };
     const onCancel = () => done(false);
+    // Forgotten PIN → verify account password → clear this purpose's PIN.
+    // Deliberately not an email round-trip: the PIN is a local salted hash and
+    // never leaves the device, so an email link couldn't reset it anyway.
+    const onForgot = async (e) => {
+      e.preventDefault();
+      if (!state.currentUser) {
+        showToast("Sign in first, then reset your PIN.");
+        return;
+      }
+      const password = window.prompt("Enter your account password to reset this PIN:");
+      if (!password) return;
+      const { error } = await supabaseClient.auth.signInWithPassword({
+        email: state.currentUser.email,
+        password,
+      });
+      if (error) {
+        showToast("That password doesn't match.");
+        return;
+      }
+      clearPin(purpose);
+      // App lock loses its guard once its PIN is gone.
+      if (purpose === "app") localStorage.removeItem("panalo.lock.app");
+      // Locked chats need their PIN — dropping the PIN unlocks all of them.
+      if (purpose === "chat") localStorage.setItem("panalo.lock.chats", "[]");
+      // Hidden chats stay hidden but no longer need a PIN to reveal.
+      showToast("PIN cleared — set a new one in Settings when you like.", "success");
+      done(true);
+    };
     const onKey = (e) => {
       if (e.key === "Enter") onSubmit();
     };
@@ -170,6 +205,7 @@ export function askPin({ purpose = "app", title = "Enter your PIN", subtitle = "
     const submit = document.getElementById("pin-submit");
     submit.addEventListener("click", onSubmit);
     cancel.addEventListener("click", onCancel);
+    forgot.addEventListener("click", onForgot);
     input.addEventListener("keydown", onKey);
   });
 }

@@ -34,6 +34,7 @@
           <span>Keep me logged in</span>
         </label>
         <button id="login-btn">Log In</button>
+        <p class="auth-switch"><a href="#" id="forgot-password">Forgot password?</a></p>
         <p class="auth-switch">No account? <a href="#" id="show-signup">Sign up</a></p>
       </div>
 
@@ -506,6 +507,37 @@
     </div>
   </div>
 
+  <!-- Landed here from the password-reset email -->
+  <div id="recovery-modal" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="recovery-modal-title">
+    <div class="modal-content">
+      <h3 id="recovery-modal-title">Set a new password</h3>
+      <p class="otp-hint" id="recovery-key-hint">
+        Your encryption key is protected by your password. If your key is still
+        cached on this device, we'll re-protect it with the new password
+        automatically. If not, we'll generate fresh keys and old encrypted
+        messages will become unreadable.
+      </p>
+      <input type="password" id="recovery-new-password" placeholder="New password" autocomplete="new-password" />
+      <input type="password" id="recovery-confirm-password" placeholder="Repeat new password" autocomplete="new-password" />
+      <div class="modal-buttons">
+        <button id="save-recovery-password">Set password</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Forgot password: ask for the email, send Supabase reset link -->
+  <div id="forgot-password-modal" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="forgot-modal-title">
+    <div class="modal-content">
+      <h3 id="forgot-modal-title">Reset your password</h3>
+      <p class="otp-hint">We'll email a reset link to your registered address. The link opens Panalo where you can pick a new one.</p>
+      <input type="email" id="forgot-email" placeholder="Your email" autocomplete="email" />
+      <div class="modal-buttons">
+        <button id="send-reset-link">Send reset link</button>
+        <button id="close-forgot-modal" class="secondary-btn">Cancel</button>
+      </div>
+    </div>
+  </div>
+
   <div id="password-modal" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="password-modal-title">
     <div class="modal-content">
       <h3 id="password-modal-title">Change password</h3>
@@ -526,6 +558,7 @@
       <p id="pin-subtitle" class="otp-hint"></p>
       <input type="password" id="pin-input" class="otp-input" inputmode="numeric" autocomplete="off"
              maxlength="8" placeholder="••••" aria-label="PIN" />
+      <p class="auth-switch" style="margin-top:6px;"><a href="#" id="pin-forgot">Forgot PIN?</a></p>
       <div class="modal-buttons">
         <button id="pin-submit">Unlock</button>
         <button id="pin-cancel" class="secondary-btn">Cancel</button>

@@ -138,6 +138,38 @@ export async function ensureUserKeys(password) {
   }
 }
 
+// Generate a brand-new keypair for the current user, protected by the new
+// password. Used as a last resort during password reset when the old private
+// key isn't cached on this device — the honest cost is that any messages
+// encrypted with the old key become unreadable forever.
+export async function regenerateKeypair(password) {
+  try {
+    const kp = await window.PanaloCrypto.generateUserKeypair();
+    state.myPublicKeyB64 = await window.PanaloCrypto.exportPublicKey(kp.publicKey);
+    const stored = await window.PanaloCrypto.protectPrivateKey(kp.privateKey, password);
+
+    const [{ error: pubErr }, { error: keyErr }] = await Promise.all([
+      supabaseClient.from("profiles").update({ public_key: state.myPublicKeyB64 }).eq("id", state.currentUser.id),
+      supabaseClient.from("user_keys").upsert({
+        user_id: state.currentUser.id,
+        enc_private_key: stored.encPrivateKey,
+        key_salt: stored.keySalt,
+        key_iv: stored.keyIv,
+      }),
+    ]);
+    if (pubErr || keyErr) throw pubErr || keyErr;
+
+    state.myPrivateKey = kp.privateKey;
+    await idbSetKey(state.currentUser.id, state.myPrivateKey);
+    // Old wrapped conversation keys are useless with the new private key.
+    conversationKeys.clear();
+    return "ready";
+  } catch (e) {
+    console.error("Could not regenerate keypair:", e);
+    return "failed";
+  }
+}
+
 // Re-protect the private key with a new password.
 //
 // This MUST happen whenever the account password changes: the stored private

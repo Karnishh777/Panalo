@@ -2,7 +2,7 @@
 import { supabaseClient, setRemember } from "./client.js";
 import { state, conversationKeys } from "./state.js";
 import { withBusy, showToast, redirectUrl } from "./util.js";
-import { ensureUserKeys, idbDelKey } from "./encryption.js";
+import { ensureUserKeys, idbDelKey, idbGetKey, rewrapPrivateKey, regenerateKeypair } from "./encryption.js";
 import { fetchConversations } from "./chat.js";
 import { startPresence, stopPresence } from "./presence.js";
 import { startNotifications, stopNotifications } from "./notifications.js";
@@ -251,8 +251,98 @@ export function initAuth() {
     location.reload();
   });
 
+  // ---- Forgot password (sends an email link) ----
+  const forgotModal = document.getElementById("forgot-password-modal");
+  document.getElementById("forgot-password").addEventListener("click", (e) => {
+    e.preventDefault();
+    document.getElementById("forgot-email").value = document.getElementById("login-email").value || "";
+    forgotModal.classList.remove("hidden");
+    document.getElementById("forgot-email").focus();
+  });
+  document.getElementById("close-forgot-modal").addEventListener("click", () => forgotModal.classList.add("hidden"));
+
+  const sendResetBtn = document.getElementById("send-reset-link");
+  sendResetBtn.addEventListener("click", () =>
+    withBusy(sendResetBtn, "Sending…", async () => {
+      const email = document.getElementById("forgot-email").value.trim();
+      if (!email) return showToast("Enter your email.");
+      const { error } = await supabaseClient.auth.resetPasswordForEmail(email, { redirectTo: redirectUrl() });
+      if (error) return showToast(error.message);
+      // Always the same message whether or not the email exists, so this can't
+      // be used to probe which addresses have accounts.
+      forgotModal.classList.add("hidden");
+      showToast("If that address has an account, a reset link is on its way. Check spam too.", "success");
+    })
+  );
+
+  // ---- Recovery landing (the app opens with a Supabase recovery token) ----
+  // Supabase fires PASSWORD_RECOVERY once it parses the recovery hash. Rather
+  // than reason about URLs ourselves, listen for that event.
+  const recoveryModal = document.getElementById("recovery-modal");
+  let inRecovery = false;
+  supabaseClient.auth.onAuthStateChange(async (event) => {
+    if (event !== "PASSWORD_RECOVERY") return;
+    inRecovery = true;
+    authScreen.classList.remove("hidden");
+    chatApp.classList.add("hidden");
+    // Tell the user whether their messages will survive the reset.
+    const uid = (await supabaseClient.auth.getUser()).data.user?.id;
+    const cached = uid ? await idbGetKey(uid) : null;
+    document.getElementById("recovery-key-hint").textContent = cached
+      ? "Your encryption key is cached on this device — we'll re-protect it with the new password so your messages stay readable."
+      : "Your encryption key isn't cached on this device. Setting a new password will generate fresh keys — older encrypted messages will become unreadable.";
+    ["recovery-new-password", "recovery-confirm-password"].forEach((id) => (document.getElementById(id).value = ""));
+    recoveryModal.classList.remove("hidden");
+    document.getElementById("recovery-new-password").focus();
+  });
+
+  const saveRecoveryBtn = document.getElementById("save-recovery-password");
+  saveRecoveryBtn.addEventListener("click", () =>
+    withBusy(saveRecoveryBtn, "Setting…", async () => {
+      const next = document.getElementById("recovery-new-password").value;
+      const confirm = document.getElementById("recovery-confirm-password").value;
+      if (!next || next.length < MIN_PASSWORD_LENGTH) return showToast(`Password must be at least ${MIN_PASSWORD_LENGTH} characters.`);
+      if (next !== confirm) return showToast("Passwords don't match.");
+
+      const { data: userData, error } = await supabaseClient.auth.updateUser({ password: next });
+      if (error) return showToast(error.message);
+
+      // Try to keep old messages readable: if the private key sits in IndexedDB
+      // from a previous session on this device, re-wrap it with the new
+      // password. Otherwise, generate new keys and accept the loss.
+      state.currentUser = userData.user;
+      const cached = await idbGetKey(state.currentUser.id);
+      if (cached) {
+        state.myPrivateKey = cached;
+        const result = await rewrapPrivateKey(next);
+        if (result !== "ready") {
+          showToast("Password set, but the encryption key didn't move with it. Try again while still signed in.");
+          return;
+        }
+        showToast("Password updated — your messages moved with it.", "success");
+      } else {
+        const result = await regenerateKeypair(next);
+        if (result !== "ready") {
+          showToast("Password set, but couldn't create new keys. Try again.");
+          return;
+        }
+        showToast("New password and fresh keys. Older encrypted messages are no longer readable — new ones will work.", "");
+      }
+
+      recoveryModal.classList.add("hidden");
+      inRecovery = false;
+      // Wipe the recovery hash so a refresh doesn't retrigger.
+      history.replaceState(null, "", location.pathname);
+
+      const { data: { session } } = await supabaseClient.auth.getSession();
+      if (session) initApp(session);
+    })
+  );
+
   // Restore an existing session on load.
   supabaseClient.auth.getSession().then(async ({ data: { session } }) => {
+    if (inRecovery) return; // the recovery event will drive the flow
+
     if (!session) return;
     state.currentUser = session.user;
     const status = await ensureUserKeys(null);
