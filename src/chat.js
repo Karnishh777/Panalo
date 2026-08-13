@@ -34,6 +34,10 @@ import {
 import { searchMessages, invalidateSearchIndex } from "./search.js";
 import { parseSticker, stickerSvg, stickerImg, describeText, initStickerPicker } from "./stickers.js";
 import { getMemories, isDismissed as isMemoryDismissed, dismiss as dismissMemory } from "./memories.js";
+import {
+  snoozeMessage, cancelSnooze, isSnoozed, presetOptions, humanWhen,
+  setSnoozeFireHandler, startSnoozes, pendingCount,
+} from "./snooze.js";
 import { initCalls, startCall, setCallLogger, parseCall, describeCall } from "./calls.js";
 import { parseLocation, locationCard, locationMarker, getCurrentPosition, initLocation, describeLocation } from "./location.js";
 import { openChatInfo, closeChatInfo, setChatInfoCallbacks, displayTitle, initChatInfo } from "./chatinfo.js";
@@ -949,6 +953,7 @@ function renderMessage(msg, prepend = false) {
   else messagesList.append(messageEl);
   refreshMsgFlags(msg.id);
   renderReactions(msg.id);
+  if (isSnoozed(msg.id)) messageEl.classList.add("snoozed");
 
   // Track the other side's latest message — it's what proves a 1:1 "Seen".
   if (!isMine && msg.created_at && (!lastOtherMessageAt || msg.created_at > lastOtherMessageAt)) {
@@ -1063,6 +1068,51 @@ function refreshMessageStates() {
 // ---- Per-message actions (star / pin / edit / delete) ----
 let msgActionsEl = null;
 
+// ---- Snooze picker ----
+// Reuses the same visual language as the message-actions menu, so it feels
+// like a natural second step from tapping "Snooze".
+let snoozePickerEl = null;
+
+function closeSnoozePicker() {
+  snoozePickerEl?.remove();
+  snoozePickerEl = null;
+}
+
+async function openSnoozePicker(msg, anchor) {
+  closeSnoozePicker();
+  const sample = msg._plain || (msg.file_url ? "📎 Attachment" : "");
+  snoozePickerEl = el("div", { class: "msg-actions", role: "menu" });
+  presetOptions().forEach(({ label, at }) => {
+    snoozePickerEl.append(
+      el("button", {
+        class: "chat-menu-item",
+        type: "button",
+        role: "menuitem",
+        onClick: (e) => {
+          e.stopPropagation();
+          closeSnoozePicker();
+          snoozeMessage({
+            msgId: msg.id,
+            convId: msg.conversation_id,
+            msgCreatedAt: msg.created_at,
+            wakeAt: at,
+            sample,
+            from: msg.username || "someone",
+          });
+          // The .snoozed style is only added at render time, so an already-
+          // rendered row needs to be updated in place — otherwise the clock
+          // badge doesn't appear until you scroll away and back.
+          document.getElementById(`msg-${msg.id}`)?.classList.add("snoozed");
+          showToast(`Snoozed — I'll nudge you ${humanWhen(at)}.`, "success");
+          renderConversations();
+        },
+      }, [icon("clock", 16), label])
+    );
+  });
+  document.body.append(snoozePickerEl);
+  placePopup(snoozePickerEl, anchor.closest(".message") || anchor, "below");
+}
+
 function closeMsgActions() {
   msgActionsEl?.remove();
   msgActionsEl = null;
@@ -1088,6 +1138,11 @@ function openMsgActions(msg, anchor) {
     } },
   ];
   items.push({ ico: "send", label: "Forward", act: () => openForwardModal(msg) });
+  items.push({
+    ico: "clock",
+    label: isSnoozed(msg.id) ? "Cancel snooze" : "Snooze",
+    act: () => (isSnoozed(msg.id) ? (cancelSnooze(msg.id), showToast("Snooze cancelled.", "success"), renderConversations()) : openSnoozePicker(msg, anchor)),
+  });
   if (isMine && msg.content) items.push({ ico: "edit", label: "Edit", act: () => openEditModal(msg) });
   if (isMine) items.push({ ico: "trash", label: "Delete", act: () => deleteMessage(msg.id), danger: true });
 
@@ -2047,6 +2102,27 @@ export function initChatUI() {
   // Revealing or re-hiding chats redraws the list.
   document.addEventListener("panalo:refresh-chats", renderConversations);
 
+  // Snooze: when a scheduled reminder fires, refresh the badges + list so the
+  // now-unread chat bumps to the top. The banner + sound come from snooze.js.
+  setSnoozeFireHandler(async (entry) => {
+    const conv = allConversations.find((c) => c.id === entry.convId);
+    if (conv) {
+      // Re-hydrate this chat's meta so unread count reflects the rollback.
+      const { data } = await supabaseClient
+        .from("messages")
+        .select("id, conversation_id, user_id, username, content, iv, file_url, created_at")
+        .eq("conversation_id", conv.id)
+        .order("created_at", { ascending: false })
+        .limit(META_SCAN_LIMIT);
+      conv.lastMessage = (data || [])[0] || null;
+      conv.lastAt = conv.lastMessage?.created_at || conv.lastAt;
+      conv.unread = countUnread(conv.id, data || []);
+      refreshUnreadBadges();
+      renderConversations();
+    }
+  });
+  startSnoozes(); // catch up on anything already overdue and schedule the rest
+
   // The hidden-chats gesture: ⌘/Ctrl+Shift+H, or a two-finger tap on a phone.
   initHiddenShortcut((visible) => {
     renderConversations();
@@ -2218,6 +2294,7 @@ export function initChatUI() {
     chatMenu.classList.add("hidden");
     closeMsgActions();
     if (!e.target.closest(".reaction-picker")) closeReactionPicker();
+    if (!e.target.closest(".msg-actions")) closeSnoozePicker();
     if (document.body.classList.contains("panel-out") && !e.target.closest(".sidebar, .focus-controls")) {
       document.body.classList.remove("panel-out");
     }

@@ -46,6 +46,19 @@ export function markRead(convId) {
   writeMap(map);
 }
 
+// Roll the read pointer back to just before a specific message, so it (and
+// anything after it) shows up as unread again. Used by snooze — the whole
+// point is to *un*-read a message and let the normal unread machinery notice.
+export function rollbackReadTo(convId, iso) {
+  const map = readMap();
+  const before = new Date(new Date(iso).getTime() - 1).toISOString();
+  // Only move backwards; never accidentally advance the pointer.
+  if (!map[convId] || before < map[convId]) {
+    map[convId] = before;
+    writeMap(map);
+  }
+}
+
 // Count messages in `messages` that arrived after the last read and weren't ours.
 export function countUnread(convId, messages) {
   const since = getLastRead(convId);
