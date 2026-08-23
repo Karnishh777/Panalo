@@ -1894,6 +1894,22 @@ export function initChatUI() {
 
   fileBtn.addEventListener("click", () => fileInput.click());
 
+  // Compose "+" — one entry point for attach / sticker / location so the
+  // composer row has room for the actual text input on narrow screens.
+  const composeAdd = document.getElementById("compose-add");
+  const composeMenu = document.getElementById("compose-menu");
+  composeAdd.addEventListener("click", (e) => {
+    e.stopPropagation();
+    composeMenu.classList.toggle("hidden");
+  });
+  composeMenu.addEventListener("click", (e) => {
+    // Any menu-item click closes the menu; the item's own handler still runs.
+    if (e.target.closest(".compose-menu-item")) composeMenu.classList.add("hidden");
+  });
+  document.addEventListener("click", (e) => {
+    if (!e.target.closest("#compose-add, #compose-menu")) composeMenu.classList.add("hidden");
+  });
+
   // Paste a screenshot straight into the chat. The clipboard hands us a File
   // with no useful name, so it gets one, then it goes through the very same
   // attach → preview → send path as a picked file.

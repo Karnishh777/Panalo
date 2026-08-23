@@ -134,7 +134,18 @@ function createPeer(peerId) {
     remoteStream = e.streams[0];
     const remote = $("call-remote");
     remote.srcObject = remoteStream;
-    remote.play?.().catch(() => {});
+    // iOS Safari sometimes blocks autoplay on the remote video until the user
+    // touches the screen. If play() rejects, wait for the next tap and try
+    // again — otherwise the connection is up but the video looks frozen.
+    remote.play?.().catch(() => {
+      const kick = () => {
+        remote.play?.().catch(() => {});
+        document.removeEventListener("touchend", kick);
+        document.removeEventListener("click", kick);
+      };
+      document.addEventListener("touchend", kick, { once: true });
+      document.addEventListener("click", kick, { once: true });
+    });
     setStatus("Connected");
     startDuration();
   };
@@ -171,9 +182,19 @@ async function restartIce(peerId) {
 
 async function getMedia(video) {
   try {
+    // facingMode:"user" asks mobile Safari/Chrome for the FRONT camera —
+    // without it they often pick the rear-facing one, which is nobody's
+    // expectation on a chat call. Constraints stay ideal (not exact) so a
+    // device without the requested size still returns something usable.
     return await navigator.mediaDevices.getUserMedia({
-      audio: true,
-      video: video ? { width: { ideal: 1280 }, height: { ideal: 720 } } : false,
+      audio: { echoCancellation: true, noiseSuppression: true },
+      video: video
+        ? {
+            facingMode: "user",
+            width: { ideal: 1280 },
+            height: { ideal: 720 },
+          }
+        : false,
     });
   } catch (err) {
     if (err && (err.name === "NotAllowedError" || err.name === "SecurityError")) {

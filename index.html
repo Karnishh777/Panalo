@@ -162,9 +162,16 @@
 
         <form id="message-form">
           <input type="file" id="file-input" class="hidden" aria-label="Attach a file" />
-          <button type="button" id="file-btn" title="Attach a file (up to 50 MB)" aria-label="Attach a file"><span data-icon="clip"></span></button>
-          <button type="button" id="sticker-btn" title="Stickers &amp; greetings" aria-label="Stickers and greetings"><span data-icon="smile"></span></button>
-          <button type="button" id="location-btn" title="Share your location" aria-label="Share your location"><span data-icon="pin"></span></button>
+
+          <!-- One + button opens a small menu with attach / sticker / location.
+               The three original buttons still live in that menu, so JS wiring
+               (fileBtn.click, stickerBtn, locationBtn) doesn't have to change. -->
+          <button type="button" id="compose-add" title="Attach" aria-label="Attach"><span data-icon="plus" data-icon-size="20"></span></button>
+          <div id="compose-menu" class="compose-menu hidden" role="menu">
+            <button type="button" id="file-btn" class="compose-menu-item" role="menuitem"><span data-icon="clip" data-icon-size="18"></span>Photo or file</button>
+            <button type="button" id="sticker-btn" class="compose-menu-item" role="menuitem"><span data-icon="smile" data-icon-size="18"></span>Sticker</button>
+            <button type="button" id="location-btn" class="compose-menu-item" role="menuitem"><span data-icon="pin" data-icon-size="18"></span>Location</button>
+          </div>
 
           <input type="text" id="message-input" placeholder="Type a message..." autocomplete="off" aria-label="Type a message" />
           <button type="submit" id="send-btn" aria-label="Send"><span data-icon="send" data-icon-size="17"></span><span class="send-label">Send</span></button>
