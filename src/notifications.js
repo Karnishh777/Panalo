@@ -43,6 +43,14 @@ export function toggleMute(convId) {
   }
   return list.includes(convId);
 }
+export function forgetMute(convId) {
+  const list = getMuted().filter((id) => id !== convId);
+  try {
+    localStorage.setItem(MUTED_KEY, JSON.stringify(list));
+  } catch {
+    /* ignore */
+  }
+}
 
 export function setAlertPrefs(next) {
   prefs = { ...prefs, ...next };
@@ -150,6 +158,15 @@ function showDesktop(title, body, convId) {
 // ---- Sound (generated, no asset) ----
 let audioCtx = null;
 export function playChime() {
+  // Tiny haptic tap alongside the chime — makes the phone-in-pocket case feel
+  // alive without being loud. Guarded by prefers-reduced-motion via util.haptic.
+  try {
+    if (!window.matchMedia?.("(prefers-reduced-motion: reduce)").matches) {
+      navigator.vibrate?.(10);
+    }
+  } catch {
+    /* ignore */
+  }
   if (!prefs.sound) return;
   try {
     const Ctx = window.AudioContext || window.webkitAudioContext;

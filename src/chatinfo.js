@@ -10,10 +10,16 @@ import {
   getNickname, setNickname, isPinned, togglePin,
   getChatFont, setChatFont, getChatWallpaper, setChatWallpaper,
   getFolders, isChatInFolder, toggleChatInFolder,
+  forgetChatPrefs,
 } from "./prefs.js";
 import { icon } from "./icons.js";
-import { isMuted, toggleMute } from "./notifications.js";
+import { isMuted, toggleMute, forgetMute } from "./notifications.js";
 import { getConversationKey } from "./encryption.js";
+import { forgetChatLock } from "./lock.js";
+import { forgetMemory } from "./memories.js";
+import { forgetReadState } from "./unread.js";
+import { pendingFor, cancelSnooze } from "./snooze.js";
+import { conversationKeys } from "./state.js";
 
 let cb = {}; // { onListChanged, onTitleChanged, onOpenTheme, onLeftChat, onWallpaperChanged }
 export function setChatInfoCallbacks(callbacks) {
@@ -221,19 +227,108 @@ async function addMember(conv) {
 }
 
 async function leaveGroup(conv) {
+  const confirmed = await confirmDelete({
+    title: "Leave and delete group?",
+    body: `You'll be removed from ${conv.name || "this group"}. Your copy of the messages goes with you; other members keep theirs.`,
+    danger: "Leave & delete",
+  });
+  if (!confirmed) return;
+  await removeMeAndForget(conv, "You left the group.");
+}
+
+// Delete a chat for me only. Server-side that's just leaving the conversation
+// (dropping my participant row + my wrapped conversation key). Everyone else in
+// the conversation still has their full copy — this matches WhatsApp's
+// "delete chat" semantics, which is what users expect.
+async function deleteChat(conv) {
+  const isGroup = conv.type === "group";
+  const label = isGroup ? (conv.name || "this group") : (conv.displayTitle || conv.name || "this chat");
+  const confirmed = await confirmDelete({
+    title: isGroup ? "Leave and delete group?" : "Delete chat?",
+    body: isGroup
+      ? `You'll be removed from ${label}. Your copy of the messages disappears; other members keep theirs.`
+      : `Delete your copy of the chat with ${label}. Messages stay with them, and they can still write to you — a new message will start the chat again.`,
+    danger: isGroup ? "Leave & delete" : "Delete for me",
+  });
+  if (!confirmed) return;
+  await removeMeAndForget(conv, isGroup ? "You left the group." : "Chat deleted.");
+}
+
+// Common tail: drop the server rows I control, wipe every scrap of local state
+// that referred to this chat, and hand off to chat.js to close and re-render.
+async function removeMeAndForget(conv, toast) {
   const { error } = await supabaseClient
     .from("conversation_participants")
     .delete()
     .eq("conversation_id", conv.id)
     .eq("user_id", state.currentUser.id);
   if (error) {
-    showToast("Could not leave — run supabase-phase5.sql first.");
+    showToast("Could not delete — please try again.");
     return;
   }
+  // Best-effort key row cleanup. Kept even if it fails: my public_key changing
+  // makes an old wrapped key unopenable anyway.
   await supabaseClient.from("conversation_keys").delete().eq("conversation_id", conv.id).eq("user_id", state.currentUser.id);
+
+  // Everything local — nicknames, pins, mute, lock/hidden, memories dismissal,
+  // read pointer, snoozes, in-memory AES key. A chat with the same id that
+  // came back later should feel like a fresh start.
+  forgetChatPrefs(conv.id);
+  forgetMute(conv.id);
+  forgetChatLock(conv.id);
+  forgetMemory(conv.id);
+  forgetReadState(conv.id);
+  pendingFor(conv.id).forEach((s) => cancelSnooze(s.msgId));
+  conversationKeys.delete(conv.id);
+
   closeChatInfo();
-  showToast("You left the group.", "success");
+  showToast(toast, "success");
   cb.onLeftChat?.(conv.id);
+}
+
+// Bespoke confirmation modal — the browser confirm() is jarring and mobile
+// keyboards cover it. Returns a Promise<boolean>. Traps focus lightly and
+// closes on Escape / backdrop click. The button copy is caller-supplied so
+// "Delete for me" reads correctly against "Leave & delete" for groups.
+function confirmDelete({ title, body, danger }) {
+  return new Promise((resolve) => {
+    const backdrop = el("div", { class: "modal confirm-modal", role: "dialog", "aria-modal": "true" });
+    const card = el("div", { class: "modal-content confirm-content" });
+    const heading = el("h3", { text: title });
+    const para = el("p", { class: "confirm-body", text: body });
+    const cancelBtn = el("button", {
+      class: "modal-btn",
+      type: "button",
+      text: "Cancel",
+      onClick: () => close(false),
+    });
+    const okBtn = el("button", {
+      class: "modal-btn danger",
+      type: "button",
+      text: danger,
+      onClick: () => close(true),
+    });
+    const row = el("div", { class: "modal-buttons" }, [cancelBtn, okBtn]);
+    card.append(heading, para, row);
+    backdrop.append(card);
+    backdrop.addEventListener("click", (e) => {
+      if (e.target === backdrop) close(false);
+    });
+    const keyHandler = (e) => {
+      if (e.key === "Escape") close(false);
+      if (e.key === "Enter" && document.activeElement !== cancelBtn) close(true);
+    };
+    document.addEventListener("keydown", keyHandler);
+    document.body.append(backdrop);
+    requestAnimationFrame(() => okBtn.focus());
+
+    function close(result) {
+      document.removeEventListener("keydown", keyHandler);
+      backdrop.classList.add("closing");
+      setTimeout(() => backdrop.remove(), 160);
+      resolve(result);
+    }
+  });
 }
 
 async function saveGroupField(conv, field, value, label) {
@@ -268,6 +363,13 @@ export async function openChatInfo() {
   document.getElementById("info-group-section").style.display = isGroup ? "block" : "none";
   document.getElementById("info-members-section").style.display = isGroup ? "block" : "none";
   document.getElementById("info-bio-section").style.display = isGroup ? "none" : "block";
+
+  // The unified Delete chat button says the right thing for the current chat.
+  const deleteBtn = document.getElementById("delete-chat-btn");
+  deleteBtn.replaceChildren(icon("trash", 15), document.createTextNode(isGroup ? "Leave and delete group" : "Delete chat"));
+  // Hide the older group-only leave button now that Delete handles both cases.
+  const legacyLeave = document.getElementById("leave-group-btn");
+  if (legacyLeave) legacyLeave.style.display = "none";
 
   if (isGroup) {
     document.getElementById("info-group-name").value = conv.name || "";
@@ -356,4 +458,14 @@ export function initChatInfo() {
   });
 
   document.getElementById("leave-group-btn").addEventListener("click", () => leaveGroup(state.currentConversation));
+  document.getElementById("delete-chat-btn").addEventListener("click", () => {
+    const conv = state.currentConversation;
+    if (conv) deleteChat(conv);
+  });
+}
+
+// Also expose deleteChat so chat.js can call it from the conversation-list
+// context menu, without re-doing all the cleanup logic there.
+export function deleteConversation(conv) {
+  return deleteChat(conv);
 }

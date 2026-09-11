@@ -77,6 +77,18 @@ export function showToast(message, type = "error") {
   }, 4000);
 }
 
+// Fire a small vibration on devices that support it. No-op on desktop and on
+// browsers that expose the API but disable it. Centralised so a future
+// user-level "no haptics" toggle only needs one edit.
+export function haptic(ms = 8) {
+  try {
+    if (window.matchMedia?.("(prefers-reduced-motion: reduce)").matches) return;
+    navigator.vibrate?.(ms);
+  } catch {
+    /* ignore */
+  }
+}
+
 // Fill an avatar element: profile photo if there's a safe URL, else the
 // colored-initial fallback.
 export function setAvatar(node, name, url) {

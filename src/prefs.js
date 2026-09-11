@@ -153,3 +153,35 @@ export function setChatFont(convId, fontId) {
   else delete map[convId];
   write(FONT_KEY, map);
 }
+
+// ---- Forget everything this file remembers about one chat ----
+// Called from the delete-chat flow so a removed chat doesn't leave orphan
+// nicknames, pins, or folder memberships behind (which would come back the
+// moment a chat with the same id was re-created).
+export function forgetChatPrefs(convId) {
+  [NICK_KEY, CHAT_WP_KEY, FONT_KEY, PINMSG_KEY].forEach((key) => {
+    const map = read(key, {});
+    if (map[convId] !== undefined) {
+      delete map[convId];
+      write(key, map);
+    }
+  });
+  const pins = read(PINS_KEY, []);
+  const idx = pins.indexOf(convId);
+  if (idx >= 0) {
+    pins.splice(idx, 1);
+    write(PINS_KEY, pins);
+  }
+  const stars = read(STARS_KEY, []).filter((s) => s.convId !== convId);
+  write(STARS_KEY, stars);
+  const folders = read(FOLDERS_KEY, []);
+  let touched = false;
+  folders.forEach((f) => {
+    const i = f.convIds.indexOf(convId);
+    if (i >= 0) {
+      f.convIds.splice(i, 1);
+      touched = true;
+    }
+  });
+  if (touched) write(FOLDERS_KEY, folders);
+}

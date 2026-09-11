@@ -46,6 +46,15 @@ export function markRead(convId) {
   writeMap(map);
 }
 
+// Drop the read pointer for a deleted chat — otherwise a re-created chat with
+// the same id would silently pick up the old "already read up to" marker.
+export function forgetReadState(convId) {
+  const map = readMap();
+  if (map[convId] === undefined) return;
+  delete map[convId];
+  writeMap(map);
+}
+
 // Roll the read pointer back to just before a specific message, so it (and
 // anything after it) shows up as unread again. Used by snooze — the whole
 // point is to *un*-read a message and let the normal unread machinery notice.

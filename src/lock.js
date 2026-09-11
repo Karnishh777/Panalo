@@ -121,6 +121,15 @@ export function toggleChatHidden(convId) {
   write(HIDDEN_CHATS_KEY, list);
   return list.includes(convId);
 }
+
+// Wipe both lock lists for a chat that's being deleted, and drop it from the
+// per-session unlocked set so a re-created chat with the same id isn't
+// accidentally "already unlocked".
+export function forgetChatLock(convId) {
+  write(LOCKED_CHATS_KEY, read(LOCKED_CHATS_KEY, []).filter((id) => id !== convId));
+  write(HIDDEN_CHATS_KEY, read(HIDDEN_CHATS_KEY, []).filter((id) => id !== convId));
+  unlockedThisSession.delete(convId);
+}
 export function hiddenCount() {
   return read(HIDDEN_CHATS_KEY, []).length;
 }

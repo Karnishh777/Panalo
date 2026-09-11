@@ -3645,3 +3645,142 @@ body.app-locked #auth-screen {
     transition: none !important;
   }
 }
+
+/* ============================================================
+   Phase 10 polish — delete-chat, confirm modal, springs, ripple
+   ============================================================ */
+
+#info-danger-section {
+  padding-top: 8px;
+  border-top: 1px solid var(--border);
+  margin-top: 6px;
+}
+#info-danger-section .danger-btn {
+  width: 100%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 12px 16px;
+  border-radius: 14px;
+  font-weight: 600;
+  border: 0;
+  box-shadow: 0 8px 22px rgba(230, 76, 76, 0.25);
+  transition: transform 0.12s ease, box-shadow 0.2s ease, filter 0.15s ease;
+}
+#info-danger-section .danger-btn:hover {
+  filter: brightness(1.05);
+  transform: translateY(-1px);
+  box-shadow: 0 12px 28px rgba(230, 76, 76, 0.35);
+}
+#info-danger-section .danger-btn:active {
+  transform: translateY(0);
+  filter: brightness(0.95);
+}
+
+.confirm-modal {
+  z-index: 60;
+  animation: confirmFadeIn 0.16s ease;
+}
+.confirm-modal.closing {
+  animation: confirmFadeOut 0.16s ease forwards;
+}
+.confirm-content {
+  padding: 26px 24px;
+  max-width: 380px;
+  animation: confirmPop 0.28s cubic-bezier(0.34, 1.56, 0.64, 1);
+  border-radius: 20px;
+}
+.confirm-content h3 {
+  color: var(--text);
+  margin-bottom: 10px;
+  font-family: var(--font-display);
+}
+.confirm-body {
+  color: var(--text-muted);
+  font-size: 14px;
+  line-height: 1.5;
+  margin-bottom: 20px;
+}
+.modal-btn {
+  flex: 1;
+  padding: 11px 14px;
+  border: 0;
+  border-radius: 12px;
+  background: var(--surface-2);
+  color: var(--text);
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s ease, transform 0.1s ease;
+}
+.modal-btn:hover { background: var(--surface-3); }
+.modal-btn:active { transform: scale(0.97); }
+.modal-btn.danger {
+  background: linear-gradient(135deg, #ff7a7a, #e64c4c);
+  color: #fff;
+  box-shadow: 0 6px 18px rgba(230, 76, 76, 0.28);
+}
+.modal-btn.danger:hover { filter: brightness(1.06); }
+.modal-btn:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 2px;
+}
+
+@keyframes confirmFadeIn {
+  from { opacity: 0; } to { opacity: 1; }
+}
+@keyframes confirmFadeOut {
+  from { opacity: 1; } to { opacity: 0; }
+}
+@keyframes confirmPop {
+  0%   { opacity: 0; transform: scale(0.94) translateY(4px); }
+  70%  { opacity: 1; transform: scale(1.02) translateY(0); }
+  100% { opacity: 1; transform: scale(1); }
+}
+
+#send-btn {
+  transition: transform 0.1s ease, box-shadow 0.2s ease, filter 0.15s ease;
+}
+#send-btn:hover { filter: brightness(1.06); box-shadow: 0 6px 18px rgba(139, 124, 246, 0.35); }
+#send-btn:active { transform: scale(0.92); filter: brightness(0.98); }
+
+.toast {
+  animation: toastPop 0.28s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+@keyframes toastPop {
+  0%   { opacity: 0; transform: translateY(14px) scale(0.96); }
+  70%  { opacity: 1; transform: translateY(-2px) scale(1.02); }
+  100% { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+.msg-actions .chat-menu-item { gap: 10px; }
+
+.conv-item {
+  transition: background 0.14s ease, transform 0.1s ease;
+}
+.conv-item:active { transform: scale(0.985); }
+
+.empty-list {
+  padding: 42px 20px;
+  text-align: center;
+  color: var(--text-muted);
+  animation: fadeSlideUp 0.35s ease;
+}
+.empty-list .empty-emoji {
+  font-size: 44px;
+  display: block;
+  margin-bottom: 10px;
+  filter: drop-shadow(0 4px 18px rgba(139, 124, 246, 0.5));
+  animation: emptyBob 3.6s ease-in-out infinite;
+}
+.empty-list .empty-title {
+  color: var(--text);
+  font-weight: 700;
+  font-family: var(--font-display);
+  margin-bottom: 4px;
+}
+.empty-list .empty-sub { font-size: 13px; line-height: 1.5; }
+@keyframes emptyBob {
+  0%, 100% { transform: translateY(0); }
+  50%      { transform: translateY(-6px); }
+}

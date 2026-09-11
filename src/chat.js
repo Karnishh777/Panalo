@@ -1,7 +1,7 @@
 // Conversations, messages, sending, and realtime.
 import { supabaseClient } from "./client.js";
 import { state } from "./state.js";
-import { el, showToast, withBusy, getAvatarColor, safeImageUrl, scrollToBottom, compressImage, announce, setAvatar, formatTime } from "./util.js";
+import { el, showToast, withBusy, getAvatarColor, safeImageUrl, scrollToBottom, compressImage, announce, setAvatar, formatTime, haptic } from "./util.js";
 import { getConversationKey, provisionConversationKey, messagePlaintext } from "./encryption.js";
 import { MESSAGES_PAGE_SIZE, THEME_PRESETS, FONT_PRESETS, MAX_FILE_BYTES } from "./config.js";
 import { isOnline, setPresenceListener } from "./presence.js";
@@ -40,7 +40,7 @@ import {
 } from "./snooze.js";
 import { initCalls, startCall, setCallLogger, parseCall, describeCall } from "./calls.js";
 import { parseLocation, locationCard, locationMarker, getCurrentPosition, initLocation, describeLocation } from "./location.js";
-import { openChatInfo, closeChatInfo, setChatInfoCallbacks, displayTitle, initChatInfo } from "./chatinfo.js";
+import { openChatInfo, closeChatInfo, setChatInfoCallbacks, displayTitle, initChatInfo, deleteConversation } from "./chatinfo.js";
 
 // Message rows currently on screen (id → row) — powers the actions menu.
 const msgCache = new Map();
@@ -233,7 +233,19 @@ function renderConversations() {
     return String(b.lastAt || "").localeCompare(String(a.lastAt || ""));
   });
   if (!items.length && q.length < 2) {
-    conversationsList.append(el("div", { class: "list-empty", text: q ? "No chats match your search." : "No chats here yet." }));
+    if (q) {
+      conversationsList.append(el("div", { class: "list-empty", text: "No chats match your search." }));
+    } else {
+      // No chats at all in this view — soft, encouraging empty state.
+      const isFiltered = chatFilter !== "all";
+      conversationsList.append(el("div", { class: "empty-list" }, [
+        el("span", { class: "empty-emoji", text: isFiltered ? "🗂️" : "💬" }),
+        el("div", { class: "empty-title", text: isFiltered ? "Nothing here yet." : "Start a chat" }),
+        el("div", { class: "empty-sub", text: isFiltered
+          ? "Chats you add to this view will appear here."
+          : "Tap the pencil to message someone by username." }),
+      ]));
+    }
     return;
   }
   items.forEach((c) => renderConversationItem(c));
@@ -422,8 +434,97 @@ function renderConversationItem(conv) {
       open();
     }
   });
+  wireConvContextMenu(item, conv);
 
   conversationsList.append(item);
+}
+
+// ---- Quick-action menu on a conversation item (right-click / long-press) ----
+// Pin, Mute, Mark as read, Delete — the actions users hunt for and can't find.
+// Anchors to the item that was clicked, reuses the same popup styling as the
+// message action menu so it feels native.
+let convMenuEl = null;
+function closeConvMenu() {
+  convMenuEl?.remove();
+  convMenuEl = null;
+}
+document.addEventListener("click", (e) => {
+  if (!convMenuEl) return;
+  if (!e.target.closest(".msg-actions")) closeConvMenu();
+});
+document.addEventListener("scroll", closeConvMenu, true);
+
+function openConvMenu(conv, anchor) {
+  closeConvMenu();
+  const items = [
+    { ico: "pin", label: isPinned(conv.id) ? "Unpin chat" : "Pin chat", act: () => {
+      togglePin(conv.id);
+      renderConversations();
+      haptic(6);
+    } },
+    { ico: isMuted(conv.id) ? "bell" : "bellOff", label: isMuted(conv.id) ? "Unmute" : "Mute", act: () => {
+      toggleMute(conv.id);
+      renderConversations();
+      haptic(6);
+    } },
+    { ico: "checkDouble", label: "Mark as read", act: () => {
+      markRead(conv.id);
+      markConversationRead(conv.id);
+      conv.unread = 0;
+      refreshUnreadBadges();
+      renderConversations();
+    } },
+    { ico: "trash", label: conv.type === "group" ? "Leave & delete" : "Delete chat", danger: true, act: () => {
+      deleteConversation(conv);
+    } },
+  ];
+  convMenuEl = el("div", { class: "msg-actions", role: "menu" });
+  items.forEach(({ ico, label, act, danger }) => {
+    const b = el("button", { class: "chat-menu-item", type: "button", role: "menuitem", onClick: (e) => {
+      e.stopPropagation();
+      closeConvMenu();
+      act();
+    } }, [icon(ico, 16), label]);
+    if (danger) b.style.color = "var(--danger)";
+    convMenuEl.append(b);
+  });
+  document.body.append(convMenuEl);
+  placePopup(convMenuEl, anchor, "below");
+}
+
+function wireConvContextMenu(item, conv) {
+  item.addEventListener("contextmenu", (e) => {
+    e.preventDefault();
+    openConvMenu(conv, item);
+  });
+  // Long-press for touch. 500ms feels intentional without frustrating.
+  let pressTimer = null;
+  let pressed = false;
+  const clear = () => {
+    if (pressTimer) {
+      clearTimeout(pressTimer);
+      pressTimer = null;
+    }
+  };
+  item.addEventListener("touchstart", () => {
+    pressed = false;
+    pressTimer = setTimeout(() => {
+      pressed = true;
+      haptic(12);
+      openConvMenu(conv, item);
+    }, 500);
+  }, { passive: true });
+  item.addEventListener("touchend", (e) => {
+    clear();
+    // If we opened the menu on long-press, swallow the tap that follows so the
+    // chat doesn't open behind the menu.
+    if (pressed) {
+      e.preventDefault();
+      pressed = false;
+    }
+  });
+  item.addEventListener("touchmove", clear, { passive: true });
+  item.addEventListener("touchcancel", clear);
 }
 
 async function openConversation(conv) {
@@ -1984,6 +2085,7 @@ export function initChatUI() {
 
   messageForm.addEventListener("submit", (e) => {
     e.preventDefault();
+    haptic(6);
     handleSend();
   });
 

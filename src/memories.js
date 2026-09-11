@@ -50,6 +50,17 @@ export function dismiss(convId) {
   }
 }
 
+export function forgetMemory(convId) {
+  const map = readDismissed();
+  if (map[convId] === undefined) return;
+  delete map[convId];
+  try {
+    localStorage.setItem(DISMISS_KEY, JSON.stringify(map));
+  } catch {
+    /* ignore */
+  }
+}
+
 // The day-window for a horizon: local-midnight-to-midnight on that anniversary.
 // Local, not UTC, because "on this day" is a human calendar concept.
 function windowFor({ years = 0, months = 0 }) {
