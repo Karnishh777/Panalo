@@ -190,9 +190,16 @@ async function addMember(conv) {
   const { data: profs, error } = await supabaseClient
     .from("profiles")
     .select("id, username, public_key")
-    .ilike("username", username);
+    .ilike("username", username)
+    .limit(2);
   if (error || !profs || !profs.length) {
     showToast(`"${username}" not found.`);
+    return;
+  }
+  // Usernames are meant to be unique (see supabase-phase7.sql); refuse to
+  // guess which account is meant rather than adding the wrong person.
+  if (profs.length > 1) {
+    showToast(`Multiple accounts match "${username}" — ask them for their exact username, or run supabase-phase7.sql.`);
     return;
   }
   const target = profs[0];

@@ -782,7 +782,8 @@ async function createDirect() {
   const { data: targetProfiles, error: lookupError } = await supabaseClient
     .from("profiles")
     .select("id, username")
-    .ilike("username", username);
+    .ilike("username", username)
+    .limit(2);
 
   if (lookupError) {
     showToast("Could not look up that user.");
@@ -790,6 +791,14 @@ async function createDirect() {
   }
   if (!targetProfiles || targetProfiles.length === 0) {
     showToast(`Username "${username}" not found.`);
+    return;
+  }
+  // Usernames are meant to be unique (see supabase-phase7.sql); more than one
+  // match means that migration hasn't run yet on a database with existing
+  // duplicates. Refuse to guess which account is meant rather than silently
+  // messaging the wrong person.
+  if (targetProfiles.length > 1) {
+    showToast(`Multiple accounts match "${username}" — ask them for their exact username, or run supabase-phase7.sql.`);
     return;
   }
   const targetUser = targetProfiles[0];
@@ -852,10 +861,20 @@ async function createGroup() {
       showToast("Could not look up members.");
       return;
     }
-    foundProfiles = data || [];
-    const foundNames = new Set(foundProfiles.map((p) => p.username));
-    const missing = usernames.filter((u) => !foundNames.has(u));
+    const byUsername = new Map();
+    (data || []).forEach((p) => byUsername.set(p.username, [...(byUsername.get(p.username) || []), p]));
+
+    // Usernames are meant to be unique (see supabase-phase7.sql); a username
+    // resolving to more than one account means that migration hasn't run yet
+    // on a database with existing duplicates. Skip it rather than guessing
+    // which account should be added to the group.
+    const ambiguous = [...byUsername.entries()].filter(([, ps]) => ps.length > 1).map(([u]) => u);
+    ambiguous.forEach((u) => byUsername.delete(u));
+    foundProfiles = [...byUsername.values()].map((ps) => ps[0]);
+
+    const missing = usernames.filter((u) => !byUsername.has(u));
     if (missing.length) showToast(`Not found: ${missing.join(", ")}`, "");
+    if (ambiguous.length) showToast(`Skipped (multiple accounts match): ${ambiguous.join(", ")}`, "");
   }
 
   const { data: newConv, error: convError } = await supabaseClient
@@ -1668,11 +1687,15 @@ function refreshSendReady() {
   messageForm.classList.toggle("has-text", hasText);
 }
 
-async function sendMessage(content, file, convId, replyToId = null) {
-  const tempId = "temp-" + crypto.randomUUID();
+async function sendMessage(content, file, convId, replyToId = null, clientId = null) {
+  // Stable across retries of the same logical send (see retry() below), so a
+  // response lost to a network error — even though the insert actually
+  // committed — can be recognized as "already sent" instead of duplicated.
+  const cid = clientId || crypto.randomUUID();
+  const tempId = "temp-" + cid;
   const isImage = file && file.type.startsWith("image/");
   const localPreview = isImage ? URL.createObjectURL(file) : null;
-  const retry = () => sendMessage(content, file, convId, replyToId);
+  const retry = () => sendMessage(content, file, convId, replyToId, cid);
 
   renderMessage({
     id: tempId,
@@ -1731,6 +1754,7 @@ async function sendMessage(content, file, convId, replyToId = null) {
       user_id: state.currentUser.id,
       conversation_id: convId,
       file_url: fileUrl,
+      client_id: cid,
     };
     // Only send reply_to when there's a reply, so plain messages still work on
     // a database where supabase-phase6.sql hasn't been run yet.
@@ -1740,10 +1764,27 @@ async function sendMessage(content, file, convId, replyToId = null) {
 
     // Replying before the column exists: send it as a normal message instead of
     // losing what was typed.
-    if (insertError && replyToId && /reply_to|column/i.test(insertError.message)) {
+    if (insertError && replyToId && /reply_to/i.test(insertError.message)) {
       delete row.reply_to;
       ({ data: inserted, error: insertError } = await supabaseClient.from("messages").insert([row]).select().single());
       if (!insertError) showToast("Sent — run supabase-phase6.sql to enable replies.", "");
+    }
+
+    if (insertError && /client_id/i.test(insertError.message)) {
+      if (/duplicate|unique/i.test(insertError.message)) {
+        // This exact send already went through on an earlier attempt whose
+        // response we never saw — fetch the real row instead of resending.
+        const { data: existing } = await supabaseClient.from("messages").select("*").eq("client_id", cid).maybeSingle();
+        if (existing) {
+          inserted = existing;
+          insertError = null;
+        }
+      } else {
+        // Column doesn't exist yet — send without duplicate-retry protection
+        // rather than losing what was typed.
+        delete row.client_id;
+        ({ data: inserted, error: insertError } = await supabaseClient.from("messages").insert([row]).select().single());
+      }
     }
 
     if (insertError || !inserted) return markSendFailed(tempId, "Message failed to send", retry);
@@ -1889,13 +1930,18 @@ function updateSwatchSelection(themeId) {
 async function setChatTheme(themeId) {
   applyChatTheme(themeId);
   updateSwatchSelection(themeId);
-  if (state.currentConversation) {
-    state.currentConversation.theme = themeId;
-    // Persist for both members. No-ops gracefully until the backend is set up.
-    await supabaseClient.rpc("set_conversation_theme", {
-      conv: state.currentConversation.id,
-      new_theme: themeId,
-    });
+  if (!state.currentConversation) return;
+
+  state.currentConversation.theme = themeId;
+  // Persist for both members. .select() so an RLS-filtered (silent) no-op is
+  // detectable instead of the theme quietly staying local-only.
+  const { data, error } = await supabaseClient
+    .from("conversations")
+    .update({ theme: themeId })
+    .eq("id", state.currentConversation.id)
+    .select("id");
+  if (error || !data || !data.length) {
+    showToast("Couldn't sync the theme — the other person won't see it yet.");
   }
 }
 

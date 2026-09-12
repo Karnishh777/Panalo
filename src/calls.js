@@ -1,9 +1,17 @@
 // 1:1 voice and video calls over WebRTC.
 //
-// Signaling rides on Supabase Realtime Broadcast, so there's no separate
-// signaling server: each client listens on a channel named after its own user
-// id, and a caller joins the callee's channel just long enough to send.
-// Conversation ids and user ids are UUIDs, so channel names aren't guessable.
+// The offer/answer handshake — the two messages that establish WHO is calling
+// whom — goes through the call_invites table (see supabase-phase7.sql), with
+// caller_id stamped server-side exactly like message sender identity already
+// is. Broadcast alone can't do that: a client-supplied "from" field in a
+// broadcast payload is just a claim, and since any authenticated user can
+// resolve any other user's id via the public profiles read policy, a spoofed
+// broadcast offer could trick someone into a live call with an impersonator.
+//
+// ICE candidates (and ICE-restart renegotiation) still ride Realtime
+// Broadcast — frequent, low-stakes once both sides are already identity-
+// verified via the trusted invite row — but on a channel named after that
+// row's own random id, not a permanent per-user channel.
 //
 // NAT traversal uses public STUN only. That covers most home and office
 // networks; connections that need a relay (symmetric NAT — common on some
@@ -11,7 +19,7 @@
 // plainly rather than spinning forever.
 import { supabaseClient } from "./client.js";
 import { state } from "./state.js";
-import { el, showToast, setAvatar } from "./util.js";
+import { showToast, setAvatar } from "./util.js";
 import { icon } from "./icons.js";
 
 const ICE_SERVERS = [
@@ -21,9 +29,6 @@ const ICE_SERVERS = [
 ];
 
 const RING_TIMEOUT_MS = 35000;
-// How often the caller re-announces while ringing, so a callee who comes online
-// mid-ring still receives the offer.
-const RING_REANNOUNCE_MS = 3000;
 
 // ---- Call history ----
 // A finished call is written into the conversation as an ordinary (encrypted)
@@ -62,56 +67,178 @@ export function setCallLogger(fn) {
   logger = fn;
 }
 
-let myChannel = null;
+let myChannel = null; // postgres_changes: incoming invites + status updates
+let sigChannel = null; // broadcast: ICE candidates + ICE-restart for the active call
+let sigReady = false;
+let sigQueue = [];
 let pc = null;
 let localStream = null;
 let remoteStream = null;
 let ringTimer = null;
-let ringRepeat = null;
 let durationTimer = null;
 let callStartedAt = 0;
 // Candidates can arrive before the remote description is set; hold them.
 let pendingCandidates = [];
 
-// null when idle. { peerId, peerName, peerAvatar, video, incoming, offer }
+// null when idle. { peerId, peerName, peerAvatar, video, incoming, offer, inviteId, conversationId, answered }
 let call = null;
 
 const $ = (id) => document.getElementById(id);
 
-// ---- Signaling ----
-async function signal(peerId, event, payload) {
-  const ch = supabaseClient.channel(`call:${peerId}`);
-  // Never await this forever: a channel that never reports SUBSCRIBED would
-  // otherwise hang hang-up and teardown along with it.
-  await new Promise((resolve) => {
-    const done = setTimeout(resolve, 4000);
-    ch.subscribe((status) => {
-      if (status === "SUBSCRIBED") {
-        clearTimeout(done);
-        resolve();
-      }
+// ---- Ephemeral signaling (ICE only) — scoped to one call's random invite id ----
+function openSignalChannel(inviteId) {
+  closeSignalChannel();
+  sigChannel = supabaseClient
+    .channel(`call-sig:${inviteId}`, { config: { broadcast: { self: false } } })
+    .on("broadcast", { event: "ice" }, ({ payload }) => onRemoteCandidate(payload))
+    .on("broadcast", { event: "restart-offer" }, ({ payload }) => onRestartOffer(payload))
+    .on("broadcast", { event: "restart-answer" }, ({ payload }) => onRestartAnswer(payload))
+    .subscribe((status) => {
+      if (status !== "SUBSCRIBED") return;
+      sigReady = true;
+      const queued = sigQueue;
+      sigQueue = [];
+      queued.forEach((msg) => sigChannel?.send(msg));
     });
-  });
+}
+
+function sendSignal(event, payload) {
+  const msg = { type: "broadcast", event, payload };
+  if (sigReady && sigChannel) sigChannel.send(msg);
+  else sigQueue.push(msg);
+}
+
+function closeSignalChannel() {
+  if (sigChannel) supabaseClient.removeChannel(sigChannel);
+  sigChannel = null;
+  sigReady = false;
+  sigQueue = [];
+}
+
+// Best-effort: the row update is how the other side finds out. A failed
+// write just means they'll notice via their own ring timeout instead.
+async function updateInviteStatus(inviteId, fields) {
+  if (!inviteId) return;
   try {
-    await ch.send({ type: "broadcast", event, payload: { ...payload, from: state.currentUser.id } });
+    await supabaseClient.from("call_invites").update(fields).eq("id", inviteId);
   } catch {
-    /* the call teardown continues regardless */
+    /* the local teardown continues regardless */
   }
-  // Give the message a moment to flush before tearing the channel down.
-  setTimeout(() => supabaseClient.removeChannel(ch), 1200);
+}
+
+// ---- Incoming: trusted invite handling ----
+async function onInvite(row) {
+  if (!row || row.status !== "ringing") return;
+
+  if (call) {
+    // Already on a call — decline this new one without disturbing the active
+    // one. Doesn't touch `call`, so no local UI change.
+    updateInviteStatus(row.id, { status: "busy" });
+    return;
+  }
+
+  let offer;
+  try {
+    offer = JSON.parse(row.offer_sdp);
+  } catch {
+    return; // malformed row — ignore rather than crash the call UI
+  }
+
+  // caller_id is server-verified (see set_call_invite_caller in
+  // supabase-phase7.sql); the display name/avatar come from that trusted id,
+  // never from anything the calling client could have supplied itself.
+  const { data: callerProfile } = await supabaseClient
+    .from("profiles")
+    .select("username, avatar_url")
+    .eq("id", row.caller_id)
+    .maybeSingle();
+
+  call = {
+    peerId: row.caller_id,
+    peerName: callerProfile?.username || "Someone",
+    peerAvatar: callerProfile?.avatar_url || null,
+    video: row.kind === "video",
+    incoming: true,
+    offer,
+    inviteId: row.id,
+  };
+  openSignalChannel(row.id);
+  openOverlay(call.video ? "Incoming video call" : "Incoming voice call", true);
+  ringTimer = setTimeout(() => {
+    updateInviteStatus(row.id, { status: "missed" });
+    endCall(false, "Missed call");
+  }, RING_TIMEOUT_MS);
+}
+
+// The callee (or caller) updated a row I have the other end of.
+function onInviteUpdateAsCaller(row) {
+  if (!call || call.incoming || call.inviteId !== row.id) return;
+  if (row.status === "answered" && row.answer_sdp && !call.answered) {
+    call.answered = true;
+    clearTimeout(ringTimer);
+    let answer;
+    try {
+      answer = JSON.parse(row.answer_sdp);
+    } catch {
+      return endCall(true, "Reconnection failed");
+    }
+    pc?.setRemoteDescription(new RTCSessionDescription(answer)).then(flushCandidates).catch(() => endCall(true, "Reconnection failed"));
+    setStatus("Connecting…");
+  } else if (row.status === "declined") {
+    endCall(false, "Call declined");
+  } else if (row.status === "busy") {
+    endCall(false, "They're on another call");
+  } else if (row.status === "ended") {
+    endCall(false, "Call ended");
+  }
+}
+
+function onInviteUpdateAsCallee(row) {
+  if (!call || !call.incoming || call.inviteId !== row.id) return;
+  if (row.status === "ended") endCall(false, "Call ended");
+}
+
+// Catch-up for a client that (re)connects to Realtime after the offer's
+// INSERT event already fired — e.g. the app was opening when the call came
+// in. Replaces the old "re-announce every few seconds" broadcast pattern:
+// the invite persists in the table, so a client just checks for it directly.
+async function checkForRingingInvite() {
+  if (call || !state.currentUser) return;
+  const since = new Date(Date.now() - RING_TIMEOUT_MS).toISOString();
+  const { data } = await supabaseClient
+    .from("call_invites")
+    .select("*")
+    .eq("callee_id", state.currentUser.id)
+    .eq("status", "ringing")
+    .gt("created_at", since)
+    .order("created_at", { ascending: false })
+    .limit(1);
+  if (data && data[0]) await onInvite(data[0]);
 }
 
 export function startCalls() {
   if (myChannel || !state.currentUser) return;
+  const me = state.currentUser.id;
   myChannel = supabaseClient
-    .channel(`call:${state.currentUser.id}`)
-    .on("broadcast", { event: "offer" }, ({ payload }) => onOffer(payload))
-    .on("broadcast", { event: "answer" }, ({ payload }) => onAnswer(payload))
-    .on("broadcast", { event: "ice" }, ({ payload }) => onRemoteCandidate(payload))
-    .on("broadcast", { event: "end" }, () => endCall(false, "Call ended"))
-    .on("broadcast", { event: "decline" }, () => endCall(false, "Call declined"))
-    .on("broadcast", { event: "busy" }, () => endCall(false, "They're on another call"))
-    .subscribe();
+    .channel(`calls:${me}`)
+    .on(
+      "postgres_changes",
+      { event: "INSERT", schema: "public", table: "call_invites", filter: `callee_id=eq.${me}` },
+      (payload) => onInvite(payload.new)
+    )
+    .on(
+      "postgres_changes",
+      { event: "UPDATE", schema: "public", table: "call_invites", filter: `caller_id=eq.${me}` },
+      (payload) => onInviteUpdateAsCaller(payload.new)
+    )
+    .on(
+      "postgres_changes",
+      { event: "UPDATE", schema: "public", table: "call_invites", filter: `callee_id=eq.${me}` },
+      (payload) => onInviteUpdateAsCallee(payload.new)
+    )
+    .subscribe((status) => {
+      if (status === "SUBSCRIBED") checkForRingingInvite();
+    });
 }
 
 export function stopCalls() {
@@ -123,11 +250,11 @@ export function stopCalls() {
 }
 
 // ---- Peer connection ----
-function createPeer(peerId) {
+function createPeer() {
   const conn = new RTCPeerConnection({ iceServers: ICE_SERVERS });
 
   conn.onicecandidate = (e) => {
-    if (e.candidate) signal(peerId, "ice", { candidate: e.candidate });
+    if (e.candidate) sendSignal("ice", { candidate: e.candidate });
   };
 
   conn.ontrack = (e) => {
@@ -156,7 +283,7 @@ function createPeer(peerId) {
       if (!conn._restarted) {
         conn._restarted = true;
         setStatus("Reconnecting…");
-        restartIce(peerId);
+        restartIce();
       } else {
         endCall(true, "Couldn't connect — this network needs a TURN relay.");
       }
@@ -170,13 +297,34 @@ function createPeer(peerId) {
   return conn;
 }
 
-async function restartIce(peerId) {
+async function restartIce() {
   try {
     const offer = await pc.createOffer({ iceRestart: true });
     await pc.setLocalDescription(offer);
-    await signal(peerId, "offer", { sdp: offer, video: call?.video, restart: true });
+    sendSignal("restart-offer", { sdp: offer });
   } catch {
     endCall(true, "Reconnection failed");
+  }
+}
+
+async function onRestartOffer(payload) {
+  if (!pc || !call) return;
+  try {
+    await pc.setRemoteDescription(new RTCSessionDescription(payload.sdp));
+    const answer = await pc.createAnswer();
+    await pc.setLocalDescription(answer);
+    sendSignal("restart-answer", { sdp: answer });
+  } catch {
+    /* the connection either recovers on its own or the failed-state handler takes over */
+  }
+}
+
+async function onRestartAnswer(payload) {
+  if (!pc) return;
+  try {
+    await pc.setRemoteDescription(new RTCSessionDescription(payload.sdp));
+  } catch {
+    /* ignore */
   }
 }
 
@@ -232,56 +380,31 @@ export async function startCall(peer, wantVideo) {
   if (!localStream) return endCall(false);
   attachLocal();
 
-  pc = createPeer(peer.id);
+  pc = createPeer();
   localStream.getTracks().forEach((t) => pc.addTrack(t, localStream));
 
   const offer = await pc.createOffer();
   await pc.setLocalDescription(offer);
-  const payload = { sdp: offer, video: wantVideo, name: state.currentUsername };
-  await signal(peer.id, "offer", payload);
 
-  // Signaling is a live broadcast: someone who isn't connected yet simply never
-  // hears it. Re-announcing while the phone rings means a person who opens the
-  // app mid-call still sees it, instead of the call ringing into nothing.
-  ringRepeat = setInterval(() => {
-    if (!call || call.answered) return;
-    signal(peer.id, "offer", payload);
-  }, RING_REANNOUNCE_MS);
+  const { data: invite, error: inviteError } = await supabaseClient
+    .from("call_invites")
+    .insert([{ callee_id: peer.id, kind: wantVideo ? "video" : "voice", offer_sdp: JSON.stringify(offer) }])
+    .select()
+    .single();
+  if (inviteError || !invite) {
+    showToast("Could not start the call.");
+    return endCall(false);
+  }
+  call.inviteId = invite.id;
+  openSignalChannel(invite.id);
 
-  ringTimer = setTimeout(() => endCall(true, "No answer"), RING_TIMEOUT_MS);
+  ringTimer = setTimeout(() => {
+    updateInviteStatus(invite.id, { status: "missed" });
+    endCall(false, "No answer");
+  }, RING_TIMEOUT_MS);
 }
 
-// ---- Incoming ----
-async function onOffer(payload) {
-  // A renegotiation for the call already in progress (ICE restart).
-  if (call && payload.restart && pc && payload.from === call.peerId) {
-    await pc.setRemoteDescription(new RTCSessionDescription(payload.sdp));
-    const answer = await pc.createAnswer();
-    await pc.setLocalDescription(answer);
-    signal(call.peerId, "answer", { sdp: answer });
-    return;
-  }
-  // The caller re-announces every few seconds while ringing; a repeat from the
-  // peer we're already ringing with is that, not a second caller. Treating it
-  // as "busy" would hang up the very call being announced.
-  if (call && call.peerId === payload.from) return;
-
-  if (call) {
-    signal(payload.from, "busy", {});
-    return;
-  }
-
-  call = {
-    peerId: payload.from,
-    peerName: payload.name || "Someone",
-    video: !!payload.video,
-    incoming: true,
-    offer: payload.sdp,
-  };
-  openOverlay(payload.video ? "Incoming video call" : "Incoming voice call", true);
-  ringTimer = setTimeout(() => endCall(true, "Missed call"), RING_TIMEOUT_MS);
-}
-
+// ---- Incoming: accept / media ----
 async function acceptCall() {
   if (!call?.incoming) return;
   clearTimeout(ringTimer);
@@ -294,30 +417,19 @@ async function acceptCall() {
 
   localStream = await getMedia(call.video);
   if (!localStream) {
-    signal(call.peerId, "decline", {});
+    updateInviteStatus(call.inviteId, { status: "declined" });
     return endCall(false);
   }
   attachLocal();
 
-  pc = createPeer(call.peerId);
+  pc = createPeer();
   localStream.getTracks().forEach((t) => pc.addTrack(t, localStream));
 
   await pc.setRemoteDescription(new RTCSessionDescription(call.offer));
   await flushCandidates();
   const answer = await pc.createAnswer();
   await pc.setLocalDescription(answer);
-  await signal(call.peerId, "answer", { sdp: answer });
-}
-
-async function onAnswer(payload) {
-  if (!pc || !call) return;
-  call.answered = true;
-  clearTimeout(ringTimer);
-  clearInterval(ringRepeat);
-  ringRepeat = null;
-  await pc.setRemoteDescription(new RTCSessionDescription(payload.sdp));
-  await flushCandidates();
-  setStatus("Connecting…");
+  await updateInviteStatus(call.inviteId, { status: "answered", answer_sdp: JSON.stringify(answer) });
 }
 
 async function onRemoteCandidate(payload) {
@@ -346,8 +458,9 @@ async function flushCandidates() {
 
 // ---- Teardown ----
 export function endCall(notifyPeer = true, reason = "") {
-  if (notifyPeer && call?.peerId) {
-    signal(call.peerId, call.incoming && $("call-answer-row") && !$("call-answer-row").classList.contains("hidden") ? "decline" : "end", {});
+  if (notifyPeer && call?.inviteId) {
+    const ringing = $("call-answer-row") && !$("call-answer-row").classList.contains("hidden");
+    updateInviteStatus(call.inviteId, { status: call.incoming && ringing ? "declined" : "ended" });
   }
   // Write the call into the conversation before state is cleared. Only the
   // caller logs, so one call produces one history entry, not two.
@@ -361,12 +474,11 @@ export function endCall(notifyPeer = true, reason = "") {
   }
 
   clearTimeout(ringTimer);
-  clearInterval(ringRepeat);
   clearInterval(durationTimer);
   ringTimer = null;
-  ringRepeat = null;
   durationTimer = null;
   callStartedAt = 0;
+  closeSignalChannel();
 
   if (pc) {
     pc.onicecandidate = null;
@@ -434,7 +546,7 @@ function openOverlay(status, incoming = false) {
 export function initCalls() {
   $("call-hangup").addEventListener("click", () => endCall(true));
   $("call-decline").addEventListener("click", () => {
-    if (call) signal(call.peerId, "decline", {});
+    if (call) updateInviteStatus(call.inviteId, { status: "declined" });
     endCall(false);
   });
   $("call-accept").addEventListener("click", acceptCall);

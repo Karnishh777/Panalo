@@ -10,6 +10,15 @@
   Referrer-Policy: strict-origin-when-cross-origin
   # Calls and location sharing need these for our own origin — and nobody else's.
   Permissions-Policy: geolocation=(self), microphone=(self), camera=(self), interest-cohort=()
+  # Defense in depth against injected scripts: the app's own safe DOM builder
+  # (see util.js `el()`) already makes stored-XSS structurally hard, but a CSP
+  # closes the gap for any injection vector that isn't through renderMessage.
+  # Every origin here is one the app actually loads from — Supabase JS (CDN),
+  # Supabase itself (REST + Realtime WebSocket + Storage), Google Fonts, and
+  # Leaflet + OpenStreetMap tiles (lazy-loaded only when location is shared).
+  # style-src needs 'unsafe-inline' because the app uses inline style="" on a
+  # handful of elements; script-src does not, and stays strict.
+  Content-Security-Policy: default-src 'self'; script-src 'self' https://cdn.jsdelivr.net https://unpkg.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://unpkg.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: blob: https://*.supabase.co https://tile.openstreetmap.org; media-src 'self' blob: https://*.supabase.co; connect-src 'self' https://*.supabase.co wss://*.supabase.co; object-src 'none'; base-uri 'self'; frame-ancestors 'none'
 
 # A stale service worker is worse than none: it can keep serving an old app
 # long after a deploy. Always revalidate this one.

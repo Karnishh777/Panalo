@@ -20,7 +20,13 @@ const PanaloCrypto = (() => {
   const enc = new TextEncoder();
   const dec = new TextDecoder();
 
-  const PBKDF2_ITERATIONS = 200000;
+  // Iterations travel WITH each stored key (see key_iterations in
+  // supabase-phase7.sql) rather than living only here, so this can be raised
+  // later without breaking recovery of keys already protected at a lower
+  // count. New/rewrapped keys always use the current value; legacy rows
+  // recover at whatever count they were actually protected with.
+  const PBKDF2_ITERATIONS_CURRENT = 600000;
+  const PBKDF2_ITERATIONS_LEGACY_DEFAULT = 200000; // rows predating the column
   const RSA = { name: "RSA-OAEP", hash: "SHA-256" };
 
   // ---- base64 <-> bytes (works in browser and Node) ----
@@ -56,26 +62,27 @@ const PanaloCrypto = (() => {
   }
 
   // ---- Protect / recover the private key with the user's password ----
-  async function deriveWrapKey(password, saltBytes) {
+  async function deriveWrapKey(password, saltBytes, iterations) {
     const baseKey = await subtle.importKey("raw", enc.encode(password), "PBKDF2", false, ["deriveKey"]);
     return subtle.deriveKey(
-      { name: "PBKDF2", salt: saltBytes, iterations: PBKDF2_ITERATIONS, hash: "SHA-256" },
+      { name: "PBKDF2", salt: saltBytes, iterations, hash: "SHA-256" },
       baseKey,
       { name: "AES-GCM", length: 256 },
       false,
       ["encrypt", "decrypt"]
     );
   }
-  async function protectPrivateKey(privateKey, password) {
+  async function protectPrivateKey(privateKey, password, iterations = PBKDF2_ITERATIONS_CURRENT) {
     const pkcs8 = await subtle.exportKey("pkcs8", privateKey);
     const salt = randomBytes(16);
     const iv = randomBytes(12);
-    const wrapKey = await deriveWrapKey(password, salt);
+    const wrapKey = await deriveWrapKey(password, salt, iterations);
     const ct = await subtle.encrypt({ name: "AES-GCM", iv }, wrapKey, pkcs8);
-    return { encPrivateKey: bytesToB64(ct), keySalt: bytesToB64(salt), keyIv: bytesToB64(iv) };
+    return { encPrivateKey: bytesToB64(ct), keySalt: bytesToB64(salt), keyIv: bytesToB64(iv), keyIterations: iterations };
   }
-  async function recoverPrivateKey({ encPrivateKey, keySalt, keyIv }, password) {
-    const wrapKey = await deriveWrapKey(password, b64ToBytes(keySalt));
+  async function recoverPrivateKey({ encPrivateKey, keySalt, keyIv, keyIterations }, password) {
+    const iterations = keyIterations || PBKDF2_ITERATIONS_LEGACY_DEFAULT;
+    const wrapKey = await deriveWrapKey(password, b64ToBytes(keySalt), iterations);
     const pkcs8 = await subtle.decrypt({ name: "AES-GCM", iv: b64ToBytes(keyIv) }, wrapKey, b64ToBytes(encPrivateKey));
     return subtle.importKey("pkcs8", pkcs8, RSA, true, ["unwrapKey", "decrypt"]);
   }

@@ -55,6 +55,25 @@ export async function idbDelKey(id) {
   }
 }
 
+// Store a freshly protected private key. Falls back to writing without
+// key_iterations on a database that hasn't run supabase-phase7.sql yet — the
+// key still works, it just recovers at the legacy iteration count.
+async function upsertUserKeys(stored) {
+  const row = {
+    user_id: state.currentUser.id,
+    enc_private_key: stored.encPrivateKey,
+    key_salt: stored.keySalt,
+    key_iv: stored.keyIv,
+    key_iterations: stored.keyIterations,
+  };
+  let { error } = await supabaseClient.from("user_keys").upsert(row);
+  if (error && /key_iterations/i.test(error.message)) {
+    delete row.key_iterations;
+    ({ error } = await supabaseClient.from("user_keys").upsert(row));
+  }
+  return error;
+}
+
 // Ensure this user's keypair is ready in memory.
 //
 // Returns a status rather than a bare boolean, because "the password was
@@ -68,10 +87,26 @@ export async function idbDelKey(id) {
 export async function ensureUserKeys(password) {
   if (!window.PanaloCrypto || !window.PanaloCrypto.isSupported()) return "unsupported";
 
-  const [{ data: keyRow }, { data: profileRow }] = await Promise.all([
-    supabaseClient.from("user_keys").select("enc_private_key, key_salt, key_iv").eq("user_id", state.currentUser.id).maybeSingle(),
-    supabaseClient.from("profiles").select("public_key").eq("id", state.currentUser.id).maybeSingle(),
-  ]);
+  let keyQuery = await supabaseClient
+    .from("user_keys")
+    .select("enc_private_key, key_salt, key_iv, key_iterations")
+    .eq("user_id", state.currentUser.id)
+    .maybeSingle();
+  // Graceful fallback until supabase-phase7.sql adds key_iterations —
+  // recoverPrivateKey treats a missing value as the pre-phase7 default.
+  if (keyQuery.error && /column/i.test(keyQuery.error.message)) {
+    keyQuery = await supabaseClient
+      .from("user_keys")
+      .select("enc_private_key, key_salt, key_iv")
+      .eq("user_id", state.currentUser.id)
+      .maybeSingle();
+  }
+  const keyRow = keyQuery.data;
+  const { data: profileRow } = await supabaseClient
+    .from("profiles")
+    .select("public_key")
+    .eq("id", state.currentUser.id)
+    .maybeSingle();
 
   const hasServerKeys = keyRow && profileRow && profileRow.public_key;
 
@@ -85,7 +120,7 @@ export async function ensureUserKeys(password) {
     if (!password) return "needs-unlock";
     try {
       state.myPrivateKey = await window.PanaloCrypto.recoverPrivateKey(
-        { encPrivateKey: keyRow.enc_private_key, keySalt: keyRow.key_salt, keyIv: keyRow.key_iv },
+        { encPrivateKey: keyRow.enc_private_key, keySalt: keyRow.key_salt, keyIv: keyRow.key_iv, keyIterations: keyRow.key_iterations },
         password
       );
       await idbSetKey(state.currentUser.id, state.myPrivateKey);
@@ -121,12 +156,7 @@ export async function ensureUserKeys(password) {
     if (pubError) throw pubError;
     if (!updated || !updated.length) throw new Error("public key was not saved");
 
-    const { error: keyError } = await supabaseClient.from("user_keys").upsert({
-      user_id: state.currentUser.id,
-      enc_private_key: stored.encPrivateKey,
-      key_salt: stored.keySalt,
-      key_iv: stored.keyIv,
-    });
+    const keyError = await upsertUserKeys(stored);
     if (keyError) throw keyError;
 
     state.myPrivateKey = kp.privateKey;
@@ -148,14 +178,9 @@ export async function regenerateKeypair(password) {
     state.myPublicKeyB64 = await window.PanaloCrypto.exportPublicKey(kp.publicKey);
     const stored = await window.PanaloCrypto.protectPrivateKey(kp.privateKey, password);
 
-    const [{ error: pubErr }, { error: keyErr }] = await Promise.all([
+    const [{ error: pubErr }, keyErr] = await Promise.all([
       supabaseClient.from("profiles").update({ public_key: state.myPublicKeyB64 }).eq("id", state.currentUser.id),
-      supabaseClient.from("user_keys").upsert({
-        user_id: state.currentUser.id,
-        enc_private_key: stored.encPrivateKey,
-        key_salt: stored.keySalt,
-        key_iv: stored.keyIv,
-      }),
+      upsertUserKeys(stored),
     ]);
     if (pubErr || keyErr) throw pubErr || keyErr;
 
@@ -180,12 +205,7 @@ export async function rewrapPrivateKey(newPassword) {
   if (!state.myPrivateKey) return "no-key";
   try {
     const stored = await window.PanaloCrypto.protectPrivateKey(state.myPrivateKey, newPassword);
-    const { error } = await supabaseClient.from("user_keys").upsert({
-      user_id: state.currentUser.id,
-      enc_private_key: stored.encPrivateKey,
-      key_salt: stored.keySalt,
-      key_iv: stored.keyIv,
-    });
+    const error = await upsertUserKeys(stored);
     if (error) throw error;
     return "ready";
   } catch (e) {
