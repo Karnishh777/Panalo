@@ -154,11 +154,36 @@ export function setChatFont(convId, fontId) {
   write(FONT_KEY, map);
 }
 
+// ---- Per-chat drafts: { convId: "half-typed text" } ----
+// Keep in-progress messages across chat switches — start typing to Ada, jump
+// to Ben, come back and find your thought where you left it. Capped at 4KB
+// per chat so nobody accidentally saves a pasted article to localStorage.
+const DRAFT_KEY = "panalo.drafts";
+const DRAFT_MAX_BYTES = 4096;
+
+export function getDraft(convId) {
+  return read(DRAFT_KEY, {})[convId] || "";
+}
+export function setDraft(convId, text) {
+  const map = read(DRAFT_KEY, {});
+  const trimmed = (text || "").slice(0, DRAFT_MAX_BYTES);
+  if (trimmed) map[convId] = trimmed;
+  else delete map[convId];
+  write(DRAFT_KEY, map);
+}
+export function forgetDraft(convId) {
+  const map = read(DRAFT_KEY, {});
+  if (map[convId] === undefined) return;
+  delete map[convId];
+  write(DRAFT_KEY, map);
+}
+
 // ---- Forget everything this file remembers about one chat ----
 // Called from the delete-chat flow so a removed chat doesn't leave orphan
 // nicknames, pins, or folder memberships behind (which would come back the
 // moment a chat with the same id was re-created).
 export function forgetChatPrefs(convId) {
+  forgetDraft(convId);
   [NICK_KEY, CHAT_WP_KEY, FONT_KEY, PINMSG_KEY].forEach((key) => {
     const map = read(key, {});
     if (map[convId] !== undefined) {

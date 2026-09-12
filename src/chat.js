@@ -16,6 +16,7 @@ import {
   getPinnedMessages, isMessagePinned, toggleMessagePin,
   getChatFont, getChatWallpaper,
   getFolders, addFolder, deleteFolder, folderChatIds,
+  getDraft, setDraft, forgetDraft,
 } from "./prefs.js";
 import { icon } from "./icons.js";
 import {
@@ -248,7 +249,38 @@ function renderConversations() {
     }
     return;
   }
-  items.forEach((c) => renderConversationItem(c));
+  renderConversationsWithSections(items);
+}
+
+// Group the sidebar into readable time buckets — "Pinned", "Today",
+// "Yesterday", "This week", "Earlier". Same data as a flat list, way easier
+// on the eye. Pinned chats keep their existing top-of-list rule.
+function renderConversationsWithSections(items) {
+  const now = new Date();
+  const startOfToday = new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime();
+  const startOfYesterday = startOfToday - 24 * 60 * 60 * 1000;
+  const startOfWeek = startOfToday - 6 * 24 * 60 * 60 * 1000;
+
+  const buckets = { pinned: [], today: [], yesterday: [], week: [], earlier: [] };
+  items.forEach((c) => {
+    if (isPinned(c.id)) return buckets.pinned.push(c);
+    const t = c.lastAt ? new Date(c.lastAt).getTime() : 0;
+    if (t >= startOfToday) buckets.today.push(c);
+    else if (t >= startOfYesterday) buckets.yesterday.push(c);
+    else if (t >= startOfWeek) buckets.week.push(c);
+    else buckets.earlier.push(c);
+  });
+
+  const emit = (label, chats) => {
+    if (!chats.length) return;
+    conversationsList.append(el("div", { class: "sidebar-section", text: label }));
+    chats.forEach((c) => renderConversationItem(c));
+  };
+  emit("Pinned", buckets.pinned);
+  emit("Today", buckets.today);
+  emit("Yesterday", buckets.yesterday);
+  emit("This week", buckets.week);
+  emit("Earlier", buckets.earlier);
 }
 
 // Message hits are appended under the matching chats, newest first. Searching
@@ -378,8 +410,9 @@ function renderConversationItem(conv) {
   const baseTitle = isGroup ? conv.name : (conv.displayTitle || conv.name || "Direct Message");
   const title = getNickname(conv.id) || baseTitle;
 
+  const peerOnline = !isGroup && conv.otherUserId && isOnline(conv.otherUserId);
   const item = el("div", {
-    class: `conv-item${conv.id === state.currentConversationId ? " active" : ""}`,
+    class: `conv-item${conv.id === state.currentConversationId ? " active" : ""}${peerOnline ? " online" : ""}`,
     role: "button",
     tabindex: "0",
     "aria-label": `Open ${isGroup ? "group chat" : "direct message"}: ${title}`,
@@ -389,10 +422,17 @@ function renderConversationItem(conv) {
   const avatar = el("div", { class: "avatar" });
   setAvatar(avatar, baseTitle, isGroup ? null : conv.otherAvatar);
 
-  // Preview line: the last message, decrypted, with the sender's name in groups.
+  // Preview line: a saved draft beats the last message (matches WhatsApp).
+  // Otherwise: last message decrypted, with the sender's name in groups.
+  const draft = getDraft(conv.id);
   const last = conv.lastMessage;
   const previewEl = el("div", { class: "conv-preview" });
-  if (!last) {
+  if (draft) {
+    previewEl.append(
+      el("span", { class: "conv-preview-tag", text: "Draft: " }),
+      document.createTextNode(draft.length > 60 ? draft.slice(0, 60) + "…" : draft)
+    );
+  } else if (!last) {
     previewEl.textContent = isGroup ? "Group Chat" : "Direct Message";
   } else if (last.file_url) {
     previewEl.textContent = "📎 Attachment";
@@ -506,11 +546,20 @@ function wireConvContextMenu(item, conv) {
       pressTimer = null;
     }
   };
-  item.addEventListener("touchstart", () => {
+  item.addEventListener("touchstart", (e) => {
     pressed = false;
+    // Set the ripple centre to where the finger landed.
+    const rect = item.getBoundingClientRect();
+    const t = e.touches[0];
+    if (t) {
+      item.style.setProperty("--rx", `${t.clientX - rect.left}px`);
+      item.style.setProperty("--ry", `${t.clientY - rect.top}px`);
+    }
     pressTimer = setTimeout(() => {
       pressed = true;
       haptic(12);
+      item.classList.add("pressed");
+      setTimeout(() => item.classList.remove("pressed"), 620);
       openConvMenu(conv, item);
     }, 500);
   }, { passive: true });
@@ -572,6 +621,35 @@ async function openConversation(conv) {
 
   cancelReply();
   lastOtherMessageAt = null;
+
+  // Restore any half-typed message you left here last time. Focus the composer
+  // so you can keep going with the same key press.
+  messageInput.value = getDraft(conv.id);
+  refreshSendReady();
+
+  // Composer placeholder learns from the chat: for empty chats we invite you
+  // to say hi to the specific person; otherwise it's the neutral default.
+  // "Say hi to Ada 👋" reads warmer than "Type a message..." for a first message.
+  const convIsGroup = conv.type === "group";
+  const peerName = convIsGroup ? conv.name : (conv.displayTitle || conv.name || "");
+  const emptyChat = !conv.lastMessage;
+  messageInput.placeholder = emptyChat && peerName
+    ? `Say hi to ${peerName.split(" ")[0]} 👋`
+    : "Type a message...";
+
+  // Play the chat-switch motion (fade + soft slide-in). The class is removed
+  // and re-added via a forced reflow so it restarts even when the previous
+  // chat used the same class.
+  activeChatWindow.classList.remove("chat-enter");
+  void activeChatWindow.offsetWidth;
+  activeChatWindow.classList.add("chat-enter");
+
+  // Skeleton messages while we wait for the real ones. Keeps the pane alive
+  // instead of flashing empty.
+  messagesList.innerHTML = "";
+  for (let i = 0; i < 4; i++) {
+    messagesList.append(el("div", { class: `msg-skeleton ${i % 2 === 0 ? "left" : "right"}` }));
+  }
 
   // Who's in this chat + where everyone has read up to (drives "Seen").
   const [{ data: parts }] = await Promise.all([
@@ -927,8 +1005,35 @@ function renderMessage(msg, prepend = false) {
 
   const isMine = msg.user_id === state.currentUser.id;
 
+  // iMessage-style grouping: consecutive messages from the same sender within
+  // GROUP_GAP_MS collapse into a run — only the first shows author/timestamp,
+  // and the last gets the bubble tail (via CSS). Appended messages compare
+  // against the current tail; prepended ones we leave alone (older history
+  // loading in bulk).
+  const GROUP_GAP_MS = 5 * 60 * 1000;
+  let grouped = false;
+  if (!prepend) {
+    const prev = messagesList.querySelector(".message:last-child");
+    if (prev) {
+      const prevId = prev.id.replace(/^msg-/, "");
+      const prevMsg = msgCache.get(prevId);
+      if (
+        prevMsg &&
+        prevMsg.user_id === msg.user_id &&
+        Math.abs(new Date(msg.created_at) - new Date(prevMsg.created_at)) < GROUP_GAP_MS
+      ) {
+        grouped = true;
+        // The previous message was the tail of a run — it stops being the tail
+        // now that another message joins the run. CSS uses .grouped-end for the
+        // tail; drop it here and re-add below on the new message.
+        prev.classList.remove("grouped-end");
+        prev.classList.add("grouped-mid");
+      }
+    }
+  }
+
   const messageEl = el("div", {
-    class: `message${isMine ? " my-message" : ""}${msg._pending ? " pending" : ""}`,
+    class: `message${isMine ? " my-message" : ""}${msg._pending ? " pending" : ""}${grouped ? " grouped-mid grouped-end" : " grouped-end"}`,
     id: `msg-${msg.id}`,
   });
 
@@ -1511,12 +1616,23 @@ function handleSend() {
   const convId = state.currentConversationId;
   const replyToId = replyTarget?.id || null;
   messageInput.value = "";
+  forgetDraft(convId); // the message is on its way; don't restore the same text next open
+  refreshSendReady();
   fileInput.value = "";
   filePreview.classList.add("hidden");
   filePreview.innerHTML = "";
   cancelReply();
 
   sendMessage(content, file, convId, replyToId);
+}
+
+// A tiny "the input has content" hint on the composer — the send button
+// wakes up (rotates + brightens) and the sidebar entry gets a "draft: …"
+// preview even before the send actually happens.
+function refreshSendReady() {
+  const hasText = messageInput.value.trim().length > 0;
+  document.getElementById("send-btn")?.classList.toggle("ready", hasText);
+  messageForm.classList.toggle("has-text", hasText);
 }
 
 async function sendMessage(content, file, convId, replyToId = null) {
@@ -2163,7 +2279,11 @@ export function initChatUI() {
   });
 
   // Typing: broadcast (debounced) that we're typing so the other side sees it.
+  // Also: persist the draft per-chat so switching chats doesn't lose it, and
+  // flip the "send button ready" state as the input goes empty ↔ non-empty.
   messageInput.addEventListener("input", () => {
+    refreshSendReady();
+    if (state.currentConversationId) setDraft(state.currentConversationId, messageInput.value);
     const now = Date.now();
     if (now - lastTypingSent > 1500 && state.realtimeChannel && state.currentConversationId) {
       lastTypingSent = now;
