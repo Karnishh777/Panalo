@@ -4179,3 +4179,96 @@ body.app-locked #auth-screen {
   box-shadow: 0 6px 20px rgba(139, 124, 246, 0.55);
 }
 
+/* ============================================================
+   UI overhaul G — per-chat mood colour
+   ============================================================ */
+
+/* --chat-accent is set on #active-chat-window by JS from a deterministic
+   hash of the peer's id, so different friends visually feel different.
+   Falls back to the app primary when nothing is set. */
+#active-chat-window {
+  --chat-accent: var(--primary);
+  --chat-accent-strong: var(--primary-strong);
+}
+#active-chat-window .chat-header h2 {
+  background: linear-gradient(135deg, var(--chat-accent), color-mix(in srgb, var(--chat-accent-strong) 80%, white));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+#active-chat-window .call-btn:hover,
+#active-chat-window .header-icon-btn:hover {
+  color: var(--chat-accent);
+}
+/* Outgoing bubble picks up a whisper of the chat accent — the strong colour
+   still owns "your voice" but each chat feels a little different. */
+#active-chat-window .message.my-message .message-text,
+#active-chat-window .message.my-message .message-content {
+  background: linear-gradient(135deg,
+    color-mix(in srgb, var(--chat-accent) 80%, var(--primary-strong)),
+    color-mix(in srgb, var(--chat-accent-strong) 78%, var(--primary-strong)));
+}
+
+/* ============================================================
+   UI overhaul H — richer sidebar previews
+   ============================================================ */
+
+.conv-preview {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 100%;
+}
+.conv-preview-icon {
+  font-size: 12px;
+  flex-shrink: 0;
+  filter: drop-shadow(0 1px 4px rgba(0, 0, 0, 0.35));
+}
+
+/* ============================================================
+   UI overhaul K — click ripple on primary buttons
+   ============================================================ */
+
+#send-btn,
+.modal-btn,
+.danger-btn,
+.mini-btn,
+.primary-btn,
+[data-ripple] {
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+}
+.rippling::after {
+  content: "";
+  position: absolute;
+  left: var(--rx, 50%);
+  top: var(--ry, 50%);
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.55);
+  transform: translate(-50%, -50%) scale(1);
+  animation: rippleGrow 0.6s ease-out forwards;
+  pointer-events: none;
+  z-index: 1;
+}
+@keyframes rippleGrow {
+  to {
+    transform: translate(-50%, -50%) scale(50);
+    opacity: 0;
+  }
+}
+/* Make sure text/icons stay above the ripple layer. */
+#send-btn > *,
+.modal-btn > *,
+.danger-btn > *,
+.mini-btn > *,
+.primary-btn > * {
+  position: relative;
+  z-index: 2;
+}
+

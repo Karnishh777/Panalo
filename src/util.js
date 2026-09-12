@@ -77,6 +77,38 @@ export function showToast(message, type = "error") {
   }, 4000);
 }
 
+// Deterministic hue [0-360) for any string — used to give each chat its own
+// mood colour without needing anything stored per-chat. Same peer always
+// picks up the same accent, so the visual identity stays stable across
+// sessions and devices.
+export function hueFor(seed) {
+  const s = String(seed || "");
+  let h = 5381;
+  for (let i = 0; i < s.length; i++) {
+    h = ((h << 5) + h + s.charCodeAt(i)) | 0;
+  }
+  return Math.abs(h) % 360;
+}
+
+// Delegated click ripple. Any element matching RIPPLE_SELECTOR gets a
+// material-style splash from where the pointer landed. Called once from
+// startup; no per-button wiring.
+const RIPPLE_SELECTOR = "#send-btn, .modal-btn, .danger-btn, .mini-btn, .primary-btn, [data-ripple]";
+export function attachRipples() {
+  document.addEventListener("pointerdown", (event) => {
+    const target = event.target.closest(RIPPLE_SELECTOR);
+    if (!target || target.disabled) return;
+    const rect = target.getBoundingClientRect();
+    target.style.setProperty("--rx", `${event.clientX - rect.left}px`);
+    target.style.setProperty("--ry", `${event.clientY - rect.top}px`);
+    target.classList.remove("rippling");
+    // Force reflow so the animation restarts on rapid re-taps.
+    void target.offsetWidth;
+    target.classList.add("rippling");
+    setTimeout(() => target.classList.remove("rippling"), 620);
+  }, { passive: true });
+}
+
 // Fire a small vibration on devices that support it. No-op on desktop and on
 // browsers that expose the API but disable it. Centralised so a future
 // user-level "no haptics" toggle only needs one edit.

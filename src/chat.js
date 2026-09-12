@@ -1,7 +1,7 @@
 // Conversations, messages, sending, and realtime.
 import { supabaseClient } from "./client.js";
 import { state } from "./state.js";
-import { el, showToast, withBusy, getAvatarColor, safeImageUrl, scrollToBottom, compressImage, announce, setAvatar, formatTime, haptic } from "./util.js";
+import { el, showToast, withBusy, getAvatarColor, safeImageUrl, scrollToBottom, compressImage, announce, setAvatar, formatTime, haptic, hueFor, attachRipples } from "./util.js";
 import { getConversationKey, provisionConversationKey, messagePlaintext } from "./encryption.js";
 import { MESSAGES_PAGE_SIZE, THEME_PRESETS, FONT_PRESETS, MAX_FILE_BYTES } from "./config.js";
 import { isOnline, setPresenceListener } from "./presence.js";
@@ -405,6 +405,18 @@ async function resolveDirectTitles(conversations) {
   }
 }
 
+// Read the extension off an uploaded file's URL and turn it into a friendly
+// pill label — "🖼️ Photo" reads better than "📎 Attachment" when the peer
+// actually sent a photo.
+function describeAttachment(url) {
+  const ext = String(url || "").toLowerCase().split("?")[0].split(".").pop();
+  if (/^(jpg|jpeg|png|gif|webp|avif|heic|bmp)$/.test(ext)) return { icon: "🖼️", label: "Photo" };
+  if (/^(mp4|mov|webm|m4v)$/.test(ext)) return { icon: "🎬", label: "Video" };
+  if (/^(mp3|wav|ogg|m4a|opus|flac)$/.test(ext)) return { icon: "🎵", label: "Audio" };
+  if (/^pdf$/.test(ext)) return { icon: "📕", label: "PDF" };
+  return { icon: "📎", label: "File" };
+}
+
 function renderConversationItem(conv) {
   const isGroup = conv.type === "group";
   const baseTitle = isGroup ? conv.name : (conv.displayTitle || conv.name || "Direct Message");
@@ -435,13 +447,22 @@ function renderConversationItem(conv) {
   } else if (!last) {
     previewEl.textContent = isGroup ? "Group Chat" : "Direct Message";
   } else if (last.file_url) {
-    previewEl.textContent = "📎 Attachment";
+    // Type-aware attachment label — knowing at a glance whether the peer sent
+    // you a photo or a PDF is worth the extra branch.
+    const attachment = describeAttachment(last.file_url);
+    const mine = last.user_id === state.currentUser.id;
+    const who = mine ? "You: " : isGroup ? `${last.username || "?"}: ` : "";
+    previewEl.append(
+      el("span", { class: "conv-preview-icon", text: attachment.icon }),
+      document.createTextNode(` ${who}${attachment.label}`)
+    );
   } else {
     previewEl.textContent = "…";
     messagePlaintext(last).then((text) => {
       const mine = last.user_id === state.currentUser.id;
       const who = mine ? "You: " : isGroup ? `${last.username || "?"}: ` : "";
-      previewEl.textContent = who + describeCall(describeLocation(describeText(text)));
+      const raw = describeCall(describeLocation(describeText(text)));
+      previewEl.textContent = who + raw;
     });
   }
 
@@ -643,6 +664,16 @@ async function openConversation(conv) {
   activeChatWindow.classList.remove("chat-enter");
   void activeChatWindow.offsetWidth;
   activeChatWindow.classList.add("chat-enter");
+
+  // Per-chat mood colour. Seed on the peer's user id for direct chats and on
+  // the conversation id for groups — same peer always picks up the same
+  // accent, so every friend feels visually distinct without needing anything
+  // stored per-chat. The chat pane exposes it as --chat-accent; CSS uses it
+  // for the header title glow and the send button gradient.
+  const hue = hueFor(conv.type === "direct" && conv.otherUserId ? conv.otherUserId : conv.id);
+  activeChatWindow.style.setProperty("--chat-accent-h", hue);
+  activeChatWindow.style.setProperty("--chat-accent", `hsl(${hue} 78% 68%)`);
+  activeChatWindow.style.setProperty("--chat-accent-strong", `hsl(${hue} 72% 58%)`);
 
   // Skeleton messages while we wait for the real ones. Keeps the pane alive
   // instead of flashing empty.
@@ -2063,6 +2094,9 @@ export function setFocusMode(on) {
 
 // ---- Wire up all chat-related event listeners ----
 export function initChatUI() {
+  // Single delegated listener for all click ripples across the app.
+  attachRipples();
+
   document.getElementById("back-btn").addEventListener("click", () => {
     chatApp.classList.remove("chat-open");
   });
@@ -2327,6 +2361,19 @@ export function initChatUI() {
     }
     refreshUnreadBadges();
     renderConversations();
+
+    // Tiny bell jiggle on incoming messages from someone else — makes the
+    // header react so you notice, without stealing focus. Class removes
+    // itself so the animation can play again next time.
+    if (msg.user_id !== state.currentUser?.id) {
+      const bells = document.querySelectorAll('[data-icon="bell"], [data-icon="bellOff"]');
+      bells.forEach((b) => {
+        b.classList.remove("bell-jiggle");
+        void b.offsetWidth;
+        b.classList.add("bell-jiggle");
+        setTimeout(() => b.classList.remove("bell-jiggle"), 700);
+      });
+    }
   });
 
   // Clicking an alert banner (or a desktop notification) jumps to that chat.
