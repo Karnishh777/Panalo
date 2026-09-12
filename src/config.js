@@ -28,13 +28,14 @@ export const IMAGE_QUALITY = 0.8;
 export const COMPRESS_MIN_BYTES = 200 * 1024;
 
 // Per-chat themes — each preset recolors the chat area (sent bubbles, accents).
+// Colors are deliberately muted (not neon) so every option reads matte.
 export const THEME_PRESETS = [
-  { id: "default", name: "Violet", primary: "#8b7cf6", strong: "#6c5ce7" },
-  { id: "sunset", name: "Sunset", primary: "#ff8a5b", strong: "#ff5e7e" },
-  { id: "ocean", name: "Ocean", primary: "#37c2e0", strong: "#3a7bd5" },
-  { id: "forest", name: "Forest", primary: "#4ecb71", strong: "#2fa060" },
-  { id: "rose", name: "Rose", primary: "#ff6fae", strong: "#e0559a" },
-  { id: "slate", name: "Slate", primary: "#9aa4b8", strong: "#6b7688" },
+  { id: "default", name: "Ember", primary: "#e2582e", strong: "#c2431f" },
+  { id: "sunset", name: "Sunset", primary: "#d97a48", strong: "#b85f34" },
+  { id: "ocean", name: "Ocean", primary: "#3f9db0", strong: "#2f7c8c" },
+  { id: "forest", name: "Forest", primary: "#5a9e6a", strong: "#437c50" },
+  { id: "rose", name: "Rose", primary: "#c46a89", strong: "#a1516c" },
+  { id: "slate", name: "Slate", primary: "#8a8478", strong: "#6b6559" },
 ];
 
 // Per-chat font presets (personal, stored locally). "stack" is the CSS value
@@ -49,11 +50,11 @@ export const FONT_PRESETS = [
 ];
 
 // Ambient background effects (Settings → Effects). "aurora" is the CSS layer;
-// the rest render on the fx canvas (see effects.js).
+// "tech" renders on the fx canvas (see effects.js). Trimmed down to the two
+// that read as premium/matte rather than glossy — "liquid" and "bubbles"
+// were dropped for clashing with the matte direction.
 export const EFFECT_PRESETS = [
   { id: "aurora", name: "Aurora" },
-  { id: "liquid", name: "Liquid" },
-  { id: "bubbles", name: "Bubbles" },
   { id: "tech", name: "Tech" },
   { id: "image", name: "Upload", icon: "upload" },
   { id: "none", name: "None" },
@@ -63,13 +64,13 @@ export const EFFECT_PRESETS = [
 export const MAX_FILE_BYTES = 50 * 1024 * 1024;
 
 // Chat background presets (applied to .chat-main via a data-wallpaper attribute).
+// "aurora" and "mesh" were dropped — both were rainbow gradient-blob patterns
+// that clashed with the matte direction.
 export const WALLPAPER_PRESETS = [
   { id: "doodle", name: "Doodle" },
   // "Ambient" makes the app translucent so the ambient effect shows through it.
   { id: "ambient", name: "Ambient", icon: "sparkle" },
   { id: "dots", name: "Dots" },
-  { id: "aurora", name: "Aurora" },
-  { id: "mesh", name: "Mesh" },
   { id: "plain", name: "Plain" },
   { id: "custom", name: "Upload", icon: "upload" },
 ];

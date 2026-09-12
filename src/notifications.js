@@ -99,8 +99,8 @@ function notificationIcon() {
     c.height = 64;
     const g = c.getContext("2d");
     const grad = g.createLinearGradient(0, 0, 64, 64);
-    grad.addColorStop(0, "#8b7cf6");
-    grad.addColorStop(1, "#6c5ce7");
+    grad.addColorStop(0, "#6f4e37");
+    grad.addColorStop(1, "#a9784f");
     g.fillStyle = grad;
     g.fillRect(0, 0, 64, 64);
     g.fillStyle = "#fff";

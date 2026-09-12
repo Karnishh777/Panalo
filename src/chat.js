@@ -669,11 +669,13 @@ async function openConversation(conv) {
   // the conversation id for groups — same peer always picks up the same
   // accent, so every friend feels visually distinct without needing anything
   // stored per-chat. The chat pane exposes it as --chat-accent; CSS uses it
-  // for the header title glow and the send button gradient.
+  // for the header title color and (via a derived gradient) the outgoing
+  // bubble fill. Dark, moderate saturation keeps it legible on a white card.
   const hue = hueFor(conv.type === "direct" && conv.otherUserId ? conv.otherUserId : conv.id);
+  const accent = `hsl(${hue} 38% 32%)`;
   activeChatWindow.style.setProperty("--chat-accent-h", hue);
-  activeChatWindow.style.setProperty("--chat-accent", `hsl(${hue} 78% 68%)`);
-  activeChatWindow.style.setProperty("--chat-accent-strong", `hsl(${hue} 72% 58%)`);
+  activeChatWindow.style.setProperty("--chat-accent", accent);
+  activeChatWindow.style.setProperty("--chat-accent-grad", `linear-gradient(135deg, ${accent}, color-mix(in srgb, ${accent} 55%, white))`);
 
   // Skeleton messages while we wait for the real ones. Keeps the pane alive
   // instead of flashing empty.
@@ -1871,7 +1873,7 @@ function applyChatTheme(themeId) {
     THEME_VARS.forEach((v) => chatMainEl.style.removeProperty(v));
     return;
   }
-  const grad = `linear-gradient(135deg, ${preset.primary}, ${preset.strong})`;
+  const grad = `linear-gradient(135deg, ${preset.primary}, color-mix(in srgb, ${preset.primary} 55%, white))`;
   chatMainEl.style.setProperty("--primary", preset.primary);
   chatMainEl.style.setProperty("--primary-strong", preset.strong);
   chatMainEl.style.setProperty("--grad", grad);
@@ -2300,7 +2302,7 @@ export function initChatUI() {
       },
     });
     swatch.dataset.themeId = preset.id;
-    swatch.style.background = `linear-gradient(135deg, ${preset.primary}, ${preset.strong})`;
+    swatch.style.background = `linear-gradient(135deg, ${preset.primary}, color-mix(in srgb, ${preset.primary} 55%, white))`;
     themeSwatches.append(swatch);
   });
 

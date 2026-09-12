@@ -25,7 +25,7 @@ const DEFAULTS = {
   effect: "aurora",
   ambientImage: null,
   appFont: "default",
-  cursorGlow: true,
+  cursorGlow: false,
   notifications: false, // desktop (needs browser permission)
   inAppAlerts: true, // always works
   alertSound: true,
@@ -54,9 +54,11 @@ function save() {
 const settings = load();
 
 // ---- Accent ----
+// A brown→tan gradient built from the preset's one stored color, so every
+// preset (and the default) gets a matching two-tone fill.
 function applyAccent(id) {
   const p = THEME_PRESETS.find((t) => t.id === id) || THEME_PRESETS[0];
-  const grad = `linear-gradient(135deg, ${p.primary}, ${p.strong})`;
+  const grad = `linear-gradient(135deg, ${p.primary}, color-mix(in srgb, ${p.primary} 55%, white))`;
   const root = document.documentElement.style;
   root.setProperty("--primary", p.primary);
   root.setProperty("--primary-strong", p.strong);
@@ -87,7 +89,7 @@ function applyWallpaper(id) {
   if (id === "custom" && settings.customWallpaper) {
     // Dark overlay keeps text readable over any photo.
     container.style.backgroundImage =
-      `linear-gradient(rgba(18,14,30,0.55), rgba(18,14,30,0.7)), url(${settings.customWallpaper})`;
+      `linear-gradient(rgba(17,15,12,0.55), rgba(17,15,12,0.7)), url(${settings.customWallpaper})`;
   } else {
     container.style.removeProperty("background-image"); // let the CSS preset apply
   }
@@ -239,7 +241,7 @@ export function initSettings() {
       },
     });
     s.dataset.id = p.id;
-    s.style.background = `linear-gradient(135deg, ${p.primary}, ${p.strong})`;
+    s.style.background = `linear-gradient(135deg, ${p.primary}, color-mix(in srgb, ${p.primary} 55%, white))`;
     accentBox.append(s);
   });
   markSelected(accentBox, ".theme-swatch", settings.accent);

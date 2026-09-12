@@ -1,9 +1,7 @@
 // Ambient background effects rendered on the #fx-canvas layer.
-//   aurora  → the CSS aurora div (no canvas)
-//   liquid  → slow-drifting blurred color blobs ("liquid retina" glass feel)
-//   bubbles → translucent bubbles rising with a light wobble
-//   tech    → the flagship: a glowing plexus network with data pulses,
-//             drifting glyphs, and a scanline sweep — all theme-colored
+//   aurora → the CSS aurora div (no canvas)
+//   tech   → a quiet plexus network with data pulses, drifting glyphs, and
+//            a scanline sweep — all theme-colored, matte-appropriate
 // Deterministic, no network, pauses when the tab is hidden, respects
 // prefers-reduced-motion, and caps devicePixelRatio for performance.
 
@@ -14,24 +12,14 @@ let mode = "none";
 let W = 0;
 let H = 0;
 let frame = 0;
-let accent = "#8b7cf6";
-let accentRgb = [139, 124, 246];
+let accent = "#6f4e37";
+let accentRgb = [111, 78, 55];
 
 // Scene state
-let blobs = [];
-let bubbles = [];
 let nodes = [];
 let pulses = [];
 let glyphs = [];
 const mouse = { x: -1e4, y: -1e4 };
-
-const LIQUID_PALETTE = [
-  [139, 124, 246], // violet
-  [255, 110, 174], // pink
-  [55, 194, 224],  // cyan
-  [255, 138, 91],  // orange
-  [108, 92, 231],  // deep violet
-];
 
 function reducedMotion() {
   return window.matchMedia("(prefers-reduced-motion: reduce)").matches;
@@ -81,28 +69,6 @@ function resize() {
 const rand = (a, b) => a + Math.random() * (b - a);
 
 function seed() {
-  // Liquid blobs
-  blobs = [];
-  for (let i = 0; i < 6; i++) {
-    blobs.push({
-      cx: rand(0.1, 0.9), cy: rand(0.1, 0.9),
-      r: rand(Math.min(W, H) * 0.18, Math.min(W, H) * 0.34),
-      ax: rand(0.06, 0.16), ay: rand(0.06, 0.16),
-      sx: rand(0.00016, 0.00034), sy: rand(0.00013, 0.0003),
-      p1: rand(0, Math.PI * 2), p2: rand(0, Math.PI * 2),
-      color: i === 0 ? null : LIQUID_PALETTE[i % LIQUID_PALETTE.length], // null → accent
-    });
-  }
-  // Bubbles
-  bubbles = [];
-  const nb = Math.min(30, Math.round(W / 46));
-  for (let i = 0; i < nb; i++) {
-    bubbles.push({
-      x: rand(0, W), y: rand(0, H),
-      r: rand(5, 34), v: rand(0.18, 0.8),
-      w: rand(0.4, 1.6), p: rand(0, Math.PI * 2), a: rand(0.08, 0.2),
-    });
-  }
   // Tech nodes
   nodes = [];
   const nn = Math.min(95, Math.round((W * H) / 16000));
@@ -127,52 +93,6 @@ function seed() {
 }
 
 // ---- Renderers ----
-function drawLiquid() {
-  ctx.clearRect(0, 0, W, H);
-  ctx.globalCompositeOperation = "lighter";
-  const t = frame;
-  for (const b of blobs) {
-    const x = (b.cx + Math.sin(t * b.sx * 60 + b.p1) * b.ax) * W;
-    const y = (b.cy + Math.cos(t * b.sy * 60 + b.p2) * b.ay) * H;
-    const [r, g, bl] = b.color || accentRgb;
-    const grad = ctx.createRadialGradient(x, y, 0, x, y, b.r);
-    grad.addColorStop(0, `rgba(${r},${g},${bl},0.34)`);
-    grad.addColorStop(1, `rgba(${r},${g},${bl},0)`);
-    ctx.fillStyle = grad;
-    ctx.beginPath();
-    ctx.arc(x, y, b.r, 0, Math.PI * 2);
-    ctx.fill();
-  }
-  ctx.globalCompositeOperation = "source-over";
-}
-
-function drawBubbles() {
-  ctx.clearRect(0, 0, W, H);
-  const [r, g, b] = accentRgb;
-  for (const bu of bubbles) {
-    bu.y -= bu.v;
-    bu.p += 0.01 * bu.w;
-    const x = bu.x + Math.sin(bu.p) * 14;
-    if (bu.y < -bu.r) {
-      bu.y = H + bu.r;
-      bu.x = rand(0, W);
-    }
-    // body
-    ctx.beginPath();
-    ctx.arc(x, bu.y, bu.r, 0, Math.PI * 2);
-    ctx.fillStyle = `rgba(${r},${g},${b},${bu.a * 0.35})`;
-    ctx.fill();
-    ctx.strokeStyle = `rgba(255,255,255,${bu.a})`;
-    ctx.lineWidth = 1.2;
-    ctx.stroke();
-    // shine
-    ctx.beginPath();
-    ctx.arc(x - bu.r * 0.32, bu.y - bu.r * 0.34, bu.r * 0.22, 0, Math.PI * 2);
-    ctx.fillStyle = `rgba(255,255,255,${bu.a * 0.9})`;
-    ctx.fill();
-  }
-}
-
 const LINK_DIST = 132;
 
 function drawTech() {
@@ -292,9 +212,7 @@ function drawTech() {
 function tick() {
   frame++;
   if (frame % 120 === 0) refreshAccent();
-  if (mode === "liquid") drawLiquid();
-  else if (mode === "bubbles") drawBubbles();
-  else if (mode === "tech") drawTech();
+  if (mode === "tech") drawTech();
   raf = requestAnimationFrame(tick);
 }
 
@@ -318,7 +236,7 @@ export function applyEffect(id, imageUrl = null) {
 
   // Uploaded ambient photo sits behind everything (dimmed for readability).
   if (id === "image" && imageUrl) {
-    document.body.style.backgroundImage = `linear-gradient(rgba(10,7,20,0.62), rgba(10,7,20,0.72)), url(${imageUrl})`;
+    document.body.style.backgroundImage = `linear-gradient(rgba(17,15,12,0.62), rgba(17,15,12,0.72)), url(${imageUrl})`;
     document.body.style.backgroundSize = "cover";
     document.body.style.backgroundPosition = "center";
     document.body.style.backgroundAttachment = "fixed";
@@ -329,9 +247,8 @@ export function applyEffect(id, imageUrl = null) {
     document.body.style.removeProperty("background-attachment");
   }
 
-  const canvasMode = id === "liquid" || id === "bubbles" || id === "tech";
+  const canvasMode = id === "tech";
   canvas.style.display = canvasMode ? "block" : "none";
-  canvas.style.filter = id === "liquid" ? "blur(60px) saturate(1.25)" : "none";
 
   stopLoop();
   if (!canvasMode) return;
@@ -341,9 +258,7 @@ export function applyEffect(id, imageUrl = null) {
     // Render one static frame instead of animating.
     frame++;
     refreshAccent();
-    if (id === "liquid") drawLiquid();
-    else if (id === "bubbles") drawBubbles();
-    else drawTech();
+    drawTech();
     return;
   }
   startLoop();
