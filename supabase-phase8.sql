@@ -278,29 +278,36 @@ create trigger trg_sync_message_usernames
 
 -- The Supabase linter flagged this directly:
 --   "Public bucket chat-files has 1 broad SELECT policy on storage.objects,
---    allowing clients to list all files."
+--    allowing clients to list all files. Public buckets don't need this for
+--    object URL access."
 --
--- The policy was `using (bucket_id = 'chat-files')` with no role restriction,
--- so the anon role could enumerate the bucket. Attachments are stored
--- unencrypted under random paths, which makes enumeration the whole attack:
--- list the bucket, then read every photo and document any user has ever sent,
--- without holding an account at all.
+-- The original policy was `using (bucket_id = 'chat-files')` with no role
+-- restriction, so even the anon role could enumerate the bucket. Attachments
+-- are stored unencrypted under random paths, which makes enumeration the
+-- whole attack: list the bucket, then read every photo and document any user
+-- has ever sent.
 --
--- A public bucket serves objects over /storage/v1/object/public/... with no
--- policy involved, so images, downloads and avatars keep working. Restricting
--- this policy to authenticated users removes anonymous listing without
--- changing how the app renders anything.
+-- A first attempt scoped this policy to `authenticated`. That was not enough
+-- and the linter rightly kept flagging it: any signed-in user could still
+-- list every attachment in the bucket, including from conversations they are
+-- not a member of. Narrowing who can enumerate everything is not the same as
+-- stopping enumeration.
 --
--- NOTE: this narrows exposure, it does not make attachments private. Anyone
+-- The policy is simply not needed. A public bucket serves its objects over
+-- /storage/v1/object/public/... without consulting RLS at all, and a grep of
+-- the client confirms it only ever calls .upload() and .getPublicUrl() --
+-- there is no .list(), no .download(), no createSignedUrl(). So dropping the
+-- SELECT policy removes bucket enumeration for everyone while images,
+-- avatars and downloads keep working exactly as before.
+--
+-- NOTE: this ends enumeration, it does not make attachments private. Anyone
 -- holding an object URL can still read it, and those URLs sit in plaintext in
 -- messages.file_url. Encrypting attachment bytes with the conversation key is
--- the real fix — see the audit's recommended next steps.
+-- the real fix -- see the audit's recommended next steps.
 drop policy if exists "chat-files read"   on storage.objects;
 drop policy if exists "chat-files upload" on storage.objects;
 
-create policy "chat-files read" on storage.objects
-  for select to authenticated using (bucket_id = 'chat-files');
-
+-- Upload stays: the app writes through the authenticated Storage API.
 create policy "chat-files upload" on storage.objects
   for insert to authenticated with check (bucket_id = 'chat-files');
 
@@ -341,31 +348,58 @@ create policy "chat-files upload" on storage.objects
 --   -- only after reading its body and confirming it is not load-bearing:
 --   -- drop function if exists public.rls_auto_enable();
 
--- IMPORTANT: revoke from PUBLIC, not from anon.
+-- Revoking EXECUTE takes THREE grantees, not one.
 --
--- PostgreSQL grants EXECUTE on every new function to PUBLIC automatically.
--- anon therefore holds EXECUTE through PUBLIC, not through any grant naming
--- anon -- and REVOKE only removes privileges that were actually granted to
--- the role you name. `revoke execute ... from anon` against a PUBLIC grant
--- succeeds silently and changes nothing, leaving the function just as
--- callable as before.
+-- This took two attempts to get right, so the reasoning is worth recording.
 --
--- This is also why the "Theme selector" snippet's explicit
--- `grant execute ... to authenticated` did not keep anon out: the default
--- PUBLIC grant was already there and was never removed.
-revoke execute on function public.is_conversation_member(uuid)   from public;
-revoke execute on function public.set_message_sender()           from public;
-revoke execute on function public.protect_message_identity()     from public;
-revoke execute on function public.sync_message_usernames()       from public;
-revoke execute on function public.set_call_invite_caller()       from public;
-revoke execute on function public.protect_call_invite_identity() from public;
+--   1. PostgreSQL grants EXECUTE on every new function to PUBLIC by default.
+--   2. Supabase additionally runs ALTER DEFAULT PRIVILEGES granting EXECUTE
+--      on new functions in `public` directly to anon, authenticated and
+--      service_role.
+--
+-- REVOKE only removes privileges granted to the grantee you name. So
+-- `revoke ... from anon` leaves the PUBLIC grant; `revoke ... from public`
+-- leaves the explicit anon and authenticated grants. Either one alone
+-- succeeds silently and the function stays just as callable -- which is
+-- exactly what the linter kept reporting after each attempt.
+--
+-- Naming all three is what actually closes it.
+do $$
+declare
+  fn text;
+begin
+  foreach fn in array array[
+    'public.set_message_sender()',
+    'public.protect_message_identity()',
+    'public.sync_message_usernames()',
+    'public.set_call_invite_caller()',
+    'public.protect_call_invite_identity()',
+    'public.is_conversation_member(uuid)'
+  ] loop
+    execute format('revoke execute on function %s from public, anon, authenticated', fn);
+  end loop;
+end $$;
 
--- Trigger functions need no grant at all: PostgreSQL does not check EXECUTE
--- when firing a trigger, so they stay revoked from everyone.
+-- Trigger functions need no grant back: PostgreSQL does not check EXECUTE
+-- when firing a trigger, so the five above stay revoked from everyone and
+-- become unreachable over /rest/v1/rpc/.
 
--- is_conversation_member is different -- it is called from inside RLS
--- policies, which are evaluated as the querying role. It must be granted
--- back, or every policy depending on it starts failing.
+-- is_conversation_member is the one exception. It is called from inside RLS
+-- policies, which are evaluated as the querying role, so authenticated must
+-- keep EXECUTE or every policy depending on it starts failing -- that would
+-- take the whole app down to silence a linter warning.
+--
+-- It stays flagged as "Signed-In Users Can Execute SECURITY DEFINER
+-- Function", and that is an accepted, deliberate exception. The exposure is
+-- minimal: it takes a conversation id the caller already has and returns a
+-- boolean saying whether THEY are a member of it. It reveals nothing about
+-- anyone else and cannot be used to read content.
+--
+-- The zero-warning alternative is to move it into a schema PostgREST does
+-- not expose (e.g. `private`) and repoint every policy at it. That is the
+-- correct long-term fix; it is deliberately not bundled here because it
+-- rewrites policies across four migration files and the risk outweighs the
+-- benefit of clearing one WARN.
 grant execute on function public.is_conversation_member(uuid) to authenticated;
 
 -- ---- Drop the two orphans now confirmed dead --------------------------------
@@ -403,6 +437,39 @@ drop function if exists public.username_available(text);
 -- not.
 create index if not exists idx_conversation_reads_user
   on public.conversation_reads (user_id);
+
+-- ############################################################################
+-- PART 6 — verify, rather than assume
+-- ############################################################################
+
+-- Two rounds of revokes failed silently before the grantee list was right, so
+-- this file now proves its own result instead of trusting that it worked.
+-- This SELECT returns the EXECUTE grants that remain.
+--
+-- EXPECTED OUTPUT: exactly one row --
+--   is_conversation_member | authenticated | EXECUTE
+--
+-- Anything else means a revoke did not land. In particular, any row naming
+-- PUBLIC or anon means the function is still reachable at /rest/v1/rpc/.
+-- An empty result means is_conversation_member lost its grant, which will
+-- break RLS -- re-run the GRANT in Part 4 if so.
+select
+  p.proname                                                             as function_name,
+  case when a.grantee = 0 then 'PUBLIC' else a.grantee::regrole::text end as grantee,
+  a.privilege_type
+from pg_proc p
+join pg_namespace n on n.oid = p.pronamespace
+left join lateral aclexplode(p.proacl) a on true
+where n.nspname = 'public'
+  and p.proname in (
+    'set_message_sender', 'protect_message_identity', 'sync_message_usernames',
+    'set_call_invite_caller', 'protect_call_invite_identity',
+    'is_conversation_member'
+  )
+  and a.privilege_type = 'EXECUTE'
+  and case when a.grantee = 0 then 'PUBLIC' else a.grantee::regrole::text end
+      not in ('postgres', 'supabase_admin', 'service_role')
+order by 1, 2;
 
 -- Done. ✅
 -- After running this, re-run the Supabase linter: the public-bucket-listing
