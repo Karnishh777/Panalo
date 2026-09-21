@@ -42,6 +42,7 @@ import {
 import { initCalls, startCall, setCallLogger, parseCall, describeCall } from "./calls.js";
 import { parseLocation, locationCard, locationMarker, getCurrentPosition, initLocation, describeLocation } from "./location.js";
 import { openChatInfo, closeChatInfo, setChatInfoCallbacks, displayTitle, initChatInfo, deleteConversation } from "./chatinfo.js";
+import { reportChannelStatus, forgetChannel, onResync, requestResync } from "./connection.js";
 
 // Message rows currently on screen (id → row) — powers the actions menu.
 const msgCache = new Map();
@@ -1844,11 +1845,15 @@ function markSendFailed(tempId, reason, onRetry) {
 
 // ---- Realtime ----
 function subscribeToMessages() {
-  if (state.realtimeChannel) supabaseClient.removeChannel(state.realtimeChannel);
+  if (state.realtimeChannel) {
+    forgetChannel(state.realtimeChannel.topic);
+    supabaseClient.removeChannel(state.realtimeChannel);
+  }
   otherTyping = false;
 
+  const channelName = `room:${state.currentConversationId}`;
   state.realtimeChannel = supabaseClient
-    .channel(`room:${state.currentConversationId}`, { config: { broadcast: { self: false } } })
+    .channel(channelName, { config: { broadcast: { self: false } } })
     .on("broadcast", { event: "typing" }, () => {
       otherTyping = true;
       refreshChatSubtitle();
@@ -1862,8 +1867,13 @@ function subscribeToMessages() {
       "postgres_changes",
       { event: "INSERT", schema: "public", table: "messages", filter: `conversation_id=eq.${state.currentConversationId}` },
       (payload) => {
+        // Decide BEFORE rendering: appending the row changes scrollHeight, so
+        // measuring afterwards always reports "not at the bottom".
+        const wasAtBottom = isNearBottom();
         renderMessage(payload.new);
-        scrollToBottom();
+        // Only follow the conversation down if the reader was already at the
+        // live end. Someone scrolled up reading history should stay there.
+        if (wasAtBottom || payload.new.user_id === state.currentUser.id) scrollToBottom();
         if (payload.new.user_id !== state.currentUser.id) {
           announce(`New message from ${payload.new.username || "someone"}`);
           // We're looking at it, so tell the sender it's been read.
@@ -1899,7 +1909,67 @@ function subscribeToMessages() {
       if (targetEl) targetEl.remove();
       msgCache.delete(payload.old.id);
     })
-    .subscribe();
+    .subscribe((status) => reportChannelStatus(channelName, status));
+}
+
+// Reconcile the open conversation with the server.
+//
+// Realtime events that arrived while the socket was down are gone for good —
+// they are not replayed. The only way back to a correct view is to ask for
+// anything newer than what we already have. renderMessage() is idempotent on
+// message id, so re-rendering something already on screen is a no-op and
+// there's no need to diff.
+async function resyncOpenConversation() {
+  const convId = state.currentConversationId;
+  if (!convId) return;
+
+  // Newest message we actually hold for this chat. Optimistic rows are
+  // excluded: their created_at is a local clock reading, which can run ahead
+  // of the server and would make us skip real messages.
+  // Compare parsed instants, not raw strings: Postgres renders "+00:00"
+  // while other paths produce "Z", and those two don't sort together.
+  let since = null;
+  let sinceMs = -Infinity;
+  for (const m of msgCache.values()) {
+    if (m.conversation_id !== convId || m._pending || !m.created_at) continue;
+    const ms = Date.parse(m.created_at);
+    if (Number.isFinite(ms) && ms > sinceMs) {
+      sinceMs = ms;
+      since = m.created_at;
+    }
+  }
+
+  let query = supabaseClient.from("messages").select("*").eq("conversation_id", convId);
+  // An empty chat has no floor to page from, so bound it by page size
+  // instead of pulling the whole history.
+  query = since
+    ? query.gt("created_at", since).order("created_at", { ascending: true })
+    : query.order("created_at", { ascending: false }).limit(MESSAGES_PAGE_SIZE);
+
+  const { data, error } = await query;
+  if (error || !data || !data.length) return;
+
+  const ordered = since ? data : data.slice().reverse();
+  const missing = ordered.filter((m) => !document.getElementById(`msg-${m.id}`));
+  if (!missing.length) return;
+
+  const wasAtBottom = isNearBottom();
+  await loadReactions(missing.map((m) => m.id), { replace: false });
+  missing.forEach((msg) => renderMessage(msg));
+  if (wasAtBottom) scrollToBottom();
+
+  // Recovered messages count as delivered to us; keep the ticks honest.
+  if (!document.hidden) markConversationRead(convId);
+}
+
+// Whether the reader is parked at the live end of the thread. Anything else
+// means they scrolled up deliberately, and yanking them back down is the
+// rudest thing a chat app can do.
+const NEAR_BOTTOM_PX = 120;
+function isNearBottom() {
+  const c = document.getElementById("messages-container");
+  if (!c) return true;
+  return c.scrollHeight - c.scrollTop - c.clientHeight < NEAR_BOTTOM_PX;
 }
 
 // ---- Per-chat theme ----
@@ -2144,6 +2214,17 @@ export function setFocusMode(on) {
 export function initChatUI() {
   // Single delegated listener for all click ripples across the app.
   attachRipples();
+
+  // Whenever the connection layer decides we may have fallen behind (socket
+  // resubscribed, network returned, tab came back to the foreground), pull
+  // whatever we missed. Both halves matter: the open thread so the reader
+  // sees new messages, and the sidebar so previews, ordering and unread
+  // counts stop showing a stale world.
+  onResync(async () => {
+    if (!state.currentUser) return;
+    await resyncOpenConversation();
+    await fetchConversations();
+  });
 
   document.getElementById("back-btn").addEventListener("click", () => {
     chatApp.classList.remove("chat-open");

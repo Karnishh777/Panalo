@@ -5,6 +5,7 @@
 // The same table doubles as cross-device unread sync: the marker written on
 // your phone is visible to your laptop.
 import { supabaseClient } from "./client.js";
+import { reportChannelStatus, forgetChannel } from "./connection.js";
 import { state } from "./state.js";
 
 // conversation_id -> { user_id: last_read_at }
@@ -70,10 +71,14 @@ export function isReadByAll(convId, msg, memberIds) {
 
 // Live ticks: someone opening the chat updates their marker.
 export function subscribeReceipts(convId) {
-  if (channel) supabaseClient.removeChannel(channel);
+  if (channel) {
+    forgetChannel(channel.topic);
+    supabaseClient.removeChannel(channel);
+  }
   if (!convId) return;
+  const channelName = `reads:${convId}`;
   channel = supabaseClient
-    .channel(`reads:${convId}`)
+    .channel(channelName)
     .on(
       "postgres_changes",
       { event: "*", schema: "public", table: "conversation_reads", filter: `conversation_id=eq.${convId}` },
@@ -86,11 +91,12 @@ export function subscribeReceipts(convId) {
         onChange?.();
       }
     )
-    .subscribe();
+    .subscribe((status) => reportChannelStatus(channelName, status));
 }
 
 export function stopReceipts() {
   if (channel) {
+    forgetChannel(channel.topic);
     supabaseClient.removeChannel(channel);
     channel = null;
   }

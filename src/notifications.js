@@ -9,12 +9,14 @@
 //   2. sound         — a short WebAudio chime, no asset to load
 //   3. desktop       — real OS notifications, only if the browser granted them
 import { supabaseClient } from "./client.js";
+import { reportChannelStatus, forgetChannel } from "./connection.js";
 import { state } from "./state.js";
 import { el, showToast } from "./util.js";
 import { messagePlaintext } from "./encryption.js";
 import { describeText } from "./stickers.js";
 
 const MUTED_KEY = "panalo.muted";
+const NOTIFY_CHANNEL = "notify:all";
 let channel = null;
 let prefs = { desktop: false, inApp: true, sound: true };
 let inboxListener = null; // chat.js: update unread + list previews
@@ -263,7 +265,7 @@ async function alertFor(msg) {
 export function startNotifications() {
   if (channel) return;
   channel = supabaseClient
-    .channel("notify:all")
+    .channel(NOTIFY_CHANNEL)
     .on("postgres_changes", { event: "INSERT", schema: "public", table: "messages" }, (payload) => {
       const m = payload.new;
       if (!state.currentUser || m.user_id === state.currentUser.id) return;
@@ -277,11 +279,12 @@ export function startNotifications() {
       if (watching) return;
       alertFor(m);
     })
-    .subscribe();
+    .subscribe((status) => reportChannelStatus(NOTIFY_CHANNEL, status));
 }
 
 export function stopNotifications() {
   if (channel) {
+    forgetChannel(NOTIFY_CHANNEL);
     supabaseClient.removeChannel(channel);
     channel = null;
   }

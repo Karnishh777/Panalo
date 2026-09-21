@@ -2,12 +2,14 @@
 // carries no private content, and keeping them in the clear lets counts be
 // grouped without unwrapping a key for every message.
 import { supabaseClient } from "./client.js";
+import { reportChannelStatus, forgetChannel } from "./connection.js";
 import { state } from "./state.js";
 
 export const REACTION_EMOJIS = ["❤️", "👍", "😂", "😮", "😢", "🙏", "🔥", "🎉"];
 
 // message_id -> [{ user_id, emoji }]
 const byMessage = new Map();
+const REACTIONS_CHANNEL = "reactions:all";
 let channel = null;
 let onChange = null; // chat.js re-renders the pills for a message
 
@@ -101,18 +103,19 @@ export async function toggleReaction(messageId, emoji) {
 export function startReactions() {
   if (channel) return;
   channel = supabaseClient
-    .channel("reactions:all")
+    .channel(REACTIONS_CHANNEL)
     .on("postgres_changes", { event: "INSERT", schema: "public", table: "message_reactions" }, (payload) => {
       if (addLocal(payload.new)) onChange?.(payload.new.message_id);
     })
     .on("postgres_changes", { event: "DELETE", schema: "public", table: "message_reactions" }, (payload) => {
       if (removeLocal(payload.old)) onChange?.(payload.old.message_id);
     })
-    .subscribe();
+    .subscribe((status) => reportChannelStatus(REACTIONS_CHANNEL, status));
 }
 
 export function stopReactions() {
   if (channel) {
+    forgetChannel(REACTIONS_CHANNEL);
     supabaseClient.removeChannel(channel);
     channel = null;
   }

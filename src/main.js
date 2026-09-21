@@ -9,8 +9,10 @@ import { hydrateIcons } from "./icons.js";
 import { setFocusMode } from "./chat.js";
 import { setServiceWorker } from "./notifications.js";
 import { enforceAppLock } from "./lock.js";
+import { startConnectionWatch } from "./connection.js";
 
 hydrateIcons(); // swap every <span data-icon> for its themed vector icon
+startConnectionWatch(); // surface offline/reconnecting/syncing, and recover from gaps
 enforceAppLock(); // if a PIN guards the app, ask for it before anything shows
 initChatUI();
 initAuth();

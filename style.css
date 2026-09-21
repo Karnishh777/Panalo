@@ -1272,6 +1272,66 @@ a:focus-visible {
   transform: translateY(8px);
 }
 
+/* ---- Connection status ----------------------------------------------------
+   The app used to fail silently when its realtime sockets dropped: messages
+   sent during the gap simply never appeared. Showing the state is half the
+   fix (connection.js does the recovery); the user deserves to know when the
+   view they're reading might be behind.
+
+   Sits above the composer rather than over it, and never intercepts clicks —
+   it's information, not a control. */
+.connection-pill {
+  position: fixed;
+  top: 14px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 120;
+  pointer-events: none;
+  padding: 7px 15px;
+  border-radius: 999px;
+  font-size: 12.5px;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  color: var(--text);
+  background: var(--surface-2);
+  border: 1px solid var(--surface-3);
+  box-shadow: var(--shadow-md);
+  animation: pill-in 0.22s ease both;
+}
+
+@keyframes pill-in {
+  from { opacity: 0; transform: translateX(-50%) translateY(-6px); }
+  to   { opacity: 1; transform: translateX(-50%) translateY(0); }
+}
+
+/* Offline is a hard stop — say so in the danger colour. Reconnecting and
+   syncing are transient and shouldn't read as errors. */
+.connection-pill[data-state="offline"] {
+  border-color: var(--danger);
+  color: var(--danger);
+}
+
+.connection-pill[data-state="reconnecting"],
+.connection-pill[data-state="syncing"] {
+  color: var(--text-muted);
+}
+
+/* A quiet pulse distinguishes "working on it" from "stuck", without the
+   spinner-in-the-corner noise. */
+.connection-pill[data-state="reconnecting"],
+.connection-pill[data-state="syncing"] {
+  animation: pill-in 0.22s ease both, pill-pulse 1.6s ease-in-out 0.22s infinite;
+}
+
+@keyframes pill-pulse {
+  0%, 100% { opacity: 1; }
+  50%      { opacity: 0.62; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .connection-pill { animation: none; }
+}
+
 /* Animations */
 @keyframes fadeSlideUp {
   from { opacity: 0; transform: translateY(8px); }
