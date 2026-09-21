@@ -1,0 +1,18 @@
+# Line endings.
+#
+# index.html was the only CRLF file in an otherwise all-LF repo. An ordinary
+# ten-line edit to it silently rewrote all 620 lines to LF, turning a small
+# change into a 1248-line diff and costing the file its blame history. The
+# repo is now consistently LF; this pins that so a stray editor or script
+# can't reintroduce the inconsistency.
+* text=auto eol=lf
+
+# Keep binary assets byte-exact.
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.webp binary
+*.gif binary
+*.ico binary
+*.woff binary
+*.woff2 binary
