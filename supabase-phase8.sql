@@ -417,14 +417,47 @@ drop function if exists public.set_conversation_theme(uuid, text);
 -- callers a username-enumeration oracle.
 drop function if exists public.username_available(text);
 
--- STILL UNEXPLAINED: public.rls_auto_enable()
--- It appears in none of the saved snippets and nowhere in this repo. Read it
--- before deciding -- a SECURITY DEFINER function with that name, reachable by
--- anonymous callers, is not something to drop or keep on a guess:
+-- ---- rls_auto_enable(): identified, and deliberately KEPT ------------------
+-- This one was flagged alongside the orphans but is a different animal. Its
+-- definition begins:
 --
---   select pg_get_functiondef(p.oid)
---   from pg_proc p join pg_namespace n on n.oid = p.pronamespace
---   where n.nspname = 'public' and p.proname = 'rls_auto_enable';
+--   CREATE OR REPLACE FUNCTION public.rls_auto_enable()
+--    RETURNS event_trigger
+--
+-- It is an EVENT TRIGGER function. It fires on CREATE TABLE in `public` and
+-- runs `alter table ... enable row level security` on the new table, logging
+-- success or failure and skipping system schemas.
+--
+-- That makes the linter finding a false positive. PostgreSQL refuses to
+-- invoke an event-trigger function directly -- "event trigger functions can
+-- only be called as event triggers" -- so /rest/v1/rpc/rls_auto_enable
+-- cannot execute it no matter which role calls it. The linter matched on
+-- SECURITY DEFINER plus an EXECUTE grant without accounting for the return
+-- type.
+--
+-- It is also genuinely worth keeping: it means any future table added to
+-- `public` gets RLS switched on automatically rather than silently shipping
+-- world-readable. That is exactly the class of mistake this audit exists to
+-- catch, caught by the database itself.
+--
+-- So: keep the function, drop the pointless grant. Event triggers do not
+-- check EXECUTE when firing, so revoking costs nothing and clears the noise.
+do $$
+begin
+  if exists (
+    select 1 from pg_proc p
+    join pg_namespace n on n.oid = p.pronamespace
+    where n.nspname = 'public' and p.proname = 'rls_auto_enable'
+  ) then
+    execute 'revoke execute on function public.rls_auto_enable() from public, anon, authenticated';
+  end if;
+end $$;
+
+-- Worth confirming the event trigger is actually attached -- the function
+-- alone does nothing without one wired to it:
+--
+--   select e.evtname, e.evtevent, e.evtenabled, p.proname
+--   from pg_event_trigger e join pg_proc p on p.oid = e.evtfoid;
 
 
 -- ############################################################################
