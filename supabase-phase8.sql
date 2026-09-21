@@ -26,12 +26,33 @@
 -- guarantee, two accounts sharing a username means a chat — or a group
 -- invite — can silently reach the wrong person.
 --
+-- Production ALREADY has this, created by an ad-hoc snippet under the name
+-- `profiles_username_lower_key` rather than phase 7's `idx_profiles_username_lower`.
+-- `create index if not exists` matches on NAME, not on definition, so naming it
+-- differently here would build a second, redundant unique index over the same
+-- expression -- extra work on every insert and update, for nothing.
+--
+-- Check for any unique index on lower(username) and only create one if none
+-- exists, whatever it happens to be called.
+--
 -- If this fails with a duplicate-key error, some accounts already share a
 -- username. Find them, have one side rename, then re-run:
 --   select lower(username), array_agg(username), array_agg(id)
 --   from public.profiles group by lower(username) having count(*) > 1;
-create unique index if not exists idx_profiles_username_lower
-  on public.profiles (lower(username));
+do $$
+begin
+  if not exists (
+    select 1
+    from pg_index i
+    join pg_class c on c.oid = i.indexrelid
+    where i.indrelid = 'public.profiles'::regclass
+      and i.indisunique
+      and pg_get_indexdef(i.indexrelid) ilike '%lower(username%'
+  ) then
+    create unique index idx_profiles_username_lower
+      on public.profiles (lower(username));
+  end if;
+end $$;
 
 -- ---- 1b. Per-key PBKDF2 iteration count ------------------------------------
 -- The client now carries the iteration count inside the stored key blob
@@ -320,27 +341,56 @@ create policy "chat-files upload" on storage.objects
 --   -- only after reading its body and confirming it is not load-bearing:
 --   -- drop function if exists public.rls_auto_enable();
 
--- For the functions this repo DOES define, anonymous execution is
--- unnecessary: each is either a trigger function or an RLS helper, and no
--- signed-out caller has any reason to reach them over /rest/v1/rpc/.
-revoke execute on function public.is_conversation_member(uuid)   from anon;
-revoke execute on function public.set_message_sender()           from anon;
-revoke execute on function public.protect_message_identity()     from anon;
-revoke execute on function public.sync_message_usernames()       from anon;
-revoke execute on function public.set_call_invite_caller()       from anon;
-revoke execute on function public.protect_call_invite_identity() from anon;
+-- IMPORTANT: revoke from PUBLIC, not from anon.
+--
+-- PostgreSQL grants EXECUTE on every new function to PUBLIC automatically.
+-- anon therefore holds EXECUTE through PUBLIC, not through any grant naming
+-- anon -- and REVOKE only removes privileges that were actually granted to
+-- the role you name. `revoke execute ... from anon` against a PUBLIC grant
+-- succeeds silently and changes nothing, leaving the function just as
+-- callable as before.
+--
+-- This is also why the "Theme selector" snippet's explicit
+-- `grant execute ... to authenticated` did not keep anon out: the default
+-- PUBLIC grant was already there and was never removed.
+revoke execute on function public.is_conversation_member(uuid)   from public;
+revoke execute on function public.set_message_sender()           from public;
+revoke execute on function public.protect_message_identity()     from public;
+revoke execute on function public.sync_message_usernames()       from public;
+revoke execute on function public.set_call_invite_caller()       from public;
+revoke execute on function public.protect_call_invite_identity() from public;
 
--- Trigger functions are invoked by their trigger, never by a client, so
--- signed-in users have no reason to call them over the REST API either.
-revoke execute on function public.set_message_sender()           from authenticated;
-revoke execute on function public.protect_message_identity()     from authenticated;
-revoke execute on function public.sync_message_usernames()       from authenticated;
-revoke execute on function public.set_call_invite_caller()       from authenticated;
-revoke execute on function public.protect_call_invite_identity() from authenticated;
+-- Trigger functions need no grant at all: PostgreSQL does not check EXECUTE
+-- when firing a trigger, so they stay revoked from everyone.
 
--- is_conversation_member stays callable by authenticated users on purpose:
--- RLS policies evaluate it as the calling role, so revoking it would break
--- every policy that depends on it.
+-- is_conversation_member is different -- it is called from inside RLS
+-- policies, which are evaluated as the querying role. It must be granted
+-- back, or every policy depending on it starts failing.
+grant execute on function public.is_conversation_member(uuid) to authenticated;
+
+-- ---- Drop the two orphans now confirmed dead --------------------------------
+-- Both were found in production, both exist nowhere in this repo, and a grep
+-- of the entire client confirms it makes no .rpc() calls at all -- so nothing
+-- can be calling either one.
+--
+-- set_conversation_theme: superseded. setChatTheme() in src/chat.js now does
+-- a plain UPDATE against the conversations table.
+drop function if exists public.set_conversation_theme(uuid, text);
+
+-- username_available: never wired up. It was meant to let the signup form
+-- check a name before creating the account, and was deliberately granted to
+-- anon for that. Nothing calls it, so all it does today is give anonymous
+-- callers a username-enumeration oracle.
+drop function if exists public.username_available(text);
+
+-- STILL UNEXPLAINED: public.rls_auto_enable()
+-- It appears in none of the saved snippets and nowhere in this repo. Read it
+-- before deciding -- a SECURITY DEFINER function with that name, reachable by
+-- anonymous callers, is not something to drop or keep on a guess:
+--
+--   select pg_get_functiondef(p.oid)
+--   from pg_proc p join pg_namespace n on n.oid = p.pronamespace
+--   where n.nspname = 'public' and p.proname = 'rls_auto_enable';
 
 
 -- ############################################################################
