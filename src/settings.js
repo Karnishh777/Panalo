@@ -1,7 +1,8 @@
 // Per-device "vibe" settings: global accent, chat wallpaper (presets or your own
 // image), animated background, and a themed custom cursor. Stored in localStorage
 // (UI preferences, no backend needed).
-import { THEME_PRESETS, WALLPAPER_PRESETS, EFFECT_PRESETS, FONT_PRESETS, MIN_PASSWORD_LENGTH } from "./config.js";
+import { THEME_PRESETS, WALLPAPER_PRESETS, EFFECT_PRESETS, FONT_PRESETS } from "./config.js";
+import { validatePassword } from "./password.js";
 import { el, showToast, withBusy } from "./util.js";
 import { icon } from "./icons.js";
 import {
@@ -409,7 +410,8 @@ export function initSettings() {
       const confirm = document.getElementById("confirm-password").value;
 
       if (!current || !next) return showToast("Fill in every field.");
-      if (next.length < MIN_PASSWORD_LENGTH) return showToast(`New password must be at least ${MIN_PASSWORD_LENGTH} characters.`);
+      const weakNew = validatePassword(next);
+      if (weakNew) return showToast(weakNew);
       if (next !== confirm) return showToast("The new passwords don't match.");
       if (next === current) return showToast("That's already your password.");
 

@@ -11,7 +11,8 @@ import { stopReceipts } from "./receipts.js";
 import { startCalls, stopCalls } from "./calls.js";
 import { startTour } from "./tour.js";
 import { refreshMyProfile } from "./profile.js";
-import { MIN_PASSWORD_LENGTH, OTP_LENGTH } from "./config.js";
+import { OTP_LENGTH } from "./config.js";
+import { validatePassword, describePasswordPolicy } from "./password.js";
 
 const authScreen = document.getElementById("auth-screen");
 const chatApp = document.getElementById("chat-app");
@@ -83,6 +84,13 @@ function showUnlockModal(session) {
 
 // ---- Wire up all auth-related event listeners + restore an existing session ----
 export function initAuth() {
+  // State the password rule up front. Discovering it by being rejected is a
+  // worse experience than reading one line before you start typing, and the
+  // text is generated from the same constants the validator uses, so the two
+  // can't drift apart.
+  const hint = document.getElementById("password-hint");
+  if (hint) hint.textContent = describePasswordPolicy();
+
   showSignup.addEventListener("click", (e) => {
     e.preventDefault();
     loginForm.classList.add("hidden");
@@ -110,8 +118,9 @@ export function initAuth() {
         setAuthMessage("Please fill in all fields.");
         return;
       }
-      if (password.length < MIN_PASSWORD_LENGTH) {
-        setAuthMessage(`Password must be at least ${MIN_PASSWORD_LENGTH} characters.`);
+      const weak = validatePassword(password);
+      if (weak) {
+        setAuthMessage(weak);
         return;
       }
 
@@ -301,7 +310,8 @@ export function initAuth() {
     withBusy(saveRecoveryBtn, "Setting…", async () => {
       const next = document.getElementById("recovery-new-password").value;
       const confirm = document.getElementById("recovery-confirm-password").value;
-      if (!next || next.length < MIN_PASSWORD_LENGTH) return showToast(`Password must be at least ${MIN_PASSWORD_LENGTH} characters.`);
+      const weakNext = validatePassword(next);
+      if (weakNext) return showToast(weakNext);
       if (next !== confirm) return showToast("Passwords don't match.");
 
       const { data: userData, error } = await supabaseClient.auth.updateUser({ password: next });

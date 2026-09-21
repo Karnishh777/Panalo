@@ -12,7 +12,18 @@ export const STORAGE_URL_PREFIX = `${SUPABASE_URL}/storage/`;
 // Session persistence preference key ("Keep me logged in").
 export const REMEMBER_KEY = "panalo.remember";
 
-export const MIN_PASSWORD_LENGTH = 6;
+// Password policy. These MUST match Authentication → Sign In / Providers →
+// Email in the Supabase dashboard, which is where the rule is actually
+// enforced. The client checks the same thing only so the user finds out
+// while typing rather than after submitting.
+//
+// Supabase's own guidance: anything under 8 characters is not recommended.
+export const MIN_PASSWORD_LENGTH = 8;
+// Character classes a password must contain. Set to the strongest option
+// Supabase offers. If the dashboard is set to a weaker option, trim this
+// array to match, or users will be refused passwords the server accepts.
+// Valid entries: "lower", "upper", "digit", "symbol".
+export const PASSWORD_REQUIRED_CLASSES = ["lower", "upper", "digit", "symbol"];
 export const OTP_LENGTH = 6;
 
 export const AVATAR_COLORS = [
