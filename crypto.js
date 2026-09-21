@@ -20,13 +20,13 @@ const PanaloCrypto = (() => {
   const enc = new TextEncoder();
   const dec = new TextDecoder();
 
-  // Iterations travel WITH each stored key (see key_iterations in
-  // supabase-phase7.sql) rather than living only here, so this can be raised
+  // Iterations travel WITH each stored key (inside the blob itself — see
+  // packEnvelope below) rather than living only here, so this can be raised
   // later without breaking recovery of keys already protected at a lower
-  // count. New/rewrapped keys always use the current value; legacy rows
+  // count. New/rewrapped keys always use the current value; older rows
   // recover at whatever count they were actually protected with.
   const PBKDF2_ITERATIONS_CURRENT = 600000;
-  const PBKDF2_ITERATIONS_LEGACY_DEFAULT = 200000; // rows predating the column
+  const PBKDF2_ITERATIONS_LEGACY_DEFAULT = 200000; // rows predating the envelope
   const RSA = { name: "RSA-OAEP", hash: "SHA-256" };
 
   // ---- base64 <-> bytes (works in browser and Node) ----
@@ -72,19 +72,82 @@ const PanaloCrypto = (() => {
       ["encrypt", "decrypt"]
     );
   }
+  // The stored blob is self-describing: the iteration count lives INSIDE it,
+  // next to the ciphertext it applies to.
+  //
+  // It used to live only in a separate key_iterations column. That coupled
+  // recovery to a schema migration, and when the column was missing the count
+  // was silently dropped on write while protection still used the raised
+  // value — so recovery derived a different wrapping key and reported a
+  // CORRECT password as wrong, orphaning that account's history for good.
+  // Carrying the count with the ciphertext removes the schema from the
+  // recovery path entirely. The column is still written when it exists, but
+  // nothing depends on it any more.
+  const ENVELOPE_VERSION = 1;
+
+  function packEnvelope(ctB64, iterations) {
+    return JSON.stringify({ v: ENVELOPE_VERSION, it: iterations, ct: ctB64 });
+  }
+
+  // Returns { ct, iterations } — iterations is null when the blob predates the
+  // envelope and the count has to be inferred by the caller.
+  function unpackEnvelope(stored) {
+    if (typeof stored === "string" && stored.startsWith("{")) {
+      try {
+        const parsed = JSON.parse(stored);
+        if (parsed && parsed.v === ENVELOPE_VERSION && typeof parsed.ct === "string") {
+          return { ct: parsed.ct, iterations: Number(parsed.it) || null };
+        }
+      } catch {
+        /* not an envelope — fall through to the legacy shape */
+      }
+    }
+    return { ct: stored, iterations: null };
+  }
+
   async function protectPrivateKey(privateKey, password, iterations = PBKDF2_ITERATIONS_CURRENT) {
     const pkcs8 = await subtle.exportKey("pkcs8", privateKey);
     const salt = randomBytes(16);
     const iv = randomBytes(12);
     const wrapKey = await deriveWrapKey(password, salt, iterations);
     const ct = await subtle.encrypt({ name: "AES-GCM", iv }, wrapKey, pkcs8);
-    return { encPrivateKey: bytesToB64(ct), keySalt: bytesToB64(salt), keyIv: bytesToB64(iv), keyIterations: iterations };
+    return {
+      encPrivateKey: packEnvelope(bytesToB64(ct), iterations),
+      keySalt: bytesToB64(salt),
+      keyIv: bytesToB64(iv),
+      keyIterations: iterations,
+    };
   }
+
   async function recoverPrivateKey({ encPrivateKey, keySalt, keyIv, keyIterations }, password) {
-    const iterations = keyIterations || PBKDF2_ITERATIONS_LEGACY_DEFAULT;
-    const wrapKey = await deriveWrapKey(password, b64ToBytes(keySalt), iterations);
-    const pkcs8 = await subtle.decrypt({ name: "AES-GCM", iv: b64ToBytes(keyIv) }, wrapKey, b64ToBytes(encPrivateKey));
-    return subtle.importKey("pkcs8", pkcs8, RSA, true, ["unwrapKey", "decrypt"]);
+    const { ct, iterations: embedded } = unpackEnvelope(encPrivateKey);
+
+    // Most specific source of truth first: the count carried with the
+    // ciphertext, then the column, then — for rows that have neither — every
+    // count this app has ever protected keys with. Trying both rescues the
+    // accounts already orphaned by the dropped-column bug; without it they
+    // would stay permanently locked out of their own history.
+    const candidates = embedded
+      ? [embedded]
+      : keyIterations
+        ? [keyIterations]
+        : [PBKDF2_ITERATIONS_LEGACY_DEFAULT, PBKDF2_ITERATIONS_CURRENT];
+
+    const salt = b64ToBytes(keySalt);
+    const iv = b64ToBytes(keyIv);
+    const body = b64ToBytes(ct);
+
+    let lastError;
+    for (const iterations of candidates) {
+      try {
+        const wrapKey = await deriveWrapKey(password, salt, iterations);
+        const pkcs8 = await subtle.decrypt({ name: "AES-GCM", iv }, wrapKey, body);
+        return await subtle.importKey("pkcs8", pkcs8, RSA, true, ["unwrapKey", "decrypt"]);
+      } catch (e) {
+        lastError = e; // wrong count, or genuinely the wrong password
+      }
+    }
+    throw lastError;
   }
 
   // ---- Conversation key (AES-GCM 256), shared via public-key wrapping ----

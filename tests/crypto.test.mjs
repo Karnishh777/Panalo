@@ -99,6 +99,62 @@ async function main() {
   ok("fingerprint is deterministic for the same key", fp1 === fp1Again);
   ok("fingerprint differs for different keys", fp1 !== fp2);
 
+
+  // ---- Iteration count must survive a database that can't store it -------
+  // Regression test for a confirmed production data-loss bug: keys were
+  // protected at the current (raised) iteration count, but the deployed
+  // user_keys table had no key_iterations column, so the count was silently
+  // dropped on write. Recovery then defaulted to the legacy count, derived a
+  // different wrapping key, and reported a CORRECT password as wrong --
+  // permanently orphaning that user's encrypted history.
+  //
+  // The count now travels inside the stored blob itself, so no schema column
+  // is required for recovery to work.
+  const dbless = await PanaloCrypto.protectPrivateKey(kp.privateKey, password);
+  const strippedByDb = {
+    encPrivateKey: dbless.encPrivateKey,
+    keySalt: dbless.keySalt,
+    keyIv: dbless.keyIv,
+    // key_iterations column absent -- the value never reaches the database
+  };
+  const survived = await PanaloCrypto.recoverPrivateKey(strippedByDb, password);
+  ok("recovers when the database cannot store the iteration count", !!survived);
+
+  await expectThrow("a wrong password still fails with no stored count", () =>
+    PanaloCrypto.recoverPrivateKey(strippedByDb, "not the password")
+  );
+
+  // ---- Rescue path: keys already orphaned by the bug above ----------------
+  // Rows written before this fix hold raw base64 with no embedded count and
+  // no column value. Recovery must try the plausible counts rather than
+  // assuming the legacy one, or those accounts stay locked out forever.
+  const orphanedCt = JSON.parse(dbless.encPrivateKey).ct; // pre-envelope shape
+  const orphanedRow = {
+    encPrivateKey: orphanedCt,
+    keySalt: dbless.keySalt,
+    keyIv: dbless.keyIv,
+  };
+  const rescued = await PanaloCrypto.recoverPrivateKey(orphanedRow, password);
+  ok("rescues a legacy row protected at the raised count", !!rescued);
+
+  // And the genuinely-legacy case (protected at the old count) still works.
+  const trueLegacyStored = await PanaloCrypto.protectPrivateKey(kp.privateKey, password, 200000);
+  const trueLegacyRow = {
+    encPrivateKey: JSON.parse(trueLegacyStored.encPrivateKey).ct,
+    keySalt: trueLegacyStored.keySalt,
+    keyIv: trueLegacyStored.keyIv,
+  };
+  ok("still recovers a genuinely legacy 200k row", !!(await PanaloCrypto.recoverPrivateKey(trueLegacyRow, password)));
+
+  // An explicit stored count is authoritative and must still be honoured.
+  ok(
+    "an explicit key_iterations value is still honoured",
+    !!(await PanaloCrypto.recoverPrivateKey(
+      { ...trueLegacyRow, keyIterations: 200000 },
+      password
+    ))
+  );
+
   console.log(`\n${passed} passed, ${failures.length} failed`);
   if (failures.length) {
     console.log("\nFailures:");
