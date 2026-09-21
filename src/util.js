@@ -77,6 +77,24 @@ export function showToast(message, type = "error") {
   }, 4000);
 }
 
+// Run `task` over `items` with at most `limit` running at once, preserving
+// input order in the result. Used where a job fans out to one request per
+// item and firing them all simultaneously would be rude to the server (and
+// to the user's connection) without being any faster.
+export async function mapLimited(items, limit, task) {
+  const results = new Array(items.length);
+  let cursor = 0;
+  const workerCount = Math.max(1, Math.min(limit, items.length));
+  const workers = Array.from({ length: workerCount }, async () => {
+    while (cursor < items.length) {
+      const index = cursor++;
+      results[index] = await task(items[index], index);
+    }
+  });
+  await Promise.all(workers);
+  return results;
+}
+
 // Deterministic hue [0-360) for any string — used to give each chat its own
 // mood colour without needing anything stored per-chat. Same peer always
 // picks up the same accent, so the visual identity stays stable across

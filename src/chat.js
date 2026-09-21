@@ -1,7 +1,7 @@
 // Conversations, messages, sending, and realtime.
 import { supabaseClient } from "./client.js";
 import { state } from "./state.js";
-import { el, showToast, withBusy, getAvatarColor, safeImageUrl, scrollToBottom, compressImage, announce, setAvatar, formatTime, haptic, hueFor, attachRipples } from "./util.js";
+import { el, showToast, withBusy, getAvatarColor, safeImageUrl, scrollToBottom, compressImage, announce, setAvatar, formatTime, haptic, hueFor, attachRipples, mapLimited } from "./util.js";
 import { getConversationKey, provisionConversationKey, messagePlaintext } from "./encryption.js";
 import { MESSAGES_PAGE_SIZE, THEME_PRESETS, FONT_PRESETS, MAX_FILE_BYTES } from "./config.js";
 import { isOnline, setPresenceListener } from "./presence.js";
@@ -136,18 +136,38 @@ export async function fetchConversations() {
   renderConversations();
 }
 
-// One query gives us, for every chat: the latest message (preview + ordering)
-// and the unread count. RLS already limits this to the user's own chats.
+// Sidebar metadata for every chat: the latest message (preview + ordering)
+// and the unread count. RLS already limits every query here to the user's
+// own chats.
+//
+// The cheap pass is one query for the newest messages across all chats. It
+// cannot be the only pass, though: a global LIMIT says nothing about
+// per-conversation coverage. One busy group could fill the entire window on
+// its own, and every quieter chat would come back with no rows at all --
+// showing no preview, no timestamp (so sorting to the bottom of the list)
+// and no unread badge, as though nothing had ever been said in it. The
+// quieter the chat, the more likely it vanished, which is exactly backwards.
+//
+// So anything the scan didn't reach gets asked for directly.
 const META_SCAN_LIMIT = 500;
+// Per gap-filled chat: enough for the preview and for an unread count that's
+// accurate up to the badge's own "99+" cap.
+const META_PER_CONVERSATION_LIMIT = 100;
+// Gap queries run in parallel, but not unboundedly -- a user with many quiet
+// chats shouldn't open a hundred sockets at once.
+const META_GAP_CONCURRENCY = 8;
+
+const META_FIELDS = "id, conversation_id, user_id, username, content, iv, file_url, created_at";
 
 async function hydrateConversationMeta() {
   if (!allConversations.length) {
     refreshUnreadBadges();
     return;
   }
+
   const { data } = await supabaseClient
     .from("messages")
-    .select("id, conversation_id, user_id, username, content, iv, file_url, created_at")
+    .select(META_FIELDS)
     .order("created_at", { ascending: false })
     .limit(META_SCAN_LIMIT);
 
@@ -155,6 +175,24 @@ async function hydrateConversationMeta() {
   for (const m of data || []) {
     if (!byConv.has(m.conversation_id)) byConv.set(m.conversation_id, []);
     byConv.get(m.conversation_id).push(m);
+  }
+
+  // A chat missing from the scan is not necessarily empty -- it's just
+  // older than the newest META_SCAN_LIMIT messages. Ask for its own page.
+  // Genuinely empty chats cost one cheap indexed query and return nothing,
+  // which is the correct answer for them anyway.
+  const gaps = allConversations.filter((c) => !byConv.has(c.id));
+  if (gaps.length) {
+    const filled = await mapLimited(gaps, META_GAP_CONCURRENCY, async (conv) => {
+      const { data: rows } = await supabaseClient
+        .from("messages")
+        .select(META_FIELDS)
+        .eq("conversation_id", conv.id)
+        .order("created_at", { ascending: false })
+        .limit(META_PER_CONVERSATION_LIMIT);
+      return { id: conv.id, rows: rows || [] };
+    });
+    filled.forEach(({ id, rows }) => byConv.set(id, rows));
   }
 
   for (const conv of allConversations) {
