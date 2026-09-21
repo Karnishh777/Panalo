@@ -395,9 +395,14 @@ export async function openChatInfo() {
   const encEl = document.getElementById("info-encryption");
   encEl.textContent = "…";
   getConversationKey(conv.id).then((k) => {
+    // "Older chat" blamed the wrong thing. A chat has no key because nobody
+    // had finished setting up encryption when it was created -- see
+    // provisionConversationKey(), which returns silently if any member is
+    // missing a public key. Age has nothing to do with it, and the state
+    // never repairs itself, so say what is actually true.
     encEl.textContent = k
-      ? "Messages in this chat are encrypted"
-      : "Older chat — messages not encrypted";
+      ? "Message text in this chat is encrypted. Photos and files are not."
+      : "This chat isn't encrypted — it was created before everyone in it had keys set up.";
   });
 
   drawer().classList.add("open");
