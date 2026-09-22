@@ -3,7 +3,7 @@ import { supabaseClient } from "./client.js";
 import { state } from "./state.js";
 import { el, showToast, withBusy, getAvatarColor, safeImageUrl, scrollToBottom, compressImage, announce, setAvatar, formatTime, haptic, hueFor, attachRipples, mapLimited } from "./util.js";
 import { getConversationKey, provisionConversationKey, ensureConversationKey, messagePlaintext } from "./encryption.js";
-import { uploadEncrypted, loadEncrypted, isEncryptedAttachment, isImageEntry, primeAttachmentCache, clearAttachmentCache } from "./attachments.js";
+import { uploadEncrypted, loadEncrypted, isEncryptedAttachment, isImageEntry, primeAttachmentCache, clearAttachmentCache, deleteAttachment } from "./attachments.js";
 import { MESSAGES_PAGE_SIZE, THEME_PRESETS, FONT_PRESETS, MAX_FILE_BYTES } from "./config.js";
 import { isOnline, setPresenceListener } from "./presence.js";
 import { isMuted, toggleMute, setInboxListener, setOpenChatListener } from "./notifications.js";
@@ -1727,8 +1727,23 @@ export function applyChatWallpaper(convId) {
 }
 
 async function deleteMessage(msgId) {
+  // Grab the attachment URL before the row goes, or there is nothing left to
+  // find the file by.
+  const fileUrl = msgCache.get(msgId)?.file_url || null;
+
   const { error } = await supabaseClient.from("messages").delete().eq("id", msgId);
-  if (error) showToast("Could not delete the message.");
+  if (error) {
+    showToast("Could not delete the message.");
+    return;
+  }
+
+  // Free the file too. Deleting a message used to leave its photo in the
+  // bucket forever, still served to anyone holding the URL -- so "delete"
+  // removed the message without deleting the thing people most wanted gone.
+  // Best-effort and deliberately not awaited into the result: the message IS
+  // deleted, and an orphaned file is a smaller problem than a message that
+  // appears to survive deletion.
+  if (fileUrl) deleteAttachment(fileUrl);
 }
 
 // ---- Replying ----
