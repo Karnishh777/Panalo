@@ -16,7 +16,10 @@ import { hasPin, setPin, appLockEnabled, setAppLock, askPin, SHORTCUT_LABEL } fr
 import { startTour } from "./tour.js";
 import { supabaseClient } from "./client.js";
 import { state } from "./state.js";
-import { rewrapPrivateKey } from "./encryption.js";
+import { rewrapPrivateKey, idbDelKey } from "./encryption.js";
+import { confirmDelete } from "./chatinfo.js";
+import { deleteAttachment, clearAttachmentCache } from "./attachments.js";
+import { mapLimited } from "./util.js";
 
 const SETTINGS_KEY = "panalo.settings";
 const DEFAULTS = {
@@ -241,6 +244,68 @@ function markSelected(container, selector, id) {
   });
 }
 
+// Delete this account and everything belonging to it.
+//
+// There was previously no way to do this at all: someone who wanted to leave
+// could delete individual chats and nothing more, while their profile,
+// messages, keys and uploaded files stayed indefinitely with no route to
+// remove them.
+//
+// Order matters. Storage objects are invisible to Postgres, so nothing
+// cascades to them -- once the account is gone its uploads are unreachable
+// even by an admin policy, because the owner no longer exists. So the files
+// go first, while there is still a session allowed to remove them, and the
+// account row goes last.
+async function deleteAccount() {
+  const confirmed = await confirmDelete({
+    title: "Delete your account?",
+    body:
+      "This removes your profile, your messages, your encryption keys and every file you've uploaded. " +
+      "Messages you sent to other people stay in their copy of the chat — we can only delete what's yours. " +
+      "This cannot be undone.",
+    danger: "Delete everything",
+  });
+  if (!confirmed) return;
+
+  const userId = state.currentUser?.id;
+  if (!userId) return;
+
+  try {
+    // Every file this account uploaded, found through the messages that
+    // point at them -- there is no listing permission on the bucket, by
+    // design, so the message rows are the index.
+    const { data: mine } = await supabaseClient
+      .from("messages")
+      .select("file_url")
+      .eq("user_id", userId)
+      .not("file_url", "is", null);
+
+    const urls = [...new Set((mine || []).map((m) => m.file_url).filter(Boolean))];
+    if (state.myProfile?.avatar_url) urls.push(state.myProfile.avatar_url);
+    // Best-effort: a file that refuses to delete must not strand someone in
+    // an account they have asked to leave.
+    await mapLimited(urls, 5, (url) => deleteAttachment(url).catch(() => false));
+
+    const { error } = await supabaseClient.rpc("delete_my_account");
+    if (error) throw error;
+
+    // The account is gone; clear every local trace of it before the reload.
+    await idbDelKey(userId);
+    clearAttachmentCache();
+    try {
+      localStorage.clear();
+      sessionStorage.clear();
+    } catch {
+      /* private mode -- nothing persisted anyway */
+    }
+    await supabaseClient.auth.signOut();
+    location.reload();
+  } catch (e) {
+    console.error("Account deletion failed:", e);
+    showToast("Couldn't delete your account. Nothing was removed — please try again.");
+  }
+}
+
 export function initSettings() {
   // Apply saved prefs on load.
   applyAccent(settings.accent);
@@ -250,6 +315,8 @@ export function initSettings() {
   applyCursor(settings.cursorGlow);
   applySkin(settings.ogSkin);
   syncAlertPrefs();
+
+  document.getElementById("delete-account-btn")?.addEventListener("click", deleteAccount);
 
   // OG skin toggle.
   const ogBox = document.getElementById("setting-og-skin");

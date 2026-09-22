@@ -1,5 +1,5 @@
 // Conversations, messages, sending, and realtime.
-import { supabaseClient } from "./client.js";
+import { supabaseClient, findProfileByUsername } from "./client.js";
 import { state } from "./state.js";
 import { el, showToast, withBusy, getAvatarColor, safeImageUrl, scrollToBottom, compressImage, announce, setAvatar, formatTime, haptic, hueFor, attachRipples, mapLimited } from "./util.js";
 import { getConversationKey, provisionConversationKey, ensureConversationKey, messagePlaintext } from "./encryption.js";
@@ -837,29 +837,17 @@ async function createDirect() {
     return;
   }
 
-  const { data: targetProfiles, error: lookupError } = await supabaseClient
-    .from("profiles")
-    .select("id, username")
-    .ilike("username", username)
-    .limit(2);
-
-  if (lookupError) {
+  let targetUser;
+  try {
+    targetUser = await findProfileByUsername(username);
+  } catch {
     showToast("Could not look up that user.");
     return;
   }
-  if (!targetProfiles || targetProfiles.length === 0) {
+  if (!targetUser) {
     showToast(`Username "${username}" not found.`);
     return;
   }
-  // Usernames are meant to be unique (see supabase-phase7.sql); more than one
-  // match means that migration hasn't run yet on a database with existing
-  // duplicates. Refuse to guess which account is meant rather than silently
-  // messaging the wrong person.
-  if (targetProfiles.length > 1) {
-    showToast(`Multiple accounts match "${username}" — ask them for their exact username, or run supabase-phase7.sql.`);
-    return;
-  }
-  const targetUser = targetProfiles[0];
 
   const existingId = await findExistingDirect(targetUser.id);
   if (existingId) {
@@ -914,25 +902,21 @@ async function createGroup() {
 
   let foundProfiles = [];
   if (usernames.length) {
-    const { data, error } = await supabaseClient.from("profiles").select("id, username").in("username", usernames);
-    if (error) {
+    // One exact lookup per name rather than a bulk `in (...)` query, because
+    // bulk lookup is precisely the capability that made the whole user list
+    // enumerable. Capped concurrency keeps a long paste from opening a
+    // request per name at once.
+    let resolved;
+    try {
+      resolved = await mapLimited(usernames, 5, (u) => findProfileByUsername(u));
+    } catch {
       showToast("Could not look up members.");
       return;
     }
-    const byUsername = new Map();
-    (data || []).forEach((p) => byUsername.set(p.username, [...(byUsername.get(p.username) || []), p]));
+    foundProfiles = resolved.filter(Boolean);
 
-    // Usernames are meant to be unique (see supabase-phase7.sql); a username
-    // resolving to more than one account means that migration hasn't run yet
-    // on a database with existing duplicates. Skip it rather than guessing
-    // which account should be added to the group.
-    const ambiguous = [...byUsername.entries()].filter(([, ps]) => ps.length > 1).map(([u]) => u);
-    ambiguous.forEach((u) => byUsername.delete(u));
-    foundProfiles = [...byUsername.values()].map((ps) => ps[0]);
-
-    const missing = usernames.filter((u) => !byUsername.has(u));
+    const missing = usernames.filter((u, i) => !resolved[i]);
     if (missing.length) showToast(`Not found: ${missing.join(", ")}`, "");
-    if (ambiguous.length) showToast(`Skipped (multiple accounts match): ${ambiguous.join(", ")}`, "");
   }
 
   const { data: newConv, error: convError } = await supabaseClient

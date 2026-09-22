@@ -59,3 +59,22 @@ export const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABAS
     detectSessionInUrl: true,
   },
 });
+
+// Resolve exactly one username to a profile.
+//
+// This used to be `select ... from profiles where username ilike ?`, which
+// worked because the read policy was `using (true)` -- every signed-in
+// account could read every profile in the system. That made the whole user
+// list downloadable by anyone who signed up. The policy is now scoped to
+// yourself and people you share a chat with, so a stranger lookup has to go
+// through this instead: exact name in, at most one row out, no pattern
+// matching and nothing to iterate over.
+//
+// Returns { id, username, public_key } or null.
+export async function findProfileByUsername(name) {
+  const trimmed = String(name || "").trim();
+  if (!trimmed) return null;
+  const { data, error } = await supabaseClient.rpc("find_profile_by_username", { name: trimmed });
+  if (error) throw error;
+  return (data && data[0]) || null;
+}
