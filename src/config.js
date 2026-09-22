@@ -19,11 +19,19 @@ export const REMEMBER_KEY = "panalo.remember";
 //
 // Supabase's own guidance: anything under 8 characters is not recommended.
 export const MIN_PASSWORD_LENGTH = 8;
-// Character classes a password must contain. Set to the strongest option
-// Supabase offers. If the dashboard is set to a weaker option, trim this
-// array to match, or users will be refused passwords the server accepts.
-// Valid entries: "lower", "upper", "digit", "symbol".
-export const PASSWORD_REQUIRED_CLASSES = ["lower", "upper", "digit", "symbol"];
+// Character classes a password must contain, matching the dashboard's
+// "Required characters" setting — currently none, so length is the only rule.
+//
+// Empty is deliberate, not an oversight. The client must never be STRICTER
+// than the server: requiring a symbol here while Supabase happily accepts
+// "correcthorsebatterystaple" would refuse a genuinely strong passphrase and
+// leave the user no way to understand why. Composition rules also push people
+// toward predictable shapes like "Password1!", which is why current NIST
+// guidance (SP 800-63B) favours length over mandatory character classes.
+//
+// If "Required characters" is ever enabled in the dashboard, add the matching
+// entries here: "lower", "upper", "digit", "symbol".
+export const PASSWORD_REQUIRED_CLASSES = [];
 export const OTP_LENGTH = 6;
 
 export const AVATAR_COLORS = [
