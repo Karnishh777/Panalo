@@ -2,8 +2,8 @@
 import { supabaseClient } from "./client.js";
 import { state } from "./state.js";
 import { el, showToast, withBusy, getAvatarColor, safeImageUrl, scrollToBottom, compressImage, announce, setAvatar, formatTime, haptic, hueFor, attachRipples, mapLimited } from "./util.js";
-import { getConversationKey, provisionConversationKey, messagePlaintext } from "./encryption.js";
-import { uploadEncrypted, loadEncrypted, isEncryptedAttachment, isImageEntry, primeAttachmentCache, clearAttachmentCache } from "./attachments.js";
+import { getConversationKey, provisionConversationKey, ensureConversationKey, messagePlaintext } from "./encryption.js";
+import { uploadEncrypted, loadEncrypted, isEncryptedAttachment, isImageEntry, primeAttachmentCache, clearAttachmentCache, deleteAttachment } from "./attachments.js";
 import { MESSAGES_PAGE_SIZE, THEME_PRESETS, FONT_PRESETS, MAX_FILE_BYTES } from "./config.js";
 import { isOnline, setPresenceListener } from "./presence.js";
 import { isMuted, toggleMute, setInboxListener, setOpenChatListener } from "./notifications.js";
@@ -733,6 +733,21 @@ async function openConversation(conv) {
     loadReadState(conv.id),
   ]);
   currentMemberIds = (parts || []).map((p) => p.user_id);
+
+  // A chat created while someone was still setting up encryption never got a
+  // key, and nothing revisited that -- so it stayed plaintext forever, even
+  // once everyone in it had keys. Opening it is the natural moment to check,
+  // and the member list is already loaded, so this costs no extra query
+  // unless a backfill is actually possible.
+  ensureConversationKey(conv.id, currentMemberIds).then(({ backfilled }) => {
+    if (!backfilled) return;
+    // Say so. How a chat is protected shouldn't change silently underneath
+    // the people using it, and the honest caveat is that this applies going
+    // forward -- messages already sent in the clear stay that way.
+    showToast("This chat is encrypted from now on. Earlier messages stay as they were.", "success");
+    // The chat-info drawer reads the key when it opens, so its badge picks
+    // this up on its own the next time it's shown.
+  });
 
   await fetchMessages();
   // "On this day" — fired after messages render, before subscribing, so the
@@ -1712,8 +1727,23 @@ export function applyChatWallpaper(convId) {
 }
 
 async function deleteMessage(msgId) {
+  // Grab the attachment URL before the row goes, or there is nothing left to
+  // find the file by.
+  const fileUrl = msgCache.get(msgId)?.file_url || null;
+
   const { error } = await supabaseClient.from("messages").delete().eq("id", msgId);
-  if (error) showToast("Could not delete the message.");
+  if (error) {
+    showToast("Could not delete the message.");
+    return;
+  }
+
+  // Free the file too. Deleting a message used to leave its photo in the
+  // bucket forever, still served to anyone holding the URL -- so "delete"
+  // removed the message without deleting the thing people most wanted gone.
+  // Best-effort and deliberately not awaited into the result: the message IS
+  // deleted, and an orphaned file is a smaller problem than a message that
+  // appears to survive deletion.
+  if (fileUrl) deleteAttachment(fileUrl);
 }
 
 // ---- Replying ----

@@ -163,6 +163,49 @@ export async function loadEncrypted(url, convKey) {
   }
 }
 
+// Delete an uploaded file from storage.
+//
+// Until phase 9 there was no DELETE policy on the bucket at all, so this was
+// impossible: removing a message dropped the row pointing at the file and
+// left the bytes served forever. Storage only grew, and a photo the user
+// had deleted was still readable by anyone holding its URL.
+//
+// Best-effort by design. The message row is the source of truth for whether
+// something was deleted; if the object removal fails we do not block or
+// reverse that, because leaving a visible message behind would be a worse
+// outcome than leaving an orphaned file behind. Returns whether it worked so
+// callers can decide, and drops the local decrypted copy either way.
+export async function deleteAttachment(url) {
+  const path = storagePathFrom(url);
+  if (!path) return false;
+
+  const entry = cache.get(url);
+  if (entry) {
+    URL.revokeObjectURL(entry.objectUrl);
+    cache.delete(url);
+  }
+
+  try {
+    const { error } = await supabaseClient.storage.from(BUCKET).remove([path]);
+    return !error;
+  } catch {
+    return false;
+  }
+}
+
+// Pull the in-bucket path back out of a public URL, rejecting anything that
+// is not one of ours -- remove() takes a path, so a URL from elsewhere must
+// never be coerced into one.
+function storagePathFrom(url) {
+  const safe = safeImageUrl(url);
+  if (!safe) return null;
+  const marker = `/${BUCKET}/`;
+  const at = safe.indexOf(marker);
+  if (at === -1) return null;
+  const path = safe.slice(at + marker.length).split("?")[0];
+  return path ? decodeURIComponent(path) : null;
+}
+
 // Whether a decrypted attachment is an image. The path no longer carries an
 // extension to guess from, so this reads the encrypted header instead.
 export function isImageEntry(entry) {
