@@ -234,30 +234,97 @@ export async function getConversationKey(conversationId) {
   }
 }
 
-// On conversation creation, make a fresh AES key and wrap it to every member's
-// public key. Encrypt ONLY if every member already has a key, so nobody in the
-// conversation is ever locked out (otherwise the chat stays plaintext).
+// Generate a conversation key and wrap it to every member, or adopt whoever
+// got there first.
+//
+// The insert is deliberately one multi-row statement. PostgREST sends it as a
+// single INSERT and Postgres applies it atomically, so two members racing to
+// provision the same conversation cannot half-succeed: one writes every row,
+// the other writes none and loses cleanly on the primary key. Were the rows
+// inserted one at a time, an interleaved race could leave member A holding
+// key A and member B holding key B for the same conversation -- each able to
+// write messages the other could never read.
+//
+// The loser must then DISCARD the key it generated and take the winner's. An
+// earlier version cached its own key without ever checking the insert error,
+// which meant a failed write left the client encrypting with a key the
+// server had never stored: unreadable to everyone, including the sender on
+// their next device.
+async function provisionKeyFor(conversationId, memberIds) {
+  const { data: profs } = await supabaseClient.from("profiles").select("id, public_key").in("id", memberIds);
+  const members = profs || [];
+  // Any member without a public key could never unwrap this, so the chat
+  // stays plaintext rather than locking someone out of it.
+  if (members.length < memberIds.length || members.some((p) => !p.public_key)) return null;
+
+  const convKey = await window.PanaloCrypto.generateConversationKey();
+  const rows = [];
+  for (const p of members) {
+    const pub = await window.PanaloCrypto.importPublicKey(p.public_key);
+    rows.push({
+      conversation_id: conversationId,
+      user_id: p.id,
+      wrapped_key: await window.PanaloCrypto.wrapConversationKey(convKey, pub),
+    });
+  }
+
+  const { error } = await supabaseClient.from("conversation_keys").insert(rows);
+  if (error) {
+    // Lost the race, or the write failed. Either way the key just generated
+    // is worthless -- never cache it. Re-read whatever is actually stored.
+    conversationKeys.delete(conversationId);
+    return await getConversationKey(conversationId);
+  }
+
+  conversationKeys.set(conversationId, convKey);
+  return convKey;
+}
+
+// On conversation creation, make a fresh AES key and wrap it to every
+// member's public key. Encrypt ONLY if every member already has a key, so
+// nobody in the conversation is ever locked out (otherwise it stays
+// plaintext, and ensureConversationKey below can fix that later).
 export async function provisionConversationKey(conversationId, memberIds) {
   if (!encryptionReady()) return;
   try {
-    const { data: profs } = await supabaseClient.from("profiles").select("id, public_key").in("id", memberIds);
-    const members = profs || [];
-    if (members.length < memberIds.length || members.some((p) => !p.public_key)) return;
-
-    const convKey = await window.PanaloCrypto.generateConversationKey();
-    const rows = [];
-    for (const p of members) {
-      const pub = await window.PanaloCrypto.importPublicKey(p.public_key);
-      rows.push({
-        conversation_id: conversationId,
-        user_id: p.id,
-        wrapped_key: await window.PanaloCrypto.wrapConversationKey(convKey, pub),
-      });
-    }
-    await supabaseClient.from("conversation_keys").insert(rows);
-    conversationKeys.set(conversationId, convKey);
+    await provisionKeyFor(conversationId, memberIds);
   } catch (e) {
     console.error("Could not set up conversation encryption:", e);
+  }
+}
+
+// Give a conversation a key if it never got one.
+//
+// A chat created while any member was still setting up encryption got no key
+// at all, and nothing ever revisited that decision -- so it stayed plaintext
+// permanently, even once everyone in it had keys. That is a chat quietly
+// less protected than the app implies, with no way for anyone to notice or
+// repair it.
+//
+// Called when a conversation is opened. Returns { key, backfilled } so the
+// caller can say something the first time it changes, rather than silently
+// altering how a chat is protected.
+export async function ensureConversationKey(conversationId, memberIds) {
+  if (!encryptionReady()) return { key: null, backfilled: false };
+  try {
+    const existing = await getConversationKey(conversationId);
+    if (existing) return { key: existing, backfilled: false };
+
+    let ids = memberIds;
+    if (!ids || !ids.length) {
+      const { data: parts } = await supabaseClient
+        .from("conversation_participants")
+        .select("user_id")
+        .eq("conversation_id", conversationId);
+      ids = (parts || []).map((p) => p.user_id);
+    }
+    if (!ids.length) return { key: null, backfilled: false };
+
+    const key = await provisionKeyFor(conversationId, ids);
+    return { key, backfilled: !!key };
+  } catch (e) {
+    console.error("Could not backfill conversation encryption:", e);
+    return { key: null, backfilled: false };
   }
 }
 

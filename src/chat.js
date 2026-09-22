@@ -2,7 +2,7 @@
 import { supabaseClient } from "./client.js";
 import { state } from "./state.js";
 import { el, showToast, withBusy, getAvatarColor, safeImageUrl, scrollToBottom, compressImage, announce, setAvatar, formatTime, haptic, hueFor, attachRipples, mapLimited } from "./util.js";
-import { getConversationKey, provisionConversationKey, messagePlaintext } from "./encryption.js";
+import { getConversationKey, provisionConversationKey, ensureConversationKey, messagePlaintext } from "./encryption.js";
 import { uploadEncrypted, loadEncrypted, isEncryptedAttachment, isImageEntry, primeAttachmentCache, clearAttachmentCache } from "./attachments.js";
 import { MESSAGES_PAGE_SIZE, THEME_PRESETS, FONT_PRESETS, MAX_FILE_BYTES } from "./config.js";
 import { isOnline, setPresenceListener } from "./presence.js";
@@ -733,6 +733,21 @@ async function openConversation(conv) {
     loadReadState(conv.id),
   ]);
   currentMemberIds = (parts || []).map((p) => p.user_id);
+
+  // A chat created while someone was still setting up encryption never got a
+  // key, and nothing revisited that -- so it stayed plaintext forever, even
+  // once everyone in it had keys. Opening it is the natural moment to check,
+  // and the member list is already loaded, so this costs no extra query
+  // unless a backfill is actually possible.
+  ensureConversationKey(conv.id, currentMemberIds).then(({ backfilled }) => {
+    if (!backfilled) return;
+    // Say so. How a chat is protected shouldn't change silently underneath
+    // the people using it, and the honest caveat is that this applies going
+    // forward -- messages already sent in the clear stay that way.
+    showToast("This chat is encrypted from now on. Earlier messages stay as they were.", "success");
+    // The chat-info drawer reads the key when it opens, so its badge picks
+    // this up on its own the next time it's shown.
+  });
 
   await fetchMessages();
   // "On this day" — fired after messages render, before subscribing, so the
