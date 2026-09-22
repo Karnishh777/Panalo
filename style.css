@@ -699,16 +699,33 @@ button:active {
 }
 
 /* Theme picker swatches */
-.theme-swatches {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 14px;
+/* Six presets in a wrapping flex row landed as five-on-top-and-one-below,
+   which reads as a broken grid rather than a palette. A fixed six-column
+   grid keeps them on one even line at any modal width, dropping to two rows
+   of three only when the screen is genuinely too narrow -- so it is never
+   one orphaned swatch. Applies to both pickers: the per-chat theme and the
+   global accent. */
+.theme-swatches,
+#accent-swatches {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 10px;
+  justify-items: center;
   margin-bottom: 18px;
 }
 
+@media (max-width: 460px) {
+  .theme-swatches,
+  #accent-swatches {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 14px;
+  }
+}
+
 .theme-swatch {
-  width: 46px;
-  height: 46px;
+  width: 40px;
+  height: 40px;
+  aspect-ratio: 1;
   padding: 0;
   border-radius: 50%;
   border: 3px solid transparent;
@@ -1272,6 +1289,79 @@ a:focus-visible {
   transform: translateY(8px);
 }
 
+/* ============================================================================
+   OG skin — the original violet build, brought back as a toggle.
+   ============================================================================
+   Restored because people liked it, not because the current look is wrong.
+   It overrides the palette only: every layout, radius, spacing and shadow
+   token stays exactly as it is, so this is a recolour rather than a second
+   design competing with the first.
+
+   Three things ARE changed from the original, because they were defects
+   rather than style:
+
+     1. --text-faint was #7c7699 on a #201b33 surface: about 3.7:1, under
+        the 4.5:1 WCAG AA needs for body text. Timestamps and hints in that
+        colour were genuinely hard to read. Now ~5.4:1.
+     2. --text-muted got the same treatment for the same reason.
+     3. --border was rgba(255,255,255,0.06) -- so faint that card and input
+        edges effectively vanished, which is what made the original feel
+        muddy rather than sharp.
+
+   The violet identity, the dark ground and the gradient bubbles are all
+   untouched. ========================================================== */
+:root[data-skin="og"] {
+  --bg: #0e0b18;
+  --page-bg: radial-gradient(circle at top, #1b1730 0%, #0e0b18 100%);
+  --app-bg: #191526;
+  --sidebar-bg: #141020;
+  --panel-bg: #1c1730;
+  --surface: #201b33;
+  --surface-2: #2a2440;
+  --surface-3: #332c4d;
+  --surface-4: #3d3559;
+
+  --primary: #8b7cf6;
+  --primary-strong: #6c5ce7;
+  --primary-soft: rgba(139, 124, 246, 0.16);
+  --grad: linear-gradient(135deg, #8b7cf6, #6c5ce7);
+  --on-primary: #ffffff;
+
+  --text: #ece9f7;
+  /* Raised from #a49fbe / #7c7699 — see note 1 above. */
+  --text-muted: #b5b0cc;
+  --text-faint: #9a93b8;
+
+  /* Raised from 0.06 — see note 3 above. */
+  --border: rgba(255, 255, 255, 0.12);
+  --border-strong: rgba(255, 255, 255, 0.2);
+
+  --bubble-in: #2a2440;
+  --bubble-out: linear-gradient(135deg, #8b7cf6, #6c5ce7);
+
+  --danger: #ff6b6b;
+  --danger-strong: #e04f4f;
+  --success: #4ade80;
+  --warning: #fbbf24;
+
+  /* Shadows need more depth on a dark ground than on the light one, or
+     cards read as flat rectangles rather than lifted surfaces. */
+  --shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.4);
+  --shadow-sm: 0 2px 6px rgba(0, 0, 0, 0.45);
+  --shadow-md: 0 6px 18px rgba(0, 0, 0, 0.5);
+  --shadow-lg: 0 18px 48px rgba(0, 0, 0, 0.55);
+  --shadow-card: 0 4px 14px rgba(0, 0, 0, 0.45);
+  --shadow-card-hover: 0 10px 28px rgba(0, 0, 0, 0.55);
+  --focus-ring: 0 0 0 3px rgba(139, 124, 246, 0.45);
+}
+
+/* The light build assumes dark text on pale paper in a few places that read
+   the raw page background rather than a token. */
+:root[data-skin="og"] body {
+  background: var(--page-bg);
+  color: var(--text);
+}
+
 /* ---- Connection status ----------------------------------------------------
    The app used to fail silently when its realtime sockets dropped: messages
    sent during the gap simply never appeared. Showing the state is half the
@@ -1483,15 +1573,26 @@ a:focus-visible {
   background: var(--surface);
   border-left: 1px solid var(--border);
   transform: translateX(105%);
-  transition: transform 0.28s ease;
+  transition: transform 0.28s ease, visibility 0.28s;
   display: flex;
   flex-direction: column;
   z-index: 8;
+  /* Translating the drawer off-screen only MOVES it -- it stays laid out,
+     focusable, and reachable. On a laptop you could scroll the chat pane
+     sideways and drag it into view without ever pressing the button, and a
+     screen reader would read its contents as part of the page. Hiding it
+     properly takes it out of hit-testing, out of the tab order, and out of
+     the accessibility tree until it is actually opened. */
+  visibility: hidden;
+  pointer-events: none;
+  overscroll-behavior: contain;
   box-shadow: -18px 0 48px rgba(0, 0, 0, 0.35);
 }
 
 .chat-info.open {
   transform: translateX(0);
+  visibility: visible;
+  pointer-events: auto;
 }
 
 .chat-info-header {
