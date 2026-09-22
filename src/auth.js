@@ -46,9 +46,28 @@ function reportKeyStatus(status) {
     showToast("This browser can't encrypt messages — chats will be unencrypted.", "");
   } else if (status === "setup-failed") {
     showToast("Couldn't set up your encryption keys. Messages won't be encrypted until this is fixed.");
+  } else if (status === "wrong-password") {
+    showToast("Your messages are locked with a different password — they stay unreadable until it's entered.");
+  } else if (status === "needs-unlock") {
+    showToast("Your messages are locked on this device until you unlock them.");
+  } else {
+    // Anything unrecognised still has to surface. A key status that reaches
+    // the user as silence is how a session ends up sending plaintext while
+    // the app claims otherwise.
+    showToast("Encryption isn't available right now — messages won't be encrypted.");
   }
   return false;
 }
+
+// Copy for the unlock prompt. "Your key isn't on this device" and "your key
+// was locked with a different password" are genuinely different problems and
+// need different instructions; showing the same sentence for both is what
+// made a correct password look rejected.
+const UNLOCK_COPY = {
+  "not-on-device": "Enter your password to decrypt your chats on this device.",
+  "password-mismatch":
+    "Your messages were locked with a different password than the one you just used. Enter that earlier password and we'll re-protect them with your current one.",
+};
 
 // ---- App bootstrap ----
 async function initApp(session) {
@@ -73,10 +92,12 @@ async function initApp(session) {
 }
 
 // ---- Unlock screen (session restored but private key not cached here) ----
-function showUnlockModal(session) {
+function showUnlockModal(session, reason = "not-on-device") {
   state.pendingUnlockSession = session;
   const modal = document.getElementById("unlock-modal");
   const input = document.getElementById("unlock-password");
+  const subtitle = document.getElementById("unlock-subtitle");
+  if (subtitle) subtitle.textContent = UNLOCK_COPY[reason] || UNLOCK_COPY["not-on-device"];
   input.value = "";
   modal.classList.remove("hidden");
   input.focus();
@@ -198,7 +219,24 @@ export function initAuth() {
         setAuthMessage(error.message);
       } else {
         state.currentUser = data.session.user;
-        reportKeyStatus(await ensureUserKeys(password));
+        const keyStatus = await ensureUserKeys(password);
+        // The account password was right -- Supabase just accepted it -- but
+        // the stored private key was protected with a different one. That
+        // happens after a password change made outside this app, or a
+        // recovery that only half-completed.
+        //
+        // This used to fall through to initApp() with no key and no message:
+        // old messages showed as locked, and every NEW message was sent as
+        // plaintext, because sendMessage() silently skips encryption when
+        // there's no conversation key. A session that quietly stops
+        // encrypting while the app says it encrypts is the worst possible
+        // outcome, so ask for the earlier password instead.
+        if (keyStatus === "wrong-password") {
+          state.pendingRewrapPassword = password;
+          showUnlockModal(data.session, "password-mismatch");
+          return;
+        }
+        reportKeyStatus(keyStatus);
         initApp(data.session);
       }
     })
@@ -219,6 +257,7 @@ export function initAuth() {
     stopCalls();
     state.myPrivateKey = null;
     state.myPublicKeyB64 = null;
+    state.pendingRewrapPassword = "";
     conversationKeys.clear();
     await supabaseClient.auth.signOut();
     state.currentUser = null;
@@ -248,6 +287,22 @@ export function initAuth() {
         return;
       }
       document.getElementById("unlock-modal").classList.add("hidden");
+
+      // Arriving here from a password mismatch means the key is now in
+      // memory, unwrapped with the OLD password. Re-protect it with the one
+      // they actually log in with, so the next login just works instead of
+      // asking again forever.
+      if (state.pendingRewrapPassword) {
+        const rewrap = await rewrapPrivateKey(state.pendingRewrapPassword);
+        state.pendingRewrapPassword = "";
+        showToast(
+          rewrap === "ready"
+            ? "Unlocked — your messages now use your current password."
+            : "Unlocked, but we couldn't move your key to the new password. You'll be asked again next time.",
+          rewrap === "ready" ? "success" : ""
+        );
+      }
+
       const session = state.pendingUnlockSession;
       state.pendingUnlockSession = null;
       initApp(session);
@@ -255,6 +310,7 @@ export function initAuth() {
   );
 
   document.getElementById("unlock-logout-btn").addEventListener("click", async () => {
+    state.pendingRewrapPassword = "";
     document.getElementById("unlock-modal").classList.add("hidden");
     await supabaseClient.auth.signOut();
     location.reload();
