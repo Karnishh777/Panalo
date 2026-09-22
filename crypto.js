@@ -180,6 +180,20 @@ const PanaloCrypto = (() => {
     return dec.decode(pt);
   }
 
+  // ---- Raw-byte encryption (attachments) ----
+  // Deliberately NOT the base64 string path above. Attachments run to tens of
+  // megabytes, and base64 would inflate every one of them by a third both in
+  // memory and in storage. These work on ArrayBuffers end to end; the caller
+  // assembles the stored blob and decides where the IV lives.
+  async function encryptBytes(bytes, convKey) {
+    const iv = randomBytes(12);
+    const ciphertext = await subtle.encrypt({ name: "AES-GCM", iv }, convKey, bytes);
+    return { ciphertext, iv };
+  }
+  async function decryptBytes(ciphertext, iv, convKey) {
+    return subtle.decrypt({ name: "AES-GCM", iv }, convKey, ciphertext);
+  }
+
   // ---- Identity fingerprint (short, human-comparable — for verifying contacts) ----
   async function fingerprint(b64PublicKey) {
     const hash = await subtle.digest("SHA-256", b64ToBytes(b64PublicKey));
@@ -192,7 +206,7 @@ const PanaloCrypto = (() => {
     generateUserKeypair, exportPublicKey, importPublicKey,
     protectPrivateKey, recoverPrivateKey,
     generateConversationKey, wrapConversationKey, unwrapConversationKey,
-    encryptMessage, decryptMessage, fingerprint,
+    encryptMessage, decryptMessage, encryptBytes, decryptBytes, fingerprint,
   };
 })();
 
