@@ -1,7 +1,8 @@
 // Per-device "vibe" settings: global accent, chat wallpaper (presets or your own
 // image), animated background, and a themed custom cursor. Stored in localStorage
 // (UI preferences, no backend needed).
-import { THEME_PRESETS, WALLPAPER_PRESETS, EFFECT_PRESETS, FONT_PRESETS, MIN_PASSWORD_LENGTH } from "./config.js";
+import { THEME_PRESETS, WALLPAPER_PRESETS, EFFECT_PRESETS, FONT_PRESETS } from "./config.js";
+import { validatePassword } from "./password.js";
 import { el, showToast, withBusy } from "./util.js";
 import { icon } from "./icons.js";
 import {
@@ -26,6 +27,7 @@ const DEFAULTS = {
   ambientImage: null,
   appFont: "default",
   cursorGlow: false,
+  ogSkin: false, // the original violet palette, kept as an option
   notifications: false, // desktop (needs browser permission)
   inAppAlerts: true, // always works
   alertSound: true,
@@ -56,10 +58,33 @@ const settings = load();
 // ---- Accent ----
 // A brown→tan gradient built from the preset's one stored color, so every
 // preset (and the default) gets a matching two-tone fill.
+// The OG skin is a palette swap driven by one attribute on <html>, so it can
+// be flipped instantly with no reload and no second stylesheet to keep in
+// step with the first.
+function applySkin(on) {
+  document.documentElement.setAttribute("data-skin", on ? "og" : "matte");
+}
+
+const ACCENT_VARS = ["--primary", "--primary-strong", "--grad", "--bubble-out"];
+
 function applyAccent(id) {
+  const root = document.documentElement.style;
+
+  // These are written as INLINE properties on <html>, which outrank any
+  // stylesheet rule including the skin's. Left unconditional, picking the OG
+  // skin gave you a violet app with an orange send button, because the
+  // default accent kept overriding the violet the skin defines.
+  //
+  // "Default" now means "whatever this skin says": clear the overrides and
+  // let the stylesheet decide. An accent the user actually chose is still
+  // honoured on either skin -- that is their call, not a bug.
+  if (settings.ogSkin && (!id || id === "default")) {
+    ACCENT_VARS.forEach((v) => root.removeProperty(v));
+    return;
+  }
+
   const p = THEME_PRESETS.find((t) => t.id === id) || THEME_PRESETS[0];
   const grad = `linear-gradient(135deg, ${p.primary}, color-mix(in srgb, ${p.primary} 55%, white))`;
-  const root = document.documentElement.style;
   root.setProperty("--primary", p.primary);
   root.setProperty("--primary-strong", p.strong);
   root.setProperty("--grad", grad);
@@ -223,7 +248,23 @@ export function initSettings() {
   applyWallpaper(settings.wallpaper);
   applyEffect(settings.effect, settings.ambientImage);
   applyCursor(settings.cursorGlow);
+  applySkin(settings.ogSkin);
   syncAlertPrefs();
+
+  // OG skin toggle.
+  const ogBox = document.getElementById("setting-og-skin");
+  if (ogBox) {
+    ogBox.checked = settings.ogSkin;
+    ogBox.addEventListener("change", () => {
+      settings.ogSkin = ogBox.checked;
+      applySkin(settings.ogSkin);
+      save();
+      // The per-chat accent sets --primary inline on <html>, which would
+      // otherwise sit on top of the skin and leave the old accent stranded
+      // against the new ground.
+      applyAccent(settings.accent);
+    });
+  }
 
   // Accent swatches.
   const accentBox = document.getElementById("accent-swatches");
@@ -409,7 +450,8 @@ export function initSettings() {
       const confirm = document.getElementById("confirm-password").value;
 
       if (!current || !next) return showToast("Fill in every field.");
-      if (next.length < MIN_PASSWORD_LENGTH) return showToast(`New password must be at least ${MIN_PASSWORD_LENGTH} characters.`);
+      const weakNew = validatePassword(next);
+      if (weakNew) return showToast(weakNew);
       if (next !== confirm) return showToast("The new passwords don't match.");
       if (next === current) return showToast("That's already your password.");
 

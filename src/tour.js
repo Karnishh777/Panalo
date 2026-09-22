@@ -25,7 +25,13 @@ const slides = () => [
   {
     icon: "sparkle",
     title: "You're in ✨",
-    body: "Welcome to Panalo. Everything you type gets scrambled on your device before it leaves — the server just stores expensive-looking gibberish. Nice for it.",
+    // "Everything you type" was never true of attachments, and it survived the
+    // pass that fixed the same claim in the About screen because the tour
+    // keeps its own copy. Photos and files are encrypted now too, so the
+    // sentence can finally be accurate -- but it still says "messages and
+    // files" rather than "everything", because who you talk to and when
+    // remains visible to the server.
+    body: "Welcome to Panalo. Your messages and the files you send are scrambled on your device before they leave — the server just stores expensive-looking gibberish. Nice for it.",
   },
   {
     icon: "plus",

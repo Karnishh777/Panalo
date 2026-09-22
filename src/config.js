@@ -12,7 +12,26 @@ export const STORAGE_URL_PREFIX = `${SUPABASE_URL}/storage/`;
 // Session persistence preference key ("Keep me logged in").
 export const REMEMBER_KEY = "panalo.remember";
 
-export const MIN_PASSWORD_LENGTH = 6;
+// Password policy. These MUST match Authentication → Sign In / Providers →
+// Email in the Supabase dashboard, which is where the rule is actually
+// enforced. The client checks the same thing only so the user finds out
+// while typing rather than after submitting.
+//
+// Supabase's own guidance: anything under 8 characters is not recommended.
+export const MIN_PASSWORD_LENGTH = 8;
+// Character classes a password must contain, matching the dashboard's
+// "Required characters" setting — currently none, so length is the only rule.
+//
+// Empty is deliberate, not an oversight. The client must never be STRICTER
+// than the server: requiring a symbol here while Supabase happily accepts
+// "correcthorsebatterystaple" would refuse a genuinely strong passphrase and
+// leave the user no way to understand why. Composition rules also push people
+// toward predictable shapes like "Password1!", which is why current NIST
+// guidance (SP 800-63B) favours length over mandatory character classes.
+//
+// If "Required characters" is ever enabled in the dashboard, add the matching
+// entries here: "lower", "upper", "digit", "symbol".
+export const PASSWORD_REQUIRED_CLASSES = [];
 export const OTP_LENGTH = 6;
 
 export const AVATAR_COLORS = [

@@ -12,6 +12,10 @@ export const state = {
   pendingSignupEmail: "",
   pendingSignupPassword: "",
   pendingUnlockSession: null,
+  // Set only when a login succeeded but the stored key was protected with a
+  // DIFFERENT password. Held just long enough to re-protect the key once the
+  // user supplies the old one, then cleared.
+  pendingRewrapPassword: "",
 
   // encryption (see crypto.js / encryption.js)
   myPrivateKey: null, // CryptoKey (RSA) used to unwrap conversation keys

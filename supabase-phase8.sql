@@ -188,6 +188,16 @@ end $$;
 update storage.buckets
 set file_size_limit = 52428800, -- 50 MB
     allowed_mime_types = array[
+      -- Encrypted attachments upload as opaque bytes: once a file is
+      -- ciphertext it has no meaningful media type, and declaring its real
+      -- one would leak exactly what the encryption is there to hide.
+      -- Without this entry every encrypted upload is rejected outright.
+      --
+      -- Honest trade-off: this does weaken the whitelist as an abuse control,
+      -- since anything can now be labelled octet-stream. It was always weak --
+      -- the client picks the value it sends -- and the real limit on abuse is
+      -- the 50 MB size cap above, which the server does enforce.
+      'application/octet-stream',
       'image/jpeg', 'image/png', 'image/webp', 'image/gif', 'image/svg+xml',
       'application/pdf', 'application/zip',
       'application/msword',

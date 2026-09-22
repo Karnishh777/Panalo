@@ -3,6 +3,7 @@ import { supabaseClient } from "./client.js";
 import { state } from "./state.js";
 import { el, showToast, withBusy, getAvatarColor, safeImageUrl, scrollToBottom, compressImage, announce, setAvatar, formatTime, haptic, hueFor, attachRipples, mapLimited } from "./util.js";
 import { getConversationKey, provisionConversationKey, messagePlaintext } from "./encryption.js";
+import { uploadEncrypted, loadEncrypted, isEncryptedAttachment, isImageEntry, primeAttachmentCache, clearAttachmentCache } from "./attachments.js";
 import { MESSAGES_PAGE_SIZE, THEME_PRESETS, FONT_PRESETS, MAX_FILE_BYTES } from "./config.js";
 import { isOnline, setPresenceListener } from "./presence.js";
 import { isMuted, toggleMute, setInboxListener, setOpenChatListener } from "./notifications.js";
@@ -448,6 +449,9 @@ async function resolveDirectTitles(conversations) {
 // pill label — "🖼️ Photo" reads better than "📎 Attachment" when the peer
 // actually sent a photo.
 function describeAttachment(url) {
+  // Encrypted attachments carry no extension in their path -- the type is
+  // inside the ciphertext, and the sidebar isn't worth a decrypt to find out.
+  if (isEncryptedAttachment(url)) return { icon: "\u{1F4CE}", label: "Attachment" };
   const ext = String(url || "").toLowerCase().split("?")[0].split(".").pop();
   if (/^(jpg|jpeg|png|gif|webp|avif|heic|bmp)$/.test(ext)) return { icon: "🖼️", label: "Photo" };
   if (/^(mp4|mov|webm|m4v)$/.test(ext)) return { icon: "🎬", label: "Video" };
@@ -1193,6 +1197,39 @@ function renderMessage(msg, prepend = false) {
     else showText(msg.content);
   }
 
+  // An encrypted attachment can't be handed straight to <img src>: the bytes
+  // have to come back, be decrypted, and become a blob URL first. Which kind
+  // of thing it is (photo or document) is itself inside the ciphertext, so
+  // even the choice of how to render it has to wait for the decrypt.
+  if (!msg._localPreview && !msg._localFileMeta && isEncryptedAttachment(msg.file_url)) {
+    const frame = el("div", { class: "image-frame loading" });
+    messageEl.append(frame);
+    getConversationKey(msg.conversation_id)
+      .then((key) => loadEncrypted(msg.file_url, key))
+      .then((entry) => {
+        frame.classList.remove("loading");
+        if (!entry) {
+          // A locked chat, a tampered blob, or a failed fetch. Say so rather
+          // than leaving a broken image icon with no explanation.
+          frame.replaceWith(
+            el("div", { class: "file-bubble" }, [
+              el("span", { class: "file-bubble-icon" }, [icon("lock", 22)]),
+              el("div", { class: "file-bubble-meta" }, [
+                el("div", { class: "file-bubble-name", text: "Attachment locked" }),
+                el("div", { class: "file-bubble-size", text: "Unlock this chat to open it" }),
+              ]),
+            ])
+          );
+          return;
+        }
+        if (isImageEntry(entry)) {
+          frame.append(el("img", { class: "chat-image", src: entry.objectUrl, alt: "Shared image", decoding: "async" }));
+        } else {
+          frame.replaceWith(renderFileBubble({ url: entry.objectUrl, name: entry.name, size: entry.size }));
+        }
+      });
+  } else {
+
   const fileMeta = msg._localFileMeta || parseFileMeta(msg.file_url);
   if (fileMeta) {
     messageEl.append(renderFileBubble(fileMeta));
@@ -1218,6 +1255,7 @@ function renderMessage(msg, prepend = false) {
       frame.append(img);
       messageEl.append(frame);
     }
+  }
   }
 
   const time = formatTime(msg.created_at);
@@ -1756,23 +1794,37 @@ async function sendMessage(content, file, convId, replyToId = null, clientId = n
     let fileUrl = null;
     if (file) {
       if (file.size > MAX_FILE_BYTES) return markSendFailed(tempId, "File too large (max 50 MB)", retry);
-      let path;
-      let toUpload;
-      if (file.type.startsWith("image/")) {
-        toUpload = await compressImage(file);
-        const ext = (toUpload.name.split(".").pop() || "img").toLowerCase();
-        path = `${Date.now()}_${crypto.randomUUID()}.${ext}`;
+      // Photos still get downscaled first: compressing after encryption is
+      // impossible, and shipping a 12 MP original costs the recipient just as
+      // much whether or not it's encrypted.
+      const toUpload = file.type.startsWith("image/") ? await compressImage(file) : file;
+      const attachmentKey = await getConversationKey(convId);
+
+      if (attachmentKey) {
+        try {
+          fileUrl = await uploadEncrypted(toUpload, attachmentKey);
+          primeAttachmentCache(fileUrl, toUpload);
+        } catch {
+          return markSendFailed(tempId, "Upload failed", retry);
+        }
       } else {
-        // Any other file type: raw upload with size + name encoded in the path.
-        toUpload = file;
-        const safeName = (file.name || "file").replace(/[^\w.\- ]+/g, "_").slice(-80);
-        path = `files/${Date.now()}_${crypto.randomUUID()}_s${file.size}__${safeName}`;
+        // No conversation key, so the message text beside this file is going
+        // out in the clear too. Encrypting only the attachment would look
+        // like protection without being any.
+        let path;
+        if (toUpload.type.startsWith("image/")) {
+          const ext = (toUpload.name.split(".").pop() || "img").toLowerCase();
+          path = `${Date.now()}_${crypto.randomUUID()}.${ext}`;
+        } else {
+          const safeName = (file.name || "file").replace(/[^\w.\- ]+/g, "_").slice(-80);
+          path = `files/${Date.now()}_${crypto.randomUUID()}_s${file.size}__${safeName}`;
+        }
+        const { error: uploadError } = await supabaseClient.storage
+          .from("chat-files")
+          .upload(path, toUpload, { contentType: toUpload.type || undefined });
+        if (uploadError) return markSendFailed(tempId, "Upload failed", retry);
+        fileUrl = supabaseClient.storage.from("chat-files").getPublicUrl(path).data.publicUrl;
       }
-      const { error: uploadError } = await supabaseClient.storage
-        .from("chat-files")
-        .upload(path, toUpload, { contentType: toUpload.type || undefined });
-      if (uploadError) return markSendFailed(tempId, "Upload failed", retry);
-      fileUrl = supabaseClient.storage.from("chat-files").getPublicUrl(path).data.publicUrl;
     }
 
     let storedContent = content;

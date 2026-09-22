@@ -44,7 +44,8 @@
         <div id="signup-step-1">
           <input type="text" id="signup-username" placeholder="Username" autocomplete="username" aria-label="Username" />
           <input type="email" id="signup-email" placeholder="Email" autocomplete="email" aria-label="Email" />
-          <input type="password" id="signup-password" placeholder="Password" autocomplete="new-password" aria-label="Password" />
+          <input type="password" id="signup-password" placeholder="Password" autocomplete="new-password" aria-label="Password" aria-describedby="password-hint" />
+          <p id="password-hint" class="otp-hint"></p>
           <button id="signup-btn">Create Account</button>
         </div>
 
@@ -315,7 +316,7 @@
   <div id="unlock-modal" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="unlock-modal-title">
     <div class="modal-content">
       <h3 id="unlock-modal-title">Unlock your messages</h3>
-      <p style="color:#9aa8b0; font-size:13px; margin-bottom:14px;">Enter your password to decrypt your chats on this device.</p>
+      <p id="unlock-subtitle" style="color:#9aa8b0; font-size:13px; margin-bottom:14px;">Enter your password to decrypt your chats on this device.</p>
       <input type="password" id="unlock-password" placeholder="Your password" autocomplete="current-password" aria-label="Your password" />
       <div class="modal-buttons">
         <button id="unlock-btn">Unlock</button>
@@ -363,6 +364,7 @@
       <div class="settings-section">
         <span class="settings-label">Effects</span>
         <label class="settings-toggle"><span>Custom cursor (desktop)</span><input type="checkbox" id="setting-cursor" class="switch" /></label>
+        <label class="settings-toggle"><span>OG skin (the original violet)</span><input type="checkbox" id="setting-og-skin" class="switch" /></label>
       </div>
 
       <div class="settings-section">
@@ -497,8 +499,8 @@
 
         <span class="settings-label" style="margin-top:18px;">What that does and doesn't cover</span>
         <ul class="about-list">
-          <li><strong>Message text is encrypted</strong> — in any chat where everyone has finished setting up their keys.</li>
-          <li><strong>Photos and files are not.</strong> They're uploaded as-is, so treat an attachment as less private than the message around it.</li>
+          <li><strong>Messages and the files you send are encrypted</strong> — in any chat where everyone has finished setting up their keys. An attachment's name and size are encrypted too, not just its contents.</li>
+          <li><strong>Profile photos are not.</strong> An avatar is shown to people you share no key with — that's what it's for — so there's no key that could protect it and still let them see it.</li>
           <li><strong>Who you talk to, and when,</strong> is visible to the server. Encryption hides what you said, not that you said it.</li>
           <li><strong>Your key is recoverable from your password</strong>, which is what lets you read your history on a new device. It also means this is strong privacy at rest rather than zero-knowledge end-to-end encryption — we'd rather say so than imply otherwise.</li>
         </ul>
