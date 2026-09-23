@@ -103,9 +103,14 @@ PIN. A user on two devices effectively has two different apps.
   without unwrapping a key per message. A 👍 leaks little, but it is plaintext.
 - **Attachment URLs are unguessable, not private.** The bucket is public: the
   bytes are ciphertext now, but anyone holding a URL can fetch that ciphertext.
-- **`is_conversation_member` is callable by signed-in users.** Revoking it
-  breaks every RLS policy. It reveals only whether *you* belong to a
-  conversation whose id you already hold. Accepted, documented in phase 8.
+- **Two `SECURITY DEFINER` functions stay callable by signed-in users**, and
+  cannot be otherwise. `find_profile_by_username` is how you start a chat
+  with someone you don't already share one with — as `SECURITY INVOKER` it
+  would be subject to the profiles policy and return nothing for exactly the
+  strangers it exists to find. `delete_my_account` needs privileges the
+  browser must never hold, takes no arguments, and can only delete the
+  caller. The RLS helpers were moved to a non-exposed schema in phase 13, so
+  these two are the only ones left.
 - **Leaked-password protection is unavailable** on the Supabase free plan.
 - **Deleting a chat is "delete for me."** Your copy goes; the other person
   keeps theirs. There is no delete-for-everyone, and none could be enforced.

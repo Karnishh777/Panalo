@@ -72,6 +72,7 @@ For each: **SQL Editor → New query** → paste the whole file → **Run**.
 | 8 | [`supabase-phase10.sql`](supabase-phase10.sql) | Rate limiting, profile scoping, account deletion | No |
 | 9 | [`supabase-phase11.sql`](supabase-phase11.sql) | Owner/admin roles in group chats | No |
 | 10 | [`supabase-phase12.sql`](supabase-phase12.sql) | Revokes access to phase 10/11 trigger functions | No |
+| 11 | [`supabase-phase13.sql`](supabase-phase13.sql) | Moves RLS helpers out of the exposed API schema | No |
 
 Phase 8 is self-contained and re-applies everything phase 7 does, so running 8
 is enough if you are starting fresh. Run 7 anyway if you prefer the history to
