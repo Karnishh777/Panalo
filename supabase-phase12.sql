@@ -37,12 +37,15 @@ begin
     'public.guard_role_change()',
     'public.promote_on_owner_leave()'
   ] loop
-    if exists (
-      select 1 from pg_proc p
-      join pg_namespace n on n.oid = p.pronamespace
-      where n.nspname = 'public'
-        and p.oid::regprocedure::text = fn
-    ) then
+    -- to_regprocedure() parses a qualified name and returns NULL if there is
+    -- no such function. The obvious-looking alternative -- comparing against
+    -- p.oid::regprocedure::text -- does NOT work: regprocedure OMITS the
+    -- schema when it is on the search_path, so 'public.rate_limit_messages()'
+    -- never matches the 'rate_limit_messages()' it renders as, and the guard
+    -- silently skips every revoke it was supposed to protect. That is exactly
+    -- what happened on the first run of this file: it reported success and
+    -- changed nothing.
+    if to_regprocedure(fn) is not null then
       execute format('revoke execute on function %s from public, anon, authenticated', fn);
     end if;
   end loop;
