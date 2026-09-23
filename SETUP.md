@@ -79,6 +79,13 @@ Most of these end with a `select` that prints what changed — if the output doe
 not match what the file says to expect, stop and fix it before moving on rather
 than continuing onto the next one.
 
+### Before you rely on it
+
+[`LIMITATIONS.md`](LIMITATIONS.md) lists what the app cannot do, what it does
+imperfectly, and what would need a different architecture to change — group
+calls, call reliability without TURN, the search cap, per-device state, and
+the free-tier ceilings. Worth reading once before building on this.
+
 ### 4. Choose how signup verification works
 
 **Chosen: 6-digit email OTP** (matches the app's OTP screen). Set it up:
