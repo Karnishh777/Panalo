@@ -33,7 +33,7 @@ import {
   markConversationRead, loadReadState, isReadByAll, subscribeReceipts,
   setReceiptListener, loadMyReadMarkers,
 } from "./receipts.js";
-import { searchMessages, invalidateSearchIndex, addToIndex, removeFromIndex } from "./search.js";
+import { searchMessages, addToIndex, removeFromIndex } from "./search.js";
 import { parseSticker, stickerSvg, stickerImg, describeText, initStickerPicker } from "./stickers.js";
 import { getMemories, isDismissed as isMemoryDismissed, dismiss as dismissMemory } from "./memories.js";
 import {
