@@ -33,7 +33,7 @@ import {
   markConversationRead, loadReadState, isReadByAll, subscribeReceipts,
   setReceiptListener, loadMyReadMarkers,
 } from "./receipts.js";
-import { searchMessages, invalidateSearchIndex } from "./search.js";
+import { searchMessages, addToIndex, removeFromIndex } from "./search.js";
 import { parseSticker, stickerSvg, stickerImg, describeText, initStickerPicker } from "./stickers.js";
 import { getMemories, isDismissed as isMemoryDismissed, dismiss as dismissMemory } from "./memories.js";
 import {
@@ -42,6 +42,7 @@ import {
 } from "./snooze.js";
 import { initCalls, startCall, setCallLogger, parseCall, describeCall } from "./calls.js";
 import { parseLocation, locationCard, locationMarker, getCurrentPosition, initLocation, describeLocation } from "./location.js";
+import { splitMentions, mentionsUser, mentionQueryAt, applyMention } from "./mentions.js";
 import { openChatInfo, closeChatInfo, setChatInfoCallbacks, displayTitle, initChatInfo, deleteConversation } from "./chatinfo.js";
 import { reportChannelStatus, forgetChannel, onResync, requestResync } from "./connection.js";
 
@@ -49,6 +50,8 @@ import { reportChannelStatus, forgetChannel, onResync, requestResync } from "./c
 const msgCache = new Map();
 // Members of the open conversation, needed to decide when a message is read.
 let currentMemberIds = [];
+// Usernames of everyone in the open conversation, for matching @mentions.
+let currentMemberNameList = [];
 // Newest message from anyone else in the open chat (drives the 1:1 "Seen").
 let lastOtherMessageAt = null;
 // The message we're currently replying to, if any.
@@ -728,11 +731,18 @@ async function openConversation(conv) {
   }
 
   // Who's in this chat + where everyone has read up to (drives "Seen").
+  // Usernames come along for the ride: mentions are matched on the device
+  // (message text is ciphertext, so the server cannot resolve them), and
+  // only people actually in this chat should highlight.
   const [{ data: parts }] = await Promise.all([
-    supabaseClient.from("conversation_participants").select("user_id").eq("conversation_id", conv.id),
+    supabaseClient
+      .from("conversation_participants")
+      .select("user_id, profiles(username)")
+      .eq("conversation_id", conv.id),
     loadReadState(conv.id),
   ]);
   currentMemberIds = (parts || []).map((p) => p.user_id);
+  currentMemberNameList = (parts || []).map((p) => p.profiles?.username).filter(Boolean);
 
   // A chat created while someone was still setting up encryption never got a
   // key, and nothing revisited that -- so it stayed plaintext forever, even
@@ -1092,6 +1102,102 @@ function refreshMsgFlags(msgId) {
   if (isMessagePinned(convId, msgId)) flagEl.append(icon("pin", 12));
 }
 
+// Write message text, highlighting anyone named in it.
+//
+// Built node by node rather than with innerHTML: message text is the one
+// thing in this app that is entirely attacker-controlled, and el()/textContent
+// is the choke point that keeps it inert. A mention is still just text -- it
+// is styled, not made clickable, because there is nowhere useful to click to.
+//
+// Only people actually in this conversation are highlighted. Marking up
+// "@everyone" or an email address as though it were a person would promise
+// something the app does not do.
+// ---- Mention autocomplete ----
+// Typing "@" in a group offers the people who are actually in it. Without
+// this you have to remember exactly how someone spells their username, and a
+// near-miss mention silently notifies nobody -- which makes the whole feature
+// feel unreliable rather than absent.
+let mentionPicker = null;
+
+function closeMentionPicker() {
+  mentionPicker?.remove();
+  mentionPicker = null;
+}
+
+function openMentionPicker(matches, start, caret) {
+  closeMentionPicker();
+  if (!matches.length) return;
+
+  mentionPicker = el("div", { class: "mention-picker", role: "listbox" });
+  matches.slice(0, 6).forEach((name, i) => {
+    mentionPicker.append(
+      el("button", {
+        class: `mention-option${i === 0 ? " active" : ""}`,
+        type: "button",
+        role: "option",
+        text: name,
+        onMousedown: (e) => {
+          // mousedown, not click: the input must not lose focus first, or the
+          // caret position we are about to use is already gone.
+          e.preventDefault();
+          chooseMention(name, start, caret);
+        },
+      })
+    );
+  });
+  messageForm.append(mentionPicker);
+}
+
+function chooseMention(name, start, caret) {
+  const { text, caret: next } = applyMention(messageInput.value, start, caret, name);
+  messageInput.value = text;
+  messageInput.setSelectionRange(next, next);
+  messageInput.focus();
+  closeMentionPicker();
+  refreshSendReady();
+}
+
+function updateMentionPicker() {
+  // Direct chats have exactly one other person; a picker would be noise.
+  if (state.currentConversation?.type !== "group") return closeMentionPicker();
+  const caret = messageInput.selectionStart ?? messageInput.value.length;
+  const found = mentionQueryAt(messageInput.value, caret);
+  if (!found) return closeMentionPicker();
+
+  const me = String(state.currentUsername || "").toLowerCase();
+  const matches = currentMemberNameList
+    .filter((n) => n.toLowerCase() !== me && n.toLowerCase().startsWith(found.query))
+    .sort((a, b) => a.localeCompare(b));
+  openMentionPicker(matches, found.start, caret);
+}
+
+function renderText(node, plaintext) {
+  const names = currentMemberNameList;
+  const parts = splitMentions(plaintext, names);
+
+  // Nothing to mark up: keep the simple path, which is the overwhelmingly
+  // common case.
+  if (parts.length === 1 && parts[0].type === "text") {
+    node.textContent = plaintext;
+    return;
+  }
+
+  node.textContent = "";
+  const me = String(state.currentUsername || "").toLowerCase();
+  for (const part of parts) {
+    if (part.type !== "mention") {
+      node.append(document.createTextNode(part.value));
+      continue;
+    }
+    node.append(
+      el("span", {
+        class: `mention${part.name === me ? " mention-me" : ""}`,
+        text: part.value,
+      })
+    );
+  }
+}
+
 function renderMessage(msg, prepend = false) {
   // Idempotent: dedupes the realtime echo of an optimistically-rendered message.
   if (document.getElementById(`msg-${msg.id}`)) return;
@@ -1189,7 +1295,7 @@ function renderMessage(msg, prepend = false) {
         textEl.innerHTML = "";
         textEl.append(locationCard(place));
       } else {
-        textEl.textContent = plaintext;
+        renderText(textEl, plaintext);
       }
     };
     if (msg.iv) messagePlaintext(msg).then(showText);
@@ -1721,6 +1827,8 @@ async function deleteMessage(msgId) {
     return;
   }
 
+  removeFromIndex(msgId);
+
   // Free the file too. Deleting a message used to leave its photo in the
   // bucket forever, still served to anyone holding the URL -- so "delete"
   // removed the message without deleting the thing people most wanted gone.
@@ -1773,6 +1881,7 @@ function handleSend() {
 // wakes up (rotates + brightens) and the sidebar entry gets a "draft: …"
 // preview even before the send actually happens.
 function refreshSendReady() {
+  updateMentionPicker();
   const hasText = messageInput.value.trim().length > 0;
   document.getElementById("send-btn")?.classList.toggle("ready", hasText);
   messageForm.classList.toggle("has-text", hasText);
@@ -1909,6 +2018,7 @@ function reconcileSend(tempId, realMsg, localPreview) {
   if (tempEl) tempEl.remove();
   renderMessage(realMsg);
   scrollToBottom();
+  messagePlaintext(realMsg).then((t) => addToIndex(realMsg, t));
   if (localPreview) URL.revokeObjectURL(localPreview);
 
   // Our own message updates the chat list preview + ordering too.
@@ -1978,6 +2088,10 @@ function subscribeToMessages() {
         // Only follow the conversation down if the reader was already at the
         // live end. Someone scrolled up reading history should stay there.
         if (wasAtBottom || payload.new.user_id === state.currentUser.id) scrollToBottom();
+        // Keep search current. Without this the index is whatever existed at
+        // the first search of the session, so anything said afterwards is
+        // simply not findable.
+        messagePlaintext(payload.new).then((t) => addToIndex(payload.new, t));
         if (payload.new.user_id !== state.currentUser.id) {
           announce(`New message from ${payload.new.username || "someone"}`);
           // We're looking at it, so tell the sender it's been read.

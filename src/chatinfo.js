@@ -124,9 +124,16 @@ async function renderMembers(conv) {
   listEl.innerHTML = "";
   let { data, error } = await supabaseClient
     .from("conversation_participants")
-    .select("user_id, profiles(username, avatar_url)")
+    .select("user_id, role, profiles(username, avatar_url)")
     .eq("conversation_id", conv.id);
-  // Graceful fallback until supabase-phase5.sql adds avatar_url.
+  // Graceful fallbacks: avatar_url needs phase 5, role needs phase 11. Until
+  // those run, the list still renders -- just without pictures or roles.
+  if (error && /role/i.test(error.message)) {
+    ({ data, error } = await supabaseClient
+      .from("conversation_participants")
+      .select("user_id, profiles(username, avatar_url)")
+      .eq("conversation_id", conv.id));
+  }
   if (error && /column/i.test(error.message)) {
     ({ data } = await supabaseClient
       .from("conversation_participants")
@@ -135,7 +142,23 @@ async function renderMembers(conv) {
   }
 
   const members = data || [];
-  const iAmCreator = conv.created_by === state.currentUser.id;
+  // Sort by standing, then name, so whoever runs the group is at the top
+  // rather than wherever the database happened to return them.
+  const RANK = { owner: 0, admin: 1, member: 2 };
+  members.sort((a, b) => {
+    const r = (RANK[a.role] ?? 2) - (RANK[b.role] ?? 2);
+    return r || String(a.profiles?.username || "").localeCompare(String(b.profiles?.username || ""));
+  });
+
+  // What this device is allowed to do. The database enforces all of it
+  // regardless (phase 11); this only decides which controls are worth
+  // showing, because offering a button that will be refused is worse than
+  // not offering it.
+  const myRole = members.find((m) => m.user_id === state.currentUser.id)?.role
+    || (conv.created_by === state.currentUser.id ? "owner" : "member");
+  const iAmOwner = myRole === "owner";
+  const canManage = iAmOwner || myRole === "admin";
+  const isGroup = conv.type === "group";
   document.getElementById("info-sub").textContent =
     conv.type === "group" ? `Group · ${members.length} member${members.length === 1 ? "" : "s"}` : document.getElementById("info-sub").textContent;
 
@@ -148,12 +171,29 @@ async function renderMembers(conv) {
     avatar.style.fontSize = "13px";
     setAvatar(avatar, p.profiles?.username || name, p.profiles?.avatar_url);
 
-    const row = el("div", { class: "member-row" }, [
-      el("div", { class: "member-id" }, [avatar, el("span", { text: name + (p.user_id === conv.created_by ? " 👑" : "") })]),
-    ]);
-    // The creator can remove anyone else.
-    if (iAmCreator && !isMe) {
-      row.append(
+    const label = el("div", { class: "member-id" }, [avatar, el("span", { text: name })]);
+    if (isGroup && (p.role === "owner" || p.role === "admin")) {
+      label.append(el("span", { class: `member-role member-role-${p.role}`, text: p.role === "owner" ? "Owner" : "Admin" }));
+    }
+
+    const row = el("div", { class: "member-row" }, [label]);
+    const actions = el("div", { class: "member-actions" });
+
+    // An owner may promote and demote. Owners are never removable, by
+    // anyone -- that is what stops an admin evicting the person who runs the
+    // group, and the database refuses it too.
+    if (isGroup && iAmOwner && !isMe && p.role !== "owner") {
+      actions.append(
+        el("button", {
+          class: "member-action",
+          type: "button",
+          text: p.role === "admin" ? "Make member" : "Make admin",
+          onClick: () => setMemberRole(conv, p.user_id, p.role === "admin" ? "member" : "admin", name),
+        })
+      );
+    }
+    if (isGroup && canManage && !isMe && p.role !== "owner") {
+      actions.append(
         el("button", {
           class: "member-remove",
           type: "button",
@@ -162,8 +202,26 @@ async function renderMembers(conv) {
         })
       );
     }
+    if (actions.childNodes.length) row.append(actions);
     listEl.append(row);
   });
+}
+
+// Promote or demote. The database is the authority here (phase 11): a member
+// who called this directly would be refused, so a failure is reported rather
+// than assumed impossible.
+async function setMemberRole(conv, userId, role, name) {
+  const { error } = await supabaseClient
+    .from("conversation_participants")
+    .update({ role })
+    .eq("conversation_id", conv.id)
+    .eq("user_id", userId);
+  if (error) {
+    showToast(/phase11|role/i.test(error.message) ? "Run supabase-phase11.sql to enable roles." : error.message);
+    return;
+  }
+  showToast(role === "admin" ? `${name} is now an admin.` : `${name} is now a member.`, "success");
+  renderMembers(conv);
 }
 
 async function removeMember(conv, userId, name) {
