@@ -14,7 +14,7 @@ that runs 24/7 and gives you four things PANALO uses:
 | Image storage | **Supabase Storage** | The `chat-files` bucket. |
 
 ```
-  Browser (index.html + app.js)              Supabase (your always-on backend)
+  Browser (index.html + src/*.js)              Supabase (your always-on backend)
   ┌───────────────────────────┐   HTTPS      ┌──────────────────────────────────┐
   │  frontend, ships the       │  ───────►    │  Auth  (users, hashed passwords) │
   │  PUBLIC "anon" key only    │  ◄───────    │  Postgres + RLS (your data)      │
@@ -23,7 +23,7 @@ that runs 24/7 and gives you four things PANALO uses:
                                               └──────────────────────────────────┘
 ```
 
-The public **anon key** in `app.js` is *meant* to be public. It's safe **because**
+The public **anon key** in `src/config.js` is *meant* to be public. It's safe **because**
 Row-Level Security (the policies in `supabase-setup.sql`) decides what each logged-in
 user can actually read or write. Without those policies the key would be dangerous —
 which is exactly the hole we're closing here.
@@ -42,8 +42,8 @@ which is exactly the hole we're closing here.
 - **Project URL** (e.g. `https://abcdefgh.supabase.co`)
 - **anon / publishable** key (the public one — *not* the `service_role` key)
 
-Paste both to me and I'll wire them into `app.js`, **or** edit the top of
-[`app.js`](app.js) yourself:
+Paste both to me and I'll wire them in, **or** edit the top of
+[`src/config.js`](src/config.js) yourself:
 ```js
 const SUPABASE_URL = "https://YOUR-PROJECT.supabase.co";
 const SUPABASE_KEY = "YOUR-ANON-KEY";
@@ -51,9 +51,33 @@ const SUPABASE_KEY = "YOUR-ANON-KEY";
 > ⚠️ Never put the **`service_role`** key in the frontend — it bypasses all security.
 
 ### 3. Create the schema + security
-**SQL Editor → New query** → paste all of [`supabase-setup.sql`](supabase-setup.sql)
-→ **Run**. You should see "Success". This creates the tables, RLS policies,
-realtime, and the storage bucket.
+
+The schema is built up in numbered files. **Run them in order, top to bottom.**
+Each is idempotent, so re-running one costs nothing — but skipping one leaves
+the app running against a database that is missing something it assumes is
+there, which is exactly how this project once shipped a bug that made people's
+encrypted history unrecoverable.
+
+For each: **SQL Editor → New query** → paste the whole file → **Run**.
+
+| # | File | What it adds | Skippable? |
+|---|------|--------------|-----------|
+| 1 | [`supabase-setup.sql`](supabase-setup.sql) | Tables, RLS, realtime, storage bucket | No |
+| 2 | [`supabase-keys.sql`](supabase-keys.sql) | Encryption key storage, message `iv` | No |
+| 3 | [`supabase-phase5.sql`](supabase-phase5.sql) | Profiles (bio/avatar), group management, message editing | No |
+| 4 | [`supabase-phase6.sql`](supabase-phase6.sql) | Reactions, read receipts, replies | No |
+| 5 | [`supabase-phase7.sql`](supabase-phase7.sql) | Username uniqueness, call invites, storage limits | Superseded by 6 |
+| 6 | [`supabase-phase8.sql`](supabase-phase8.sql) | Re-applies phase 7, message-identity lock, bucket lockdown | No |
+| 7 | [`supabase-phase9.sql`](supabase-phase9.sql) | Lets people delete files they uploaded | No |
+| 8 | [`supabase-phase10.sql`](supabase-phase10.sql) | Rate limiting, profile scoping, account deletion | No |
+
+Phase 8 is self-contained and re-applies everything phase 7 does, so running 8
+is enough if you are starting fresh. Run 7 anyway if you prefer the history to
+match the files.
+
+Most of these end with a `select` that prints what changed — if the output does
+not match what the file says to expect, stop and fix it before moving on rather
+than continuing onto the next one.
 
 ### 4. Choose how signup verification works
 

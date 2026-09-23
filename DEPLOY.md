@@ -91,11 +91,11 @@ Two separate things affect speed — handle both:
    - Check yours: Supabase → **Project Settings → General → Region**.
    - Region **can't be changed after creation.** If it's far from India (US/EU) and
      feels laggy, the fix is to create a **new project in the Mumbai region**, re-run
-     both SQL files (`supabase-setup.sql` then `supabase-keys.sql`), and swap the URL
-     + anon key in `app.js`. (I can walk you through this migration if needed.)
+     **every** migration in order (see the table in [SETUP.md](SETUP.md#3-create-the-schema--security)
+     — there are eight, not two), and swap the URL + anon key in `src/config.js`.
 
 ## Security notes
-- The **anon / publishable key** in `app.js` is *meant* to be public — it's safe on
+- The **anon / publishable key** in `src/config.js` is *meant* to be public — it's safe on
   GitHub because Row-Level Security controls all access. ✅
 - **Never** commit the **`service_role`** key, your **DB password**, or **SMTP
   password**. They don't belong in the frontend at all.

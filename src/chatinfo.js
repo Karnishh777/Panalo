@@ -2,7 +2,7 @@
 // management (add / remove / leave, with encryption-key wrapping for new
 // members), pin/mute shortcuts, and the per-chat font picker.
 // Cycle-free: chat.js registers callbacks instead of being imported.
-import { supabaseClient } from "./client.js";
+import { supabaseClient, findProfileByUsername } from "./client.js";
 import { state } from "./state.js";
 import { el, showToast, withBusy, setAvatar } from "./util.js";
 import { FONT_PRESETS, WALLPAPER_PRESETS } from "./config.js";
@@ -187,22 +187,19 @@ async function addMember(conv) {
   const username = input.value.trim();
   if (!username) return;
 
-  const { data: profs, error } = await supabaseClient
-    .from("profiles")
-    .select("id, username, public_key")
-    .ilike("username", username)
-    .limit(2);
-  if (error || !profs || !profs.length) {
+  // Exact-match lookup rather than a pattern query on profiles: the read
+  // policy no longer exposes people you share no chat with, which is what
+  // made the whole user list enumerable.
+  let target;
+  try {
+    target = await findProfileByUsername(username);
+  } catch {
+    target = null;
+  }
+  if (!target) {
     showToast(`"${username}" not found.`);
     return;
   }
-  // Usernames are meant to be unique (see supabase-phase7.sql); refuse to
-  // guess which account is meant rather than adding the wrong person.
-  if (profs.length > 1) {
-    showToast(`Multiple accounts match "${username}" — ask them for their exact username, or run supabase-phase7.sql.`);
-    return;
-  }
-  const target = profs[0];
 
   const { error: insErr } = await supabaseClient
     .from("conversation_participants")
@@ -297,7 +294,7 @@ async function removeMeAndForget(conv, toast) {
 // keyboards cover it. Returns a Promise<boolean>. Traps focus lightly and
 // closes on Escape / backdrop click. The button copy is caller-supplied so
 // "Delete for me" reads correctly against "Leave & delete" for groups.
-function confirmDelete({ title, body, danger }) {
+export function confirmDelete({ title, body, danger }) {
   return new Promise((resolve) => {
     const backdrop = el("div", { class: "modal confirm-modal", role: "dialog", "aria-modal": "true" });
     const card = el("div", { class: "modal-content confirm-content" });
