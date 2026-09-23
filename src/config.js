@@ -34,10 +34,6 @@ export const MIN_PASSWORD_LENGTH = 8;
 export const PASSWORD_REQUIRED_CLASSES = [];
 export const OTP_LENGTH = 6;
 
-export const AVATAR_COLORS = [
-  "#00d69b", "#6fd3ff", "#ffb86f", "#ff8888", "#c792ff", "#ffe066", "#7ef2c2", "#ff9ecb",
-];
-
 // Messages loaded per page (recent first; older fetched on scroll-up).
 export const MESSAGES_PAGE_SIZE = 30;
 

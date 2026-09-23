@@ -85,6 +85,12 @@
      --chat-font per conversation (see FONT_PRESETS). */
   --font-ui: 'Inter', 'Segoe UI', system-ui, -apple-system, sans-serif;
   --font-display: 'Sora', 'Segoe UI', system-ui, sans-serif;
+  /* Avatar tint. The hue is derived per person, so only how saturated and
+     how light it should be needs to change between skins -- muted on the
+     pale matte ground, brighter on the dark violet one. */
+  --avatar-sat: 42%;
+  --avatar-light: 46%;
+
   --chat-font: var(--font-ui);
 }
 
@@ -1353,6 +1359,11 @@ a:focus-visible {
   --shadow-card: 0 4px 14px rgba(0, 0, 0, 0.45);
   --shadow-card-hover: 0 10px 28px rgba(0, 0, 0, 0.55);
   --focus-ring: 0 0 0 3px rgba(139, 124, 246, 0.45);
+
+  /* Brighter and a little more saturated, so avatars read against a dark
+     ground instead of sinking into it. */
+  --avatar-sat: 52%;
+  --avatar-light: 62%;
 }
 
 /* The light build assumes dark text on pale paper in a few places that read
@@ -1443,6 +1454,16 @@ a:focus-visible {
 
 .app-container {
   position: relative; /* anchors the chat-info drawer */
+  /* The chat-info drawer is parked off-screen with translateX(105%). A
+     transform MOVES an element, it does not remove it from layout -- so the
+     drawer's 340px kept extending the container past the viewport and the
+     whole page scrolled sideways. Hiding it (visibility/pointer-events) made
+     it unreachable but did nothing about the width it still claimed.
+
+     The shell is exactly the viewport and clips. Scrolling belongs to the
+     panes that need it -- the chat list, the message thread, the members
+     list, settings, the info drawer -- and nowhere else. */
+  overflow: hidden;
 }
 
 /* ---- Left icon rail (WhatsApp Mac style) ---- */

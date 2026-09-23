@@ -1,6 +1,5 @@
 import {
   STORAGE_URL_PREFIX,
-  AVATAR_COLORS,
   MAX_IMAGE_DIMENSION,
   IMAGE_QUALITY,
   COMPRESS_MIN_BYTES,
@@ -153,11 +152,37 @@ export function setAvatar(node, name, url) {
   }
 }
 
-// Deterministic avatar color from a name.
+// Deterministic avatar colour from a name, tinted to suit the current skin.
+//
+// This used to pick from eight fixed hex values. Two problems with that: the
+// palette was neon (#00d69b, #6fd3ff, #ffe066), chosen for a dark theme, so
+// it read as garish once the app went pale -- and eight colours means people
+// collide constantly. In a list of ten chats you would expect several pairs
+// sharing a colour, which defeats the point of a colour that identifies
+// someone.
+//
+// The hue now comes from the same deterministic hash used elsewhere, giving
+// 360 distinct values instead of 8, and how saturated and light that hue
+// should be is left to CSS -- so the matte skin gets muted avatars on its
+// pale ground and the OG skin gets brighter ones on its dark ground, from
+// one source of truth.
+let tintCache = { skin: null, sat: "42%", light: "46%" };
+
+function avatarTint() {
+  const skin = document.documentElement.getAttribute("data-skin") || "matte";
+  if (tintCache.skin === skin) return tintCache;
+  const root = getComputedStyle(document.documentElement);
+  tintCache = {
+    skin,
+    sat: root.getPropertyValue("--avatar-sat").trim() || "42%",
+    light: root.getPropertyValue("--avatar-light").trim() || "46%",
+  };
+  return tintCache;
+}
+
 export function getAvatarColor(name) {
-  let hash = 0;
-  for (let i = 0; i < name.length; i++) hash = name.charCodeAt(i) + ((hash << 5) - hash);
-  return AVATAR_COLORS[Math.abs(hash) % AVATAR_COLORS.length];
+  const { sat, light } = avatarTint();
+  return `hsl(${hueFor(name)} ${sat} ${light})`;
 }
 
 // Clock times are shown 12-hour with am/pm ("9:41 pm"). The locale is pinned so
