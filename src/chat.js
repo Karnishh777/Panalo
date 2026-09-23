@@ -33,7 +33,7 @@ import {
   markConversationRead, loadReadState, isReadByAll, subscribeReceipts,
   setReceiptListener, loadMyReadMarkers,
 } from "./receipts.js";
-import { searchMessages, invalidateSearchIndex } from "./search.js";
+import { searchMessages, invalidateSearchIndex, addToIndex, removeFromIndex } from "./search.js";
 import { parseSticker, stickerSvg, stickerImg, describeText, initStickerPicker } from "./stickers.js";
 import { getMemories, isDismissed as isMemoryDismissed, dismiss as dismissMemory } from "./memories.js";
 import {
@@ -1721,6 +1721,8 @@ async function deleteMessage(msgId) {
     return;
   }
 
+  removeFromIndex(msgId);
+
   // Free the file too. Deleting a message used to leave its photo in the
   // bucket forever, still served to anyone holding the URL -- so "delete"
   // removed the message without deleting the thing people most wanted gone.
@@ -1909,6 +1911,7 @@ function reconcileSend(tempId, realMsg, localPreview) {
   if (tempEl) tempEl.remove();
   renderMessage(realMsg);
   scrollToBottom();
+  messagePlaintext(realMsg).then((t) => addToIndex(realMsg, t));
   if (localPreview) URL.revokeObjectURL(localPreview);
 
   // Our own message updates the chat list preview + ordering too.
@@ -1978,6 +1981,10 @@ function subscribeToMessages() {
         // Only follow the conversation down if the reader was already at the
         // live end. Someone scrolled up reading history should stay there.
         if (wasAtBottom || payload.new.user_id === state.currentUser.id) scrollToBottom();
+        // Keep search current. Without this the index is whatever existed at
+        // the first search of the session, so anything said afterwards is
+        // simply not findable.
+        messagePlaintext(payload.new).then((t) => addToIndex(payload.new, t));
         if (payload.new.user_id !== state.currentUser.id) {
           announce(`New message from ${payload.new.username || "someone"}`);
           // We're looking at it, so tell the sender it's been read.

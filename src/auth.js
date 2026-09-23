@@ -4,6 +4,7 @@ import { state, conversationKeys } from "./state.js";
 import { withBusy, showToast, redirectUrl } from "./util.js";
 import { ensureUserKeys, idbDelKey, idbGetKey, rewrapPrivateKey, regenerateKeypair } from "./encryption.js";
 import { clearAttachmentCache } from "./attachments.js";
+import { invalidateSearchIndex } from "./search.js";
 import { fetchConversations } from "./chat.js";
 import { startPresence, stopPresence } from "./presence.js";
 import { startNotifications, stopNotifications } from "./notifications.js";
@@ -261,6 +262,9 @@ export function initAuth() {
     state.pendingRewrapPassword = "";
     // Decrypted attachments must not outlive the session allowed to see them.
     clearAttachmentCache();
+    // The index holds decrypted message text. It must not survive the
+    // session that was allowed to read it.
+    invalidateSearchIndex();
     conversationKeys.clear();
     await supabaseClient.auth.signOut();
     state.currentUser = null;

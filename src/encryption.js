@@ -280,6 +280,42 @@ async function provisionKeyFor(conversationId, memberIds) {
   return convKey;
 }
 
+// Warm the key cache for many conversations at once.
+//
+// getConversationKey() fetches one wrapped key per call, so anything that
+// walks messages across several chats -- building the search index, most
+// obviously -- pays a separate network round trip for each conversation it
+// meets, strictly in sequence. Measured against the work it was blocking:
+// decrypting a thousand messages costs about 19ms, while twenty of those
+// round trips cost one to four SECONDS. The crypto was never the expensive
+// part; the serialised fetches were.
+//
+// One query, one pass of unwrapping. Already-cached conversations are
+// skipped, so calling this repeatedly is cheap.
+export async function prefetchConversationKeys(conversationIds) {
+  if (!state.myPrivateKey) return;
+  const missing = [...new Set(conversationIds)].filter((id) => id && !conversationKeys.has(id));
+  if (!missing.length) return;
+
+  const { data } = await supabaseClient
+    .from("conversation_keys")
+    .select("conversation_id, wrapped_key")
+    .eq("user_id", state.currentUser.id)
+    .in("conversation_id", missing);
+
+  for (const row of data || []) {
+    try {
+      conversationKeys.set(
+        row.conversation_id,
+        await window.PanaloCrypto.unwrapConversationKey(row.wrapped_key, state.myPrivateKey)
+      );
+    } catch {
+      // A key we can't unwrap is left absent, so the caller falls back to
+      // showing the message as locked rather than caching a broken entry.
+    }
+  }
+}
+
 // On conversation creation, make a fresh AES key and wrap it to every
 // member's public key. Encrypt ONLY if every member already has a key, so
 // nobody in the conversation is ever locked out (otherwise it stays

@@ -8,7 +8,7 @@
 // The index is built once per session (fetch + decrypt), then every keystroke
 // filters it in memory.
 import { supabaseClient } from "./client.js";
-import { messagePlaintext } from "./encryption.js";
+import { messagePlaintext, prefetchConversationKeys } from "./encryption.js";
 
 // How many recent messages to pull into the searchable index. Deliberately
 // bounded: decrypting is per-message work and this stays instant on a phone.
@@ -30,9 +30,18 @@ async function buildIndex() {
     .limit(INDEX_LIMIT);
   if (error) return [];
 
+  // Every conversation key this batch needs, in one query, BEFORE decrypting
+  // anything. messagePlaintext() otherwise fetches a key the first time it
+  // meets each conversation, strictly in sequence -- so the loop below used
+  // to stall on a fresh network round trip per chat. Decrypting a thousand
+  // messages takes about 19ms; twenty of those round trips take one to four
+  // seconds. This is the whole performance problem, and it was never the
+  // cryptography.
+  await prefetchConversationKeys((data || []).map((m) => m.conversation_id));
+
   const rows = [];
   for (const m of data || []) {
-    // Decrypt sequentially-ish; keys are cached per conversation after the first.
+    // Now purely local work: every key is already in memory.
     const text = m.content ? await messagePlaintext(m) : m.file_url ? "Attachment" : "";
     rows.push({
       id: m.id,
@@ -68,9 +77,16 @@ export async function searchMessages(query, limit = 30) {
   return hits;
 }
 
-// Add a newly-sent/received message so a fresh message is searchable at once.
+// Add a newly-sent/received message so it is searchable at once.
+//
+// This existed but was never called, and neither was invalidateSearchIndex.
+// So the index was built on the first search of a session and then never
+// touched again: every message sent or received afterwards was invisible to
+// search until a reload. That is a correctness bug wearing a performance
+// bug's clothes -- the results were not slow, they were quietly wrong.
 export function addToIndex(msg, text) {
-  if (!index) return;
+  if (!index) return; // nothing built yet; the first search will include it
+  if (index.some((r) => r.id === msg.id)) return;
   index.unshift({
     id: msg.id,
     conversation_id: msg.conversation_id,
@@ -80,4 +96,12 @@ export function addToIndex(msg, text) {
     file_url: msg.file_url,
     text: text || "",
   });
+}
+
+// Drop a deleted message, so search can't offer a result that no longer
+// exists and would fail to open.
+export function removeFromIndex(msgId) {
+  if (!index) return;
+  const at = index.findIndex((r) => r.id === msgId);
+  if (at !== -1) index.splice(at, 1);
 }
