@@ -1373,6 +1373,62 @@ a:focus-visible {
   color: var(--text);
 }
 
+/* ---- Mentions -------------------------------------------------------------
+   Styled, not clickable: there is nowhere useful a mention could take you,
+   and a link that does nothing is worse than plain text. Being named yourself
+   is the one case worth making obvious at a glance. */
+.mention {
+  color: var(--primary);
+  font-weight: 600;
+}
+
+.mention-me {
+  background: var(--primary-soft, rgba(226, 88, 46, 0.16));
+  border-radius: var(--radius-sm, 6px);
+  padding: 0 3px;
+}
+
+/* Sits above the composer, anchored to it, so it never covers what is being
+   typed. */
+/* The picker is absolutely positioned against the composer, so the composer
+   has to be a positioning context. */
+#message-form {
+  position: relative;
+}
+
+.mention-picker {
+  position: absolute;
+  bottom: calc(100% + 8px);
+  left: 12px;
+  z-index: 30;
+  min-width: 180px;
+  max-width: 260px;
+  padding: 5px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  background: var(--surface);
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-md, 12px);
+  box-shadow: var(--shadow-lg);
+}
+
+.mention-option {
+  background: transparent;
+  border: 0;
+  color: var(--text);
+  text-align: left;
+  padding: 7px 10px;
+  border-radius: var(--radius-sm, 8px);
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.mention-option:hover,
+.mention-option.active {
+  background: var(--surface-2);
+}
+
 /* ---- Group roles ----------------------------------------------------------
    A badge beside the name, not a separate column: who runs a group is part of
    how you read the name, and a column would make every ordinary member look

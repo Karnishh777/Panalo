@@ -70,6 +70,8 @@ For each: **SQL Editor → New query** → paste the whole file → **Run**.
 | 6 | [`supabase-phase8.sql`](supabase-phase8.sql) | Re-applies phase 7, message-identity lock, bucket lockdown | No |
 | 7 | [`supabase-phase9.sql`](supabase-phase9.sql) | Lets people delete files they uploaded | No |
 | 8 | [`supabase-phase10.sql`](supabase-phase10.sql) | Rate limiting, profile scoping, account deletion | No |
+| 9 | [`supabase-phase11.sql`](supabase-phase11.sql) | Owner/admin roles in group chats | No |
+| 10 | [`supabase-phase12.sql`](supabase-phase12.sql) | Revokes access to phase 10/11 trigger functions | No |
 
 Phase 8 is self-contained and re-applies everything phase 7 does, so running 8
 is enough if you are starting fresh. Run 7 anyway if you prefer the history to

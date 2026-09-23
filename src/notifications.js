@@ -11,6 +11,7 @@
 import { supabaseClient } from "./client.js";
 import { reportChannelStatus, forgetChannel } from "./connection.js";
 import { state } from "./state.js";
+import { mentionsUser } from "./mentions.js";
 import { el, showToast } from "./util.js";
 import { messagePlaintext } from "./encryption.js";
 import { describeText } from "./stickers.js";
@@ -252,11 +253,15 @@ export async function sendTestAlert() {
 }
 
 // ---- Realtime inbox ----
-async function alertFor(msg) {
+async function alertFor(msg, { mention = false } = {}) {
   const body = msg.file_url
     ? "📎 Sent an attachment"
     : describeText(await messagePlaintext(msg)) || "New message";
-  const title = msg.username || "New message";
+  // A mention arrives in a chat the user has deliberately muted, so it needs
+  // to say why it is interrupting.
+  const title = mention
+    ? `${msg.username || "Someone"} mentioned you`
+    : msg.username || "New message";
   showBanner(title, body, msg.conversation_id);
   playChime();
   showDesktop(title, body, msg.conversation_id);
@@ -273,11 +278,24 @@ export function startNotifications() {
       // Unread counts + chat-list previews update for every message, always.
       inboxListener?.(m);
 
-      if (isMuted(m.conversation_id)) return;
-      // Don't alert for the chat you're actively looking at.
+      // Don't alert for the chat you're actively looking at, mention or not.
       const watching = m.conversation_id === state.currentConversationId && !document.hidden;
       if (watching) return;
-      alertFor(m);
+
+      if (!isMuted(m.conversation_id)) {
+        alertFor(m);
+        return;
+      }
+
+      // Muting a group means "stop telling me about the chatter", not "stop
+      // telling me when someone needs me". Being named is the one thing worth
+      // interrupting for, so a mention still alerts.
+      //
+      // It has to be checked here rather than server-side: message text is
+      // ciphertext, so only this device can tell who was named.
+      messagePlaintext(m).then((text) => {
+        if (mentionsUser(text, state.currentUsername)) alertFor(m, { mention: true });
+      });
     })
     .subscribe((status) => reportChannelStatus(NOTIFY_CHANNEL, status));
 }
