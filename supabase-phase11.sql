@@ -55,7 +55,7 @@ where c.id = p.conversation_id
 -- ---- Reading your own role -------------------------------------------
 -- SECURITY DEFINER so the policies below can call it without recursing
 -- through the policies on the very table they protect.
-create or replace function public.my_conversation_role(conv uuid)
+create or replace function private.my_conversation_role(conv uuid)
 returns text
 language sql
 security definer
@@ -68,8 +68,8 @@ as $$
     and user_id = auth.uid();
 $$;
 
-revoke execute on function public.my_conversation_role(uuid) from public, anon;
-grant execute on function public.my_conversation_role(uuid) to authenticated;
+revoke execute on function private.my_conversation_role(uuid) from public, anon;
+grant execute on function private.my_conversation_role(uuid) to authenticated;
 
 
 -- ---- Creating a group makes you its owner -----------------------------
@@ -96,7 +96,7 @@ begin
   -- Nobody else is created as an owner, and an admin may only be appointed
   -- by an existing owner. Everyone else joins as a member regardless of what
   -- the client asked for.
-  caller_role := public.my_conversation_role(new.conversation_id);
+  caller_role := private.my_conversation_role(new.conversation_id);
   if new.role = 'owner' or (new.role = 'admin' and caller_role is distinct from 'owner') then
     new.role := 'member';
   end if;
@@ -122,11 +122,23 @@ security definer
 set search_path = public
 as $$
 declare
-  caller_role text := public.my_conversation_role(old.conversation_id);
+  caller_role text := private.my_conversation_role(old.conversation_id);
 begin
   -- Identity is not editable here; only the role is.
   new.conversation_id := old.conversation_id;
   new.user_id         := old.user_id;
+
+  -- The rules below are for people. Two callers are not people and must
+  -- pass: another trigger (promote_on_owner_leave handing ownership over,
+  -- which runs after the leaver's row is gone -- so the leaver has no role
+  -- and was refused, which made leaving, deleting a chat you started, and
+  -- deleting your account all fail), and a migration or the dashboard, which
+  -- run with no signed-in user at all. Neither is reachable by a client:
+  -- PostgREST requests always arrive at trigger depth 1, and RLS only lets
+  -- `authenticated` update this table. Kept identical in phase 14.
+  if pg_trigger_depth() > 1 or auth.uid() is null then
+    return new;
+  end if;
 
   if new.role is distinct from old.role then
     if caller_role is distinct from 'owner' then
@@ -153,8 +165,8 @@ create trigger trg_guard_role_change
 drop policy if exists "participants update" on public.conversation_participants;
 create policy "participants update" on public.conversation_participants
   for update to authenticated
-  using (public.my_conversation_role(conversation_id) = 'owner')
-  with check (public.my_conversation_role(conversation_id) = 'owner');
+  using (private.my_conversation_role(conversation_id) = 'owner')
+  with check (private.my_conversation_role(conversation_id) = 'owner');
 
 
 -- ---- Who may add people ----------------------------------------------
@@ -170,7 +182,7 @@ create policy "participants insert" on public.conversation_participants
       where c.id = conversation_id and c.created_by = auth.uid()
     )
     or (
-      public.my_conversation_role(conversation_id) in ('owner', 'admin')
+      private.my_conversation_role(conversation_id) in ('owner', 'admin')
       and exists (
         select 1 from public.conversations c
         where c.id = conversation_id and c.type = 'group'
@@ -188,7 +200,7 @@ create policy "participants delete" on public.conversation_participants
   using (
     user_id = auth.uid()
     or (
-      public.my_conversation_role(conversation_id) in ('owner', 'admin')
+      private.my_conversation_role(conversation_id) in ('owner', 'admin')
       and role <> 'owner'
     )
   );
@@ -247,12 +259,12 @@ drop policy if exists "conversations update" on public.conversations;
 create policy "conversations update" on public.conversations
   for update to authenticated
   using (
-    (type = 'group' and public.my_conversation_role(id) in ('owner', 'admin'))
-    or (type <> 'group' and public.is_conversation_member(id))
+    (type = 'group' and private.my_conversation_role(id) in ('owner', 'admin'))
+    or (type <> 'group' and private.is_conversation_member(id))
   )
   with check (
-    (type = 'group' and public.my_conversation_role(id) in ('owner', 'admin'))
-    or (type <> 'group' and public.is_conversation_member(id))
+    (type = 'group' and private.my_conversation_role(id) in ('owner', 'admin'))
+    or (type <> 'group' and private.is_conversation_member(id))
   );
 
 

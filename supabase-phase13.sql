@@ -51,11 +51,13 @@ begin
   ] loop
     sig := 'public.' || fn;
 
-    -- Re-running the earlier phases recreates these in `public`, because
-    -- `create or replace function public.x()` makes a NEW function once the
-    -- original has moved. The policies still point at the private one, so
-    -- the public copy is an unreferenced duplicate -- drop it rather than
-    -- leaving something the linter will rightly flag again.
+    -- A public copy next to a private one is left over from re-running an
+    -- OLD version of the earlier phases, which said `create or replace
+    -- function public.x()` and so made a new function once the original had
+    -- moved. They now create the helpers in `private` directly and point
+    -- every policy there, so a copy found here is unreferenced and safe to
+    -- drop. (Before that change this DROP failed -- the re-run had re-bound
+    -- the policies to the public copy -- and took supabase-all.sql with it.)
     if to_regprocedure(sig) is not null and to_regprocedure('private.' || fn) is not null then
       execute format('drop function %s', sig);
 

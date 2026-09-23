@@ -60,8 +60,21 @@ create index if not exists idx_messages_conversation
 -- SECURITY DEFINER runs the lookup as the function owner, bypassing RLS on
 -- conversation_participants — this avoids infinite recursion when a policy on
 -- that table needs to check membership of that same table.
+--
+-- It lives in `private`, a schema PostgREST does not publish, so it has no
+-- /rest/v1/rpc/ endpoint. It was created in `public` originally and moved by
+-- phase 13; creating it here directly is what makes re-running this file safe.
+-- When it was still `create ... public.is_conversation_member`, a re-run made
+-- a SECOND copy in public, every policy below re-bound to that copy, and
+-- phase 13 could then no longer drop it -- so supabase-all.sql failed on any
+-- database that had ever run phase 13.
 -- ============================================================================
-create or replace function public.is_conversation_member(conv uuid)
+create schema if not exists private;
+-- Policies are evaluated as the querying role, which therefore has to be able
+-- to reach into the schema. Without this every policy fails closed.
+grant usage on schema private to authenticated;
+
+create or replace function private.is_conversation_member(conv uuid)
 returns boolean
 language sql
 security definer
@@ -125,7 +138,7 @@ drop policy if exists "conversations insert" on public.conversations;
 
 create policy "conversations read" on public.conversations
   for select to authenticated
-  using (created_by = auth.uid() or public.is_conversation_member(id));
+  using (created_by = auth.uid() or private.is_conversation_member(id));
 create policy "conversations insert" on public.conversations
   for insert to authenticated
   with check (created_by = auth.uid());
@@ -138,7 +151,7 @@ drop policy if exists "participants insert" on public.conversation_participants;
 
 create policy "participants read" on public.conversation_participants
   for select to authenticated
-  using (public.is_conversation_member(conversation_id));
+  using (private.is_conversation_member(conversation_id));
 create policy "participants insert" on public.conversation_participants
   for insert to authenticated
   with check (exists (
@@ -154,10 +167,10 @@ drop policy if exists "messages delete" on public.messages;
 
 create policy "messages read" on public.messages
   for select to authenticated
-  using (public.is_conversation_member(conversation_id));
+  using (private.is_conversation_member(conversation_id));
 create policy "messages insert" on public.messages
   for insert to authenticated
-  with check (user_id = auth.uid() and public.is_conversation_member(conversation_id));
+  with check (user_id = auth.uid() and private.is_conversation_member(conversation_id));
 create policy "messages delete" on public.messages
   for delete to authenticated
   using (user_id = auth.uid());

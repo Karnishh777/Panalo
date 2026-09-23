@@ -145,7 +145,7 @@ create trigger trg_rate_limit_call_invites
 -- function that takes an exact name and returns at most one row.
 
 -- SECURITY DEFINER so it does not recurse through the policy that uses it.
-create or replace function public.shares_conversation_with(other uuid)
+create or replace function private.shares_conversation_with(other uuid)
 returns boolean
 language sql
 security definer
@@ -167,7 +167,7 @@ create policy "profiles read" on public.profiles
   for select to authenticated
   using (
     id = auth.uid()
-    or public.shares_conversation_with(id)
+    or private.shares_conversation_with(id)
   );
 
 -- Exact match, case-insensitive, at most one row, no wildcard or pattern
@@ -187,11 +187,11 @@ as $$
   limit 1;
 $$;
 
-revoke execute on function public.shares_conversation_with(uuid)  from public, anon, authenticated;
+revoke execute on function private.shares_conversation_with(uuid)  from public, anon, authenticated;
 revoke execute on function public.find_profile_by_username(text)  from public, anon, authenticated;
 -- Policies evaluate as the querying role, so this one has to be granted back
 -- or every profile read fails.
-grant execute on function public.shares_conversation_with(uuid) to authenticated;
+grant execute on function private.shares_conversation_with(uuid) to authenticated;
 -- Signed-in only: a signed-out visitor has no business resolving names.
 grant execute on function public.find_profile_by_username(text) to authenticated;
 
