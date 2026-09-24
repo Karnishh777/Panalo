@@ -1,4 +1,5 @@
 import { SUPABASE_URL, SUPABASE_KEY, REMEMBER_KEY } from "./config.js";
+import { cleanUsername } from "./util.js";
 
 // "Keep me logged in" routes the auth session to localStorage (survives browser
 // restarts) vs sessionStorage (cleared when the tab/browser closes). Default is
@@ -72,7 +73,8 @@ export const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABAS
 //
 // Returns { id, username, public_key } or null.
 export async function findProfileByUsername(name) {
-  const trimmed = String(name || "").trim();
+  // "@ishana1318" is how people write a name; the @ is not part of it.
+  const trimmed = cleanUsername(name);
   if (!trimmed) return null;
   const { data, error } = await supabaseClient.rpc("find_profile_by_username", { name: trimmed });
   if (error) throw error;

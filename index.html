@@ -81,7 +81,14 @@
     <div class="sidebar">
       <div class="sidebar-header">
         <div style="display:flex; align-items:center; gap:8px;">
-          <img src="logo.svg" width="24" height="24" style="border-radius:6px;">
+          <!-- Inline rather than logo.svg so the mark takes the accent colour
+               chosen in Settings; an <img> can't see CSS variables and stayed
+               brown whatever colour the rest of the app was. -->
+          <svg class="brand-mark" width="24" height="24" viewBox="0 0 140 140" aria-hidden="true">
+            <rect width="140" height="140" rx="32" style="fill: var(--primary)"/>
+            <path d="M35 55 Q35 40 50 40 L90 40 Q105 40 105 55 L105 85 Q105 100 90 100 L60 100 L42 116 L45 100 L50 100 Q35 100 35 85 Z" fill="#fbf5eb"/>
+            <path d="M55 70 L67 82 L90 56" fill="none" style="stroke: var(--primary)" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
           <h2 id="my-profile-name">My Chats</h2>
         </div>
       </div>
@@ -305,7 +312,11 @@
     <div class="modal-content">
       <h3 id="group-modal-title">Create Group Chat</h3>
       <input type="text" id="group-name-input" placeholder="Group Name" aria-label="Group name" />
-      <input type="text" id="group-members-input" placeholder="Member Usernames (comma separated)" aria-label="Member usernames, comma separated" />
+      <div id="group-members-picker" class="member-picker">
+        <div class="member-chips" aria-live="polite"></div>
+        <input type="text" id="group-members-input" placeholder="Add people by username" aria-label="Add people by username" aria-describedby="group-members-hint" autocomplete="off" autocapitalize="off" spellcheck="false" />
+      </div>
+      <p id="group-members-hint" class="member-picker-hint">Type a username and press Enter. You can add more after.</p>
       <div class="modal-buttons">
         <button id="create-group-btn">Create Group</button>
         <button id="close-group-modal" class="secondary-btn">Cancel</button>

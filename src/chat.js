@@ -1,8 +1,10 @@
 // Conversations, messages, sending, and realtime.
 import { supabaseClient, findProfileByUsername } from "./client.js";
 import { state } from "./state.js";
-import { el, showToast, withBusy, getAvatarColor, safeImageUrl, scrollToBottom, compressImage, announce, setAvatar, formatTime, haptic, hueFor, attachRipples, mapLimited } from "./util.js";
-import { getConversationKey, provisionConversationKey, ensureConversationKey, messagePlaintext } from "./encryption.js";
+import { el, showToast, withBusy, getAvatarColor, safeImageUrl, scrollToBottom, compressImage, announce, setAvatar, formatTime, haptic, attachRipples, mapLimited, cleanUsername } from "./util.js";
+import { getConversationKey, provisionConversationKey, ensureConversationKey, messagePlaintext, keyForSending } from "./encryption.js";
+import { SEND } from "./sendpolicy.js";
+import { createMemberPicker } from "./memberpicker.js";
 import { uploadEncrypted, loadEncrypted, isEncryptedAttachment, isImageEntry, primeAttachmentCache, clearAttachmentCache, deleteAttachment } from "./attachments.js";
 import { MESSAGES_PAGE_SIZE, THEME_PRESETS, FONT_PRESETS, MAX_FILE_BYTES } from "./config.js";
 import { isOnline, setPresenceListener } from "./presence.js";
@@ -56,6 +58,8 @@ let currentMemberNameList = [];
 let lastOtherMessageAt = null;
 // The message we're currently replying to, if any.
 let replyTarget = null;
+// People chosen for a new group, as chips (src/memberpicker.js).
+let groupPicker = null;
 
 // Look a message up on screen first, then fall back to the server (for quoted
 // messages that scrolled out of the loaded page).
@@ -711,17 +715,12 @@ async function openConversation(conv) {
   void activeChatWindow.offsetWidth;
   activeChatWindow.classList.add("chat-enter");
 
-  // Per-chat mood colour. Seed on the peer's user id for direct chats and on
-  // the conversation id for groups — same peer always picks up the same
-  // accent, so every friend feels visually distinct without needing anything
-  // stored per-chat. The chat pane exposes it as --chat-accent; CSS uses it
-  // for the header title color and (via a derived gradient) the outgoing
-  // bubble fill. Dark, moderate saturation keeps it legible on a white card.
-  const hue = hueFor(conv.type === "direct" && conv.otherUserId ? conv.otherUserId : conv.id);
-  const accent = `hsl(${hue} 38% 32%)`;
-  activeChatWindow.style.setProperty("--chat-accent-h", hue);
-  activeChatWindow.style.setProperty("--chat-accent", accent);
-  activeChatWindow.style.setProperty("--chat-accent-grad", `linear-gradient(135deg, ${accent}, color-mix(in srgb, ${accent} 55%, white))`);
+  // There used to be a per-chat "mood colour" here: a hue hashed from the
+  // peer's id, set inline on the chat pane. Inline beats everything, so it
+  // silently overrode both the accent chosen in Settings and the chat's own
+  // theme from the palette button -- your bubbles came out olive green in a
+  // chat themed Ember, and changing the colour appeared to do nothing. The
+  // bubble and header now follow the chat theme, then the app accent.
 
   // Skeleton messages while we wait for the real ones. Keeps the pane alive
   // instead of flashing empty.
@@ -839,7 +838,7 @@ async function findExistingDirect(targetUserId) {
 
 async function createDirect() {
   const usernameField = document.getElementById("direct-username");
-  const username = usernameField.value.trim();
+  const username = cleanUsername(usernameField.value);
   if (!username) return;
 
   if (username.toLowerCase() === state.currentUsername.toLowerCase()) {
@@ -899,34 +898,23 @@ async function createDirect() {
 
 async function createGroup() {
   const nameField = document.getElementById("group-name-input");
-  const membersField = document.getElementById("group-members-input");
   const groupName = nameField.value.trim();
-  const usernamesInput = membersField.value.trim();
 
   if (!groupName) {
-    showToast("Please enter a group name.");
+    showToast("Give the group a name first.");
+    nameField.focus();
     return;
   }
 
-  const usernames = usernamesInput.split(",").map((u) => u.trim()).filter((u) => u.length > 0);
-
-  let foundProfiles = [];
-  if (usernames.length) {
-    // One exact lookup per name rather than a bulk `in (...)` query, because
-    // bulk lookup is precisely the capability that made the whole user list
-    // enumerable. Capped concurrency keeps a long paste from opening a
-    // request per name at once.
-    let resolved;
-    try {
-      resolved = await mapLimited(usernames, 5, (u) => findProfileByUsername(u));
-    } catch {
-      showToast("Could not look up members.");
-      return;
-    }
-    foundProfiles = resolved.filter(Boolean);
-
-    const missing = usernames.filter((u, i) => !resolved[i]);
-    if (missing.length) showToast(`Not found: ${missing.join(", ")}`, "");
+  // Each person was looked up as their chip was added (src/memberpicker.js),
+  // one exact name at a time -- bulk lookup is precisely the capability that
+  // made the whole user list enumerable. A name still sitting in the box is
+  // resolved now; if it can't be, nothing is created, rather than creating
+  // the group without them and apologising afterwards as this used to.
+  const foundProfiles = await groupPicker.finish();
+  if (!foundProfiles) {
+    document.getElementById("group-members-input").focus();
+    return;
   }
 
   const { data: newConv, error: convError } = await supabaseClient
@@ -953,7 +941,7 @@ async function createGroup() {
 
   groupModal.classList.add("hidden");
   nameField.value = "";
-  membersField.value = "";
+  groupPicker.reset();
   await fetchConversations();
 }
 
@@ -1659,11 +1647,18 @@ async function saveEdit() {
     return;
   }
 
+  // The third door to the same hole: an edit made without the key used to
+  // overwrite an encrypted message with plaintext. Same rule as sending.
+  const plan = await keyForSending(msg.conversation_id);
+  if (plan.mode === SEND.REFUSE) {
+    showToast(plan.locked ? "Unlock your messages to edit." : "Can't edit: this device doesn't have this chat's key.");
+    return;
+  }
+
   let content = newText;
   let iv = null;
-  const convKey = await getConversationKey(msg.conversation_id);
-  if (convKey) {
-    const enc = await window.PanaloCrypto.encryptMessage(newText, convKey);
+  if (plan.key) {
+    const enc = await window.PanaloCrypto.encryptMessage(newText, plan.key);
     content = enc.ciphertext;
     iv = enc.iv;
   }
@@ -1701,15 +1696,20 @@ async function saveEdit() {
 async function forwardMessage(msg, targetConvId) {
   const plain = msg.file_url && !msg.content ? "" : await messagePlaintext(msg);
 
+  // Same rule as sending: a chat whose key this device lacks gets nothing,
+  // not a plaintext copy. See src/sendpolicy.js.
+  const plan = await keyForSending(targetConvId);
+  if (plan.mode === SEND.REFUSE) {
+    showToast(plan.locked ? "Unlock your messages to forward." : "Can't forward there: this device doesn't have that chat's key.");
+    return false;
+  }
+
   let content = plain;
   let iv = null;
-  if (plain) {
-    const key = await getConversationKey(targetConvId);
-    if (key) {
-      const enc = await window.PanaloCrypto.encryptMessage(plain, key);
-      content = enc.ciphertext;
-      iv = enc.iv;
-    }
+  if (plain && plan.key) {
+    const enc = await window.PanaloCrypto.encryptMessage(plain, plan.key);
+    content = enc.ciphertext;
+    iv = enc.iv;
   }
 
   const { error } = await supabaseClient.from("messages").insert([
@@ -1914,6 +1914,18 @@ async function sendMessage(content, file, convId, replyToId = null, clientId = n
   scrollToBottom();
 
   try {
+    // Decided once, before anything leaves the device. This used to fall
+    // back to plaintext whenever there was no key -- including in encrypted
+    // chats where this device just lacked its copy. See src/sendpolicy.js.
+    const plan = await keyForSending(convId, convId === state.currentConversationId ? currentMemberIds : undefined);
+    if (plan.mode === SEND.REFUSE) {
+      return markSendFailed(
+        tempId,
+        plan.locked ? "Not sent: unlock your messages first" : "Not sent: this device doesn't have this chat's key",
+        retry
+      );
+    }
+
     let fileUrl = null;
     if (file) {
       if (file.size > MAX_FILE_BYTES) return markSendFailed(tempId, "File too large (max 50 MB)", retry);
@@ -1921,7 +1933,7 @@ async function sendMessage(content, file, convId, replyToId = null, clientId = n
       // impossible, and shipping a 12 MP original costs the recipient just as
       // much whether or not it's encrypted.
       const toUpload = file.type.startsWith("image/") ? await compressImage(file) : file;
-      const attachmentKey = await getConversationKey(convId);
+      const attachmentKey = plan.key;
 
       if (attachmentKey) {
         try {
@@ -1952,13 +1964,10 @@ async function sendMessage(content, file, convId, replyToId = null, clientId = n
 
     let storedContent = content;
     let storedIv = null;
-    if (content) {
-      const convKey = await getConversationKey(convId);
-      if (convKey) {
-        const encrypted = await window.PanaloCrypto.encryptMessage(content, convKey);
-        storedContent = encrypted.ciphertext;
-        storedIv = encrypted.iv;
-      }
+    if (content && plan.key) {
+      const encrypted = await window.PanaloCrypto.encryptMessage(content, plan.key);
+      storedContent = encrypted.ciphertext;
+      storedIv = encrypted.iv;
     }
 
     const row = {
@@ -2472,7 +2481,15 @@ export function initChatUI() {
     document.getElementById("group-name-input").focus();
   });
   document.getElementById("close-direct-modal").addEventListener("click", () => directModal.classList.add("hidden"));
-  document.getElementById("close-group-modal").addEventListener("click", () => groupModal.classList.add("hidden"));
+  document.getElementById("close-group-modal").addEventListener("click", () => {
+    groupModal.classList.add("hidden");
+    groupPicker.reset();
+  });
+  groupPicker = createMemberPicker({
+    root: document.getElementById("group-members-picker"),
+    input: document.getElementById("group-members-input"),
+    hint: document.getElementById("group-members-hint"),
+  });
 
   // Focus mode: hide the rail + list + ambient, and give back a floating
   // control to pop the chat list out again.

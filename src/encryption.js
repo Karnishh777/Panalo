@@ -4,6 +4,7 @@
 // part is unavailable, callers fall back to plaintext so messaging never breaks.
 import { supabaseClient } from "./client.js";
 import { state, conversationKeys } from "./state.js";
+import { sendMode } from "./sendpolicy.js";
 
 export function encryptionReady() {
   return !!(state.myPrivateKey && state.myPublicKeyB64 && window.PanaloCrypto && window.PanaloCrypto.isSupported());
@@ -255,7 +256,9 @@ async function provisionKeyFor(conversationId, memberIds) {
   const members = profs || [];
   // Any member without a public key could never unwrap this, so the chat
   // stays plaintext rather than locking someone out of it.
-  if (members.length < memberIds.length || members.some((p) => !p.public_key)) return null;
+  if (members.length < memberIds.length || members.some((p) => !p.public_key)) {
+    return { key: null, reason: "member-without-key" };
+  }
 
   const convKey = await window.PanaloCrypto.generateConversationKey();
   const rows = [];
@@ -273,11 +276,11 @@ async function provisionKeyFor(conversationId, memberIds) {
     // Lost the race, or the write failed. Either way the key just generated
     // is worthless -- never cache it. Re-read whatever is actually stored.
     conversationKeys.delete(conversationId);
-    return await getConversationKey(conversationId);
+    return { key: await getConversationKey(conversationId), reason: "held-elsewhere" };
   }
 
   conversationKeys.set(conversationId, convKey);
-  return convKey;
+  return { key: convKey, reason: "provisioned" };
 }
 
 // Warm the key cache for many conversations at once.
@@ -341,10 +344,10 @@ export async function provisionConversationKey(conversationId, memberIds) {
 // caller can say something the first time it changes, rather than silently
 // altering how a chat is protected.
 export async function ensureConversationKey(conversationId, memberIds) {
-  if (!encryptionReady()) return { key: null, backfilled: false };
+  if (!encryptionReady()) return { key: null, backfilled: false, reason: "not-ready" };
   try {
     const existing = await getConversationKey(conversationId);
-    if (existing) return { key: existing, backfilled: false };
+    if (existing) return { key: existing, backfilled: false, reason: "existing" };
 
     let ids = memberIds;
     if (!ids || !ids.length) {
@@ -354,14 +357,61 @@ export async function ensureConversationKey(conversationId, memberIds) {
         .eq("conversation_id", conversationId);
       ids = (parts || []).map((p) => p.user_id);
     }
-    if (!ids.length) return { key: null, backfilled: false };
+    if (!ids.length) return { key: null, backfilled: false, reason: "no-members" };
 
-    const key = await provisionKeyFor(conversationId, ids);
-    return { key, backfilled: !!key };
+    // "Backfilled" only when THIS device made the key. Losing the race to
+    // another member and adopting theirs used to count too, which toasted
+    // "encrypted from now on" for a chat that already was.
+    const { key, reason } = await provisionKeyFor(conversationId, ids);
+    return { key, backfilled: reason === "provisioned", reason };
   } catch (e) {
     console.error("Could not backfill conversation encryption:", e);
-    return { key: null, backfilled: false };
+    return { key: null, backfilled: false, reason: "error" };
   }
+}
+
+// Whether any message in this conversation was ever sent encrypted. A chat
+// with none has never had a key anyone used; a chat with some has a key,
+// whether or not this device holds it.
+async function hasEncryptedMessages(conversationId) {
+  const { data, error } = await supabaseClient
+    .from("messages")
+    .select("id")
+    .eq("conversation_id", conversationId)
+    .not("iv", "is", null)
+    .limit(1);
+  // Unknown counts as yes: the answer only ever decides between refusing and
+  // sending plaintext, and refusing is the direction that can be retried.
+  if (error) return true;
+  return !!(data && data.length);
+}
+
+// The key to send with, and whether sending is allowed at all -- decided by
+// sendMode() (src/sendpolicy.js), never by the mere absence of a key. See that
+// file for why the old "no key, so plaintext" fallback was dangerous.
+//
+// Returns { key, mode, locked }: `locked` is true when the refusal is because
+// this device's private key is not unlocked, which needs different words than
+// a chat whose key this device was never given.
+export async function keyForSending(conversationId, memberIds) {
+  const cryptoSupported = !!(window.PanaloCrypto && window.PanaloCrypto.isSupported());
+  const hasPrivateKey = !!state.myPrivateKey;
+
+  let key = hasPrivateKey ? await getConversationKey(conversationId) : null;
+  let missingMemberKeys = false;
+  let hasEncryptedHistory = false;
+
+  if (!key && cryptoSupported && hasPrivateKey) {
+    // The same repair openConversation() attempts: give a never-encrypted
+    // chat a key if everyone in it can now hold one.
+    const repaired = await ensureConversationKey(conversationId, memberIds);
+    key = repaired.key;
+    missingMemberKeys = repaired.reason === "member-without-key";
+    if (!key && missingMemberKeys) hasEncryptedHistory = await hasEncryptedMessages(conversationId);
+  }
+
+  const mode = sendMode({ hasKey: !!key, cryptoSupported, hasPrivateKey, missingMemberKeys, hasEncryptedHistory });
+  return { key, mode, locked: cryptoSupported && !hasPrivateKey };
 }
 
 // Resolve a message row to displayable plaintext (handles legacy unencrypted rows).

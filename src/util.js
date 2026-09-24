@@ -94,6 +94,15 @@ export async function mapLimited(items, limit, task) {
   return results;
 }
 
+// A username as typed, reduced to the name itself. People write "@ishana1318"
+// because that is how names are written everywhere else, including in this
+// app's own @mentions -- and the lookup was being handed the @ literally, so
+// the person came back "not found". Only LEADING @s go: one inside a name is
+// part of it.
+export function cleanUsername(raw) {
+  return String(raw ?? "").trim().replace(/^@+/, "").trim();
+}
+
 // Deterministic hue [0-360) for any string — used to give each chat its own
 // mood colour without needing anything stored per-chat. Same peer always
 // picks up the same accent, so the visual identity stays stable across

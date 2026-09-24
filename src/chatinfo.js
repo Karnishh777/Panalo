@@ -269,22 +269,38 @@ async function addMember(conv) {
   }
 
   // Wrap the existing conversation key for the new member so they can read
-  // the chat. Skipped silently for plaintext (pre-encryption) chats.
+  // the chat. Skipped for plaintext (pre-encryption) chats.
+  //
+  // A failure here used to be swallowed by an empty catch, leaving someone in
+  // an encrypted group with no key: unable to read anything, and -- before
+  // sendpolicy.js -- sending plaintext into it. Their sends now refuse
+  // instead, which is safe but leaves them stuck, so the person adding them
+  // has to hear about it while they can still do something.
+  let keyShared = true;
   try {
     const key = await getConversationKey(conv.id);
     if (key && target.public_key && window.PanaloCrypto) {
       const pub = await window.PanaloCrypto.importPublicKey(target.public_key);
       const wrapped = await window.PanaloCrypto.wrapConversationKey(key, pub);
-      await supabaseClient.from("conversation_keys").insert([
+      const { error } = await supabaseClient.from("conversation_keys").insert([
         { conversation_id: conv.id, user_id: target.id, wrapped_key: wrapped },
       ]);
+      if (error && !/duplicate/i.test(error.message)) keyShared = false;
+    } else if (key && !target.public_key) {
+      keyShared = false; // they have never set up encryption
     }
-  } catch {
-    /* chat stays readable for existing members either way */
+  } catch (e) {
+    console.error("Could not share the chat key with the new member:", e);
+    keyShared = false;
   }
 
   input.value = "";
-  showToast(`${target.username} added 🎉`, "success");
+  showToast(
+    keyShared
+      ? `${target.username} added 🎉`
+      : `${target.username} was added, but can't read or send messages here yet: sharing this chat's key with them failed.`,
+    keyShared ? "success" : ""
+  );
   renderMembers(conv);
 }
 
@@ -455,8 +471,12 @@ export async function openChatInfo() {
     // provisionConversationKey(), which returns silently if any member is
     // missing a public key. Age has nothing to do with it, and the state
     // never repairs itself, so say what is actually true.
+    // "Photos and files are not" was true once and stopped being true when
+    // attachments started being encrypted with the chat key -- so the app was
+    // understating its own protection. Names, avatars, who is in the chat and
+    // when messages were sent are still visible to the server; say so.
     encEl.textContent = k
-      ? "Message text in this chat is encrypted. Photos and files are not."
+      ? "Messages, photos and files in this chat are encrypted. Who is in it, and when messages are sent, are not."
       : "This chat isn't encrypted — it was created before everyone in it had keys set up.";
   });
 

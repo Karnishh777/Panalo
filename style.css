@@ -4402,10 +4402,10 @@ body.app-locked #auth-screen {
    UI overhaul G — per-chat mood colour
    ============================================================ */
 
-/* --chat-accent is set on #active-chat-window by JS from a deterministic
-   hash of the peer's id, so different friends visually feel different.
-   Falls back to the app primary when nothing is set. A dark, legible tone
-   (used for text); its own gradient is derived the same way as --grad. */
+/* --chat-accent used to be set inline by JS from a hash of the peer's id.
+   Inline won over both the Settings accent and the chat's own theme, so
+   changing the colour appeared to do nothing and bubbles came out in an
+   unrelated hue. It now simply follows the chat theme, then the app accent. */
 #active-chat-window {
   --chat-accent: var(--primary);
   --chat-accent-grad: var(--grad);
@@ -4487,5 +4487,107 @@ body.app-locked #auth-screen {
 .primary-btn > * {
   position: relative;
   z-index: 2;
+}
+
+/* ============================================================
+   Member picker — people as chips, not a comma-separated list
+   ============================================================ */
+
+/* Looks like the other modal inputs (surface-2, 14px radius, primary ring on
+   focus) but holds chips and a borderless input that grows into the space
+   left on the line. */
+.member-picker {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 9px;
+  margin-bottom: 6px;
+  min-height: 48px;
+  border: 1px solid transparent;
+  border-radius: 14px;
+  background: var(--surface-2);
+  cursor: text;
+  transition: border 0.2s, background 0.2s;
+}
+.member-picker:focus-within {
+  border-color: var(--primary);
+  background: color-mix(in srgb, var(--primary) 8%, transparent);
+}
+.member-chips {
+  display: contents;
+}
+.member-picker input {
+  flex: 1 1 140px;
+  min-width: 0;
+  width: auto;
+  margin: 0;
+  padding: 6px 4px;
+  border: 0;
+  background: transparent;
+}
+/* The whole picker shows the focus ring (:focus-within above); a second one
+   on the inner input drew a ring inside a ring. */
+.member-picker input:focus,
+.member-picker input:focus-visible {
+  border: 0;
+  background: transparent;
+  outline: none;
+  box-shadow: none;
+}
+.member-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  max-width: 100%;
+  padding: 3px 4px 3px 3px;
+  border-radius: 999px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  font-size: 14px;
+  color: var(--text);
+  animation: fadeSlideUp 0.15s ease;
+}
+.member-chip-avatar {
+  width: 24px;
+  height: 24px;
+  font-size: 11px;
+  flex: none;
+}
+.member-chip-name {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.member-chip-remove {
+  display: inline-grid;
+  place-items: center;
+  width: 22px;
+  height: 22px;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: transparent;
+  color: var(--text-muted);
+  cursor: pointer;
+}
+.member-chip-remove:hover,
+.member-chip-remove:focus-visible {
+  background: color-mix(in srgb, var(--primary) 14%, transparent);
+  color: var(--primary);
+  outline: none;
+}
+.member-picker-hint {
+  margin: 0 2px 14px;
+  font-size: 12.5px;
+  line-height: 1.4;
+  color: var(--text-faint);
+  text-align: left;
+}
+.member-picker-hint.error {
+  color: var(--danger, #c2431f);
+}
+@media (prefers-reduced-motion: reduce) {
+  .member-chip { animation: none; }
 }
 
