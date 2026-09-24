@@ -5,6 +5,7 @@
 import { supabaseClient } from "./client.js";
 import { state, conversationKeys } from "./state.js";
 import { sendMode } from "./sendpolicy.js";
+import { KEY_PROBLEM, lockedPreview } from "./keystatus.js";
 
 export function encryptionReady() {
   return !!(state.myPrivateKey && state.myPublicKeyB64 && window.PanaloCrypto && window.PanaloCrypto.isSupported());
@@ -189,6 +190,7 @@ export async function regenerateKeypair(password) {
     await idbSetKey(state.currentUser.id, state.myPrivateKey);
     // Old wrapped conversation keys are useless with the new private key.
     conversationKeys.clear();
+    keyProblems.clear();
     return "ready";
   } catch (e) {
     console.error("Could not regenerate keypair:", e);
@@ -216,6 +218,29 @@ export async function rewrapPrivateKey(newPassword) {
 }
 
 // Get (and cache) the AES key for a conversation by unwrapping our stored copy.
+// Why getConversationKey() last came back empty, per conversation. It returns
+// null for two very different reasons -- no copy of the key, or a copy this
+// account can no longer open -- and the person staring at an unreadable chat
+// needs to know which. See src/keystatus.js.
+const keyProblems = new Map(); // conversationId -> KEY_PROBLEM.MISSING | KEY_PROBLEM.STALE
+
+export function keyProblemFor(conversationId) {
+  if (!state.myPrivateKey) return KEY_PROBLEM.LOCKED;
+  return keyProblems.get(conversationId) || KEY_PROBLEM.MISSING;
+}
+
+// Forget what we concluded, so the next read asks the server again -- after
+// someone shares the key, for instance.
+export function forgetConversationKey(conversationId) {
+  conversationKeys.delete(conversationId);
+  keyProblems.delete(conversationId);
+}
+
+// On logout: the next account on this device starts with no conclusions.
+export function clearKeyProblems() {
+  keyProblems.clear();
+}
+
 export async function getConversationKey(conversationId) {
   if (conversationKeys.has(conversationId)) return conversationKeys.get(conversationId);
   if (!state.myPrivateKey) return null;
@@ -225,12 +250,17 @@ export async function getConversationKey(conversationId) {
     .eq("conversation_id", conversationId)
     .eq("user_id", state.currentUser.id)
     .maybeSingle();
-  if (!data) return null;
+  if (!data) {
+    keyProblems.set(conversationId, KEY_PROBLEM.MISSING);
+    return null;
+  }
   try {
     const key = await window.PanaloCrypto.unwrapConversationKey(data.wrapped_key, state.myPrivateKey);
     conversationKeys.set(conversationId, key);
+    keyProblems.delete(conversationId);
     return key;
   } catch {
+    keyProblems.set(conversationId, KEY_PROBLEM.STALE);
     return null;
   }
 }
@@ -315,6 +345,7 @@ export async function prefetchConversationKeys(conversationIds) {
     } catch {
       // A key we can't unwrap is left absent, so the caller falls back to
       // showing the message as locked rather than caching a broken entry.
+      keyProblems.set(row.conversation_id, KEY_PROBLEM.STALE);
     }
   }
 }
@@ -419,7 +450,7 @@ export async function messagePlaintext(msg) {
   if (!msg.content) return "";
   if (!msg.iv) return msg.content; // legacy / unencrypted message
   const convKey = await getConversationKey(msg.conversation_id);
-  if (!convKey) return "🔒 Encrypted — unlock to read";
+  if (!convKey) return lockedPreview(keyProblemFor(msg.conversation_id));
   try {
     return await window.PanaloCrypto.decryptMessage(msg.content, msg.iv, convKey);
   } catch {

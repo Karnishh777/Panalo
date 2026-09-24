@@ -2,7 +2,7 @@
 import { supabaseClient, setRemember } from "./client.js";
 import { state, conversationKeys } from "./state.js";
 import { withBusy, showToast, redirectUrl } from "./util.js";
-import { ensureUserKeys, idbDelKey, idbGetKey, rewrapPrivateKey, regenerateKeypair } from "./encryption.js";
+import { ensureUserKeys, idbDelKey, idbGetKey, rewrapPrivateKey, regenerateKeypair, clearKeyProblems } from "./encryption.js";
 import { clearAttachmentCache } from "./attachments.js";
 import { clearPersistedIndex } from "./search.js";
 import { fetchConversations } from "./chat.js";
@@ -278,6 +278,7 @@ export function initAuth() {
     // and must never be inherited by the next account on this device.
     await clearPersistedIndex();
     conversationKeys.clear();
+    clearKeyProblems();
     await supabaseClient.auth.signOut();
     state.currentUser = null;
     state.currentUsername = "";

@@ -20,8 +20,9 @@ import { forgetMemory } from "./memories.js";
 import { forgetReadState } from "./unread.js";
 import { pendingFor, cancelSnooze } from "./snooze.js";
 import { conversationKeys } from "./state.js";
+import { TIMERS, normalizeTimer, timerLabel } from "./disappear.js";
 
-let cb = {}; // { onListChanged, onTitleChanged, onOpenTheme, onLeftChat, onWallpaperChanged }
+let cb = {}; // { onListChanged, onTitleChanged, onOpenTheme, onLeftChat, onWallpaperChanged, onTimerChanged }
 export function setChatInfoCallbacks(callbacks) {
   cb = callbacks;
 }
@@ -70,6 +71,53 @@ function renderFontChips(conv) {
     chip.style.fontFamily = f.stack;
     box.append(chip);
   });
+}
+
+// Disappearing messages. Unlike the font and wallpaper above, this is not
+// personal: it changes what happens to everyone's messages, so it is stored
+// on the chat, only group admins may change it in a group (the same rule as
+// renaming one), and changing it leaves a notice in the chat.
+function renderTimerChips(conv) {
+  const box = document.getElementById("info-timer-chips");
+  const note = document.getElementById("info-timer-note");
+  const current = normalizeTimer(conv.disappear_after);
+  box.replaceChildren(
+    ...TIMERS.map((t) =>
+      el("button", {
+        class: `info-chip${t.value === current ? " selected" : ""}`,
+        type: "button",
+        role: "radio",
+        "aria-checked": String(t.value === current),
+        text: t.label,
+        onClick: () => setTimer(conv, t.value),
+      })
+    )
+  );
+  note.textContent = current
+    ? `New messages disappear ${timerLabel(current)} after they're sent. Anyone can still copy or screenshot them before then.`
+    : "Messages stay until someone deletes them.";
+}
+
+async function setTimer(conv, value) {
+  if (normalizeTimer(conv.disappear_after) === value) return;
+  // .select() so an RLS-filtered no-op -- a non-admin in a group -- is
+  // detectable as 0 rows instead of looking like it worked.
+  const { data, error } = await supabaseClient
+    .from("conversations")
+    .update({ disappear_after: value })
+    .eq("id", conv.id)
+    .select("id");
+  if (error && /disappear_after/i.test(error.message)) {
+    showToast("Run supabase-phase15.sql to enable disappearing messages.");
+    return;
+  }
+  if (error || !data || !data.length) {
+    showToast(conv.type === "group" ? "Only group admins can change this." : "Couldn't change the timer.");
+    return;
+  }
+  conv.disappear_after = value;
+  renderTimerChips(conv);
+  cb.onTimerChanged?.(conv, value);
 }
 
 // Per-chat wallpaper — personal, so each conversation can look different
@@ -458,6 +506,7 @@ export async function openChatInfo() {
   }
 
   refreshChips(conv);
+  renderTimerChips(conv);
   renderFontChips(conv);
   renderWallpaperChips(conv);
   renderFolderChips(conv);

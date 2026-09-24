@@ -936,14 +936,6 @@ button:active {
   line-height: 1.45;
 }
 
-.chat-image {
-  max-width: 100%;
-  max-height: 260px;
-  border-radius: 14px;
-  margin-top: 6px;
-  display: block;
-}
-
 .message-footer {
   display: flex;
   justify-content: space-between;
@@ -1052,51 +1044,6 @@ button:active {
   width: 44px;
   height: 44px;
   flex-shrink: 0;
-}
-
-.file-preview-bar {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  background: var(--panel-bg);
-  border-top: 1px solid var(--border);
-  padding: 8px 14px;
-}
-
-.file-preview-thumb {
-  width: 42px;
-  height: 42px;
-  border-radius: 10px;
-  object-fit: cover;
-  flex-shrink: 0;
-}
-
-.file-preview-name {
-  flex: 1;
-  font-size: 13px;
-  color: var(--text-muted);
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.file-preview-remove {
-  width: auto;
-  padding: 5px 10px;
-  border-radius: 10px;
-  background: var(--surface-2);
-  color: var(--text);
-  font-size: 13px;
-}
-
-.file-preview-remove:hover {
-  background: var(--surface-3);
-  transform: none;
-  box-shadow: none;
-}
-
-.chat-image {
-  cursor: zoom-in;
 }
 
 /* Full-screen image viewer */
@@ -1961,55 +1908,6 @@ a.mini-btn:hover {
 }
 
 /* ---- File bubbles (non-image attachments) ---- */
-.file-bubble {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  background: rgba(0, 0, 0, 0.18);
-  border-radius: 14px;
-  padding: 10px 12px;
-  margin-top: 6px;
-  max-width: 280px;
-}
-
-.file-bubble-icon {
-  font-size: 26px;
-  flex-shrink: 0;
-}
-
-.file-bubble-meta {
-  min-width: 0;
-  flex: 1;
-}
-
-.file-bubble-name {
-  font-size: 13px;
-  font-weight: 600;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.file-bubble-size {
-  font-size: 11px;
-  color: var(--text-faint);
-}
-
-.message.my-message .file-bubble-size {
-  color: rgba(255, 255, 255, 0.7);
-}
-
-.file-download-btn {
-  width: 34px;
-  height: 34px;
-  padding: 0;
-  border-radius: 50%;
-  background: var(--surface-2);
-  color: var(--text);
-  font-size: 15px;
-  flex-shrink: 0;
-}
-
 /* ---- Starred messages view (in the sidebar list) ---- */
 .star-item {
   display: flex;
@@ -2289,7 +2187,6 @@ a.mini-btn:hover {
   .focus-ctl,
   .back-btn,
   .msg-menu-btn,
-  .file-download-btn,
   .reply-cancel,
   .alert-close,
   .member-remove,
@@ -2311,7 +2208,6 @@ a.mini-btn:hover {
 .call-btn,
 .back-btn,
 .msg-menu-btn,
-.file-download-btn,
 .reply-cancel,
 .alert-close,
 #file-btn,
@@ -2415,15 +2311,6 @@ a.mini-btn:hover {
 .conv-pin {
   display: inline-flex;
   color: var(--text-faint);
-}
-
-.file-bubble-icon {
-  display: flex;
-  color: var(--primary);
-}
-
-.message.my-message .file-bubble-icon {
-  color: #fff;
 }
 
 /* Send button keeps its label on desktop, icon-only when tight */
@@ -3017,50 +2904,6 @@ body.focus-mode #fx-canvas {
   background: var(--surface-3);
   transform: none;
   box-shadow: none;
-}
-
-/* ---- Progressive image loading ---- */
-.image-frame {
-  margin-top: 6px;
-  border-radius: 14px;
-  overflow: hidden;
-  position: relative;
-}
-
-.image-frame.loading {
-  min-height: 140px;
-  min-width: 180px;
-  background: linear-gradient(100deg, var(--surface-2) 30%, var(--surface-3) 50%, var(--surface-2) 70%);
-  background-size: 220% 100%;
-  animation: shimmer 1.3s linear infinite;
-}
-
-/* While loading, the image fills the placeholder box. Without this it has no
-   intrinsic size yet, collapses to 0×0, and the browser skips lazy-loading a
-   zero-size image — so it would never load and the shimmer would never clear. */
-.image-frame.loading .chat-image {
-  opacity: 0;
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-}
-
-.image-frame .chat-image {
-  margin-top: 0;
-  opacity: 1;
-  transition: opacity 0.35s ease;
-}
-
-@keyframes shimmer {
-  from { background-position: 140% 0; }
-  to { background-position: -40% 0; }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .image-frame.loading {
-    animation: none;
-  }
 }
 
 /* ============================================================
@@ -4591,3 +4434,384 @@ body.app-locked #auth-screen {
   .member-chip { animation: none; }
 }
 
+
+/* ============================================================
+   Attachments in messages (src/mediabubble.js)
+   ============================================================ */
+/* Photos used to render at whatever width the bubble allowed -- the full
+   width of the chat on a desktop -- and documents were a grey page icon and
+   a byte count. Photos and videos now sit in a bounded frame with the time
+   over them, the way WhatsApp shows them; documents are a card with a
+   coloured badge naming the type. */
+/* Sizes are fixed pixels on purpose. A bubble sizes itself from its content,
+   and a percentage cap does not count while that happens -- a 1200px photo
+   capped at "100%" made its bubble as wide as the chat allowed, with the
+   photo floating in empty colour beside it. */
+.media-frame {
+  position: relative;
+  overflow: hidden;
+  border-radius: 14px;
+  width: fit-content;
+  max-width: var(--media-max);
+  margin: 2px 0 4px;
+  background: color-mix(in srgb, var(--text) 8%, transparent);
+}
+
+.media-frame.loading {
+  width: 240px;
+  height: 180px;
+  background: linear-gradient(100deg, var(--surface-2) 30%, var(--surface-3) 50%, var(--surface-2) 70%);
+  background-size: 220% 100%;
+  animation: shimmer 1.3s linear infinite;
+}
+
+/* While loading, the media fills the placeholder. With no intrinsic size yet
+   it would collapse to 0x0, and the browser skips lazy-loading a zero-size
+   image -- so it would never load and the shimmer would never clear. */
+.media-frame.loading > * {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+}
+
+.media-frame .chat-image,
+.media-frame .chat-video {
+  display: block;
+  max-width: var(--media-max);
+  max-height: 360px;
+  min-width: 120px;
+  object-fit: cover;
+  transition: opacity 0.3s ease;
+}
+
+.media-frame .chat-image {
+  cursor: zoom-in;
+}
+
+.media-frame .chat-video {
+  width: var(--media-max);
+  background: #000;
+}
+
+/* A caption wraps to the photo's width instead of stretching the bubble. */
+.message.has-media {
+  max-width: min(calc(var(--media-max) + 30px), 85%);
+}
+
+/* Narrow by the width of the CHAT PANE, not the window: a desktop window
+   with the sidebar and info drawer open can leave the thread narrower than
+   a phone. */
+#messages-list {
+  container-type: inline-size;
+  --media-max: 330px;
+}
+
+@container (max-width: 430px) {
+  .message {
+    --media-max: 240px;
+  }
+}
+
+/* A photo with no caption: the bubble shrinks to a thin border round the
+   photo and the time sits on the photo itself. */
+.message.has-media:not(:has(> .message-text)) {
+  padding: 4px;
+}
+
+.message.has-media:not(:has(> .message-text)) > .media-frame {
+  margin: 0;
+}
+
+.message.has-media:not(:has(> .message-text)):has(> .media-frame) > .message-author {
+  padding: 2px 8px 0;
+}
+
+.message.has-media:not(:has(> .message-text)):has(> .media-frame .chat-image) > .message-footer {
+  position: absolute;
+  right: 10px;
+  bottom: 10px;
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: rgba(0, 0, 0, 0.45);
+  pointer-events: none;
+}
+
+.message.has-media:not(:has(> .message-text)):has(> .media-frame .chat-image) > .message-footer * {
+  color: #fff;
+}
+
+/* ---- Document card ---- */
+.doc-card {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: min(300px, 100%);
+  padding: 10px;
+  margin: 2px 0 4px;
+  border-radius: 12px;
+  background: color-mix(in srgb, var(--text) 7%, transparent);
+  cursor: pointer;
+  text-align: left;
+}
+
+.message.my-message .doc-card {
+  background: rgba(0, 0, 0, 0.16);
+}
+
+.doc-card:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 2px;
+}
+
+.doc-badge {
+  flex-shrink: 0;
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 48px;
+  border-radius: 6px;
+  background: #6b7280;
+  color: #fff;
+  font-size: 10.5px;
+  font-weight: 800;
+  letter-spacing: 0.02em;
+}
+
+.doc-card.kind-pdf .doc-badge { background: #d93025; }
+.doc-card.kind-doc .doc-badge { background: #2b6cd4; }
+.doc-card.kind-sheet .doc-badge { background: #188038; }
+.doc-card.kind-slides .doc-badge { background: #e37400; }
+.doc-card.kind-archive .doc-badge { background: #7c5a3a; }
+.doc-card.kind-audio .doc-badge { background: #8e44ad; }
+.doc-card.kind-locked .doc-badge { background: var(--surface-3); color: var(--text-muted); }
+.doc-card.kind-locked { cursor: default; }
+
+.doc-meta {
+  min-width: 0;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.doc-name {
+  font-size: 13.5px;
+  font-weight: 600;
+  line-height: 1.3;
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  word-break: break-word;
+}
+
+.doc-sub {
+  font-size: 11.5px;
+  opacity: 0.7;
+}
+
+.doc-download {
+  flex-shrink: 0;
+  width: 36px;
+  height: 36px;
+  padding: 0;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: color-mix(in srgb, var(--text) 10%, transparent);
+  color: inherit;
+}
+
+.message.my-message .doc-download {
+  background: rgba(255, 255, 255, 0.18);
+}
+
+/* ---- Files waiting to be sent (src/attachtray.js) ---- */
+.file-preview-bar {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 10px 14px;
+  border-top: 1px solid var(--border);
+  background: var(--panel-bg);
+}
+
+.tray-tiles {
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  padding-bottom: 2px;
+}
+
+.tray-tile {
+  position: relative;
+  flex-shrink: 0;
+  width: 76px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.tray-thumb,
+.tray-badge {
+  width: 76px;
+  height: 76px;
+  border-radius: 12px;
+}
+
+.tray-thumb {
+  object-fit: cover;
+  display: block;
+}
+
+.tray-badge {
+  display: grid;
+  place-items: center;
+  background: #6b7280;
+  color: #fff;
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.tray-badge.kind-pdf { background: #d93025; }
+.tray-badge.kind-doc { background: #2b6cd4; }
+.tray-badge.kind-sheet { background: #188038; }
+.tray-badge.kind-slides { background: #e37400; }
+.tray-badge.kind-video { background: #111; }
+
+.tray-name {
+  font-size: 11px;
+  color: var(--text-muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.tray-remove {
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  width: 22px;
+  height: 22px;
+  padding: 0;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.6);
+  color: #fff;
+}
+
+.tray-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 12.5px;
+  color: var(--text-muted);
+}
+
+.tray-clear {
+  width: auto;
+  padding: 4px 10px;
+  border-radius: 999px;
+  background: var(--surface-2);
+  color: var(--text);
+  font-size: 12.5px;
+}
+
+.chat-window.drop-target,
+#active-chat-window.drop-target {
+  outline: 2px dashed var(--primary);
+  outline-offset: -8px;
+}
+
+/* ============================================================
+   Notices inside a chat: key requests, timer changes
+   ============================================================ */
+.message.system-note {
+  align-self: center;
+  max-width: min(460px, 92%);
+  padding: 6px 12px;
+  background: color-mix(in srgb, var(--text) 7%, transparent);
+  color: var(--text-muted);
+  border: none;
+  border-radius: 12px;
+  box-shadow: none;
+  text-align: center;
+  font-size: 12.5px;
+}
+
+.message.system-note .message-author,
+.message.system-note .message-footer,
+.message.system-note .msg-menu-btn,
+.message.system-note .reaction-bar {
+  display: none;
+}
+
+.message.system-note .message-text {
+  font-size: 12.5px;
+}
+
+.key-request {
+  display: inline-flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 6px 8px;
+}
+
+.key-request-share,
+.key-banner-btn {
+  width: auto;
+  padding: 5px 12px;
+  border-radius: 999px;
+  background: var(--primary);
+  color: var(--on-primary);
+  font-size: 12.5px;
+  font-weight: 600;
+}
+
+.key-banner-btn.secondary {
+  background: var(--surface-2);
+  color: var(--text);
+}
+
+.key-banner {
+  display: flex;
+  gap: 12px;
+  align-self: stretch;
+  padding: 14px 16px;
+  margin: 2px 0 12px;
+  border-radius: 16px;
+  background: color-mix(in srgb, var(--primary) 10%, transparent);
+  border: 1px solid color-mix(in srgb, var(--primary) 28%, transparent);
+}
+
+.key-banner-icon {
+  color: var(--primary);
+  padding-top: 2px;
+}
+
+.key-banner-text {
+  margin: 0 0 10px;
+  font-size: 13.5px;
+  line-height: 1.45;
+}
+
+.key-banner-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.chat-timer-tag {
+  opacity: 0.85;
+}
+
+.info-note {
+  margin: 8px 0 0;
+  font-size: 12px;
+  line-height: 1.45;
+  color: var(--text-muted);
+}

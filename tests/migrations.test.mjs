@@ -400,8 +400,80 @@ async function historyTests() {
   }
 }
 
+// ---- disappearing messages (phase 15) ---------------------------------------
+
+async function disappearTests() {
+  const db = await freshDb();
+  const alice = await createUser(db, "alice");
+  const bob = await createUser(db, "bob");
+  const carol = await createUser(db, "carol");
+  const dm = await startDirect(db, alice, bob);
+
+  const send = (who, conv, expiresSql = null) =>
+    as(db, who, async (tx) =>
+      (await tx.query(
+        `insert into messages (conversation_id, user_id, username, content, expires_at)
+         values ($1, $2, 'x', 'hi', ${expiresSql || "null"}) returning id, expires_at`,
+        [conv, who]
+      )).rows[0]
+    );
+
+  const plain = await send(alice, dm);
+  ok("without a timer, messages do not expire", plain.expires_at === null);
+
+  const forged = await send(alice, dm, "now() + interval '100 years'");
+  ok("a client cannot choose its own expiry", forged.expires_at === null);
+
+  const silly = await attempt(db, alice, (tx) =>
+    tx.query("update conversations set disappear_after = interval '1 second' where id = $1", [dm])
+  );
+  ok("only the offered timers are accepted", !silly.ok);
+
+  await as(db, bob, (tx) => tx.query("update conversations set disappear_after = interval '7 days' where id = $1", [dm]));
+  const setting = (await db.query("select disappear_after::text as t from conversations where id = $1", [dm])).rows[0].t;
+  ok("either person in a 1:1 chat can set the timer", setting === "7 days", setting);
+
+  const timed = await send(alice, dm);
+  const days = (new Date(timed.expires_at) - Date.now()) / 86400000;
+  ok("the database stamps the expiry from the chat's timer", days > 6.9 && days < 7.1, `${days} days`);
+
+  const extend = await attempt(db, alice, async (tx) => {
+    await tx.query("update messages set content = 'edited', expires_at = null where id = $1", [timed.id]);
+    return (await tx.query("select expires_at from messages where id = $1", [timed.id])).rows[0].expires_at;
+  });
+  ok("editing a message cannot take it off the timer", extend.ok && extend.value !== null, extend.error);
+
+  // Age the message past its expiry as the database itself, skipping the
+  // trigger that would otherwise pin it.
+  await db.exec("set session_replication_role = replica");
+  await db.query("update messages set expires_at = now() - interval '1 minute' where id = $1", [timed.id]);
+  await db.exec("set session_replication_role = origin");
+
+  const seen = await as(db, bob, async (tx) =>
+    (await tx.query("select id from messages where conversation_id = $1", [dm])).rows.map((r) => r.id)
+  );
+  ok("an expired message is hidden before the clean-up runs", !seen.includes(timed.id) && seen.includes(plain.id));
+
+  const callPurge = await attempt(db, alice, (tx) => tx.query("select private.purge_disappeared_messages()"));
+  ok("nobody can run the clean-up over the API", !callPurge.ok);
+
+  const removed = (await db.query("select private.purge_disappeared_messages() as n")).rows[0].n;
+  const left = (await db.query("select count(*)::int as n from messages where id = $1", [timed.id])).rows[0].n;
+  ok("the clean-up deletes expired messages and nothing else", removed === 1 && left === 0, `removed ${removed}`);
+
+  const grp = await startGroup(db, alice, [bob, carol]);
+  const byMember = await attempt(db, carol, async (tx) =>
+    (await tx.query("update conversations set disappear_after = interval '1 day' where id = $1", [grp])).affectedRows
+  );
+  ok("an ordinary group member cannot change the timer", !byMember.ok || byMember.value === 0);
+  const byOwner = await attempt(db, alice, async (tx) =>
+    (await tx.query("update conversations set disappear_after = interval '1 day' where id = $1", [grp])).affectedRows
+  );
+  ok("a group owner can change the timer", byOwner.ok && byOwner.value === 1, byOwner.error);
+}
+
 async function main() {
-  const sections = [migrationTests, chatTests, takeoverTests, callTests, accountTests, backfillTests, historyTests];
+  const sections = [migrationTests, chatTests, takeoverTests, callTests, accountTests, backfillTests, historyTests, disappearTests];
   for (const run of sections) {
     try {
       await run();

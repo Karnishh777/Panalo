@@ -15,6 +15,8 @@ import { mentionsUser } from "./mentions.js";
 import { el, showToast } from "./util.js";
 import { messagePlaintext } from "./encryption.js";
 import { describeText } from "./stickers.js";
+import { describeKeyRequest } from "./keystatus.js";
+import { describeTimerMarker } from "./disappear.js";
 
 const MUTED_KEY = "panalo.muted";
 const NOTIFY_CHANNEL = "notify:all";
@@ -256,7 +258,7 @@ export async function sendTestAlert() {
 async function alertFor(msg, { mention = false } = {}) {
   const body = msg.file_url
     ? "📎 Sent an attachment"
-    : describeText(await messagePlaintext(msg)) || "New message";
+    : describeKeyRequest(describeTimerMarker(describeText(await messagePlaintext(msg)))) || "New message";
   // A mention arrives in a chat the user has deliberately muted, so it needs
   // to say why it is interrupting.
   const title = mention

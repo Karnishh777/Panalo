@@ -28,6 +28,7 @@
 import { supabaseClient } from "./client.js";
 import { messagePlaintext, prefetchConversationKeys } from "./encryption.js";
 import { state } from "./state.js";
+import { isExpired } from "./disappear.js";
 
 // How many recent messages to pull into the searchable index. Deliberately
 // bounded: decrypting is per-message work and this stays instant on a phone.
@@ -41,7 +42,7 @@ const DB_NAME = "panalo-search";
 const STORE = "rows";
 const META = "meta";
 
-let index = null; // [{ id, conversation_id, user_id, username, created_at, file_url, text }]
+let index = null; // [{ id, conversation_id, user_id, username, created_at, file_url, expires_at, text }]
 let building = null;
 
 // ---- Persistence -----------------------------------------------------
@@ -138,13 +139,14 @@ async function decryptRows(data) {
       username: m.username,
       created_at: m.created_at,
       file_url: m.file_url,
+      expires_at: m.expires_at || null,
       text: text || "",
     });
   }
   return rows;
 }
 
-const FIELDS = "id, conversation_id, user_id, username, content, iv, file_url, created_at";
+const FIELDS = "id, conversation_id, user_id, username, content, iv, file_url, created_at, expires_at";
 
 async function fetchPage({ before, after, limit }) {
   let q = supabaseClient.from("messages").select(FIELDS);
@@ -191,6 +193,16 @@ async function buildIndex() {
   const decrypted = fresh.length ? await decryptRows(fresh) : [];
   for (const row of decrypted) known.set(row.id, row);
 
+  // The index holds decrypted text on disk. A disappearing message must
+  // disappear from here too, or "gone for everyone" would mean "gone from
+  // the chat, still searchable on every device that ever saw it".
+  for (const row of [...known.values()]) {
+    if (isExpired(row.expires_at)) {
+      known.delete(row.id);
+      removeFromIndex(row.id);
+    }
+  }
+
   const all = [...known.values()].sort((a, b) => String(b.created_at).localeCompare(String(a.created_at)));
   if (decrypted.length) await writePersisted(decrypted, me);
   return all;
@@ -209,6 +221,7 @@ export async function searchMessages(query, limit = 30) {
   const rows = await ensureIndex();
   const hits = [];
   for (const row of rows) {
+    if (isExpired(row.expires_at)) continue;
     if (row.text.toLowerCase().includes(q)) {
       hits.push(row);
       if (hits.length >= limit) break;
@@ -232,6 +245,7 @@ export function addToIndex(msg, text) {
     username: msg.username,
     created_at: msg.created_at,
     file_url: msg.file_url,
+    expires_at: msg.expires_at || null,
     text: text || "",
   };
   // Persist regardless of whether an index is loaded in memory: a message

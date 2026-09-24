@@ -114,6 +114,21 @@ PIN. A user on two devices effectively has two different apps.
 - **Leaked-password protection is unavailable** on the Supabase free plan.
 - **Deleting a chat is "delete for me."** Your copy goes; the other person
   keeps theirs. There is no delete-for-everyone, and none could be enforced.
+- **Disappearing messages cannot stop a copy.** Anyone in the chat can
+  screenshot, copy or save a message before its timer runs out; the app says
+  so where the timer is set. After it runs out the message is hidden from
+  everyone at once and deleted within fifteen minutes by a `pg_cron` job.
+  **Its photos and files are not deleted**: Storage objects can only be
+  removed through the Storage API, not by a database job, so the encrypted
+  blob stays in the bucket under its random name. Nobody who was not already
+  in the chat has its address, but it still counts against the 1 GB limit.
+- **Getting a chat key back is a person's choice, not automatic.** After a
+  password reset on a device that did not hold the old key, chats encrypted
+  to the old key cannot be read until someone else in them presses "Share
+  key". That request is the one plaintext message an encrypted chat carries;
+  it contains no typed text, but the server can see that it was sent. Sharing
+  wraps the chat key to the public key the server returns for that person,
+  so it trusts the server exactly as much as adding a member does.
 - **No admin or moderation tooling.** No way to suspend an abusive account, no
   reporting, no audit log. With real users this becomes urgent quickly.
 
@@ -182,8 +197,9 @@ PIN. A user on two devices effectively has two different apps.
 
 ## 7. Testing and operational gaps 🟡
 
-- **166 tests.** 124 are pure-function (`crypto`, `textassist`, `password`,
-  `mentions`, `mapLimited`, the attachment format). 42 replay every migration
+- **265 tests.** 207 are pure-function (`crypto`, `textassist`, `password`,
+  `mentions`, `mapLimited`, the attachment format, file kinds, the send and
+  key-status rules, disappearing-message timers). 58 replay every migration
   into an in-process Postgres (`tests/migrations.test.mjs`) and exercise RLS
   and triggers as signed-in users. **Nothing covers the UI, realtime, or a
   multi-user flow in a browser**, and the test database is PGlite with a
@@ -191,7 +207,7 @@ PIN. A user on two devices effectively has two different apps.
 - **Verification is manual.** This session's confidence came from driving a
   live account by hand. None of that is repeatable.
 - **No CI.** Nothing runs the tests on push.
-- **Migrations are hand-run.** Twelve SQL files pasted into a dashboard, with
+- **Migrations are hand-run.** Thirteen SQL files pasted into a dashboard, with
   no migration table and no record of what has been applied. This caused the
   worst bug of the first audit (phase 7 committed, never run) and, later,
   phase 13 moving a helper that two trigger bodies still called by name,

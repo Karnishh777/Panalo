@@ -74,6 +74,7 @@ For each: **SQL Editor → New query** → paste the whole file → **Run**.
 | 10 | [`supabase-phase12.sql`](supabase-phase12.sql) | Revokes access to phase 10/11 trigger functions | No |
 | 11 | [`supabase-phase13.sql`](supabase-phase13.sql) | Moves RLS helpers out of the exposed API schema | No |
 | 12 | [`supabase-phase14.sql`](supabase-phase14.sql) | Repairs chat creation, leaving and account deletion; signup creates the profile | No |
+| 13 | [`supabase-phase15.sql`](supabase-phase15.sql) | Disappearing messages (24 hours / 7 days / 90 days per chat) | No |
 
 Phase 8 is self-contained and re-applies everything phase 7 does, so running 8
 is enough if you are starting fresh. Run 7 anyway if you prefer the history to

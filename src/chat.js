@@ -1,11 +1,17 @@
 // Conversations, messages, sending, and realtime.
 import { supabaseClient, findProfileByUsername } from "./client.js";
 import { state } from "./state.js";
-import { el, showToast, withBusy, getAvatarColor, safeImageUrl, scrollToBottom, compressImage, announce, setAvatar, formatTime, haptic, attachRipples, mapLimited, cleanUsername } from "./util.js";
-import { getConversationKey, provisionConversationKey, ensureConversationKey, messagePlaintext, keyForSending } from "./encryption.js";
+import { el, showToast, withBusy, getAvatarColor, scrollToBottom, compressImage, announce, setAvatar, formatTime, haptic, attachRipples, mapLimited, cleanUsername } from "./util.js";
+import { getConversationKey, provisionConversationKey, ensureConversationKey, messagePlaintext, keyForSending, keyProblemFor, forgetConversationKey } from "./encryption.js";
+import { lockedPreview, isKeyRequest, describeKeyRequest } from "./keystatus.js";
+import { renderKeyRequest, renderKeyBanner } from "./keyshare.js";
+import { renderAttachment } from "./mediabubble.js";
+import { createAttachTray } from "./attachtray.js";
+import { fileKind, isVisual } from "./filekind.js";
+import { normalizeTimer, timerLabel, timerMarker, parseTimerMarker, describeTimerChange, describeTimerMarker, msUntilExpiry, isExpired } from "./disappear.js";
 import { SEND } from "./sendpolicy.js";
 import { createMemberPicker } from "./memberpicker.js";
-import { uploadEncrypted, loadEncrypted, isEncryptedAttachment, isImageEntry, primeAttachmentCache, clearAttachmentCache, deleteAttachment } from "./attachments.js";
+import { uploadEncrypted, isEncryptedAttachment, primeAttachmentCache, clearAttachmentCache, deleteAttachment } from "./attachments.js";
 import { MESSAGES_PAGE_SIZE, THEME_PRESETS, FONT_PRESETS, MAX_FILE_BYTES } from "./config.js";
 import { isOnline, setPresenceListener } from "./presence.js";
 import { isMuted, toggleMute, setInboxListener, setOpenChatListener } from "./notifications.js";
@@ -105,6 +111,12 @@ function refreshChatSubtitle() {
     sub.textContent = "Direct message";
     sub.className = "chat-subtitle";
   }
+  // Everyone in a chat with a timer should be able to see that it is on
+  // without opening the info drawer.
+  const timer = normalizeTimer(conv.disappear_after);
+  if (timer && !otherTyping) {
+    sub.append(el("span", { class: "chat-timer-tag", text: ` · ⏱ ${timerLabel(timer)}` }));
+  }
 }
 
 const conversationsList = document.getElementById("conversations-list");
@@ -118,6 +130,8 @@ const messageInput = document.getElementById("message-input");
 const fileInput = document.getElementById("file-input");
 const fileBtn = document.getElementById("file-btn");
 const filePreview = document.getElementById("file-preview");
+// Files waiting to be sent. Created in initChatUI(), once the DOM is ready.
+let attachTray = null;
 const directModal = document.getElementById("direct-modal");
 const groupModal = document.getElementById("group-modal");
 
@@ -511,7 +525,7 @@ function renderConversationItem(conv) {
     messagePlaintext(last).then((text) => {
       const mine = last.user_id === state.currentUser.id;
       const who = mine ? "You: " : isGroup ? `${last.username || "?"}: ` : "";
-      const raw = describeCall(describeLocation(describeText(text)));
+      const raw = describeKeyRequest(describeTimerMarker(describeCall(describeLocation(describeText(text)))));
       previewEl.textContent = who + raw;
     });
   }
@@ -691,6 +705,8 @@ async function openConversation(conv) {
   });
 
   cancelReply();
+  // Files chosen in one chat must never be sent into the next one.
+  attachTray?.clear();
   lastOtherMessageAt = null;
 
   // Restore any half-typed message you left here last time. Focus the composer
@@ -762,6 +778,16 @@ async function openConversation(conv) {
   // "On this day" — fired after messages render, before subscribing, so the
   // banner appears above the historical thread rather than jumping in later.
   renderMemoriesBanner(conv.id);
+  // If this chat can't be read here, say why and how to fix it, instead of a
+  // wall of "Encrypted" bubbles.
+  renderKeyBanner(conv.id, {
+    onRetry: () => {
+      forgetConversationKey(conv.id);
+      openConversation(conv);
+    },
+  }).then((banner) => {
+    if (banner && conv.id === state.currentConversationId) messagesList.prepend(banner);
+  });
 
   // Everything on screen counts as read — locally and for the other side.
   markRead(conv.id);
@@ -1016,70 +1042,6 @@ async function loadOlderMessages() {
   state.loadingOlder = false;
 }
 
-// Non-image attachments live under files/ with size + name encoded in the path:
-//   files/<ts>_<uuid>_s<bytes>__<original-name>
-function parseFileMeta(url) {
-  const safe = safeImageUrl(url); // same allow-list as images
-  if (!safe || !safe.includes("/chat-files/files/")) return null;
-  let base = safe.split("/").pop() || "";
-  try {
-    base = decodeURIComponent(base);
-  } catch {
-    /* keep raw */
-  }
-  const m = /_s(\d+)__(.+)$/.exec(base);
-  return { url: safe, size: m ? Number(m[1]) : 0, name: m ? m[2] : base };
-}
-
-function prettyBytes(n) {
-  if (!n) return "";
-  if (n < 1024) return `${n} B`;
-  if (n < 1024 * 1024) return `${(n / 1024).toFixed(1)} KB`;
-  return `${(n / (1024 * 1024)).toFixed(1)} MB`;
-}
-
-// Broad file-type icon (vector, so it recolors with the theme).
-function fileIcon(name) {
-  const ext = (name.split(".").pop() || "").toLowerCase();
-  if (["mp3", "wav", "ogg", "m4a", "flac"].includes(ext)) return "sound";
-  if (["png", "jpg", "jpeg", "gif", "webp", "svg", "heic"].includes(ext)) return "image";
-  return "file";
-}
-
-// Save any storage file with its original name (blob fetch, like images).
-async function downloadFile(url, name) {
-  if (!url) return; // still uploading
-  try {
-    const res = await fetch(url);
-    if (!res.ok) throw new Error("fetch failed");
-    const blob = await res.blob();
-    const objUrl = URL.createObjectURL(blob);
-    const a = el("a", { href: objUrl, download: name || `panalo-${Date.now()}` });
-    document.body.append(a);
-    a.click();
-    a.remove();
-    setTimeout(() => URL.revokeObjectURL(objUrl), 2000);
-  } catch {
-    window.open(url, "_blank", "noopener");
-  }
-}
-
-function renderFileBubble(meta) {
-  return el("div", { class: "file-bubble" }, [
-    el("span", { class: "file-bubble-icon" }, [icon(fileIcon(meta.name), 26)]),
-    el("div", { class: "file-bubble-meta" }, [
-      el("div", { class: "file-bubble-name", text: meta.name }),
-      el("div", { class: "file-bubble-size", text: prettyBytes(meta.size) }),
-    ]),
-    el("button", {
-      class: "file-download-btn",
-      type: "button",
-      "aria-label": `Download ${meta.name}`,
-      onClick: () => downloadFile(meta.url, meta.name),
-    }, [icon("download", 16)]),
-  ]);
-}
-
 // Star/pin flags shown in the footer, refreshed after every toggle.
 function refreshMsgFlags(msgId) {
   const flagEl = document.querySelector(`#msg-${CSS.escape(String(msgId))} .msg-flags`);
@@ -1189,6 +1151,9 @@ function renderText(node, plaintext) {
 function renderMessage(msg, prepend = false) {
   // Idempotent: dedupes the realtime echo of an optimistically-rendered message.
   if (document.getElementById(`msg-${msg.id}`)) return;
+  // The server hides expired rows, but a row fetched a moment before its
+  // expiry can still arrive here after it.
+  if (isExpired(msg.expires_at)) return;
   msgCache.set(msg.id, msg);
 
   const isMine = msg.user_id === state.currentUser.id;
@@ -1257,12 +1222,24 @@ function renderMessage(msg, prepend = false) {
     });
   }
 
+  // Photo, video or document first, caption underneath -- the order every
+  // chat app people know uses. It used to be the other way round.
+  const media = renderAttachment(msg, {
+    getKey: getConversationKey,
+    lockedLabel: (convId) => lockedPreview(keyProblemFor(convId)).replace(/^🔒\s*/, ""),
+  });
+  if (media) {
+    messageEl.append(media);
+    messageEl.classList.add("has-media");
+  }
+
   if (msg.content) {
     const textEl = el("div", { class: "message-text", text: msg.iv ? "…" : msg.content });
     messageEl.append(textEl);
     // A sticker arrives as a marker in the text; swap it for the artwork.
     const showText = (plaintext) => {
       msg._plain = plaintext;
+      if (renderSystemNote(msg, messageEl, textEl, plaintext, isMine)) return;
       const found = parseSticker(plaintext);
       const place = found ? null : parseLocation(plaintext);
       const callLog = found || place ? null : parseCall(plaintext);
@@ -1288,67 +1265,6 @@ function renderMessage(msg, prepend = false) {
     };
     if (msg.iv) messagePlaintext(msg).then(showText);
     else showText(msg.content);
-  }
-
-  // An encrypted attachment can't be handed straight to <img src>: the bytes
-  // have to come back, be decrypted, and become a blob URL first. Which kind
-  // of thing it is (photo or document) is itself inside the ciphertext, so
-  // even the choice of how to render it has to wait for the decrypt.
-  if (!msg._localPreview && !msg._localFileMeta && isEncryptedAttachment(msg.file_url)) {
-    const frame = el("div", { class: "image-frame loading" });
-    messageEl.append(frame);
-    getConversationKey(msg.conversation_id)
-      .then((key) => loadEncrypted(msg.file_url, key))
-      .then((entry) => {
-        frame.classList.remove("loading");
-        if (!entry) {
-          // A locked chat, a tampered blob, or a failed fetch. Say so rather
-          // than leaving a broken image icon with no explanation.
-          frame.replaceWith(
-            el("div", { class: "file-bubble" }, [
-              el("span", { class: "file-bubble-icon" }, [icon("lock", 22)]),
-              el("div", { class: "file-bubble-meta" }, [
-                el("div", { class: "file-bubble-name", text: "Attachment locked" }),
-                el("div", { class: "file-bubble-size", text: "Unlock this chat to open it" }),
-              ]),
-            ])
-          );
-          return;
-        }
-        if (isImageEntry(entry)) {
-          frame.append(el("img", { class: "chat-image", src: entry.objectUrl, alt: "Shared image", decoding: "async" }));
-        } else {
-          frame.replaceWith(renderFileBubble({ url: entry.objectUrl, name: entry.name, size: entry.size }));
-        }
-      });
-  } else {
-
-  const fileMeta = msg._localFileMeta || parseFileMeta(msg.file_url);
-  if (fileMeta) {
-    messageEl.append(renderFileBubble(fileMeta));
-  } else {
-    const imageUrl = msg._localPreview || safeImageUrl(msg.file_url);
-    if (imageUrl) {
-      // Shimmering frame holds the space until the bytes land, so a slow
-      // connection can't shove the rest of the conversation around.
-      const frame = el("div", { class: "image-frame loading" });
-      const img = el("img", {
-        class: "chat-image",
-        src: imageUrl,
-        alt: "Shared image",
-        loading: "lazy",
-        decoding: "async",
-      });
-      const reveal = () => frame.classList.remove("loading");
-      img.addEventListener("load", reveal);
-      img.addEventListener("error", reveal);
-      if (img.complete) reveal();
-      // Never let a placeholder outlive the thing it stands in for.
-      setTimeout(reveal, 10000);
-      frame.append(img);
-      messageEl.append(frame);
-    }
-  }
   }
 
   const time = formatTime(msg.created_at);
@@ -1388,6 +1304,57 @@ function renderMessage(msg, prepend = false) {
     lastOtherMessageAt = msg.created_at;
   }
   if (isMine) refreshMessageStates();
+  scheduleExpiry(msg);
+}
+
+// A disappearing message leaves the screen when its time is up, not on the
+// next reload -- otherwise "disappears after 24 hours" would really mean
+// "after 24 hours and whenever you next restart the app".
+function scheduleExpiry(msg) {
+  const ms = msUntilExpiry(msg.expires_at);
+  if (ms === null) return;
+  setTimeout(() => {
+    document.getElementById(`msg-${msg.id}`)?.remove();
+    msgCache.delete(msg.id);
+    removeFromIndex(msg.id);
+  }, ms);
+}
+
+// Key requests and timer changes are messages, but they are notices about
+// the chat rather than something someone said: a centred line, no bubble.
+function renderSystemNote(msg, messageEl, textEl, plaintext, isMine) {
+  let note = null;
+  if (isKeyRequest(plaintext)) {
+    note = renderKeyRequest({ msg, isMine, isMember: currentMemberIds.includes(msg.user_id) });
+  } else {
+    const timer = parseTimerMarker(plaintext);
+    if (!timer) return false;
+    note = el("span", { text: describeTimerChange(timer.value, isMine ? "You" : msg.username || "Someone") });
+    syncTimerSetting(msg.conversation_id);
+  }
+  textEl.replaceChildren(note);
+  messageEl.classList.add("system-note");
+  return true;
+}
+
+// Someone else changed the timer: the notice arrives as a message, and the
+// header should agree with it. Re-read the setting rather than trusting the
+// notice, which is only what the sender's client claimed. At most once a few
+// seconds, because opening a chat renders every past notice at once.
+const TIMER_SYNC_INTERVAL_MS = 5000;
+let lastTimerSync = { convId: null, at: 0 };
+async function syncTimerSetting(convId) {
+  const now = Date.now();
+  if (lastTimerSync.convId === convId && now - lastTimerSync.at < TIMER_SYNC_INTERVAL_MS) return;
+  lastTimerSync = { convId, at: now };
+  const { data } = await supabaseClient.from("conversations").select("disappear_after").eq("id", convId).maybeSingle();
+  if (!data) return;
+  const conv = allConversations.find((c) => c.id === convId);
+  if (conv) conv.disappear_after = data.disappear_after;
+  if (state.currentConversation?.id === convId) {
+    state.currentConversation.disappear_after = data.disappear_after;
+    refreshChatSubtitle();
+  }
 }
 
 // ---- Reactions ----
@@ -1857,24 +1824,25 @@ function cancelReply() {
 }
 
 // ---- Sending (optimistic) ----
-function handleSend() {
+async function handleSend() {
   const content = messageInput.value.trim();
-  const file = fileInput.files[0];
-
-  if (!content && !file) return;
   if (!state.currentConversationId) return;
+  if (!content && !attachTray.count()) return;
+  const files = attachTray.take();
 
   const convId = state.currentConversationId;
   const replyToId = replyTarget?.id || null;
   messageInput.value = "";
   forgetDraft(convId); // the message is on its way; don't restore the same text next open
   refreshSendReady();
-  fileInput.value = "";
-  filePreview.classList.add("hidden");
-  filePreview.innerHTML = "";
   cancelReply();
 
-  sendMessage(content, file, convId, replyToId);
+  if (!files.length) return sendMessage(content, null, convId, replyToId);
+  // One message per file, the caption and reply riding on the first, sent
+  // one after another so they arrive in the order they were picked.
+  for (const [i, file] of files.entries()) {
+    await sendMessage(i === 0 ? content : "", file, convId, i === 0 ? replyToId : null);
+  }
 }
 
 // A tiny "the input has content" hint on the composer — the send button
@@ -1893,8 +1861,9 @@ async function sendMessage(content, file, convId, replyToId = null, clientId = n
   // committed — can be recognized as "already sent" instead of duplicated.
   const cid = clientId || crypto.randomUUID();
   const tempId = "temp-" + cid;
-  const isImage = file && file.type.startsWith("image/");
-  const localPreview = isImage ? URL.createObjectURL(file) : null;
+  const kind = file ? fileKind(file) : null;
+  const visual = isVisual(kind);
+  const localPreview = visual ? URL.createObjectURL(file) : null;
   const retry = () => sendMessage(content, file, convId, replyToId, cid);
 
   renderMessage({
@@ -1905,7 +1874,8 @@ async function sendMessage(content, file, convId, replyToId = null, clientId = n
     iv: null,
     file_url: null,
     _localPreview: localPreview,
-    _localFileMeta: file && !isImage ? { url: null, name: file.name, size: file.size } : null,
+    _localKind: kind,
+    _localFileMeta: file && !visual ? { url: null, name: file.name, size: file.size, type: file.type } : null,
     created_at: new Date().toISOString(),
     conversation_id: convId,
     reply_to: replyToId,
@@ -2507,6 +2477,10 @@ export function initChatUI() {
   const createGroupBtn = document.getElementById("create-group-btn");
   createGroupBtn.addEventListener("click", () => withBusy(createGroupBtn, "Creating…", createGroup));
 
+  attachTray = createAttachTray({
+    root: filePreview,
+    onChange: (count) => messageForm.classList.toggle("has-files", count > 0),
+  });
   fileBtn.addEventListener("click", () => fileInput.click());
 
   // Compose "+" — one entry point for attach / sticker / location so the
@@ -2537,47 +2511,30 @@ export function initChatUI() {
     e.preventDefault();
 
     const ext = (blob.type.split("/")[1] || "png").split("+")[0];
-    const named = new File([blob], `pasted-${Date.now()}.${ext}`, { type: blob.type });
-    const dt = new DataTransfer();
-    dt.items.add(named);
-    fileInput.files = dt.files;
-    fileInput.dispatchEvent(new Event("change"));
+    attachTray.add([new File([blob], `pasted-${Date.now()}.${ext}`, { type: blob.type })]);
     showToast("Image pasted — press Send.", "success");
   });
+
   fileInput.addEventListener("change", () => {
-    const file = fileInput.files[0];
-    filePreview.innerHTML = "";
-    if (!file) {
-      filePreview.classList.add("hidden");
-      return;
-    }
-    const isImage = file.type.startsWith("image/");
-    if (file.size > MAX_FILE_BYTES) {
-      showToast("That file is over the 50 MB limit.");
-      fileInput.value = "";
-      filePreview.classList.add("hidden");
-      return;
-    }
-    const previewUrl = isImage ? URL.createObjectURL(file) : null;
-    filePreview.append(
-      isImage
-        ? el("img", { src: previewUrl, class: "file-preview-thumb", alt: "Selected image" })
-        : el("span", { class: "file-bubble-icon", text: fileIcon(file.name) }),
-      el("span", { class: "file-preview-name", text: `${file.name} · ${prettyBytes(file.size)}` }),
-      el("button", {
-        class: "file-preview-remove",
-        type: "button",
-        text: "Remove",
-        "aria-label": "Remove selected image",
-        onClick: () => {
-          fileInput.value = "";
-          filePreview.classList.add("hidden");
-          filePreview.innerHTML = "";
-          URL.revokeObjectURL(previewUrl);
-        },
-      })
-    );
-    filePreview.classList.remove("hidden");
+    attachTray.add(fileInput.files);
+    // Cleared at once so choosing the same file again still fires "change".
+    fileInput.value = "";
+  });
+
+  // Drop files anywhere on the open chat.
+  activeChatWindow.addEventListener("dragover", (e) => {
+    if (!e.dataTransfer?.types.includes("Files")) return;
+    e.preventDefault();
+    activeChatWindow.classList.add("drop-target");
+  });
+  activeChatWindow.addEventListener("dragleave", (e) => {
+    if (!activeChatWindow.contains(e.relatedTarget)) activeChatWindow.classList.remove("drop-target");
+  });
+  activeChatWindow.addEventListener("drop", (e) => {
+    activeChatWindow.classList.remove("drop-target");
+    if (!e.dataTransfer?.files.length) return;
+    e.preventDefault();
+    attachTray.add(e.dataTransfer.files);
   });
 
   // Image viewer: click a chat image to open; zoom, download, or close.
@@ -2861,7 +2818,10 @@ export function initChatUI() {
       updateSwatchSelection(state.currentConversation?.theme);
       document.getElementById("theme-modal").classList.remove("hidden");
     },
-    onWallpaperChanged: (convId) => applyChatWallpaper(convId),
+    onTimerChanged: (conv, value) => {
+      if (conv.id === state.currentConversationId) refreshChatSubtitle();
+      sendMessage(timerMarker(value), null, conv.id);
+    },
     onWallpaperChanged: (convId) => {
       if (convId === state.currentConversationId) applyChatWallpaper(convId);
     },

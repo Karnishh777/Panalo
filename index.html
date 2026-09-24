@@ -168,15 +168,17 @@
           <button id="cancel-reply" class="reply-cancel" type="button" aria-label="Cancel reply"><span data-icon="close" data-icon-size="14"></span></button>
         </div>
 
+        <div id="file-preview" class="file-preview-bar hidden" aria-label="Files to send"></div>
+
         <form id="message-form">
-          <input type="file" id="file-input" class="hidden" aria-label="Attach a file" />
+          <input type="file" id="file-input" class="hidden" multiple aria-label="Attach photos or files" />
 
           <!-- One + button opens a small menu with attach / sticker / location.
                The three original buttons still live in that menu, so JS wiring
                (fileBtn.click, stickerBtn, locationBtn) doesn't have to change. -->
           <button type="button" id="compose-add" title="Attach" aria-label="Attach"><span data-icon="plus" data-icon-size="20"></span></button>
           <div id="compose-menu" class="compose-menu hidden" role="menu">
-            <button type="button" id="file-btn" class="compose-menu-item" role="menuitem"><span data-icon="clip" data-icon-size="18"></span>Photo or file</button>
+            <button type="button" id="file-btn" class="compose-menu-item" role="menuitem"><span data-icon="clip" data-icon-size="18"></span>Photos or files</button>
             <button type="button" id="sticker-btn" class="compose-menu-item" role="menuitem"><span data-icon="smile" data-icon-size="18"></span>Sticker</button>
             <button type="button" id="location-btn" class="compose-menu-item" role="menuitem"><span data-icon="pin" data-icon-size="18"></span>Location</button>
           </div>
@@ -184,7 +186,6 @@
           <input type="text" id="message-input" placeholder="Type a message..." autocomplete="off" aria-label="Type a message" />
           <button type="submit" id="send-btn" aria-label="Send"><span data-icon="send" data-icon-size="17"></span><span class="send-label">Send</span></button>
         </form>
-        <div id="file-preview" class="file-preview-bar hidden"></div>
       </div>
     </div>
 
@@ -234,6 +235,12 @@
             <button id="info-pin" class="info-chip" type="button">Pin chat</button>
             <button id="info-theme" class="info-chip" type="button"><span data-icon="palette" data-icon-size="14"></span>Theme</button>
           </div>
+        </div>
+
+        <div class="info-section">
+          <span class="settings-label">Disappearing messages</span>
+          <div id="info-timer-chips" class="info-actions" role="radiogroup" aria-label="Disappearing messages"></div>
+          <p id="info-timer-note" class="info-note"></p>
         </div>
 
         <div class="info-section">
