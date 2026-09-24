@@ -344,8 +344,64 @@ async function backfillTests() {
   ok("an ownerless group gets an owner from its remaining members", (await roleOf(db, orphan, bob)) === "owner");
 }
 
+// ---- phase 13 against every history it has met ----------------------------
+
+// Phase 13 has been "fixed" twice, in opposite directions, by two sessions:
+// once dropping the public copy of a helper, once dropping the private one.
+// Each broke a real database whose history the other did not expect -- the
+// second failed in production because phase 14's policies use the private
+// copy. It now drops whichever copy no policy depends on. These build each
+// history by hand and check it does the right thing.
+async function historyTests() {
+  const helperSchemas = async (db) =>
+    (await db.query(
+      `select n.nspname as s from pg_proc p join pg_namespace n on n.oid = p.pronamespace
+       where p.proname = 'is_conversation_member' order by 1`
+    )).rows.map((r) => r.s).join(",");
+
+  const PUBLIC_COPY = `
+    create function public.is_conversation_member(conv uuid) returns boolean
+      language sql stable security definer set search_path = public as $$
+      select exists (select 1 from public.conversation_participants
+                     where conversation_id = conv and user_id = auth.uid()) $$;`;
+
+  // A stray public copy nothing uses: the leftover of an old re-run.
+  {
+    const db = await freshDb();
+    await db.exec(PUBLIC_COPY);
+    const r = await runFile(db, "supabase-phase13.sql");
+    ok("phase 13 drops an unused public copy", r.ok && (await helperSchemas(db)) === "private", r.error);
+  }
+
+  // Both copies in use -- production's state when it ran the other branch's
+  // phase 13 after phase 14. Must refuse with a readable message, never drop
+  // a helper a policy needs.
+  {
+    const db = await freshDb();
+    await db.exec(`${PUBLIC_COPY}
+      drop policy "messages read" on public.messages;
+      create policy "messages read" on public.messages for select to authenticated
+        using (public.is_conversation_member(conversation_id));`);
+    const r = await runFile(db, "supabase-phase13.sql");
+    ok("phase 13 refuses, with instructions, when both copies are in use",
+       !r.ok && /Re-run supabase-setup\.sql through supabase-phase11\.sql/.test(r.error || ""), r.error);
+    ok("... and leaves both copies in place", (await helperSchemas(db)) === "private,public");
+
+    // Following its instructions resolves it: the earlier phases re-point
+    // every policy at private, leaving the public copy unused.
+    for (const f of ["supabase-setup.sql", "supabase-keys.sql", "supabase-phase5.sql", "supabase-phase6.sql",
+                     "supabase-phase7.sql", "supabase-phase8.sql", "supabase-phase9.sql",
+                     "supabase-phase10.sql", "supabase-phase11.sql"]) {
+      await runFile(db, f);
+    }
+    const again = await runFile(db, "supabase-phase13.sql");
+    ok("... and succeeds once the earlier phases are re-run",
+       again.ok && (await helperSchemas(db)) === "private", again.error);
+  }
+}
+
 async function main() {
-  const sections = [migrationTests, chatTests, takeoverTests, callTests, accountTests, backfillTests];
+  const sections = [migrationTests, chatTests, takeoverTests, callTests, accountTests, backfillTests, historyTests];
   for (const run of sections) {
     try {
       await run();

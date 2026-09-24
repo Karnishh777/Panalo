@@ -42,28 +42,54 @@ grant usage on schema private to authenticated;
 do $$
 declare
   fn text;
-  sig text;
+  pub regprocedure;
+  priv regprocedure;
+  pub_uses int;
+  priv_uses int;
 begin
   foreach fn in array array[
     'is_conversation_member(uuid)',
     'shares_conversation_with(uuid)',
     'my_conversation_role(uuid)'
   ] loop
-    sig := 'public.' || fn;
+    pub  := to_regprocedure('public.' || fn);
+    priv := to_regprocedure('private.' || fn);
 
-    -- A public copy next to a private one is left over from re-running an
-    -- OLD version of the earlier phases, which said `create or replace
-    -- function public.x()` and so made a new function once the original had
-    -- moved. They now create the helpers in `private` directly and point
-    -- every policy there, so a copy found here is unreferenced and safe to
-    -- drop. (Before that change this DROP failed -- the re-run had re-bound
-    -- the policies to the public copy -- and took supabase-all.sql with it.)
-    if to_regprocedure(sig) is not null and to_regprocedure('private.' || fn) is not null then
-      execute format('drop function %s', sig);
+    if pub is not null and priv is null then
+      -- The original move. ACLs survive it; the schema grant above completes it.
+      execute format('alter function %s set schema private', pub);
 
-    elsif to_regprocedure(sig) is not null then
-      execute format('alter function %s set schema private', sig);
-      -- ACLs survive the move; the schema grant above is what completes it.
+    elsif pub is not null and priv is not null then
+      -- Two copies: one is live, one is a leftover. Which is which depends on
+      -- history, and this file has guessed wrong in BOTH directions:
+      --
+      --   * It first dropped the public copy -- but a re-run of an OLD version
+      --     of the earlier phases had re-bound every policy to it, so the
+      --     DROP failed and took supabase-all.sql with it.
+      --   * A later fix, on another branch, dropped the private copy instead
+      --     -- which fails the moment any policy points at `private`, as
+      --     phase 14's do.
+      --
+      -- So stop guessing and ask the catalog. A policy records the function
+      -- it calls in pg_depend; the copy nothing depends on is the leftover.
+      select count(*) into pub_uses from pg_depend
+        where refobjid = pub and classid = 'pg_policy'::regclass;
+      select count(*) into priv_uses from pg_depend
+        where refobjid = priv and classid = 'pg_policy'::regclass;
+
+      if pub_uses = 0 then
+        execute format('drop function %s', pub);
+      elsif priv_uses = 0 then
+        execute format('drop function %s', priv);
+        execute format('alter function %s set schema private', pub);
+      else
+        -- Both in use. Dropping either breaks policies, and CASCADE would
+        -- delete them. Stop with a message that says what to do instead of
+        -- a raw dependency error.
+        raise exception
+          'Both public.% and private.% are used by policies (% and %). Re-run supabase-setup.sql through supabase-phase11.sql from this repository first: they point every policy at private, after which this file can drop the public copy.',
+          fn, fn, pub_uses, priv_uses;
+      end if;
     end if;
   end loop;
 end $$;
