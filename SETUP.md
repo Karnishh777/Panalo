@@ -73,10 +73,18 @@ For each: **SQL Editor → New query** → paste the whole file → **Run**.
 | 9 | [`supabase-phase11.sql`](supabase-phase11.sql) | Owner/admin roles in group chats | No |
 | 10 | [`supabase-phase12.sql`](supabase-phase12.sql) | Revokes access to phase 10/11 trigger functions | No |
 | 11 | [`supabase-phase13.sql`](supabase-phase13.sql) | Moves RLS helpers out of the exposed API schema | No |
+| 12 | [`supabase-phase14.sql`](supabase-phase14.sql) | Repairs chat creation, leaving and account deletion; signup creates the profile | No |
 
 Phase 8 is self-contained and re-applies everything phase 7 does, so running 8
 is enough if you are starting fresh. Run 7 anyway if you prefer the history to
 match the files.
+
+Or run [`supabase-all.sql`](supabase-all.sql), which is every file above in
+order. It is generated, never edited: after changing any phase file run
+`node tools/build-supabase-all.mjs`. Every file is replayed against a real
+Postgres by `node tests/migrations.test.mjs` (install once with
+`cd tools/sqltest && npm install`), including re-running each one on a
+database that already has everything.
 
 Most of these end with a `select` that prints what changed — if the output does
 not match what the file says to expect, stop and fix it before moving on rather
@@ -137,7 +145,3 @@ In **Database → Policies**, every table (`profiles`, `conversations`,
 `conversation_participants`, `messages`) should show **RLS enabled** with the
 named policies from the SQL. If any table says "RLS disabled", re-run the SQL.
 
-## Known limitation to revisit
-Usernames are **not** enforced unique yet (so profile creation never fails). The
-"start chat by username" lookup returns the first match. Enforcing unique
-usernames with a proper check at signup is a small follow-up (Phase 1.5).

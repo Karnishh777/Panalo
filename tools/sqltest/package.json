@@ -1,0 +1,9 @@
+{
+  "name": "panalo-sqltest",
+  "private": true,
+  "type": "module",
+  "description": "Replays the supabase-*.sql migrations against an in-process Postgres (PGlite) and tests RLS. Dev-only; the app itself has no build step.",
+  "dependencies": {
+    "@electric-sql/pglite": "0.5.8"
+  }
+}

@@ -121,9 +121,10 @@ PIN. A user on two devices effectively has two different apps.
 
 ## 4. Scale limits 🔴
 
-- **Search covers only the newest 1,000 messages**, globally. Older messages
-  are silently unfindable, and results look complete. Raising the cap costs
-  transfer (~2 MB at 10,000), not CPU (169 ms measured).
+- **Search covers what this device has seen.** The index persists in
+  IndexedDB and catches up on each session, but a new device starts from the
+  newest 10,000 messages, and messages you could not decrypt when they were
+  indexed stay unsearchable.
 - **Free tier ceilings:** 500 MB database, **1 GB file storage**, 5 GB egress,
   50,000 monthly users, and projects **pause after one week of inactivity**.
   Storage is the first wall — roughly 20 large attachments.
@@ -181,17 +182,22 @@ PIN. A user on two devices effectively has two different apps.
 
 ## 7. Testing and operational gaps 🟡
 
-- **97 tests, all pure-function.** `crypto`, `textassist`, `password`,
-  `mapLimited` and the attachment format are covered. **Nothing covers UI,
-  realtime, RLS policies, or any multi-user flow** — no integration tests, no
-  end-to-end tests, no test database.
+- **166 tests.** 124 are pure-function (`crypto`, `textassist`, `password`,
+  `mentions`, `mapLimited`, the attachment format). 42 replay every migration
+  into an in-process Postgres (`tests/migrations.test.mjs`) and exercise RLS
+  and triggers as signed-in users. **Nothing covers the UI, realtime, or a
+  multi-user flow in a browser**, and the test database is PGlite with a
+  minimal Supabase stub, not Supabase itself.
 - **Verification is manual.** This session's confidence came from driving a
   live account by hand. None of that is repeatable.
 - **No CI.** Nothing runs the tests on push.
-- **Migrations are hand-run.** Ten SQL files pasted into a dashboard, with no
-  migration table and no record of what has been applied. This already caused
-  the worst bug found in this audit: phase 7 was committed but never run, and
-  the client assumed it had been.
+- **Migrations are hand-run.** Twelve SQL files pasted into a dashboard, with
+  no migration table and no record of what has been applied. This caused the
+  worst bug of the first audit (phase 7 committed, never run) and, later,
+  phase 13 moving a helper that two trigger bodies still called by name,
+  which stopped anyone adding a second person to a chat until phase 14. The
+  replay test now catches that class of mistake; nothing records what
+  production has actually run.
 - **No backups.** The free plan has none. A bad migration is unrecoverable.
 - **No staging environment.** Every SQL change goes straight to production.
 
@@ -212,8 +218,8 @@ PIN. A user on two devices effectively has two different apps.
 ## Top five by real risk
 
 1. **Storage ceiling** — 1 GB, and attachments are the most-used feature.
-2. **Search silently incomplete** past 1,000 messages; users will trust a
-   wrong answer.
+2. **No moderation tooling** — no blocking, reporting or suspension, before
+   any growth.
 3. **Calls unreliable** without TURN, on exactly the networks phones use.
 4. **No CI, no integration tests, no backups** — nothing catches a regression
    before users do.

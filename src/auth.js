@@ -156,7 +156,18 @@ export function initAuth() {
       });
 
       if (error) {
-        setAuthMessage(error.message);
+        // The profile is created by a database trigger in the same
+        // transaction as the account (phase 14), so a taken username now
+        // refuses the signup itself. Supabase Auth reports every trigger
+        // failure with this one generic sentence; the username is the only
+        // thing that trigger can reject. Before, the signup succeeded and
+        // left an account with no profile that looked fine but could not
+        // chat, be found, or encrypt anything.
+        setAuthMessage(
+          /database error saving new user/i.test(error.message)
+            ? `"${username}" is already taken. Try a different username.`
+            : error.message
+        );
         return;
       }
 

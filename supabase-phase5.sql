@@ -17,8 +17,8 @@ alter table public.conversations add column if not exists theme text;
 drop policy if exists "conversations update" on public.conversations;
 create policy "conversations update" on public.conversations
   for update to authenticated
-  using (public.is_conversation_member(id))
-  with check (public.is_conversation_member(id));
+  using (private.is_conversation_member(id))
+  with check (private.is_conversation_member(id));
 
 -- ---- Messages: editing -----------------------------------------------------
 alter table public.messages add column if not exists edited_at timestamptz;
@@ -28,7 +28,7 @@ drop policy if exists "messages update" on public.messages;
 create policy "messages update" on public.messages
   for update to authenticated
   using (user_id = auth.uid())
-  with check (user_id = auth.uid() and public.is_conversation_member(conversation_id));
+  with check (user_id = auth.uid() and private.is_conversation_member(conversation_id));
 
 -- ---- Group membership: add + remove ---------------------------------------
 -- Add: the creator (existing rule) OR any member of a GROUP chat may add people.
@@ -41,7 +41,7 @@ create policy "participants insert" on public.conversation_participants
       where c.id = conversation_id and c.created_by = auth.uid()
     )
     or (
-      public.is_conversation_member(conversation_id)
+      private.is_conversation_member(conversation_id)
       and exists (
         select 1 from public.conversations c
         where c.id = conversation_id and c.type = 'group'
@@ -68,7 +68,7 @@ drop policy if exists "conv_keys insert" on public.conversation_keys;
 create policy "conv_keys insert" on public.conversation_keys
   for insert to authenticated
   with check (
-    public.is_conversation_member(conversation_id)
+    private.is_conversation_member(conversation_id)
     or exists (
       select 1 from public.conversations c
       where c.id = conversation_id and c.created_by = auth.uid()

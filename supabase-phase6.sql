@@ -28,7 +28,7 @@ create policy "reactions read" on public.message_reactions
   for select to authenticated
   using (exists (
     select 1 from public.messages m
-    where m.id = message_id and public.is_conversation_member(m.conversation_id)
+    where m.id = message_id and private.is_conversation_member(m.conversation_id)
   ));
 
 -- You may only add reactions as yourself, and only in your own conversations.
@@ -38,7 +38,7 @@ create policy "reactions insert" on public.message_reactions
     user_id = auth.uid()
     and exists (
       select 1 from public.messages m
-      where m.id = message_id and public.is_conversation_member(m.conversation_id)
+      where m.id = message_id and private.is_conversation_member(m.conversation_id)
     )
   );
 
@@ -66,11 +66,11 @@ drop policy if exists "reads update" on public.conversation_reads;
 -- Members see each other's read position (that's what powers the ticks).
 create policy "reads read" on public.conversation_reads
   for select to authenticated
-  using (public.is_conversation_member(conversation_id));
+  using (private.is_conversation_member(conversation_id));
 
 create policy "reads insert" on public.conversation_reads
   for insert to authenticated
-  with check (user_id = auth.uid() and public.is_conversation_member(conversation_id));
+  with check (user_id = auth.uid() and private.is_conversation_member(conversation_id));
 
 create policy "reads update" on public.conversation_reads
   for update to authenticated

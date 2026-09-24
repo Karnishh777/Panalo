@@ -384,7 +384,7 @@ begin
     'public.sync_message_usernames()',
     'public.set_call_invite_caller()',
     'public.protect_call_invite_identity()',
-    'public.is_conversation_member(uuid)'
+    'private.is_conversation_member(uuid)'
   ] loop
     execute format('revoke execute on function %s from public, anon, authenticated', fn);
   end loop;
@@ -399,18 +399,13 @@ end $$;
 -- keep EXECUTE or every policy depending on it starts failing -- that would
 -- take the whole app down to silence a linter warning.
 --
--- It stays flagged as "Signed-In Users Can Execute SECURITY DEFINER
--- Function", and that is an accepted, deliberate exception. The exposure is
--- minimal: it takes a conversation id the caller already has and returns a
--- boolean saying whether THEY are a member of it. It reveals nothing about
--- anyone else and cannot be used to read content.
---
--- The zero-warning alternative is to move it into a schema PostgREST does
--- not expose (e.g. `private`) and repoint every policy at it. That is the
--- correct long-term fix; it is deliberately not bundled here because it
--- rewrites policies across four migration files and the risk outweighs the
--- benefit of clearing one WARN.
-grant execute on function public.is_conversation_member(uuid) to authenticated;
+-- It now lives in `private` (created there by supabase-setup.sql; phase 13
+-- moved it for databases that predate that), so the grant no longer exposes
+-- an endpoint -- PostgREST does not publish that schema. This file used to
+-- name public.is_conversation_member here, which on any database that had
+-- run phase 13 either failed outright or, after a setup re-run, re-granted
+-- a stray public copy.
+grant execute on function private.is_conversation_member(uuid) to authenticated;
 
 -- ---- Drop the two orphans now confirmed dead --------------------------------
 -- Both were found in production, both exist nowhere in this repo, and a grep
@@ -503,7 +498,7 @@ select
 from pg_proc p
 join pg_namespace n on n.oid = p.pronamespace
 left join lateral aclexplode(p.proacl) a on true
-where n.nspname = 'public'
+where n.nspname in ('public', 'private')
   and p.proname in (
     'set_message_sender', 'protect_message_identity', 'sync_message_usernames',
     'set_call_invite_caller', 'protect_call_invite_identity',

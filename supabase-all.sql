@@ -97,8 +97,21 @@ create index if not exists idx_messages_conversation
 -- SECURITY DEFINER runs the lookup as the function owner, bypassing RLS on
 -- conversation_participants — this avoids infinite recursion when a policy on
 -- that table needs to check membership of that same table.
+--
+-- It lives in `private`, a schema PostgREST does not publish, so it has no
+-- /rest/v1/rpc/ endpoint. It was created in `public` originally and moved by
+-- phase 13; creating it here directly is what makes re-running this file safe.
+-- When it was still `create ... public.is_conversation_member`, a re-run made
+-- a SECOND copy in public, every policy below re-bound to that copy, and
+-- phase 13 could then no longer drop it -- so supabase-all.sql failed on any
+-- database that had ever run phase 13.
 -- ============================================================================
-create or replace function public.is_conversation_member(conv uuid)
+create schema if not exists private;
+-- Policies are evaluated as the querying role, which therefore has to be able
+-- to reach into the schema. Without this every policy fails closed.
+grant usage on schema private to authenticated;
+
+create or replace function private.is_conversation_member(conv uuid)
 returns boolean
 language sql
 security definer
@@ -162,7 +175,7 @@ drop policy if exists "conversations insert" on public.conversations;
 
 create policy "conversations read" on public.conversations
   for select to authenticated
-  using (created_by = auth.uid() or public.is_conversation_member(id));
+  using (created_by = auth.uid() or private.is_conversation_member(id));
 create policy "conversations insert" on public.conversations
   for insert to authenticated
   with check (created_by = auth.uid());
@@ -175,7 +188,7 @@ drop policy if exists "participants insert" on public.conversation_participants;
 
 create policy "participants read" on public.conversation_participants
   for select to authenticated
-  using (public.is_conversation_member(conversation_id));
+  using (private.is_conversation_member(conversation_id));
 create policy "participants insert" on public.conversation_participants
   for insert to authenticated
   with check (exists (
@@ -191,10 +204,10 @@ drop policy if exists "messages delete" on public.messages;
 
 create policy "messages read" on public.messages
   for select to authenticated
-  using (public.is_conversation_member(conversation_id));
+  using (private.is_conversation_member(conversation_id));
 create policy "messages insert" on public.messages
   for insert to authenticated
-  with check (user_id = auth.uid() and public.is_conversation_member(conversation_id));
+  with check (user_id = auth.uid() and private.is_conversation_member(conversation_id));
 create policy "messages delete" on public.messages
   for delete to authenticated
   using (user_id = auth.uid());
@@ -323,8 +336,8 @@ alter table public.conversations add column if not exists theme text;
 drop policy if exists "conversations update" on public.conversations;
 create policy "conversations update" on public.conversations
   for update to authenticated
-  using (public.is_conversation_member(id))
-  with check (public.is_conversation_member(id));
+  using (private.is_conversation_member(id))
+  with check (private.is_conversation_member(id));
 
 -- ---- Messages: editing -----------------------------------------------------
 alter table public.messages add column if not exists edited_at timestamptz;
@@ -334,7 +347,7 @@ drop policy if exists "messages update" on public.messages;
 create policy "messages update" on public.messages
   for update to authenticated
   using (user_id = auth.uid())
-  with check (user_id = auth.uid() and public.is_conversation_member(conversation_id));
+  with check (user_id = auth.uid() and private.is_conversation_member(conversation_id));
 
 -- ---- Group membership: add + remove ---------------------------------------
 -- Add: the creator (existing rule) OR any member of a GROUP chat may add people.
@@ -347,7 +360,7 @@ create policy "participants insert" on public.conversation_participants
       where c.id = conversation_id and c.created_by = auth.uid()
     )
     or (
-      public.is_conversation_member(conversation_id)
+      private.is_conversation_member(conversation_id)
       and exists (
         select 1 from public.conversations c
         where c.id = conversation_id and c.type = 'group'
@@ -374,7 +387,7 @@ drop policy if exists "conv_keys insert" on public.conversation_keys;
 create policy "conv_keys insert" on public.conversation_keys
   for insert to authenticated
   with check (
-    public.is_conversation_member(conversation_id)
+    private.is_conversation_member(conversation_id)
     or exists (
       select 1 from public.conversations c
       where c.id = conversation_id and c.created_by = auth.uid()
@@ -430,7 +443,7 @@ create policy "reactions read" on public.message_reactions
   for select to authenticated
   using (exists (
     select 1 from public.messages m
-    where m.id = message_id and public.is_conversation_member(m.conversation_id)
+    where m.id = message_id and private.is_conversation_member(m.conversation_id)
   ));
 
 -- You may only add reactions as yourself, and only in your own conversations.
@@ -440,7 +453,7 @@ create policy "reactions insert" on public.message_reactions
     user_id = auth.uid()
     and exists (
       select 1 from public.messages m
-      where m.id = message_id and public.is_conversation_member(m.conversation_id)
+      where m.id = message_id and private.is_conversation_member(m.conversation_id)
     )
   );
 
@@ -468,11 +481,11 @@ drop policy if exists "reads update" on public.conversation_reads;
 -- Members see each other's read position (that's what powers the ticks).
 create policy "reads read" on public.conversation_reads
   for select to authenticated
-  using (public.is_conversation_member(conversation_id));
+  using (private.is_conversation_member(conversation_id));
 
 create policy "reads insert" on public.conversation_reads
   for insert to authenticated
-  with check (user_id = auth.uid() and public.is_conversation_member(conversation_id));
+  with check (user_id = auth.uid() and private.is_conversation_member(conversation_id));
 
 create policy "reads update" on public.conversation_reads
   for update to authenticated
@@ -1088,7 +1101,7 @@ begin
     'public.sync_message_usernames()',
     'public.set_call_invite_caller()',
     'public.protect_call_invite_identity()',
-    'public.is_conversation_member(uuid)'
+    'private.is_conversation_member(uuid)'
   ] loop
     execute format('revoke execute on function %s from public, anon, authenticated', fn);
   end loop;
@@ -1103,18 +1116,13 @@ end $$;
 -- keep EXECUTE or every policy depending on it starts failing -- that would
 -- take the whole app down to silence a linter warning.
 --
--- It stays flagged as "Signed-In Users Can Execute SECURITY DEFINER
--- Function", and that is an accepted, deliberate exception. The exposure is
--- minimal: it takes a conversation id the caller already has and returns a
--- boolean saying whether THEY are a member of it. It reveals nothing about
--- anyone else and cannot be used to read content.
---
--- The zero-warning alternative is to move it into a schema PostgREST does
--- not expose (e.g. `private`) and repoint every policy at it. That is the
--- correct long-term fix; it is deliberately not bundled here because it
--- rewrites policies across four migration files and the risk outweighs the
--- benefit of clearing one WARN.
-grant execute on function public.is_conversation_member(uuid) to authenticated;
+-- It now lives in `private` (created there by supabase-setup.sql; phase 13
+-- moved it for databases that predate that), so the grant no longer exposes
+-- an endpoint -- PostgREST does not publish that schema. This file used to
+-- name public.is_conversation_member here, which on any database that had
+-- run phase 13 either failed outright or, after a setup re-run, re-granted
+-- a stray public copy.
+grant execute on function private.is_conversation_member(uuid) to authenticated;
 
 -- ---- Drop the two orphans now confirmed dead --------------------------------
 -- Both were found in production, both exist nowhere in this repo, and a grep
@@ -1207,7 +1215,7 @@ select
 from pg_proc p
 join pg_namespace n on n.oid = p.pronamespace
 left join lateral aclexplode(p.proacl) a on true
-where n.nspname = 'public'
+where n.nspname in ('public', 'private')
   and p.proname in (
     'set_message_sender', 'protect_message_identity', 'sync_message_usernames',
     'set_call_invite_caller', 'protect_call_invite_identity',
@@ -1444,7 +1452,7 @@ create trigger trg_rate_limit_call_invites
 -- function that takes an exact name and returns at most one row.
 
 -- SECURITY DEFINER so it does not recurse through the policy that uses it.
-create or replace function public.shares_conversation_with(other uuid)
+create or replace function private.shares_conversation_with(other uuid)
 returns boolean
 language sql
 security definer
@@ -1466,7 +1474,7 @@ create policy "profiles read" on public.profiles
   for select to authenticated
   using (
     id = auth.uid()
-    or public.shares_conversation_with(id)
+    or private.shares_conversation_with(id)
   );
 
 -- Exact match, case-insensitive, at most one row, no wildcard or pattern
@@ -1486,11 +1494,11 @@ as $$
   limit 1;
 $$;
 
-revoke execute on function public.shares_conversation_with(uuid)  from public, anon, authenticated;
+revoke execute on function private.shares_conversation_with(uuid)  from public, anon, authenticated;
 revoke execute on function public.find_profile_by_username(text)  from public, anon, authenticated;
 -- Policies evaluate as the querying role, so this one has to be granted back
 -- or every profile read fails.
-grant execute on function public.shares_conversation_with(uuid) to authenticated;
+grant execute on function private.shares_conversation_with(uuid) to authenticated;
 -- Signed-in only: a signed-out visitor has no business resolving names.
 grant execute on function public.find_profile_by_username(text) to authenticated;
 
@@ -1624,7 +1632,7 @@ where c.id = p.conversation_id
 -- ---- Reading your own role -------------------------------------------
 -- SECURITY DEFINER so the policies below can call it without recursing
 -- through the policies on the very table they protect.
-create or replace function public.my_conversation_role(conv uuid)
+create or replace function private.my_conversation_role(conv uuid)
 returns text
 language sql
 security definer
@@ -1637,8 +1645,8 @@ as $$
     and user_id = auth.uid();
 $$;
 
-revoke execute on function public.my_conversation_role(uuid) from public, anon;
-grant execute on function public.my_conversation_role(uuid) to authenticated;
+revoke execute on function private.my_conversation_role(uuid) from public, anon;
+grant execute on function private.my_conversation_role(uuid) to authenticated;
 
 
 -- ---- Creating a group makes you its owner -----------------------------
@@ -1665,7 +1673,7 @@ begin
   -- Nobody else is created as an owner, and an admin may only be appointed
   -- by an existing owner. Everyone else joins as a member regardless of what
   -- the client asked for.
-  caller_role := public.my_conversation_role(new.conversation_id);
+  caller_role := private.my_conversation_role(new.conversation_id);
   if new.role = 'owner' or (new.role = 'admin' and caller_role is distinct from 'owner') then
     new.role := 'member';
   end if;
@@ -1691,11 +1699,23 @@ security definer
 set search_path = public
 as $$
 declare
-  caller_role text := public.my_conversation_role(old.conversation_id);
+  caller_role text := private.my_conversation_role(old.conversation_id);
 begin
   -- Identity is not editable here; only the role is.
   new.conversation_id := old.conversation_id;
   new.user_id         := old.user_id;
+
+  -- The rules below are for people. Two callers are not people and must
+  -- pass: another trigger (promote_on_owner_leave handing ownership over,
+  -- which runs after the leaver's row is gone -- so the leaver has no role
+  -- and was refused, which made leaving, deleting a chat you started, and
+  -- deleting your account all fail), and a migration or the dashboard, which
+  -- run with no signed-in user at all. Neither is reachable by a client:
+  -- PostgREST requests always arrive at trigger depth 1, and RLS only lets
+  -- `authenticated` update this table. Kept identical in phase 14.
+  if pg_trigger_depth() > 1 or auth.uid() is null then
+    return new;
+  end if;
 
   if new.role is distinct from old.role then
     if caller_role is distinct from 'owner' then
@@ -1722,8 +1742,8 @@ create trigger trg_guard_role_change
 drop policy if exists "participants update" on public.conversation_participants;
 create policy "participants update" on public.conversation_participants
   for update to authenticated
-  using (public.my_conversation_role(conversation_id) = 'owner')
-  with check (public.my_conversation_role(conversation_id) = 'owner');
+  using (private.my_conversation_role(conversation_id) = 'owner')
+  with check (private.my_conversation_role(conversation_id) = 'owner');
 
 
 -- ---- Who may add people ----------------------------------------------
@@ -1739,7 +1759,7 @@ create policy "participants insert" on public.conversation_participants
       where c.id = conversation_id and c.created_by = auth.uid()
     )
     or (
-      public.my_conversation_role(conversation_id) in ('owner', 'admin')
+      private.my_conversation_role(conversation_id) in ('owner', 'admin')
       and exists (
         select 1 from public.conversations c
         where c.id = conversation_id and c.type = 'group'
@@ -1757,7 +1777,7 @@ create policy "participants delete" on public.conversation_participants
   using (
     user_id = auth.uid()
     or (
-      public.my_conversation_role(conversation_id) in ('owner', 'admin')
+      private.my_conversation_role(conversation_id) in ('owner', 'admin')
       and role <> 'owner'
     )
   );
@@ -1816,12 +1836,12 @@ drop policy if exists "conversations update" on public.conversations;
 create policy "conversations update" on public.conversations
   for update to authenticated
   using (
-    (type = 'group' and public.my_conversation_role(id) in ('owner', 'admin'))
-    or (type <> 'group' and public.is_conversation_member(id))
+    (type = 'group' and private.my_conversation_role(id) in ('owner', 'admin'))
+    or (type <> 'group' and private.is_conversation_member(id))
   )
   with check (
-    (type = 'group' and public.my_conversation_role(id) in ('owner', 'admin'))
-    or (type <> 'group' and public.is_conversation_member(id))
+    (type = 'group' and private.my_conversation_role(id) in ('owner', 'admin'))
+    or (type <> 'group' and private.is_conversation_member(id))
   );
 
 
@@ -1984,26 +2004,54 @@ grant usage on schema private to authenticated;
 do $$
 declare
   fn text;
-  sig text;
+  pub regprocedure;
+  priv regprocedure;
+  pub_uses int;
+  priv_uses int;
 begin
   foreach fn in array array[
     'is_conversation_member(uuid)',
     'shares_conversation_with(uuid)',
     'my_conversation_role(uuid)'
   ] loop
-    sig := 'public.' || fn;
+    pub  := to_regprocedure('public.' || fn);
+    priv := to_regprocedure('private.' || fn);
 
-    -- Re-running the earlier phases recreates these in `public`, because
-    -- `create or replace function public.x()` makes a NEW function once the
-    -- original has moved. The policies still point at the private one, so
-    -- the public copy is an unreferenced duplicate -- drop it rather than
-    -- leaving something the linter will rightly flag again.
-    if to_regprocedure(sig) is not null and to_regprocedure('private.' || fn) is not null then
-      execute format('drop function %s', sig);
+    if pub is not null and priv is null then
+      -- The original move. ACLs survive it; the schema grant above completes it.
+      execute format('alter function %s set schema private', pub);
 
-    elsif to_regprocedure(sig) is not null then
-      execute format('alter function %s set schema private', sig);
-      -- ACLs survive the move; the schema grant above is what completes it.
+    elsif pub is not null and priv is not null then
+      -- Two copies: one is live, one is a leftover. Which is which depends on
+      -- history, and this file has guessed wrong in BOTH directions:
+      --
+      --   * It first dropped the public copy -- but a re-run of an OLD version
+      --     of the earlier phases had re-bound every policy to it, so the
+      --     DROP failed and took supabase-all.sql with it.
+      --   * A later fix, on another branch, dropped the private copy instead
+      --     -- which fails the moment any policy points at `private`, as
+      --     phase 14's do.
+      --
+      -- So stop guessing and ask the catalog. A policy records the function
+      -- it calls in pg_depend; the copy nothing depends on is the leftover.
+      select count(*) into pub_uses from pg_depend
+        where refobjid = pub and classid = 'pg_policy'::regclass;
+      select count(*) into priv_uses from pg_depend
+        where refobjid = priv and classid = 'pg_policy'::regclass;
+
+      if pub_uses = 0 then
+        execute format('drop function %s', pub);
+      elsif priv_uses = 0 then
+        execute format('drop function %s', priv);
+        execute format('alter function %s set schema private', pub);
+      else
+        -- Both in use. Dropping either breaks policies, and CASCADE would
+        -- delete them. Stop with a message that says what to do instead of
+        -- a raw dependency error.
+        raise exception
+          'Both public.% and private.% are used by policies (% and %). Re-run supabase-setup.sql through supabase-phase11.sql from this repository first: they point every policy at private, after which this file can drop the public copy.',
+          fn, fn, pub_uses, priv_uses;
+      end if;
     end if;
   end loop;
 end $$;
@@ -2051,5 +2099,426 @@ order by 2;
 -- your own conversations without error. An error here means the policies
 -- cannot reach their helper -- re-run the grant above.
 -- select count(*) from public.conversation_participants;
+
+-- Done. ✅
+
+
+-- ############################################################################
+-- SOURCE FILE: supabase-phase14.sql
+-- ############################################################################
+
+-- ============================================================================
+-- PANALO — Phase 14: repair what phases 11 and 13 broke, and close the gaps
+-- a replay of every migration against a real Postgres found.
+--
+-- Run in the Supabase SQL Editor (paste → Run). Idempotent — safe to re-run.
+-- Every change here is covered by tests/migrations.test.mjs, which replays
+-- all the supabase-*.sql files into an in-process Postgres and acts as
+-- signed-in users through RLS. None of these bugs needed production to find.
+-- ============================================================================
+
+
+-- ############################################################################
+-- PART 1 — nobody could add a second person to a chat
+-- ############################################################################
+
+-- Phase 13 moved my_conversation_role() from `public` to `private` and
+-- checked that no POLICY needed rewriting -- policies hold the function by
+-- OID, so they followed it. But two TRIGGER FUNCTIONS from phase 11 call it
+-- by name, and PL/pgSQL resolves names when the function runs, not when it is
+-- created. From the moment phase 13 ran, both raised
+--   function public.my_conversation_role(uuid) does not exist
+-- on every call:
+--
+--   stamp_creator_as_owner  fires on every participant insert other than the
+--                           creator's own -- so no 1:1 chat and no group with
+--                           members could be created, and nobody could be
+--                           added to an existing group.
+--   guard_role_change       fires on every role change -- so "Make admin"
+--                           failed too.
+--
+-- Both are recreated here pointing at private.my_conversation_role. The
+-- bodies are kept IDENTICAL to supabase-phase11.sql, which was corrected at
+-- the same time, so re-running either file leaves the same functions behind.
+
+create or replace function public.stamp_creator_as_owner()
+returns trigger
+language plpgsql
+security definer
+set search_path = public
+as $$
+declare
+  creator uuid;
+  caller_role text;
+begin
+  select created_by into creator from public.conversations where id = new.conversation_id;
+
+  -- The conversation's creator is always an owner, whatever was sent.
+  if new.user_id = creator then
+    new.role := 'owner';
+    return new;
+  end if;
+
+  -- Nobody else is created as an owner, and an admin may only be appointed
+  -- by an existing owner. Everyone else joins as a member regardless of what
+  -- the client asked for.
+  caller_role := private.my_conversation_role(new.conversation_id);
+  if new.role = 'owner' or (new.role = 'admin' and caller_role is distinct from 'owner') then
+    new.role := 'member';
+  end if;
+
+  return new;
+end;
+$$;
+
+
+-- ############################################################################
+-- PART 2 — leaving, deleting a chat you started, and deleting your account
+-- ############################################################################
+
+-- When the last owner leaves, promote_on_owner_leave() (phase 11) hands the
+-- conversation to someone else with an UPDATE. guard_role_change() then
+-- checked the CALLER's role -- but the caller is the person leaving, whose
+-- row is already gone, so they had no role and the hand-off was refused.
+-- The refusal aborted the leave itself. Three things failed that way:
+--
+--   * leaving a group you own while anyone else is still in it;
+--   * "Delete chat" on any 1:1 chat you started (the creator is stamped as
+--     owner there too, and the other person is the heir);
+--   * delete_my_account() for anyone who ever started a chat with someone.
+--
+-- The guard now lets two kinds of caller through: another trigger
+-- (pg_trigger_depth() > 1) and a migration or the dashboard (no signed-in
+-- user). Neither is reachable by a client -- a PostgREST request always
+-- arrives at trigger depth 1, and RLS lets only `authenticated` update this
+-- table at all -- so every rule for people still holds.
+create or replace function public.guard_role_change()
+returns trigger
+language plpgsql
+security definer
+set search_path = public
+as $$
+declare
+  caller_role text := private.my_conversation_role(old.conversation_id);
+begin
+  -- Identity is not editable here; only the role is.
+  new.conversation_id := old.conversation_id;
+  new.user_id         := old.user_id;
+
+  -- The rules below are for people. Two callers are not people and must
+  -- pass: another trigger (promote_on_owner_leave handing ownership over,
+  -- which runs after the leaver's row is gone -- so the leaver has no role
+  -- and was refused, which made leaving, deleting a chat you started, and
+  -- deleting your account all fail), and a migration or the dashboard, which
+  -- run with no signed-in user at all. Neither is reachable by a client:
+  -- PostgREST requests always arrive at trigger depth 1, and RLS only lets
+  -- `authenticated` update this table. Kept identical in phase 14.
+  if pg_trigger_depth() > 1 or auth.uid() is null then
+    return new;
+  end if;
+
+  if new.role is distinct from old.role then
+    if caller_role is distinct from 'owner' then
+      raise exception 'Only the group owner can change roles.' using errcode = '42501';
+    end if;
+    -- Handing ownership over is allowed; demoting yourself while you are the
+    -- only owner is not, or the group is left unadministered.
+    if old.role = 'owner' and new.role <> 'owner'
+       and (select count(*) from public.conversation_participants
+            where conversation_id = old.conversation_id and role = 'owner') = 1 then
+      raise exception 'Promote someone else to owner first.' using errcode = '42501';
+    end if;
+  end if;
+
+  return new;
+end;
+$$;
+
+-- Deleting your account must delete YOU -- not every conversation you ever
+-- started. conversations.created_by was ON DELETE CASCADE, so once the guard
+-- above stopped blocking it, delete_my_account() would have erased every
+-- 1:1 chat and group the person had started, taking everybody else's
+-- messages in them along with it. "Delete" in this app means "delete for
+-- me"; the other people keep their copy.
+--
+-- The chat outlives its creator with created_by set to NULL. Nothing relies
+-- on it being set: every policy compares it to auth.uid(), which a NULL never
+-- matches, so the departed creator's special powers simply lapse.
+alter table public.conversations alter column created_by drop not null;
+
+do $$
+begin
+  if exists (
+    select 1 from pg_constraint
+    where conrelid = 'public.conversations'::regclass
+      and conname = 'conversations_created_by_fkey'
+      and confdeltype <> 'n'  -- 'n' is SET NULL
+  ) then
+    alter table public.conversations drop constraint conversations_created_by_fkey;
+  end if;
+  if not exists (
+    select 1 from pg_constraint
+    where conrelid = 'public.conversations'::regclass
+      and conname = 'conversations_created_by_fkey'
+  ) then
+    alter table public.conversations
+      add constraint conversations_created_by_fkey
+      foreign key (created_by) references public.profiles (id) on delete set null;
+  end if;
+end $$;
+
+
+-- ############################################################################
+-- PART 3 — a chat cannot be taken over by the other person in it
+-- ############################################################################
+
+-- The phase 11 update policy lets either member of a 1:1 chat update the
+-- conversation row -- meant for the shared theme -- with no limit on WHICH
+-- columns. created_by is not cosmetic: it lets its holder add participants
+-- and delete anyone's wrapped key. So the other person could make themselves
+-- creator, delete your copy of the chat key, and leave your device with no
+-- key -- at which point sendMessage() falls back to plaintext.
+--
+-- id, type, created_by and created_at are fixed at creation. The name, bio
+-- and theme stay editable exactly as before. The ON DELETE SET NULL above is
+-- itself an UPDATE made by a trigger, so trigger-made changes pass.
+create or replace function public.protect_conversation_identity()
+returns trigger
+language plpgsql
+set search_path = ''
+as $$
+begin
+  if pg_trigger_depth() > 1 then
+    return new;
+  end if;
+  new.id         := old.id;
+  new.type       := old.type;
+  new.created_by := old.created_by;
+  new.created_at := old.created_at;
+  return new;
+end;
+$$;
+
+drop trigger if exists trg_protect_conversation_identity on public.conversations;
+create trigger trg_protect_conversation_identity
+  before update on public.conversations
+  for each row execute function public.protect_conversation_identity();
+
+-- A read marker is yours to move forward, not to move sideways. "reads
+-- update" checked only that the row was yours, so a marker could be moved
+-- into someone else's chat, where it would show you as having read it.
+-- Restrictive, so re-running phase 6 cannot quietly undo it.
+drop policy if exists "reads update stays in your chats" on public.conversation_reads;
+create policy "reads update stays in your chats" on public.conversation_reads
+  as restrictive
+  for update to authenticated
+  using (true)
+  with check (private.is_conversation_member(conversation_id));
+
+
+-- ############################################################################
+-- PART 4 — no ringing strangers
+-- ############################################################################
+
+-- Phase 10 made profiles invisible to people you share no chat with, so a
+-- stranger cannot see who you are. They could still RING you: the call
+-- insert policy only checked that you were not calling yourself, and any
+-- account's id is one find_profile_by_username() away. Calls are 1:1 in the
+-- app and only offered inside an existing chat, so requiring one costs no
+-- real caller anything. Restrictive, so re-running phase 7 or 8 cannot
+-- quietly undo it.
+drop policy if exists "call_invites only between people who share a chat" on public.call_invites;
+create policy "call_invites only between people who share a chat" on public.call_invites
+  as restrictive
+  for insert to authenticated
+  with check (private.shares_conversation_with(callee_id));
+
+
+-- ############################################################################
+-- PART 5 — no more accounts without a profile
+-- ############################################################################
+
+-- Signup never checked the username. The account was created, then the app
+-- tried to create the profile, the unique index on lower(username) refused a
+-- taken name -- and the app reported that as "couldn't set up your
+-- encryption keys", logged the rest to the console, and carried on. The
+-- result looked like a working account named after someone else, but had no
+-- profile at all: nobody could find it, it could not start a chat (every
+-- chat needs its creator's profile), and it had no encryption.
+--
+-- The profile is now created by the database in the SAME transaction as the
+-- account. A taken name makes the signup itself fail, so there is nothing
+-- half-made left behind. The app shows that as "That username is taken".
+create or replace function public.create_profile_for_new_user()
+returns trigger
+language plpgsql
+security definer
+set search_path = ''
+as $$
+declare
+  wanted text := nullif(btrim(new.raw_user_meta_data ->> 'username'), '');
+begin
+  insert into public.profiles (id, username)
+  values (
+    new.id,
+    coalesce(wanted, nullif(split_part(coalesce(new.email, ''), '@', 1), ''), 'user-' || left(new.id::text, 8))
+  )
+  on conflict (id) do nothing;
+  return new;
+exception
+  when unique_violation then
+    raise exception 'That username is taken.' using errcode = '23505';
+end;
+$$;
+
+drop trigger if exists trg_create_profile_for_new_user on auth.users;
+create trigger trg_create_profile_for_new_user
+  after insert on auth.users
+  for each row execute function public.create_profile_for_new_user();
+
+-- Two unique indexes on lower(username) existed in production -- one from an
+-- ad-hoc snippet, one from phase 7 -- so every signup and rename maintained
+-- both. Keep the one the repository creates; drop any other.
+do $$
+declare
+  extra record;
+begin
+  if to_regclass('public.idx_profiles_username_lower') is null then
+    return;
+  end if;
+  for extra in
+    select c.relname as index_name, con.conname as constraint_name
+    from pg_index i
+    join pg_class c on c.oid = i.indexrelid
+    left join pg_constraint con on con.conindid = i.indexrelid
+    where i.indrelid = 'public.profiles'::regclass
+      and i.indisunique
+      and pg_get_indexdef(i.indexrelid) ilike '%lower(username%'
+      and c.relname <> 'idx_profiles_username_lower'
+  loop
+    if extra.constraint_name is not null then
+      execute format('alter table public.profiles drop constraint %I', extra.constraint_name);
+    else
+      execute format('drop index public.%I', extra.index_name);
+    end if;
+  end loop;
+end $$;
+
+
+-- ############################################################################
+-- PART 6 — give ownerless groups an owner
+-- ############################################################################
+
+-- 15 of 16 groups in production had no owner, so nobody could rename them,
+-- add or remove anyone, or promote anyone. Each gets one, preferring its
+-- creator if still present, then an admin, then whoever has been talking
+-- there longest (the earliest message is the only join-time record there is).
+-- guard_role_change lets this through because a migration has no signed-in
+-- user.
+with ownerless as (
+  select c.id, c.created_by
+  from public.conversations c
+  where c.type = 'group'
+    and exists (select 1 from public.conversation_participants p where p.conversation_id = c.id)
+    and not exists (select 1 from public.conversation_participants p
+                    where p.conversation_id = c.id and p.role = 'owner')
+),
+heir as (
+  select distinct on (o.id) o.id as conversation_id, p.user_id
+  from ownerless o
+  join public.conversation_participants p on p.conversation_id = o.id
+  order by o.id,
+           (p.user_id = o.created_by) desc,
+           (p.role = 'admin') desc,
+           (select min(m.created_at) from public.messages m
+            where m.conversation_id = o.id and m.user_id = p.user_id) asc nulls last,
+           p.user_id
+)
+update public.conversation_participants p
+set role = 'owner'
+from heir
+where p.conversation_id = heir.conversation_id
+  and p.user_id = heir.user_id;
+
+
+-- ############################################################################
+-- PART 7 — trigger functions stay unreachable
+-- ############################################################################
+
+-- Same rule as phases 8 and 12: a trigger function has no business being
+-- callable at /rest/v1/rpc/. All three grantees, or the revoke does nothing.
+do $$
+declare
+  fn text;
+begin
+  foreach fn in array array[
+    'public.stamp_creator_as_owner()',
+    'public.guard_role_change()',
+    'public.protect_conversation_identity()',
+    'public.create_profile_for_new_user()'
+  ] loop
+    if to_regprocedure(fn) is not null then
+      execute format('revoke execute on function %s from public, anon, authenticated', fn);
+    end if;
+  end loop;
+end $$;
+
+
+-- ############################################################################
+-- PART 8 — verify
+-- ############################################################################
+
+-- EXPECTED OUTPUT, one row per check:
+--   helpers in private                  3
+--   functions calling a moved helper    0
+--   created_by on account deletion      set null
+--   groups with no owner                0
+--   unique username indexes             1
+--   signup creates profile              yes
+--   callable SECURITY DEFINER functions delete_my_account, find_profile_by_username
+--   accounts without a profile          0   (anything else: see note below)
+--
+-- "accounts without a profile" counts accounts made before this phase whose
+-- profile was refused. They cannot use the app; delete them in
+-- Authentication -> Users, or they can be given a profile by hand.
+select 'helpers in private' as check_name,
+       (select count(*)::text from pg_proc p join pg_namespace n on n.oid = p.pronamespace
+        where n.nspname = 'private'
+          and p.proname in ('is_conversation_member', 'my_conversation_role', 'shares_conversation_with')) as result
+union all
+select 'functions calling a moved helper',
+       (select count(*)::text from pg_proc p join pg_namespace n on n.oid = p.pronamespace
+        where n.nspname = 'public'
+          and p.prosrc ~ 'public\.(is_conversation_member|my_conversation_role|shares_conversation_with)')
+union all
+select 'created_by on account deletion',
+       (select case confdeltype when 'n' then 'set null' when 'c' then 'CASCADE' else confdeltype::text end
+        from pg_constraint where conname = 'conversations_created_by_fkey')
+union all
+select 'groups with no owner',
+       (select count(*)::text from public.conversations c
+        where c.type = 'group'
+          and exists (select 1 from public.conversation_participants p where p.conversation_id = c.id)
+          and not exists (select 1 from public.conversation_participants p
+                          where p.conversation_id = c.id and p.role = 'owner'))
+union all
+select 'unique username indexes',
+       (select count(*)::text from pg_index i
+        where i.indrelid = 'public.profiles'::regclass and i.indisunique
+          and pg_get_indexdef(i.indexrelid) ilike '%lower(username%')
+union all
+select 'signup creates profile',
+       (select case when count(*) > 0 then 'yes' else 'MISSING' end from pg_trigger
+        where tgname = 'trg_create_profile_for_new_user')
+union all
+select 'callable SECURITY DEFINER functions',
+       (select string_agg(p.proname, ', ' order by p.proname) from pg_proc p
+        join pg_namespace n on n.oid = p.pronamespace
+        where n.nspname = 'public' and p.prosecdef
+          and has_function_privilege('authenticated', p.oid, 'EXECUTE'))
+union all
+select 'accounts without a profile',
+       (select count(*)::text from auth.users u
+        where not exists (select 1 from public.profiles p where p.id = u.id));
 
 -- Done. ✅
