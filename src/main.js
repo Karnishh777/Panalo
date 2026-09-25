@@ -1,23 +1,34 @@
-// Entry point: wire up the chat UI, then the auth UI (which also restores any
-// existing session). crypto.js and the Supabase SDK are loaded as classic scripts
-// before this module, so window.PanaloCrypto and window.supabase already exist.
+// Entry point: wire up the public pages, the chat UI, then the auth UI (which
+// also restores any existing session). crypto.js and the Supabase SDK are
+// loaded as classic scripts before this module, so window.PanaloCrypto and
+// window.supabase already exist.
 import { initChatUI } from "./chat.js";
 import { initAuth } from "./auth.js";
 import { initSettings } from "./settings.js";
 import { initProfile } from "./profile.js";
 import { hydrateIcons } from "./icons.js";
-import { setFocusMode } from "./chat.js";
 import { setServiceWorker } from "./notifications.js";
 import { enforceAppLock } from "./lock.js";
 import { startConnectionWatch } from "./connection.js";
+import { initPublic } from "./public.js";
+import { initA11y } from "./a11y.js";
+import { initHome } from "./home.js";
 
 hydrateIcons(); // swap every <span data-icon> for its themed vector icon
+initSettings(); // theme, accent and fonts first, so nothing repaints later
+initA11y(); // focus management + Escape for every dialog and menu
 startConnectionWatch(); // surface offline/reconnecting/syncing, and recover from gaps
 enforceAppLock(); // if a PIN guards the app, ask for it before anything shows
+initPublic();
 initChatUI();
+initHome();
 initAuth();
-initSettings();
 initProfile();
+
+// Every <form> here is handled in JS; none should ever navigate. Buttons do
+// their own work in click handlers (Enter in a field "clicks" the form's
+// submit button), so this only has to stop the page reload.
+document.addEventListener("submit", (e) => e.preventDefault());
 
 // Service worker: offline shell, installability, and — the reason it matters
 // day to day — notifications that reach the OS notification centre instead of
@@ -41,22 +52,3 @@ if ("serviceWorker" in navigator && location.protocol.startsWith("http")) {
     );
   });
 }
-
-// Accessibility: Escape closes the dismissable modals (not the unlock modal).
-document.addEventListener("keydown", (e) => {
-  if (e.key !== "Escape") return;
-  document.getElementById("direct-modal")?.classList.add("hidden");
-  document.getElementById("group-modal")?.classList.add("hidden");
-  document.getElementById("theme-modal")?.classList.add("hidden");
-  document.getElementById("settings-modal")?.classList.add("hidden");
-  document.getElementById("image-viewer")?.classList.add("hidden");
-  document.getElementById("members-modal")?.classList.add("hidden");
-  document.getElementById("chat-menu")?.classList.add("hidden");
-  document.getElementById("profile-modal")?.classList.add("hidden");
-  document.getElementById("edit-modal")?.classList.add("hidden");
-  document.getElementById("pinned-modal")?.classList.add("hidden");
-  document.getElementById("new-chat-modal")?.classList.add("hidden");
-  document.getElementById("cancel-reply")?.click();
-  document.getElementById("chat-info")?.classList.remove("open");
-  setFocusMode(false);
-});

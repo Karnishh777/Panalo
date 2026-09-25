@@ -9,14 +9,20 @@
 // (even a background one). Notifications with the browser fully closed need Web
 // Push (VAPID keys + a server to push from) — see ROADMAP Phase 9.
 
-const CACHE = "panalo-shell-v1";
+const CACHE = "panalo-shell-v2";
 
 // The app shell only. Messages and images are never cached: they're private,
 // and stale chat content would be worse than none.
 const SHELL = [
   "./",
   "./index.html",
-  "./style.css",
+  "./css/tokens.css",
+  "./css/base.css",
+  "./css/public.css",
+  "./css/shell.css",
+  "./css/chat.css",
+  "./css/overlays.css",
+  "./src/boot.js",
   "./crypto.js",
   "./logo.svg",
   "./doodle.svg",

@@ -101,7 +101,7 @@ and both are the same kind of decision: they cost money.**
 
 ## Current-state snapshot
 
-Pure client-side SPA (`index.html`, `app.js`, `style.css`, `logo.svg`), no build step.
+Pure client-side SPA (`index.html`, `src/*.js`, `css/*.css`, `logo.svg`), no build step.
 Supabase provides Auth + Postgres (`profiles`, `conversations`,
 `conversation_participants`, `messages`) + Realtime + Storage (`chat-files`, public).
 All logic is client-side; **all security currently depends on RLS policies not yet

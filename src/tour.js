@@ -36,12 +36,12 @@ const slides = () => [
   {
     icon: "plus",
     title: "Start something",
-    body: "The + at the top-left is where chats begin. One person or a whole group, your call. Group names are permanent, so choose wisely (or don't — you can rename it later).",
+    body: "The + button is where chats begin — top-left on a computer, middle of the bottom bar on a phone. One person or a whole group, your call.",
   },
   {
     icon: "palette",
     title: "Make it yours",
-    body: "Accents, wallpapers, fonts, and ambient effects live in ⚙️ Settings. Try the Tech effect. We spent a suspicious amount of time on the Tech effect.",
+    body: "Light or dark, eight accents, bubble shapes, wallpapers and fonts — all in Settings → Appearance. Give each chat its own colour from its ⋮ menu.",
   },
   {
     icon: "smile",

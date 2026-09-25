@@ -1,0 +1,273 @@
+/* ============================================================================
+   Panalo design tokens
+   ----------------------------------------------------------------------------
+   Every colour, radius, shadow, duration and font in the product comes from
+   here. Components never hard-code a colour; they ask for a role
+   (--surface, --text-2, --primary-soft...). That is what lets one attribute
+   on <html> switch the whole app between light and dark, and one inline
+   variable re-tint it with a different accent.
+
+   Attributes on <html> (set before first paint by src/boot.js):
+     data-theme     light | dark          resolved from Settings (auto → OS)
+     data-density   comfortable | compact
+     data-bubbles   round | soft | crisp  message bubble shape
+     data-text      s | m | l             chat text size
+     data-motion    reduce                user asked for less motion
+
+   Accent: --primary / --primary-strong / --on-primary are written inline by
+   src/appearance.js (app-wide) and per chat on .chat-main by chat.js. Every
+   other accent shade is derived here with color-mix, so a new accent is one
+   entry in config.js, not a new block of CSS.
+   ========================================================================== */
+
+:root {
+  /* ---- Accent (overridden inline; these are Ember, the brand default) ---- */
+  --primary: #d83b17;
+  --primary-strong: #b02c0d;
+  --on-primary: #ffffff;
+  /* ---- Brand constants (logo, landing art) ---- */
+  --brand-ember: #d83b17;
+  --brand-coral: #ff7a45;
+  --brand-sun: #ffc24b;
+  --brand-grape: #7b45e0;
+  --brand-ink: #15121c;
+
+  /* ---- Status ---- */
+  --danger: #c42b2b;
+  --danger-soft: color-mix(in oklab, var(--danger) 12%, transparent);
+  --success: #1b8a52;
+  --success-soft: color-mix(in oklab, var(--success) 13%, transparent);
+  --warning: #a3620a;
+  --warning-soft: color-mix(in oklab, var(--warning) 14%, transparent);
+  --online: #22b573;
+
+  /* ---- Typography ---- */
+  --font-ui: "Inter", "Segoe UI", system-ui, -apple-system, "Helvetica Neue", Arial, sans-serif;
+  --font-display: "Bricolage Grotesque", "Inter", "Segoe UI", system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, "SF Mono", Consolas, monospace;
+  --chat-font: var(--font-ui);
+
+  --fs-xs: 0.75rem;   /* 12 */
+  --fs-sm: 0.8125rem; /* 13 */
+  --fs-md: 0.9375rem; /* 15 */
+  --fs-lg: 1.0625rem; /* 17 */
+  --fs-xl: 1.375rem;  /* 22 */
+  --fs-2xl: 1.75rem;  /* 28 */
+  --fs-3xl: clamp(2.25rem, 1.2rem + 3.6vw, 4.25rem);
+  --chat-text: 0.96875rem; /* 15.5 */
+
+  /* ---- Space (4px grid) ---- */
+  --s-1: 4px;
+  --s-2: 8px;
+  --s-3: 12px;
+  --s-4: 16px;
+  --s-5: 20px;
+  --s-6: 24px;
+  --s-8: 32px;
+  --s-10: 40px;
+  --s-12: 48px;
+  --s-16: 64px;
+
+  /* ---- Radius ---- */
+  --r-xs: 6px;
+  --r-sm: 10px;
+  --r-md: 14px;
+  --r-lg: 20px;
+  --r-xl: 28px;
+  --r-full: 999px;
+  --bubble-r: 20px;
+  --bubble-r-tight: 6px;
+
+  /* ---- Motion ---- */
+  --ease: cubic-bezier(0.2, 0.8, 0.2, 1);
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+  --dur-1: 120ms;
+  --dur-2: 200ms;
+  --dur-3: 320ms;
+
+  /* ---- Layout ---- */
+  --rail-w: 72px;
+  --sidebar-w: 348px;
+  --drawer-w: 360px;
+  --shell-gap: 8px;
+  --row-h: 68px;
+  --tap: 44px;
+
+  /* ---- Z layers ---- */
+  --z-app: 1;
+  --z-drawer: 30;
+  --z-popover: 60;
+  --z-modal: 80;
+  --z-toast: 95;
+  --z-call: 100;
+  --z-lock: 110;
+  --z-cursor: 120;
+
+  color-scheme: light;
+}
+
+/* ---------------------------------------------------------------------------
+   Derived accent roles.
+   A custom property's var() is resolved where it is DECLARED, so shades
+   derived on :root alone would ignore a per-chat accent set inline on
+   .chat-main. Re-declaring them on every accent scope keeps them in step.
+   ------------------------------------------------------------------------- */
+:root,
+.chat-main,
+.accent-scope {
+  --grad: linear-gradient(135deg, var(--primary), color-mix(in oklab, var(--primary) 74%, #ffb45e));
+  --bubble-out: var(--primary);
+  --primary-soft: color-mix(in oklab, var(--primary) 12%, transparent);
+  --primary-softer: color-mix(in oklab, var(--primary) 7%, transparent);
+  --primary-line: color-mix(in oklab, var(--primary) 32%, transparent);
+  --primary-text: color-mix(in oklab, var(--primary) 84%, black);
+}
+:root[data-theme="dark"],
+:root[data-theme="dark"] .chat-main,
+:root[data-theme="dark"] .accent-scope {
+  --primary-text: color-mix(in oklab, var(--primary) 60%, white);
+  --primary-soft: color-mix(in oklab, var(--primary) 22%, transparent);
+  --primary-softer: color-mix(in oklab, var(--primary) 12%, transparent);
+  --primary-line: color-mix(in oklab, var(--primary) 48%, transparent);
+}
+
+/* ---------------------------------------------------------------------------
+   Light — warm paper, ink text. The default when the OS doesn't say.
+   ------------------------------------------------------------------------- */
+:root,
+:root[data-theme="light"] {
+  --bg: #f3efe9;
+  --bg-tint: #ece6de;
+  --surface: #ffffff;
+  --surface-2: #f7f4f0;
+  --surface-3: #eee9e2;
+  --surface-hover: #f4f0ea;
+  --surface-sunken: #efeae3;
+  --surface-glass: color-mix(in oklab, #ffffff 82%, transparent);
+  --overlay: rgba(20, 16, 26, 0.42);
+
+  --text: #1b1822;
+  --text-2: #56505d;
+  --text-3: #716a78;
+  --text-on-media: #ffffff;
+  --border: #e6e0d8;
+  --border-strong: #d5cdc3;
+  --divider: color-mix(in oklab, #1b1822 8%, transparent);
+
+  --bubble-in: #ffffff;
+  --bubble-in-text: var(--text);
+  --bubble-in-border: #e9e3db;
+  --bubble-out-text: var(--on-primary);
+
+  --shadow-1: 0 1px 2px rgba(27, 24, 34, 0.06), 0 1px 1px rgba(27, 24, 34, 0.04);
+  --shadow-2: 0 4px 14px rgba(27, 24, 34, 0.08), 0 1px 3px rgba(27, 24, 34, 0.05);
+  --shadow-3: 0 18px 48px rgba(27, 24, 34, 0.16), 0 4px 12px rgba(27, 24, 34, 0.06);
+  --shadow-panel: 0 1px 0 rgba(255, 255, 255, 0.7) inset, 0 1px 3px rgba(27, 24, 34, 0.05);
+
+  --wp-ink: #3b2f26;
+  --wp-alpha: 1;
+  --skeleton: #ebe5dd;
+  --skeleton-hi: #f6f2ec;
+  --scrim-media: linear-gradient(180deg, transparent 55%, rgba(0, 0, 0, 0.45));
+  --avatar-sat: 46%;
+  --avatar-light: 48%;
+
+  --focus: 0 0 0 2px var(--surface), 0 0 0 4px color-mix(in oklab, var(--primary) 70%, #1b1822);
+}
+
+/* ---------------------------------------------------------------------------
+   Dark — deep ink with a violet cast, never pure black.
+   ------------------------------------------------------------------------- */
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --bg: #0b0a0f;
+  --bg-tint: #121018;
+  --surface: #15131b;
+  --surface-2: #1c1a24;
+  --surface-3: #25222f;
+  --surface-hover: #1f1c28;
+  --surface-sunken: #110f16;
+  --surface-glass: color-mix(in oklab, #15131b 78%, transparent);
+  --overlay: rgba(4, 3, 8, 0.66);
+
+  --text: #f3f0f7;
+  --text-2: #b9b2c4;
+  --text-3: #938c9f;
+  --border: #2a2633;
+  --border-strong: #3a3546;
+  --divider: color-mix(in oklab, #ffffff 7%, transparent);
+
+  --bubble-in: #211e2a;
+  --bubble-in-text: var(--text);
+  --bubble-in-border: #2c2837;
+
+  --danger: #f0645c;
+  --success: #3ccb84;
+  --warning: #f0b243;
+
+  --shadow-1: 0 1px 2px rgba(0, 0, 0, 0.4);
+  --shadow-2: 0 6px 18px rgba(0, 0, 0, 0.45), 0 1px 3px rgba(0, 0, 0, 0.35);
+  --shadow-3: 0 24px 60px rgba(0, 0, 0, 0.6), 0 4px 14px rgba(0, 0, 0, 0.4);
+  --shadow-panel: 0 0 0 1px rgba(255, 255, 255, 0.03) inset;
+
+  --wp-ink: #d9cfee;
+  --wp-alpha: 0.55;
+  --skeleton: #211e29;
+  --skeleton-hi: #2b2735;
+  --avatar-sat: 52%;
+  --avatar-light: 56%;
+
+  --focus: 0 0 0 2px var(--surface), 0 0 0 4px color-mix(in oklab, var(--primary) 60%, white);
+}
+
+/* ---- Density ---- */
+:root[data-density="compact"] {
+  --row-h: 56px;
+  --shell-gap: 6px;
+}
+
+/* ---- Bubble shape ---- */
+:root[data-bubbles="soft"] {
+  --bubble-r: 14px;
+  --bubble-r-tight: 5px;
+}
+:root[data-bubbles="crisp"] {
+  --bubble-r: 8px;
+  --bubble-r-tight: 3px;
+}
+
+/* ---- Chat text size ---- */
+:root[data-text="s"] { --chat-text: 0.875rem; }
+:root[data-text="l"] { --chat-text: 1.09375rem; }
+
+/* ---- Motion ---------------------------------------------------------------
+   The OS preference always wins; the in-app switch can only ask for LESS. */
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --dur-1: 0ms;
+    --dur-2: 0ms;
+    --dur-3: 0ms;
+  }
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+:root[data-motion="reduce"] {
+  --dur-1: 0ms;
+  --dur-2: 0ms;
+  --dur-3: 0ms;
+}
+:root[data-motion="reduce"] *,
+:root[data-motion="reduce"] *::before,
+:root[data-motion="reduce"] *::after {
+  animation-duration: 0.001ms !important;
+  animation-iteration-count: 1 !important;
+  transition-duration: 0.001ms !important;
+  scroll-behavior: auto !important;
+}

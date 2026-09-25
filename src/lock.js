@@ -11,6 +11,7 @@
 import { showToast } from "./util.js";
 import { supabaseClient } from "./client.js";
 import { state } from "./state.js";
+import { promptSecret } from "./dialogs.js";
 
 // Three independent PINs, so unlocking the app doesn't reveal hidden chats and
 // knowing one PIN doesn't grant the others.
@@ -154,6 +155,9 @@ export function askPin({ purpose = "app", title = "Enter your PIN", subtitle = "
     document.getElementById("pin-title").textContent = title;
     document.getElementById("pin-subtitle").textContent = subtitle;
     cancel.style.display = allowCancel ? "" : "none";
+    // Escape must not be a way past a prompt that can't be cancelled
+    // (src/a11y.js honours data-persistent).
+    modal.toggleAttribute("data-persistent", !allowCancel);
     // "Forgot?" is only meaningful once the user is signed in — the account
     // password is what proves identity to clear a PIN.
     forgot.parentElement.style.display = state.currentUser ? "" : "none";
@@ -188,7 +192,13 @@ export function askPin({ purpose = "app", title = "Enter your PIN", subtitle = "
         showToast("Sign in first, then reset your PIN.");
         return;
       }
-      const password = window.prompt("Enter your account password to reset this PIN:");
+      const password = await promptSecret({
+        title: "Reset this PIN",
+        subtitle: "Enter your account password to prove it's you.",
+        placeholder: "Account password",
+        autocomplete: "current-password",
+        submitLabel: "Reset PIN",
+      });
       if (!password) return;
       const { error } = await supabaseClient.auth.signInWithPassword({
         email: state.currentUser.email,
@@ -223,12 +233,17 @@ export function askPin({ purpose = "app", title = "Enter your PIN", subtitle = "
 export async function enforceAppLock() {
   if (!appLockEnabled() || !hasPin("app")) return;
   document.body.classList.add("app-locked");
-  await askPin({
+  // Only a correct PIN (or a verified password reset) opens the app. The
+  // result used to be ignored, so anything that resolved the prompt -- a
+  // stray Escape handler, say -- unlocked the app.
+  while (!(await askPin({
     purpose: "app",
     title: "Panalo is locked",
     subtitle: "Enter your PIN to continue",
     allowCancel: false,
-  });
+  }))) {
+    /* ask again */
+  }
   document.body.classList.remove("app-locked");
 }
 

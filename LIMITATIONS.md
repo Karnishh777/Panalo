@@ -197,15 +197,20 @@ PIN. A user on two devices effectively has two different apps.
 
 ## 7. Testing and operational gaps 🟡
 
-- **265 tests.** 207 are pure-function (`crypto`, `textassist`, `password`,
-  `mentions`, `mapLimited`, the attachment format, file kinds, the send and
-  key-status rules, disappearing-message timers). 58 replay every migration
+- **341 unit tests.** 283 are pure-function (`crypto`, `textassist`, `password`,
+  `mentions`, `mapLimited`, link splitting, emoji detection, the attachment
+  format, file kinds, the send and key-status rules, disappearing-message
+  timers, appearance settings and accent contrast). 58 replay every migration
   into an in-process Postgres (`tests/migrations.test.mjs`) and exercise RLS
-  and triggers as signed-in users. **Nothing covers the UI, realtime, or a
-  multi-user flow in a browser**, and the test database is PGlite with a
-  minimal Supabase stub, not Supabase itself.
-- **Verification is manual.** This session's confidence came from driving a
-  live account by hand. None of that is repeatable.
+  and triggers as signed-in users.
+- **Browser tests run against a mock, not Supabase.** `tools/qa/smoke.mjs`
+  drives the real UI in Chromium — sign-in, real encryption, sending,
+  realtime, settings, app lock, phone layout — against an in-memory stand-in
+  (`tools/qa/supabase-mock.js`). It proves the interface works; it cannot
+  prove the real project's RLS, realtime delivery or storage behave the same,
+  and it covers one user at a time.
+- **Verification against the live project is manual.** Nothing repeatable
+  signs in to the real deployment.
 - **No CI.** Nothing runs the tests on push.
 - **Migrations are hand-run.** Thirteen SQL files pasted into a dashboard, with
   no migration table and no record of what has been applied. This caused the
@@ -216,18 +221,31 @@ PIN. A user on two devices effectively has two different apps.
   production has actually run.
 - **No backups.** The free plan has none. A bad migration is unrecoverable.
 - **No staging environment.** Every SQL change goes straight to production.
+- **No privacy policy or terms pages.** The landing page states plainly what
+  encryption does and doesn't cover, but there is no legal text, no age
+  statement and no parental-consent flow. For an audience of students and
+  teenagers (DPDP in India, COPPA in the US) that is a launch blocker, not a
+  UI task.
 
 ---
 
 ## 8. Accessibility and UX gaps ⚪
 
-- **Keyboard navigation is incomplete** — modals do not trap focus, and the
-  message list is not reachable by keyboard alone.
-- **Screen-reader coverage is partial.** ARIA labels exist in places; the
-  message list is not a proper live region.
+- **Keyboard navigation is mostly complete.** Dialogs take focus, trap Tab,
+  close on Escape (except the ones that must not: unlock, password recovery,
+  an app-lock PIN, an active call) and give focus back. Menus open on Enter
+  and move with the arrow keys; settings tabs and choices are proper tab and
+  radio groups. Individual messages are not tab stops — a message's actions
+  are reached through its ⋮ button, which only a pointer reveals visually.
+- **Screen-reader coverage is partial.** The message list is a `log` region
+  and new messages are announced, but bubbles don't expose their sender and
+  time as one readable unit.
 - **No RTL support and no localisation** — English only, hard-coded.
-- **`prefers-reduced-motion` is respected in most places, not all.**
-- **No font-size control**; the app ignores OS text-size preferences.
+- **Motion:** the OS reduced-motion setting and an in-app "Reduce motion"
+  switch both turn animation off app-wide.
+- **Text size:** chat text has Small / Default / Large; the rest of the
+  interface uses a mix of rem and px, so it only partly follows the browser's
+  own font-size setting.
 
 ---
 

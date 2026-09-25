@@ -15,8 +15,8 @@ import { startTour } from "./tour.js";
 import { refreshMyProfile } from "./profile.js";
 import { OTP_LENGTH } from "./config.js";
 import { validatePassword, describePasswordPolicy } from "./password.js";
+import { enterApp, leaveApp, showPublic } from "./public.js";
 
-const authScreen = document.getElementById("auth-screen");
 const chatApp = document.getElementById("chat-app");
 const loginForm = document.getElementById("login-form");
 const signupForm = document.getElementById("signup-form");
@@ -36,7 +36,7 @@ const activeChatWindow = document.getElementById("active-chat-window");
 const noChatSelected = document.getElementById("no-chat-selected");
 
 function setAuthMessage(text, ok = false) {
-  authMessage.style.color = ok ? "#00a884" : "#f15c6d";
+  authMessage.dataset.tone = ok ? "ok" : "error";
   authMessage.textContent = text;
 }
 
@@ -84,8 +84,7 @@ async function initApp(session) {
   });
   if (error) console.error("Error saving profile:", error.message);
 
-  authScreen.classList.add("hidden");
-  chatApp.classList.remove("hidden");
+  enterApp();
 
   startPresence(state.currentUser); // go online
   startNotifications();
@@ -114,8 +113,9 @@ export function initAuth() {
   const hint = document.getElementById("password-hint");
   if (hint) hint.textContent = describePasswordPolicy();
 
-  showSignup.addEventListener("click", (e) => {
-    e.preventDefault();
+  // These are links to #signup / #login, so the URL (and the Back button)
+  // follow along; public.js routes on the hash.
+  showSignup.addEventListener("click", () => {
     loginForm.classList.add("hidden");
     signupForm.classList.remove("hidden");
     signupStep1.classList.remove("hidden");
@@ -123,8 +123,7 @@ export function initAuth() {
     authMessage.textContent = "";
   });
 
-  showLogin.addEventListener("click", (e) => {
-    e.preventDefault();
+  showLogin.addEventListener("click", () => {
     signupForm.classList.add("hidden");
     loginForm.classList.remove("hidden");
     authMessage.textContent = "";
@@ -288,8 +287,7 @@ export function initAuth() {
     activeChatWindow.classList.add("hidden");
     noChatSelected.classList.remove("hidden");
     chatApp.classList.remove("chat-open");
-    chatApp.classList.add("hidden");
-    authScreen.classList.remove("hidden");
+    leaveApp("login");
   });
 
   // Unlock modal
@@ -368,8 +366,7 @@ export function initAuth() {
   supabaseClient.auth.onAuthStateChange(async (event) => {
     if (event !== "PASSWORD_RECOVERY") return;
     inRecovery = true;
-    authScreen.classList.remove("hidden");
-    chatApp.classList.add("hidden");
+    leaveApp("login");
     // Tell the user whether their messages will survive the reset.
     const uid = (await supabaseClient.auth.getUser()).data.user?.id;
     const cached = uid ? await idbGetKey(uid) : null;
@@ -429,7 +426,10 @@ export function initAuth() {
   supabaseClient.auth.getSession().then(async ({ data: { session } }) => {
     if (inRecovery) return; // the recovery event will drive the flow
 
-    if (!session) return;
+    if (!session) {
+      showPublic();
+      return;
+    }
     state.currentUser = session.user;
     const status = await ensureUserKeys(null);
     if (status === "ready") {

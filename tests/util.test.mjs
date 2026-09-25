@@ -1,6 +1,6 @@
 // Tests for the pure helpers in src/util.js. No DOM is touched at import
 // time, so this runs in plain Node.
-import { mapLimited } from "../src/util.js";
+import { mapLimited, splitLinks, emojiCount } from "../src/util.js";
 
 let passed = 0;
 const failures = [];
@@ -43,6 +43,39 @@ async function main() {
      JSON.stringify(await mapLimited([1, 2], 99, async (n) => n * 2)) === JSON.stringify([2, 4]));
   ok("limit of zero still makes progress rather than hanging",
      JSON.stringify(await mapLimited([1, 2, 3], 0, async (n) => n)) === JSON.stringify([1, 2, 3]));
+
+  // ---- splitLinks -----------------------------------------------------
+  // Message text is attacker-controlled; the only hrefs that may come out
+  // are http(s), and the text around them must survive untouched.
+  const links = (t) => splitLinks(t).filter((p) => p.type === "link");
+  const joined = (t) => splitLinks(t).map((p) => p.value).join("");
+  ok("plain text is one text part", splitLinks("hello there").length === 1 && splitLinks("hello there")[0].type === "text");
+  ok("finds an https link", links("see https://example.com/a?b=1 now")[0]?.href === "https://example.com/a?b=1");
+  ok("www. gets https://", links("go to www.example.org")[0]?.href === "https://www.example.org");
+  ok("trailing full stop isn't part of the link", links("read https://example.com.")[0]?.value === "https://example.com");
+  ok("trailing comma isn't part of the link", links("https://a.io/x, then")[0]?.value === "https://a.io/x");
+  ok("wrapping parens aren't part of the link", links("(https://a.io/x)")[0]?.value === "https://a.io/x");
+  ok("balanced parens inside a link are kept", links("https://en.wikipedia.org/wiki/Foo_(bar)")[0]?.value === "https://en.wikipedia.org/wiki/Foo_(bar)");
+  ok("javascript: is never a link", links("javascript:alert(1)").length === 0);
+  ok("data: is never a link", links("data:text/html,<b>x</b>").length === 0);
+  ok("quotes end a link", links('"https://a.io/x"onmouseover=1')[0]?.value === "https://a.io/x");
+  ok("angle brackets end a link", links("<https://a.io/x>")[0]?.value === "https://a.io/x");
+  ok("every character survives the split", joined("a https://x.io/b. c www.y.org!") === "a https://x.io/b. c www.y.org!");
+  ok("two links, text between", links("https://a.io and https://b.io").length === 2);
+  ok("bare www. is not a link", links("www. nothing").length === 0);
+
+  // ---- emojiCount -----------------------------------------------------
+  ok("one emoji", emojiCount("🔥") === 1);
+  ok("three emoji", emojiCount("😂😂😂") === 3);
+  ok("four is text-sized", emojiCount("😂😂😂😂") === 0);
+  ok("emoji with a word is text", emojiCount("🔥 lit") === 0);
+  ok("digits are not emoji", emojiCount("123") === 0);
+  ok("ZWJ family counts as one", emojiCount("👨‍👩‍👧") === 1);
+  ok("skin tone counts as one", emojiCount("👍🏽") === 1);
+  ok("flag counts as one", emojiCount("🇵🇭") === 1);
+  ok("heart with variation selector", emojiCount("❤️") === 1);
+  ok("empty is not emoji", emojiCount("   ") === 0);
+  ok("punctuation is text", emojiCount("!!") === 0);
 
   console.log(`\n${passed} passed, ${failures.length} failed`);
   if (failures.length) {

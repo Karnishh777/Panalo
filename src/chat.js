@@ -1,7 +1,7 @@
 // Conversations, messages, sending, and realtime.
 import { supabaseClient, findProfileByUsername } from "./client.js";
 import { state } from "./state.js";
-import { el, showToast, withBusy, getAvatarColor, scrollToBottom, compressImage, announce, setAvatar, formatTime, haptic, attachRipples, mapLimited, cleanUsername } from "./util.js";
+import { el, showToast, withBusy, getAvatarColor, scrollToBottom, compressImage, announce, setAvatar, formatTime, haptic, attachRipples, mapLimited, cleanUsername, hueFor, splitLinks, emojiCount } from "./util.js";
 import { getConversationKey, provisionConversationKey, ensureConversationKey, messagePlaintext, keyForSending, keyProblemFor, forgetConversationKey } from "./encryption.js";
 import { lockedPreview, isKeyRequest, describeKeyRequest } from "./keystatus.js";
 import { renderKeyRequest, renderKeyBanner } from "./keyshare.js";
@@ -11,13 +11,13 @@ import { fileKind, isVisual } from "./filekind.js";
 import { normalizeTimer, timerLabel, timerMarker, parseTimerMarker, describeTimerChange, describeTimerMarker, msUntilExpiry, isExpired } from "./disappear.js";
 import { SEND } from "./sendpolicy.js";
 import { createMemberPicker } from "./memberpicker.js";
-import { uploadEncrypted, isEncryptedAttachment, primeAttachmentCache, clearAttachmentCache, deleteAttachment } from "./attachments.js";
+import { uploadEncrypted, isEncryptedAttachment, primeAttachmentCache, deleteAttachment } from "./attachments.js";
 import { MESSAGES_PAGE_SIZE, THEME_PRESETS, FONT_PRESETS, MAX_FILE_BYTES } from "./config.js";
 import { isOnline, setPresenceListener } from "./presence.js";
 import { isMuted, toggleMute, setInboxListener, setOpenChatListener } from "./notifications.js";
 import {
   markRead, countUnread, isUnreadMessage, formatCount, updateTitleBadge,
-  getLastRead, mergeServerMarkers,
+  mergeServerMarkers,
 } from "./unread.js";
 import {
   getNickname, isPinned, togglePin,
@@ -30,7 +30,7 @@ import {
 import { icon } from "./icons.js";
 import {
   isChatLocked, toggleChatLock, isChatUnlocked, markChatUnlocked,
-  isChatHidden, toggleChatHidden, hiddenVisible, askPin, hasPin, setPin,
+  isChatHidden, toggleChatHidden, hiddenVisible, askPin, hasPin,
   initHiddenShortcut, hiddenCount,
 } from "./lock.js";
 import {
@@ -46,13 +46,18 @@ import { parseSticker, stickerSvg, stickerImg, describeText, initStickerPicker }
 import { getMemories, isDismissed as isMemoryDismissed, dismiss as dismissMemory } from "./memories.js";
 import {
   snoozeMessage, cancelSnooze, isSnoozed, presetOptions, humanWhen,
-  setSnoozeFireHandler, startSnoozes, pendingCount,
+  setSnoozeFireHandler, startSnoozes,
 } from "./snooze.js";
 import { initCalls, startCall, setCallLogger, parseCall, describeCall } from "./calls.js";
 import { parseLocation, locationCard, locationMarker, getCurrentPosition, initLocation, describeLocation } from "./location.js";
-import { splitMentions, mentionsUser, mentionQueryAt, applyMention } from "./mentions.js";
+import { splitMentions, mentionQueryAt, applyMention } from "./mentions.js";
 import { openChatInfo, closeChatInfo, setChatInfoCallbacks, displayTitle, initChatInfo, deleteConversation } from "./chatinfo.js";
-import { reportChannelStatus, forgetChannel, onResync, requestResync } from "./connection.js";
+import { reportChannelStatus, forgetChannel, onResync } from "./connection.js";
+import { getSetting, managePin } from "./settings.js";
+import { paintAccent, clearAccent } from "./appearance.js";
+import { ensureFont } from "./fonts.js";
+import { initEmojiPicker } from "./emoji.js";
+import { SHORTCUT_LABEL } from "./lock.js";
 
 // Message rows currently on screen (id → row) — powers the actions menu.
 const msgCache = new Map();
@@ -83,6 +88,7 @@ function jumpToMessage(id) {
     showToast("That message is further up — scroll to load it.", "");
     return;
   }
+  pinnedToBottom = false; // the reader asked to be somewhere else
   target.scrollIntoView({ behavior: "smooth", block: "center" });
   target.classList.add("flash");
   setTimeout(() => target.classList.remove("flash"), 1200);
@@ -102,10 +108,11 @@ function refreshChatSubtitle() {
     sub.textContent = "typing…";
     sub.className = "chat-subtitle typing";
   } else if (conv.type === "group") {
-    sub.textContent = "Group chat";
+    const n = currentMemberIds.length;
+    sub.textContent = n ? `Group · ${n} member${n === 1 ? "" : "s"}` : "Group";
     sub.className = "chat-subtitle";
   } else if (conv.otherUserId && isOnline(conv.otherUserId)) {
-    sub.textContent = "● online";
+    sub.textContent = "Online";
     sub.className = "chat-subtitle online";
   } else {
     sub.textContent = "Direct message";
@@ -238,16 +245,24 @@ function listTime(iso) {
   return d.toLocaleDateString([], { day: "numeric", month: "short" });
 }
 
-// Total unread on the rail icons + the browser tab title.
-function refreshUnreadBadges() {
+function unreadTotals() {
   const totals = { all: 0, direct: 0, group: 0 };
+  const folders = getFolders();
   for (const c of allConversations) {
     const n = c.unread || 0;
     if (!n) continue;
     totals.all += n;
     if (c.type === "direct") totals.direct += n;
     if (c.type === "group") totals.group += n;
+    for (const f of folders) if (f.convIds.includes(c.id)) totals[`folder:${f.id}`] = (totals[`folder:${f.id}`] || 0) + n;
   }
+  return totals;
+}
+
+// Total unread on the rail icons, the filter chips + the browser tab title.
+function refreshUnreadBadges() {
+  const totals = unreadTotals();
+  renderViewChips(totals);
   document.querySelectorAll(".rail-btn[data-view]").forEach((btn) => {
     const view = btn.dataset.view;
     const count = totals[view] || 0;
@@ -270,7 +285,37 @@ let allConversations = [];
 let chatSearch = "";
 let chatFilter = "all";
 
+// Views offered as chips on phones and tablets (the rail does it on desktop).
+const VIEW_LABELS = { all: "All", direct: "Direct", group: "Groups", starred: "Starred" };
+function viewTitle(view) {
+  if (view.startsWith("folder:")) return getFolders().find((f) => `folder:${f.id}` === view)?.name || "Folder";
+  return view === "all" ? "Chats" : VIEW_LABELS[view] || "Chats";
+}
+function renderViewChips(totals = unreadTotals()) {
+  const box = document.getElementById("view-chips");
+  if (!box) return;
+  const views = [...Object.keys(VIEW_LABELS), ...getFolders().map((f) => `folder:${f.id}`)];
+  box.replaceChildren(
+    ...views.map((view) => {
+      const label = view.startsWith("folder:") ? viewTitle(view) : VIEW_LABELS[view];
+      const count = totals[view] || 0;
+      const chip = el("button", {
+        class: "view-chip",
+        type: "button",
+        role: "tab",
+        "aria-selected": String(chatFilter === view),
+        onClick: () => selectView(view),
+      }, [label, count ? el("span", { class: "chip-count", text: formatCount(count), "aria-label": `${count} unread` }) : null]);
+      return chip;
+    })
+  );
+}
+
 function renderConversations() {
+  // Home (src/home.js) and anything else that summarises the chat list
+  // listens for this rather than reaching into chat.js.
+  document.dispatchEvent(new CustomEvent("panalo:chats", { detail: allConversations }));
+  refreshQuickBar();
   conversationsList.innerHTML = "";
   if (chatFilter === "starred") {
     renderStarredList();
@@ -300,12 +345,20 @@ function renderConversations() {
     } else {
       // No chats at all in this view — soft, encouraging empty state.
       const isFiltered = chatFilter !== "all";
+      const isFolder = chatFilter.startsWith("folder:");
       conversationsList.append(el("div", { class: "empty-list" }, [
-        el("span", { class: "empty-emoji", text: isFiltered ? "🗂️" : "💬" }),
-        el("div", { class: "empty-title", text: isFiltered ? "Nothing here yet." : "Start a chat" }),
-        el("div", { class: "empty-sub", text: isFiltered
-          ? "Chats you add to this view will appear here."
-          : "Tap the pencil to message someone by username." }),
+        el("span", { class: "empty-emoji", "aria-hidden": "true", text: isFiltered ? "🗂️" : "💬" }),
+        el("div", { class: "empty-title", text: isFiltered ? "Nothing here yet" : "Start your first chat" }),
+        el("div", { class: "empty-sub", text: isFolder
+          ? "Add chats to this folder from a chat's info panel."
+          : isFiltered
+            ? "Chats of this kind will show up here."
+            : "Message a friend by their username, or start a group." }),
+        isFiltered ? null : el("button", {
+          class: "btn btn-primary empty-action",
+          type: "button",
+          onClick: () => document.getElementById("new-chat-btn")?.click(),
+        }, [icon("plus", 18), "New chat"]),
       ]));
     }
     return;
@@ -392,7 +445,11 @@ async function renderMessageHits(q) {
 async function renderStarredList() {
   const stars = getStars();
   if (!stars.length) {
-    conversationsList.append(el("div", { class: "list-empty", text: "No starred messages yet.\nHover a message → ⋮ → Star." }));
+    conversationsList.append(el("div", { class: "empty-list" }, [
+      el("span", { class: "empty-emoji", "aria-hidden": "true", text: "⭐" }),
+      el("div", { class: "empty-title", text: "No starred messages" }),
+      el("div", { class: "empty-sub", text: "Open a message's menu — right-click, or long-press on a phone — and choose Star to keep it here." }),
+    ]));
     return;
   }
   const { data } = await supabaseClient
@@ -683,6 +740,7 @@ async function openConversation(conv) {
   const baseTitle = conv.type === "group" ? conv.name : conv.displayTitle || conv.name;
   setAvatar(headerAvatar, baseTitle, conv.type === "group" ? null : conv.otherAvatar);
   otherTyping = false;
+  currentMemberIds = []; // the previous chat's members must not be counted here
   refreshChatSubtitle(); // live: typing / online / default
 
   // Calls are 1:1 only (group calls need an SFU — a separate initiative).
@@ -697,7 +755,10 @@ async function openConversation(conv) {
 
   noChatSelected.classList.add("hidden");
   activeChatWindow.classList.remove("hidden");
+  // Names above bubbles only mean something in groups (chat.css).
+  activeChatWindow.classList.toggle("is-group", conv.type === "group");
   chatApp.classList.add("chat-open"); // mobile: switch from list to chat view
+  resetLiveEnd();
 
   // Update the active highlight in place instead of rebuilding the whole sidebar.
   document.querySelectorAll(".conv-item").forEach((item) => {
@@ -712,6 +773,7 @@ async function openConversation(conv) {
   // Restore any half-typed message you left here last time. Focus the composer
   // so you can keep going with the same key press.
   messageInput.value = getDraft(conv.id);
+  autosizeComposer();
   refreshSendReady();
 
   // Composer placeholder learns from the chat: for empty chats we invite you
@@ -722,7 +784,11 @@ async function openConversation(conv) {
   const emptyChat = !conv.lastMessage;
   messageInput.placeholder = emptyChat && peerName
     ? `Say hi to ${peerName.split(" ")[0]} 👋`
-    : "Type a message...";
+    : "Message";
+  refreshQuickBar(conv);
+  // Straight into typing on a computer. Not on a phone, where focusing would
+  // throw up the keyboard over the conversation you just opened.
+  if (window.matchMedia("(pointer: fine)").matches) messageInput.focus({ preventScroll: true });
 
   // Play the chat-switch motion (fade + soft slide-in). The class is removed
   // and re-added via a forced reflow so it restarts even when the previous
@@ -758,6 +824,7 @@ async function openConversation(conv) {
   ]);
   currentMemberIds = (parts || []).map((p) => p.user_id);
   currentMemberNameList = (parts || []).map((p) => p.profiles?.username).filter(Boolean);
+  refreshChatSubtitle(); // now the member count is known
 
   // A chat created while someone was still setting up encryption never got a
   // key, and nothing revisited that -- so it stayed plaintext forever, even
@@ -1005,6 +1072,7 @@ async function fetchMessages() {
     }
     renderMessage(msg);
   });
+  refreshDaySeparators();
 
   if (data && data.length) state.oldestLoadedAt = data[data.length - 1].created_at;
   state.hasMoreOlderMessages = (data || []).length === MESSAGES_PAGE_SIZE;
@@ -1034,6 +1102,7 @@ async function loadOlderMessages() {
 
   await loadReactions((data || []).map((m) => m.id), { replace: false });
   (data || []).forEach((msg) => renderMessage(msg, true));
+  refreshDaySeparators();
 
   if (data && data.length) state.oldestLoadedAt = data[data.length - 1].created_at;
   state.hasMoreOlderMessages = (data || []).length === MESSAGES_PAGE_SIZE;
@@ -1121,13 +1190,25 @@ function updateMentionPicker() {
   openMentionPicker(matches, found.start, caret);
 }
 
+// Plain text with web links made clickable. Built from nodes, never HTML;
+// the href can only be an http(s) address (util.js splitLinks).
+function appendLinked(node, text) {
+  for (const piece of splitLinks(text)) {
+    if (piece.type === "link") {
+      node.append(el("a", { href: piece.href, target: "_blank", rel: "noopener noreferrer nofollow", text: piece.value }));
+    } else {
+      node.append(document.createTextNode(piece.value));
+    }
+  }
+}
+
 function renderText(node, plaintext) {
   const names = currentMemberNameList;
   const parts = splitMentions(plaintext, names);
 
   // Nothing to mark up: keep the simple path, which is the overwhelmingly
   // common case.
-  if (parts.length === 1 && parts[0].type === "text") {
+  if (parts.length === 1 && parts[0].type === "text" && !/https?:\/\/|www\./i.test(plaintext)) {
     node.textContent = plaintext;
     return;
   }
@@ -1136,7 +1217,7 @@ function renderText(node, plaintext) {
   const me = String(state.currentUsername || "").toLowerCase();
   for (const part of parts) {
     if (part.type !== "mention") {
-      node.append(document.createTextNode(part.value));
+      appendLinked(node, part.value);
       continue;
     }
     node.append(
@@ -1146,6 +1227,87 @@ function renderText(node, plaintext) {
       })
     );
   }
+}
+
+// ---- Day separators ----
+function dayKey(iso) {
+  const d = new Date(iso || Date.now());
+  return `${d.getFullYear()}-${d.getMonth() + 1}-${d.getDate()}`;
+}
+function dayLabel(iso) {
+  const d = new Date(iso || Date.now());
+  const today = new Date();
+  const startOf = (x) => new Date(x.getFullYear(), x.getMonth(), x.getDate()).getTime();
+  const days = Math.round((startOf(today) - startOf(d)) / 86400000);
+  if (days === 0) return "Today";
+  if (days === 1) return "Yesterday";
+  if (days > 1 && days < 7) return d.toLocaleDateString([], { weekday: "long" });
+  return d.toLocaleDateString([], {
+    weekday: "short",
+    day: "numeric",
+    month: "short",
+    ...(d.getFullYear() !== today.getFullYear() ? { year: "numeric" } : {}),
+  });
+}
+function daySeparator(iso) {
+  const sep = el("div", { class: "day-separator", role: "separator", text: dayLabel(iso) });
+  sep.dataset.day = dayKey(iso);
+  return sep;
+}
+// After a bulk load (a page of history arrives above what's on screen),
+// rebuild the separators rather than patching them one row at a time.
+function refreshDaySeparators() {
+  messagesList.querySelectorAll(".day-separator:not(.unread-divider)").forEach((n) => n.remove());
+  let lastDay = null;
+  messagesList.querySelectorAll(".message").forEach((row) => {
+    const day = row.dataset.day;
+    if (day && day !== lastDay) {
+      const msg = msgCache.get(row.id.replace(/^msg-/, ""));
+      // The unread divider, if it sits right above this row, stays above
+      // the date so "Today" still reads as the heading of the section.
+      const anchor = row.previousElementSibling?.classList.contains("unread-divider") ? row.previousElementSibling : row;
+      messagesList.insertBefore(daySeparator(msg?.created_at), anchor);
+    }
+    lastDay = day;
+  });
+}
+
+// ---- Message actions by touch / right-click ----
+// The ⋮ button appears on hover, which touch screens don't have. Long-press
+// is what every messenger uses there; right-click does the same on desktop.
+const LONG_PRESS_MS = 450;
+function wireMessagePress(row, msg) {
+  if (row.classList.contains("system-note")) return;
+  row.addEventListener("contextmenu", (e) => {
+    // Links, photos and videos keep the browser's own menu (copy link, save).
+    if (e.target.closest("a, img, video")) return;
+    e.preventDefault();
+    openMsgActions(msg, row);
+  });
+  let timer = null;
+  let startX = 0;
+  let startY = 0;
+  row.addEventListener("touchstart", (e) => {
+    const t = e.touches[0];
+    startX = t.clientX;
+    startY = t.clientY;
+    clearTimeout(timer);
+    timer = setTimeout(() => {
+      timer = null;
+      haptic(12);
+      openMsgActions(msg, row);
+    }, LONG_PRESS_MS);
+  }, { passive: true });
+  const cancel = () => {
+    clearTimeout(timer);
+    timer = null;
+  };
+  row.addEventListener("touchmove", (e) => {
+    const t = e.touches[0];
+    if (Math.abs(t.clientX - startX) > 8 || Math.abs(t.clientY - startY) > 8) cancel();
+  }, { passive: true });
+  row.addEventListener("touchend", cancel);
+  row.addEventListener("touchcancel", cancel);
 }
 
 function renderMessage(msg, prepend = false) {
@@ -1173,7 +1335,8 @@ function renderMessage(msg, prepend = false) {
       if (
         prevMsg &&
         prevMsg.user_id === msg.user_id &&
-        Math.abs(new Date(msg.created_at) - new Date(prevMsg.created_at)) < GROUP_GAP_MS
+        Math.abs(new Date(msg.created_at) - new Date(prevMsg.created_at)) < GROUP_GAP_MS &&
+        dayKey(prevMsg.created_at) === dayKey(msg.created_at)
       ) {
         grouped = true;
         // The previous message was the tail of a run — it stops being the tail
@@ -1189,6 +1352,8 @@ function renderMessage(msg, prepend = false) {
     class: `message${isMine ? " my-message" : ""}${msg._pending ? " pending" : ""}${grouped ? " grouped-mid grouped-end" : " grouped-end"}`,
     id: `msg-${msg.id}`,
   });
+  messageEl.dataset.day = dayKey(msg.created_at);
+  if (!isMine) messageEl.style.setProperty("--author-hue", hueFor(msg.username || msg.user_id));
 
   messageEl.append(el("div", { class: "message-author", text: isMine ? "You" : (msg.username || "Unknown") }));
 
@@ -1261,6 +1426,10 @@ function renderMessage(msg, prepend = false) {
         textEl.append(locationCard(place));
       } else {
         renderText(textEl, plaintext);
+        // "🔥" on its own reads better big and bubble-less.
+        const n = !media && !msg.reply_to ? emojiCount(plaintext) : 0;
+        messageEl.classList.toggle("emoji-only", n > 0);
+        if (n) messageEl.dataset.count = String(n);
       }
     };
     if (msg.iv) messagePlaintext(msg).then(showText);
@@ -1293,8 +1462,16 @@ function renderMessage(msg, prepend = false) {
     );
   }
 
-  if (prepend) messagesList.insertBefore(messageEl, messagesList.firstChild);
-  else messagesList.append(messageEl);
+  if (!msg._pending) wireMessagePress(messageEl, msg);
+
+  if (prepend) {
+    messagesList.insertBefore(messageEl, messagesList.firstChild);
+  } else {
+    // A new day starts a new section.
+    const prevRow = [...messagesList.querySelectorAll(".message")].pop();
+    if (!prevRow || prevRow.dataset.day !== messageEl.dataset.day) messagesList.append(daySeparator(msg.created_at));
+    messagesList.append(messageEl);
+  }
   refreshMsgFlags(msg.id);
   renderReactions(msg.id);
   if (isSnoozed(msg.id)) messageEl.classList.add("snoozed");
@@ -1648,7 +1825,7 @@ async function saveEdit() {
   const rowEl = document.getElementById(`msg-${msg.id}`);
   if (rowEl) {
     const textEl = rowEl.querySelector(".message-text");
-    if (textEl) textEl.textContent = newText;
+    if (textEl) renderText(textEl, newText); // same links/@mentions as a new message
     if (!rowEl.querySelector(".edited-tag")) {
       rowEl.querySelector(".message-footer")?.append(el("span", { class: "edited-tag", text: "edited" }));
     }
@@ -1772,7 +1949,14 @@ async function openPinnedModal() {
 
 // ---- Per-chat font + wallpaper (personal) ----
 function applyChatFont(convId) {
-  const font = FONT_PRESETS.find((f) => f.id === getChatFont(convId)) || FONT_PRESETS[0];
+  // "Classic" means "whatever the app font is", so it inherits rather than
+  // pinning Inter over an app-wide choice.
+  const font = FONT_PRESETS.find((f) => f.id === getChatFont(convId));
+  if (!font || font.id === "default") {
+    chatMainEl.style.removeProperty("--chat-font");
+    return;
+  }
+  ensureFont(font);
   chatMainEl.style.setProperty("--chat-font", font.stack);
 }
 
@@ -1833,6 +2017,7 @@ async function handleSend() {
   const convId = state.currentConversationId;
   const replyToId = replyTarget?.id || null;
   messageInput.value = "";
+  autosizeComposer();
   forgetDraft(convId); // the message is on its way; don't restore the same text next open
   refreshSendReady();
   cancelReply();
@@ -2050,10 +2235,12 @@ function subscribeToMessages() {
     .on("broadcast", { event: "typing" }, () => {
       otherTyping = true;
       refreshChatSubtitle();
+      showTypingBubble(true);
       clearTimeout(typingTimer);
       typingTimer = setTimeout(() => {
         otherTyping = false;
         refreshChatSubtitle();
+        showTypingBubble(false);
       }, 2500);
     })
     .on(
@@ -2063,10 +2250,20 @@ function subscribeToMessages() {
         // Decide BEFORE rendering: appending the row changes scrollHeight, so
         // measuring afterwards always reports "not at the bottom".
         const wasAtBottom = isNearBottom();
+        const fromOther = payload.new.user_id !== state.currentUser.id;
+        // Their message arrived, so they've stopped typing.
+        if (fromOther) {
+          otherTyping = false;
+          clearTimeout(typingTimer);
+          showTypingBubble(false);
+          refreshChatSubtitle();
+        }
         renderMessage(payload.new);
         // Only follow the conversation down if the reader was already at the
-        // live end. Someone scrolled up reading history should stay there.
-        if (wasAtBottom || payload.new.user_id === state.currentUser.id) scrollToBottom();
+        // live end. Someone scrolled up reading history should stay there --
+        // and gets a count on the jump button instead.
+        if (wasAtBottom || !fromOther) scrollToBottom();
+        else if (document.getElementById(`msg-${payload.new.id}`)) bumpUnseen();
         // Keep search current. Without this the index is whatever existed at
         // the first search of the session, so anything said afterwards is
         // simply not findable.
@@ -2090,7 +2287,7 @@ function subscribeToMessages() {
         const textEl = rowEl.querySelector(".message-text");
         if (textEl && m.content) {
           messagePlaintext(m).then((t) => {
-            textEl.textContent = t;
+            renderText(textEl, t);
             m._plain = t;
           });
         }
@@ -2169,23 +2366,67 @@ function isNearBottom() {
   return c.scrollHeight - c.scrollTop - c.clientHeight < NEAR_BOTTOM_PX;
 }
 
+// ---- Live end: "jump to latest" + typing bubble ----
+let unseenWhileAway = 0;
+// Whether the reader is parked at the newest message. Encrypted text,
+// photos and reactions fill in AFTER a message is placed, growing the list
+// under the reader; while this is true the view follows, so opening a chat
+// really ends on its latest message. Scrolling up turns it off.
+let pinnedToBottom = true;
+let lastScrollIntent = 0;
+function refreshJumpButton() {
+  const btn = document.getElementById("jump-latest");
+  const count = document.getElementById("jump-count");
+  if (!btn) return;
+  const away = !isNearBottom();
+  if (!away) unseenWhileAway = 0;
+  btn.classList.toggle("hidden", !away);
+  count.classList.toggle("hidden", !unseenWhileAway);
+  count.textContent = formatCount(unseenWhileAway);
+  btn.setAttribute("aria-label", unseenWhileAway ? `Jump to the latest message, ${unseenWhileAway} new` : "Jump to the latest message");
+}
+function bumpUnseen() {
+  unseenWhileAway++;
+  refreshJumpButton();
+}
+function resetLiveEnd() {
+  unseenWhileAway = 0;
+  pinnedToBottom = true;
+  document.getElementById("jump-latest")?.classList.add("hidden");
+  showTypingBubble(false);
+}
+function showTypingBubble(on) {
+  const bubble = document.getElementById("typing-bubble");
+  if (!bubble) return;
+  const stick = on && isNearBottom();
+  bubble.classList.toggle("hidden", !on);
+  if (stick) scrollToBottom();
+}
+
+// ---- Composer ----
+// The box grows with what you type, up to a limit, then scrolls.
+function autosizeComposer() {
+  messageInput.style.height = "auto";
+  messageInput.style.height = `${Math.min(messageInput.scrollHeight, 180)}px`;
+}
+// Quick replies: always in a chat with no messages yet (a nudge to start),
+// otherwise only if switched on in Settings.
+function refreshQuickBar(conv = state.currentConversation) {
+  const bar = document.getElementById("quick-bar");
+  if (!bar) return;
+  const show = !!conv && (getSetting("quickBar") || !conv.lastMessage);
+  bar.classList.toggle("hidden", !show);
+}
+
 // ---- Per-chat theme ----
 const chatMainEl = document.querySelector(".chat-main");
 
-const THEME_VARS = ["--primary", "--primary-strong", "--grad", "--bubble-out"];
-
 function applyChatTheme(themeId) {
-  // "default" (or none) → clear overrides so the chat uses the global accent.
+  // "default" (or none, or an id this build doesn't know) → clear overrides
+  // so the chat uses the app accent.
   const preset = themeId && themeId !== "default" ? THEME_PRESETS.find((t) => t.id === themeId) : null;
-  if (!preset) {
-    THEME_VARS.forEach((v) => chatMainEl.style.removeProperty(v));
-    return;
-  }
-  const grad = `linear-gradient(135deg, ${preset.primary}, color-mix(in srgb, ${preset.primary} 55%, white))`;
-  chatMainEl.style.setProperty("--primary", preset.primary);
-  chatMainEl.style.setProperty("--primary-strong", preset.strong);
-  chatMainEl.style.setProperty("--grad", grad);
-  chatMainEl.style.setProperty("--bubble-out", grad);
+  if (!preset) clearAccent(chatMainEl);
+  else paintAccent(chatMainEl, preset.id);
 }
 
 function updateSwatchSelection(themeId) {
@@ -2272,7 +2513,7 @@ function openChatMenu() {
   const conv = state.currentConversation;
   const menu = document.getElementById("chat-menu");
   // "View members" only makes sense for groups.
-  document.getElementById("menu-members").style.display = conv && conv.type === "group" ? "block" : "none";
+  document.getElementById("menu-members").style.display = conv && conv.type === "group" ? "" : "none";
   // Reflect current mute + pin state.
   const muteLabel = menu.querySelector('[data-action="mute"] .menu-label');
   const pinLabel = menu.querySelector('[data-action="pin"] .menu-label');
@@ -2314,7 +2555,7 @@ function renderRailFolders() {
       type: "button",
       title: folder.name,
       "aria-label": `${folder.name} folder`,
-      onClick: () => selectView(`folder:${folder.id}`, btn),
+      onClick: () => selectView(`folder:${folder.id}`),
     });
     btn.dataset.view = `folder:${folder.id}`;
     btn.append(folderIconNode(folder.icon, 20));
@@ -2322,9 +2563,12 @@ function renderRailFolders() {
   });
 }
 
-function selectView(view, btn) {
+function selectView(view) {
   chatFilter = view;
-  document.querySelectorAll(".rail-btn[data-view]").forEach((b) => b.classList.toggle("active", b === btn));
+  document.querySelectorAll(".rail-btn[data-view]").forEach((b) => b.classList.toggle("active", b.dataset.view === view));
+  const title = document.querySelector(".sidebar-title");
+  if (title) title.textContent = viewTitle(view);
+  renderViewChips();
   renderConversations();
 }
 
@@ -2363,13 +2607,10 @@ function renderFolderModal() {
           text: "Delete",
           onClick: () => {
             deleteFolder(folder.id);
-            if (chatFilter === `folder:${folder.id}`) {
-              chatFilter = "all";
-              document.querySelectorAll(".rail-btn[data-view]").forEach((b) => b.classList.toggle("active", b.dataset.view === "all"));
-            }
             renderFolderModal();
             renderRailFolders();
-            renderConversations();
+            if (chatFilter === `folder:${folder.id}`) selectView("all");
+            else renderViewChips();
           },
         }),
       ])
@@ -2432,7 +2673,82 @@ export function initChatUI() {
     if (container.scrollTop < 80 && state.hasMoreOlderMessages && !state.loadingOlder) {
       loadOlderMessages();
     }
+    // Reaching the bottom re-pins. Leaving it only counts if the reader did
+    // it -- a scroll shortly after their own wheel, touch, key or pointer
+    // (a scrollbar drag has only the pointer). Chrome's scroll anchoring also
+    // fires scroll events as decrypted text fills in, and those must not
+    // unpin the view.
+    if (isNearBottom()) pinnedToBottom = true;
+    else if (Date.now() - lastScrollIntent < 1200) pinnedToBottom = false;
+    refreshJumpButton();
+  }, { passive: true });
+  const container = document.getElementById("messages-container");
+  const intent = () => {
+    lastScrollIntent = Date.now();
+  };
+  for (const type of ["wheel", "touchmove", "pointerdown", "keydown"]) {
+    container.addEventListener(type, intent, { passive: true });
+  }
+  if ("ResizeObserver" in window) {
+    new ResizeObserver(() => {
+      if (pinnedToBottom && state.currentConversationId) scrollToBottom();
+    }).observe(messagesList);
+  }
+  document.getElementById("jump-latest")?.addEventListener("click", () => {
+    const c = document.getElementById("messages-container");
+    c.scrollTo({ top: c.scrollHeight, behavior: "smooth" });
+    unseenWhileAway = 0;
+    refreshJumpButton();
   });
+
+  // Enter sends; Shift+Enter is a new line. On touch keyboards Enter is a new
+  // line and the send button sends -- the convention on phones. While the
+  // @mention list is open, arrows pick and Enter/Tab choose.
+  const coarse = window.matchMedia("(pointer: coarse)").matches;
+  messageInput.addEventListener("keydown", (e) => {
+    if (mentionPicker && ["ArrowDown", "ArrowUp", "Enter", "Tab"].includes(e.key)) {
+      const options = [...mentionPicker.querySelectorAll(".mention-option")];
+      const i = Math.max(0, options.findIndex((o) => o.classList.contains("active")));
+      if (e.key === "ArrowDown" || e.key === "ArrowUp") {
+        e.preventDefault();
+        const next = (i + (e.key === "ArrowDown" ? 1 : -1) + options.length) % options.length;
+        options.forEach((o, j) => o.classList.toggle("active", j === next));
+        return;
+      }
+      e.preventDefault();
+      options[i]?.dispatchEvent(new MouseEvent("mousedown", { bubbles: true, cancelable: true }));
+      return;
+    }
+    if (e.key === "Enter" && !e.shiftKey && !e.isComposing && !coarse) {
+      e.preventDefault();
+      messageForm.requestSubmit();
+    }
+  });
+  messageInput.addEventListener("input", autosizeComposer);
+  // Keep the keyboard up on phones: tapping Send would otherwise blur the box.
+  const sendBtn = document.getElementById("send-btn");
+  let refocusAfterSend = false;
+  sendBtn.addEventListener("pointerdown", () => {
+    refocusAfterSend = document.activeElement === messageInput;
+  });
+  sendBtn.addEventListener("mousedown", (e) => e.preventDefault());
+  messageForm.addEventListener("submit", () => {
+    if (refocusAfterSend) messageInput.focus({ preventScroll: true });
+    refocusAfterSend = false;
+  });
+
+  initEmojiPicker({
+    panel: document.getElementById("emoji-panel"),
+    button: document.getElementById("emoji-btn"),
+    onPick: (emoji) => {
+      const start = messageInput.selectionStart ?? messageInput.value.length;
+      const end = messageInput.selectionEnd ?? start;
+      messageInput.setRangeText(emoji, start, end, "end");
+      messageInput.focus();
+      messageInput.dispatchEvent(new Event("input", { bubbles: true }));
+    },
+  });
+  document.addEventListener("panalo:settings", () => refreshQuickBar());
 
   // One "+" in the rail opens a chooser: direct chat or group.
   const newChatModal = document.getElementById("new-chat-modal");
@@ -2755,7 +3071,7 @@ export function initChatUI() {
     renderConversations();
   });
   document.querySelectorAll(".rail-btn[data-view]").forEach((btn) => {
-    btn.addEventListener("click", () => selectView(btn.dataset.view, btn));
+    btn.addEventListener("click", () => selectView(btn.dataset.view));
   });
   renderRailFolders();
 
@@ -2792,6 +3108,7 @@ export function initChatUI() {
     pendingFolderIcon = "star";
     renderFolderModal();
     renderRailFolders();
+    renderViewChips();
     showToast(`Folder "${name}" created`, "success");
   });
 
@@ -2878,10 +3195,7 @@ export function initChatUI() {
     } else if (item.dataset.action === "lock" && conv) {
       // A lock is only a lock if there's a PIN behind it.
       (async () => {
-        if (!hasPin("chat")) {
-          const pin = window.prompt("Choose a 4–8 digit PIN for locking chats:");
-          if (!pin || !(await setPin("chat", pin))) return;
-        }
+        if (!hasPin("chat") && !(await managePin("chat", "chat-lock PIN"))) return;
         const locked = toggleChatLock(conv.id);
         if (!locked) markChatUnlocked(conv.id);
         showToast(locked ? "Chat locked" : "Chat unlocked", "success");
@@ -2889,7 +3203,7 @@ export function initChatUI() {
       })();
     } else if (item.dataset.action === "hide" && conv) {
       const hidden = toggleChatHidden(conv.id);
-      showToast(hidden ? "Chat hidden — reveal it in Settings" : "Chat is visible again", "success");
+      showToast(hidden ? `Chat hidden. Bring hidden chats back with ${SHORTCUT_LABEL}, or a two-finger tap on a phone.` : "Chat is visible again", "success");
       renderConversations();
     } else if (item.dataset.action === "theme") {
       updateSwatchSelection(conv?.theme);

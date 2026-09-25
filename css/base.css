@@ -1,0 +1,804 @@
+/* ============================================================================
+   Base: reset, typography, primitives (buttons, fields, switches, chips),
+   and the global feedback layers (toasts, alerts, connection pill).
+   ========================================================================== */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+* {
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+  -webkit-tap-highlight-color: transparent;
+}
+
+body {
+  min-height: 100vh;
+  min-height: 100dvh;
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-ui);
+  font-size: var(--fs-md);
+  line-height: 1.45;
+  font-feature-settings: "cv11", "ss01";
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+  overflow-x: hidden;
+}
+
+h1,
+h2,
+h3,
+h4 {
+  font-family: var(--font-display);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  line-height: 1.15;
+  color: var(--text);
+}
+h3 {
+  font-size: var(--fs-xl);
+}
+
+a {
+  color: var(--primary-text);
+  text-decoration-thickness: 1px;
+  text-underline-offset: 2px;
+}
+
+img,
+svg,
+video,
+canvas {
+  display: block;
+  max-width: 100%;
+}
+.icon {
+  flex: none;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.9;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+[data-icon] {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+button,
+input,
+textarea,
+select {
+  font: inherit;
+  color: inherit;
+}
+button {
+  background: none;
+  border: 0;
+  cursor: pointer;
+  -webkit-user-select: none;
+  user-select: none;
+}
+button:disabled {
+  cursor: not-allowed;
+  opacity: 0.55;
+}
+
+::selection {
+  background: color-mix(in oklab, var(--primary) 26%, transparent);
+}
+
+.hidden {
+  display: none !important;
+}
+.sr-only {
+  position: absolute !important;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* One focus treatment everywhere, only for keyboard users. */
+:focus {
+  outline: none;
+}
+:focus-visible {
+  outline: none;
+  box-shadow: var(--focus);
+  border-radius: var(--r-sm);
+}
+input:focus-visible,
+textarea:focus-visible {
+  box-shadow: none;
+}
+
+/* Scrollbars: thin and quiet. */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: color-mix(in oklab, var(--text) 18%, transparent) transparent;
+}
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+::-webkit-scrollbar-thumb {
+  background: color-mix(in oklab, var(--text) 16%, transparent);
+  border: 3px solid transparent;
+  background-clip: padding-box;
+  border-radius: 99px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+kbd {
+  font-family: var(--font-mono);
+  font-size: var(--fs-xs);
+  padding: 3px 8px;
+  border-radius: var(--r-xs);
+  background: var(--surface-3);
+  border: 1px solid var(--border-strong);
+  border-bottom-width: 2px;
+  color: var(--text);
+  white-space: nowrap;
+}
+
+/* ---------------------------------------------------------------------------
+   Buttons
+   ------------------------------------------------------------------------- */
+.btn,
+.modal-btn,
+.tour-next,
+.key-banner-btn,
+.secondary-btn,
+.danger-btn,
+.mini-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--s-2);
+  min-height: var(--tap);
+  padding: 0 var(--s-5);
+  border-radius: var(--r-full);
+  font-weight: 600;
+  font-size: var(--fs-md);
+  line-height: 1;
+  white-space: nowrap;
+  transition: background-color var(--dur-2) var(--ease), color var(--dur-2) var(--ease),
+    transform var(--dur-1) var(--ease), box-shadow var(--dur-2) var(--ease);
+  position: relative;
+  overflow: hidden;
+  text-decoration: none;
+}
+.btn:active:not(:disabled),
+.modal-btn:active:not(:disabled),
+.secondary-btn:active:not(:disabled),
+.danger-btn:active:not(:disabled),
+.mini-btn:active:not(:disabled),
+.tour-next:active:not(:disabled) {
+  transform: scale(0.97);
+}
+
+.btn-primary,
+.modal-btn,
+.tour-next,
+.key-banner-btn {
+  background: var(--primary);
+  color: var(--on-primary);
+  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.18) inset, 0 6px 16px -6px color-mix(in oklab, var(--primary) 70%, transparent);
+}
+.btn-primary:hover:not(:disabled),
+.modal-btn:hover:not(:disabled),
+.tour-next:hover:not(:disabled),
+.key-banner-btn:hover:not(:disabled) {
+  background: var(--primary-strong);
+}
+/* In a confirm dialog the neutral choice is the plain one. */
+.modal-btn:not(.danger) {
+  background: var(--surface-3);
+  color: var(--text);
+  box-shadow: none;
+}
+.modal-btn:not(.danger):hover:not(:disabled) {
+  background: var(--border);
+}
+.modal-btn.danger {
+  background: var(--danger);
+  color: #fff;
+  box-shadow: none;
+}
+.modal-btn.danger:hover:not(:disabled) {
+  background: color-mix(in oklab, var(--danger) 85%, black);
+}
+
+.btn-lg {
+  min-height: 52px;
+  padding: 0 var(--s-6);
+  font-size: var(--fs-lg);
+}
+.btn-block {
+  width: 100%;
+}
+
+.secondary-btn,
+.btn-secondary,
+.key-banner-btn.secondary {
+  background: var(--surface-3);
+  color: var(--text);
+  box-shadow: none;
+}
+.secondary-btn:hover:not(:disabled),
+.btn-secondary:hover:not(:disabled),
+.key-banner-btn.secondary:hover:not(:disabled) {
+  background: var(--border);
+}
+
+.btn-ghost {
+  background: transparent;
+  color: var(--text);
+}
+.btn-ghost:hover {
+  background: var(--surface-hover);
+}
+
+.danger-btn {
+  background: var(--danger-soft);
+  color: var(--danger);
+}
+.danger-btn:hover:not(:disabled) {
+  background: var(--danger);
+  color: #fff;
+}
+
+.mini-btn {
+  min-height: 36px;
+  padding: 0 var(--s-4);
+  font-size: var(--fs-sm);
+  background: var(--surface-3);
+  color: var(--text);
+}
+.mini-btn:hover:not(:disabled) {
+  background: var(--border);
+}
+
+/* Square icon-only buttons. */
+.icon-btn,
+.header-icon-btn,
+.back-btn {
+  display: inline-grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  flex: none;
+  border-radius: var(--r-full);
+  color: var(--text-2);
+  transition: background-color var(--dur-2) var(--ease), color var(--dur-2) var(--ease), transform var(--dur-1) var(--ease);
+}
+.icon-btn:hover,
+.header-icon-btn:hover,
+.back-btn:hover {
+  background: var(--surface-hover);
+  color: var(--text);
+}
+.icon-btn:active,
+.header-icon-btn:active,
+.back-btn:active {
+  transform: scale(0.94);
+}
+
+/* Busy state (util.js withBusy sets aria-busy): a spinner, same label width. */
+button[aria-busy="true"]::before {
+  content: "";
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  border: 2px solid currentColor;
+  border-right-color: transparent;
+  animation: spin 0.7s linear infinite;
+  flex: none;
+}
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Press ripple (util.js attachRipples). */
+.rippling::after {
+  content: "";
+  position: absolute;
+  left: var(--rx, 50%);
+  top: var(--ry, 50%);
+  width: 12px;
+  height: 12px;
+  margin: -6px 0 0 -6px;
+  border-radius: 50%;
+  background: currentColor;
+  opacity: 0.22;
+  pointer-events: none;
+  animation: ripple 0.6s var(--ease-out) forwards;
+}
+@keyframes ripple {
+  to {
+    transform: scale(26);
+    opacity: 0;
+  }
+}
+
+.link-btn,
+.auth-switch a,
+.text-link {
+  color: var(--primary-text);
+  font-weight: 600;
+  text-decoration: none;
+  border-radius: var(--r-xs);
+}
+.link-btn:hover,
+.auth-switch a:hover,
+.text-link:hover {
+  text-decoration: underline;
+}
+
+/* ---------------------------------------------------------------------------
+   Fields
+   ------------------------------------------------------------------------- */
+input[type="text"],
+input[type="email"],
+input[type="password"],
+input[type="search"],
+input[type="tel"],
+textarea,
+.field {
+  width: 100%;
+  min-height: 48px;
+  padding: 12px 16px;
+  background: var(--surface-2);
+  border: 1.5px solid var(--border);
+  border-radius: var(--r-md);
+  color: var(--text);
+  font-size: 1rem; /* 16px: stops iOS zooming into a focused field */
+  transition: border-color var(--dur-2) var(--ease), background-color var(--dur-2) var(--ease), box-shadow var(--dur-2) var(--ease);
+}
+input::placeholder,
+textarea::placeholder {
+  color: var(--text-3);
+  opacity: 1;
+}
+input[type="text"]:hover,
+input[type="email"]:hover,
+input[type="password"]:hover,
+textarea:hover {
+  border-color: var(--border-strong);
+}
+input[type="text"]:focus,
+input[type="email"]:focus,
+input[type="password"]:focus,
+input[type="search"]:focus,
+textarea:focus,
+.field:focus-within {
+  border-color: var(--primary);
+  background: var(--surface);
+  box-shadow: 0 0 0 4px var(--primary-soft);
+}
+input[aria-invalid="true"] {
+  border-color: var(--danger);
+}
+input[aria-invalid="true"]:focus {
+  box-shadow: 0 0 0 4px var(--danger-soft);
+}
+
+.shake {
+  animation: shakeX 0.4s var(--ease);
+}
+@keyframes shakeX {
+  20%,
+  60% {
+    transform: translateX(-6px);
+  }
+  40%,
+  80% {
+    transform: translateX(6px);
+  }
+}
+
+/* Checkbox rendered as a switch. */
+input.switch {
+  appearance: none;
+  -webkit-appearance: none;
+  flex: none;
+  width: 44px;
+  height: 26px;
+  border-radius: var(--r-full);
+  background: var(--border-strong);
+  position: relative;
+  cursor: pointer;
+  transition: background-color var(--dur-2) var(--ease);
+}
+input.switch::after {
+  content: "";
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: #fff;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.25);
+  transition: transform var(--dur-2) var(--ease-spring);
+}
+input.switch:checked {
+  background: var(--primary);
+}
+input.switch:checked::after {
+  transform: translateX(18px);
+}
+input.switch:focus-visible {
+  box-shadow: var(--focus);
+}
+
+input[type="checkbox"]:not(.switch) {
+  width: 18px;
+  height: 18px;
+  accent-color: var(--primary);
+}
+
+/* ---------------------------------------------------------------------------
+   Chips and segmented choices (Settings, chat info)
+   ------------------------------------------------------------------------- */
+.chip,
+.wallpaper-chip,
+.info-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 36px;
+  padding: 0 14px;
+  border-radius: var(--r-full);
+  background: var(--surface-2);
+  border: 1.5px solid var(--border);
+  color: var(--text);
+  font-size: var(--fs-sm);
+  font-weight: 600;
+  transition: background-color var(--dur-2) var(--ease), border-color var(--dur-2) var(--ease), color var(--dur-2) var(--ease);
+}
+.chip:hover,
+.wallpaper-chip:hover,
+.info-chip:hover {
+  border-color: var(--border-strong);
+  background: var(--surface-hover);
+}
+.chip.selected,
+.chip[aria-pressed="true"],
+.chip[aria-checked="true"],
+.wallpaper-chip.selected,
+.info-chip.selected,
+.info-chip.on {
+  background: var(--primary-soft);
+  border-color: var(--primary);
+  color: var(--primary-text);
+}
+
+.segmented {
+  display: inline-flex;
+  padding: 3px;
+  gap: 2px;
+  background: var(--surface-3);
+  border-radius: var(--r-full);
+}
+.segmented button {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 34px;
+  padding: 0 14px;
+  border-radius: var(--r-full);
+  font-size: var(--fs-sm);
+  font-weight: 600;
+  color: var(--text-2);
+  transition: background-color var(--dur-2) var(--ease), color var(--dur-2) var(--ease);
+}
+.segmented button[aria-checked="true"] {
+  background: var(--surface);
+  color: var(--text);
+  box-shadow: var(--shadow-1);
+}
+:root[data-theme="dark"] .segmented button[aria-checked="true"] {
+  background: var(--border-strong);
+}
+
+/* ---------------------------------------------------------------------------
+   Avatars (util.js setAvatar fills text or an <img>)
+   ------------------------------------------------------------------------- */
+.avatar {
+  position: relative;
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 46px;
+  height: 46px;
+  border-radius: 50%;
+  color: #fff;
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 1.05rem;
+  overflow: hidden;
+  -webkit-user-select: none;
+  user-select: none;
+}
+.avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* ---------------------------------------------------------------------------
+   Toasts (util.js showToast)
+   ------------------------------------------------------------------------- */
+#toast-container {
+  position: fixed;
+  left: 50%;
+  bottom: calc(24px + env(safe-area-inset-bottom));
+  transform: translateX(-50%);
+  z-index: var(--z-toast);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  width: min(92vw, 440px);
+  pointer-events: none;
+}
+.toast {
+  pointer-events: auto;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 18px;
+  border-radius: var(--r-md);
+  background: var(--brand-ink);
+  color: #fff;
+  font-size: var(--fs-sm);
+  font-weight: 500;
+  line-height: 1.4;
+  box-shadow: var(--shadow-3);
+  animation: toastIn var(--dur-3) var(--ease-out);
+}
+:root[data-theme="dark"] .toast {
+  background: #f3f0f7;
+  color: #15121c;
+}
+.toast::before {
+  content: "";
+  flex: none;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--text-3);
+}
+.toast-error::before {
+  background: #ff6b5e;
+}
+.toast-success::before {
+  background: var(--online);
+}
+.toast-hide {
+  opacity: 0;
+  transform: translateY(8px);
+  transition: opacity 0.3s var(--ease), transform 0.3s var(--ease);
+}
+@keyframes toastIn {
+  from {
+    opacity: 0;
+    transform: translateY(12px) scale(0.98);
+  }
+}
+/* Lift toasts above the composer / bottom nav. */
+body.in-app #toast-container {
+  bottom: calc(96px + env(safe-area-inset-bottom));
+}
+
+/* ---------------------------------------------------------------------------
+   In-app alert banners (notifications.js)
+   ------------------------------------------------------------------------- */
+#alert-host {
+  position: fixed;
+  top: calc(14px + env(safe-area-inset-top));
+  right: 14px;
+  z-index: var(--z-toast);
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  width: min(360px, calc(100vw - 28px));
+  pointer-events: none;
+}
+.alert-card {
+  pointer-events: auto;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 12px 12px 14px;
+  border-radius: var(--r-lg);
+  background: var(--surface-glass);
+  -webkit-backdrop-filter: blur(18px) saturate(1.4);
+  backdrop-filter: blur(18px) saturate(1.4);
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow-3);
+  cursor: pointer;
+  animation: alertIn var(--dur-3) var(--ease-spring);
+}
+.alert-avatar {
+  flex: none;
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  background: var(--primary);
+  color: var(--on-primary);
+  font-weight: 700;
+  font-family: var(--font-display);
+}
+.alert-body {
+  flex: 1;
+  min-width: 0;
+}
+.alert-title {
+  font-weight: 700;
+  font-size: var(--fs-sm);
+}
+.alert-text {
+  color: var(--text-2);
+  font-size: var(--fs-sm);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.alert-close {
+  flex: none;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  color: var(--text-3);
+}
+.alert-close:hover {
+  background: var(--surface-3);
+  color: var(--text);
+}
+.alert-hide {
+  opacity: 0;
+  transform: translateX(16px);
+  transition: opacity 0.3s var(--ease), transform 0.3s var(--ease);
+}
+@keyframes alertIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px) scale(0.97);
+  }
+}
+
+/* ---------------------------------------------------------------------------
+   Connection pill (connection.js)
+   ------------------------------------------------------------------------- */
+.connection-pill {
+  position: fixed;
+  top: calc(12px + env(safe-area-inset-top));
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: var(--z-toast);
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 7px 14px 7px 12px;
+  border-radius: var(--r-full);
+  background: var(--brand-ink);
+  color: #fff;
+  font-size: var(--fs-sm);
+  font-weight: 600;
+  box-shadow: var(--shadow-2);
+  animation: toastIn var(--dur-3) var(--ease-out);
+}
+.connection-pill::before {
+  content: "";
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--brand-sun);
+  animation: pulseDot 1.2s ease-in-out infinite;
+}
+.connection-pill[data-state="offline"]::before {
+  background: #ff6b5e;
+  animation: none;
+}
+@keyframes pulseDot {
+  50% {
+    opacity: 0.35;
+  }
+}
+
+/* ---------------------------------------------------------------------------
+   Ambient layers behind the app (settings.js / effects.js)
+   ------------------------------------------------------------------------- */
+#aurora {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(48% 42% at 12% 0%, color-mix(in oklab, var(--primary) 14%, transparent), transparent 70%),
+    radial-gradient(40% 40% at 100% 100%, color-mix(in oklab, var(--brand-grape) 9%, transparent), transparent 70%);
+  animation: auroraDrift 36s ease-in-out infinite alternate;
+}
+.no-aurora #aurora {
+  display: none;
+}
+@keyframes auroraDrift {
+  to {
+    transform: translate3d(2%, 3%, 0) scale(1.06);
+  }
+}
+#fx-canvas {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  display: none;
+}
+
+/* Custom cursor (Settings → Appearance → Extras). */
+body.custom-cursor,
+body.custom-cursor * {
+  cursor: none !important;
+}
+#cursor-dot {
+  position: fixed;
+  z-index: var(--z-cursor);
+  width: 10px;
+  height: 10px;
+  margin: -5px 0 0 -5px;
+  border-radius: 50%;
+  background: var(--primary);
+  pointer-events: none;
+  display: none;
+  transition: width var(--dur-2) var(--ease), height var(--dur-2) var(--ease), margin var(--dur-2) var(--ease), background-color var(--dur-2);
+}
+#cursor-dot.big {
+  width: 30px;
+  height: 30px;
+  margin: -15px 0 0 -15px;
+  background: var(--primary-soft);
+  border: 1.5px solid var(--primary);
+}
+#cursor-glow {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 0;
+  width: 360px;
+  height: 360px;
+  border-radius: 50%;
+  pointer-events: none;
+  display: none;
+  background: radial-gradient(circle, color-mix(in oklab, var(--primary) 16%, transparent), transparent 65%);
+}
+
+/* The app-lock gate hides everything behind the PIN prompt. */
+body.app-locked > *:not(#pin-modal):not(#toast-container):not(#aurora) {
+  visibility: hidden;
+}
+body.app-locked #pin-modal {
+  background: var(--bg);
+}

@@ -42,26 +42,32 @@ export const MAX_IMAGE_DIMENSION = 1600;
 export const IMAGE_QUALITY = 0.8;
 export const COMPRESS_MIN_BYTES = 200 * 1024;
 
-// Per-chat themes — each preset recolors the chat area (sent bubbles, accents).
-// Colors are deliberately muted (not neon) so every option reads matte.
+// Accents: the app-wide colour (Settings) and each chat's own theme (stored in
+// conversations.theme, so the ids are a contract with every existing chat --
+// never rename one). `primary` carries white text at WCAG AA (>= 4.5:1);
+// every lighter/darker shade is derived from it in css/tokens.css.
 export const THEME_PRESETS = [
-  { id: "default", name: "Ember", primary: "#e2582e", strong: "#c2431f" },
-  { id: "sunset", name: "Sunset", primary: "#d97a48", strong: "#b85f34" },
-  { id: "ocean", name: "Ocean", primary: "#3f9db0", strong: "#2f7c8c" },
-  { id: "forest", name: "Forest", primary: "#5a9e6a", strong: "#437c50" },
-  { id: "rose", name: "Rose", primary: "#c46a89", strong: "#a1516c" },
-  { id: "slate", name: "Slate", primary: "#8a8478", strong: "#6b6559" },
+  { id: "default", name: "Ember", primary: "#d83b17", strong: "#b02c0d" },
+  { id: "sunset", name: "Sunset", primary: "#b85a10", strong: "#94470a" },
+  { id: "rose", name: "Rose", primary: "#cc2e66", strong: "#a82251" },
+  { id: "grape", name: "Grape", primary: "#7b45e0", strong: "#6232bf" },
+  { id: "sky", name: "Sky", primary: "#2f6fe4", strong: "#1f57c0" },
+  { id: "ocean", name: "Ocean", primary: "#0b7a9e", strong: "#07607d" },
+  { id: "forest", name: "Forest", primary: "#1e8250", strong: "#15673f" },
+  { id: "slate", name: "Slate", primary: "#56606f", strong: "#414a57" },
 ];
 
-// Per-chat font presets (personal, stored locally). "stack" is the CSS value
-// applied to the chat area via the --chat-font custom property.
+// Font presets, for the whole app (Settings) or one chat (chat info).
+// `google` is the Google Fonts family spec; src/fonts.js loads it the first
+// time the font is actually used, so nobody downloads six families to read
+// their messages in the default one.
 export const FONT_PRESETS = [
   { id: "default", name: "Classic", stack: "'Inter', 'Segoe UI', system-ui, sans-serif" },
-  { id: "rounded", name: "Rounded", stack: "'Quicksand', 'Segoe UI', sans-serif" },
-  { id: "elegant", name: "Elegant", stack: "'Lora', Georgia, serif" },
-  { id: "mono", name: "Hacker", stack: "'JetBrains Mono', Consolas, monospace" },
-  { id: "cyber", name: "Cyber", stack: "'Orbitron', 'Segoe UI', sans-serif" },
-  { id: "comic", name: "Comic", stack: "'Comic Neue', 'Comic Sans MS', cursive" },
+  { id: "rounded", name: "Rounded", stack: "'Quicksand', 'Segoe UI', sans-serif", google: "Quicksand:wght@500;700" },
+  { id: "elegant", name: "Elegant", stack: "'Lora', Georgia, serif", google: "Lora:ital,wght@0,500;0,700;1,500" },
+  { id: "mono", name: "Hacker", stack: "'JetBrains Mono', Consolas, monospace", google: "JetBrains+Mono:wght@400;700" },
+  { id: "cyber", name: "Cyber", stack: "'Orbitron', 'Segoe UI', sans-serif", google: "Orbitron:wght@500;700" },
+  { id: "comic", name: "Comic", stack: "'Comic Neue', 'Comic Sans MS', cursive", google: "Comic+Neue:wght@400;700" },
 ];
 
 // Ambient background effects (Settings → Effects). "aurora" is the CSS layer;
@@ -69,7 +75,7 @@ export const FONT_PRESETS = [
 // that read as premium/matte rather than glossy — "liquid" and "bubbles"
 // were dropped for clashing with the matte direction.
 export const EFFECT_PRESETS = [
-  { id: "aurora", name: "Aurora" },
+  { id: "aurora", name: "Glow" },
   { id: "tech", name: "Tech" },
   { id: "image", name: "Upload", icon: "upload" },
   { id: "none", name: "None" },

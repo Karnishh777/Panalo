@@ -100,6 +100,8 @@ async function saveProfile() {
 
 export function initProfile() {
   document.getElementById("rail-profile").addEventListener("click", openProfileModal);
+  // The @name at the top of the chat list is a shortcut to the same place.
+  document.getElementById("my-profile-name")?.addEventListener("click", openProfileModal);
   document.getElementById("close-profile-modal").addEventListener("click", () => {
     document.getElementById("profile-modal").classList.add("hidden");
   });

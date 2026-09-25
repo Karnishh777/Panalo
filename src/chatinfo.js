@@ -31,6 +31,8 @@ const drawer = () => document.getElementById("chat-info");
 
 export function closeChatInfo() {
   drawer().classList.remove("open");
+  // On very wide screens the drawer docks beside the chat (shell.css).
+  document.getElementById("chat-app")?.classList.remove("info-open");
 }
 
 function needsPhase5(error) {
@@ -440,15 +442,19 @@ export function confirmDelete({ title, body, danger }) {
     backdrop.addEventListener("click", (e) => {
       if (e.target === backdrop) close(false);
     });
+    let closed = false;
     const keyHandler = (e) => {
       if (e.key === "Escape") close(false);
-      if (e.key === "Enter" && document.activeElement !== cancelBtn) close(true);
+      // Enter activates whichever button has focus on its own.
     };
     document.addEventListener("keydown", keyHandler);
     document.body.append(backdrop);
-    requestAnimationFrame(() => okBtn.focus());
+    // Focus the safe choice: a reflexive Enter shouldn't delete anything.
+    requestAnimationFrame(() => cancelBtn.focus());
 
     function close(result) {
+      if (closed) return;
+      closed = true;
       document.removeEventListener("keydown", keyHandler);
       backdrop.classList.add("closing");
       setTimeout(() => backdrop.remove(), 160);
@@ -530,6 +536,7 @@ export async function openChatInfo() {
   });
 
   drawer().classList.add("open");
+  document.getElementById("chat-app")?.classList.add("info-open");
 }
 
 export function initChatInfo() {

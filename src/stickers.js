@@ -283,6 +283,10 @@ export async function initStickerPicker(onPick) {
 
   document.getElementById("sticker-btn").addEventListener("click", (e) => {
     e.stopPropagation();
+    // stopPropagation also stops the + menu's own "close on pick", so close
+    // it here -- and only one panel sits above the composer at a time.
+    document.getElementById("compose-menu")?.classList.add("hidden");
+    document.getElementById("emoji-panel")?.classList.add("hidden");
     panel.classList.toggle("hidden");
   });
   panel.addEventListener("click", (e) => e.stopPropagation());

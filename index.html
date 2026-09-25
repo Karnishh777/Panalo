@@ -2,194 +2,450 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Panalo</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>Panalo — chat that's actually yours</title>
+  <meta name="description" content="Panalo is a fast, private chat app for friends, classmates and study groups. Messages and files are encrypted on your device, and every chat can look exactly how you want.">
   <link rel="icon" type="image/svg+xml" href="logo.svg">
   <link rel="manifest" href="manifest.webmanifest">
-  <meta name="theme-color" content="#6f4e37">
+  <meta name="theme-color" content="#f3efe9" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#0b0a0f" media="(prefers-color-scheme: dark)">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta property="og:title" content="Panalo — chat that's actually yours">
+  <meta property="og:description" content="Encrypted chat for your people. Make every conversation look the way you want.">
+  <meta property="og:type" content="website">
+  <!-- Theme, accent and "is someone signed in" are applied before first
+       paint, so there is no flash of the wrong colours or of the landing
+       page for a returning user. External file: the CSP forbids inline JS. -->
+  <script src="src/boot.js"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Sora:wght@600;700;800&family=Quicksand:wght@500;700&family=Lora:ital,wght@0,500;0,700&family=JetBrains+Mono:wght@400;700&family=Orbitron:wght@500;700&family=Comic+Neue:wght@400;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="style.css">
+  <!-- Only the two UI families load up front. The personalisation fonts
+       (Rounded, Elegant, Hacker…) load on demand — see src/fonts.js. -->
+  <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600..800&family=Inter:wght@400..700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/tokens.css">
+  <link rel="stylesheet" href="css/base.css">
+  <link rel="stylesheet" href="css/public.css">
+  <link rel="stylesheet" href="css/shell.css">
+  <link rel="stylesheet" href="css/chat.css">
+  <link rel="stylesheet" href="css/overlays.css">
 </head>
 <body>
   <div id="aurora" aria-hidden="true"></div>
   <canvas id="fx-canvas" aria-hidden="true"></canvas>
 
-  <div id="auth-screen" class="screen">
-    <div class="auth-box">
-      <div style="display:flex; align-items:center; justify-content:center; gap:10px; margin-bottom:20px;">
-        <img src="logo.svg" width="40" height="40" style="border-radius:10px;">
-        <h1 style="margin-bottom:0;">Panalo</h1>
+  <!-- Shown only while a returning user's session is being restored. -->
+  <div id="boot-splash" class="boot-splash" aria-hidden="true">
+    <svg class="boot-mark" width="64" height="64" viewBox="0 0 140 140"><use href="#panalo-mark"/></svg>
+  </div>
+
+  <!-- The brand mark, defined once. Uses currentColor-free gradient ids so it
+       looks the same everywhere; the in-app copy follows the accent. -->
+  <svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+    <defs>
+      <linearGradient id="pm-grad" x1="0" y1="0" x2="1" y2="1">
+        <stop offset="0" stop-color="#ff7a45"/>
+        <stop offset="1" stop-color="#d83b17"/>
+      </linearGradient>
+      <symbol id="panalo-mark" viewBox="0 0 140 140">
+        <rect width="140" height="140" rx="38" fill="url(#pm-grad)"/>
+        <path d="M36 58c0-13 9-22 22-22h24c13 0 22 9 22 22v14c0 13-9 22-22 22H64l-19 15 4-15c-8-3-13-11-13-22z" fill="#fff"/>
+        <path d="M55 66l10 10 21-22" fill="none" stroke="#d83b17" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/>
+      </symbol>
+    </defs>
+  </svg>
+
+  <!-- =====================================================================
+       PUBLIC LANDING
+       ===================================================================== -->
+  <div id="landing" class="landing">
+    <header class="land-nav" id="land-nav">
+      <a class="wordmark" href="#top" aria-label="Panalo home">
+        <svg width="34" height="34" viewBox="0 0 140 140" aria-hidden="true"><use href="#panalo-mark"/></svg>
+        <span>Panalo</span>
+      </a>
+      <nav class="land-links" aria-label="Sections">
+        <a href="#features">Features</a>
+        <a href="#yours">Make it yours</a>
+        <a href="#privacy">Privacy</a>
+      </nav>
+      <div class="land-nav-cta">
+        <a class="btn btn-ghost" href="#login">Log in</a>
+        <a class="btn btn-primary" href="#signup">Get started</a>
       </div>
+    </header>
 
-      <div id="login-form">
-        <h2>Log In</h2>
-        <input type="email" id="login-email" placeholder="Email" autocomplete="email" aria-label="Email" />
-        <input type="password" id="login-password" placeholder="Password" autocomplete="current-password" aria-label="Password" />
-        <label class="remember-row">
-          <input type="checkbox" id="remember-me" checked />
-          <span>Keep me logged in</span>
-        </label>
-        <button id="login-btn">Log In</button>
-        <p class="auth-switch"><a href="#" id="forgot-password">Forgot password?</a></p>
-        <p class="auth-switch">No account? <a href="#" id="show-signup">Sign up</a></p>
-      </div>
-
-      <div id="signup-form" class="hidden">
-        <h2>Sign Up</h2>
-
-        <div id="signup-step-1">
-          <input type="text" id="signup-username" placeholder="Username" autocomplete="username" aria-label="Username" />
-          <input type="email" id="signup-email" placeholder="Email" autocomplete="email" aria-label="Email" />
-          <input type="password" id="signup-password" placeholder="Password" autocomplete="new-password" aria-label="Password" aria-describedby="password-hint" />
-          <p id="password-hint" class="otp-hint"></p>
-          <button id="signup-btn">Create Account</button>
+    <main id="top">
+      <section class="hero" aria-labelledby="hero-title">
+        <div class="hero-copy">
+          <p class="eyebrow"><span class="eyebrow-dot" aria-hidden="true"></span>Encrypted chat for your people</p>
+          <h1 id="hero-title">Your group chat, but make it <span class="hero-hl">yours.</span></h1>
+          <p class="hero-sub">Panalo is a fast, private place to talk with friends, classmates and study groups. Messages and files are encrypted on your device — and every chat can look exactly how you want.</p>
+          <div class="hero-cta">
+            <a class="btn btn-primary btn-lg" href="#signup">Create your account</a>
+            <a class="btn btn-secondary btn-lg" href="#login">I have an account</a>
+          </div>
+          <ul class="hero-facts">
+            <li><span data-icon="lock" data-icon-size="16"></span>Encrypted on your device</li>
+            <li><span data-icon="sparkle" data-icon-size="16"></span>No ads, no feed, no follower counts</li>
+            <li><span data-icon="download" data-icon-size="16"></span>Runs in your browser, installs like an app</li>
+          </ul>
         </div>
 
-        <div id="signup-step-2" class="hidden">
-          <p class="otp-hint">Enter the 6-digit code we emailed you. Check your spam folder too.</p>
-          <input type="text" id="otp-code-input" class="otp-input" placeholder="000000" maxlength="6" inputmode="numeric" autocomplete="one-time-code" aria-label="6-digit verification code" />
-          <button id="verify-otp-btn">Verify &amp; Create Account</button>
+        <!-- A live, hand-built preview of the product — not a screenshot.
+             The swatches below it really re-theme it. -->
+        <div class="hero-demo accent-scope" id="hero-demo" aria-label="Preview of a Panalo group chat" role="img">
+          <div class="demo-glow" aria-hidden="true"></div>
+          <div class="demo-phone" aria-hidden="true">
+            <div class="demo-head">
+              <span class="demo-avatar" style="--h:200">P</span>
+              <span class="demo-title">
+                <strong>Physics study group</strong>
+                <small><i class="demo-online"></i>maya is typing…</small>
+              </span>
+              <span class="demo-lock" data-icon="lock" data-icon-size="14"></span>
+            </div>
+            <div class="demo-body">
+              <div class="demo-day">Today</div>
+              <div class="demo-msg in" style="--i:0"><b style="--h:18">priya</b>notes from today are in the drive 📚</div>
+              <div class="demo-msg in" style="--i:1"><b style="--h:280">sam</b>legend</div>
+              <div class="demo-msg out" style="--i:2">library at 4? I'll bring flashcards</div>
+              <div class="demo-msg in" style="--i:3"><b style="--h:200">maya</b><span class="demo-mention">@alex</span> can you explain the double slit bit?</div>
+              <div class="demo-msg out" style="--i:4">yes!! snacks first though 🍪<span class="demo-react">👍 2</span></div>
+              <div class="demo-typing" style="--i:5"><i></i><i></i><i></i></div>
+            </div>
+            <div class="demo-composer"><span>Message</span><i data-icon="send" data-icon-size="16"></i></div>
+          </div>
+          <div class="demo-controls" role="group" aria-label="Try an accent">
+            <span class="demo-controls-label">Try it:</span>
+            <button type="button" class="demo-swatch" data-accent="default" aria-label="Ember" aria-pressed="true" style="--c:#d83b17"></button>
+            <button type="button" class="demo-swatch" data-accent="grape" aria-label="Grape" aria-pressed="false" style="--c:#7b45e0"></button>
+            <button type="button" class="demo-swatch" data-accent="ocean" aria-label="Ocean" aria-pressed="false" style="--c:#0b7a9e"></button>
+            <button type="button" class="demo-swatch" data-accent="forest" aria-label="Forest" aria-pressed="false" style="--c:#1e8250"></button>
+            <button type="button" class="demo-swatch" data-accent="rose" aria-label="Rose" aria-pressed="false" style="--c:#cc2e66"></button>
+            <button type="button" class="demo-mode" id="demo-mode" aria-label="Toggle dark preview"><span data-icon="moon" data-icon-size="16"></span></button>
+          </div>
+        </div>
+      </section>
+
+      <section class="land-section" id="features" aria-labelledby="features-title">
+        <div class="section-head">
+          <p class="eyebrow">What you get</p>
+          <h2 id="features-title">Everything a good chat needs. Nothing it doesn't.</h2>
+        </div>
+        <div class="bento">
+          <article class="bento-card bento-lg tone-ember">
+            <span class="bento-icon" data-icon="lock" data-icon-size="22"></span>
+            <h3>Encrypted before it leaves your phone</h3>
+            <p>Message text, photos and files — including their names and sizes — are encrypted on your device. The server stores ciphertext it can't read.</p>
+            <div class="cipher" aria-hidden="true"><span>see you at 4?</span><span class="cipher-arrow">→</span><code>k9Qx2…vT7=</code></div>
+          </article>
+          <article class="bento-card tone-grape">
+            <span class="bento-icon" data-icon="eyeOff" data-icon-size="22"></span>
+            <h3>Lock it. Hide it.</h3>
+            <p>Put a PIN on the whole app or one chat, or hide a chat so it isn't in your list at all.</p>
+          </article>
+          <article class="bento-card tone-sun">
+            <span class="bento-icon" data-icon="clock" data-icon-size="22"></span>
+            <h3>Messages that disappear</h3>
+            <p>Set a chat to clear itself after 24 hours, 7 days or 90 days.</p>
+          </article>
+          <article class="bento-card tone-ocean">
+            <span class="bento-icon" data-icon="users" data-icon-size="22"></span>
+            <h3>Groups that run themselves</h3>
+            <p>Owners and admins, @mentions that actually notify, and pinned messages for the important stuff.</p>
+          </article>
+          <article class="bento-card tone-rose">
+            <span class="bento-icon" data-icon="smile" data-icon-size="22"></span>
+            <h3>Say it louder</h3>
+            <p>Reactions, stickers, replies, photos, voice and video calls — right from the chat.</p>
+          </article>
+          <article class="bento-card bento-wide tone-forest">
+            <span class="bento-icon" data-icon="search" data-icon-size="22"></span>
+            <h3>Search that stays on your device</h3>
+            <p>Because the server only ever sees ciphertext, searching your messages happens on your device — and the index is wiped when you log out.</p>
+          </article>
+        </div>
+      </section>
+
+      <section class="land-section yours" id="yours" aria-labelledby="yours-title">
+        <div class="section-head">
+          <p class="eyebrow">Personal, not performative</p>
+          <h2 id="yours-title">Make every chat feel like yours.</h2>
+          <p class="section-sub">Pick a colour for the whole app and a different one for each chat. Light, dark, or follow your phone. Bubbles as round or as crisp as you like. Your wallpaper, your font, your vibe.</p>
+        </div>
+        <ul class="yours-grid" aria-label="Personalisation options">
+          <li><span class="yours-swatches" aria-hidden="true"><i style="--c:#d83b17"></i><i style="--c:#7b45e0"></i><i style="--c:#0b7a9e"></i><i style="--c:#1e8250"></i><i style="--c:#cc2e66"></i></span><strong>8 accents</strong><span>for the app, and one per chat that both of you see</span></li>
+          <li><span class="yours-modes" aria-hidden="true"><i class="m-light"></i><i class="m-dark"></i></span><strong>Light, dark or auto</strong><span>follows your phone at sunset if you want</span></li>
+          <li><span class="yours-bubbles" aria-hidden="true"><i class="b1"></i><i class="b2"></i><i class="b3"></i></span><strong>Bubble shapes</strong><span>bubbly, soft or crisp</span></li>
+          <li><span class="yours-wall" aria-hidden="true"></span><strong>Wallpapers</strong><span>doodles, dots, plain, or your own photo</span></li>
+        </ul>
+      </section>
+
+      <section class="land-section privacy" id="privacy" aria-labelledby="privacy-title">
+        <div class="privacy-card">
+          <div class="section-head">
+            <p class="eyebrow">The honest version</p>
+            <h2 id="privacy-title">What we protect — and what we don't.</h2>
+            <p class="section-sub">Privacy claims are easy to inflate. Here's exactly what Panalo's encryption covers.</p>
+          </div>
+          <div class="privacy-cols">
+            <div>
+              <h3 class="privacy-h ok"><span data-icon="check" data-icon-size="18"></span>Encrypted</h3>
+              <ul>
+                <li>Message text, in every chat where everyone has set up their keys</li>
+                <li>Photos and files you send — contents, names and sizes</li>
+                <li>Your searchable message history, which lives only on your device</li>
+              </ul>
+            </div>
+            <div>
+              <h3 class="privacy-h no"><span data-icon="info" data-icon-size="18"></span>Not hidden</h3>
+              <ul>
+                <li>Who you talk to, and when — encryption hides what you said, not that you said it</li>
+                <li>Profile photos, so people can recognise you</li>
+                <li>Your key can be recovered with your password — strong privacy at rest, not zero-knowledge encryption</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="land-final" aria-labelledby="final-title">
+        <h2 id="final-title">Your people are waiting.</h2>
+        <p>Make an account in under a minute. No phone number needed.</p>
+        <a class="btn btn-primary btn-lg" href="#signup">Create your account</a>
+      </section>
+    </main>
+
+    <footer class="land-footer">
+      <a class="wordmark small" href="#top"><svg width="26" height="26" viewBox="0 0 140 140" aria-hidden="true"><use href="#panalo-mark"/></svg><span>Panalo</span></a>
+      <p>Chat for friends, classmates and study groups.</p>
+      <nav aria-label="Footer">
+        <a href="#features">Features</a>
+        <a href="#privacy">Privacy</a>
+        <a href="#login">Log in</a>
+        <a href="#signup">Sign up</a>
+      </nav>
+    </footer>
+  </div>
+
+  <!-- =====================================================================
+       AUTH
+       ===================================================================== -->
+  <div id="auth-screen" class="screen auth-screen hidden">
+    <aside class="auth-art" aria-hidden="true">
+      <a class="wordmark light" href="#top" tabindex="-1"><svg width="34" height="34" viewBox="0 0 140 140"><use href="#panalo-mark"/></svg><span>Panalo</span></a>
+      <div class="auth-art-stack">
+        <div class="art-bubble in">you coming tonight?</div>
+        <div class="art-bubble out">obviously 🎉</div>
+        <div class="art-bubble in">🔒 end of the line for eavesdroppers</div>
+      </div>
+      <p class="auth-art-foot">Encrypted on your device. Yours to style.</p>
+    </aside>
+
+    <div class="auth-main">
+      <a class="auth-back" href="#top"><span data-icon="back" data-icon-size="16"></span>Home</a>
+
+      <div class="auth-box">
+        <a class="wordmark auth-mobile-mark" href="#top" tabindex="-1" aria-hidden="true"><svg width="40" height="40" viewBox="0 0 140 140"><use href="#panalo-mark"/></svg></a>
+
+        <form id="login-form" class="auth-form" novalidate aria-labelledby="login-heading">
+          <h1 id="login-heading" class="auth-title">Welcome back</h1>
+          <p class="auth-lead">Log in to pick up where you left off.</p>
+          <label class="field-label" for="login-email">Email</label>
+          <input type="email" id="login-email" placeholder="you@example.com" autocomplete="email" inputmode="email" required />
+          <div class="label-row">
+            <label class="field-label" for="login-password">Password</label>
+            <a href="#" id="forgot-password" class="text-link small">Forgot password?</a>
+          </div>
+          <div class="password-field">
+            <input type="password" id="login-password" placeholder="Your password" autocomplete="current-password" required aria-describedby="login-caps" />
+            <button type="button" class="reveal-btn" data-reveal="login-password" aria-label="Show password" aria-pressed="false"><span data-icon="eye" data-icon-size="18"></span></button>
+          </div>
+          <p id="login-caps" class="caps-hint hidden" role="status">Caps Lock is on</p>
+          <label class="remember-row">
+            <input type="checkbox" id="remember-me" checked />
+            <span>Keep me logged in on this device</span>
+          </label>
+          <button type="submit" id="login-btn" class="btn btn-primary btn-lg btn-block">Log in</button>
+          <p class="auth-switch">New to Panalo? <a href="#signup" id="show-signup">Create an account</a></p>
+        </form>
+
+        <div id="signup-form" class="hidden">
+          <form id="signup-step-1" class="auth-form" novalidate aria-labelledby="signup-heading">
+            <h1 id="signup-heading" class="auth-title">Create your account</h1>
+            <p class="auth-lead">Pick a username your friends will find you by.</p>
+            <label class="field-label" for="signup-username">Username</label>
+            <div class="prefix-field">
+              <span class="prefix" aria-hidden="true">@</span>
+              <input type="text" id="signup-username" placeholder="yourname" autocomplete="username" autocapitalize="off" spellcheck="false" maxlength="30" required />
+            </div>
+            <label class="field-label" for="signup-email">Email</label>
+            <input type="email" id="signup-email" placeholder="you@example.com" autocomplete="email" inputmode="email" required />
+            <label class="field-label" for="signup-password">Password</label>
+            <div class="password-field">
+              <input type="password" id="signup-password" placeholder="Create a password" autocomplete="new-password" required aria-describedby="password-hint signup-caps" />
+              <button type="button" class="reveal-btn" data-reveal="signup-password" aria-label="Show password" aria-pressed="false"><span data-icon="eye" data-icon-size="18"></span></button>
+            </div>
+            <div class="strength" id="signup-strength" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+            <p id="password-hint" class="otp-hint"></p>
+            <p id="signup-caps" class="caps-hint hidden" role="status">Caps Lock is on</p>
+            <p class="fine-print">Your password also protects your encryption key, so choose one you'll remember.</p>
+            <button type="submit" id="signup-btn" class="btn btn-primary btn-lg btn-block">Create account</button>
+          </form>
+
+          <form id="signup-step-2" class="auth-form hidden" novalidate aria-labelledby="otp-heading">
+            <h1 id="otp-heading" class="auth-title">Check your email</h1>
+            <p class="otp-hint">Enter the 6-digit code we emailed you. It can take a minute — check your spam folder too.</p>
+            <label class="field-label" for="otp-code-input">Verification code</label>
+            <input type="text" id="otp-code-input" class="otp-input" placeholder="000000" maxlength="6" inputmode="numeric" autocomplete="one-time-code" pattern="[0-9]*" required />
+            <button type="submit" id="verify-otp-btn" class="btn btn-primary btn-lg btn-block">Verify &amp; continue</button>
+          </form>
+
+          <p class="auth-switch">Already have an account? <a href="#login" id="show-login">Log in</a></p>
         </div>
 
-        <p class="auth-switch">Have an account? <a href="#" id="show-login">Log in</a></p>
+        <p id="auth-message" class="auth-message" role="alert" aria-live="polite"></p>
       </div>
-
-      <p id="auth-message" aria-live="polite"></p>
     </div>
   </div>
 
+  <!-- =====================================================================
+       APP
+       ===================================================================== -->
   <div id="chat-app" class="app-container hidden" data-wallpaper="doodle">
 
     <nav class="nav-rail" aria-label="Views">
-      <button class="rail-btn rail-new" id="new-chat-btn" type="button" title="New chat" aria-label="New chat"><span data-icon="plus" data-icon-size="20"></span></button>
-      <div class="rail-divider"></div>
-      <button class="rail-btn active" data-view="all" type="button" title="All chats" aria-label="All chats"><span data-icon="chat" data-icon-size="20"></span></button>
-      <button class="rail-btn" data-view="direct" type="button" title="Direct chats" aria-label="Direct chats"><span data-icon="user" data-icon-size="20"></span></button>
-      <button class="rail-btn" data-view="group" type="button" title="Groups" aria-label="Groups"><span data-icon="users" data-icon-size="20"></span></button>
-      <button class="rail-btn" data-view="starred" type="button" title="Starred messages" aria-label="Starred messages"><span data-icon="star" data-icon-size="20"></span></button>
+      <span class="rail-brand" aria-hidden="true">
+        <svg class="brand-mark" width="36" height="36" viewBox="0 0 140 140">
+          <rect width="140" height="140" rx="38" style="fill: var(--primary)"/>
+          <path d="M36 58c0-13 9-22 22-22h24c13 0 22 9 22 22v14c0 13-9 22-22 22H64l-19 15 4-15c-8-3-13-11-13-22z" fill="#fff"/>
+          <path d="M55 66l10 10 21-22" fill="none" style="stroke: var(--primary)" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </span>
+      <button class="rail-btn rail-new" id="new-chat-btn" type="button" title="New chat" aria-label="New chat"><span data-icon="plus" data-icon-size="22"></span></button>
+      <div class="rail-divider" aria-hidden="true"></div>
+      <button class="rail-btn active" data-view="all" type="button" title="All chats" aria-label="All chats"><span data-icon="chat" data-icon-size="21"></span><span class="rail-label">Chats</span></button>
+      <button class="rail-btn" data-view="direct" type="button" title="Direct chats" aria-label="Direct chats"><span data-icon="user" data-icon-size="21"></span><span class="rail-label">Direct</span></button>
+      <button class="rail-btn" data-view="group" type="button" title="Groups" aria-label="Groups"><span data-icon="users" data-icon-size="21"></span><span class="rail-label">Groups</span></button>
+      <button class="rail-btn" data-view="starred" type="button" title="Starred messages" aria-label="Starred messages"><span data-icon="star" data-icon-size="21"></span><span class="rail-label">Starred</span></button>
       <div class="rail-spacer"></div>
       <button class="rail-btn rail-profile-btn" id="rail-profile" type="button" title="My profile" aria-label="My profile">
-        <span id="rail-avatar" class="rail-avatar">?</span>
+        <span id="rail-avatar" class="rail-avatar avatar">?</span><span class="rail-label">Me</span>
       </button>
-      <button class="rail-btn" id="settings-btn" type="button" title="Settings" aria-label="Settings"><span data-icon="settings" data-icon-size="20"></span></button>
+      <button class="rail-btn" id="settings-btn" type="button" title="Settings" aria-label="Settings"><span data-icon="settings" data-icon-size="21"></span><span class="rail-label">Settings</span></button>
     </nav>
 
     <div class="sidebar">
       <div class="sidebar-header">
-        <div style="display:flex; align-items:center; gap:8px;">
-          <!-- Inline rather than logo.svg so the mark takes the accent colour
-               chosen in Settings; an <img> can't see CSS variables and stayed
-               brown whatever colour the rest of the app was. -->
-          <svg class="brand-mark" width="24" height="24" viewBox="0 0 140 140" aria-hidden="true">
-            <rect width="140" height="140" rx="32" style="fill: var(--primary)"/>
-            <path d="M35 55 Q35 40 50 40 L90 40 Q105 40 105 55 L105 85 Q105 100 90 100 L60 100 L42 116 L45 100 L50 100 Q35 100 35 85 Z" fill="#fbf5eb"/>
-            <path d="M55 70 L67 82 L90 56" fill="none" style="stroke: var(--primary)" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/>
-          </svg>
-          <h2 id="my-profile-name">My Chats</h2>
-        </div>
+        <h2 class="sidebar-title">Chats</h2>
+        <button type="button" id="my-profile-name" class="me-pill" title="Edit my profile">My Chats</button>
       </div>
 
       <div class="sidebar-search">
-        <span class="search-icon" data-icon="search" data-icon-size="16"></span>
-        <input type="text" id="chat-search" placeholder="Search chats…" aria-label="Search chats" autocomplete="off" />
+        <span class="search-icon" data-icon="search" data-icon-size="17"></span>
+        <input type="search" id="chat-search" placeholder="Search chats and messages" aria-label="Search chats and messages" autocomplete="off" enterkeyhint="search" />
       </div>
 
-      <div id="conversations-list" class="conversations-list"></div>
+      <div id="view-chips" class="view-chips" role="tablist" aria-label="Filter chats"></div>
+
+      <div id="conversations-list" class="conversations-list" aria-label="Conversations"></div>
     </div>
 
     <div class="chat-main">
-      <div id="no-chat-selected" class="empty-chat-state">
-        <h3>Select a conversation to start chatting!</h3>
-      </div>
+      <section id="no-chat-selected" class="empty-chat-state home" aria-label="Home"></section>
 
       <div id="active-chat-window" class="chat-window hidden">
-        <div class="chat-header">
-          <button id="back-btn" class="back-btn" type="button" aria-label="Back to conversations"><span data-icon="back"></span></button>
+        <header class="chat-header">
+          <button id="back-btn" class="back-btn" type="button" aria-label="Back to conversations"><span data-icon="back" data-icon-size="20"></span></button>
           <button id="focus-panel-btn" class="header-icon-btn focus-only" type="button" title="Show chat list" aria-label="Show chat list"><span data-icon="menu"></span></button>
           <button id="focus-exit-btn" class="header-icon-btn focus-only" type="button" title="Exit focus mode" aria-label="Exit focus mode"><span data-icon="collapse"></span></button>
           <div id="chat-header-main" class="chat-header-main" role="button" tabindex="0" aria-label="Open chat info">
             <div id="active-chat-avatar" class="avatar chat-header-avatar" aria-hidden="true"></div>
             <div class="chat-header-info">
-              <h2 id="active-chat-title">Chat Title</h2>
-              <span id="active-chat-subtitle" class="chat-subtitle"></span>
+              <h2 id="active-chat-title">Chat</h2>
+              <span id="active-chat-subtitle" class="chat-subtitle" aria-live="polite"></span>
             </div>
           </div>
-          <button id="voice-call-btn" class="header-icon-btn direct-only hidden" type="button" title="Voice call" aria-label="Start a voice call"><span data-icon="phone"></span></button>
-          <button id="video-call-btn" class="header-icon-btn direct-only hidden" type="button" title="Video call" aria-label="Start a video call"><span data-icon="video"></span></button>
-          <button id="focus-btn" class="header-icon-btn" type="button" title="Focus mode" aria-label="Focus mode"><span data-icon="expand"></span></button>
-          <button id="theme-btn" class="header-icon-btn" type="button" title="Chat theme" aria-label="Change chat theme"><span data-icon="palette"></span></button>
-          <button id="chat-menu-btn" class="header-icon-btn" type="button" title="Chat options" aria-label="Chat options"><span data-icon="more"></span></button>
-          <div id="chat-menu" class="chat-menu hidden" role="menu">
-            <button class="chat-menu-item" data-action="info" type="button" role="menuitem"><span data-icon="info" data-icon-size="16"></span>Chat info</button>
-            <button class="chat-menu-item" data-action="mute" type="button" role="menuitem"><span data-icon="bellOff" data-icon-size="16"></span><span class="menu-label">Mute notifications</span></button>
-            <button class="chat-menu-item" data-action="pin" type="button" role="menuitem"><span data-icon="pin" data-icon-size="16"></span><span class="menu-label">Pin chat</span></button>
-            <button class="chat-menu-item" data-action="lock" type="button" role="menuitem"><span data-icon="lock" data-icon-size="16"></span><span class="menu-label">Lock chat</span></button>
-            <button class="chat-menu-item" data-action="hide" type="button" role="menuitem"><span data-icon="eyeOff" data-icon-size="16"></span><span class="menu-label">Hide chat</span></button>
-            <button class="chat-menu-item" data-action="theme" type="button" role="menuitem"><span data-icon="palette" data-icon-size="16"></span>Chat theme</button>
-            <button id="menu-members" class="chat-menu-item" data-action="members" type="button" role="menuitem"><span data-icon="users" data-icon-size="16"></span>View members</button>
+          <div class="chat-header-actions">
+            <button id="voice-call-btn" class="header-icon-btn direct-only hidden" type="button" title="Voice call" aria-label="Start a voice call"><span data-icon="phone"></span></button>
+            <button id="video-call-btn" class="header-icon-btn direct-only hidden" type="button" title="Video call" aria-label="Start a video call"><span data-icon="video"></span></button>
+            <button id="focus-btn" class="header-icon-btn wide-only" type="button" title="Focus mode" aria-label="Focus mode"><span data-icon="expand"></span></button>
+            <button id="theme-btn" class="header-icon-btn wide-only" type="button" title="Chat theme" aria-label="Change chat theme"><span data-icon="palette"></span></button>
+            <button id="chat-menu-btn" class="header-icon-btn" type="button" title="Chat options" aria-label="Chat options" aria-haspopup="menu" aria-controls="chat-menu"><span data-icon="more"></span></button>
           </div>
-        </div>
+          <div id="chat-menu" class="chat-menu hidden" role="menu">
+            <button class="chat-menu-item" data-action="info" type="button" role="menuitem"><span data-icon="info" data-icon-size="17"></span>Chat info</button>
+            <button class="chat-menu-item" data-action="theme" type="button" role="menuitem"><span data-icon="palette" data-icon-size="17"></span>Chat theme</button>
+            <button class="chat-menu-item" data-action="mute" type="button" role="menuitem"><span data-icon="bellOff" data-icon-size="17"></span><span class="menu-label">Mute notifications</span></button>
+            <button class="chat-menu-item" data-action="pin" type="button" role="menuitem"><span data-icon="pin" data-icon-size="17"></span><span class="menu-label">Pin chat</span></button>
+            <button id="menu-members" class="chat-menu-item" data-action="members" type="button" role="menuitem"><span data-icon="users" data-icon-size="17"></span>View members</button>
+            <div class="menu-sep" role="separator"></div>
+            <button class="chat-menu-item" data-action="lock" type="button" role="menuitem"><span data-icon="lock" data-icon-size="17"></span><span class="menu-label">Lock chat</span></button>
+            <button class="chat-menu-item" data-action="hide" type="button" role="menuitem"><span data-icon="eyeOff" data-icon-size="17"></span><span class="menu-label">Hide chat</span></button>
+          </div>
+        </header>
 
         <button id="pinned-bar" class="pinned-bar hidden" type="button" aria-label="View pinned messages">
           <span data-icon="pin" data-icon-size="14"></span> <span id="pinned-count">0 pinned</span>
         </button>
 
-        <div id="messages-container">
+        <div id="messages-container" role="log" aria-label="Messages" tabindex="-1">
           <div id="messages-list"></div>
+          <div id="typing-bubble" class="typing-bubble hidden" aria-hidden="true"><i></i><i></i><i></i></div>
         </div>
+        <button id="jump-latest" class="jump-latest hidden" type="button" aria-label="Jump to the latest message">
+          <span data-icon="arrowDown" data-icon-size="18"></span><span id="jump-count" class="jump-count hidden"></span>
+        </button>
 
-        <div id="quick-bar" class="quick-bar" role="group" aria-label="Quick messages">
-          <button type="button" class="quick-btn" data-msg="👋" aria-label="Send waving hand">👋</button>
-          <button type="button" class="quick-btn" data-msg="❤️" aria-label="Send heart">❤️</button>
-          <button type="button" class="quick-btn" data-msg="👍" aria-label="Send thumbs up">👍</button>
-          <button type="button" class="quick-btn" data-msg="😂" aria-label="Send laughing">😂</button>
-          <button type="button" class="quick-btn" data-msg="🎉" aria-label="Send celebration">🎉</button>
-          <button type="button" class="quick-btn" data-msg="🙏" aria-label="Send folded hands">🙏</button>
-          <button type="button" class="quick-btn" data-msg="Good morning! 🌅">Good morning</button>
-          <button type="button" class="quick-btn" data-msg="On my way! 🚗">On my way</button>
-          <button type="button" class="quick-btn" data-msg="Thank you! 🙏">Thank you</button>
-        </div>
-
-        <div id="sticker-panel" class="sticker-panel hidden" role="dialog" aria-label="Stickers">
-          <div id="sticker-tabs" class="chat-filters"></div>
-          <div id="sticker-grid" class="sticker-grid"></div>
-        </div>
-
-        <div id="reply-bar" class="reply-bar hidden">
-          <span class="reply-bar-icon" data-icon="reply" data-icon-size="16"></span>
-          <div class="reply-bar-body">
-            <div id="reply-bar-author" class="reply-bar-author"></div>
-            <div id="reply-bar-text" class="reply-bar-text"></div>
-          </div>
-          <button id="cancel-reply" class="reply-cancel" type="button" aria-label="Cancel reply"><span data-icon="close" data-icon-size="14"></span></button>
-        </div>
-
-        <div id="file-preview" class="file-preview-bar hidden" aria-label="Files to send"></div>
-
-        <form id="message-form">
-          <input type="file" id="file-input" class="hidden" multiple aria-label="Attach photos or files" />
-
-          <!-- One + button opens a small menu with attach / sticker / location.
-               The three original buttons still live in that menu, so JS wiring
-               (fileBtn.click, stickerBtn, locationBtn) doesn't have to change. -->
-          <button type="button" id="compose-add" title="Attach" aria-label="Attach"><span data-icon="plus" data-icon-size="20"></span></button>
-          <div id="compose-menu" class="compose-menu hidden" role="menu">
-            <button type="button" id="file-btn" class="compose-menu-item" role="menuitem"><span data-icon="clip" data-icon-size="18"></span>Photos or files</button>
-            <button type="button" id="sticker-btn" class="compose-menu-item" role="menuitem"><span data-icon="smile" data-icon-size="18"></span>Sticker</button>
-            <button type="button" id="location-btn" class="compose-menu-item" role="menuitem"><span data-icon="pin" data-icon-size="18"></span>Location</button>
+        <div class="composer">
+          <div id="quick-bar" class="quick-bar hidden" role="group" aria-label="Quick replies">
+            <button type="button" class="quick-btn" data-msg="👋" aria-label="Send waving hand">👋</button>
+            <button type="button" class="quick-btn" data-msg="❤️" aria-label="Send heart">❤️</button>
+            <button type="button" class="quick-btn" data-msg="😂" aria-label="Send laughing">😂</button>
+            <button type="button" class="quick-btn" data-msg="🎉" aria-label="Send celebration">🎉</button>
+            <button type="button" class="quick-btn" data-msg="Good morning! 🌅">Good morning</button>
+            <button type="button" class="quick-btn" data-msg="On my way! 🚗">On my way</button>
+            <button type="button" class="quick-btn" data-msg="Thank you! 🙏">Thank you</button>
           </div>
 
-          <input type="text" id="message-input" placeholder="Type a message..." autocomplete="off" aria-label="Type a message" />
-          <button type="submit" id="send-btn" aria-label="Send"><span data-icon="send" data-icon-size="17"></span><span class="send-label">Send</span></button>
-        </form>
+          <div id="sticker-panel" class="sticker-panel hidden" role="dialog" aria-label="Stickers">
+            <div id="sticker-tabs" class="chat-filters"></div>
+            <div id="sticker-grid" class="sticker-grid"></div>
+          </div>
+
+          <div id="emoji-panel" class="emoji-panel hidden" role="dialog" aria-label="Emoji"></div>
+
+          <div id="reply-bar" class="reply-bar hidden">
+            <span class="reply-bar-icon" data-icon="reply" data-icon-size="16"></span>
+            <div class="reply-bar-body">
+              <div id="reply-bar-author" class="reply-bar-author"></div>
+              <div id="reply-bar-text" class="reply-bar-text"></div>
+            </div>
+            <button id="cancel-reply" class="reply-cancel" type="button" aria-label="Cancel reply"><span data-icon="close" data-icon-size="14"></span></button>
+          </div>
+
+          <div id="file-preview" class="file-preview-bar hidden" aria-label="Files to send"></div>
+
+          <form id="message-form" autocomplete="off">
+            <input type="file" id="file-input" class="hidden" multiple aria-label="Attach photos or files" />
+            <button type="button" id="compose-add" class="compose-btn" title="Attach" aria-label="Attach" aria-haspopup="menu" aria-controls="compose-menu"><span data-icon="plus" data-icon-size="22"></span></button>
+            <div id="compose-menu" class="compose-menu hidden" role="menu">
+              <button type="button" id="file-btn" class="compose-menu-item" role="menuitem"><span class="cm-ico tone-ocean" data-icon="image" data-icon-size="18"></span>Photos &amp; files</button>
+              <button type="button" id="sticker-btn" class="compose-menu-item" role="menuitem"><span class="cm-ico tone-sun" data-icon="smile" data-icon-size="18"></span>Stickers</button>
+              <button type="button" id="location-btn" class="compose-menu-item" role="menuitem"><span class="cm-ico tone-forest" data-icon="pin" data-icon-size="18"></span>Location</button>
+            </div>
+            <div class="compose-field">
+              <textarea id="message-input" rows="1" placeholder="Message" aria-label="Type a message" enterkeyhint="send" spellcheck="true"></textarea>
+              <button type="button" id="emoji-btn" class="compose-emoji" aria-label="Emoji" aria-haspopup="dialog" aria-controls="emoji-panel"><span data-icon="smile" data-icon-size="20"></span></button>
+            </div>
+            <button type="submit" id="send-btn" aria-label="Send"><span data-icon="send" data-icon-size="19"></span><span class="send-label">Send</span></button>
+          </form>
+        </div>
       </div>
     </div>
 
-    <!-- WhatsApp-style chat info drawer (slides in from the right) -->
+    <!-- Chat info drawer (slides in from the right) -->
     <aside id="chat-info" class="chat-info" aria-label="Chat info">
       <div class="chat-info-header">
         <button id="close-chat-info" class="header-icon-btn" type="button" aria-label="Close chat info"><span data-icon="close"></span></button>
@@ -200,26 +456,10 @@
           <div id="info-avatar" class="avatar info-avatar"></div>
           <h2 id="info-title"></h2>
           <span id="info-sub" class="chat-subtitle"></span>
-        </div>
-
-        <div class="info-section">
-          <span class="settings-label">Nickname (only you see this)</span>
-          <div class="info-row-inline">
-            <input type="text" id="info-nickname" placeholder="Add a nickname…" maxlength="40" aria-label="Nickname" />
-            <button id="save-nickname" class="mini-btn" type="button">Save</button>
-          </div>
-        </div>
-
-        <div class="info-section" id="info-group-section">
-          <span class="settings-label">Group name</span>
-          <div class="info-row-inline">
-            <input type="text" id="info-group-name" maxlength="60" aria-label="Group name" />
-            <button id="save-group-name" class="mini-btn" type="button">Save</button>
-          </div>
-          <span class="settings-label" style="margin-top:14px;">Group bio</span>
-          <div class="info-row-inline">
-            <input type="text" id="info-group-bio" placeholder="What's this group about?" maxlength="140" aria-label="Group bio" />
-            <button id="save-group-bio" class="mini-btn" type="button">Save</button>
+          <div class="info-actions info-hero-actions">
+            <button id="info-mute" class="info-chip" type="button">Mute</button>
+            <button id="info-pin" class="info-chip" type="button">Pin chat</button>
+            <button id="info-theme" class="info-chip" type="button"><span data-icon="palette" data-icon-size="14"></span>Theme</button>
           </div>
         </div>
 
@@ -229,11 +469,23 @@
         </div>
 
         <div class="info-section">
-          <span class="settings-label">Quick actions</span>
-          <div class="info-actions">
-            <button id="info-mute" class="info-chip" type="button">Mute</button>
-            <button id="info-pin" class="info-chip" type="button">Pin chat</button>
-            <button id="info-theme" class="info-chip" type="button"><span data-icon="palette" data-icon-size="14"></span>Theme</button>
+          <label class="settings-label" for="info-nickname">Nickname <em>only you see this</em></label>
+          <div class="info-row-inline">
+            <input type="text" id="info-nickname" placeholder="Add a nickname…" maxlength="40" />
+            <button id="save-nickname" class="mini-btn" type="button">Save</button>
+          </div>
+        </div>
+
+        <div class="info-section" id="info-group-section">
+          <label class="settings-label" for="info-group-name">Group name</label>
+          <div class="info-row-inline">
+            <input type="text" id="info-group-name" maxlength="60" />
+            <button id="save-group-name" class="mini-btn" type="button">Save</button>
+          </div>
+          <label class="settings-label" for="info-group-bio" style="margin-top:14px;">Group bio</label>
+          <div class="info-row-inline">
+            <input type="text" id="info-group-bio" placeholder="What's this group about?" maxlength="140" />
+            <button id="save-group-bio" class="mini-btn" type="button">Save</button>
           </div>
         </div>
 
@@ -244,12 +496,12 @@
         </div>
 
         <div class="info-section">
-          <span class="settings-label">Chat font (only for you)</span>
+          <span class="settings-label">Chat font <em>only for you</em></span>
           <div id="info-font-chips" class="info-actions"></div>
         </div>
 
         <div class="info-section">
-          <span class="settings-label">Chat wallpaper (only for you)</span>
+          <span class="settings-label">Chat wallpaper <em>only for you</em></span>
           <div id="info-wallpaper-chips" class="info-actions"></div>
         </div>
 
@@ -262,7 +514,7 @@
           <span class="settings-label">Members</span>
           <div id="info-members-list" class="members-list"></div>
           <div class="info-row-inline">
-            <input type="text" id="add-member-input" placeholder="Add by username…" aria-label="Add member by username" />
+            <input type="text" id="add-member-input" placeholder="Add by username…" aria-label="Add member by username" autocapitalize="off" spellcheck="false" />
             <button id="add-member-btn" class="mini-btn" type="button">Add</button>
           </div>
           <button id="leave-group-btn" class="danger-btn" type="button" style="margin-top:12px;"><span data-icon="logout" data-icon-size="15"></span>Leave group</button>
@@ -278,240 +530,309 @@
 
   </div>
 
-  <div id="new-chat-modal" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="new-chat-title">
+  <!-- =====================================================================
+       DIALOGS
+       data-dismiss names the button Escape should press (so its own cleanup
+       runs). data-persistent dialogs are never closed by Escape.
+       ===================================================================== -->
+  <div id="new-chat-modal" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="new-chat-title" data-dismiss="close-new-chat-modal">
     <div class="modal-content">
       <h3 id="new-chat-title">Start something new</h3>
       <div class="choice-row">
         <button id="choose-direct" class="choice-card" type="button">
-          <span class="choice-icon" data-icon="user" data-icon-size="26"></span>
+          <span class="choice-icon tone-ember" data-icon="user" data-icon-size="24"></span>
           <span class="choice-name">Direct chat</span>
           <span class="choice-sub">Message one person</span>
         </button>
         <button id="choose-group" class="choice-card" type="button">
-          <span class="choice-icon" data-icon="users" data-icon-size="26"></span>
+          <span class="choice-icon tone-grape" data-icon="users" data-icon-size="24"></span>
           <span class="choice-name">New group</span>
-          <span class="choice-sub">Chat with many</span>
+          <span class="choice-sub">Friends, a class, a project</span>
         </button>
         <button id="choose-folder" class="choice-card" type="button">
-          <span class="choice-icon" data-icon="star" data-icon-size="26"></span>
+          <span class="choice-icon tone-sun" data-icon="star" data-icon-size="24"></span>
           <span class="choice-name">New folder</span>
           <span class="choice-sub">Sort chats your way</span>
         </button>
       </div>
       <div class="modal-buttons">
-        <button id="close-new-chat-modal" class="secondary-btn">Cancel</button>
+        <button id="close-new-chat-modal" class="secondary-btn" type="button">Cancel</button>
       </div>
     </div>
   </div>
 
-  <div id="direct-modal" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="direct-modal-title">
-    <div class="modal-content">
-      <h3 id="direct-modal-title">Start Direct Chat</h3>
-      <input type="text" id="direct-username" placeholder="Enter recipient's exact Username" aria-label="Recipient's username" />
+  <div id="direct-modal" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="direct-modal-title" data-dismiss="close-direct-modal">
+    <form class="modal-content" id="direct-form" novalidate>
+      <h3 id="direct-modal-title">Start a direct chat</h3>
+      <p class="modal-sub">Enter their exact username. Nobody can browse the list of people on Panalo — you need to know who you're looking for.</p>
+      <label class="field-label" for="direct-username">Username</label>
+      <div class="prefix-field">
+        <span class="prefix" aria-hidden="true">@</span>
+        <input type="text" id="direct-username" placeholder="username" autocapitalize="off" spellcheck="false" />
+      </div>
       <div class="modal-buttons">
-        <button id="create-direct-btn">Start Chat</button>
-        <button id="close-direct-modal" class="secondary-btn">Cancel</button>
+        <button id="close-direct-modal" class="secondary-btn" type="button">Cancel</button>
+        <button id="create-direct-btn" class="btn btn-primary" type="submit">Start chat</button>
       </div>
-    </div>
+    </form>
   </div>
 
-  <div id="group-modal" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="group-modal-title">
+  <div id="group-modal" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="group-modal-title" data-dismiss="close-group-modal">
     <div class="modal-content">
-      <h3 id="group-modal-title">Create Group Chat</h3>
-      <input type="text" id="group-name-input" placeholder="Group Name" aria-label="Group name" />
+      <h3 id="group-modal-title">Create a group</h3>
+      <label class="field-label" for="group-name-input">Group name</label>
+      <input type="text" id="group-name-input" placeholder="e.g. Physics study group" maxlength="60" />
+      <label class="field-label" for="group-members-input">People</label>
       <div id="group-members-picker" class="member-picker">
         <div class="member-chips" aria-live="polite"></div>
-        <input type="text" id="group-members-input" placeholder="Add people by username" aria-label="Add people by username" aria-describedby="group-members-hint" autocomplete="off" autocapitalize="off" spellcheck="false" />
+        <input type="text" id="group-members-input" placeholder="Add people by username" aria-describedby="group-members-hint" autocomplete="off" autocapitalize="off" spellcheck="false" />
       </div>
       <p id="group-members-hint" class="member-picker-hint">Type a username and press Enter. You can add more after.</p>
       <div class="modal-buttons">
-        <button id="create-group-btn">Create Group</button>
-        <button id="close-group-modal" class="secondary-btn">Cancel</button>
+        <button id="close-group-modal" class="secondary-btn" type="button">Cancel</button>
+        <button id="create-group-btn" class="btn btn-primary" type="button">Create group</button>
       </div>
     </div>
   </div>
 
-  <div id="unlock-modal" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="unlock-modal-title">
-    <div class="modal-content">
+  <div id="unlock-modal" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="unlock-modal-title" data-persistent>
+    <form class="modal-content narrow" id="unlock-form" novalidate>
+      <span class="modal-hero-icon tone-ember" data-icon="lock" data-icon-size="26"></span>
       <h3 id="unlock-modal-title">Unlock your messages</h3>
-      <p id="unlock-subtitle" style="color:#9aa8b0; font-size:13px; margin-bottom:14px;">Enter your password to decrypt your chats on this device.</p>
-      <input type="password" id="unlock-password" placeholder="Your password" autocomplete="current-password" aria-label="Your password" />
-      <div class="modal-buttons">
-        <button id="unlock-btn">Unlock</button>
-        <button id="unlock-logout-btn" class="secondary-btn">Log out</button>
+      <p id="unlock-subtitle" class="modal-sub">Enter your password to decrypt your chats on this device.</p>
+      <div class="password-field">
+        <input type="password" id="unlock-password" placeholder="Your password" autocomplete="current-password" aria-label="Your password" />
+        <button type="button" class="reveal-btn" data-reveal="unlock-password" aria-label="Show password" aria-pressed="false"><span data-icon="eye" data-icon-size="18"></span></button>
       </div>
-    </div>
+      <div class="modal-buttons">
+        <button id="unlock-logout-btn" class="secondary-btn" type="button">Log out</button>
+        <button id="unlock-btn" class="btn btn-primary" type="submit">Unlock</button>
+      </div>
+    </form>
   </div>
 
-  <div id="settings-modal" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="settings-modal-title">
+  <div id="settings-modal" class="modal hidden settings-modal" role="dialog" aria-modal="true" aria-labelledby="settings-modal-title" data-dismiss="close-settings-modal">
     <div class="modal-content settings-content">
-      <h3 id="settings-modal-title">Settings</h3>
+      <div class="settings-top">
+        <h3 id="settings-modal-title">Settings</h3>
+        <button id="close-settings-x" class="icon-btn" type="button" aria-label="Close settings"><span data-icon="close" data-icon-size="20"></span></button>
+      </div>
+      <div class="settings-tabs" role="tablist" aria-label="Settings sections">
+        <button type="button" role="tab" id="tab-appearance" aria-controls="panel-appearance" aria-selected="true"><span data-icon="palette" data-icon-size="17"></span>Appearance</button>
+        <button type="button" role="tab" id="tab-notifications" aria-controls="panel-notifications" aria-selected="false" tabindex="-1"><span data-icon="bell" data-icon-size="17"></span>Notifications</button>
+        <button type="button" role="tab" id="tab-privacy" aria-controls="panel-privacy" aria-selected="false" tabindex="-1"><span data-icon="shield" data-icon-size="17"></span>Privacy</button>
+        <button type="button" role="tab" id="tab-account" aria-controls="panel-account" aria-selected="false" tabindex="-1"><span data-icon="user" data-icon-size="17"></span>Account</button>
+      </div>
 
       <div class="settings-body">
-      <div class="settings-section">
-        <span class="settings-label">Accent</span>
-        <div id="accent-swatches" class="theme-swatches"></div>
-      </div>
+        <section id="panel-appearance" class="settings-panel" role="tabpanel" aria-labelledby="tab-appearance">
+          <div class="appearance-preview accent-scope" id="appearance-preview" aria-hidden="true">
+            <div class="ap-msg in">look at this 👀</div>
+            <div class="ap-msg out">okay that's actually so good</div>
+            <div class="ap-msg in">told you</div>
+          </div>
 
-      <div class="settings-section">
-        <span class="settings-label">Chat wallpaper</span>
-        <div id="wallpaper-options" class="wallpaper-options"></div>
-        <input type="file" id="wallpaper-input" accept="image/*" class="hidden" aria-label="Upload a wallpaper image" />
-      </div>
+          <div class="settings-section">
+            <span class="settings-label" id="theme-mode-label">Theme</span>
+            <div id="theme-mode-options" class="segmented" role="radiogroup" aria-labelledby="theme-mode-label"></div>
+          </div>
 
-      <div class="settings-section">
-        <span class="settings-label">App font</span>
-        <div id="app-font-options" class="wallpaper-options"></div>
-      </div>
+          <div class="settings-section">
+            <span class="settings-label" id="accent-label">Accent</span>
+            <div id="accent-swatches" class="theme-swatches" role="radiogroup" aria-labelledby="accent-label"></div>
+          </div>
 
-      <div class="settings-section">
-        <span class="settings-label">Ambient effect</span>
-        <div id="effect-options" class="wallpaper-options"></div>
-        <input type="file" id="ambient-input" accept="image/*" class="hidden" aria-label="Upload an ambient image" />
-      </div>
+          <div class="settings-section two-col">
+            <div>
+              <span class="settings-label" id="bubble-label">Bubbles</span>
+              <div id="bubble-options" class="segmented" role="radiogroup" aria-labelledby="bubble-label"></div>
+            </div>
+            <div>
+              <span class="settings-label" id="text-size-label">Text size</span>
+              <div id="text-size-options" class="segmented" role="radiogroup" aria-labelledby="text-size-label"></div>
+            </div>
+          </div>
 
-      <div class="settings-section">
-        <span class="settings-label">Notifications</span>
-        <label class="settings-toggle"><span>Desktop notifications</span><input type="checkbox" id="setting-notify" class="switch" /></label>
-        <label class="settings-toggle"><span>In-app alerts</span><input type="checkbox" id="setting-inapp" class="switch" /></label>
-        <label class="settings-toggle"><span>Sound</span><input type="checkbox" id="setting-sound" class="switch" /></label>
-        <p id="notify-status" class="notify-status"></p>
-        <button id="test-alert-btn" class="mini-btn" type="button">🔔 Send a test alert</button>
-      </div>
+          <div class="settings-section">
+            <span class="settings-label">Chat wallpaper</span>
+            <div id="wallpaper-options" class="wallpaper-options"></div>
+            <input type="file" id="wallpaper-input" accept="image/*" class="hidden" aria-label="Upload a wallpaper image" />
+          </div>
 
-      <div class="settings-section">
-        <span class="settings-label">Effects</span>
-        <label class="settings-toggle"><span>Custom cursor (desktop)</span><input type="checkbox" id="setting-cursor" class="switch" /></label>
-        <label class="settings-toggle"><span>OG skin (the original violet)</span><input type="checkbox" id="setting-og-skin" class="switch" /></label>
-      </div>
+          <div class="settings-section">
+            <label class="settings-toggle"><span><strong>Compact list</strong><small>Fit more chats on screen</small></span><input type="checkbox" id="setting-compact" class="switch" /></label>
+            <label class="settings-toggle"><span><strong>Quick replies</strong><small>Emoji and one-tap phrases above the message box</small></span><input type="checkbox" id="setting-quickbar" class="switch" /></label>
+            <label class="settings-toggle"><span><strong>Reduce motion</strong><small>Fewer animations. Your device setting is always respected.</small></span><input type="checkbox" id="setting-reduce-motion" class="switch" /></label>
+          </div>
 
-      <div class="settings-section">
-        <span class="settings-label">Privacy &amp; lock</span>
-        <label class="settings-toggle"><span>App lock (PIN)</span><input type="checkbox" id="setting-app-lock" class="switch" /></label>
-        <div class="info-actions" style="margin-top:8px;">
-          <button id="pin-app-btn" class="info-chip" type="button">App PIN</button>
-          <button id="pin-chat-btn" class="info-chip" type="button">Chat-lock PIN</button>
-          <button id="pin-hidden-btn" class="info-chip" type="button">Hidden-chats PIN</button>
-        </div>
-        <p class="notify-status">Three separate PINs, so one doesn't unlock the others. Hidden chats have no switch here on purpose — use the shortcut in <strong>About &amp; shortcuts</strong>. Locks this device only; they don't change who can read messages on the server.</p>
-      </div>
+          <details class="settings-more">
+            <summary>More styling</summary>
+            <div class="settings-section">
+              <span class="settings-label">App font</span>
+              <div id="app-font-options" class="wallpaper-options"></div>
+            </div>
+            <div class="settings-section">
+              <span class="settings-label">Ambient background</span>
+              <div id="effect-options" class="wallpaper-options"></div>
+              <input type="file" id="ambient-input" accept="image/*" class="hidden" aria-label="Upload an ambient image" />
+            </div>
+            <div class="settings-section">
+              <label class="settings-toggle"><span><strong>Custom cursor</strong><small>Desktop only</small></span><input type="checkbox" id="setting-cursor" class="switch" /></label>
+            </div>
+          </details>
+        </section>
 
-      <div class="settings-section">
-        <span class="settings-label">Account</span>
-        <button id="change-password-btn" class="mini-btn" type="button"><span data-icon="lock" data-icon-size="15"></span>Change password</button>
-        <button id="about-btn" class="mini-btn" type="button" style="margin-top:8px;"><span data-icon="info" data-icon-size="15"></span>About &amp; shortcuts</button>
-        <p class="notify-status">Your messages are unlocked with this password, so changing it re-protects your encryption key at the same time.</p>
-        <button id="delete-account-btn" class="danger-btn" type="button" style="margin-top:14px;"><span data-icon="trash" data-icon-size="15"></span>Delete my account</button>
-        <p class="notify-status">Removes your profile, messages, keys and uploaded files. Messages you sent to other people stay in their copy of the chat — we can only delete what's yours. This cannot be undone.</p>
-      </div>
+        <section id="panel-notifications" class="settings-panel hidden" role="tabpanel" aria-labelledby="tab-notifications">
+          <div class="settings-section">
+            <label class="settings-toggle"><span><strong>Desktop notifications</strong><small>Alerts from your browser, even in another tab</small></span><input type="checkbox" id="setting-notify" class="switch" /></label>
+            <label class="settings-toggle"><span><strong>In-app alerts</strong><small>A banner when a message arrives in another chat</small></span><input type="checkbox" id="setting-inapp" class="switch" /></label>
+            <label class="settings-toggle"><span><strong>Sound</strong></span><input type="checkbox" id="setting-sound" class="switch" /></label>
+            <p id="notify-status" class="notify-status"></p>
+            <button id="test-alert-btn" class="mini-btn" type="button"><span data-icon="bell" data-icon-size="15"></span>Send a test alert</button>
+          </div>
+        </section>
+
+        <section id="panel-privacy" class="settings-panel hidden" role="tabpanel" aria-labelledby="tab-privacy">
+          <div class="settings-section">
+            <label class="settings-toggle"><span><strong>App lock</strong><small>Ask for a PIN whenever Panalo opens</small></span><input type="checkbox" id="setting-app-lock" class="switch" /></label>
+            <span class="settings-label">PINs</span>
+            <div class="info-actions">
+              <button id="pin-app-btn" class="info-chip" type="button"><span data-icon="lock" data-icon-size="14"></span>App PIN</button>
+              <button id="pin-chat-btn" class="info-chip" type="button"><span data-icon="lock" data-icon-size="14"></span>Chat-lock PIN</button>
+              <button id="pin-hidden-btn" class="info-chip" type="button"><span data-icon="eyeOff" data-icon-size="14"></span>Hidden-chats PIN</button>
+            </div>
+            <p class="notify-status">Three separate PINs, so one never unlocks the others. They guard this device only — they aren't encryption keys. Hidden chats have no switch here on purpose; see <strong>About &amp; shortcuts</strong>.</p>
+          </div>
+          <div class="settings-section">
+            <span class="settings-label">Encryption</span>
+            <p class="notify-status" id="encryption-status">Message text and files are encrypted on your device before they're sent.</p>
+            <button id="about-btn" class="mini-btn" type="button"><span data-icon="info" data-icon-size="15"></span>About &amp; shortcuts</button>
+          </div>
+        </section>
+
+        <section id="panel-account" class="settings-panel hidden" role="tabpanel" aria-labelledby="tab-account">
+          <div class="settings-section">
+            <button id="settings-profile-btn" class="settings-row" type="button"><span data-icon="user" data-icon-size="18"></span><span><strong>Edit profile</strong><small>Photo, username and bio</small></span></button>
+            <button id="change-password-btn" class="settings-row" type="button"><span data-icon="key" data-icon-size="18"></span><span><strong>Change password</strong><small>Your encryption key moves with it</small></span></button>
+            <button id="replay-tour-shortcut" class="settings-row" type="button"><span data-icon="sparkle" data-icon-size="18"></span><span><strong>Replay the welcome tour</strong><small>A 30-second refresher</small></span></button>
+          </div>
+          <div class="settings-section danger-zone">
+            <span class="settings-label">Danger zone</span>
+            <button id="delete-account-btn" class="danger-btn" type="button"><span data-icon="trash" data-icon-size="15"></span>Delete my account</button>
+            <p class="notify-status">Removes your profile, messages, keys and uploaded files. Messages you sent to other people stay in their copy of the chat — we can only delete what's yours. This cannot be undone.</p>
+          </div>
+        </section>
       </div>
 
       <div class="settings-footer">
-        <button id="logout-btn" class="danger-btn" type="button"><span data-icon="logout" data-icon-size="16"></span>Log Out</button>
-        <button id="close-settings-modal" class="secondary-btn">Done</button>
+        <button id="logout-btn" class="danger-btn" type="button"><span data-icon="logout" data-icon-size="16"></span>Log out</button>
+        <button id="close-settings-modal" class="btn btn-primary" type="button">Done</button>
       </div>
     </div>
   </div>
 
-  <div id="theme-modal" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="theme-modal-title">
-    <div class="modal-content">
+  <div id="theme-modal" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="theme-modal-title" data-dismiss="close-theme-modal">
+    <div class="modal-content narrow">
       <h3 id="theme-modal-title">Chat theme</h3>
-      <p style="color:var(--text-muted); font-size:13px; margin-bottom:16px;">Pick a vibe for this chat — both of you will see it.</p>
+      <p class="modal-sub">Pick a colour for this chat — everyone in it will see it.</p>
       <div id="theme-swatches" class="theme-swatches"></div>
       <div class="modal-buttons">
-        <button id="close-theme-modal" class="secondary-btn">Close</button>
+        <button id="close-theme-modal" class="secondary-btn" type="button">Close</button>
       </div>
     </div>
   </div>
 
-  <div id="members-modal" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="members-modal-title">
-    <div class="modal-content">
+  <div id="members-modal" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="members-modal-title" data-dismiss="close-members-modal">
+    <div class="modal-content narrow">
       <h3 id="members-modal-title">Members</h3>
       <div id="members-list" class="members-list"></div>
       <div class="modal-buttons">
-        <button id="close-members-modal" class="secondary-btn">Close</button>
+        <button id="close-members-modal" class="secondary-btn" type="button">Close</button>
       </div>
     </div>
   </div>
 
-  <div id="profile-modal" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="profile-modal-title">
-    <div class="modal-content">
+  <div id="profile-modal" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="profile-modal-title" data-dismiss="close-profile-modal">
+    <div class="modal-content narrow">
       <h3 id="profile-modal-title">My profile</h3>
       <div class="profile-avatar-row">
         <div id="profile-avatar-preview" class="avatar profile-avatar"></div>
         <button id="change-dp-btn" class="mini-btn" type="button"><span data-icon="camera" data-icon-size="15"></span>Change photo</button>
         <input type="file" id="dp-input" accept="image/*" class="hidden" aria-label="Upload a profile photo" />
       </div>
-      <span class="settings-label">Name</span>
-      <input type="text" id="profile-name-input" maxlength="30" aria-label="Your name" />
-      <span class="settings-label">Bio</span>
-      <input type="text" id="profile-bio-input" placeholder="Say something about yourself…" maxlength="140" aria-label="Your bio" />
+      <label class="field-label" for="profile-name-input">Username</label>
+      <div class="prefix-field">
+        <span class="prefix" aria-hidden="true">@</span>
+        <input type="text" id="profile-name-input" maxlength="30" autocapitalize="off" spellcheck="false" />
+      </div>
+      <label class="field-label" for="profile-bio-input">Bio</label>
+      <input type="text" id="profile-bio-input" placeholder="Say something about yourself…" maxlength="140" />
       <div class="modal-buttons">
-        <button id="save-profile-btn">Save</button>
-        <button id="close-profile-modal" class="secondary-btn">Close</button>
+        <button id="close-profile-modal" class="secondary-btn" type="button">Close</button>
+        <button id="save-profile-btn" class="btn btn-primary" type="button">Save</button>
       </div>
     </div>
   </div>
 
-  <div id="edit-modal" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="edit-modal-title">
+  <div id="edit-modal" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="edit-modal-title" data-dismiss="close-edit-modal">
     <div class="modal-content">
       <h3 id="edit-modal-title">Edit message</h3>
       <input type="text" id="edit-message-input" aria-label="Edited message text" />
       <div class="modal-buttons">
-        <button id="save-edit-btn">Save</button>
-        <button id="close-edit-modal" class="secondary-btn">Cancel</button>
+        <button id="close-edit-modal" class="secondary-btn" type="button">Cancel</button>
+        <button id="save-edit-btn" class="btn btn-primary" type="button">Save</button>
       </div>
     </div>
   </div>
 
-  <div id="pinned-modal" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="pinned-modal-title">
+  <div id="pinned-modal" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="pinned-modal-title" data-dismiss="close-pinned-modal">
     <div class="modal-content">
-      <h3 id="pinned-modal-title">📌 Pinned messages</h3>
+      <h3 id="pinned-modal-title">Pinned messages</h3>
       <div id="pinned-list" class="members-list"></div>
       <div class="modal-buttons">
-        <button id="close-pinned-modal" class="secondary-btn">Close</button>
+        <button id="close-pinned-modal" class="secondary-btn" type="button">Close</button>
       </div>
     </div>
   </div>
 
-  <div id="forward-modal" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="forward-modal-title">
-    <div class="modal-content">
+  <div id="forward-modal" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="forward-modal-title" data-dismiss="close-forward-modal">
+    <div class="modal-content narrow">
       <h3 id="forward-modal-title">Forward to…</h3>
       <div id="forward-list" class="members-list"></div>
       <div class="modal-buttons">
-        <button id="close-forward-modal" class="secondary-btn">Cancel</button>
+        <button id="close-forward-modal" class="secondary-btn" type="button">Cancel</button>
       </div>
     </div>
   </div>
 
-  <div id="folder-modal" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="folder-modal-title">
+  <div id="folder-modal" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="folder-modal-title" data-dismiss="close-folder-modal">
     <div class="modal-content">
-      <h3 id="folder-modal-title">Sidebar folders</h3>
+      <h3 id="folder-modal-title">Folders</h3>
       <span class="settings-label">Your folders</span>
       <div id="folder-list" class="members-list"></div>
 
-      <span class="settings-label">New folder</span>
-      <input type="text" id="folder-name-input" placeholder="Folder name (e.g. Friends)" maxlength="24" aria-label="Folder name" />
+      <label class="field-label" for="folder-name-input">New folder</label>
+      <input type="text" id="folder-name-input" placeholder="Folder name (e.g. Friends)" maxlength="24" />
       <span class="settings-label">Pick an icon</span>
       <div id="folder-icon-grid" class="folder-icon-grid"></div>
       <button id="folder-upload-btn" class="mini-btn" type="button"><span data-icon="upload" data-icon-size="14"></span>Upload your own</button>
       <input type="file" id="folder-icon-input" accept="image/*" class="hidden" aria-label="Upload a folder icon" />
       <div class="modal-buttons">
-        <button id="create-folder-btn">Create folder</button>
-        <button id="close-folder-modal" class="secondary-btn">Done</button>
+        <button id="close-folder-modal" class="secondary-btn" type="button">Done</button>
+        <button id="create-folder-btn" class="btn btn-primary" type="button">Create folder</button>
       </div>
     </div>
   </div>
 
-  <div id="image-viewer" class="image-viewer hidden" role="dialog" aria-modal="true" aria-label="Image viewer">
+  <div id="image-viewer" class="image-viewer hidden" role="dialog" aria-modal="true" aria-label="Image viewer" data-dismiss="viewer-close">
     <div class="viewer-bar">
       <button id="viewer-download" type="button"><span data-icon="download" data-icon-size="16"></span>Download</button>
-      <button id="viewer-close" type="button" aria-label="Close image viewer"><span data-icon="close" data-icon-size="16"></span></button>
+      <button id="viewer-close" type="button" aria-label="Close image viewer"><span data-icon="close" data-icon-size="18"></span></button>
     </div>
     <img id="viewer-img" class="viewer-img" alt="Full-size image" />
   </div>
 
-  <div id="about-modal" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="about-modal-title">
+  <div id="about-modal" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="about-modal-title" data-dismiss="close-about-modal">
     <div class="modal-content about-content">
       <h3 id="about-modal-title">About Panalo</h3>
       <div class="settings-body">
@@ -529,6 +850,7 @@
         <div class="shortcut-row"><span>Show / hide hidden chats</span><kbd id="about-hidden-shortcut">Ctrl + Shift + H</kbd></div>
         <div class="shortcut-row"><span>Same, on a phone</span><kbd>Two-finger tap</kbd></div>
         <div class="shortcut-row"><span>Paste a screenshot into a chat</span><kbd id="about-paste-shortcut">Ctrl + V</kbd></div>
+        <div class="shortcut-row"><span>New line in a message</span><kbd>Shift + Enter</kbd></div>
         <div class="shortcut-row"><span>Close any panel</span><kbd>Esc</kbd></div>
         <div class="shortcut-row"><span>Send</span><kbd>Enter</kbd></div>
 
@@ -537,89 +859,114 @@
           <li><strong>Lock a single chat</strong> from that chat's ⋮ menu — not here.</li>
           <li><strong>Hide a chat</strong> from the same ⋮ menu. Hidden chats have no switch in Settings on purpose: a visible toggle would tell anyone holding your phone that there's something to find.</li>
           <li><strong>Three separate PINs</strong> — app, chat lock, hidden chats — so one never unlocks the others.</li>
-          <li>PINs guard <em>this device</em> — they aren't encryption keys and don't protect anything on the server. What protects message text there is the chat's encryption key; see About for what it covers.</li>
+          <li>PINs guard <em>this device</em> — they aren't encryption keys and don't protect anything on the server. What protects message text there is the chat's encryption key; see above for what it covers.</li>
           <li><strong>Calls</strong> work on most Wi-Fi. Some mobile networks block the connection type calls need.</li>
         </ul>
       </div>
       <div class="modal-buttons">
         <button id="replay-tour-btn" class="mini-btn" type="button">Replay the tour</button>
-        <button id="close-about-modal" class="secondary-btn">Close</button>
+        <button id="close-about-modal" class="secondary-btn" type="button">Close</button>
       </div>
     </div>
   </div>
 
   <!-- Landed here from the password-reset email -->
-  <div id="recovery-modal" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="recovery-modal-title">
-    <div class="modal-content">
+  <div id="recovery-modal" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="recovery-modal-title" data-persistent>
+    <form class="modal-content narrow" id="recovery-form" novalidate>
+      <span class="modal-hero-icon tone-ember" data-icon="key" data-icon-size="26"></span>
       <h3 id="recovery-modal-title">Set a new password</h3>
-      <p class="otp-hint" id="recovery-key-hint">
+      <p class="modal-sub" id="recovery-key-hint">
         Your encryption key is protected by your password. If your key is still
         cached on this device, we'll re-protect it with the new password
         automatically. If not, we'll generate fresh keys and old encrypted
         messages will become unreadable.
       </p>
-      <input type="password" id="recovery-new-password" placeholder="New password" autocomplete="new-password" />
-      <input type="password" id="recovery-confirm-password" placeholder="Repeat new password" autocomplete="new-password" />
+      <label class="field-label" for="recovery-new-password">New password</label>
+      <input type="password" id="recovery-new-password" autocomplete="new-password" />
+      <label class="field-label" for="recovery-confirm-password">Repeat new password</label>
+      <input type="password" id="recovery-confirm-password" autocomplete="new-password" />
       <div class="modal-buttons">
-        <button id="save-recovery-password">Set password</button>
+        <button id="save-recovery-password" class="btn btn-primary" type="submit">Set password</button>
       </div>
-    </div>
+    </form>
   </div>
 
   <!-- Forgot password: ask for the email, send Supabase reset link -->
-  <div id="forgot-password-modal" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="forgot-modal-title">
-    <div class="modal-content">
+  <div id="forgot-password-modal" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="forgot-modal-title" data-dismiss="close-forgot-modal">
+    <form class="modal-content narrow" id="forgot-form" novalidate>
       <h3 id="forgot-modal-title">Reset your password</h3>
-      <p class="otp-hint">We'll email a reset link to your registered address. The link opens Panalo where you can pick a new one.</p>
-      <input type="email" id="forgot-email" placeholder="Your email" autocomplete="email" />
+      <p class="modal-sub">We'll email a reset link to your registered address. The link opens Panalo where you can pick a new one.</p>
+      <label class="field-label" for="forgot-email">Email</label>
+      <input type="email" id="forgot-email" placeholder="you@example.com" autocomplete="email" />
       <div class="modal-buttons">
-        <button id="send-reset-link">Send reset link</button>
-        <button id="close-forgot-modal" class="secondary-btn">Cancel</button>
+        <button id="close-forgot-modal" class="secondary-btn" type="button">Cancel</button>
+        <button id="send-reset-link" class="btn btn-primary" type="submit">Send reset link</button>
       </div>
-    </div>
+    </form>
   </div>
 
-  <div id="password-modal" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="password-modal-title">
-    <div class="modal-content">
+  <div id="password-modal" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="password-modal-title" data-dismiss="close-password-modal">
+    <form class="modal-content narrow" id="password-form" novalidate>
       <h3 id="password-modal-title">Change password</h3>
-      <p class="otp-hint">Your encryption key is protected by this password, so it gets re-protected with the new one automatically. Stay online until it finishes.</p>
-      <input type="password" id="current-password" placeholder="Current password" autocomplete="current-password" aria-label="Current password" />
-      <input type="password" id="new-password" placeholder="New password" autocomplete="new-password" aria-label="New password" />
-      <input type="password" id="confirm-password" placeholder="Repeat new password" autocomplete="new-password" aria-label="Repeat new password" />
+      <p class="modal-sub">Your encryption key is protected by this password, so it gets re-protected with the new one automatically. Stay online until it finishes.</p>
+      <label class="field-label" for="current-password">Current password</label>
+      <input type="password" id="current-password" autocomplete="current-password" />
+      <label class="field-label" for="new-password">New password</label>
+      <input type="password" id="new-password" autocomplete="new-password" />
+      <label class="field-label" for="confirm-password">Repeat new password</label>
+      <input type="password" id="confirm-password" autocomplete="new-password" />
       <div class="modal-buttons">
-        <button id="save-password-btn">Change password</button>
-        <button id="close-password-modal" class="secondary-btn">Cancel</button>
+        <button id="close-password-modal" class="secondary-btn" type="button">Cancel</button>
+        <button id="save-password-btn" class="btn btn-primary" type="submit">Change password</button>
       </div>
-    </div>
+    </form>
   </div>
 
-  <div id="pin-modal" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="pin-title">
-    <div class="modal-content pin-content">
+  <div id="pin-modal" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="pin-title" data-dismiss="pin-cancel">
+    <form class="modal-content pin-content narrow" id="pin-form" novalidate>
+      <span class="modal-hero-icon tone-grape" data-icon="lock" data-icon-size="26"></span>
       <h3 id="pin-title">Enter your PIN</h3>
-      <p id="pin-subtitle" class="otp-hint"></p>
+      <p id="pin-subtitle" class="modal-sub"></p>
       <input type="password" id="pin-input" class="otp-input" inputmode="numeric" autocomplete="off"
              maxlength="8" placeholder="••••" aria-label="PIN" />
-      <p class="auth-switch" style="margin-top:6px;"><a href="#" id="pin-forgot">Forgot PIN?</a></p>
+      <p class="auth-switch"><a href="#" id="pin-forgot">Forgot PIN?</a></p>
       <div class="modal-buttons">
-        <button id="pin-submit">Unlock</button>
-        <button id="pin-cancel" class="secondary-btn">Cancel</button>
+        <button id="pin-cancel" class="secondary-btn" type="button">Cancel</button>
+        <button id="pin-submit" class="btn btn-primary" type="button">Unlock</button>
       </div>
-    </div>
+    </form>
   </div>
 
-  <div id="map-modal" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="map-modal-title">
+  <!-- Generic secret entry (new PIN, confirm password). Replaces
+       window.prompt, which showed secrets in plain text. src/dialogs.js -->
+  <div id="prompt-modal" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="prompt-title" data-dismiss="prompt-cancel">
+    <form class="modal-content narrow" id="prompt-form" novalidate>
+      <span class="modal-hero-icon tone-grape" data-icon="key" data-icon-size="26"></span>
+      <h3 id="prompt-title"></h3>
+      <p id="prompt-subtitle" class="modal-sub"></p>
+      <input type="password" id="prompt-input" autocomplete="off" />
+      <input type="password" id="prompt-input-2" autocomplete="off" class="hidden" />
+      <p id="prompt-error" class="field-error hidden" role="alert"></p>
+      <div class="modal-buttons">
+        <button id="prompt-cancel" class="secondary-btn" type="button">Cancel</button>
+        <button id="prompt-submit" class="btn btn-primary" type="submit">Save</button>
+      </div>
+    </form>
+  </div>
+
+  <div id="map-modal" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="map-modal-title" data-dismiss="close-map-modal">
     <div class="modal-content map-content">
       <h3 id="map-modal-title">Location</h3>
       <div id="map-canvas" class="map-canvas"></div>
       <p id="map-coords" class="location-coords"></p>
       <div class="modal-buttons">
         <a id="map-open-external" class="mini-btn" href="#" target="_blank" rel="noopener noreferrer">Open in maps</a>
-        <button id="close-map-modal" class="secondary-btn">Close</button>
+        <button id="close-map-modal" class="secondary-btn" type="button">Close</button>
       </div>
     </div>
   </div>
 
-  <div id="call-overlay" class="call-overlay hidden" role="dialog" aria-modal="true" aria-label="Call">
+  <div id="call-overlay" class="call-overlay hidden" role="dialog" aria-modal="true" aria-label="Call" data-persistent>
     <video id="call-remote" class="call-remote" autoplay playsinline></video>
     <video id="call-local" class="call-local hidden" autoplay playsinline muted></video>
 

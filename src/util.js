@@ -45,10 +45,11 @@ export function redirectUrl() {
 }
 
 // Run an async action while showing a busy state on `button`, preventing
-// double-submits. Restores the original label afterward no matter what.
+// double-submits. Restores the original content afterward no matter what --
+// the nodes themselves, not just the text, so a button's icon survives.
 export async function withBusy(button, busyLabel, fn) {
   if (!button || button.disabled) return;
-  const previousLabel = button.textContent;
+  const previous = [...button.childNodes];
   button.disabled = true;
   button.setAttribute("aria-busy", "true");
   if (busyLabel) button.textContent = busyLabel;
@@ -57,8 +58,47 @@ export async function withBusy(button, busyLabel, fn) {
   } finally {
     button.disabled = false;
     button.removeAttribute("aria-busy");
-    button.textContent = previousLabel;
+    button.replaceChildren(...previous);
   }
+}
+
+// Split text into plain runs and web links, for rendering links as <a>
+// without ever parsing message text as HTML. Only http(s) and bare "www."
+// addresses count; trailing punctuation that is almost always prose
+// ("see example.com." / "(www.site.org)") is left out of the link.
+const LINK_RE = /\b(?:https?:\/\/|www\.)[^\s<>"']+/gi;
+export function splitLinks(text) {
+  const out = [];
+  const s = String(text ?? "");
+  let last = 0;
+  for (const m of s.matchAll(LINK_RE)) {
+    let raw = m[0];
+    // Peel closing punctuation that isn't balanced inside the URL.
+    while (/[.,!?;:)\]}]$/.test(raw)) {
+      const ch = raw.at(-1);
+      if (ch === ")" && (raw.match(/\(/g) || []).length >= (raw.match(/\)/g) || []).length) break;
+      raw = raw.slice(0, -1);
+    }
+    if (!raw || /^www\.$/i.test(raw)) continue;
+    const start = m.index;
+    if (start > last) out.push({ type: "text", value: s.slice(last, start) });
+    const href = /^https?:\/\//i.test(raw) ? raw : `https://${raw}`;
+    out.push({ type: "link", value: raw, href });
+    last = start + raw.length;
+  }
+  if (last < s.length) out.push({ type: "text", value: s.slice(last) });
+  return out.length ? out : [{ type: "text", value: s }];
+}
+
+// Emoji-only messages ("🔥", "😂😂") are shown large and without a bubble.
+// Up to three emoji; anything with letters, digits or punctuation is text.
+const EMOJI_ONLY_RE = /^(?:\p{Extended_Pictographic}(?:️|‍\p{Extended_Pictographic}|\p{Emoji_Modifier}|⃣)*|\p{Regional_Indicator}{2}|\s)+$/u;
+export function emojiCount(text) {
+  const t = String(text ?? "").trim();
+  if (!t || t.length > 40 || !EMOJI_ONLY_RE.test(t)) return 0;
+  const seg = typeof Intl !== "undefined" && Intl.Segmenter ? new Intl.Segmenter(undefined, { granularity: "grapheme" }) : null;
+  const graphemes = seg ? [...seg.segment(t)].filter((g) => g.segment.trim()).length : [...t.replace(/\s/g, "")].length;
+  return graphemes <= 3 ? graphemes : 0;
 }
 
 // Lightweight, accessible, non-blocking toast.
@@ -140,6 +180,7 @@ export function attachRipples() {
 // user-level "no haptics" toggle only needs one edit.
 export function haptic(ms = 8) {
   try {
+    if (document.documentElement.getAttribute("data-motion") === "reduce") return;
     if (window.matchMedia?.("(prefers-reduced-motion: reduce)").matches) return;
     navigator.vibrate?.(ms);
   } catch {

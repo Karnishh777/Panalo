@@ -22,7 +22,10 @@ let glyphs = [];
 const mouse = { x: -1e4, y: -1e4 };
 
 function reducedMotion() {
-  return window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  return (
+    document.documentElement.getAttribute("data-motion") === "reduce" ||
+    window.matchMedia("(prefers-reduced-motion: reduce)").matches
+  );
 }
 
 function hexToRgb(hex) {
