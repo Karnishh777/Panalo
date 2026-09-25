@@ -147,12 +147,25 @@ async function decryptRows(data) {
 }
 
 const FIELDS = "id, conversation_id, user_id, username, content, iv, file_url, created_at, expires_at";
+// Before supabase-phase15.sql there is no expires_at column, and asking for
+// it fails the whole query -- which silently emptied search. Fall back to
+// the older column list, once, rather than breaking search on a database
+// that hasn't been migrated yet. Nothing expires there anyway.
+const LEGACY_FIELDS = "id, conversation_id, user_id, username, content, iv, file_url, created_at";
+let fields = FIELDS;
 
 async function fetchPage({ before, after, limit }) {
-  let q = supabaseClient.from("messages").select(FIELDS);
-  if (before) q = q.lt("created_at", before);
-  if (after) q = q.gt("created_at", after);
-  const { data, error } = await q.order("created_at", { ascending: false }).limit(limit);
+  const run = () => {
+    let q = supabaseClient.from("messages").select(fields);
+    if (before) q = q.lt("created_at", before);
+    if (after) q = q.gt("created_at", after);
+    return q.order("created_at", { ascending: false }).limit(limit);
+  };
+  let { data, error } = await run();
+  if (error && fields === FIELDS && /expires_at/i.test(error.message || "")) {
+    fields = LEGACY_FIELDS;
+    ({ data, error } = await run());
+  }
   return error ? [] : data || [];
 }
 

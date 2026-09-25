@@ -411,6 +411,11 @@
       const t = this.table;
       if (!me() && t !== "profiles") return { error: { message: "not signed in" } };
       if (this.op === "select") {
+        // QA.preMigration: behave like a database without supabase-phase15.sql.
+        if (QA.preMigration) {
+          const missing = parseSelect(this.selectStr).plain.find((c) => ["expires_at", "disappear_after"].includes(c));
+          if (missing) return { error: { message: `column ${t}.${missing} does not exist`, code: "42703" } };
+        }
         let rows = this.matching();
         // "!inner" embeds drop rows whose relation is missing.
         const { embeds } = parseSelect(this.selectStr);
