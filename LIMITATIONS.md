@@ -24,9 +24,9 @@ can be added to this codebase. The UI correctly hides call buttons in groups.
 Many networks — mobile carriers, school and office Wi-Fi — can't connect two
 devices directly, and those calls need a **TURN relay**. Support is built in
 (`functions/api/turn.js` hands short-lived Cloudflare TURN credentials to a
-signed-in user) but it stays **off until a TURN key is added** in Cloudflare;
-see `HOSTING.md`. Relayed calls are billed by Cloudflare per GB; calls that
-connect directly cost nothing. Until then, calls on those networks fail, and
+signed-in user) but it stays **off until a relay provider is configured**
+(ExpressTURN or Metered free tiers, or Cloudflare TURN); see `HOSTING.md`.
+Calls that connect directly never use the relay. Until then, calls on those networks fail, and
 the app says so instead of pretending to connect.
 
 ### 🔴 The server can never search your messages

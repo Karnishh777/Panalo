@@ -63,20 +63,25 @@ host on Cloudflare Pages or GitHub Pages, because it never needed builds.
 
 Calls connect two devices directly when they can. On many networks (mobile
 carriers, school and office Wi-Fi) they can't, and the call needs a relay.
-The app already knows how to use one; it just needs a key:
+`functions/api/turn.js` (a Pages Function — part of this Pages project, no
+separate Worker) hands relay credentials to signed-in users only. Pick ONE
+provider and add its values in **Workers & Pages → panalo → Settings →
+Variables and secrets** as **Secrets** (Production), then **Deployments →
+Retry deployment**:
 
-1. Cloudflare dashboard → **Realtime → TURN** → create a TURN key. Copy its
-   **ID** and **API token**.
-2. **Workers & Pages → panalo → Settings → Variables and secrets** → add two
-   **secrets** (Production, and Preview if you want it there too):
-   - `TURN_KEY_ID`
-   - `TURN_KEY_API_TOKEN`
-3. Push any commit (or "Retry deployment") so the new secrets are picked up.
+| Provider | Cost | Secrets |
+|---|---|---|
+| ExpressTURN (or any TURN with a fixed login) | free tier 1000 GB/month | `TURN_URLS`, `TURN_USERNAME`, `TURN_CREDENTIAL` |
+| Metered.ca | free tier 500 MB/month, no card | `METERED_APP`, `METERED_API_KEY` |
+| Cloudflare TURN | pay per GB, needs a card | `TURN_KEY_ID`, `TURN_KEY_API_TOKEN` |
 
-Check: while signed in, calls on mobile data should now connect. The endpoint
-is `functions/api/turn.js`; it only gives credentials to a signed-in Panalo
-user and never exposes the key. Cloudflare bills relayed traffic per GB
-(see their Realtime pricing); calls that connect directly use no relay.
+`TURN_URLS` is comma-separated, e.g.
+`turn:relay1.expressturn.com:3478,turn:relay1.expressturn.com:3478?transport=tcp`.
+With a fixed login, anyone signed in to Panalo can see those credentials
+during a call; rotate the password in the provider's dashboard if it leaks.
+
+Check: `curl -X POST https://<site>/api/turn` answers 501 while nothing is
+configured and 401 (sign-in required) once a provider is.
 
 ---
 

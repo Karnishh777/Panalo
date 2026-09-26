@@ -1,18 +1,23 @@
-// POST /api/turn — short-lived TURN relay credentials for a call.
+// POST /api/turn — TURN relay credentials for a call.
 //
 // A Cloudflare Pages Function (Pages runs anything under /functions; the
-// rest of the site is still plain static files). It exists because a TURN
-// key is a long-lived secret that must never reach the browser: this trades
-// it for credentials that expire, and only for someone signed in to Panalo,
-// so the relay (which is billed per GB) can't be used by strangers.
+// rest of the site is still plain static files — no separate Worker needed).
+// It keeps the relay's secret on the server and hands credentials only to
+// someone signed in to Panalo, so strangers can't burn the relay's quota.
 //
-// Setup (Cloudflare dashboard):
-//   1. Realtime → TURN → create a TURN key.
-//   2. Pages project → Settings → Variables and secrets → add, as secrets:
-//        TURN_KEY_ID         the key's id
-//        TURN_KEY_API_TOKEN  the key's API token
-//   3. Redeploy (or push any commit).
-// Without them this answers 501 and calls use STUN only, as before.
+// Configure ONE provider in Pages → Settings → Variables and secrets
+// (as secrets), then redeploy. The first one found is used:
+//
+//   Cloudflare TURN (needs a payment method on the Cloudflare account)
+//     TURN_KEY_ID, TURN_KEY_API_TOKEN
+//   Metered.ca (free tier, no card; 500 MB/month)
+//     METERED_APP      the app name, i.e. <name> in <name>.metered.live
+//     METERED_API_KEY
+//   Any TURN server with a fixed username/password (e.g. ExpressTURN)
+//     TURN_URLS        comma-separated, e.g. "turn:relay1.expressturn.com:3478"
+//     TURN_USERNAME, TURN_CREDENTIAL
+//
+// With none of them set this answers 501 and calls use STUN only.
 //
 // SUPABASE_URL / SUPABASE_ANON_KEY can be overridden with variables of the
 // same name; the defaults are the public values already in src/config.js.
@@ -26,8 +31,51 @@ const json = (body, status = 200) =>
     headers: { "content-type": "application/json", "cache-control": "no-store" },
   });
 
+function provider(env) {
+  if (env.TURN_KEY_ID && env.TURN_KEY_API_TOKEN) return "cloudflare";
+  if (env.METERED_APP && env.METERED_API_KEY) return "metered";
+  if (env.TURN_URLS && env.TURN_USERNAME && env.TURN_CREDENTIAL) return "static";
+  return null;
+}
+
+// Only STUN/TURN addresses may come out of here, whatever is configured.
+function cleanServers(list) {
+  return (Array.isArray(list) ? list : [])
+    .map((s) => ({ ...s, urls: [].concat(s?.urls || []).filter((u) => /^(stun|turns?):/i.test(String(u))) }))
+    .filter((s) => s.urls.length);
+}
+
+async function fetchServers(kind, env) {
+  if (kind === "cloudflare") {
+    const res = await fetch(
+      `https://rtc.live.cloudflare.com/v1/turn/keys/${encodeURIComponent(env.TURN_KEY_ID)}/credentials/generate-ice-servers`,
+      {
+        method: "POST",
+        headers: { authorization: `Bearer ${env.TURN_KEY_API_TOKEN}`, "content-type": "application/json" },
+        body: JSON.stringify({ ttl: TTL_SECONDS }),
+      }
+    );
+    if (!res.ok) return null;
+    return (await res.json()).iceServers;
+  }
+  if (kind === "metered") {
+    if (!/^[a-z0-9-]+$/i.test(env.METERED_APP)) return null;
+    const res = await fetch(
+      `https://${env.METERED_APP}.metered.live/api/v1/turn/credentials?apiKey=${encodeURIComponent(env.METERED_API_KEY)}`
+    );
+    if (!res.ok) return null;
+    return await res.json();
+  }
+  if (kind === "static") {
+    const urls = String(env.TURN_URLS).split(",").map((u) => u.trim()).filter(Boolean);
+    return [{ urls, username: env.TURN_USERNAME, credential: env.TURN_CREDENTIAL }];
+  }
+  return null;
+}
+
 export async function onRequestPost({ request, env }) {
-  if (!env.TURN_KEY_ID || !env.TURN_KEY_API_TOKEN) return json({ error: "turn-not-configured" }, 501);
+  const kind = provider(env);
+  if (!kind) return json({ error: "turn-not-configured" }, 501);
 
   // Only a signed-in Panalo user: ask Supabase who this token belongs to.
   const auth = request.headers.get("authorization") || "";
@@ -38,17 +86,14 @@ export async function onRequestPost({ request, env }) {
   });
   if (!who.ok) return json({ error: "unauthorized" }, 401);
 
-  const res = await fetch(
-    `https://rtc.live.cloudflare.com/v1/turn/keys/${encodeURIComponent(env.TURN_KEY_ID)}/credentials/generate-ice-servers`,
-    {
-      method: "POST",
-      headers: { authorization: `Bearer ${env.TURN_KEY_API_TOKEN}`, "content-type": "application/json" },
-      body: JSON.stringify({ ttl: TTL_SECONDS }),
-    }
-  );
-  if (!res.ok) return json({ error: "turn-unavailable" }, 502);
-  const data = await res.json();
-  return json({ iceServers: data.iceServers || [] });
+  let servers = null;
+  try {
+    servers = cleanServers(await fetchServers(kind, env));
+  } catch {
+    servers = null;
+  }
+  if (!servers || !servers.length) return json({ error: "turn-unavailable" }, 502);
+  return json({ iceServers: servers });
 }
 
 export function onRequest() {
