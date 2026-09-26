@@ -95,5 +95,5 @@ export function rootAttributes(settings, prefersDark) {
 
 // The browser UI colour (address bar, PWA title bar) for a resolved theme.
 export function themeColor(theme) {
-  return theme === "dark" ? "#0b0a0f" : "#f3efe9";
+  return theme === "dark" ? "#070b16" : "#f3efe9";
 }

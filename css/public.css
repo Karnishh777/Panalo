@@ -106,6 +106,12 @@ body.in-app {
     radial-gradient(34% 38% at 12% 12%, color-mix(in oklab, var(--brand-sun) 22%, transparent), transparent 70%);
   filter: blur(8px);
 }
+:root[data-theme="dark"] .landing::before {
+  background:
+    radial-gradient(38% 42% at 72% 30%, rgba(47, 111, 228, 0.34), transparent 70%),
+    radial-gradient(32% 38% at 90% 64%, rgba(123, 69, 224, 0.34), transparent 70%),
+    radial-gradient(34% 38% at 12% 12%, rgba(64, 196, 255, 0.16), transparent 70%);
+}
 
 .land-nav {
   position: sticky;

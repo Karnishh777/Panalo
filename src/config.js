@@ -89,9 +89,23 @@ export const MAX_FILE_BYTES = 50 * 1024 * 1024;
 // that clashed with the matte direction.
 export const WALLPAPER_PRESETS = [
   { id: "doodle", name: "Doodle" },
-  // "Ambient" makes the app translucent so the ambient effect shows through it.
-  { id: "ambient", name: "Ambient", icon: "sparkle" },
+  { id: "city", name: "Night city", scene: "wallpapers/night-city.svg" },
+  { id: "northern", name: "Northern lights", scene: "wallpapers/northern-lights.svg" },
+  { id: "galaxy", name: "Galaxy", scene: "wallpapers/galaxy.svg" },
   { id: "dots", name: "Dots" },
   { id: "plain", name: "Plain" },
+  // "Ambient" makes the app translucent so the ambient effect shows through it.
+  { id: "ambient", name: "Ambient", icon: "sparkle" },
   { id: "custom", name: "Upload", icon: "upload" },
+];
+
+// One-tap looks: a theme (light/dark) plus an accent. Picking one just sets
+// those two settings, which stay individually adjustable underneath.
+export const LOOK_PRESETS = [
+  { id: "midnight", name: "Midnight", mode: "dark", accent: "sky" },
+  { id: "neon", name: "Neon", mode: "dark", accent: "grape" },
+  { id: "ocean", name: "Ocean", mode: "dark", accent: "ocean" },
+  { id: "sunset", name: "Sunset", mode: "light", accent: "sunset" },
+  { id: "forest", name: "Forest", mode: "dark", accent: "forest" },
+  { id: "daylight", name: "Daylight", mode: "light", accent: "default" },
 ];

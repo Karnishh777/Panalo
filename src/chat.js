@@ -311,7 +311,45 @@ function renderViewChips(totals = unreadTotals()) {
   );
 }
 
+// People row above the list: the faces of your direct chats, whoever is
+// online first. Only on the plain "All" view -- in a filter, a folder or a
+// search it would be noise -- and hidden chats stay out of it.
+function renderFriendsRow() {
+  const row = document.getElementById("friends-row");
+  if (!row) return;
+  const people = allConversations.filter(
+    (c) => c.type === "direct" && c.otherUserId && (hiddenVisible() || !isChatHidden(c.id))
+  );
+  if (chatFilter !== "all" || chatSearch.trim() || people.length < 2) {
+    row.classList.add("hidden");
+    row.replaceChildren();
+    return;
+  }
+  people.sort(
+    (a, b) =>
+      Number(isOnline(b.otherUserId)) - Number(isOnline(a.otherUserId)) ||
+      String(b.lastAt || "").localeCompare(String(a.lastAt || ""))
+  );
+  row.replaceChildren(
+    ...people.slice(0, 12).map((conv) => {
+      const title = displayTitle(conv);
+      const online = isOnline(conv.otherUserId);
+      const avatar = el("span", { class: "avatar", "aria-hidden": "true" });
+      setAvatar(avatar, conv.displayTitle || conv.name, conv.otherAvatar);
+      return el("button", {
+        class: `friend${online ? " online" : ""}`,
+        type: "button",
+        title,
+        "aria-label": `${title}${online ? ", online" : ""}`,
+        onClick: () => openConversation(conv),
+      }, [avatar, el("span", { class: "friend-name", text: title.split(" ")[0] })]);
+    })
+  );
+  row.classList.remove("hidden");
+}
+
 function renderConversations() {
+  renderFriendsRow();
   // Home (src/home.js) and anything else that summarises the chat list
   // listens for this rather than reaching into chat.js.
   document.dispatchEvent(new CustomEvent("panalo:chats", { detail: allConversations }));
@@ -2975,7 +3013,10 @@ export function initChatUI() {
   startReactions();
 
   // Refresh the header status whenever anyone's online state changes.
-  setPresenceListener(refreshChatSubtitle);
+  setPresenceListener(() => {
+    refreshChatSubtitle();
+    renderFriendsRow();
+  });
 
   // Live inbox: every incoming message updates previews, ordering, and unread
   // counts — even for chats that aren't open.

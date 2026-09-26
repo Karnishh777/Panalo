@@ -418,6 +418,121 @@
   background: var(--surface);
 }
 
+/* Looks: one tap for theme + accent. Each card is a tiny live render. */
+.look-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+}
+.look-card {
+  display: grid;
+  gap: 6px;
+  padding: 6px 6px 8px;
+  border-radius: var(--r-lg);
+  border: 2px solid var(--border);
+  background: var(--surface);
+  text-align: left;
+  font-size: var(--fs-sm);
+  font-weight: 650;
+  color: var(--text);
+  transition: border-color var(--dur-2) var(--ease), transform var(--dur-2) var(--ease);
+}
+.look-card:hover {
+  transform: translateY(-2px);
+}
+.look-card[aria-pressed="true"] {
+  border-color: var(--text);
+}
+.look-card > span:last-child {
+  padding-left: 4px;
+}
+.look-swatch {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  gap: 4px;
+  height: 74px;
+  padding: 8px;
+  border-radius: 12px;
+  overflow: hidden;
+  background: var(--lk-bg);
+}
+.look-swatch::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(70% 70% at 90% 0%, color-mix(in oklab, var(--lk-accent) 45%, transparent), transparent 70%);
+}
+.look-swatch i {
+  position: relative;
+  height: 12px;
+  border-radius: 7px;
+}
+.look-swatch i:first-child {
+  width: 58%;
+  background: var(--lk-in);
+}
+.look-swatch i:last-child {
+  width: 46%;
+  align-self: flex-end;
+  background: var(--lk-accent);
+}
+
+/* Wallpaper gallery. */
+.wp-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(92px, 1fr));
+  gap: 10px;
+}
+.wp-tile {
+  display: grid;
+  gap: 6px;
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--text-2);
+  text-align: center;
+}
+.wp-thumb {
+  display: grid;
+  place-items: center;
+  height: 118px;
+  border-radius: 14px;
+  border: 2px solid var(--border);
+  background: var(--surface-2) center / cover no-repeat;
+  color: var(--text-3);
+  transition: border-color var(--dur-2) var(--ease), transform var(--dur-2) var(--ease);
+}
+.wp-tile:hover .wp-thumb {
+  transform: translateY(-2px);
+}
+.wp-tile.selected .wp-thumb {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px var(--primary-soft);
+}
+.wp-tile.selected {
+  color: var(--text);
+}
+.wp-thumb.pat-doodle {
+  background-color: var(--surface-2);
+  background-image: none;
+  position: relative;
+  overflow: hidden;
+}
+.wp-thumb.pat-doodle::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-color: var(--wp-ink);
+  -webkit-mask: url("../doodle.svg") 0 0 / 150px repeat;
+  mask: url("../doodle.svg") 0 0 / 150px repeat;
+  opacity: var(--wp-alpha);
+}
+.wp-thumb.pat-dots {
+  background-image: radial-gradient(color-mix(in oklab, var(--wp-ink) 22%, transparent) 1.3px, transparent 1.4px);
+  background-size: 12px 12px;
+}
+
 /* Live preview of the appearance choices. */
 .appearance-preview {
   display: flex;
@@ -856,6 +971,9 @@
   }
   .choice-row {
     grid-template-columns: 1fr;
+  }
+  .look-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
   .choice-card {
     flex-direction: row;

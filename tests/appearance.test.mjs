@@ -3,7 +3,8 @@
 import {
   normalizeSettings, resolveTheme, accentVars, rootAttributes, themeColor, SETTINGS_DEFAULTS,
 } from "../src/appearance-core.js";
-import { THEME_PRESETS } from "../src/config.js";
+import { THEME_PRESETS, LOOK_PRESETS, WALLPAPER_PRESETS } from "../src/config.js";
+import fs from "node:fs";
 
 let passed = 0;
 const failures = [];
@@ -84,6 +85,19 @@ for (const p of THEME_PRESETS) {
   const ratio = 1.05 / (lum(p.primary) + 0.05);
   ok(`${p.name}: white text contrast ${ratio.toFixed(2)} >= 4.5`, ratio >= 4.5);
 }
+
+// ---- Looks and wallpapers ----
+for (const look of LOOK_PRESETS) {
+  ok(`look "${look.id}" uses a real accent`, accentIds.includes(look.accent));
+  ok(`look "${look.id}" uses a real theme`, look.mode === "light" || look.mode === "dark");
+}
+ok("look ids are unique", new Set(LOOK_PRESETS.map((l) => l.id)).size === LOOK_PRESETS.length);
+for (const w of WALLPAPER_PRESETS.filter((w) => w.scene)) {
+  ok(`wallpaper "${w.id}" file exists`, fs.existsSync(new URL(`../${w.scene}`, import.meta.url)));
+}
+ok("wallpaper ids are unique", new Set(WALLPAPER_PRESETS.map((w) => w.id)).size === WALLPAPER_PRESETS.length);
+ok("new wallpapers are accepted by the settings rules",
+  normalizeSettings({ wallpaper: "galaxy" }, { wallpaperIds: WALLPAPER_PRESETS.map((w) => w.id) }).wallpaper === "galaxy");
 
 console.log(`${passed} passed, ${failures.length} failed`);
 if (failures.length) {

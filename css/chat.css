@@ -280,6 +280,10 @@
     transform: translateY(6px) scale(0.985);
   }
 }
+:root[data-theme="dark"] .message.my-message {
+  --bubble-bg: linear-gradient(135deg, var(--primary), var(--primary-strong));
+  box-shadow: 0 8px 22px -10px color-mix(in oklab, var(--primary) 90%, transparent), 0 0 0 1px color-mix(in oklab, var(--primary) 40%, transparent) inset;
+}
 .message.my-message {
   --bubble-bg: var(--bubble-out);
   --bubble-fg: var(--bubble-out-text);
@@ -375,8 +379,22 @@
 .message.emoji-only[data-count="3"] .message-text {
   font-size: 2.1rem;
 }
-.message.emoji-only .message-footer {
-  color: var(--text-3);
+/* No bubble behind these, so the time gets its own frosted pill -- readable
+   on any wallpaper, photo or scene. */
+.message.emoji-only .message-footer,
+.message.sticker-message .message-footer {
+  align-self: flex-start;
+  margin-top: 4px;
+  padding: 1px 7px;
+  border-radius: var(--r-full);
+  background: var(--surface-glass);
+  -webkit-backdrop-filter: blur(8px);
+  backdrop-filter: blur(8px);
+  color: var(--text-2);
+}
+.message.my-message.emoji-only .message-footer,
+.message.my-message.sticker-message .message-footer {
+  align-self: flex-end;
 }
 
 .message-footer {
@@ -742,9 +760,7 @@
   box-shadow: none;
   padding: 0;
 }
-.message.sticker-message .message-footer {
-  color: var(--text-3);
-}
+
 .sticker-img {
   width: 132px;
   height: 132px;

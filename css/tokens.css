@@ -177,45 +177,50 @@
 }
 
 /* ---------------------------------------------------------------------------
-   Dark — deep ink with a violet cast, never pure black.
+   Dark — "Midnight": deep navy with a blue-violet glow, never pure black.
+   Every text role here is AA on every surface (checked by calculation).
    ------------------------------------------------------------------------- */
 :root[data-theme="dark"] {
   color-scheme: dark;
-  --bg: #0b0a0f;
-  --bg-tint: #121018;
-  --surface: #15131b;
-  --surface-2: #1c1a24;
-  --surface-3: #25222f;
-  --surface-hover: #1f1c28;
-  --surface-sunken: #110f16;
-  --surface-glass: color-mix(in oklab, #15131b 78%, transparent);
-  --overlay: rgba(4, 3, 8, 0.66);
+  --bg: #070b16;
+  --bg-tint: #0b1120;
+  --surface: #0e1424;
+  --surface-2: #131a2d;
+  --surface-3: #1b2338;
+  --surface-hover: #161e33;
+  --surface-sunken: #0a0f1c;
+  --surface-glass: color-mix(in oklab, #0e1424 76%, transparent);
+  --overlay: rgba(3, 6, 14, 0.68);
 
-  --text: #f3f0f7;
-  --text-2: #b9b2c4;
-  --text-3: #938c9f;
-  --border: #2a2633;
-  --border-strong: #3a3546;
+  --text: #eef2fb;
+  --text-2: #b3bdd3;
+  --text-3: #8b96ae;
+  --border: #1f2940;
+  --border-strong: #2d3957;
   --divider: color-mix(in oklab, #ffffff 7%, transparent);
 
-  --bubble-in: #211e2a;
+  --bubble-in: #19213a;
   --bubble-in-text: var(--text);
-  --bubble-in-border: #2c2837;
+  --bubble-in-border: #243050;
 
   --danger: #f0645c;
   --success: #3ccb84;
   --warning: #f0b243;
 
-  --shadow-1: 0 1px 2px rgba(0, 0, 0, 0.4);
-  --shadow-2: 0 6px 18px rgba(0, 0, 0, 0.45), 0 1px 3px rgba(0, 0, 0, 0.35);
-  --shadow-3: 0 24px 60px rgba(0, 0, 0, 0.6), 0 4px 14px rgba(0, 0, 0, 0.4);
-  --shadow-panel: 0 0 0 1px rgba(255, 255, 255, 0.03) inset;
+  --shadow-1: 0 1px 2px rgba(0, 0, 0, 0.45);
+  --shadow-2: 0 6px 18px rgba(0, 0, 0, 0.5), 0 1px 3px rgba(0, 0, 0, 0.35);
+  --shadow-3: 0 24px 60px rgba(0, 0, 0, 0.65), 0 4px 14px rgba(0, 0, 0, 0.4);
+  --shadow-panel: 0 0 0 1px rgba(140, 170, 255, 0.04) inset;
 
-  --wp-ink: #d9cfee;
-  --wp-alpha: 0.55;
-  --skeleton: #211e29;
-  --skeleton-hi: #2b2735;
-  --avatar-sat: 52%;
+  /* The glow behind everything: electric blue and violet. */
+  --glow-a: #2f6fe4;
+  --glow-b: #7b45e0;
+
+  --wp-ink: #cdd8f5;
+  --wp-alpha: 0.5;
+  --skeleton: #182038;
+  --skeleton-hi: #212b47;
+  --avatar-sat: 55%;
   --avatar-light: 56%;
 
   --focus: 0 0 0 2px var(--surface), 0 0 0 4px color-mix(in oklab, var(--primary) 60%, white);

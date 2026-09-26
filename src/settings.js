@@ -3,7 +3,7 @@
 // Everything visual is per-device and stored in localStorage (no backend
 // needed). The rules for what a valid setting is live in appearance-core.js
 // and are unit-tested; this file wires them to the controls.
-import { THEME_PRESETS, WALLPAPER_PRESETS, EFFECT_PRESETS, FONT_PRESETS } from "./config.js";
+import { THEME_PRESETS, WALLPAPER_PRESETS, EFFECT_PRESETS, FONT_PRESETS, LOOK_PRESETS } from "./config.js";
 import { validatePassword } from "./password.js";
 import { el, showToast, withBusy, mapLimited } from "./util.js";
 import { icon } from "./icons.js";
@@ -374,6 +374,45 @@ export function initSettings() {
     });
   });
 
+  // ---- Looks: one tap sets theme + accent ----
+  const lookBox = document.getElementById("look-options");
+  const syncLooks = () => {
+    lookBox.querySelectorAll(".look-card").forEach((c) => {
+      const look = LOOK_PRESETS.find((l) => l.id === c.dataset.id);
+      const on = settings.themeMode === look.mode && settings.accent === look.accent;
+      c.setAttribute("aria-pressed", String(on));
+    });
+  };
+  LOOK_PRESETS.forEach((look) => {
+    const accent = accentPreset(look.accent).primary;
+    const dark = look.mode === "dark";
+    const swatch = el("span", { class: "look-swatch", "aria-hidden": "true" }, [el("i"), el("i")]);
+    swatch.style.setProperty("--lk-bg", dark ? "#0e1424" : "#f7f4f0");
+    swatch.style.setProperty("--lk-in", dark ? "#243050" : "#ffffff");
+    swatch.style.setProperty("--lk-accent", accent);
+    const card = el("button", {
+      class: "look-card",
+      type: "button",
+      "aria-label": `${look.name} look`,
+      onClick: () => {
+        settings.themeMode = look.mode;
+        settings.accent = look.accent;
+        save();
+        applyAppearance();
+        // Keep the individual controls below in step.
+        markSelected(document.getElementById("theme-mode-options"), "[role='radio']", look.mode);
+        const acc = document.getElementById("accent-swatches");
+        markSelected(acc, "[role='radio']", look.accent);
+        acc.querySelectorAll(".theme-swatch").forEach((sw) => sw.classList.toggle("selected", sw.dataset.id === look.accent));
+        syncLooks();
+      },
+    }, [swatch, el("span", { text: look.name })]);
+    card.dataset.id = look.id;
+    lookBox.append(card);
+  });
+  syncLooks();
+  document.addEventListener("panalo:settings", syncLooks);
+
   // ---- Theme mode ----
   radioGroup(
     document.getElementById("theme-mode-options"),
@@ -497,14 +536,22 @@ export function initSettings() {
     if (e.target.open) ensureAllFonts();
   });
 
-  // ---- Wallpaper ("custom" opens the file picker) ----
+  // ---- Wallpaper gallery ("Upload" opens the file picker) ----
   const wpBox = document.getElementById("wallpaper-options");
   const wpInput = document.getElementById("wallpaper-input");
+  const wpThumb = (w) => {
+    const thumb = el("span", { class: "wp-thumb", "aria-hidden": "true" });
+    if (w.scene) thumb.style.backgroundImage = `url("${w.scene}")`;
+    else if (w.id === "doodle" || w.id === "dots") thumb.classList.add(`pat-${w.id}`);
+    else if (w.id === "custom" && settings.customWallpaper) thumb.style.backgroundImage = `url("${settings.customWallpaper}")`;
+    else if (w.icon) thumb.append(icon(w.icon, 22));
+    return thumb;
+  };
   WALLPAPER_PRESETS.forEach((w) => {
-    const chip = el("button", {
-      class: "wallpaper-chip",
+    const tile = el("button", {
+      class: "wp-tile",
       type: "button",
-      text: w.name,
+      "aria-label": `${w.name} wallpaper`,
       onClick: () => {
         if (w.id === "custom") {
           wpInput.click();
@@ -513,14 +560,13 @@ export function initSettings() {
         settings.wallpaper = w.id;
         save();
         applyWallpaper(w.id);
-        markSelected(wpBox, ".wallpaper-chip", w.id);
+        markSelected(wpBox, ".wp-tile", w.id);
       },
-    });
-    chip.dataset.id = w.id;
-    if (w.icon) chip.prepend(icon(w.icon, 14));
-    wpBox.append(chip);
+    }, [wpThumb(w), el("span", { text: w.name })]);
+    tile.dataset.id = w.id;
+    wpBox.append(tile);
   });
-  markSelected(wpBox, ".wallpaper-chip", settings.wallpaper);
+  markSelected(wpBox, ".wp-tile", settings.wallpaper);
 
   wpInput.addEventListener("change", async () => {
     const file = wpInput.files[0];
@@ -531,7 +577,12 @@ export function initSettings() {
       settings.wallpaper = "custom";
       save();
       applyWallpaper("custom");
-      markSelected(wpBox, ".wallpaper-chip", "custom");
+      markSelected(wpBox, ".wp-tile", "custom");
+      const thumb = wpBox.querySelector('[data-id="custom"] .wp-thumb');
+      if (thumb) {
+        thumb.replaceChildren();
+        thumb.style.backgroundImage = `url("${settings.customWallpaper}")`;
+      }
     } catch {
       showToast("Could not use that image.");
     }
