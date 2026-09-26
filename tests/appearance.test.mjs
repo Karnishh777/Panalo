@@ -43,7 +43,9 @@ ok("unknown accent → default", bad.accent === "default");
 ok("unknown wallpaper → doodle", bad.wallpaper === "doodle");
 ok("custom wallpaper without an image falls back", normalizeSettings({ wallpaper: "custom" }, { wallpaperIds }).wallpaper === "doodle");
 ok("custom wallpaper with an image is kept", normalizeSettings({ wallpaper: "custom", customWallpaper: "data:x" }, { wallpaperIds }).wallpaper === "custom");
-ok("flags are booleans", normalizeSettings({ quickBar: 1, reduceMotion: "yes" }).quickBar === true);
+ok("flags are booleans", normalizeSettings({ quickReplies: 1, reduceMotion: "yes" }).quickReplies === true);
+ok("quick replies are on by default", normalizeSettings(null).quickReplies === true);
+ok("old quickBar:false no longer hides the emoji bar", normalizeSettings({ quickBar: false }).quickReplies === true && !("quickBar" in normalizeSettings({ quickBar: false })));
 ok("non-appearance keys pass through", normalizeSettings({ alertSound: false }).alertSound === false);
 ok("new accents are accepted", normalizeSettings({ accent: "sky" }, { accentIds }).accent === "sky");
 

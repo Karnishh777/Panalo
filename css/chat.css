@@ -365,23 +365,12 @@
 }
 
 /* Emoji-only: big, no bubble. */
-.message.emoji-only {
-  background: none;
-  border-color: transparent;
-  box-shadow: none;
-  padding: 0 2px;
-}
 .message.emoji-only .message-text {
-  font-size: 2.6rem;
-  line-height: 1.15;
+  font-size: 1.6rem;
+  line-height: 1.25;
 }
-.message.emoji-only[data-count="2"] .message-text,
-.message.emoji-only[data-count="3"] .message-text {
-  font-size: 2.1rem;
-}
-/* No bubble behind these, so the time gets its own frosted pill -- readable
-   on any wallpaper, photo or scene. */
-.message.emoji-only .message-footer,
+/* Stickers have no bubble behind them, so the time gets its own frosted
+   pill -- readable on any wallpaper, photo or scene. */
 .message.sticker-message .message-footer {
   align-self: flex-start;
   margin-top: 4px;
@@ -392,7 +381,6 @@
   backdrop-filter: blur(8px);
   color: var(--text-2);
 }
-.message.my-message.emoji-only .message-footer,
 .message.my-message.sticker-message .message-footer {
   align-self: flex-end;
 }
@@ -1026,14 +1014,15 @@
 }
 .quick-btn {
   flex: none;
-  min-height: 34px;
-  padding: 0 12px;
+  min-height: 36px;
+  padding: 0 13px;
   border-radius: var(--r-full);
   background: var(--surface);
   border: 1px solid var(--border);
   font-family: var(--chat-font);
-  font-size: 0.86rem;
+  font-size: 0.92rem;
   font-weight: 600;
+  white-space: nowrap;
   box-shadow: var(--shadow-1);
   transition: transform var(--dur-1) var(--ease-spring), border-color var(--dur-2);
 }

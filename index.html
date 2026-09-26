@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <title>Panalo — chat that's actually yours</title>
   <meta name="description" content="Panalo is a fast, private chat app for friends, classmates and study groups. Messages and files are encrypted on your device, and every chat can look exactly how you want.">
-  <link rel="icon" type="image/svg+xml" href="logo.svg?v=3">
+  <link rel="icon" type="image/svg+xml" href="logo.svg?v=4">
   <link rel="manifest" href="manifest.webmanifest">
   <meta name="theme-color" content="#f3efe9" media="(prefers-color-scheme: light)">
   <meta name="theme-color" content="#070b16" media="(prefers-color-scheme: dark)">
@@ -39,15 +39,27 @@
     <svg class="boot-mark" width="64" height="64" viewBox="0 0 140 140"><use href="#panalo-mark"/></svg>
   </div>
 
-  <!-- The brand mark, defined once. Uses currentColor-free gradient ids so it
-       looks the same everywhere; the in-app copy follows the accent. -->
+  <!-- The brand mark, defined once: a glossy 3D chat bubble on a tile in the
+       accent (the same drawing as the tab icon, src/boot.js). The gradients
+       read the accent variables, so every copy follows the chosen colour. -->
   <svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
     <defs>
+      <linearGradient id="pm-tile" x1="0" y1="0" x2="1" y2="1"><stop offset="0" style="stop-color: var(--primary, #d83b17)"/><stop offset="1" style="stop-color: var(--primary-strong, #a82a0c)"/></linearGradient>
+      <radialGradient id="pm-glow" cx=".28" cy=".18" r=".75"><stop offset="0" stop-color="#fff" stop-opacity=".38"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></radialGradient>
+      <linearGradient id="pm-face" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fff"/><stop offset="1" stop-color="#dfe5f5"/></linearGradient>
+      <linearGradient id="pm-shine" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fff" stop-opacity=".95"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></linearGradient>
+      <radialGradient id="pm-dot" cx=".35" cy=".3" r=".8"><stop offset="0" style="stop-color: color-mix(in srgb, var(--primary, #d83b17) 55%, #fff)"/><stop offset=".55" style="stop-color: var(--primary, #d83b17)"/><stop offset="1" style="stop-color: var(--primary-strong, #a82a0c)"/></radialGradient>
+      <filter id="pm-blur" x="-20%" y="-20%" width="140%" height="160%"><feGaussianBlur stdDeviation="4"/></filter>
       <symbol id="panalo-mark" viewBox="0 0 140 140">
-        <rect width="140" height="140" rx="36" fill="#d83b17"/>
-        <path d="M30 52c0-15 11-26 26-26h28c15 0 26 11 26 26v12c0 15-11 26-26 26H66l-20 16c-3 2-7-1-6-4l3-12c-8-4-13-13-13-22z" transform="translate(0 8)" fill="#b02c0d"/>
-        <path d="M30 52c0-15 11-26 26-26h28c15 0 26 11 26 26v12c0 15-11 26-26 26H66l-20 16c-3 2-7-1-6-4l3-12c-8-4-13-13-13-22z" fill="#fff"/>
-        <ellipse cx="57" cy="55" rx="7" ry="9" fill="#1b1822"/><ellipse cx="83" cy="55" rx="7" ry="9" fill="#1b1822"/><circle cx="59.5" cy="51.5" r="2.6" fill="#fff"/><circle cx="85.5" cy="51.5" r="2.6" fill="#fff"/><path d="M59 71l9 8 14-13" fill="none" stroke="#d83b17" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/>
+        <rect width="140" height="140" rx="36" fill="url(#pm-tile)"/>
+        <rect width="140" height="140" rx="36" fill="url(#pm-glow)"/>
+        <path d="M30 52c0-15 11-26 26-26h28c15 0 26 11 26 26v12c0 15-11 26-26 26H66l-20 16c-3 2-7-1-6-4l3-12c-8-4-13-13-13-22z" transform="translate(2 13)" fill="#000" opacity=".32" filter="url(#pm-blur)"/>
+        <path d="M30 52c0-15 11-26 26-26h28c15 0 26 11 26 26v12c0 15-11 26-26 26H66l-20 16c-3 2-7-1-6-4l3-12c-8-4-13-13-13-22z" transform="translate(0 7)" fill="#000" opacity=".28"/>
+        <path d="M30 52c0-15 11-26 26-26h28c15 0 26 11 26 26v12c0 15-11 26-26 26H66l-20 16c-3 2-7-1-6-4l3-12c-8-4-13-13-13-22z" transform="translate(0 7)" fill="#fff" opacity=".55"/>
+        <path d="M30 52c0-15 11-26 26-26h28c15 0 26 11 26 26v12c0 15-11 26-26 26H66l-20 16c-3 2-7-1-6-4l3-12c-8-4-13-13-13-22z" fill="url(#pm-face)"/>
+        <path d="M40 44c3-8 9-11 17-11h26c8 0 14 3 17 11c-12-4-48-4-60 0z" fill="url(#pm-shine)" opacity=".9"/>
+        <circle cx="53" cy="62" r="7.5" fill="#000" opacity=".12"/><circle cx="53" cy="60" r="7.5" fill="url(#pm-dot)"/><circle cx="51" cy="57.6" r="2" fill="#fff" opacity=".85"/><circle cx="70" cy="62" r="7.5" fill="#000" opacity=".12"/><circle cx="70" cy="60" r="7.5" fill="url(#pm-dot)"/><circle cx="68" cy="57.6" r="2" fill="#fff" opacity=".85"/><circle cx="87" cy="62" r="7.5" fill="#000" opacity=".12"/><circle cx="87" cy="60" r="7.5" fill="url(#pm-dot)"/><circle cx="85" cy="57.6" r="2" fill="#fff" opacity=".85"/>
+        <path d="M113 17l3 8 8 3-8 3-3 8-3-8-8-3 8-3z" fill="#fff" opacity=".95"/>
       </symbol>
     </defs>
   </svg>
@@ -314,12 +326,7 @@
 
     <nav class="nav-rail" aria-label="Views">
       <span class="rail-brand" aria-hidden="true">
-        <svg class="brand-mark" width="36" height="36" viewBox="0 0 140 140">
-          <rect width="140" height="140" rx="36" style="fill: var(--primary)"/>
-          <path d="M30 52c0-15 11-26 26-26h28c15 0 26 11 26 26v12c0 15-11 26-26 26H66l-20 16c-3 2-7-1-6-4l3-12c-8-4-13-13-13-22z" transform="translate(0 8)" style="fill: var(--primary-strong)"/>
-          <path d="M30 52c0-15 11-26 26-26h28c15 0 26 11 26 26v12c0 15-11 26-26 26H66l-20 16c-3 2-7-1-6-4l3-12c-8-4-13-13-13-22z" fill="#fff"/>
-          <ellipse cx="57" cy="55" rx="7" ry="9" fill="#1b1822"/><ellipse cx="83" cy="55" rx="7" ry="9" fill="#1b1822"/><circle cx="59.5" cy="51.5" r="2.6" fill="#fff"/><circle cx="85.5" cy="51.5" r="2.6" fill="#fff"/><path d="M59 71l9 8 14-13" fill="none" style="stroke: var(--primary)" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/>
-        </svg>
+        <svg class="brand-mark" width="36" height="36" viewBox="0 0 140 140"><use href="#panalo-mark"/></svg>
       </span>
       <button class="rail-btn rail-new" id="new-chat-btn" type="button" title="New chat" aria-label="New chat"><span data-icon="plus" data-icon-size="22"></span></button>
       <div class="rail-divider" aria-hidden="true"></div>
@@ -402,8 +409,10 @@
           <div id="quick-bar" class="quick-bar hidden" role="group" aria-label="Quick replies">
             <button type="button" class="quick-btn" data-msg="👋" aria-label="Send waving hand">👋</button>
             <button type="button" class="quick-btn" data-msg="❤️" aria-label="Send heart">❤️</button>
+            <button type="button" class="quick-btn" data-msg="👍" aria-label="Send thumbs up">👍</button>
             <button type="button" class="quick-btn" data-msg="😂" aria-label="Send laughing">😂</button>
             <button type="button" class="quick-btn" data-msg="🎉" aria-label="Send celebration">🎉</button>
+            <button type="button" class="quick-btn" data-msg="🙏" aria-label="Send folded hands">🙏</button>
             <button type="button" class="quick-btn" data-msg="Good morning! 🌅">Good morning</button>
             <button type="button" class="quick-btn" data-msg="On my way! 🚗">On my way</button>
             <button type="button" class="quick-btn" data-msg="Thank you! 🙏">Thank you</button>

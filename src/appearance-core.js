@@ -18,7 +18,7 @@ export const SETTINGS_DEFAULTS = Object.freeze({
   bubbles: "round",
   textSize: "m",
   density: "comfortable",
-  quickBar: false,
+  quickReplies: true, // the one-tap emoji bar above the message box
   reduceMotion: false,
   wallpaper: "doodle",
   customWallpaper: null,
@@ -51,6 +51,10 @@ export function normalizeSettings(stored, { accentIds = null, wallpaperIds = nul
   }
   delete s.ogSkin;
 
+  // quickBar (off by default for a few days in the redesign) → quickReplies,
+  // on again for everyone, as the emoji bar always was before.
+  delete s.quickBar;
+
   const out = { ...SETTINGS_DEFAULTS, ...s };
   out.themeMode = oneOf(out.themeMode, THEME_MODES, SETTINGS_DEFAULTS.themeMode);
   out.bubbles = oneOf(out.bubbles, BUBBLE_SHAPES, SETTINGS_DEFAULTS.bubbles);
@@ -60,7 +64,7 @@ export function normalizeSettings(stored, { accentIds = null, wallpaperIds = nul
   if (wallpaperIds && !wallpaperIds.includes(out.wallpaper)) out.wallpaper = SETTINGS_DEFAULTS.wallpaper;
   // An uploaded wallpaper that failed to save can't be shown.
   if (out.wallpaper === "custom" && !out.customWallpaper) out.wallpaper = SETTINGS_DEFAULTS.wallpaper;
-  for (const k of ["quickBar", "reduceMotion", "cursorGlow", "notifications", "inAppAlerts", "alertSound"]) {
+  for (const k of ["quickReplies", "reduceMotion", "cursorGlow", "notifications", "inAppAlerts", "alertSound"]) {
     out[k] = Boolean(out[k]);
   }
   return out;

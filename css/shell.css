@@ -595,7 +595,7 @@
   background: none;
 }
 /* Illustrated scenes. A veil in the theme's own colour keeps everything
-   drawn straight on the wallpaper (dates, emoji-only messages, stickers)
+   drawn straight on the wallpaper (dates, stickers)
    legible: pastel in light mode, deep in dark. */
 .app-container[data-wallpaper="city"] .chat-main:not([data-wp])::before,
 .chat-main[data-wp="city"]::before {

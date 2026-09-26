@@ -503,7 +503,7 @@ export function initSettings() {
     save();
     applyAppearance();
   });
-  bindToggle("setting-quickbar", "quickBar");
+  bindToggle("setting-quickbar", "quickReplies");
   bindToggle("setting-reduce-motion", "reduceMotion", () => {
     applyAppearance();
     applyEffect(settings.effect, settings.ambientImage);

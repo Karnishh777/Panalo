@@ -1464,10 +1464,9 @@ function renderMessage(msg, prepend = false) {
         textEl.append(locationCard(place));
       } else {
         renderText(textEl, plaintext);
-        // "🔥" on its own reads better big and bubble-less.
+        // "🔥" on its own stays in its bubble, just a little bigger.
         const n = !media && !msg.reply_to ? emojiCount(plaintext) : 0;
         messageEl.classList.toggle("emoji-only", n > 0);
-        if (n) messageEl.dataset.count = String(n);
       }
     };
     if (msg.iv) messagePlaintext(msg).then(showText);
@@ -2447,12 +2446,12 @@ function autosizeComposer() {
   messageInput.style.height = "auto";
   messageInput.style.height = `${Math.min(messageInput.scrollHeight, 180)}px`;
 }
-// Quick replies: always in a chat with no messages yet (a nudge to start),
-// otherwise only if switched on in Settings.
+// Quick replies: the one-tap emoji bar, on unless switched off in Settings
+// (and always in a chat with no messages yet, as a nudge to start).
 function refreshQuickBar(conv = state.currentConversation) {
   const bar = document.getElementById("quick-bar");
   if (!bar) return;
-  const show = !!conv && (getSetting("quickBar") || !conv.lastMessage);
+  const show = !!conv && (getSetting("quickReplies") || !conv.lastMessage);
   bar.classList.toggle("hidden", !show);
 }
 

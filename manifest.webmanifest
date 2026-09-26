@@ -11,7 +11,7 @@
   "categories": ["social", "communication"],
   "icons": [
     {
-      "src": "logo.svg?v=3",
+      "src": "logo.svg?v=4",
       "sizes": "any",
       "type": "image/svg+xml",
       "purpose": "any maskable"
