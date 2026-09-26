@@ -13,10 +13,12 @@
 // verified via the trusted invite row — but on a channel named after that
 // row's own random id, not a permanent per-user channel.
 //
-// NAT traversal uses public STUN only. That covers most home and office
-// networks; connections that need a relay (symmetric NAT — common on some
-// mobile carriers) will fail until a TURN service is added, and the UI says so
-// plainly rather than spinning forever.
+// NAT traversal: public STUN always, plus a TURN relay when one is set up.
+// Many networks (mobile carriers, school and office Wi-Fi) can't connect two
+// devices directly, and without a relay those calls cannot work at all. The
+// relay's short-lived credentials come from functions/api/turn.js on the
+// same host, which only hands them to a signed-in user; with no TURN key
+// configured it answers 501 and calls fall back to STUN only.
 import { supabaseClient } from "./client.js";
 import { state } from "./state.js";
 import { showToast, setAvatar } from "./util.js";
@@ -29,6 +31,76 @@ const ICE_SERVERS = [
 ];
 
 const RING_TIMEOUT_MS = 35000;
+// Once both sides have exchanged descriptions, media must actually start
+// flowing within this long or the call is reported as failed -- not shown as
+// "Connected" with a running timer and nothing coming through.
+const CONNECT_TIMEOUT_MS = 20000;
+// How long to wait for this device's own network candidates before sending
+// the offer/answer. See waitForCandidates().
+const GATHER_TIMEOUT_MS = 3000;
+
+// ---- ICE servers (STUN, plus TURN when configured) ----
+let iceCache = null; // { servers, expiresAt }
+let relayAvailable = false;
+async function iceServers() {
+  if (iceCache && iceCache.expiresAt > Date.now()) return iceCache.servers;
+  try {
+    const { data } = await supabaseClient.auth.getSession();
+    const token = data?.session?.access_token;
+    if (!token) throw new Error("no session");
+    const ctrl = new AbortController();
+    const timer = setTimeout(() => ctrl.abort(), 4000);
+    const res = await fetch("api/turn", {
+      method: "POST",
+      headers: { Authorization: `Bearer ${token}` },
+      signal: ctrl.signal,
+    });
+    clearTimeout(timer);
+    if (!res.ok) throw new Error(`turn ${res.status}`);
+    const body = await res.json();
+    if (!Array.isArray(body.iceServers) || !body.iceServers.length) throw new Error("no servers");
+    relayAvailable = body.iceServers.some((s) => [].concat(s.urls).some((u) => /^turns?:/.test(u)));
+    // Credentials last hours; refresh well before that.
+    iceCache = { servers: [...ICE_SERVERS, ...body.iceServers], expiresAt: Date.now() + 60 * 60 * 1000 };
+  } catch {
+    relayAvailable = false;
+    // Don't ask again for every call in this session if there's no relay.
+    iceCache = { servers: ICE_SERVERS, expiresAt: Date.now() + 10 * 60 * 1000 };
+  }
+  return iceCache.servers;
+}
+
+// Wait (briefly) until this device has found its network candidates, so they
+// travel INSIDE the offer/answer stored in call_invites.
+//
+// They used to be sent only over the broadcast channel. The caller gathers
+// and sends its candidates within a second of dialling -- before the person
+// being called has even seen the invite, let alone joined that channel -- and
+// broadcast keeps no history, so the caller's addresses were simply lost. The
+// callee then had no way to reach the caller, which on most home and mobile
+// networks means no audio or video at all. Trickle ICE over broadcast still
+// runs on top, for anything found later.
+function waitForCandidates(conn) {
+  if (conn.iceGatheringState === "complete") return Promise.resolve();
+  return new Promise((resolve) => {
+    const done = () => {
+      clearTimeout(timer);
+      conn.removeEventListener("icegatheringstatechange", check);
+      resolve();
+    };
+    const check = () => {
+      if (conn.iceGatheringState === "complete") done();
+    };
+    const timer = setTimeout(done, GATHER_TIMEOUT_MS);
+    conn.addEventListener("icegatheringstatechange", check);
+  });
+}
+
+function connectFailedMessage() {
+  return relayAvailable
+    ? "Couldn't connect the call. Check both connections and try again."
+    : "Couldn't connect — this network needs a relay server, and none is set up yet.";
+}
 
 // ---- Call history ----
 // A finished call is written into the conversation as an ordinary (encrypted)
@@ -75,6 +147,7 @@ let pc = null;
 let localStream = null;
 let remoteStream = null;
 let ringTimer = null;
+let connectTimer = null;
 let durationTimer = null;
 let callStartedAt = 0;
 // Candidates can arrive before the remote description is set; hold them.
@@ -250,8 +323,8 @@ export function stopCalls() {
 }
 
 // ---- Peer connection ----
-function createPeer() {
-  const conn = new RTCPeerConnection({ iceServers: ICE_SERVERS });
+function createPeer(servers) {
+  const conn = new RTCPeerConnection({ iceServers: servers });
 
   conn.onicecandidate = (e) => {
     if (e.candidate) sendSignal("ice", { candidate: e.candidate });
@@ -273,8 +346,15 @@ function createPeer() {
       document.addEventListener("touchend", kick, { once: true });
       document.addEventListener("click", kick, { once: true });
     });
-    setStatus("Connected");
-    startDuration();
+    // A track arriving only means the other side has described its media;
+    // nothing is flowing until the connection itself is up (below). Start
+    // the clock that fails the call if it never gets there.
+    if (!callStartedAt && !connectTimer) {
+      setStatus("Connecting…");
+      connectTimer = setTimeout(() => {
+        if (!callStartedAt) endCall(true, connectFailedMessage());
+      }, CONNECT_TIMEOUT_MS);
+    }
   };
 
   conn.onconnectionstatechange = () => {
@@ -285,12 +365,17 @@ function createPeer() {
         setStatus("Reconnecting…");
         restartIce();
       } else {
-        endCall(true, "Couldn't connect — this network needs a TURN relay.");
+        endCall(true, connectFailedMessage());
       }
     } else if (conn.connectionState === "disconnected") {
       setStatus("Reconnecting…");
     } else if (conn.connectionState === "connected") {
+      // Only now is audio/video really flowing: this is when the call starts.
+      clearTimeout(connectTimer);
+      connectTimer = null;
       setStatus("Connected");
+      startDuration();
+      $("call-remote").play?.().catch(() => {});
     }
   };
 
@@ -380,15 +465,17 @@ export async function startCall(peer, wantVideo) {
   if (!localStream) return endCall(false);
   attachLocal();
 
-  pc = createPeer();
+  pc = createPeer(await iceServers());
   localStream.getTracks().forEach((t) => pc.addTrack(t, localStream));
 
   const offer = await pc.createOffer();
   await pc.setLocalDescription(offer);
+  await waitForCandidates(pc);
+  if (!call || !pc) return; // hung up while we were gathering
 
   const { data: invite, error: inviteError } = await supabaseClient
     .from("call_invites")
-    .insert([{ callee_id: peer.id, kind: wantVideo ? "video" : "voice", offer_sdp: JSON.stringify(offer) }])
+    .insert([{ callee_id: peer.id, kind: wantVideo ? "video" : "voice", offer_sdp: JSON.stringify(pc.localDescription) }])
     .select()
     .single();
   if (inviteError || !invite) {
@@ -422,14 +509,16 @@ async function acceptCall() {
   }
   attachLocal();
 
-  pc = createPeer();
+  pc = createPeer(await iceServers());
   localStream.getTracks().forEach((t) => pc.addTrack(t, localStream));
 
   await pc.setRemoteDescription(new RTCSessionDescription(call.offer));
   await flushCandidates();
   const answer = await pc.createAnswer();
   await pc.setLocalDescription(answer);
-  await updateInviteStatus(call.inviteId, { status: "answered", answer_sdp: JSON.stringify(answer) });
+  await waitForCandidates(pc);
+  if (!call || !pc) return;
+  await updateInviteStatus(call.inviteId, { status: "answered", answer_sdp: JSON.stringify(pc.localDescription) });
 }
 
 async function onRemoteCandidate(payload) {
@@ -474,7 +563,9 @@ export function endCall(notifyPeer = true, reason = "") {
   }
 
   clearTimeout(ringTimer);
+  clearTimeout(connectTimer);
   clearInterval(durationTimer);
+  connectTimer = null;
   ringTimer = null;
   durationTimer = null;
   callStartedAt = 0;

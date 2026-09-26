@@ -12,6 +12,10 @@
   z-index: var(--z-app);
   display: grid;
   grid-template-columns: var(--rail-w) var(--sidebar-w) minmax(0, 1fr);
+  /* One row exactly the height of the screen. Without minmax(0, …) the row
+     grows to fit its tallest child -- the docked chat-info panel -- pushing
+     the message box and the rail's bottom buttons off-screen. */
+  grid-template-rows: minmax(0, 1fr);
   gap: var(--shell-gap);
   height: 100vh;
   height: 100dvh;
@@ -1182,6 +1186,7 @@ body.focus-mode #fx-canvas {
   .app-container.info-open .chat-info {
     position: static;
     width: auto;
+    min-height: 0; /* scroll inside the panel, don't stretch the page */
     transform: none;
     box-shadow: var(--shadow-panel), var(--shadow-1);
   }

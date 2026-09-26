@@ -20,13 +20,14 @@ an **SFU** — a media server that receives one stream and fans it out. That is
 separate server infrastructure with its own hosting cost, not a feature that
 can be added to this codebase. The UI correctly hides call buttons in groups.
 
-### 🔴 Calls fail on many mobile networks
-`src/calls.js` configures **STUN only** — three public STUN servers, no TURN.
-STUN discovers your public address; it cannot relay. On symmetric NAT (common
-on mobile carriers and corporate Wi-Fi) the peers never find a path and the
-call fails. TURN is a paid, always-on relay with no free production-grade
-option. The About screen is honest about this, but it means **calls are
-unreliable by design** until TURN is paid for.
+### 🔴 Calls fail on many networks until a TURN relay is switched on
+Many networks — mobile carriers, school and office Wi-Fi — can't connect two
+devices directly, and those calls need a **TURN relay**. Support is built in
+(`functions/api/turn.js` hands short-lived Cloudflare TURN credentials to a
+signed-in user) but it stays **off until a TURN key is added** in Cloudflare;
+see `HOSTING.md`. Relayed calls are billed by Cloudflare per GB; calls that
+connect directly cost nothing. Until then, calls on those networks fail, and
+the app says so instead of pretending to connect.
 
 ### 🔴 The server can never search your messages
 `content` is ciphertext, so Postgres full-text search has nothing to index.

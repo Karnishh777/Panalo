@@ -59,6 +59,27 @@ host on Cloudflare Pages or GitHub Pages, because it never needed builds.
 
 ---
 
+## Turning on reliable calls (TURN relay)
+
+Calls connect two devices directly when they can. On many networks (mobile
+carriers, school and office Wi-Fi) they can't, and the call needs a relay.
+The app already knows how to use one; it just needs a key:
+
+1. Cloudflare dashboard → **Realtime → TURN** → create a TURN key. Copy its
+   **ID** and **API token**.
+2. **Workers & Pages → panalo → Settings → Variables and secrets** → add two
+   **secrets** (Production, and Preview if you want it there too):
+   - `TURN_KEY_ID`
+   - `TURN_KEY_API_TOKEN`
+3. Push any commit (or "Retry deployment") so the new secrets are picked up.
+
+Check: while signed in, calls on mobile data should now connect. The endpoint
+is `functions/api/turn.js`; it only gives credentials to a signed-in Panalo
+user and never exposes the key. Cloudflare bills relayed traffic per GB
+(see their Realtime pricing); calls that connect directly use no relay.
+
+---
+
 ## Notes
 
 - **Your Netlify site stays up.** Running out of credits stops new *builds*,

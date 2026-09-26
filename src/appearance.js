@@ -24,6 +24,12 @@ export function clearAccent(node) {
   ["--primary", "--primary-strong", "--on-primary", ...LEGACY_VARS].forEach((v) => node.style.removeProperty(v));
 }
 
+// Tab icon in the accent colour (the drawing lives in src/boot.js).
+export function paintFavicon(id) {
+  const p = accentPreset(id);
+  window.PanaloFavicon?.(p.primary, p.strong);
+}
+
 export function applyRootAppearance(settings) {
   const root = document.documentElement;
   const attrs = rootAttributes(settings, prefersDark());

@@ -38,6 +38,49 @@
     }
   }
 
+  // The tab icon wears the accent too. Defined here, once, so it is right
+  // from the first frame; src/appearance.js calls the same function when the
+  // accent changes.
+  function hex6(c) {
+    return /^#[0-9a-f]{6}$/i.test(c) ? c : null;
+  }
+  function mix(a, b, t) {
+    var out = "#";
+    for (var i = 1; i < 7; i += 2) {
+      var v = Math.round(parseInt(a.substr(i, 2), 16) * (1 - t) + parseInt(b.substr(i, 2), 16) * t);
+      out += ("0" + v.toString(16)).slice(-2);
+    }
+    return out;
+  }
+  window.PanaloFavicon = function (primary, strong) {
+    primary = hex6(primary) || "#d83b17";
+    strong = hex6(strong) || primary;
+    var light = mix(primary, "#ffb45e", 0.35);
+    var svg =
+      '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 140 140">' +
+      '<defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1">' +
+      '<stop offset="0" stop-color="' + light + '"/><stop offset="1" stop-color="' + strong + '"/>' +
+      "</linearGradient></defs>" +
+      '<rect width="140" height="140" rx="38" fill="url(#g)"/>' +
+      '<path d="M36 58c0-13 9-22 22-22h24c13 0 22 9 22 22v14c0 13-9 22-22 22H64l-19 15 4-15c-8-3-13-11-13-22z" fill="#fff"/>' +
+      '<path d="M55 66l10 10 21-22" fill="none" stroke="' + primary + '" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/>' +
+      "</svg>";
+    var link = document.querySelector('link[rel="icon"]');
+    if (!link) {
+      link = document.createElement("link");
+      link.rel = "icon";
+      document.head.appendChild(link);
+    }
+    link.type = "image/svg+xml";
+    link.href = "data:image/svg+xml," + encodeURIComponent(svg);
+  };
+  if (vars && vars["--primary"]) {
+    // <head> is still being parsed: the icon <link> comes later, so wait.
+    document.addEventListener("DOMContentLoaded", function () {
+      window.PanaloFavicon(vars["--primary"], vars["--primary-strong"]);
+    });
+  }
+
   // Supabase keeps its session under "sb-<project>-auth-token", in
   // localStorage or (with "Keep me logged in" off) sessionStorage.
   var signedIn = false;

@@ -22,7 +22,7 @@ import { rewrapPrivateKey, idbDelKey } from "./encryption.js";
 import { confirmDelete } from "./chatinfo.js";
 import { deleteAttachment, clearAttachmentCache } from "./attachments.js";
 import { normalizeSettings, accentVars } from "./appearance-core.js";
-import { applyRootAppearance, watchSystemTheme, paintAccent, accentPreset } from "./appearance.js";
+import { applyRootAppearance, watchSystemTheme, paintAccent, accentPreset, paintFavicon } from "./appearance.js";
 import { ensureFont, ensureAllFonts } from "./fonts.js";
 import { promptSecret, pinProblem } from "./dialogs.js";
 
@@ -63,6 +63,7 @@ export function getSetting(key) {
 function applyAppearance() {
   applyRootAppearance(settings);
   paintAccent(document.documentElement, settings.accent);
+  paintFavicon(settings.accent);
 }
 
 function applyAppFont(id) {

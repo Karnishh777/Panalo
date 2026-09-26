@@ -33,7 +33,11 @@ function showAuth(view) {
     const first = signup
       ? ($("signup-step-2").classList.contains("hidden") ? $("signup-username") : $("otp-code-input"))
       : $("login-email");
-    setTimeout(() => first?.focus(), 50);
+    // Never steal focus from a field the person has already clicked into --
+    // their typing would land in the wrong box (a password in the email field).
+    setTimeout(() => {
+      if (!$("auth-screen").contains(document.activeElement)) first?.focus();
+    }, 50);
   }
 }
 
