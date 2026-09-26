@@ -44,26 +44,20 @@
   function hex6(c) {
     return /^#[0-9a-f]{6}$/i.test(c) ? c : null;
   }
-  function mix(a, b, t) {
-    var out = "#";
-    for (var i = 1; i < 7; i += 2) {
-      var v = Math.round(parseInt(a.substr(i, 2), 16) * (1 - t) + parseInt(b.substr(i, 2), 16) * t);
-      out += ("0" + v.toString(16)).slice(-2);
-    }
-    return out;
-  }
   window.PanaloFavicon = function (primary, strong) {
     primary = hex6(primary) || "#d83b17";
     strong = hex6(strong) || primary;
-    var light = mix(primary, "#ffb45e", 0.35);
+    // Flat and chunky: tile, a darker "depth" copy of the bubble, the bubble,
+    // then the face -- eyes, and the checkmark as its smile.
+    var bubble = "M30 52c0-15 11-26 26-26h28c15 0 26 11 26 26v12c0 15-11 26-26 26H66l-20 16c-3 2-7-1-6-4l3-12c-8-4-13-13-13-22z";
     var svg =
       '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 140 140">' +
-      '<defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1">' +
-      '<stop offset="0" stop-color="' + light + '"/><stop offset="1" stop-color="' + strong + '"/>' +
-      "</linearGradient></defs>" +
-      '<rect width="140" height="140" rx="38" fill="url(#g)"/>' +
-      '<path d="M36 58c0-13 9-22 22-22h24c13 0 22 9 22 22v14c0 13-9 22-22 22H64l-19 15 4-15c-8-3-13-11-13-22z" fill="#fff"/>' +
-      '<path d="M55 66l10 10 21-22" fill="none" stroke="' + primary + '" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/>' +
+      '<rect width="140" height="140" rx="36" fill="' + primary + '"/>' +
+      '<path d="' + bubble + '" transform="translate(0 8)" fill="' + strong + '"/>' +
+      '<path d="' + bubble + '" fill="#fff"/>' +
+      '<ellipse cx="57" cy="55" rx="7" ry="9" fill="#1b1822"/><ellipse cx="83" cy="55" rx="7" ry="9" fill="#1b1822"/>' +
+      '<circle cx="59.5" cy="51.5" r="2.6" fill="#fff"/><circle cx="85.5" cy="51.5" r="2.6" fill="#fff"/>' +
+      '<path d="M59 71l9 8 14-13" fill="none" stroke="' + primary + '" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/>' +
       "</svg>";
     var link = document.querySelector('link[rel="icon"]');
     if (!link) {
