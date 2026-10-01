@@ -95,15 +95,17 @@ async function migrationTests() {
   );
   ok("no policy points at a helper in `public`", pols.length === 0, pols.map((p) => p.policyname).join(", "));
 
-  // The linter floor: exactly the two functions the app calls directly stay
+  // The linter floor: exactly the functions the app calls directly stay
   // callable by signed-in users. Anything else is a new exposed endpoint.
+  // request_to_join (phase 16) is the third, for the same reason as
+  // find_profile_by_username: a join code must find a room you can't see yet.
   const { rows: exposed } = await db.query(
     `select p.proname from pg_proc p join pg_namespace n on n.oid = p.pronamespace
      where n.nspname = 'public' and p.prosecdef and has_function_privilege('authenticated', p.oid, 'EXECUTE')
      order by 1`
   );
-  ok("only delete_my_account and find_profile_by_username are callable SECURITY DEFINER functions",
-     JSON.stringify(exposed.map((r) => r.proname)) === JSON.stringify(["delete_my_account", "find_profile_by_username"]),
+  ok("only delete_my_account, find_profile_by_username and request_to_join are callable SECURITY DEFINER functions",
+     JSON.stringify(exposed.map((r) => r.proname)) === JSON.stringify(["delete_my_account", "find_profile_by_username", "request_to_join"]),
      exposed.map((r) => r.proname).join(", "));
 
   const { rows: dupes } = await db.query(
@@ -472,8 +474,200 @@ async function disappearTests() {
   ok("a group owner can change the timer", byOwner.ok && byOwner.value === 1, byOwner.error);
 }
 
+// ---- Panalo Students (phase 16) -------------------------------------------
+
+async function studentsTests() {
+  const db = await freshDb();
+  const alex = await createUser(db, "s_alex");
+  const maya = await createUser(db, "s_maya");
+  const sam = await createUser(db, "s_sam");
+
+  // -- private study data
+  const task = await as(db, alex, async (tx) =>
+    (await tx.query("insert into student_tasks (title) values ('Revise optics') returning id")).rows[0].id);
+  const seen = await as(db, maya, async (tx) => (await tx.query("select id from student_tasks")).rows.length);
+  ok("tasks are private to their owner", seen === 0, `maya saw ${seen}`);
+  const forged = await attempt(db, maya, (tx) =>
+    tx.query("insert into student_tasks (user_id, title) values ($1, 'x')", [alex]));
+  ok("nobody can write a task as someone else", !forged.ok);
+
+  const now = Date.now();
+  const iso = (ms) => new Date(ms).toISOString();
+  const honest = await attempt(db, alex, (tx) => tx.query(
+    "insert into focus_sessions (started_at, ended_at, planned_minutes, focused_minutes, task_id) values ($1, $2, 25, 25, $3)",
+    [iso(now - 26 * 60000), iso(now), task]));
+  ok("a real focus session is recorded", honest.ok, honest.error);
+  const inflated = await attempt(db, alex, (tx) => tx.query(
+    "insert into focus_sessions (started_at, ended_at, planned_minutes, focused_minutes) values ($1, $2, 25, 25)",
+    [iso(now - 5 * 60000), iso(now)]));
+  ok("focus cannot exceed the time that passed", !inflated.ok);
+  const borrowed = await attempt(db, maya, (tx) => tx.query(
+    "insert into focus_sessions (started_at, ended_at, planned_minutes, focused_minutes, task_id) values ($1, $2, 25, 1, $3)",
+    [iso(now - 5 * 60000), iso(now), task]));
+  ok("a session cannot point at someone else's task", !borrowed.ok);
+
+  const goals = await attempt(db, alex, async (tx) => {
+    for (let i = 0; i < 25; i++) await tx.query("insert into student_goals (title) values ($1)", [`goal ${i}`]);
+  });
+  ok("goals are capped per person", !goals.ok && /limit of 24/.test(goals.error || ""), goals.error);
+
+  // -- archive
+  const upload = (tx, path, owner, size) => tx.query(
+    "insert into storage.objects (bucket_id, name, owner, metadata) values ('student-resources', $1, $2, $3)",
+    [path, owner, JSON.stringify({ size })]);
+  const ghost = await attempt(db, alex, (tx) => tx.query(
+    "insert into resources (title, object_path, file_name, size_bytes) values ('x', $1, 'x.pdf', 10)", [`u/${alex}/nothing`]));
+  ok("an archive row needs a real uploaded file", !ghost.ok);
+
+  const mine = `u/${alex}/notes`;
+  const res = await as(db, alex, async (tx) => {
+    await upload(tx, mine, alex, 1234);
+    return (await tx.query(
+      "insert into resources (title, object_path, file_name, size_bytes) values ('Notes', $1, 'notes.pdf', 1) returning size_bytes",
+      [mine])).rows[0];
+  });
+  ok("the stored size comes from Storage, not the client", Number(res.size_bytes) === 1234, res.size_bytes);
+  const peek = await as(db, maya, async (tx) => ({
+    rows: (await tx.query("select id from resources")).rows.length,
+    objects: (await tx.query("select id from storage.objects where bucket_id = 'student-resources'")).rows.length,
+  }));
+  ok("a private archive file is invisible to others", peek.rows === 0 && peek.objects === 0, JSON.stringify(peek));
+  const intoMine = await attempt(db, maya, (tx) => upload(tx, `u/${alex}/planted`, maya, 1));
+  ok("nobody can upload into someone else's archive", !intoMine.ok);
+  const wrongScope = await attempt(db, alex, async (tx) => {
+    await upload(tx, `u/${alex}/scoped`, alex, 1);
+    await tx.query(
+      "insert into resources (title, object_path, file_name, size_bytes, conversation_id) values ('x', $1, 'x', 1, gen_random_uuid())",
+      [`u/${alex}/scoped`]);
+  });
+  ok("a file's path must match who it is shared with", !wrongScope.ok);
+
+  const circle = await startGroup(db, alex, [maya]);
+  const shared = `c/${circle}/sheet`;
+  await as(db, alex, async (tx) => {
+    await upload(tx, shared, alex, 99);
+    await tx.query(
+      "insert into resources (title, object_path, file_name, size_bytes, conversation_id) values ('Sheet', $1, 'sheet.pdf', 99, $2)",
+      [shared, circle]);
+  });
+  const member = await as(db, maya, async (tx) => ({
+    rows: (await tx.query("select id from resources where conversation_id = $1", [circle])).rows.length,
+    objects: (await tx.query("select id from storage.objects where name = $1", [shared])).rows.length,
+  }));
+  ok("circle members can read what was shared into the circle", member.rows === 1 && member.objects === 1, JSON.stringify(member));
+  const outsider = await as(db, sam, async (tx) => ({
+    rows: (await tx.query("select id from resources")).rows.length,
+    objects: (await tx.query("select id from storage.objects where name = $1", [shared])).rows.length,
+  }));
+  ok("people outside the circle cannot", outsider.rows === 0 && outsider.objects === 0, JSON.stringify(outsider));
+  const sneak = await attempt(db, sam, (tx) => upload(tx, `c/${circle}/x`, sam, 1));
+  ok("outsiders cannot upload into a circle", !sneak.ok);
+  const badPath = await attempt(db, sam, (tx) => upload(tx, "c/not-a-uuid/x", sam, 1));
+  ok("a malformed path is refused, not an error", !badPath.ok && !/invalid input syntax/.test(badPath.error || ""), badPath.error);
+
+  const full = await attempt(db, maya, async (tx) => {
+    for (let i = 0; i < 5; i++) {
+      const p = `u/${maya}/big${i}`;
+      await upload(tx, p, maya, 50 * 1024 * 1024);
+      await tx.query("insert into resources (title, object_path, file_name, size_bytes) values ('b', $1, 'b', 1)", [p]);
+    }
+  });
+  ok("each archive is capped at 200 MB", !full.ok && /archive is full/.test(full.error || ""), full.error);
+
+  // -- blocking
+  const dm = await startDirect(db, alex, maya);
+  await as(db, alex, (tx) => tx.query("insert into messages (conversation_id, content) values ($1, 'hi')", [dm]));
+  await as(db, maya, (tx) => tx.query("insert into blocks (blocked_id) values ($1)", [alex]));
+  const mayaSees = await as(db, maya, async (tx) => (await tx.query("select id from messages where conversation_id = $1", [dm])).rows.length);
+  const alexSees = await as(db, alex, async (tx) => (await tx.query("select id from messages where conversation_id = $1", [dm])).rows.length);
+  ok("a blocked person's messages are hidden from the blocker", mayaSees === 0, `saw ${mayaSees}`);
+  ok("the blocked person still sees their own messages", alexSees === 1, `saw ${alexSees}`);
+  const readd = await attempt(db, alex, async (tx) => {
+    const id = (await tx.query("insert into conversations (type, name) values ('group', 'again') returning id")).rows[0].id;
+    await tx.query("insert into conversation_participants (conversation_id, user_id) values ($1, $2), ($1, $3)", [id, alex, maya]);
+  });
+  ok("someone you blocked cannot add you to a chat", !readd.ok && /can't be added/.test(readd.error || ""), readd.error);
+  const blockList = await as(db, alex, async (tx) => (await tx.query("select * from blocks")).rows.length);
+  ok("you cannot see who has blocked you", blockList === 0);
+
+  // -- reports
+  const rep = await attempt(db, maya, (tx) => tx.query(
+    "insert into reports (reported_user_id, conversation_id, reason, evidence) values ($1, $2, 'harassment', 'hi')", [alex, dm]));
+  ok("a member can report someone in their chat", rep.ok, rep.error);
+  const closed = await attempt(db, maya, (tx) => tx.query(
+    "insert into reports (reason, status) values ('spam', 'closed')"));
+  ok("a report cannot be filed already closed", !closed.ok);
+  const stranger = await attempt(db, sam, (tx) => tx.query(
+    "insert into reports (reason, conversation_id) values ('spam', $1)", [dm]));
+  ok("you cannot file reports about chats you are not in", !stranger.ok);
+
+  // -- rooms
+  const ends = iso(now + 3 * 3600000);
+  const room = await as(db, alex, async (tx) => {
+    const id = (await tx.query(
+      "insert into conversations (type, name, kind, ends_at, posting) values ('group', 'Hackathon', 'event', $1, 'hosts') returning id",
+      [ends])).rows[0].id;
+    await tx.query("insert into conversation_participants (conversation_id, user_id) values ($1, $2)", [id, alex]);
+    await tx.query("insert into room_codes (conversation_id, code) values ($1, 'HACK2345')", [id]);
+    return id;
+  });
+  const longRoom = await attempt(db, alex, (tx) => tx.query(
+    "insert into conversations (type, name, ends_at) values ('group', 'forever', now() + interval '400 days')"));
+  ok("a temporary room cannot last more than 60 days", !longRoom.ok);
+  const dmEnds = await attempt(db, alex, (tx) => tx.query(
+    "insert into conversations (type, name, ends_at) values ('direct', 'dm', now() + interval '1 day')"));
+  ok("only groups can end", !dmEnds.ok);
+
+  const codes = await as(db, sam, async (tx) => (await tx.query("select * from room_codes")).rows.length);
+  ok("join codes are not listable", codes === 0);
+  const bad = await as(db, sam, async (tx) => (await tx.query("select * from request_to_join('NOPE2345')")).rows[0]);
+  ok("an unknown code reveals nothing", bad.status === "invalid" && bad.name === null, JSON.stringify(bad));
+  const asked = await as(db, sam, async (tx) => (await tx.query("select * from request_to_join(' hack-2345 ')")).rows[0]);
+  ok("a code lets you ask to join", asked.status === "pending" && asked.name === "Hackathon", JSON.stringify(asked));
+  const early = await as(db, sam, async (tx) => (await tx.query("select id from messages where conversation_id = $1", [room])).rows.length
+    + (await tx.query("select id from conversations where id = $1", [room])).rows.length);
+  ok("asking is not being in", early === 0);
+  const hostSees = await as(db, alex, async (tx) => (await tx.query("select username from room_requests where conversation_id = $1", [room])).rows);
+  ok("the host sees who is waiting", hostSees.length === 1 && hostSees[0].username === "s_sam", JSON.stringify(hostSees));
+  const othersSee = await as(db, maya, async (tx) => (await tx.query("select * from room_requests")).rows.length);
+  ok("nobody else sees the waiting room", othersSee === 0);
+
+  await as(db, alex, (tx) => tx.query("insert into conversation_participants (conversation_id, user_id) values ($1, $2)", [room, sam]));
+  const left = await db.query("select count(*)::int as n from room_requests where conversation_id = $1", [room]);
+  ok("letting someone in clears their request", left.rows[0].n === 0);
+  const again = await as(db, sam, async (tx) => (await tx.query("select status from request_to_join('HACK2345')")).rows[0].status);
+  ok("a member asking again is told they are in", again === "member", again);
+
+  const memberPost = await attempt(db, sam, (tx) => tx.query("insert into messages (conversation_id, content) values ($1, 'hi all')", [room]));
+  ok("in a hosts-only room members cannot post", !memberPost.ok);
+  const keyAsk = await attempt(db, sam, (tx) => tx.query("insert into messages (conversation_id, content) values ($1, '[[keyrequest]]')", [room]));
+  ok("but can still ask for the room's key", keyAsk.ok, keyAsk.error);
+  const hostPost = await attempt(db, alex, (tx) => tx.query("insert into messages (conversation_id, content) values ($1, 'Welcome!')", [room]));
+  ok("hosts can post", hostPost.ok, hostPost.error);
+
+  await as(db, alex, (tx) => tx.query("insert into messages (conversation_id, content) values ($1, 'Welcome!')", [room]));
+  await db.query("update conversations set ends_at = now() - interval '1 minute' where id = $1", [room]);
+  const after = await as(db, alex, async (tx) => ({
+    conv: (await tx.query("select id from conversations where id = $1", [room])).rows.length,
+    msgs: (await tx.query("select id from messages where conversation_id = $1", [room])).rows.length,
+  }));
+  ok("an ended room is hidden from its members", after.conv === 0 && after.msgs === 0, JSON.stringify(after));
+  const late = await attempt(db, alex, (tx) => tx.query("insert into messages (conversation_id, content) values ($1, 'late')", [room]));
+  ok("nobody can post into an ended room", !late.ok);
+  const lateJoin = await as(db, maya, async (tx) => (await tx.query("select status from request_to_join('HACK2345')")).rows[0].status);
+  ok("an ended room's code stops working", lateJoin === "invalid", lateJoin);
+  await db.query("update conversations set ends_at = now() - interval '2 days' where id = $1", [room]);
+  await db.query("select private.purge_ended_rooms()");
+  const gone = await db.query("select count(*)::int as n from conversations where id = $1", [room]);
+  ok("ended rooms are deleted a day later", gone.rows[0].n === 0);
+
+  // -- deleting an account with all of the above
+  const del = await attempt(db, alex, (tx) => tx.query("select public.delete_my_account()"));
+  ok("delete_my_account works for someone with study data, files and rooms", del.ok, del.error);
+}
+
 async function main() {
-  const sections = [migrationTests, chatTests, takeoverTests, callTests, accountTests, backfillTests, historyTests, disappearTests];
+  const sections = [migrationTests, chatTests, takeoverTests, callTests, accountTests, backfillTests, historyTests, disappearTests, studentsTests];
   for (const run of sections) {
     try {
       await run();

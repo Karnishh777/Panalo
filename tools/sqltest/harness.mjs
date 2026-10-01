@@ -30,6 +30,7 @@ export const MIGRATIONS = [
   "supabase-phase13.sql",
   "supabase-phase14.sql",
   "supabase-phase15.sql",
+  "supabase-phase16.sql",
 ];
 
 export async function createDb() {
