@@ -8,6 +8,7 @@ import { DAY, dayKey } from "./model/time.js";
 import { ribbons, drift, reveal, speedLines, burstOn, impactFrame } from "./fx.js";
 import { reducedMotion } from "./motion.js";
 import { globeDock, dockToggle } from "./globe-dock.js";
+import { initLandingHud } from "./landing-hud.js";
 
 let started = false;
 
@@ -35,6 +36,7 @@ export function initLanding() {
   window.addEventListener("scroll", onScroll, { passive: true });
   onScroll();
   reveal(document.getElementById("landing"));
+  initLandingHud();
 
   // The calls to action land with a hit.
   document.querySelectorAll("#landing .fx-cta").forEach((a) => {

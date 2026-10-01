@@ -1436,3 +1436,450 @@ input[type="range"].range {
   font-size: 11.5px;
   color: var(--text-3);
 }
+
+/* ---- The gate, the HUD and the thread -------------------------------------- */
+/* Mono eyebrows: the landing's labels read like instrument readouts. */
+.landing .kicker,
+.hud,
+.gate-cap,
+.stat dt {
+  font-family: var(--f-mono);
+  font-weight: 500;
+  letter-spacing: 0.16em;
+}
+
+/* The gate: a count to 100 on first arrival, then it shutters shut to a
+   line of light. Visual only; clicks pass straight through. */
+.gate {
+  display: none;
+  position: fixed;
+  inset: 0;
+  z-index: 70;
+  place-items: center;
+  pointer-events: none;
+  background:
+    radial-gradient(60% 50% at 50% 50%, rgba(154, 216, 255, 0.07), transparent 70%),
+    var(--void);
+}
+html[data-gate] .gate {
+  display: grid;
+  /* If the script never arrives, don't stand in the way. */
+  animation: gate-giveup 0.4s 6s forwards;
+}
+html[data-gate="out"] .gate {
+  animation: gate-shut 0.75s var(--ease-cine) forwards;
+}
+.gate::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 50%;
+  height: 2px;
+  margin-top: -1px;
+  background: linear-gradient(90deg, transparent, var(--time), #fff, var(--focus), transparent);
+  opacity: 0;
+}
+html[data-gate="out"] .gate::after {
+  animation: gate-line 0.75s ease-out forwards;
+}
+.gate-core {
+  display: grid;
+  justify-items: center;
+  gap: 14px;
+}
+.gate-core svg {
+  animation: breathe 1.6s ease-in-out infinite;
+}
+.gate-n {
+  font: 300 clamp(72px, 16vw, 190px) / 0.9 var(--f-display);
+  letter-spacing: -0.04em;
+  font-variant-numeric: tabular-nums;
+  color: var(--text);
+  text-shadow: 0 0 40px rgba(154, 216, 255, 0.25);
+}
+.gate-n small {
+  font-size: 0.3em;
+  margin-left: 0.1em;
+  color: var(--time);
+  vertical-align: top;
+}
+.gate-cap {
+  font-size: 11px;
+  text-transform: uppercase;
+  color: var(--text-3);
+}
+.gate-bar {
+  display: block;
+  width: min(240px, 60vw);
+  height: 1px;
+  background: var(--line-2);
+}
+.gate-bar b {
+  display: block;
+  height: 100%;
+  background: var(--time);
+  box-shadow: 0 0 10px var(--time);
+  transform-origin: left;
+  transform: scaleX(var(--p, 0));
+}
+@keyframes gate-shut {
+  to {
+    clip-path: inset(50% 0 50% 0);
+  }
+}
+@keyframes gate-line {
+  0% { opacity: 0; transform: scaleX(0.2); }
+  40% { opacity: 1; transform: scaleX(1); }
+  100% { opacity: 0; transform: scaleX(1.1); }
+}
+@keyframes gate-giveup {
+  to {
+    visibility: hidden;
+  }
+}
+/* Hold the hero's entrance until the gate opens (only when the script that
+   opens it is running). */
+html.gate-js[data-gate="on"] .hero-copy,
+html.gate-js[data-gate="on"] .hero-copy *,
+html.gate-js[data-gate="on"] .ignition {
+  animation-play-state: paused !important;
+}
+
+/* The HUD: four corner brackets, the chapter you're in, how far down you
+   are, and a hairline of progress across the top. */
+.hud {
+  position: fixed;
+  inset: 0;
+  z-index: 21; /* above the bar, so the progress hairline shows on it */
+  pointer-events: none;
+  font-size: 10.5px;
+  text-transform: uppercase;
+  color: var(--text-3);
+}
+.hud-c {
+  position: absolute;
+  width: 18px;
+  height: 18px;
+  border: 0 solid var(--line-3);
+}
+.hud-c.tl { top: 80px; left: 14px; border-width: 1px 0 0 1px; }
+.hud-c.tr { top: 80px; right: 14px; border-width: 1px 1px 0 0; }
+.hud-c.bl { bottom: 14px; left: 14px; border-width: 0 0 1px 1px; }
+.hud-c.br { bottom: 14px; right: 14px; border-width: 0 1px 1px 0; }
+.hud-chapter,
+.hud-pct {
+  position: absolute;
+  bottom: 22px;
+  display: flex;
+  gap: 10px;
+  align-items: baseline;
+}
+.hud-chapter { left: 40px; transition: opacity var(--dur-2); }
+/* On the hero the scroll cue sits there instead. */
+.hud.at-start .hud-chapter { opacity: 0; }
+.hud-pct { right: 40px; font-variant-numeric: tabular-nums; }
+.hud-no { color: var(--time); }
+.hud-name { color: var(--text-2); }
+.hud-progress {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+}
+.hud-progress b {
+  display: block;
+  height: 100%;
+  background: linear-gradient(90deg, var(--focus), var(--time));
+  box-shadow: 0 0 8px rgba(255, 196, 122, 0.6);
+  transform-origin: left;
+  transform: scaleX(var(--p, 0));
+}
+@media (max-width: 760px) {
+  .hud-c,
+  .hud-chapter,
+  .hud-pct {
+    display: none;
+  }
+}
+
+/* The thread: one line down the right edge with a star for each chapter.
+   The line fills as you read; a star lights when you reach its chapter.
+   Each star is a link to its chapter. */
+.thread {
+  position: fixed;
+  z-index: 16;
+  right: 26px;
+  top: 50%;
+  height: min(56vh, 460px);
+  transform: translateY(-50%);
+  width: 20px;
+}
+.thread-line {
+  position: absolute;
+  left: 50%;
+  top: 0;
+  bottom: 0;
+  width: 1px;
+  margin-left: -0.5px;
+  background: var(--line-2);
+}
+.thread-line b {
+  display: block;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(var(--focus), var(--time));
+  box-shadow: 0 0 6px rgba(255, 196, 122, 0.7);
+  transform-origin: top;
+  transform: scaleY(var(--p, 0));
+}
+.thread-stars {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.thread-stars li {
+  position: absolute;
+  left: 50%;
+  top: calc(var(--at) * 100%);
+  transform: translate(-50%, -50%);
+}
+.thread-stars a {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 20px;
+  height: 20px;
+  color: transparent;
+  text-decoration: none;
+}
+.thread-stars a::before {
+  content: "";
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--bg);
+  border: 1px solid var(--line-3);
+  transition: transform var(--dur-2) var(--ease-out), background var(--dur-2), box-shadow var(--dur-2);
+}
+.thread-stars li.lit a::before {
+  background: var(--time);
+  border-color: var(--time);
+  box-shadow: 0 0 8px var(--time);
+}
+.thread-stars li.here a::before {
+  transform: scale(1.7) rotate(45deg);
+  border-radius: 1px;
+  background: #fff;
+  box-shadow: 0 0 10px #fff, 0 0 22px var(--time);
+}
+/* The chapter's name, shown beside its star on hover or focus. */
+.thread-stars a span {
+  position: absolute;
+  right: 24px;
+  white-space: nowrap;
+  font: 500 10.5px/1 var(--f-mono);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--text-2);
+  opacity: 0;
+  transform: translateX(6px);
+  transition: opacity var(--dur-1), transform var(--dur-1);
+  pointer-events: none;
+}
+.thread-stars a:hover span,
+.thread-stars a:focus-visible span {
+  opacity: 1;
+  transform: none;
+}
+.thread-stars a:focus-visible {
+  outline: 2px solid var(--focus);
+  outline-offset: 0;
+  border-radius: 50%;
+}
+@media (max-width: 760px) {
+  .thread {
+    display: none;
+  }
+}
+
+/* ---- In numbers ------------------------------------------------------------ */
+.numbers,
+.letter-wrap,
+.faq {
+  position: relative;
+  z-index: 1;
+  padding: clamp(70px, 10vw, 130px) var(--gutter) 0;
+  max-width: 1240px;
+  margin: 0 auto;
+}
+.stats {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 0;
+  margin: 0;
+  border-top: 1px solid var(--line);
+}
+.stat {
+  display: flex;
+  flex-direction: column-reverse;
+  justify-content: flex-end;
+  gap: 12px;
+  padding: 26px 20px 30px;
+  border-right: 1px solid var(--line);
+}
+.stat:last-child {
+  border-right: 0;
+}
+.stat dd {
+  margin: 0;
+  font: 300 clamp(56px, 8vw, 104px) / 0.9 var(--f-display);
+  letter-spacing: -0.05em;
+  font-variant-numeric: tabular-nums;
+  color: var(--tone);
+  text-shadow: 0 0 34px color-mix(in srgb, var(--tone) 35%, transparent);
+}
+.stat dt {
+  font-size: 11px;
+  line-height: 1.5;
+  text-transform: uppercase;
+  color: var(--text-3);
+  max-width: 22ch;
+}
+@media (max-width: 900px) {
+  .stats {
+    grid-template-columns: 1fr 1fr;
+  }
+  .stat:nth-child(2) {
+    border-right: 0;
+  }
+  .stat:nth-child(-n + 2) {
+    border-bottom: 1px solid var(--line);
+  }
+}
+
+/* ---- A letter -------------------------------------------------------------- */
+/* The one light page on the outside: ivory paper, ink, a serif hand. */
+.letter {
+  position: relative;
+  margin-top: 26px;
+  max-width: 760px;
+  padding: clamp(30px, 6vw, 64px) clamp(24px, 6vw, 72px);
+  color: #2a2418;
+  background:
+    radial-gradient(120% 90% at 0% 0%, rgba(255, 255, 255, 0.55), transparent 60%),
+    radial-gradient(rgba(90, 70, 40, 0.06) 1px, transparent 1.3px) 0 0 / 5px 5px,
+    #f1e8d6;
+  border-radius: 3px;
+  box-shadow: 0 40px 90px -30px rgba(0, 0, 0, 0.8), 0 0 0 1px rgba(255, 255, 255, 0.4) inset;
+}
+.letter::before {
+  /* A wax seal in the time hue. */
+  content: "";
+  position: absolute;
+  right: clamp(22px, 5vw, 48px);
+  top: -18px;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 30%, #ffd9a3, #d9883a 55%, #8a4a17);
+  box-shadow: 0 6px 14px rgba(0, 0, 0, 0.45);
+}
+.letter p {
+  margin: 0 0 1em;
+  font-size: clamp(16px, 1.6vw, 18.5px);
+  line-height: 1.65;
+  color: #3b3324;
+}
+.letter-to {
+  margin: 0 0 22px;
+  font-size: clamp(26px, 3.4vw, 40px);
+  font-weight: 400;
+  line-height: 1.1;
+  color: #1d180f;
+}
+.letter-sign {
+  display: grid;
+  gap: 8px;
+  margin: 26px 0 0 !important;
+}
+.letter-sign .serif {
+  font-size: clamp(22px, 2.6vw, 30px);
+  font-style: italic;
+  color: #1d180f;
+}
+.letter-from {
+  font: 500 11px/1 var(--f-mono);
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: #8a6a35;
+}
+
+/* ---- Questions, answered ---------------------------------------------------- */
+.faq-list {
+  max-width: 880px;
+  border-top: 1px solid var(--line-2);
+}
+.faq details {
+  border-bottom: 1px solid var(--line-2);
+}
+.faq summary {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 22px 44px 22px 0;
+  cursor: pointer;
+  list-style: none;
+  font: 400 clamp(17px, 2vw, 22px) / 1.3 var(--f-display);
+  letter-spacing: -0.02em;
+  color: var(--text);
+}
+.faq summary::-webkit-details-marker {
+  display: none;
+}
+.faq summary::after {
+  content: "";
+  position: absolute;
+  right: 6px;
+  width: 14px;
+  height: 14px;
+  background:
+    linear-gradient(var(--time), var(--time)) center / 100% 1.5px no-repeat,
+    linear-gradient(var(--time), var(--time)) center / 1.5px 100% no-repeat;
+  transition: transform var(--dur-2) var(--ease-out);
+}
+.faq details[open] summary::after {
+  transform: rotate(135deg);
+}
+.faq summary:hover {
+  color: var(--time);
+}
+.faq summary:focus-visible {
+  outline: 2px solid var(--focus);
+  outline-offset: 4px;
+}
+.faq details p {
+  margin: 0;
+  padding: 0 44px 24px 0;
+  max-width: 64ch;
+  color: var(--text-2);
+  font-size: 15.5px;
+}
+.faq details[open] p {
+  animation: rise var(--dur-2) var(--ease-out) both;
+}
+.faq details a {
+  color: var(--focus);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .gate,
+  html[data-gate] .gate {
+    display: none;
+  }
+}
+html[data-motion="reduce"] .gate {
+  display: none !important;
+}

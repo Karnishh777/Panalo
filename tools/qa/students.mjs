@@ -66,6 +66,34 @@ try {
     check("the world demo responds to its sliders", (await page.textContent("#wd-focus-out")) === "120 h");
     await shot(page, "landing");
 
+    // The gate counts to 100 once and gets out of the way.
+    check("the gate shows on first arrival", await page.evaluate(() => document.documentElement.hasAttribute("data-gate")));
+    await page.waitForFunction(() => !document.documentElement.hasAttribute("data-gate"), null, { timeout: 5000 }).catch(() => {});
+    check("the gate opens by itself", !(await page.evaluate(() => document.documentElement.hasAttribute("data-gate"))));
+    // The thread: a star per chapter, each a link; reaching a chapter lights it.
+    const thread = await page.evaluate(() => {
+      const hrefs = [...document.querySelectorAll(".thread-stars a")].map((a) => a.getAttribute("href"));
+      return { ok: hrefs.every((h) => document.querySelector(h)), stars: hrefs.length, chapters: document.querySelectorAll("#landing section[data-chapter]").length };
+    });
+    check("the thread has a star for every chapter", thread.ok && thread.stars === thread.chapters && thread.stars > 5);
+    await page.evaluate(() => document.getElementById("numbers").scrollIntoView());
+    await page.waitForTimeout(1800);
+    const hudState = await page.evaluate(() => ({
+      name: document.querySelector(".hud-name").textContent,
+      here: [...document.querySelectorAll(".thread-stars li")].findIndex((li) => li.classList.contains("here")),
+      counts: [...document.querySelectorAll("[data-count]")].map((n) => n.textContent),
+    }));
+    check("the HUD names the chapter you're in and its star is lit", hudState.name === "In numbers" && hudState.here === 3);
+    check("the numbers count to their real values", hudState.counts.join() === "06,03,00,00");
+    await page.evaluate(() => document.getElementById("faq").scrollIntoView());
+    await page.waitForTimeout(900);
+    await page.click("#faq details:first-of-type summary");
+    check("questions open to their answers", await page.isVisible("#faq details:first-of-type p"));
+    const heading = await page.innerText("#faq-title");
+    check("decoded headings end as their real words", heading.replace(/\s+/g, " ").trim() === "Questions, answered.");
+    await page.evaluate(() => scrollTo(0, 0));
+    await page.waitForTimeout(200);
+
     await page.click(".land-cta a[href='#signup']");
     await page.waitForTimeout(300);
     check("sign-up is its own place, not the landing", (await page.isVisible("#auth")) && !(await page.isVisible("#landing")));
@@ -502,6 +530,8 @@ try {
     await r.waitForTimeout(500);
     const anim = await r.evaluate(() => getComputedStyle(document.querySelector(".ht-line")).animationName);
     check("reduced motion turns the landing animation off", anim === "none");
+    check("reduced motion skips the gate", !(await r.evaluate(() => document.documentElement.hasAttribute("data-gate"))) && !(await r.isVisible(".gate")));
+    check("reduced motion shows the numbers at once", (await r.$$eval("[data-count]", (n) => n.map((x) => x.textContent))).join() === "06,03,00,00");
     check("no console errors (reduced motion)", r.errors.length === 0);
   }
 } finally {

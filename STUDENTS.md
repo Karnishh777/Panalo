@@ -35,7 +35,12 @@ landing ──► the crossing (sign in / sign up) ──► first time? the bir
 ```
 
 - **Landing** (`#top`): what it is, who it's for, why, what's inside (with a
-  live world demo driven by the real model), safety facts, footer. `#login`
+  live world demo driven by the real model), the product in four honest
+  numbers, a letter, safety facts, questions answered, footer. Around it
+  (`js/landing-hud.js`): a count-to-100 gate on the first visit of a session,
+  a HUD with the current chapter and scroll progress, the thread (a star per
+  chapter down the right edge, lit as you pass, each a link), and headings
+  that decode as they arrive. All of it steps aside for reduced motion. `#login`
   and `#signup` open the crossing; `#join=CODE` remembers an invite through
   sign-in.
 - **Crossing**: an event horizon beside an airlock form. Crossing over

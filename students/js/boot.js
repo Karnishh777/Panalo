@@ -29,6 +29,14 @@
     if (prefs.reduceMotion) root.setAttribute("data-motion", "reduce");
   } catch (e) {}
 
+  // The landing's gate (a count to 100) plays once a session, for visitors
+  // who aren't signed in and haven't asked for less motion.
+  try {
+    var calm = root.getAttribute("data-motion") === "reduce" ||
+      (window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches);
+    if (!signedIn && !calm && !sessionStorage.getItem("panalo.students.gate")) root.setAttribute("data-gate", "on");
+  } catch (e) {}
+
   // Never leave the splash up forever (offline with nothing cached, a CDN
   // outage): after a while, fall back to the landing page.
   if (signedIn) {

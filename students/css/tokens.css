@@ -48,6 +48,7 @@
   --f-display: "Unbounded", "Segoe UI", system-ui, sans-serif;
   --f-serif: "Instrument Serif", "Iowan Old Style", Georgia, serif;
   --f-body: "Inter", "Segoe UI", system-ui, -apple-system, sans-serif;
+  --f-mono: ui-monospace, "SF Mono", "JetBrains Mono", Menlo, Consolas, monospace;
 
   --r-1: 8px;
   --r-2: 14px;
