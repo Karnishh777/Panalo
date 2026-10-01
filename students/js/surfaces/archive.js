@@ -194,17 +194,25 @@ async function preview(r) {
     form: false,
     actions: [{ label: "Download", kind: "btn-ghost", close: false, onClick: () => A.downloadResource(r) }, { label: "Close", kind: "btn-primary" }],
   });
+  if (kind === "pdf") {
+    // Open from a short-lived Storage link; nothing is downloaded first.
+    const link = await A.pdfLink(r);
+    if (!link) {
+      slot.replaceChildren(el("p", { class: "muted", text: "This file can't be shown here. Download it to open it." }));
+      return sheet;
+    }
+    slot.replaceChildren(
+      el("p", { class: "muted", text: "PDFs open in your browser's own viewer, in a new tab." }),
+      el("a", { class: "btn btn-primary", href: link, target: "_blank", rel: "noopener noreferrer", text: "Open the PDF" })
+    );
+    return sheet;
+  }
   const url = await A.resourceUrl(r);
   if (!url) return slot.replaceChildren(el("p", { class: "error-line", text: "Couldn't open this file. Check your connection." }));
   if (kind === "image") slot.replaceChildren(el("img", { src: url, alt: r.title, class: "preview-img" }));
   else if (kind === "video") slot.replaceChildren(el("video", { src: url, controls: "", class: "preview-media" }));
   else if (kind === "audio") slot.replaceChildren(el("audio", { src: url, controls: "", class: "preview-audio" }));
-  else if (kind === "pdf") {
-    slot.replaceChildren(
-      el("p", { class: "muted", text: "PDFs open in your browser's own viewer, in a new tab." }),
-      el("button", { type: "button", class: "btn btn-primary", text: "Open the PDF", onClick: () => window.open(url, "_blank", "noopener") })
-    );
-  } else if (kind === "text") {
+  else if (kind === "text") {
     const text = await fetch(url).then((x) => x.text());
     slot.replaceChildren(el("pre", { class: "preview-text", text: text.slice(0, 200000) }));
   }
@@ -236,7 +244,13 @@ export function openUpload(prefilled = null) {
   });
   if (chosen) title.value = chosen.name.replace(/\.[^.]+$/, "");
   showChosen();
-  openSheet({
+  // Progress you can see, and a way out of a slow upload.
+  const bar = el("progress", { class: "upload-progress", max: "100", value: "0", "aria-label": "Upload progress" });
+  const pct = el("span", { class: "upload-pct num", "aria-live": "polite" });
+  const progress = el("div", { class: "upload-meter", hidden: true }, [bar, pct]);
+  let controller = null;
+  const fields = [file, title, shelf, scope, note];
+  const sheet = openSheet({
     title: "Add to the archive",
     lead: "Up to 50 MB per file. Shared files can be opened by everyone in that conversation; nobody else. Archive files are protected by access rules on the server, not end-to-end encrypted like messages.",
     body: [
@@ -245,26 +259,44 @@ export function openUpload(prefilled = null) {
       el("label", { class: "field" }, [el("span", { text: "Shelf" }), shelf, shelfList]),
       el("label", { class: "field" }, [el("span", { text: "Who can see it" }), scope]),
       el("label", { class: "field" }, [el("span", { text: "Note" }), note]),
+      progress,
     ],
+    onClose: () => controller?.abort(),
     actions: [
-      { label: "Cancel", kind: "btn-quiet" },
+      { label: "Cancel", kind: "btn-quiet", onClick: () => controller?.abort() },
       {
         label: "Upload",
         kind: "btn-primary",
         submit: true,
         onClick: async (b) => {
           if (!chosen) return showToast("Choose a file first."), false;
+          if (controller) return false; // already sending
+          controller = new AbortController();
           b.disabled = true;
           b.textContent = "Uploading…";
-          const r = await A.uploadResource(chosen, { title: title.value, shelf: shelf.value, conversationId: scope.value || null, note: note.value });
+          fields.forEach((f) => (f.disabled = true));
+          progress.hidden = false;
+          const onProgress = (f) => {
+            const n = Math.round(f * 100);
+            bar.value = n;
+            pct.textContent = n >= 100 ? "Saving…" : `${n}%`;
+          };
+          const r = await A.uploadResource(chosen, { title: title.value, shelf: shelf.value, conversationId: scope.value || null, note: note.value, onProgress, signal: controller.signal });
+          controller = null;
           b.disabled = false;
           b.textContent = "Upload";
-          if (r.error) return showToast(r.error.message), false;
+          fields.forEach((f) => (f.disabled = false));
+          if (r.error) {
+            progress.hidden = true;
+            if (!r.error.cancelled) showToast(r.error.message);
+            return false;
+          }
           showToast(scope.value ? "Shared." : "Saved to your archive.", "success");
         },
       },
     ],
   });
+  return sheet;
 }
 
 function edit(r) {

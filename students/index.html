@@ -22,6 +22,7 @@
   <link rel="stylesheet" href="css/public.css">
   <link rel="stylesheet" href="css/app.css">
   <link rel="stylesheet" href="css/surfaces.css">
+  <link rel="stylesheet" href="css/fx.css">
 </head>
 <body>
   <a class="skip-link" href="#main">Skip to content</a>
@@ -71,104 +72,108 @@
 
     <main id="top" class="land">
       <section class="hero" aria-labelledby="hero-title">
+        <canvas class="hero-drift" aria-hidden="true"></canvas>
         <div class="ignition" aria-hidden="true"></div>
         <div class="hero-copy">
           <p class="kicker hero-kicker">Panalo Students · for the intensely curious</p>
           <h1 id="hero-title" class="hero-title">
             <span class="ht-line">Your student life</span>
-            <span class="ht-line">is not a spreadsheet.</span>
-            <span class="ht-line ht-serif serif">It's a universe.</span>
+            <span class="ht-line ht-serif serif">is a universe.</span>
           </h1>
-          <p class="hero-sub">Study in a room built for focus. Talk in circles and event rooms without ever swapping phone numbers. Keep your files in an archive that stays yours. And watch a world grow from what you actually do — not from how long you scrolled.</p>
+          <p class="hero-sub"><b>Focus.</b> <b>Talk.</b> <b>Keep.</b> <span>Grow a world.</span></p>
           <div class="hero-actions">
-            <a class="btn btn-primary btn-lg" href="#signup">Launch my universe</a>
+            <a class="btn btn-primary btn-lg fx-cta" href="#signup">Launch my universe</a>
             <a class="btn btn-ghost btn-lg" href="#login">I already have one</a>
           </div>
         </div>
-        <div class="hero-world" aria-hidden="true">
-          <canvas id="hero-globe" width="560" height="560"></canvas>
+        <div class="hero-stage">
+        <div class="hero-world">
+          <canvas class="rib rib-back" aria-hidden="true"></canvas>
+          <canvas id="hero-globe" width="720" height="720" tabindex="0" role="img" aria-label="A world you can turn: drag it, or use the arrow keys."></canvas>
+          <canvas class="rib rib-front" aria-hidden="true"></canvas>
+        </div>
+        <!-- The world's controls are added here once it exists (globe-dock.js). -->
         </div>
         <a class="scroll-cue" href="#idea"><span>What is this?</span><i aria-hidden="true"></i></a>
       </section>
 
       <section class="idea" id="idea" aria-labelledby="idea-title">
-        <p class="kicker">01 — The idea</p>
-        <h2 id="idea-title" class="idea-quote serif">Most apps want your attention.<br>This one wants your curiosity back.</h2>
-        <div class="idea-cols">
-          <div>
-            <h3>What it is</h3>
-            <p>One place for the student part of your life: a calm study room with a focus timer and tasks, your timetable and deadlines, group chats for friends, study circles, classes and events, a private file archive, and a small daily corner for rest.</p>
-          </div>
-          <div>
-            <h3>Who it's for</h3>
-            <p>People who fall into a Wikipedia hole about neutron stars at 1 a.m. People who draw in margins, write fiction nobody has read yet, build things, collect obscure music. Students who want their tools to feel as interesting as the things they're curious about.</p>
-          </div>
-          <div>
-            <h3>Why it exists</h3>
-            <p>Student apps are spreadsheets with a mascot. Chat apps were built for everyone, so they're built for nobody's studying. And none of them show you anything back about yourself except a streak to feel guilty about. We wanted something stranger, and kinder.</p>
-          </div>
+        <p class="kicker" data-fx="slash"><span class="kanji" aria-hidden="true">壱</span>01 — The idea</p>
+        <h2 id="idea-title" class="idea-quote serif" data-fx="slash">Most apps want your attention.<br>This one wants your curiosity back.</h2>
+        <div class="idea-cards">
+          <div class="slash-card tone-time" data-fx="slash"><h3>One place</h3><p>Study, timetable, chats, files, rest.</p></div>
+          <div class="slash-card tone-focus" data-fx="slash"><h3>For the curious</h3><p>Neutron stars at 1 a.m. Margins full of drawings.</p></div>
+          <div class="slash-card tone-drift" data-fx="slash"><h3>Kinder by design</h3><p>No feed. No streak to feel guilty about.</p></div>
         </div>
       </section>
+      <svg class="brush" data-fx="ink" viewBox="0 0 1200 40" preserveAspectRatio="none" aria-hidden="true"><path d="M6 24C160 8 300 30 470 18S820 6 980 20 1150 26 1194 14"/></svg>
 
       <section class="inside" id="inside" aria-labelledby="inside-title">
-        <p class="kicker">02 — Inside</p>
-        <h2 id="inside-title" class="section-title display">A world that is made of<br>what you actually do.</h2>
+        <p class="kicker" data-fx="slash"><span class="kanji" aria-hidden="true">弐</span>02 — Inside</p>
+        <h2 id="inside-title" class="section-title display" data-fx="slash">A world made of<br>what you actually do.</h2>
 
         <div class="world-demo" id="world-demo">
-          <div class="wd-globe"><canvas id="demo-globe" width="420" height="420" aria-label="A sample world" role="img"></canvas></div>
+          <div class="wd-globe"><canvas id="demo-globe" width="420" height="420" aria-label="A sample world" role="img" tabindex="0"></canvas></div>
           <div class="wd-controls">
-            <p class="wd-lead">Every account gets a world. It isn't decoration — each feature is a number from your real life, and the World page shows you which. Try it:</p>
+            <p class="wd-lead">Every number is real. Try it:</p>
             <label class="wd-slider tone-focus"><span><b>Focus hours</b><output id="wd-focus-out">8 h</output></span>
-              <input type="range" id="wd-focus" min="0" max="200" value="8"><small>grow the land</small></label>
+              <input type="range" id="wd-focus" min="0" max="200" value="8"><small>grows land</small></label>
             <label class="wd-slider tone-time"><span><b>Tasks finished</b><output id="wd-tasks-out">20</output></span>
-              <input type="range" id="wd-tasks" min="0" max="300" value="20"><small>one light each, on the night side</small></label>
+              <input type="range" id="wd-tasks" min="0" max="300" value="20"><small>city lights</small></label>
             <label class="wd-slider tone-drift"><span><b>Hours making things</b><output id="wd-create-out">2 h</output></span>
-              <input type="range" id="wd-create" min="0" max="20" value="2"><small>light the aurora</small></label>
+              <input type="range" id="wd-create" min="0" max="20" value="2"><small>aurora</small></label>
             <label class="wd-slider tone-signal"><span><b>Days away</b><output id="wd-away-out">0</output></span>
-              <input type="range" id="wd-away" min="0" max="21" value="0"><small>clouds gather — and clear when you're back</small></label>
+              <input type="range" id="wd-away" min="0" max="21" value="0"><small>clouds — they clear when you're back</small></label>
           </div>
         </div>
 
         <ol class="systems">
-          <li class="tone-time"><span class="sys-n">Now</span><div><h3>Your day, as an orbit</h3><p>The home screen is one instrument: a 24-hour ring with your classes, study blocks and deadlines on it, your world at the centre, and a short log of what needs you right now.</p></div></li>
-          <li class="tone-focus"><span class="sys-n">Study Room</span><div><h3>Deep space at midnight</h3><p>Almost nothing on screen. A focus timer that survives reloads, today's tasks, generated ambient sound, and a quiet history of the sessions you finished.</p></div></li>
-          <li class="tone-signal"><span class="sys-n">Signals</span><div><h3>Conversations sorted by what they're for</h3><p>People, crews, study circles, classes, projects — and event rooms that open with a code, have a host at the door, and end on schedule. Messages are encrypted on your device.</p></div></li>
-          <li class="tone-archive"><span class="sys-n">Archive</span><div><h3>Files as catalogued artifacts</h3><p>Upload, preview and download notes, papers, slides and recordings. Private unless you share them with a circle, and labelled so you always know what something is and where it came from.</p></div></li>
-          <li class="tone-world"><span class="sys-n">World</span><div><h3>A record you can see</h3><p>Land from focus, lights from finished tasks, aurora from creative work, moons for your goals. Discoveries mark the milestones. Time away shows as weather — never as loss.</p></div></li>
-          <li class="tone-drift"><span class="sys-n">Drift</span><div><h3>Recover, discover, return</h3><p>Three things a day — something true, something to make, something to play — and then the door closes. No feed. Nothing to scroll.</p></div></li>
+          <li class="tone-time" data-fx="slash"><span class="sys-k" aria-hidden="true">壱</span><span class="sys-n">Now</span><p>Your day as an orbit.</p></li>
+          <li class="tone-focus" data-fx="slash"><span class="sys-k" aria-hidden="true">弐</span><span class="sys-n">Study Room</span><p>Deep space at midnight. A timer that survives reloads.</p></li>
+          <li class="tone-signal" data-fx="slash"><span class="sys-k" aria-hidden="true">参</span><span class="sys-n">Signals</span><p>Circles, classes and event rooms. Encrypted.</p></li>
+          <li class="tone-archive" data-fx="slash"><span class="sys-k" aria-hidden="true">肆</span><span class="sys-n">Archive</span><p>Your files, catalogued. Private unless shared.</p></li>
+          <li class="tone-world" data-fx="slash"><span class="sys-k" aria-hidden="true">伍</span><span class="sys-n">World</span><p>A record you can see — and spin.</p></li>
+          <li class="tone-drift" data-fx="slash"><span class="sys-k" aria-hidden="true">陸</span><span class="sys-n">Drift</span><p>Three small things a day. Then the door closes.</p></li>
         </ol>
       </section>
+      <svg class="brush" data-fx="ink" viewBox="0 0 1200 40" preserveAspectRatio="none" aria-hidden="true"><path d="M6 24C160 8 300 30 470 18S820 6 980 20 1150 26 1194 14"/></svg>
 
       <section class="for" aria-labelledby="for-title">
-        <p class="kicker">03 — Is this for you?</p>
-        <h2 id="for-title" class="section-title display">Probably, if you…</h2>
-        <ul class="for-list">
+        <p class="kicker" data-fx="slash"><span class="kanji" aria-hidden="true">参</span>03 — Is this for you?</p>
+        <h2 id="for-title" class="section-title display" data-fx="slash">Probably, if you…</h2>
+        <div class="marquee" aria-hidden="true">
+          <div class="mq-row"><span>have tabs about black holes</span><span>draw in the margins</span><span>study better in quiet</span><span>build things at 2 a.m.</span><span>collect obscure music</span><span>write fiction nobody's read yet</span></div>
+          <div class="mq-row rev"><span>hate swapping phone numbers</span><span>lose your notes</span><span>like strange interfaces</span><span>run a hackathon chat</span><span>fall down Wikipedia holes</span><span>keep sketches and recordings</span></div>
+        </div>
+        <ul class="sr-only">
           <li>have more tabs open than finished assignments, and the tabs are about black holes</li>
-          <li>want a group chat for a hackathon that doesn't need forty strangers' phone numbers</li>
+          <li>want a group chat for a hackathon that doesn't need strangers' phone numbers</li>
           <li>study better when the room is quiet and the clock is honest</li>
-          <li>keep notes, sketches and recordings you'd like to actually find again</li>
+          <li>keep notes, sketches and recordings you'd like to find again</li>
           <li>like interfaces that are a little strange, as long as they make sense</li>
         </ul>
-        <p class="for-not"><span class="serif">Probably not,</span> if you want another feed. There isn't one, on purpose.</p>
+        <p class="for-not" data-fx="slash"><span class="serif">Probably not,</span> if you want another feed. There isn't one.</p>
       </section>
+      <svg class="brush" data-fx="ink" viewBox="0 0 1200 40" preserveAspectRatio="none" aria-hidden="true"><path d="M6 24C160 8 300 30 470 18S820 6 980 20 1150 26 1194 14"/></svg>
 
       <section class="safety" id="safety" aria-labelledby="safety-title">
-        <p class="kicker">04 — Safety and privacy</p>
-        <h2 id="safety-title" class="section-title display">Built for students,<br>so built to be careful.</h2>
+        <p class="kicker" data-fx="slash"><span class="kanji" aria-hidden="true">肆</span>04 — Safety and privacy</p>
+        <h2 id="safety-title" class="section-title display" data-fx="slash">Built for students,<br>so built to be careful.</h2>
         <div class="safety-grid">
-          <div><h3>No phone numbers</h3><p>You're a username. Nobody can browse the list of people here — they need your exact name to find you.</p></div>
-          <div><h3>Rooms with a door</h3><p>Event rooms open with a code, and a host lets each person in. Rooms can be set so only hosts post, and they end when the event does.</p></div>
-          <div><h3>Encrypted on your device</h3><p>Messages and chat files are encrypted before they leave your browser; the server stores ciphertext. Your key is protected by your password. <a href="privacy.html#encryption">Exactly what that does and doesn't cover.</a></p></div>
-          <div><h3>Block and report</h3><p>Blocking someone hides their messages from you and stops them adding you to chats. Reports go to the people who run this Panalo.</p></div>
-          <div><h3>Files stay yours</h3><p>The archive is private by default. Anything you share with a circle is readable by that circle and nobody else.</p></div>
-          <div><h3>No ads, no AI, no feed</h3><p>Nothing you write is sold, shown to advertisers, or sent to an AI service. There's no algorithm deciding what you see.</p></div>
+          <div data-fx="slash"><h3>No phone numbers</h3><p>You're a username. Nobody can browse the list.</p></div>
+          <div data-fx="slash"><h3>Rooms with a door</h3><p>A code to knock, a host to let you in.</p></div>
+          <div data-fx="slash"><h3>Encrypted on your device</h3><p>The server stores ciphertext. <a href="privacy.html#encryption">What that covers.</a></p></div>
+          <div data-fx="slash"><h3>Block and report</h3><p>Hide someone, stop them adding you.</p></div>
+          <div data-fx="slash"><h3>Files stay yours</h3><p>Private unless you share with a circle.</p></div>
+          <div data-fx="slash"><h3>No ads, no AI, no feed</h3><p>Nothing sold. No algorithm.</p></div>
         </div>
       </section>
 
       <section class="final" aria-labelledby="final-title">
-        <h2 id="final-title" class="final-title"><span class="serif">Ready when you are.</span></h2>
-        <a class="btn btn-primary btn-lg" href="#signup">Launch my universe</a>
-        <p class="final-note">Free. For students aged 13 and over. Works in your browser on any device.</p>
+        <div class="final-lines" aria-hidden="true"></div>
+        <h2 id="final-title" class="final-title" data-fx="slash"><span class="serif">Ready when you are.</span></h2>
+        <a class="btn btn-primary btn-lg fx-cta" href="#signup">Launch my universe</a>
+        <p class="final-note">Free · ages 13+ · any browser</p>
       </section>
     </main>
 
@@ -277,7 +282,6 @@
        FIRST ENTRY: a universe begins
        ===================================================================== -->
   <div id="birth" class="birth" hidden>
-    <canvas id="birth-canvas" class="birth-canvas" aria-hidden="true"></canvas>
     <p id="birth-line" class="birth-line" aria-live="polite"></p>
     <button type="button" id="birth-skip" class="btn btn-quiet btn-sm birth-skip">Skip</button>
     <form id="birth-form" class="birth-form" novalidate hidden aria-labelledby="birth-title"></form>

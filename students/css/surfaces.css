@@ -1850,3 +1850,40 @@ body[data-view="drift"].in-app {
 .now-next .tag {
   justify-self: start;
 }
+
+/* Upload progress in the archive sheet. */
+.upload-meter {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 6px;
+}
+.upload-meter[hidden] {
+  display: none;
+}
+.upload-progress {
+  flex: 1;
+  height: 8px;
+  appearance: none;
+  border: 0;
+  border-radius: 99px;
+  overflow: hidden;
+  background: var(--line-2);
+  accent-color: var(--archive);
+}
+.upload-progress::-webkit-progress-bar {
+  background: var(--line-2);
+}
+.upload-progress::-webkit-progress-value {
+  background: linear-gradient(90deg, var(--archive), var(--time));
+  transition: width 0.2s;
+}
+.upload-progress::-moz-progress-bar {
+  background: linear-gradient(90deg, var(--archive), var(--time));
+}
+.upload-pct {
+  min-width: 6ch;
+  text-align: right;
+  font-size: 13px;
+  color: var(--text-2);
+}

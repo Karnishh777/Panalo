@@ -71,14 +71,19 @@ landing ──► the crossing (sign in / sign up) ──► first time? the bir
 | --- | --- |
 | `js/main.js` | Outside → crossing → birth → inside. |
 | `js/auth.js` | Sign-in, sign-up, unlock, recovery, sign-out. |
-| `js/birth.js` | The first-entry film (slate, countdown, bang, warp, nebula, a disk falling into your world, lock-on) and the onboarding questions. |
-| `js/birth-score.js` | The film's sound, synthesized with Web Audio; one switch, remembered per device. |
+| `js/birth.js` | First entry: plays the film, its score, voice-over and captions, then the three questions over it. |
+| `js/film.js` | "Origin", the ~26 s film: the void, genesis, worldfall (your real world, a sunrise over its limb), title. |
+| `js/film-grade.js` | The film's lab: procedural 3D LUTs (void, ignition, nebula, gold) crossfaded per shot, bloom, halation, anamorphic streaks, aberration, grain, vignette, 2.39:1 bars. |
+| `js/birth-score.js` | The score, mixed live with Web Audio (reverb hall, drone, heartbeat, riser, braam/boom/crack/sub hit, whoosh, pads, resolve; music ducks under the voice) and the voice-over (the device's best English voice). One sound switch, remembered per device. |
+| `js/fx.js` | Hand-drawn action effects: speed lines, impact frames, punches, ink-slash reveals, water and flame ribbons, petals and embers. Off in the Study Room and with reduced motion. |
+| `js/globe-dock.js` | A world's controls: play/pause, direction, speed, zoom, reset, and the light panel. |
+| `js/world-light.js` | Where the sun is (Day, Dusk, Night, Live with your clock, or by hand) and how bright the night side is; saved per device, shared by every globe. |
 | `js/shell.js` | Router, top bar, dock, account menu, Warp. |
 | `js/store.js` | In-memory study data + pub/sub; all writes. |
 | `js/signals-data.js` | Conversations, unread, sending, circles, rooms, door, block, report. |
 | `js/archive-data.js` | Private-bucket uploads, downloads, previews. |
 | `js/world-surface.js` | The world's terrain, colour and night lights, generated once per seed in idle time and cached. |
-| `js/world-gl.js` | The world in WebGL: one fragment shader ray-traces the planet (relief, sun glint on water, cloud shadows, night lights, aurora, atmosphere), the ring with the planet's shadow on it and its shadow on the planet, and the moons, depth-sorted. |
+| `js/world-gl.js` | The world in WebGL: one fragment shader ray-traces the planet, ring and moons. Continents come from the seeded textures; finer detail is made per pixel from a tiling noise sampled three ways round the sphere (fractal coasts, ridges, beaches and shallows, torn cloud edges, city lights, cratered moons). Drag to spin and tip, with momentum; speed, direction, zoom; a manual mode the film drives. |
 | `js/world-render.js` | Picks WebGL when the GPU is real, otherwise the 2D canvas globe; same `setLayers()` contract either way. |
 | `js/dayorbit.js` | The SVG day orbit. |
 | `js/ambient.js` | Generated study sound (Web Audio, no files). |

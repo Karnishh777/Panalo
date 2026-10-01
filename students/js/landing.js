@@ -1,8 +1,13 @@
-// The landing page's live parts: the rising world in the hero, and the
-// world demo whose sliders drive the real world model.
+// The landing page's live parts: the hero world (yours to spin, tip, speed
+// up, slow down, reverse and zoom), the water and flame that wind around it,
+// petals and embers, sections that slash open as they arrive, and the world
+// demo whose sliders drive the real world model.
 import { createGlobe } from "./world-render.js";
 import { buildWorld } from "./model/world-model.js";
 import { DAY, dayKey } from "./model/time.js";
+import { ribbons, drift, reveal, speedLines, burstOn, impactFrame } from "./fx.js";
+import { reducedMotion } from "./motion.js";
+import { globeDock, dockToggle } from "./globe-dock.js";
 
 let started = false;
 
@@ -19,6 +24,8 @@ function demoLayers({ focusHours, tasks, createHours, away }) {
   return w.layers;
 }
 
+const $ = (id) => document.getElementById(id);
+
 export function initLanding() {
   if (started) return;
   started = true;
@@ -27,21 +34,50 @@ export function initLanding() {
   const onScroll = () => bar.classList.toggle("scrolled", window.scrollY > 20);
   window.addEventListener("scroll", onScroll, { passive: true });
   onScroll();
+  reveal(document.getElementById("landing"));
+
+  // The calls to action land with a hit.
+  document.querySelectorAll("#landing .fx-cta").forEach((a) => {
+    a.addEventListener("pointerenter", () => burstOn(a, { count: 22, dur: 320 }));
+    a.addEventListener("click", () => {
+      impactFrame();
+      const r = a.getBoundingClientRect();
+      speedLines(r.left + r.width / 2, r.top + r.height / 2, { count: 70, dur: 520, ring: true });
+    });
+  });
 
   // Defer the globes until the browser is idle: the words matter first.
   const later = window.requestIdleCallback || ((fn) => setTimeout(fn, 300));
   later(() => {
+    let dock = null;
     try {
-      const hero = createGlobe(document.getElementById("hero-globe"), { seed: "panalo-students", maxDisk: 280, spin: 0.00004 });
-      hero.setLayers({ land: 0.32, lights: 160, forest: 0.6, aurora: 0.6, glow: 0.4, atmosphere: 0.7, clouds: 0.12, ring: 0.85 }, [
+      const hero = createGlobe($("hero-globe"), { seed: "panalo-students", interactive: true, maxDisk: 300, maxPixels: 1500, onMotion: (m) => dock?.sync(m) });
+      hero.setLayers({ land: 0.34, lights: 180, forest: 0.6, aurora: 0.7, glow: 0.35, atmosphere: 0.75, clouds: 0.22, ring: 0.9 }, [
         { value: 1, done: true },
         { value: 0.6, done: false },
       ]);
+      const extra = [];
+      if (!reducedMotion()) {
+        // Water and flame around the world; they follow its speed and direction.
+        const back = document.querySelector(".rib-back"), front = document.querySelector(".rib-front");
+        let fx = ribbons(back, front, { getMotion: () => hero.getMotion() });
+        extra.push(
+          dockToggle("≋", "Water and flame", true, (on) => {
+            document.querySelector(".hero-world").classList.toggle("no-ribbons", !on);
+            if (on) fx = ribbons(back, front, { getMotion: () => hero.getMotion() });
+            else fx.destroy();
+          })
+        );
+        drift(document.querySelector(".hero-drift"), { count: 26 });
+      }
+      dock = globeDock(hero, { extra });
+      dock.node.id = "hero-dock";
+      document.querySelector(".hero-stage").append(dock.node);
     } catch (e) {
       console.error("hero globe", e);
     }
 
-    const canvas = document.getElementById("demo-globe");
+    const canvas = $("demo-globe");
     let demo;
     try {
       demo = createGlobe(canvas, { seed: "your-world", interactive: true, maxDisk: 260 });
@@ -50,10 +86,10 @@ export function initLanding() {
       return;
     }
     const inputs = {
-      focus: document.getElementById("wd-focus"),
-      tasks: document.getElementById("wd-tasks"),
-      create: document.getElementById("wd-create"),
-      away: document.getElementById("wd-away"),
+      focus: $("wd-focus"),
+      tasks: $("wd-tasks"),
+      create: $("wd-create"),
+      away: $("wd-away"),
     };
     const update = () => {
       const v = {
@@ -62,10 +98,10 @@ export function initLanding() {
         createHours: Number(inputs.create.value),
         away: Number(inputs.away.value),
       };
-      document.getElementById("wd-focus-out").textContent = `${v.focusHours} h`;
-      document.getElementById("wd-tasks-out").textContent = String(v.tasks);
-      document.getElementById("wd-create-out").textContent = `${v.createHours} h`;
-      document.getElementById("wd-away-out").textContent = v.away === 1 ? "1 day" : `${v.away} days`;
+      $("wd-focus-out").textContent = `${v.focusHours} h`;
+      $("wd-tasks-out").textContent = String(v.tasks);
+      $("wd-create-out").textContent = `${v.createHours} h`;
+      $("wd-away-out").textContent = v.away === 1 ? "1 day" : `${v.away} days`;
       demo.setLayers(demoLayers(v));
     };
     Object.values(inputs).forEach((i) => i.addEventListener("input", update));

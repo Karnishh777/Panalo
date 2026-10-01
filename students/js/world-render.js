@@ -14,6 +14,7 @@
 import { reducedMotion, animationLoop } from "./motion.js";
 import { glSupported, createGlobeGL } from "./world-gl.js";
 import { TW, TH, UW, UH, TAU, mix, surfaces, surfaceFor, paint } from "./world-surface.js";
+import { getLight, onLight, lightVector } from "./world-light.js";
 
 /**
  * @param {HTMLCanvasElement} canvas
@@ -31,7 +32,7 @@ export function createGlobe(canvas, opts = {}) {
   return createGlobe2D(canvas, opts);
 }
 
-function createGlobe2D(canvas, { seed, tilt = 0.38, interactive = false, maxDisk = 300, spin = 0.00006 } = {}) {
+function createGlobe2D(canvas, { seed, tilt = 0.38, interactive = false, maxDisk = 300, spin = 1, onMotion } = {}) {
   const ctx = canvas.getContext("2d");
   // Generating a planet takes a moment on a slow device, so it happens when
   // the browser is idle; until then only the atmosphere is drawn.
@@ -49,11 +50,28 @@ function createGlobe2D(canvas, { seed, tilt = 0.38, interactive = false, maxDisk
   let img = null;
   let frameSkip = false;
   let dragging = null;
+  // The same motion controls as the WebGL world, minus tipping and zoom.
+  const home = { speed: spin, direction: 1, paused: false, pitch: 0, zoom: 1 };
+  const motion = { ...home };
+  let acc = 0;
   const still = () => reducedMotion();
 
-  // Light comes from the upper left, so the right of the world is night
-  // and the lights of finished tasks show there.
-  const Lx = -0.62, Ly = -0.42, Lz = 0.66;
+  // Where the sun is and how bright the night side is: the person's choice
+  // (world-light.js). Screen y points down here, so the sun's y flips.
+  let lighting = getLight();
+  let Lx, Ly, Lz, ambient;
+  const aim = () => {
+    [Lx, Ly, Lz] = lightVector(lighting);
+    Ly = -Ly;
+    ambient = 0.05 + 0.4 * lighting.night * lighting.night;
+  };
+  aim();
+  const offLight = onLight((l) => {
+    lighting = l;
+    aim();
+    build();
+    redrawStill();
+  });
 
   function build() {
     const rect = canvas.getBoundingClientRect();
@@ -112,7 +130,7 @@ function createGlobe2D(canvas, { seed, tilt = 0.38, interactive = false, maxDisk
       const k = v * TW + (u2 >> 1);
       const s = table.shade[p];
       const day = Math.max(0, s);
-      const lit = 0.07 + 0.93 * Math.pow(day, 0.8);
+      const lit = ambient + (1 - ambient) * Math.pow(day, 0.8);
       let r = color[c2] * lit;
       let g = color[c2 + 1] * lit;
       let b = color[c2 + 2] * lit;
@@ -246,9 +264,13 @@ function createGlobe2D(canvas, { seed, tilt = 0.38, interactive = false, maxDisk
 
   const loop = animationLoop(canvas, (t, dt) => {
     frameSkip = !frameSkip;
+    acc += dt;
     if (frameSkip) return; // ~30 fps is plenty for a slow spin
-    if (!dragging) rot += dt * 2 * spin * 60;
-    cloudShift += dt * 2 * spin * 25;
+    const step = acc / 1000;
+    acc = 0;
+    const rate = motion.paused ? 0 : 0.16 * motion.speed * motion.direction;
+    if (!dragging) rot += rate * step;
+    cloudShift += (0.012 + Math.abs(rate) * 0.15) * step;
     draw(t);
   });
 
@@ -309,8 +331,20 @@ function createGlobe2D(canvas, { seed, tilt = 0.38, interactive = false, maxDisk
     },
     destroy() {
       destroyed = true;
+      offLight();
       loop.destroy();
       ro?.disconnect();
+    },
+    setMotion(next) {
+      Object.assign(motion, next);
+      onMotion?.({ ...motion });
+      redrawStill();
+    },
+    getMotion: () => ({ ...motion }),
+    zoomBy() {},
+    reset() {
+      Object.assign(motion, home);
+      onMotion?.({ ...motion });
     },
     renderer: "2d",
   };

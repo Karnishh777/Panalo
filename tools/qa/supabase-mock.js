@@ -25,6 +25,7 @@
 
   const SUPA = "https://zqtvqobonmpxffjxbjpt.supabase.co";
   const STORAGE_PUBLIC = `${SUPA}/storage/v1/object/public/`;
+  const STORAGE_SIGN = `${SUPA}/storage/v1/object/sign/`;
   const uuid = () => crypto.randomUUID();
   const nowIso = () => new Date().toISOString();
   const ago = (mins) => new Date(Date.now() - mins * 60000).toISOString();
@@ -664,6 +665,14 @@
           if (!blob || (bucket === "student-resources" && !mayReadResourceObject(path))) return { data: null, error: { message: "Object not found", statusCode: "404" } };
           return { data: blob, error: null };
         },
+        // Signed links answer from memory (see fetch below), carrying the
+        // type the file was stored with.
+        async createSignedUrl(path, expiresIn, opts = {}) {
+          await sleep(QA.latency ?? 15);
+          if (!storage.has(`${bucket}/${path}`) || (bucket === "student-resources" && !mayReadResourceObject(path))) return { data: null, error: { message: "Object not found", statusCode: "404" } };
+          const q = opts?.download ? `&download=${encodeURIComponent(opts.download === true ? "" : opts.download)}` : "";
+          return { data: { signedUrl: `${STORAGE_SIGN}${bucket}/${path}?token=qa${q}` }, error: null };
+        },
         getPublicUrl(path) {
           return { data: { publicUrl: `${STORAGE_PUBLIC}${bucket}/${path}` } };
         },
@@ -686,6 +695,12 @@
     if (url.startsWith(STORAGE_PUBLIC)) {
       const blob = storage.get(url.slice(STORAGE_PUBLIC.length));
       return blob ? new Response(blob, { status: 200 }) : new Response("not found", { status: 404 });
+    }
+    if (url.startsWith(STORAGE_SIGN)) {
+      const blob = storage.get(url.slice(STORAGE_SIGN.length).split("?")[0]);
+      const headers = { "content-type": blob?.type || "application/octet-stream" };
+      if (!blob) return new Response("not found", { status: 404 });
+      return (init?.method || "GET").toUpperCase() === "HEAD" ? new Response(null, { status: 200, headers }) : new Response(blob, { status: 200, headers });
     }
     if (url.startsWith(SUPA)) throw new Error("supabase-mock: blocked a real Supabase request");
     return realFetch(input, init);

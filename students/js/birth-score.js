@@ -1,14 +1,20 @@
-// The intro's sound: synthesized on the spot with Web Audio, no files.
+// The intro's sound: a small trailer score, mixed live with Web Audio.
 //
-// A hum that rises under the countdown, a tick per number, the bang (a
-// noise burst and a falling sub tone), the rush of the warp, a soft chord
-// as the nebula opens, and a two-note chime when the world is found.
-// Sound is on unless the person turned it off; the choice is remembered on
-// this device. If the browser has no Web Audio, or won't start it, the
-// intro simply plays in silence.
+//   music bus ─┐                         ┌─► dry ─────────┐
+//   sfx bus  ──┼─► (ducks under the VO) ─┤                ├─► master ─► glue compressor ─► limiter ─► out
+//              │                         └─► reverb send ─┘   (a 4 s hall made from shaped noise)
+//
+// Cues: a sub drone that breathes, a heartbeat, a riser that cuts to
+// silence, the hit (a distorted brass-like braam, a boom, a crack, a sub
+// drop), a whoosh, pads and a shimmer, and a resolve. Everything is
+// synthesized here -- there are no audio files to download.
+//
+// The voice-over uses the best English voice this device has (speech
+// synthesis); the lines are fixed text, never anything you wrote. Captions
+// always show. Sound is on unless turned off; the choice is remembered.
 import { getPrefs, setPrefs } from "./ui.js";
 
-const LEVEL = 0.45;
+const LEVEL = 0.8;
 
 export function soundWanted() {
   return getPrefs().introSound !== false;
@@ -18,25 +24,84 @@ export function setSoundWanted(on) {
   setPrefs({ introSound: !!on });
 }
 
+function impulse(ctx, seconds = 4, decay = 3.2) {
+  const rate = ctx.sampleRate, len = Math.floor(rate * seconds);
+  const ir = ctx.createBuffer(2, len, rate);
+  for (let ch = 0; ch < 2; ch++) {
+    const d = ir.getChannelData(ch);
+    let lp = 0;
+    for (let i = 0; i < len; i++) {
+      const t = i / len;
+      // Darker as it decays, like air absorbing the highs.
+      const k = 0.35 + 0.6 * t;
+      lp = lp * k + (Math.random() * 2 - 1) * (1 - k);
+      d[i] = lp * Math.pow(1 - t, decay) * (i < rate * 0.012 ? i / (rate * 0.012) : 1);
+    }
+  }
+  return ir;
+}
+
+function distortion(ctx, amount = 18) {
+  const ws = ctx.createWaveShaper();
+  const n = 1024, curve = new Float32Array(n);
+  for (let i = 0; i < n; i++) {
+    const x = (i / (n - 1)) * 2 - 1;
+    curve[i] = ((1 + amount) * x) / (1 + amount * Math.abs(x));
+  }
+  ws.curve = curve;
+  ws.oversample = "2x";
+  return ws;
+}
+
 export function createScore() {
   const AC = window.AudioContext || window.webkitAudioContext;
   if (!AC) return null;
   let ctx;
   try {
-    ctx = new AC();
+    ctx = new AC({ latencyHint: "playback" });
   } catch {
     return null;
   }
   let muted = !soundWanted();
+
+  // ---- the mix
   const master = ctx.createGain();
   master.gain.value = muted ? 0 : LEVEL;
-  const comp = ctx.createDynamicsCompressor();
-  master.connect(comp);
-  comp.connect(ctx.destination);
+  const glue = ctx.createDynamicsCompressor();
+  glue.threshold.value = -18;
+  glue.ratio.value = 3;
+  glue.attack.value = 0.02;
+  glue.release.value = 0.3;
+  const limiter = ctx.createDynamicsCompressor();
+  limiter.threshold.value = -2;
+  limiter.ratio.value = 20;
+  limiter.attack.value = 0.002;
+  limiter.release.value = 0.1;
+  master.connect(glue).connect(limiter).connect(ctx.destination);
 
-  const noise = ctx.createBuffer(1, ctx.sampleRate * 2, ctx.sampleRate);
-  const data = noise.getChannelData(0);
-  for (let i = 0; i < data.length; i++) data[i] = Math.random() * 2 - 1;
+  const verb = ctx.createConvolver();
+  verb.buffer = impulse(ctx);
+  const verbOut = ctx.createGain();
+  verbOut.gain.value = 0.9;
+  verb.connect(verbOut).connect(master);
+
+  const music = ctx.createGain(); // ducked under the voice
+  const sfx = ctx.createGain();
+  for (const bus of [music, sfx]) {
+    bus.connect(master);
+  }
+  const send = (node, amount) => {
+    const g = ctx.createGain();
+    g.gain.value = amount;
+    node.connect(g).connect(verb);
+    return node;
+  };
+
+  const noise = ctx.createBuffer(2, ctx.sampleRate * 2, ctx.sampleRate);
+  for (let ch = 0; ch < 2; ch++) {
+    const d = noise.getChannelData(ch);
+    for (let i = 0; i < d.length; i++) d[i] = Math.random() * 2 - 1;
+  }
 
   const live = new Set();
   const keep = (src) => {
@@ -44,24 +109,31 @@ export function createScore() {
     src.onended = () => live.delete(src);
     return src;
   };
-  // Nothing is scheduled while muted or suspended, so nothing piles up to
-  // play all at once later.
   const ready = () => !muted && ctx.state === "running";
-  const env = (g, t, peak, attack, release) => {
-    g.gain.setValueAtTime(0.0001, t);
-    g.gain.exponentialRampToValueAtTime(peak, t + attack);
-    g.gain.exponentialRampToValueAtTime(0.0001, t + attack + release);
+  const now = () => ctx.currentTime + 0.01;
+  const osc = (type, f) => {
+    const o = keep(ctx.createOscillator());
+    o.type = type;
+    o.frequency.value = f;
+    return o;
   };
-  const noiseSource = () => {
+  const noiseSrc = () => {
     const s = keep(ctx.createBufferSource());
     s.buffer = noise;
     s.loop = true;
     return s;
   };
+  const env = (t, { a = 0.01, peak = 1, hold = 0, r = 1 } = {}) => {
+    const g = ctx.createGain();
+    g.gain.setValueAtTime(0.0001, t);
+    g.gain.exponentialRampToValueAtTime(peak, t + a);
+    if (hold) g.gain.setValueAtTime(peak, t + a + hold);
+    g.gain.exponentialRampToValueAtTime(0.0001, t + a + hold + r);
+    return g;
+  };
+  const stopAt = (nodes, t) => nodes.forEach((n) => (n.start(now()), n.stop(t)));
 
   return {
-    // Browsers start audio only after the person has interacted with the
-    // page; signing in counts, and so does pressing the sound button.
     resume() {
       if (ctx.state !== "running") ctx.resume?.().catch(() => {});
     },
@@ -71,113 +143,194 @@ export function createScore() {
     setMuted(m) {
       muted = m;
       if (!m) this.resume();
-      master.gain.setTargetAtTime(m ? 0 : LEVEL, ctx.currentTime, 0.06);
+      master.gain.setTargetAtTime(m ? 0 : LEVEL, ctx.currentTime, 0.08);
+      if (m) window.speechSynthesis?.cancel();
     },
-    drone(dur) {
+
+    // A sub drone that breathes: low fifths, opening slowly.
+    drone(dur = 8) {
       if (!ready()) return;
-      const t = ctx.currentTime;
+      const t = now();
       const lp = ctx.createBiquadFilter();
       lp.type = "lowpass";
-      lp.frequency.setValueAtTime(110, t);
-      lp.frequency.exponentialRampToValueAtTime(1100, t + dur);
-      const g = ctx.createGain();
-      g.gain.setValueAtTime(0.0001, t);
-      g.gain.exponentialRampToValueAtTime(0.28, t + dur * 0.92);
-      g.gain.exponentialRampToValueAtTime(0.0001, t + dur + 0.06);
-      lp.connect(g).connect(master);
-      for (const [type, f0, f1] of [["sawtooth", 38, 96], ["sine", 38.6, 97.5], ["triangle", 76, 190]]) {
-        const o = keep(ctx.createOscillator());
-        o.type = type;
-        o.frequency.setValueAtTime(f0, t);
-        o.frequency.exponentialRampToValueAtTime(f1, t + dur);
-        o.connect(lp);
-        o.start(t);
-        o.stop(t + dur + 0.1);
+      lp.frequency.setValueAtTime(90, t);
+      lp.frequency.exponentialRampToValueAtTime(420, t + dur);
+      const g = env(t, { a: dur * 0.5, peak: 0.32, hold: dur * 0.3, r: dur * 0.3 });
+      const lfo = osc("sine", 0.18);
+      const lg = ctx.createGain();
+      lg.gain.value = 0.12;
+      lfo.connect(lg).connect(g.gain);
+      send(lp.connect(g), 0.3).connect(music);
+      const parts = [osc("sawtooth", 36.7), osc("sawtooth", 36.9), osc("sawtooth", 55.1), osc("sine", 36.7)];
+      parts.forEach((o) => o.connect(lp));
+      stopAt([...parts, lfo], t + dur + 0.2);
+    },
+
+    // Lub-dub, lub-dub: very low, felt more than heard.
+    heartbeat(count = 4, every = 0.95) {
+      if (!ready()) return;
+      for (let i = 0; i < count; i++) {
+        for (const [d, peak] of [[0, 0.55], [0.27, 0.35]]) {
+          const t = now() + i * every + d;
+          const o = keep(ctx.createOscillator());
+          o.frequency.setValueAtTime(62, t);
+          o.frequency.exponentialRampToValueAtTime(36, t + 0.2);
+          const g = env(t, { a: 0.008, peak: peak * (0.6 + 0.4 * (i / count)), r: 0.25 });
+          o.connect(g).connect(sfx);
+          o.start(t);
+          o.stop(t + 0.35);
+        }
       }
     },
-    tick(high = false) {
+
+    // Tension: noise and a tone climbing together, faster and faster, then
+    // nothing at all.
+    riser(dur = 3) {
       if (!ready()) return;
-      const t = ctx.currentTime;
-      const o = keep(ctx.createOscillator());
-      o.frequency.value = high ? 1320 : 880;
-      const g = ctx.createGain();
-      env(g, t, 0.16, 0.004, 0.12);
-      o.connect(g).connect(master);
-      o.start(t);
-      o.stop(t + 0.2);
-    },
-    boom() {
-      if (!ready()) return;
-      const t = ctx.currentTime;
-      const n = noiseSource();
-      const lp = ctx.createBiquadFilter();
-      lp.type = "lowpass";
-      lp.frequency.setValueAtTime(5200, t);
-      lp.frequency.exponentialRampToValueAtTime(70, t + 2.8);
-      const g = ctx.createGain();
-      env(g, t, 0.9, 0.012, 3.2);
-      n.connect(lp).connect(g).connect(master);
-      n.start(t);
-      n.stop(t + 3.4);
-      const sub = keep(ctx.createOscillator());
-      sub.frequency.setValueAtTime(110, t);
-      sub.frequency.exponentialRampToValueAtTime(26, t + 2.2);
-      const sg = ctx.createGain();
-      env(sg, t, 0.85, 0.01, 2.6);
-      sub.connect(sg).connect(master);
-      sub.start(t);
-      sub.stop(t + 2.8);
-    },
-    whoosh(dur) {
-      if (!ready()) return;
-      const t = ctx.currentTime;
-      const n = noiseSource();
+      const t = now(), end = t + dur;
+      const n = noiseSrc();
       const bp = ctx.createBiquadFilter();
       bp.type = "bandpass";
-      bp.Q.value = 1.4;
-      bp.frequency.setValueAtTime(2600, t);
-      bp.frequency.exponentialRampToValueAtTime(260, t + dur);
+      bp.Q.value = 5;
+      bp.frequency.setValueAtTime(300, t);
+      bp.frequency.exponentialRampToValueAtTime(7000, end);
       const g = ctx.createGain();
-      env(g, t, 0.3, 0.25, dur);
-      n.connect(bp).connect(g).connect(master);
-      n.start(t);
-      n.stop(t + dur + 0.4);
+      g.gain.setValueAtTime(0.0001, t);
+      g.gain.exponentialRampToValueAtTime(0.35, end - 0.02);
+      g.gain.linearRampToValueAtTime(0, end);
+      const tone = osc("sawtooth", 110);
+      tone.frequency.exponentialRampToValueAtTime(880, end);
+      const tg = ctx.createGain();
+      tg.gain.setValueAtTime(0.0001, t);
+      tg.gain.exponentialRampToValueAtTime(0.08, end - 0.02);
+      tg.gain.linearRampToValueAtTime(0, end);
+      const trem = osc("sine", 4);
+      trem.frequency.exponentialRampToValueAtTime(22, end);
+      const tdepth = ctx.createGain();
+      tdepth.gain.value = 0.5;
+      const tremGain = ctx.createGain();
+      tremGain.gain.value = 0.6;
+      trem.connect(tdepth).connect(tremGain.gain);
+      n.connect(bp).connect(g).connect(tremGain);
+      tone.connect(tg).connect(tremGain);
+      send(tremGain, 0.35).connect(sfx);
+      stopAt([n, tone, trem], end + 0.05);
     },
-    shimmer(dur) {
+
+    // The hit: braam + boom + crack + sub drop, into a big hall.
+    impact() {
       if (!ready()) return;
-      const t = ctx.currentTime;
-      [220, 277.18, 329.63, 440, 554.37].forEach((f, i) => {
-        const o = keep(ctx.createOscillator());
-        o.type = "sine";
-        o.frequency.value = f * (1 + (i % 2 ? 0.0025 : -0.002));
-        const g = ctx.createGain();
-        g.gain.setValueAtTime(0.0001, t);
-        g.gain.exponentialRampToValueAtTime(0.05 - i * 0.006, t + dur * 0.45 + i * 0.12);
-        g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
-        o.connect(g).connect(master);
+      const t = now();
+      // Braam: low brass-like stack, distorted, the filter closing over seconds.
+      const lp = ctx.createBiquadFilter();
+      lp.type = "lowpass";
+      lp.Q.value = 2;
+      lp.frequency.setValueAtTime(3200, t);
+      lp.frequency.exponentialRampToValueAtTime(180, t + 4.5);
+      const drive = distortion(ctx, 12);
+      const bg = env(t, { a: 0.03, peak: 0.42, hold: 0.6, r: 4.2 });
+      const notes = [41.2, 41.5, 61.7, 82.4, 82.0, 123.5];
+      const stack = notes.map((f) => osc("sawtooth", f));
+      stack.forEach((o) => o.connect(drive));
+      send(drive.connect(lp).connect(bg), 0.55).connect(music);
+      // Boom: noise falling through a closing filter.
+      const n = noiseSrc();
+      const nl = ctx.createBiquadFilter();
+      nl.type = "lowpass";
+      nl.frequency.setValueAtTime(6000, t);
+      nl.frequency.exponentialRampToValueAtTime(50, t + 3);
+      send(n.connect(nl).connect(env(t, { a: 0.005, peak: 0.9, r: 3.4 })), 0.5).connect(sfx);
+      // Crack: a hard transient on top.
+      const c = noiseSrc();
+      const hp = ctx.createBiquadFilter();
+      hp.type = "highpass";
+      hp.frequency.value = 2500;
+      send(c.connect(hp).connect(env(t, { a: 0.001, peak: 0.5, r: 0.18 })), 0.7).connect(sfx);
+      // Sub drop.
+      const sub = osc("sine", 90);
+      sub.frequency.exponentialRampToValueAtTime(24, t + 2.6);
+      sub.connect(env(t, { a: 0.006, peak: 0.95, r: 3 })).connect(sfx);
+      stopAt([...stack, n, c, sub], t + 6);
+    },
+
+    // Air moving past the lens, panning across.
+    whoosh(dur = 1.6) {
+      if (!ready()) return;
+      const t = now();
+      const n = noiseSrc();
+      const bp = ctx.createBiquadFilter();
+      bp.type = "bandpass";
+      bp.Q.value = 1.2;
+      bp.frequency.setValueAtTime(400, t);
+      bp.frequency.exponentialRampToValueAtTime(3500, t + dur * 0.6);
+      bp.frequency.exponentialRampToValueAtTime(600, t + dur);
+      const pan = ctx.createStereoPanner ? ctx.createStereoPanner() : null;
+      if (pan) {
+        pan.pan.setValueAtTime(-0.8, t);
+        pan.pan.linearRampToValueAtTime(0.8, t + dur);
+      }
+      const g = env(t, { a: dur * 0.55, peak: 0.28, r: dur * 0.45 });
+      const chain = n.connect(bp).connect(g);
+      send(pan ? chain.connect(pan) : chain, 0.4).connect(sfx);
+      stopAt([n], t + dur + 0.1);
+    },
+
+    // A slow chord: three detuned saws a note, softened, with a long tail.
+    pad(freqs = [146.8, 220, 277.2, 329.6, 440], dur = 8, level = 0.08) {
+      if (!ready()) return;
+      const t = now();
+      const lp = ctx.createBiquadFilter();
+      lp.type = "lowpass";
+      lp.frequency.setValueAtTime(500, t);
+      lp.frequency.exponentialRampToValueAtTime(1800, t + dur * 0.6);
+      const g = env(t, { a: dur * 0.4, peak: level, hold: dur * 0.3, r: dur * 0.3 });
+      send(lp.connect(g), 0.8).connect(music);
+      const parts = [];
+      for (const f of freqs) for (const d of [-0.006, 0, 0.007]) parts.push(osc("sawtooth", f * (1 + d)));
+      parts.forEach((o) => o.connect(lp));
+      stopAt(parts, t + dur + 0.2);
+    },
+
+    // High bell partials, mostly reverb.
+    shimmer(dur = 6) {
+      if (!ready()) return;
+      [880, 1318.5, 1760, 2637].forEach((f, i) => {
+        const t = now() + i * 0.35;
+        const o = osc("sine", f);
+        const g = env(t, { a: 0.6, peak: 0.03, r: dur });
+        const out = ctx.createGain();
+        out.gain.value = 0.25;
+        o.connect(g);
+        g.connect(out).connect(music);
+        g.connect(verb);
         o.start(t);
-        o.stop(t + dur + 0.1);
+        o.stop(t + dur + 1);
       });
     },
-    chime() {
+
+    // The ending: a warm major chord over a low note, and the shimmer.
+    resolve() {
       if (!ready()) return;
-      const t = ctx.currentTime;
-      [[1046.5, 0], [1568, 0.14]].forEach(([f, d]) => {
-        const o = keep(ctx.createOscillator());
-        o.type = "triangle";
-        o.frequency.value = f;
-        const g = ctx.createGain();
-        env(g, t + d, 0.12, 0.006, 0.9);
-        o.connect(g).connect(master);
-        o.start(t + d);
-        o.stop(t + d + 1);
-      });
+      this.pad([73.4, 146.8, 220, 293.7, 370, 440, 554.4], 9, 0.1);
+      this.shimmer(7);
+      const t = now();
+      const o = osc("sine", 73.4);
+      o.connect(env(t, { a: 1.2, peak: 0.3, r: 6 })).connect(music);
+      o.start(t);
+      o.stop(t + 8);
     },
-    // Fade out, then let go of the audio device.
+
+    // Music steps back while the voice speaks.
+    duck(on) {
+      music.gain.setTargetAtTime(on ? 0.35 : 1, ctx.currentTime, on ? 0.08 : 0.5);
+      sfx.gain.setTargetAtTime(on ? 0.6 : 1, ctx.currentTime, on ? 0.08 : 0.5);
+    },
+
     close() {
+      window.speechSynthesis?.cancel();
       const t = ctx.currentTime;
       master.gain.cancelScheduledValues(t);
-      master.gain.setTargetAtTime(0, t, 0.12);
+      master.gain.setTargetAtTime(0, t, 0.25);
       setTimeout(() => {
         for (const s of live) {
           try {
@@ -188,7 +341,62 @@ export function createScore() {
         }
         live.clear();
         ctx.close?.().catch(() => {});
-      }, 600);
+      }, 1200);
     },
   };
+}
+
+// ---- The voice-over ---------------------------------------------------------------------------
+
+let chosen = null;
+function pickVoice() {
+  const synth = window.speechSynthesis;
+  if (!synth) return null;
+  const voices = synth.getVoices().filter((v) => /^en(-|_|$)/i.test(v.lang));
+  if (!voices.length) return null;
+  const score = (v) => {
+    let s = 0;
+    if (/natural|neural|premium|enhanced|siri/i.test(v.name)) s += 6;
+    if (/daniel|arthur|oliver|ryan|guy|andrew|brian|aaron|alex|george|google uk english male/i.test(v.name)) s += 3;
+    if (/en-gb/i.test(v.lang)) s += 1;
+    if (v.localService) s += 1;
+    if (/compact|eloquence|novelty|whisper|bad news|bells|boing|bubbles|cellos|zarvox|trinoids|albert|jester|organ|superstar/i.test(v.name)) s -= 10;
+    return s;
+  };
+  return voices.sort((a, b) => score(b) - score(a))[0];
+}
+
+/** Ready the voice list early; some browsers load it asynchronously. */
+export function warmVoice() {
+  const synth = window.speechSynthesis;
+  if (!synth) return;
+  chosen = pickVoice();
+  if (!chosen) synth.addEventListener?.("voiceschanged", () => (chosen = pickVoice()), { once: true });
+}
+
+/**
+ * Speak one line in a low, unhurried voice. Resolves when it ends (or at
+ * once if there is no speech synthesis or the sound is off).
+ */
+export function speak(line, { score } = {}) {
+  const synth = window.speechSynthesis;
+  if (!synth || !line || score?.muted || !soundWanted()) return Promise.resolve();
+  return new Promise((resolve) => {
+    const u = new SpeechSynthesisUtterance(line);
+    chosen ||= pickVoice();
+    if (chosen) u.voice = chosen;
+    u.lang = chosen?.lang || "en-GB";
+    u.rate = 0.84;
+    u.pitch = 0.7;
+    u.volume = 1;
+    const done = () => {
+      score?.duck(false);
+      resolve();
+    };
+    u.onstart = () => score?.duck(true);
+    u.onend = done;
+    u.onerror = done;
+    synth.speak(u);
+    setTimeout(done, 9000); // never hang on a voice that never ends
+  });
 }

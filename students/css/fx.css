@@ -1,0 +1,317 @@
+/* Panalo Students — effects in the language of hand-drawn action animation:
+   speed lines, impact frames, ink slashes, numerals, afterimages.
+   Everything here is switched off by reduced motion (bottom of the file),
+   and the Study Room never receives any of it. */
+
+/* ---- Speed lines and impact frames -------------------------------------------------- */
+
+.fx-burst {
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 90;
+  pointer-events: none;
+}
+
+/* One hard frame: the picture inverts, then a soft white fades. Never
+   brighter than 70% white, never more than once a second (fx.js). */
+.fx-impact {
+  position: fixed;
+  inset: 0;
+  z-index: 95;
+  pointer-events: none;
+  background: #fff;
+  mix-blend-mode: difference;
+  animation: impact 0.32s steps(1, end) both;
+}
+.fx-impact.strong {
+  animation-duration: 0.42s;
+}
+@keyframes impact {
+  0% {
+    opacity: 0.85;
+    mix-blend-mode: difference;
+  }
+  18% {
+    opacity: 0.55;
+    background: #0a0d19;
+    mix-blend-mode: normal;
+  }
+  32% {
+    opacity: 0.35;
+    background: #fff;
+    mix-blend-mode: soft-light;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+
+/* A punch: overshoot, settle, with two coloured afterimages. */
+.fx-punch {
+  animation: punch 0.45s cubic-bezier(0.2, 1.8, 0.4, 1);
+}
+@keyframes punch {
+  0% {
+    transform: scale(1);
+  }
+  25% {
+    transform: scale(1.12) rotate(-2deg);
+    box-shadow: -6px 0 0 rgba(154, 216, 255, 0.45), 6px 0 0 rgba(255, 122, 168, 0.4);
+  }
+  60% {
+    transform: scale(0.97);
+  }
+  100% {
+    transform: scale(1);
+    box-shadow: none;
+  }
+}
+
+/* ---- Ink reveals --------------------------------------------------------------------- */
+/* data-fx="slash": the element is cut open by a diagonal stroke. */
+[data-fx="slash"] {
+  /* A mask, not a clip-path: IntersectionObserver treats a fully clipped
+     element as invisible and would never reveal it. */
+  -webkit-mask-image: linear-gradient(110deg, #000 42%, transparent 58%);
+  mask-image: linear-gradient(110deg, #000 42%, transparent 58%);
+  -webkit-mask-size: 320% 100%;
+  mask-size: 320% 100%;
+  -webkit-mask-position: 100% 0;
+  mask-position: 100% 0;
+  transform: translateX(-16px) skewX(-4deg);
+  transition: -webkit-mask-position 0.85s cubic-bezier(0.7, 0, 0.2, 1), mask-position 0.85s cubic-bezier(0.7, 0, 0.2, 1), transform 0.8s cubic-bezier(0.2, 1.3, 0.4, 1);
+}
+[data-fx="slash"].fx-in {
+  -webkit-mask-position: 0 0;
+  mask-position: 0 0;
+  transform: none;
+}
+/* Siblings arrive one after another. */
+[data-fx].fx-in:nth-child(2) { transition-delay: 0.08s; }
+[data-fx].fx-in:nth-child(3) { transition-delay: 0.16s; }
+[data-fx].fx-in:nth-child(4) { transition-delay: 0.24s; }
+[data-fx].fx-in:nth-child(5) { transition-delay: 0.32s; }
+[data-fx].fx-in:nth-child(6) { transition-delay: 0.4s; }
+
+/* Large numerals behind section labels, brushed in. */
+.kanji {
+  display: inline-block;
+  margin-right: 12px;
+  font: 400 2.4em/0.6 var(--f-serif);
+  vertical-align: -0.35em;
+  color: var(--time);
+  opacity: 0.85;
+  text-shadow: 0 0 18px rgba(255, 196, 122, 0.35);
+}
+
+/* ---- Route transitions inside the app ----------------------------------------------- */
+/* Two ink panels slash across the screen and away; under them the next
+   surface's parts slide in one by one. */
+.fx-wipe {
+  position: fixed;
+  inset: 0;
+  z-index: 70;
+  pointer-events: none;
+  overflow: hidden;
+}
+.fx-wipe i {
+  position: absolute;
+  top: -20%;
+  bottom: -20%;
+  width: 60%;
+  left: -70%;
+  transform: skewX(-18deg);
+  background: linear-gradient(90deg, rgba(6, 8, 18, 0.96) 70%, var(--wipe, #9ad8ff) 70% 71.5%, rgba(6, 8, 18, 0) 72%);
+  animation: wipe 0.55s cubic-bezier(0.7, 0, 0.3, 1) both;
+}
+.fx-wipe i + i {
+  width: 30%;
+  background: linear-gradient(90deg, transparent, var(--wipe, #9ad8ff) 92%, #fff 100%);
+  opacity: 0.55;
+  animation-delay: 0.05s;
+}
+@keyframes wipe {
+  to {
+    left: 140%;
+  }
+}
+
+/* Parts of a surface, staggered in after a route change. */
+.fx-enter .s-head {
+  animation: slash-in 0.6s cubic-bezier(0.2, 1.2, 0.4, 1) both;
+}
+.fx-enter .s-head h1 {
+  animation: title-in 0.7s cubic-bezier(0.2, 1.4, 0.4, 1) 0.06s both;
+}
+.fx-enter .panel,
+.fx-enter .fx-part {
+  animation: slash-in 0.55s cubic-bezier(0.2, 1.1, 0.4, 1) both;
+}
+.fx-enter .panel:nth-of-type(1) { animation-delay: 0.08s; }
+.fx-enter .panel:nth-of-type(2) { animation-delay: 0.14s; }
+.fx-enter .panel:nth-of-type(3) { animation-delay: 0.2s; }
+.fx-enter .panel:nth-of-type(4) { animation-delay: 0.26s; }
+.fx-enter .panel:nth-of-type(5) { animation-delay: 0.32s; }
+.fx-enter .panel:nth-of-type(n + 6) { animation-delay: 0.38s; }
+@keyframes slash-in {
+  0% {
+    opacity: 0;
+    clip-path: polygon(0 0, 0 0, -20% 100%, -20% 100%);
+    transform: translateX(-18px);
+  }
+  100% {
+    opacity: 1;
+    clip-path: polygon(0 0, 120% 0, 100% 100%, -20% 100%);
+    transform: none;
+  }
+}
+@keyframes title-in {
+  0% {
+    opacity: 0;
+    transform: translateX(-10%) skewX(-16deg);
+    filter: blur(6px);
+    letter-spacing: 0.04em;
+  }
+  60% {
+    opacity: 1;
+    filter: none;
+    transform: translateX(1%) skewX(3deg);
+  }
+  100% {
+    transform: none;
+  }
+}
+
+/* Panel labels get a brushed underline that draws itself on hover. */
+body:not([data-view="study"]) .panel-head h2 {
+  position: relative;
+}
+body:not([data-view="study"]) .panel-head h2::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: -5px;
+  height: 2px;
+  width: 100%;
+  background: linear-gradient(90deg, var(--tone, var(--focus)), transparent);
+  transform: scaleX(0.18);
+  transform-origin: left;
+  transition: transform 0.45s cubic-bezier(0.2, 1.3, 0.4, 1);
+}
+body:not([data-view="study"]) .panel:hover .panel-head h2::after {
+  transform: scaleX(1);
+}
+
+/* A glint sweeps across buttons outside the Study Room. */
+body:not([data-view="study"]) .stage .btn-primary,
+#landing .btn-primary,
+.birth .btn-primary {
+  position: relative;
+  overflow: hidden;
+}
+body:not([data-view="study"]) .stage .btn-primary::after,
+#landing .btn-primary::after,
+.birth .btn-primary::after {
+  content: "";
+  position: absolute;
+  top: -50%;
+  left: -70%;
+  width: 40%;
+  height: 200%;
+  transform: rotate(22deg);
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.75), transparent);
+  animation: glint 3.6s ease-in-out infinite;
+  pointer-events: none;
+}
+@keyframes glint {
+  0%,
+  70% {
+    left: -70%;
+  }
+  100% {
+    left: 140%;
+  }
+}
+
+/* Drifting petals and embers behind the app (not the Study Room). */
+.fx-ambient {
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 0;
+  pointer-events: none;
+  opacity: 0.55;
+  transition: opacity 0.6s;
+}
+body[data-view="study"] .fx-ambient {
+  opacity: 0;
+}
+
+/* ---- Reduced motion: all of it off ------------------------------------------------------ */
+@media (prefers-reduced-motion: reduce) {
+  [data-fx] {
+    -webkit-mask-image: none !important;
+    mask-image: none !important;
+    clip-path: none !important;
+    transform: none !important;
+    opacity: 1 !important;
+    transition: none !important;
+  }
+  .fx-impact,
+  .fx-wipe,
+  .fx-burst,
+  .fx-ambient {
+    display: none !important;
+  }
+  .fx-enter *,
+  .fx-punch {
+    animation: none !important;
+  }
+}
+html[data-motion="reduce"] [data-fx] {
+  -webkit-mask-image: none !important;
+  mask-image: none !important;
+  clip-path: none !important;
+  transform: none !important;
+  opacity: 1 !important;
+  transition: none !important;
+}
+html[data-motion="reduce"] .fx-impact,
+html[data-motion="reduce"] .fx-wipe,
+html[data-motion="reduce"] .fx-burst,
+html[data-motion="reduce"] .fx-ambient {
+  display: none !important;
+}
+html[data-motion="reduce"] .fx-enter *,
+html[data-motion="reduce"] .fx-punch,
+html[data-motion="reduce"] .btn-primary::after {
+  animation: none !important;
+}
+
+/* The landing's own movement, stilled too. */
+@media (prefers-reduced-motion: reduce) {
+  .hero-sub b,
+  .hero-sub span,
+  .hero-copy::before,
+  .mq-row,
+  .final-lines,
+  .globe-dock,
+  .ht-serif {
+    animation: none !important;
+  }
+}
+:root[data-motion="reduce"] .hero-sub b,
+:root[data-motion="reduce"] .hero-sub span,
+:root[data-motion="reduce"] .hero-copy::before,
+:root[data-motion="reduce"] .mq-row,
+:root[data-motion="reduce"] .final-lines,
+:root[data-motion="reduce"] .globe-dock,
+:root[data-motion="reduce"] .ht-serif,
+:root[data-motion="reduce"] .hero-kicker,
+:root[data-motion="reduce"] .hero-actions,
+:root[data-motion="reduce"] .scroll-cue {
+  animation: none !important;
+}

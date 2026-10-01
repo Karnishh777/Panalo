@@ -80,7 +80,7 @@ try {
     await page.check("#signup-age");
     await page.click("#signup-submit");
     await page.waitForSelector("#birth-skip:not([hidden])", { timeout: 20000 });
-    check("the intro is a film: an observer's log and a countdown", (await page.isVisible(".birth-hud")) && (await page.locator(".birth-count").count()) === 1);
+    check("the intro is a film, with captions and a title card", (await page.locator("#birth .film-out").count()) === 1 && (await page.locator("#birth .film-caption").count()) === 1 && (await page.locator("#birth .film-title").count()) === 1);
     if (await page.isVisible(".birth-sound")) {
       await page.click(".birth-sound");
       const muted = await page.evaluate(() => ({
@@ -90,7 +90,7 @@ try {
       check("the intro's sound can be turned off, and that is remembered", muted.pressed === "false" && muted.saved === false);
     } else check("the intro's sound can be turned off, and that is remembered", false);
     await finishBirth(page);
-    check("the film's pieces are cleared away once it ends", (await page.locator(".birth-hud, .birth-sound, .birth-reticle").count()) === 0);
+    check("the film's pieces are cleared away once it ends", (await page.locator(".film-out, .film-caption, .film-title, .birth-sound").count()) === 0);
     const prof = await page.evaluate(() => window.__qa.db.student_profiles[0]);
     check("the birth saves a named world with interests", prof?.world_name === "Kepler QA" && prof.interests.includes("space"));
     const goal = await page.evaluate(() => window.__qa.db.student_goals[0]);
@@ -261,6 +261,26 @@ try {
   await shot(page, "archive");
   await page.keyboard.press("Escape");
 
+  // A PDF: the upload shows progress, and the preview opens the browser's
+  // viewer from a signed Storage link (a blob: tab is blank under the CSP).
+  await page.click(".s-actions button >> text=Upload");
+  await page.setInputFiles("dialog input[type=file]", { name: "past-paper.pdf", mimeType: "application/pdf", buffer: Buffer.from("%PDF-1.4\n%qa\n") });
+  await page.evaluate(() => {
+    window.__sawMeter = false;
+    const m = document.querySelector("dialog .upload-meter");
+    new MutationObserver(() => !m.hidden && (window.__sawMeter = true)).observe(m, { attributes: true });
+  });
+  await page.click("dialog .btn-primary");
+  await page.waitForTimeout(1100);
+  const meter = await page.evaluate(() => window.__sawMeter);
+  check("an upload shows its progress", meter);
+  check("the PDF is catalogued", await page.evaluate(() => window.__qa.db.resources.some((r) => r.file_name === "past-paper.pdf")));
+  await page.click(".artifact:has-text('past-paper') button >> text=Preview");
+  await page.waitForTimeout(700);
+  const pdfHref = await page.getAttribute("dialog a.btn-primary", "href").catch(() => "");
+  check("a PDF opens from a signed link, not a blob", /\/object\/sign\/student-resources\//.test(pdfHref || ""));
+  await page.keyboard.press("Escape");
+
   // ---- Drift ---------------------------------------------------------------------------
   await go(page, "#/drift", 800);
   await page.click(".drift-card >> nth=0 >> button");
@@ -397,7 +417,16 @@ try {
         const px = x.getImageData(c.width >> 1, c.height >> 1, 1, 1).data;
         drawn = px[3] > 0 && px[0] + px[1] + px[2] > 0;
       }
-      const out = { renderer: g.renderer, drawn };
+      g.setMotion({ speed: 3, direction: -1 });
+      const m = g.getMotion();
+      g.reset();
+      const back = g.getMotion();
+      const { setLight, getLight } = await import("/students/js/world-light.js");
+      setLight({ mode: "night", night: 0.6 });
+      const saved = JSON.parse(localStorage.getItem("panalo.students.light") || "{}");
+      setLight({ azimuth: 30 });
+      const custom = getLight();
+      const out = { renderer: g.renderer, drawn, motion: m.speed === 3 && m.direction === -1 && back.speed === 1 && back.direction === 1, light: saved.mode === "night" && saved.night === 0.6 && custom.mode === "custom" && custom.azimuth === 30 };
       g.destroy();
       c.remove();
       return out;
@@ -406,6 +435,8 @@ try {
     await gl.waitForTimeout(400);
     const a = await probe()(gl);
     check("the world renders with WebGL when it's allowed", a.renderer === "webgl" && a.drawn);
+    check("the world's speed and direction can be changed and reset", a.motion);
+    check("the light (sun, night side) is chosen and remembered", a.light);
     check("no console errors (WebGL world)", gl.errors.length === 0);
     if (gl.errors.length) console.log(gl.errors.join("\n"));
     await gl.close();
@@ -413,6 +444,7 @@ try {
     await flat.waitForTimeout(400);
     const b = await probe()(flat);
     check("the world falls back to the 2D renderer", b.renderer === "2d" && b.drawn);
+    check("the 2D world has the same speed and direction controls", b.motion);
     check("no console errors (2D world)", flat.errors.length === 0);
     await flat.close();
   }

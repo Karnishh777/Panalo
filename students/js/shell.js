@@ -10,6 +10,8 @@ import { startPresence, stopPresence } from "../../src/presence.js";
 import { state } from "../../src/state.js";
 import { startInbox, stopInbox } from "./signals-data.js";
 import { settleTimer } from "./timer-state.js";
+import { reducedMotion } from "./motion.js";
+import { drift, punch, burstOn, calm } from "./fx.js";
 
 const $ = (id) => document.getElementById(id);
 
@@ -25,6 +27,26 @@ const SURFACES = {
   settings: () => import("./surfaces/settings.js"),
 };
 const TITLES = { now: "Now", study: "Study Room", signals: "Signals", world: "World", calendar: "Calendar", archive: "Archive", drift: "Drift", safety: "Safety", settings: "Settings" };
+
+// Each surface's colour, for the ink that wipes across when you arrive.
+const TONES = { now: "#ffc47a", signals: "#b59cff", world: "#7ee2a8", calendar: "#ffc47a", archive: "#e7d19b", drift: "#ff9ec4", safety: "#b59cff", settings: "#9ad8ff" };
+let ambient = null;
+
+// Arriving somewhere: an ink slash in that surface's colour, and its parts
+// cut in one after another. Never into the Study Room, never with reduced
+// motion.
+function arrive(name, section) {
+  ambient?.setPaused(name === "study");
+  if (reducedMotion() || name === "study") return;
+  const wipe = el("div", { class: "fx-wipe", "aria-hidden": "true", style: `--wipe:${TONES[name] || "#9ad8ff"}` }, [el("i"), el("i")]);
+  document.body.append(wipe);
+  setTimeout(() => wipe.remove(), 800);
+  section.classList.remove("fx-enter");
+  void section.offsetWidth;
+  section.classList.add("fx-enter");
+  clearTimeout(section.fxTimer);
+  section.fxTimer = setTimeout(() => section.classList.remove("fx-enter"), 1400);
+}
 
 const mounted = new Map(); // name -> module
 const loading = new Map(); // name -> pending import
@@ -56,8 +78,10 @@ async function route() {
     prev?.hide?.();
     document.querySelector(`section[data-surface="${current}"]`).hidden = true;
   }
+  const arriving = current !== name;
   current = name;
   section.hidden = false;
+  if (arriving) arrive(name, section);
 
   let mod = mounted.get(name);
   if (!mod) {
@@ -235,6 +259,14 @@ export function initShell(h) {
     }
   });
   if (!/Mac|iPhone|iPad/.test(navigator.platform || "")) document.querySelector(".warp-btn kbd").textContent = "Ctrl K";
+  // Primary actions and the main navigation land with a small hit.
+  document.addEventListener("pointerdown", (e) => {
+    if (!active || calm()) return;
+    const b = e.target.closest?.("#app .btn-primary, #app [data-route]");
+    if (!b) return;
+    punch(b);
+    burstOn(b, { count: 14, dur: 300 });
+  });
   on("student", renderMe);
   on("unread", () => {
     const n = store.unreadTotal || 0;
@@ -255,6 +287,12 @@ export async function enterShell({ firstTime = false, pendingJoin = null } = {})
   renderMe();
   schemaBanner();
   if (!wasActive) {
+    // Petals and embers drifting behind everything (paused in the Study Room).
+    if (!reducedMotion() && !ambient) {
+      const c = el("canvas", { class: "fx-ambient", "aria-hidden": "true" });
+      $("app").prepend(c);
+      ambient = drift(c, { count: 18, wind: 0.6 });
+    }
     tickClock();
     clockTimer = setInterval(tickClock, 15000);
     startPresence(state.currentUser);
@@ -287,5 +325,8 @@ export function leaveShell() {
   });
   document.querySelector(".schema-banner")?.remove();
   current = null;
+  ambient?.destroy();
+  ambient = null;
+  document.querySelector(".fx-ambient")?.remove();
   $("app").hidden = true;
 }

@@ -7,6 +7,7 @@
 import { el, openSheet, confirmSheet, showToast, chipGroup, reportError, emptyState, toLocalInput } from "../ui.js";
 import { store, on, api } from "../store.js";
 import { createGlobe } from "../world-render.js";
+import { globeDock } from "../globe-dock.js";
 import { buildWorld, weatherLine } from "../model/world-model.js";
 import { formatMinutes, dayKey, parseDayKey } from "../model/time.js";
 import { state } from "../../../src/state.js";
@@ -18,6 +19,7 @@ let discEl;
 let logsEl;
 let titleEl;
 let subEl;
+let dock = null;
 let globe = null;
 let unsubs = [];
 
@@ -222,14 +224,15 @@ export function mount(section) {
   moonsEl = el("ul", { class: "moons" });
   discEl = el("div");
   logsEl = el("div");
-  const canvas = el("canvas", { class: "world-globe", tabindex: "0", role: "img", "aria-label": "Your world. Use the left and right arrow keys to turn it. The legend lists what each feature means." });
+  const canvas = el("canvas", { class: "world-globe", tabindex: "0", role: "img", "aria-label": "Your world. Drag it, or use the arrow keys to turn and tip it. The legend lists what each feature means." });
+  const stage = el("div", { class: "world-stage" }, [canvas]);
   root.append(
     el("div", { class: "s-head" }, [
       el("div", {}, [el("p", { class: "kicker toned tone-world", text: "World" }), titleEl, subEl]),
       el("div", { class: "s-actions" }, [el("button", { type: "button", class: "btn btn-quiet btn-sm", text: "Rename", onClick: rename }), el("button", { type: "button", class: "btn btn-primary", text: "Log an activity", onClick: openLog })]),
     ]),
     el("div", { class: "world-grid" }, [
-      el("div", { class: "world-stage" }, [canvas]),
+      stage,
       el("section", { class: "panel tone-world", "aria-labelledby": "w-legend" }, [el("div", { class: "panel-head" }, [el("h2", { id: "w-legend", text: "What shapes it" })]), legendEl]),
     ]),
     el("div", { class: "world-lower" }, [
@@ -240,7 +243,9 @@ export function mount(section) {
   );
   section.append(root);
   try {
-    globe = createGlobe(canvas, { seed: state.currentUser.id, interactive: true, maxDisk: 320 });
+    globe = createGlobe(canvas, { seed: state.currentUser.id, interactive: true, maxDisk: 320, onMotion: (m) => dock?.sync(m) });
+    dock = globeDock(globe, { label: "Control your world" });
+    stage.append(dock.node);
   } catch (e) {
     console.error(e);
     canvas.replaceWith(emptyState("Your world can't be drawn in this browser.", "Everything it would show is listed beside it."));
@@ -258,4 +263,6 @@ export function destroy() {
   unsubs.forEach((u) => u());
   unsubs = [];
   globe?.destroy();
+  dock?.destroy();
+  dock = null;
 }
