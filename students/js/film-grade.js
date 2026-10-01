@@ -32,7 +32,7 @@ varying vec2 vUv;
 uniform sampler2D uScene;
 uniform sampler2D uLut;       // 1024 x 128: four 32^3 LUTs stacked
 uniform float uLutA, uLutB, uLutMix;
-uniform float uExposure, uBloom, uStreak, uGrain, uTime, uAberr, uVignette, uBars, uAspect, uWeave;
+uniform float uExposure, uBloom, uStreak, uGrain, uTime, uAberr, uVignette, uBars, uAspect, uWeave, uFrame;
 
 vec3 lut(vec3 c, float which) {
   c = clamp(c, 0.0, 1.0);
@@ -93,8 +93,9 @@ void main() {
   float g = hash(uv * 1000.0 + fract(uTime * 7.31) * 100.0) - 0.5;
   col += g * uGrain * (0.6 + 0.4 * (1.0 - dot(col, vec3(0.33))));
 
-  // 2.39:1 letterbox inside whatever screen this is.
-  float target = 1.0 / 2.39;
+  // Letterbox to the frame's aspect (2.39:1 on wide screens, a near-full
+  // frame on phones held upright) inside whatever screen this is.
+  float target = 1.0 / uFrame;
   float hFrac = min(1.0, uAspect * target);
   float bar = (1.0 - hFrac) * 0.5 * uBars;
   if (uv.y < bar || uv.y > 1.0 - bar) col = vec3(0.0);
@@ -195,7 +196,7 @@ export function createGrader(out) {
   gl.enableVertexAttribArray(aPos);
   gl.vertexAttribPointer(aPos, 2, gl.FLOAT, false, 0, 0);
   const U = {};
-  for (const n of ["uScene", "uLut", "uLutA", "uLutB", "uLutMix", "uExposure", "uBloom", "uStreak", "uGrain", "uTime", "uAberr", "uVignette", "uBars", "uAspect", "uWeave"]) U[n] = gl.getUniformLocation(prog, n);
+  for (const n of ["uScene", "uLut", "uLutA", "uLutB", "uLutMix", "uExposure", "uBloom", "uStreak", "uGrain", "uTime", "uAberr", "uVignette", "uBars", "uAspect", "uWeave", "uFrame"]) U[n] = gl.getUniformLocation(prog, n);
 
   const sceneTex = gl.createTexture();
   gl.activeTexture(gl.TEXTURE0);
@@ -223,7 +224,9 @@ export function createGrader(out) {
     sceneSize(w, h) {
       // The nearest power of two to the screen: never far from 1:1, and
       // mipmaps (the bloom) need powers of two in WebGL 1.
-      const near = (n) => Math.max(256, Math.min(2048, 2 ** Math.round(Math.log2(Math.max(2, n)))));
+      // Scaled by the screen's density, so it stays sharp on high-DPI.
+      const dpr = Math.min(1.5, window.devicePixelRatio || 1);
+      const near = (n) => Math.max(256, Math.min(2048, 2 ** Math.round(Math.log2(Math.max(2, n * dpr * 1.15)))));
       return [near(w), near(h)];
     },
     /**
@@ -256,6 +259,7 @@ export function createGrader(out) {
       gl.uniform1f(U.uBars, p.bars ?? 1);
       gl.uniform1f(U.uAspect, out.clientWidth / Math.max(1, out.clientHeight));
       gl.uniform1f(U.uWeave, p.weave ?? 1);
+      gl.uniform1f(U.uFrame, p.frame ?? 2.39);
       gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
     },
     destroy() {

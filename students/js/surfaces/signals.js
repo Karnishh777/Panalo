@@ -18,6 +18,7 @@ import { isOnline, setPresenceListener } from "../../../src/presence.js";
 import { relTime, clockTime, dayKey } from "../model/time.js";
 import { saveToArchive } from "../archive-data.js";
 import * as S from "../signals-data.js";
+import { skyMap } from "./sky.js";
 
 let root;
 let listEl;
@@ -152,6 +153,61 @@ function renderList() {
 
   listEl.querySelector(".sig-chips-slot").replaceChildren(groups.length > 1 ? chips : el("span"));
   listEl.querySelector(".sig-body").replaceChildren(...[doorSection, ...body].filter(Boolean));
+}
+
+// ---- the sky ------------------------------------------------------------------------------
+// With no conversation open, the pane is the sky: every conversation a star,
+// every kind a constellation (sky.js).
+function renderSky() {
+  if (!paneEl || current) return;
+  const unread = store.conversations.reduce((n, c) => n + (c.unread || 0), 0);
+  paneEl.replaceChildren(
+    el("div", { class: "sig-sky" }, [
+      el("div", { class: "sig-sky-head" }, [
+        el("button", { type: "button", class: "icon-btn sky-back", "aria-label": "Back to the list", text: "←", onClick: () => root.classList.remove("sky-open") }),
+        el("div", {}, [
+          el("p", { class: "kicker toned tone-signal", text: "Your sky" }),
+          el("p", { class: "sky-sub" }, [
+            store.conversations.length ? `${store.conversations.length} ${store.conversations.length === 1 ? "star" : "stars"}` : "No stars yet",
+            unread ? el("span", { class: "sky-unread", text: ` · ${unread} unread` }) : null,
+          ]),
+        ]),
+      ]),
+      store.conversations.length
+        ? skyMap({ conversations: store.conversations, contexts: S.CONTEXTS, contextOf: S.contextOf, titleOf: S.titleOf, isOnline, width: paneEl.clientWidth || 800, height: Math.max(240, (paneEl.clientHeight || 600) - 130) })
+        : el("div", { class: "thread-idle" }, [el("p", { class: "serif idle-line", text: "An empty sky." }), el("p", { class: "faint", text: "Message someone by their exact username, form a circle, or open a room." })]),
+      el("p", { class: "sky-foot faint", text: "Bigger stars have more people; brighter ones spoke more recently; pulsing ones have something new. Messages and files are encrypted on your device." }),
+    ])
+  );
+}
+
+// A conversation's own little constellation: one star per member (up to
+// eight), joined -- shown beside its name.
+function memberGlyph(conv) {
+  const NS = "http://www.w3.org/2000/svg";
+  const ids = (conv.members || []).map((m) => m.user_id || m.id || String(m)).slice(0, 8);
+  if (conv.type === "direct" && ids.length < 2) ids.push("you", "them");
+  const g = document.createElementNS(NS, "svg");
+  g.setAttribute("viewBox", "0 0 44 28");
+  g.setAttribute("class", "member-glyph");
+  g.setAttribute("aria-hidden", "true");
+  const h = (s) => {
+    let x = 2166136261;
+    for (let i = 0; i < s.length; i++) x = Math.imul(x ^ s.charCodeAt(i), 16777619);
+    return (x >>> 0) / 4294967296;
+  };
+  const pts = ids.map((id, i) => [4 + ((i + 0.5) / ids.length) * 36, 6 + h(String(id)) * 16]);
+  const path = document.createElementNS(NS, "path");
+  path.setAttribute("d", pts.map((p, i) => `${i ? "L" : "M"}${p[0].toFixed(1)} ${p[1].toFixed(1)}`).join(" "));
+  g.append(path);
+  for (const [x, y] of pts) {
+    const c = document.createElementNS(NS, "circle");
+    c.setAttribute("cx", x.toFixed(1));
+    c.setAttribute("cy", y.toFixed(1));
+    c.setAttribute("r", "1.9");
+    g.append(c);
+  }
+  return g;
 }
 
 function setContext(id) {
@@ -291,6 +347,7 @@ async function openThread(id) {
   }
   current = conv;
   S.setOpenConversation(conv.id);
+  root.classList.remove("sky-open");
   root.classList.add("thread-open");
   renderList();
 
@@ -314,6 +371,7 @@ async function openThread(id) {
   paneEl.replaceChildren(
     el("header", { class: `thread-head ${ctx?.tone || ""}` }, [
       el("a", { href: "#/signals", class: "icon-btn thread-back", "aria-label": "Back to all signals", text: "←" }),
+      memberGlyph(conv),
       el("div", { class: "thread-title" }, [el("h2", { text: S.titleOf(conv) }), el("p", {}, [el("span", { class: "tag", text: ctx?.label || "" }), ` ${sub.join(" · ")}`])]),
       el("button", { type: "button", class: "btn btn-ghost btn-sm", text: conv.type === "group" ? "Members & door" : "Details", onClick: () => openInfo(conv) }),
     ]),
@@ -858,6 +916,7 @@ export function mount(section, ctx) {
     el("div", { class: "s-head sig-head" }, [
       el("div", {}, [el("p", { class: "kicker toned tone-signal", text: "Signals" }), el("h1", { text: "Who's out there" })]),
       el("div", { class: "s-actions" }, [
+        el("button", { type: "button", class: "btn btn-ghost btn-sm sky-toggle", text: "Sky", "aria-label": "Show your conversations as a sky", onClick: () => (root.classList.add("sky-open"), renderSky()) }),
         el("button", { type: "button", class: "btn btn-ghost btn-sm", text: "Join with code", onClick: () => openJoin() }),
         el("button", { type: "button", class: "btn btn-primary btn-sm", text: "New", onClick: () => openNew() }),
       ]),
@@ -867,6 +926,19 @@ export function mount(section, ctx) {
     el("div", { class: "sig-body" }, [el("div", { class: "loading-line" })]),
   ]);
   paneEl = el("div", { class: "thread-pane" });
+  // The sky takes the pane's shape: redraw it when that changes.
+  let skyW = 0;
+  if ("ResizeObserver" in window) {
+    const ro = new ResizeObserver(() => {
+      const w = paneEl.clientWidth;
+      if (!current && w && Math.abs(w - skyW) > 40) {
+        skyW = w;
+        renderSky();
+      }
+    });
+    ro.observe(paneEl);
+    unsubs.push(() => ro.disconnect());
+  }
   root.append(listEl, paneEl);
   section.append(root);
 
@@ -874,6 +946,7 @@ export function mount(section, ctx) {
     on("signals", () => {
       settleDoors();
       renderList();
+      if (!current) renderSky();
       if (current) {
         const fresh = store.conversations.find((c) => c.id === current.id);
         if (!fresh) {
@@ -894,7 +967,10 @@ export function mount(section, ctx) {
       if (stick || msg.user_id === state.currentUser.id) toBottom();
     })
   );
-  setPresenceListener(() => renderList());
+  setPresenceListener(() => {
+    renderList();
+    if (!current) renderSky();
+  });
   if (store.conversations.length) renderList();
 }
 
@@ -904,12 +980,7 @@ export function show(param) {
     thread = null;
     S.setOpenConversation(null);
     root.classList.remove("thread-open");
-    paneEl.replaceChildren(
-      el("div", { class: "thread-idle" }, [
-        el("p", { class: "serif idle-line", text: "Pick a star." }),
-        el("p", { class: "faint", text: "Messages and files are encrypted on your device. No phone numbers, ever." }),
-      ])
-    );
+    renderSky();
     renderList();
     return;
   }

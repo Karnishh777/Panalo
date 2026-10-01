@@ -22,7 +22,7 @@ import { createGlobeGL, glSupported } from "./world-gl.js";
 
 export const IGNITION = 8650;
 export const WORLDFALL = 15500;
-export const TITLE = 22000;
+export const TITLE = 21800;
 export const LENGTH = 26500;
 
 const TAU = Math.PI * 2;
@@ -48,7 +48,7 @@ function seeded(seed) {
 // A nebula, painted once: glowing gas along a curved band, filaments, dark
 // dust lanes, embedded stars. Three of these at different depths make the
 // flight-through.
-function paintPlate(rand, palette, W = 900, H = 560) {
+function paintPlate(rand, palette, W = 1400, H = 860) {
   const c = document.createElement("canvas");
   c.width = W;
   c.height = H;
@@ -56,7 +56,7 @@ function paintPlate(rand, palette, W = 900, H = 560) {
   const ph = rand() * 6, amp = 0.18 + rand() * 0.14;
   const band = (u) => H * (0.5 + amp * Math.sin(u * 3.1 + ph));
   g.globalCompositeOperation = "lighter";
-  for (let i = 0; i < 70; i++) {
+  for (let i = 0; i < 110; i++) {
     const u = rand();
     const x = W * (0.04 + 0.92 * u), y = band(u) + (rand() - 0.5) * H * 0.35;
     const r = H * (0.06 + rand() * 0.3);
@@ -98,7 +98,7 @@ function paintPlate(rand, palette, W = 900, H = 560) {
   }
   // Young stars inside the gas.
   g.globalCompositeOperation = "lighter";
-  for (let i = 0; i < 160; i++) {
+  for (let i = 0; i < 320; i++) {
     const u = rand();
     const x = W * u, y = band(u) + (rand() - 0.5) * H * 0.5;
     const r = rand() < 0.08 ? 2 + rand() * 2.5 : 0.6 + rand() * 0.9;
@@ -134,12 +134,13 @@ export function createFilm(host, { seed, layers, cues = [], plates = {}, onFallb
   let globe = null;
   if (useGL) {
     const gc = document.createElement("canvas");
-    gc.width = gc.height = 1024;
-    globe = createGlobeGL(gc, { seed, manual: true, maxPixels: 1024 });
+    const gs = Math.min(1536, Math.max(1024, Math.round(Math.min(window.innerWidth, window.innerHeight) * Math.min(2, window.devicePixelRatio || 1))));
+    gc.width = gc.height = gs;
+    globe = createGlobeGL(gc, { seed, manual: true, maxPixels: gs });
     globe?.setLayers(layers);
   }
 
-  let w = 0, h = 0, S = 0;
+  let w = 0, h = 0, S = 0, frameAspect = 2.39;
   const resize = () => {
     w = Math.max(1, host.clientWidth || window.innerWidth);
     h = Math.max(1, host.clientHeight || window.innerHeight);
@@ -153,8 +154,10 @@ export function createFilm(host, { seed, layers, cues = [], plates = {}, onFallb
       scene.width = Math.round(w * dpr);
       scene.height = Math.round(h * dpr);
     }
-    // Where the bars are, for captions to sit in.
-    const barFrac = Math.max(0, (1 - Math.min(1, (w / h) / 2.39)) / 2);
+    // The frame: 2.39:1 on wide screens; on a phone held upright, nearly the
+    // whole screen, with thin bars. Captions sit in the lower bar.
+    frameAspect = w / h >= 1.2 ? 2.39 : Math.max(0.5, (w / h) * 1.15);
+    const barFrac = Math.max(0, (1 - Math.min(1, (w / h) / frameAspect)) / 2);
     host.style.setProperty("--film-bar", `${Math.round(barFrac * h)}px`);
   };
   resize();
@@ -166,9 +169,12 @@ export function createFilm(host, { seed, layers, cues = [], plates = {}, onFallb
     paintPlate(rand, [[255, 80, 160], [180, 70, 255], [255, 140, 200]]),
     paintPlate(rand, [[255, 170, 80], [255, 110, 60], [255, 220, 150]]),
   ];
+  // Real stars have colours: hot blue-white, white, yellow, orange, red.
+  const TEMPS = ["200,220,255", "225,235,255", "255,250,240", "255,232,190", "255,200,150", "255,170,130"];
   const star = (z) => {
     const a = Math.random() * TAU, r = Math.sqrt(Math.random()) * 1.6;
-    return { x: Math.cos(a) * r, y: Math.sin(a) * r, z, tw: Math.random() * TAU, warm: Math.random() < 0.3, big: Math.random() < 0.04 };
+    const q = Math.random();
+    return { x: Math.cos(a) * r, y: Math.sin(a) * r, z, tw: Math.random() * TAU, col: TEMPS[Math.min(5, Math.floor(q * q * 6.5))], big: Math.random() < 0.05 };
   };
   const big = w * h > 500000;
   const stars = Array.from({ length: big ? 700 : 360 }, () => star(0.05 + Math.random() * 0.95));
@@ -256,8 +262,8 @@ export function createFilm(host, { seed, layers, cues = [], plates = {}, onFallb
         B = LUT.gold;
         mix = smooth(e, WORLDFALL - 600, WORLDFALL + 2400);
         exposure = 1;
-        bloom = 0.9;
-        streak = 0.6;
+        bloom = 0.9 + 0.8 * glareNow;
+        streak = 0.6 + 1.1 * glareNow;
       }
     }
     if (holding) {
@@ -265,7 +271,7 @@ export function createFilm(host, { seed, layers, cues = [], plates = {}, onFallb
       B = LUT.gold;
       exposure *= 0.88;
     }
-    return { a: A, b: B, mix, exposure, bloom, streak, aberr, grain: 0.07, time: e / 1000, bars: holding ? 1 - smooth(e - holdAt, 0, 1200) : 1, vignette: 0.85 };
+    return { a: A, b: B, mix, exposure, bloom, streak, aberr, grain: 0.07, time: e / 1000, bars: holding ? 1 - smooth(e - holdAt, 0, 1200) : 1, vignette: 0.85, frame: frameAspect };
   }
 
   // ---- drawing ------------------------------------------------------------------------
@@ -290,12 +296,24 @@ export function createFilm(host, { seed, layers, cues = [], plates = {}, onFallb
       const near = 1 - st.z;
       const tw = 0.75 + 0.25 * Math.sin(e / 400 + st.tw);
       const al = Math.min(1, (0.25 + near * 1.1) * tw) * fade;
-      ctx.strokeStyle = st.warm ? `rgba(255,214,170,${al})` : `rgba(210,228,255,${al})`;
+      ctx.strokeStyle = `rgba(${st.col},${al})`;
       ctx.lineWidth = (st.big ? 1.8 : 0.7) + near * 1.6;
       ctx.beginPath();
       ctx.moveTo(x0, y0);
       ctx.lineTo(x1 + 0.01, y1);
       ctx.stroke();
+      // The brightest show the four-point spikes a telescope's struts make.
+      if (st.big && near > 0.35 && v < 0.0004) {
+        const L = (4 + near * 14) * tw;
+        ctx.lineWidth = 0.6;
+        ctx.strokeStyle = `rgba(${st.col},${al * 0.55})`;
+        ctx.beginPath();
+        ctx.moveTo(x1 - L, y1);
+        ctx.lineTo(x1 + L, y1);
+        ctx.moveTo(x1, y1 - L);
+        ctx.lineTo(x1, y1 + L);
+        ctx.stroke();
+      }
     }
   }
 
@@ -318,9 +336,37 @@ export function createFilm(host, { seed, layers, cues = [], plates = {}, onFallb
     }
   }
 
+  // Fine dust between us and the light, lit from the front: it glints as
+  // it drifts, brighter the nearer it is to the light's line.
+  const motes = Array.from({ length: 140 }, () => ({ x: Math.random(), y: Math.random(), z: 0.3 + Math.random() * 0.7, s: Math.random() }));
+  function drawMotes(e) {
+    const fade = smooth(e, 900, 3500) * (1 - smooth(e, 7600, 8200));
+    if (fade <= 0) return;
+    const cx = w / 2, cy = h / 2;
+    for (const m of motes) {
+      const push = 1 + (e / 8000) * 0.35 / m.z; // the slow dolly forward
+      const x = cx + (m.x - 0.5) * w * push + Math.sin(e / 2600 + m.s * 9) * 6;
+      const y = cy + (m.y - 0.5) * h * push + Math.cos(e / 3100 + m.s * 7) * 4;
+      const d = Math.hypot(x - cx, y - cy) / S;
+      const lit = (0.15 + 0.85 * Math.exp(-d * 3)) * (0.5 + 0.5 * Math.sin(e / 300 + m.s * 40)) * fade;
+      ctx.fillStyle = `rgba(255,236,210,${0.55 * lit})`;
+      ctx.fillRect(x, y, 1.1 / m.z, 1.1 / m.z);
+    }
+  }
+
   function drawPoint(e) {
-    // The one light in the void, swelling as the riser climbs.
+    // The one light in the void, swelling as the riser climbs, with a haze
+    // of light around it in the dust.
     const grow = smooth(e, 1000, 8100);
+    {
+      const H = S * (0.12 + 0.35 * grow);
+      const g = ctx.createRadialGradient(w / 2, h / 2, 0, w / 2, h / 2, H);
+      g.addColorStop(0, `rgba(255,214,170,${0.05 + 0.12 * grow})`);
+      g.addColorStop(0.4, `rgba(170,150,220,${0.03 + 0.05 * grow})`);
+      g.addColorStop(1, "rgba(60,80,160,0)");
+      ctx.fillStyle = g;
+      ctx.fillRect(w / 2 - H, h / 2 - H, H * 2, H * 2);
+    }
     const shake = e > 5000 ? (Math.random() - 0.5) * 2 * smooth(e, 5000, 8100) : 0;
     const cx = w / 2 + shake, cy = h / 2 + shake * 0.6;
     const r = S * (0.004 + 0.02 * grow * grow) * (1 + 0.08 * Math.sin(e / 90));
@@ -379,6 +425,30 @@ export function createFilm(host, { seed, layers, cues = [], plates = {}, onFallb
     ctx.restore();
   }
 
+  // Debris from the first instant: sparks flung outwards, cooling from
+  // white through gold to red, with motion blur.
+  const sparks = Array.from({ length: big ? 260 : 140 }, () => ({ a: Math.random() * TAU, v: 0.25 + Math.random() * 1.1, len: 0.5 + Math.random(), w: 0.6 + Math.random() * 1.8 }));
+  function drawSparks(e) {
+    const a = e - IGNITION;
+    if (a < 0 || a > 4200) return;
+    const cx = w / 2, cy = h / 2;
+    const q = a / 4200;
+    const dist = (t) => S * 1.1 * (1 - Math.exp(-t * 2.2));
+    ctx.lineCap = "round";
+    for (const p of sparks) {
+      const t = q * p.v;
+      const r1 = dist(t), r0 = dist(Math.max(0, t - 0.05 * p.len));
+      const heat = 1 - q;
+      const col = heat > 0.66 ? "255,250,235" : heat > 0.33 ? "255,200,120" : "255,120,70";
+      ctx.strokeStyle = `rgba(${col},${heat * 0.9})`;
+      ctx.lineWidth = p.w * (0.4 + heat);
+      ctx.beginPath();
+      ctx.moveTo(cx + Math.cos(p.a) * r0, cy + Math.sin(p.a) * r0);
+      ctx.lineTo(cx + Math.cos(p.a) * r1, cy + Math.sin(p.a) * r1);
+      ctx.stroke();
+    }
+  }
+
   function drawBang(e) {
     const a = e - IGNITION;
     if (a < 0 || a > 3200) return;
@@ -386,6 +456,26 @@ export function createFilm(host, { seed, layers, cues = [], plates = {}, onFallb
     if (a < 900) {
       ctx.fillStyle = `rgba(255,250,240,${(1 - a / 900) ** 1.6})`;
       ctx.fillRect(0, 0, w, h);
+    }
+    // The first instant is hotter than white: a blue-white core.
+    if (a < 600) {
+      const R0 = S * (0.06 + 0.25 * (a / 600));
+      const g0 = ctx.createRadialGradient(cx, cy, 0, cx, cy, R0);
+      g0.addColorStop(0, `rgba(200,225,255,${1 - a / 600})`);
+      g0.addColorStop(1, "rgba(120,170,255,0)");
+      ctx.fillStyle = g0;
+      ctx.fillRect(cx - R0, cy - R0, R0 * 2, R0 * 2);
+    }
+    // Light echoes: two fainter rings following the shockwave.
+    for (const [delay, tint, k] of [[350, "255,200,150", 0.35], [700, "160,190,255", 0.22]]) {
+      const b = a - delay;
+      if (b <= 0 || b > 2600) continue;
+      const rr = S * 0.05 + (1 - (1 - b / 2600) ** 3) * Math.hypot(w, h) * 0.5;
+      ctx.strokeStyle = `rgba(${tint},${k * (1 - b / 2600)})`;
+      ctx.lineWidth = 2 + 10 * (1 - b / 2600);
+      ctx.beginPath();
+      ctx.ellipse(cx, cy, rr, rr * 0.92, 0, 0, TAU);
+      ctx.stroke();
     }
     // The fireball and its cooling core.
     const q = clamp01(a / 3200);
@@ -433,10 +523,36 @@ export function createFilm(host, { seed, layers, cues = [], plates = {}, onFallb
   function worldFrame(e) {
     const k = holding ? smooth(e - holdAt, 0, 1400) : 0;
     const dolly = 1 + 0.12 * smooth(e, WORLDFALL, TITLE + 3000);
-    const size = lerp(S * 0.95 * dolly, Math.min(S * 0.78, h * 0.62), k);
-    const cy = lerp(h / 2, Math.max(size * 0.36, h * 0.3), k);
+    // At the title the world settles lower in frame, so the type has the
+    // sky above it.
+    const titled = holding ? 0 : smooth(e, TITLE - 400, TITLE + 1600);
+    const size = lerp(S * 0.95 * dolly * (1 - 0.08 * titled), Math.min(S * 0.78, h * 0.62), k);
+    // The world sinks until its top clears the type; it rises out of the
+    // bottom of the frame like a horizon.
+    const R = size / 2 / 1.7;
+    const cy = lerp(h / 2 + titled * (R + h * 0.06), Math.max(size * 0.36, h * 0.3), k);
     return { cx: w / 2, cy, size };
   }
+
+  // A lens looking into the sun: ghosts of the aperture strung along the
+  // line from the sun through the centre of the frame.
+  const GHOSTS = [[0.35, 0.05, "255,190,120"], [0.62, 0.12, "120,200,255"], [0.85, 0.035, "255,240,200"], [1.2, 0.2, "150,120,255"], [1.55, 0.07, "120,255,200"]];
+  function flareGhosts(gx, gy, k) {
+    const cx = w / 2, cy = h / 2;
+    for (const [f, r, col] of GHOSTS) {
+      const x = gx + (cx - gx) * f * 2, y = gy + (cy - gy) * f * 2;
+      const R = S * r;
+      const g = ctx.createRadialGradient(x, y, R * 0.55, x, y, R);
+      g.addColorStop(0, `rgba(${col},${0.025 * k})`);
+      g.addColorStop(0.85, `rgba(${col},${0.09 * k})`);
+      g.addColorStop(1, `rgba(${col},0)`);
+      ctx.fillStyle = g;
+      ctx.beginPath();
+      ctx.arc(x, y, R, 0, TAU);
+      ctx.fill();
+    }
+  }
+  let glareNow = 0;
 
   function drawWorld(e, t, dt) {
     if (!globe) return;
@@ -457,16 +573,40 @@ export function createFilm(host, { seed, layers, cues = [], plates = {}, onFallb
     const R = size / 2 / 1.7;
     const behind = sun[2];
     const glare = show * smooth(behind, 0.55, 0.05) * smooth(behind, -0.5, -0.05);
+    glareNow = glare;
     if (glare > 0.01) {
       const l = Math.hypot(sun[0], sun[1]) || 1;
       const gx = cx + (sun[0] / l) * R * 0.98, gy = cy - (sun[1] / l) * R * 0.98;
-      const g = ctx.createRadialGradient(gx, gy, 0, gx, gy, R * 0.9);
+      ctx.save();
+      ctx.globalCompositeOperation = "lighter";
+      // Rays from the sun, through the air at the limb.
+      ctx.translate(gx, gy);
+      for (let i = 0; i < 22; i++) {
+        const ang = (i / 22) * TAU + Math.sin(i * 5.1) * 0.25 + e * 0.00003;
+        const wdt = 0.01 + 0.025 * Math.abs(Math.sin(i * 2.3));
+        const len = R * (1.2 + 1.6 * Math.abs(Math.sin(i * 1.7 + 0.4)));
+        const gr = ctx.createRadialGradient(0, 0, 0, 0, 0, len);
+        gr.addColorStop(0, `rgba(255,225,180,${0.1 * glare})`);
+        gr.addColorStop(1, "rgba(255,180,120,0)");
+        ctx.fillStyle = gr;
+        ctx.beginPath();
+        ctx.moveTo(0, 0);
+        ctx.arc(0, 0, len, ang - wdt, ang + wdt);
+        ctx.closePath();
+        ctx.fill();
+      }
+      // The diamond: a hard white point on a wide warm bloom.
+      const g = ctx.createRadialGradient(0, 0, 0, 0, 0, R * 0.9);
       g.addColorStop(0, `rgba(255,255,255,${glare})`);
-      g.addColorStop(0.05, `rgba(255,240,210,${glare * 0.9})`);
-      g.addColorStop(0.3, `rgba(255,170,90,${glare * 0.25})`);
+      g.addColorStop(0.035, `rgba(255,248,230,${glare})`);
+      g.addColorStop(0.12, `rgba(255,214,160,${glare * 0.45})`);
+      g.addColorStop(0.4, `rgba(255,150,80,${glare * 0.15})`);
       g.addColorStop(1, "rgba(255,120,60,0)");
       ctx.fillStyle = g;
-      ctx.fillRect(gx - R, gy - R, R * 2, R * 2);
+      ctx.fillRect(-R, -R, R * 2, R * 2);
+      ctx.setTransform(scene.width / w, 0, 0, scene.height / h, 0, 0);
+      flareGhosts(gx, gy, glare);
+      ctx.restore();
     }
   }
 
@@ -494,6 +634,9 @@ export function createFilm(host, { seed, layers, cues = [], plates = {}, onFallb
       drawStars(e, dt);
       drawBokeh(e);
       drawPoint(e);
+      ctx.globalCompositeOperation = "lighter";
+      drawMotes(e);
+      ctx.globalCompositeOperation = "source-over";
     } else if (e >= IGNITION || holding) {
       ctx.globalCompositeOperation = "lighter";
       drawNebulae(e);
@@ -503,6 +646,7 @@ export function createFilm(host, { seed, layers, cues = [], plates = {}, onFallb
       ctx.globalCompositeOperation = "source-over";
       drawWorld(e, t, dt);
       ctx.globalCompositeOperation = "lighter";
+      drawSparks(e);
       drawBang(e);
       ctx.globalCompositeOperation = "source-over";
     }

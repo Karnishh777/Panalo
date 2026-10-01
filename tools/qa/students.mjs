@@ -171,6 +171,18 @@ try {
   // ---- Signals: encrypted messaging, a room with a door, blocking --------------------
   await go(page, "#/signals");
   check("conversations are grouped by what they are for", (await page.textContent(".sig-body")).includes("People"));
+  await page.waitForTimeout(600);
+  const sky = await page.evaluate(() => ({
+    stars: document.querySelectorAll(".sky-map .sky-star").length,
+    rows: document.querySelectorAll(".sig-body .sig-row").length,
+    unread: [...document.querySelectorAll(".sky-map .sky-star.unread")].every((a) => /unread/.test(a.getAttribute("aria-label"))),
+    figures: document.querySelectorAll(".sky-map .sky-cons").length,
+  }));
+  check("the sky shows every conversation as a star, one constellation per kind", sky.stars > 0 && sky.stars === sky.rows && sky.figures >= 1 && sky.unread);
+  await page.click(".sky-star[aria-label^='jordan']", { force: true });
+  await page.waitForTimeout(900);
+  check("a star opens its conversation", /#\/signals\/.+/.test(await page.evaluate(() => location.hash)) && (await page.isVisible(".thread-head >> text=jordan")));
+  await go(page, "#/signals");
   await page.click(".sig-row >> text=maya");
   await page.waitForTimeout(1200);
   check("a thread decrypts and shows its history", await page.isVisible(".msg >> text=error propagation"));

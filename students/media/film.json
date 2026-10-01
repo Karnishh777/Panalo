@@ -1,4 +1,11 @@
 {
-  "voice": {},
+  "voice": {
+    "01": "media/vo/01.mp3",
+    "02": "media/vo/02.mp3",
+    "03": "media/vo/03.mp3",
+    "04": "media/vo/04.mp3",
+    "05": "media/vo/05.mp3",
+    "06": "media/vo/06.mp3"
+  },
   "plates": {}
 }

@@ -37,14 +37,20 @@ Paths are relative to `students/`. Cloudflare Pages serves files up to 25 MiB.
 
 ## Voice-over script
 
-| id | starts at | must end within | line |
+| id | starts at | recorded length | line |
 | --- | --- | --- | --- |
-| 01 | 1.4 s | 3.1 s | Before anything, there was a question. |
-| 02 | 4.7 s | 3.3 s | What will you become? |
-| 03 | 10.35 s | 4.6 s | Every hour you focus. Every idea you chase. |
-| 04 | 16.6 s | 2.4 s | Every small thing you finish… |
-| 05 | 19.2 s | 3.2 s | …becomes something you can see. |
-| 06 | 22.6 s | 3.4 s | This one is yours. |
+| 01 | 1.5 s | 2.72 s | Before anything, there was a question. |
+| 02 | 5.3 s | 1.88 s | What will you become? |
+| 03 | 10.15 s | 4.96 s | Every hour you focus. Every idea you chase. |
+| 04 | 16.4 s | 2.64 s | Every small thing you finish… |
+| 05 | 19.35 s | 2.06 s | …becomes something you can see. |
+| 06 | 22.5 s | 1.54 s | This one is yours. |
+
+The recorded lines (in `students/media/vo/`) were trimmed of leading and
+trailing silence and levelled to −16 LUFS with peaks under −1.5 dBTP, so they
+sit evenly in the mix. Line 05 starts as the sun breaks over the world's edge,
+and 06 lands with the title. If a line ever runs long, the next one waits for
+it, with a breath between, rather than talking over it.
 
 Line 02 must end before 8.2 s, when the film cuts to black and silence.
 Lines 04 and 05 are one sentence split across a breath.

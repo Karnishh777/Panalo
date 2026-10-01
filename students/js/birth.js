@@ -24,12 +24,16 @@ const NEW_WORLD = { land: 0.07, clouds: 0.05, atmosphere: 0.35, forest: 0.3 };
 // run before the next beat. Recordings are listed in media/film.json by id
 // (see FILM.md); a line without one is captioned only.
 export const SCRIPT = [
-  { id: "01", at: 1400, max: 3.1, text: "Before anything, there was a question." },
-  { id: "02", at: 4700, max: 3.3, text: "What will you become?" },
-  { id: "03", at: IGNITION + 1700, max: 4.6, text: "Every hour you focus. Every idea you chase." },
-  { id: "04", at: WORLDFALL + 1100, max: 2.4, text: "Every small thing you finish…" },
-  { id: "05", at: WORLDFALL + 3700, max: 3.2, text: "…becomes something you can see." },
-  { id: "06", at: TITLE + 600, max: 3.4, text: "This one is yours." },
+  // The void: the question, then the dare, ending before the riser peaks.
+  { id: "01", at: 1500, max: 3.1, text: "Before anything, there was a question." },
+  { id: "02", at: 5300, max: 2.5, text: "What will you become?" },
+  // Genesis: over the flight through the nebulae, clear of the hit.
+  { id: "03", at: IGNITION + 1500, max: 5.2, text: "Every hour you focus. Every idea you chase." },
+  // Worldfall: as the dust gathers, and then as the sun breaks the limb.
+  { id: "04", at: WORLDFALL + 900, max: 2.9, text: "Every small thing you finish…" },
+  { id: "05", at: WORLDFALL + 3850, max: 2.3, text: "…becomes something you can see." },
+  // The title.
+  { id: "06", at: TITLE + 700, max: 2.2, text: "This one is yours." },
 ];
 
 // What the film may use beyond what it draws itself: recorded voice lines
@@ -262,7 +266,12 @@ export function runBirth({ replay = false, onDone }) {
   );
   let captionTimer = 0;
   const voices = new Map(); // line id -> decoded recording
+  let speakingUntil = 0;
   const say = (line) => {
+    // Never talk over ourselves: a line that would start while the last is
+    // still speaking waits for it, with a breath between.
+    const wait = Math.max(0, speakingUntil + 150 - performance.now());
+    if (wait > 0) return void setTimeout(() => !ended && say(line), wait);
     caption.classList.remove("on");
     clearTimeout(captionTimer);
     requestAnimationFrame(() => {
@@ -270,7 +279,8 @@ export function runBirth({ replay = false, onDone }) {
       caption.classList.add("on");
     });
     const spoken = score?.voice(voices.get(line.id)) || 0;
-    captionTimer = setTimeout(() => caption.classList.remove("on"), Math.max(2600, line.text.length * 75, spoken * 1000 + 500));
+    speakingUntil = performance.now() + spoken * 1000;
+    captionTimer = setTimeout(() => caption.classList.remove("on"), Math.max(2400, spoken * 1000 + 600));
   };
 
   score = createScore();

@@ -1254,7 +1254,8 @@ input[type="range"].range {
   z-index: 2;
   inset: 0;
   display: grid;
-  place-content: center;
+  place-content: start center;
+  padding-top: calc(var(--film-bar, 0px) + clamp(28px, 9vh, 110px));
   justify-items: center;
   gap: 14px;
   pointer-events: none;
@@ -1275,6 +1276,34 @@ input[type="range"].range {
 }
 .birth.titled .ft-word {
   animation: ft-in 4.2s cubic-bezier(0.2, 0.8, 0.2, 1) both, ft-sweep 3.2s ease-in-out 0.6s both;
+}
+.film-title::before {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: calc(var(--film-bar, 0px) + clamp(28px, 9vh, 110px) + clamp(20px, 4.5vw, 64px));
+  width: min(90vw, 1100px);
+  height: 2px;
+  transform: translate(-50%, -50%) scaleX(0);
+  background: linear-gradient(90deg, transparent, rgba(150, 200, 255, 0.55) 30%, #fff 50%, rgba(255, 210, 160, 0.55) 70%, transparent);
+  box-shadow: 0 0 24px 4px rgba(150, 200, 255, 0.25);
+  opacity: 0;
+}
+.birth.titled .film-title::before {
+  animation: ft-flare 3.4s cubic-bezier(0.2, 0.8, 0.2, 1) 0.2s both;
+}
+@keyframes ft-flare {
+  0% {
+    opacity: 0;
+    transform: translate(-50%, -50%) scaleX(0);
+  }
+  25% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+    transform: translate(-50%, -50%) scaleX(1);
+  }
 }
 .ft-sub {
   font: 500 clamp(11px, 1.2vw, 15px) / 1 var(--f-body);

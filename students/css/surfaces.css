@@ -1887,3 +1887,194 @@ body[data-view="drift"].in-app {
   font-size: 13px;
   color: var(--text-2);
 }
+
+/* ---- The sky over Signals (sky.js) ------------------------------------------------ */
+.sig-sky {
+  position: relative;
+  display: grid;
+  grid-template-rows: auto 1fr auto;
+  height: 100%;
+  min-height: 0;
+  padding: 18px 20px 14px;
+  background: radial-gradient(ellipse at 50% 40%, rgba(181, 156, 255, 0.07), transparent 65%);
+}
+.sig-sky-head {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.sky-sub {
+  margin-top: 4px;
+  font-size: 13px;
+  color: var(--text-2);
+}
+.sky-unread {
+  color: var(--signal);
+}
+.sky-back {
+  display: none;
+}
+.sky-foot {
+  font-size: 12px;
+  text-align: center;
+}
+.sky-map {
+  width: 100%;
+  height: 100%;
+  min-height: 0;
+  overflow: visible;
+}
+.sky-dust circle {
+  fill: #dfe6ff;
+  opacity: 0.35;
+  animation: sky-twinkle var(--tw, 4s) ease-in-out var(--td, 0s) infinite;
+}
+@keyframes sky-twinkle {
+  50% {
+    opacity: 0.08;
+  }
+}
+.sky-line {
+  fill: none;
+  stroke: var(--tone);
+  stroke-width: 1;
+  stroke-opacity: 0.32;
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;
+  animation: sky-draw 1.6s cubic-bezier(0.6, 0, 0.2, 1) 0.2s forwards;
+  transition: stroke-opacity 0.3s, stroke-width 0.3s;
+}
+@keyframes sky-draw {
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+.sky-cons.lit .sky-line {
+  stroke-opacity: 0.75;
+  stroke-width: 1.6;
+}
+.sky-name {
+  font: 600 13px/1 var(--f-body);
+  letter-spacing: 0.24em;
+  fill: var(--tone);
+  opacity: 0.55;
+}
+.sky-cons.lit .sky-name {
+  opacity: 0.95;
+}
+.sky-star {
+  cursor: pointer;
+  outline: none;
+  animation: sky-in 0.6s cubic-bezier(0.2, 1.3, 0.4, 1) both;
+  animation-delay: calc(0.25s + var(--i, 0) * 0.07s);
+  transform-box: fill-box;
+}
+@keyframes sky-in {
+  from {
+    opacity: 0;
+  }
+}
+.sky-core {
+  fill: #fff;
+  opacity: calc(0.45 + 0.55 * var(--b, 1));
+  transition: r 0.2s;
+}
+.sky-halo {
+  fill: var(--tone);
+  opacity: calc(0.18 * var(--b, 1));
+  transition: opacity 0.25s;
+}
+.sky-star:hover .sky-halo,
+.sky-star:focus-visible .sky-halo,
+.sky-star.current .sky-halo {
+  opacity: 0.55;
+}
+.sky-star:focus-visible .sky-core {
+  stroke: var(--focus);
+  stroke-width: 2;
+}
+.sky-pulse {
+  fill: none;
+  stroke: var(--tone);
+  stroke-width: 1.5;
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: sky-pulse 2.2s ease-out infinite;
+}
+@keyframes sky-pulse {
+  from {
+    opacity: 0.9;
+    transform: scale(0.8);
+  }
+  to {
+    opacity: 0;
+    transform: scale(2.6);
+  }
+}
+.sky-online {
+  fill: none;
+  stroke: var(--world);
+  stroke-width: 1.4;
+}
+.sky-label {
+  font: 500 16px/1 var(--f-body);
+  fill: var(--text);
+  opacity: calc(0.55 + 0.45 * var(--b, 1));
+}
+.sky-star:hover .sky-label,
+.sky-star:focus-visible .sky-label {
+  opacity: 1;
+  text-decoration: underline;
+}
+.sky-count {
+  font: 600 13px/1 var(--f-body);
+  fill: var(--tone);
+}
+.member-glyph {
+  flex: none;
+  width: 44px;
+  height: 28px;
+}
+.member-glyph path {
+  fill: none;
+  stroke: var(--tone, var(--signal));
+  stroke-opacity: 0.5;
+  stroke-width: 0.8;
+}
+.member-glyph circle {
+  fill: #fff;
+}
+.sky-toggle {
+  display: none;
+}
+@media (max-width: 899px) {
+  .sky-toggle {
+    display: inline-flex;
+  }
+  .sky-back {
+    display: inline-grid;
+  }
+  .signals.sky-open .sig-list {
+    display: none;
+  }
+  .signals.sky-open .thread-pane {
+    display: flex;
+  }
+
+}
+@media (prefers-reduced-motion: reduce) {
+  .sky-dust circle,
+  .sky-line,
+  .sky-star,
+  .sky-pulse {
+    animation: none;
+    stroke-dashoffset: 0;
+  }
+}
+:root[data-motion="reduce"] .sky-dust circle,
+:root[data-motion="reduce"] .sky-line,
+:root[data-motion="reduce"] .sky-star,
+:root[data-motion="reduce"] .sky-pulse {
+  animation: none;
+  stroke-dashoffset: 0;
+}

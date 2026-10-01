@@ -226,6 +226,9 @@ vec4 shadePlanet(vec2 p, float zp) {
   float fres = pow(1.0 - zp, 3.0);
   vec3 sky = mix(vec3(0.95, 0.5, 0.28), vec3(0.42, 0.7, 1.0), smoothstep(-0.1, 0.35, d));
   col += sky * fres * (0.22 + 0.9 * uAtmo) * smoothstep(-0.25, 0.25, d);
+  // Backlit: with the sun behind the world, the air at the rim lights up.
+  float fwd = pow(max(dot(-V, L), 0.0), 3.0);
+  col += vec3(1.0, 0.74, 0.48) * pow(fres, 1.4) * fwd * (0.6 + 0.9 * uAtmo);
   return vec4(col, 1.0);
 }
 
@@ -240,8 +243,9 @@ void main() {
   if (r2 > 1.0) {
     float r = sqrt(r2);
     float lit = 0.3 + 0.7 * max(dot(normalize(vec3(p, 0.0)), L), 0.0);
-    float g = exp(-(r - 1.0) * (14.0 - 6.0 * uAtmo)) * (0.18 + 0.62 * uAtmo) * lit;
-    col = vec3(0.45, 0.7, 1.0) * g;
+    float back = pow(max(-L.z, 0.0), 1.5); // the sun behind: a ring of fire
+    float g = exp(-(r - 1.0) * (14.0 - 6.0 * uAtmo)) * (0.18 + 0.62 * uAtmo) * (lit + 2.2 * back * (0.35 + 0.65 * max(dot(normalize(vec3(p, 0.0)), normalize(vec3(L.xy, 0.0) + 1e-4)), 0.0)));
+    col = mix(vec3(0.45, 0.7, 1.0), vec3(1.0, 0.72, 0.45), back * 0.7) * g;
     a = g;
   }
 
