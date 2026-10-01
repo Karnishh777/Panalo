@@ -461,6 +461,41 @@ try {
     await flat.close();
   }
 
+  // ---- Deleting an account deletes everything ------------------------------------------------
+  {
+    const d = await qa.open({ viewport: "laptop", path: "students/#signup" });
+    await d.evaluate(() => window.__qa.ready);
+    await appReady(d);
+    await d.fill("#signup-username", "leaving_q");
+    await d.fill("#signup-email", "leaving@panalo.test");
+    await d.fill("#signup-password", "a-long-enough-pass");
+    await d.check("#signup-age");
+    await d.click("#signup-submit");
+    await finishBirth(d);
+    const uid = await d.evaluate(() => window.__qa.db.profiles.find((p) => p.username === "leaving_q").id);
+    await go(d, "#/archive", 900);
+    await d.click(".s-actions button >> text=Upload");
+    await d.setInputFiles("dialog input[type=file]", { name: "mine.txt", mimeType: "text/plain", buffer: Buffer.from("mine") });
+    await d.click("dialog .btn-primary");
+    await d.waitForTimeout(900);
+    const before = await d.evaluate((id) => window.__qa.storageKeys().filter((o) => o.owner === id).length, uid);
+    await go(d, "#/safety", 900);
+    await d.click("text=Delete my account");
+    await d.fill("dialog input[type=text]", "leaving_q");
+    await d.click("dialog .btn-danger");
+    await d.waitForTimeout(1800);
+    const after = await d.evaluate((id) => ({
+      files: window.__qa.storageKeys().filter((o) => o.owner === id).length,
+      rows: window.__qa.db.resources.filter((r) => r.owner_id === id).length,
+      profile: window.__qa.db.profiles.some((p) => p.id === id),
+      student: (window.__qa.db.student_profiles || []).some((p) => p.user_id === id),
+    }), uid);
+    check("deleting an account removes its files, archive, world and profile", before === 1 && after.files === 0 && after.rows === 0 && !after.profile && !after.student);
+    check("no console errors (account deletion)", d.errors.length === 0);
+    if (d.errors.length) console.log(d.errors.join("\n"));
+    await d.close();
+  }
+
   // ---- Reduced motion -----------------------------------------------------------------------
   {
     const r = await qa.open({ viewport: "laptop", path: "students/", reducedMotion: "reduce" });

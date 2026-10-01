@@ -85,6 +85,51 @@ configured and 401 (sign-in required) once a provider is.
 
 ---
 
+## Turning on 10 GB of file storage (Cloudflare R2)
+
+Supabase's free tier holds **1 GB** of files. Cloudflare R2's free tier holds
+**10 GB** (plus 1 million uploads and 10 million downloads a month, and no
+charge for download traffic). `functions/api/files/[[path]].js` (a Pages
+Function) stores new chat attachments and archive files there once a bucket
+is bound. Until then, everything keeps going to Supabase Storage, and files
+already in Supabase keep working either way.
+
+1. **R2 → Overview → Create bucket.** Name it e.g. `panalo-files`, location
+   Automatic, **Standard** storage class. Leave public access **off**: files
+   are served only through the Function, which checks who is asking.
+   (R2 asks for a payment method once even on the free tier; you are not
+   charged while under the free limits.)
+2. **Workers & Pages → panalo → Settings → Bindings → Add → R2 bucket.**
+   Variable name **`FILES`**, bucket `panalo-files`. Add it for both
+   Production and Preview.
+3. **Settings → Variables and secrets → Add**, type **Secret**:
+   `FILES_SIGNING_SECRET` = a long random string (e.g. the output of
+   `openssl rand -hex 32`). It signs the ten-minute links used for
+   "open in new tab" and downloads.
+4. Optional: `USER_QUOTA_MB` (plain text), the most each person may store on
+   R2. Default 300. With 10 GB free, 300 MB covers about 33 heavy users; lower
+   it if you expect more.
+5. **Deployments → Retry deployment** on the latest one.
+
+Check: `https://<site>/api/files/health` answers `{"r2":true,"signing":true}`.
+Before the binding it answers `{"r2":false,…}` and the apps use Supabase.
+
+How it is guarded:
+
+- Every key starts with its uploader's id (`o/<user>/…`), and only that
+  person may upload under it. A file shared into a circle needs its uploader
+  to be a member; reading it needs membership **and** a row in the archive
+  listing, checked with the reader's own token so the database's row-level
+  security decides.
+- Chat attachments are encrypted in the browser before upload, so R2 only
+  ever holds ciphertext for them.
+- Files are served with `nosniff`, a sandboxing CSP, and only inert types
+  (images, audio, video, PDF, plain text) are shown inline, so an uploaded
+  HTML or SVG file can't run as part of the site.
+- Deleting an account deletes everything under `o/<user>/`.
+
+---
+
 ## Notes
 
 - **Your Netlify site stays up.** Running out of credits stops new *builds*,

@@ -104,8 +104,8 @@ async function migrationTests() {
      where n.nspname = 'public' and p.prosecdef and has_function_privilege('authenticated', p.oid, 'EXECUTE')
      order by 1`
   );
-  ok("only delete_my_account, find_profile_by_username and request_to_join are callable SECURITY DEFINER functions",
-     JSON.stringify(exposed.map((r) => r.proname)) === JSON.stringify(["delete_my_account", "find_profile_by_username", "request_to_join"]),
+  ok("only delete_my_account, find_profile_by_username, my_storage_objects and request_to_join are callable SECURITY DEFINER functions",
+     JSON.stringify(exposed.map((r) => r.proname)) === JSON.stringify(["delete_my_account", "find_profile_by_username", "my_storage_objects", "request_to_join"]),
      exposed.map((r) => r.proname).join(", "));
 
   const { rows: dupes } = await db.query(
@@ -711,9 +711,42 @@ async function studentsTests() {
   const gone = await db.query("select count(*)::int as n from conversations where id = $1", [room]);
   ok("ended rooms are deleted a day later", gone.rows[0].n === 0);
 
+  // -- phase 18: archive rows on R2 are keyed by their uploader
+  const r2Own = await attempt(db, alex, (tx) =>
+    tx.query("insert into resources (title, object_path, file_name, size_bytes) values ('R2', $1, 'r2.pdf', 4096) returning size_bytes", [`o/${alex}/u/${crypto.randomUUID()}`]));
+  ok("an archive row may point at the uploader's own R2 file", r2Own.ok && r2Own.value.rows[0].size_bytes === 4096, r2Own.error);
+  const r2Theirs = await attempt(db, alex, (tx) =>
+    tx.query("insert into resources (title, object_path, file_name, size_bytes) values ('R2', $1, 'r2.pdf', 1)", [`o/${maya}/u/${crypto.randomUUID()}`]));
+  ok("but never at someone else's", !r2Theirs.ok);
+  const r2Shared = await attempt(db, alex, (tx) =>
+    tx.query("insert into resources (title, object_path, file_name, size_bytes, conversation_id) values ('R2 shared', $1, 's.pdf', 10, $2)", [`o/${alex}/c/${circle}/${crypto.randomUUID()}`, circle]));
+  ok("an R2 file can be shared into a circle the uploader is in", r2Shared.ok, r2Shared.error);
+  const r2Big = await attempt(db, alex, (tx) =>
+    tx.query("insert into resources (title, object_path, file_name, size_bytes) values ('huge', $1, 'h.bin', 60000000)", [`o/${alex}/u/${crypto.randomUUID()}`]));
+  ok("R2 rows keep the 50 MB cap", !r2Big.ok);
+
+  // -- phase 18: listing your own Storage files, for deletion
+  const listed = await as(db, alex, async (tx) => (await tx.query("select bucket, name from public.my_storage_objects()")).rows);
+  const othersListed = await as(db, maya, async (tx) => (await tx.query("select name from public.my_storage_objects() where name like $1", [`u/${alex}/%`])).rows.length);
+  ok("my_storage_objects lists my files and only mine", listed.length > 0 && listed.every((r) => r.bucket && r.name) && othersListed === 0, JSON.stringify({ n: listed.length, othersListed }));
+
   // -- deleting an account with all of the above
-  const del = await attempt(db, alex, (tx) => tx.query("select public.delete_my_account()"));
+  const solo = await startGroup(db, alex, []);
+  const del = await attempt(db, alex, async (tx) => {
+    await tx.query("select public.delete_my_account()");
+    await tx.exec("reset role");
+    return (await tx.query(
+      `select (select count(*)::int from conversations where id = $1) as solo,
+              (select count(*)::int from conversations where id = $2) as circle,
+              (select count(*)::int from resources where owner_id = $3) as files,
+              (select count(*)::int from messages where user_id = $3) as msgs,
+              (select count(*)::int from profiles where id = $3) as profile`,
+      [solo, circle, alex])).rows[0];
+  });
   ok("delete_my_account works for someone with study data, files and rooms", del.ok, del.error);
+  const L = del.value || {};
+  ok("deleting an account removes conversations only they were in, and everything of theirs", L.solo === 0 && L.files === 0 && L.msgs === 0 && L.profile === 0, JSON.stringify(L));
+  ok("but keeps conversations other people are still in", L.circle === 1, JSON.stringify(L));
 }
 
 async function main() {

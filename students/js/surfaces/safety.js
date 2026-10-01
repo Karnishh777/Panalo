@@ -3,6 +3,8 @@
 // reassuring -- see LIMITATIONS.md for the long version.
 import { el, openSheet, showToast } from "../ui.js";
 import { supabaseClient } from "../../../src/client.js";
+import { deleteAllMyFiles } from "../../../src/filestore.js";
+import { idbDelKey } from "../../../src/encryption.js";
 import { state } from "../../../src/state.js";
 import { unblock } from "../signals-data.js";
 
@@ -74,7 +76,7 @@ function deleteAccount() {
   const input = el("input", { type: "text", autocapitalize: "off", spellcheck: "false", placeholder: state.currentUsername });
   openSheet({
     title: "Delete your account?",
-    lead: "Your profile, keys, study data, world and your copies of conversations are deleted. Messages you sent stay with the people you sent them to. Files in your archive should be deleted first if you want them gone. This can't be undone.",
+    lead: "Everything goes: your profile and keys, every message you sent (in every chat), every file you uploaded, your study data and world, and any conversation only you were in. Chats with other people carry on without you. This can't be undone.",
     body: [el("label", { class: "field" }, [el("span", { text: `Type your username (${state.currentUsername}) to confirm` }), input])],
     actions: [
       { label: "Keep my account", kind: "btn-quiet" },
@@ -84,11 +86,23 @@ function deleteAccount() {
         onClick: async (b) => {
           if (input.value.trim().replace(/^@/, "") !== state.currentUsername) return showToast("That isn't your username."), false;
           b.disabled = true;
+          b.textContent = "Deleting your files…";
+          // Files first: SQL can't remove them, and once the account is gone
+          // nobody can. Best effort per file -- a stuck file mustn't keep
+          // someone in an account they asked to leave.
+          await deleteAllMyFiles().catch(() => 0);
+          b.textContent = "Deleting your account…";
           const { error } = await supabaseClient.rpc("delete_my_account");
           if (error) {
             b.disabled = false;
+            b.textContent = "Delete forever";
             return showToast("Couldn't delete the account. Try again."), false;
           }
+          const id = state.currentUser?.id;
+          if (id) await idbDelKey(id).catch(() => {});
+          try {
+            for (const k of Object.keys(localStorage)) if (k.startsWith("panalo")) localStorage.removeItem(k);
+          } catch {}
           showToast("Your account is deleted.", "success");
           ctx.signOut();
         },

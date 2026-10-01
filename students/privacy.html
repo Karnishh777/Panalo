@@ -30,7 +30,7 @@
       <tr><td>Messages and files sent in conversations</td><td>The database and file storage, <b>as ciphertext</b>.</td><td>The people in that conversation, on their devices. See <a href="#encryption">encryption</a>.</td></tr>
       <tr><td>Who is in which conversation, when messages were sent, read markers, reactions</td><td>The database, in the clear.</td><td>The server. This “metadata” is not encrypted.</td></tr>
       <tr><td>Tasks, focus sessions, calendar, goals, activity log, world name, interests</td><td>The database, in the clear.</td><td>Only your account. Access rules on the server stop anyone else reading them.</td></tr>
-      <tr><td>Archive files</td><td>A private file store, in the clear.</td><td>You, or everyone in the conversation you shared a file with. Not end-to-end encrypted.</td></tr>
+      <tr><td>Archive files</td><td>A private file store (Supabase Storage, or Cloudflare R2 where the site has it turned on), in the clear.</td><td>You, or everyone in the conversation you shared a file with. Not end-to-end encrypted.</td></tr>
       <tr><td>Blocks and reports</td><td>The database.</td><td>Your own blocks and reports are visible to you; reports are visible to whoever runs this Panalo.</td></tr>
       <tr><td>Timer state, sound and motion preferences, which Drift items you opened</td><td>Your browser only (local storage).</td><td>Only this device. Clearing your browser data removes them.</td></tr>
     </table>
@@ -56,14 +56,14 @@
     <h2 id="rooms">Rooms, codes and blocking</h2>
     <ul>
       <li>A room's join code lets someone <i>ask</i> to join. A host decides who gets in; letting someone in is what gives them the room's key.</li>
-      <li>Rooms end at the time their host set. After that they are hidden from everyone, and deleted a day later together with their messages. Files shared into a room stay in storage until their uploader deletes them.</li>
+      <li>Rooms end at the time their host set. After that they are hidden from everyone, and deleted a day later together with their messages. Files shared into a room stay in storage until their uploader deletes them or their account.</li>
       <li>Blocking someone hides their messages from you everywhere in Panalo and stops them adding you to conversations or rooms. They aren't told.</li>
     </ul>
 
     <h2 id="delete">Deleting things</h2>
     <ul>
-      <li>You can delete your account from Safety &amp; privacy. Your profile, keys, study data and your copies of conversations are removed. Messages you sent stay with the people you sent them to, as in any messaging app.</li>
-      <li>Delete archive files you want gone before deleting your account.</li>
+      <li>You can delete your account from Safety &amp; privacy. It removes everything of yours: your profile and keys, every message you sent (in every conversation), every file you uploaded, your study data and world, conversations only you were in, and the sign-in records kept about you. It can't be undone.</li>
+      <li>Anything someone else already saved, copied or screenshotted is outside our reach. Reports you filed or that named you are kept for moderation, without your account attached.</li>
       <li>“Delete for everyone” removes a message from the server, but anyone could already have read or copied it.</li>
     </ul>
 

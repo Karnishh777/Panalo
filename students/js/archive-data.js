@@ -8,6 +8,11 @@ import { state } from "../../src/state.js";
 import { MAX_FILE_BYTES, SUPABASE_URL, SUPABASE_KEY } from "../../src/config.js";
 import { store, emit } from "./store.js";
 import { safeBlobType } from "./model/safe-type.js";
+import { r2Available, newKey, r2Put, r2Get, r2Sign, r2Delete } from "../../src/filestore.js";
+
+// Files whose key starts with o/ live on Cloudflare R2 (src/filestore.js);
+// the rest are in Supabase Storage. New uploads go to R2 when the site has it.
+const onR2 = (r) => String(r.object_path || "").startsWith("o/");
 
 const BUCKET = "student-resources";
 export const ARCHIVE_QUOTA = 200 * 1024 * 1024;
@@ -77,14 +82,27 @@ export async function uploadResource(file, { title, shelf, conversationId = null
   if (!file.size) return { error: { message: "That file is empty." } };
   if (file.size > MAX_FILE_BYTES) return { error: { message: "Files can be up to 50 MB." } };
   if (store.resources && usedBytes() + file.size > ARCHIVE_QUOTA) return { error: { message: "Your archive is full (200 MB). Remove something to make room." } };
-  const path = conversationId ? `c/${conversationId}/${crypto.randomUUID()}` : `u/${state.currentUser.id}/${crypto.randomUUID()}`;
-  const { error: upErr } = await sendBytes(path, file, { onProgress, signal });
+  let path;
+  let upErr;
+  if (await r2Available()) {
+    path = await newKey(conversationId ? "c" : "u", conversationId);
+    ({ error: upErr } = await r2Put(path, file, { type: file.type, name: file.name, onProgress, signal }));
+    if (upErr && !upErr.cancelled) {
+      const st = upErr.status;
+      upErr = { message: st === 507 ? "quota" : st === 403 ? "policy" : st === 413 ? "too large" : upErr.message, statusCode: String(st || "") };
+    }
+  } else {
+    path = conversationId ? `c/${conversationId}/${crypto.randomUUID()}` : `u/${state.currentUser.id}/${crypto.randomUUID()}`;
+    ({ error: upErr } = await sendBytes(path, file, { onProgress, signal }));
+  }
   if (upErr) {
     if (upErr.cancelled) return { error: { message: "Upload cancelled.", cancelled: true } };
     const m = upErr.message || "";
     return {
       error: {
-        message: /row-level|policy|403|unauthorized/i.test(m + upErr.statusCode)
+        message: /quota|507/i.test(m + upErr.statusCode)
+          ? "Your storage is full. Remove something to make room."
+          : /row-level|policy|403|unauthorized/i.test(m + upErr.statusCode)
           ? "You can't put files there — or your archive is full."
           : /413|too large|maximum/i.test(m + upErr.statusCode)
             ? "That file is bigger than this server accepts."
@@ -105,7 +123,8 @@ export async function uploadResource(file, { title, shelf, conversationId = null
   const { data, error } = await supabaseClient.from("resources").insert([row]).select().single();
   if (error) {
     // Don't leave an orphaned file behind a failed row.
-    await supabaseClient.storage.from(BUCKET).remove([path]);
+    if (path.startsWith("o/")) await r2Delete(path);
+    else await supabaseClient.storage.from(BUCKET).remove([path]);
     return { error: { message: error.code === "54000" ? error.message : "Couldn't add it to the archive." } };
   }
   if (store.resources) store.resources.unshift(data);
@@ -118,8 +137,16 @@ export const saveToArchive = (file, opts) => uploadResource(file, { ...opts, con
 const blobs = new Map(); // resource id -> object URL (a few, for previews)
 export async function resourceUrl(r) {
   if (blobs.has(r.id)) return blobs.get(r.id);
-  const { data, error } = await supabaseClient.storage.from(BUCKET).download(r.object_path);
-  if (error || !data) return null;
+  let data = null;
+  if (onR2(r)) {
+    const res = await r2Get(r.object_path).catch(() => null);
+    if (!res?.ok) return null;
+    data = await res.blob();
+  } else {
+    const got = await supabaseClient.storage.from(BUCKET).download(r.object_path);
+    if (got.error || !got.data) return null;
+    data = got.data;
+  }
   const url = URL.createObjectURL(new Blob([data], { type: safeBlobType(r) }));
   blobs.set(r.id, url);
   if (blobs.size > 12) {
@@ -133,6 +160,7 @@ export async function resourceUrl(r) {
 // A short-lived link to the file on Storage itself. Downloading through it
 // streams straight to disk -- no copy of a 50 MB file held in memory first.
 export async function signedUrl(r, { download = false } = {}) {
+  if (onR2(r)) return r2Sign(r.object_path, { download });
   const api = supabaseClient.storage.from(BUCKET);
   if (typeof api.createSignedUrl !== "function") return null;
   const { data, error } = await api.createSignedUrl(r.object_path, 600, download ? { download: r.file_name || r.title || true } : undefined);
@@ -180,7 +208,8 @@ export async function deleteResource(r) {
   // The bytes first, then the listing. Reading a shared file requires its
   // listing (phase 17), so once the row is gone a host could no longer see
   // the object to remove it. The uploader, or a host of the circle, may.
-  await supabaseClient.storage.from(BUCKET).remove([r.object_path]);
+  if (onR2(r)) await r2Delete(r.object_path);
+  else await supabaseClient.storage.from(BUCKET).remove([r.object_path]);
   const { error } = await supabaseClient.from("resources").delete().eq("id", r.id);
   if (error) return { error };
   const url = blobs.get(r.id);

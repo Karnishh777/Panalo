@@ -585,8 +585,26 @@
       const p = db.profiles.find((x) => x.username_lc === n);
       return { data: p ? [{ id: p.id, username: p.username, public_key: p.public_key || null }] : [], error: null };
     }
+    if (name === "my_storage_objects") {
+      const uid = me();
+      const out = [];
+      for (const [k, m] of storageMeta) if (m.owner === uid) {
+        const at = k.indexOf("/");
+        out.push({ bucket: k.slice(0, at), name: k.slice(at + 1) });
+      }
+      return { data: out, error: null };
+    }
     if (name === "delete_my_account") {
       const uid = me();
+      // Phase 18: conversations only they were in go too.
+      const solo = db.conversations.filter((c) => {
+        const ps = db.conversation_participants.filter((p) => p.conversation_id === c.id);
+        return ps.some((p) => p.user_id === uid) && ps.every((p) => p.user_id === uid);
+      }).map((c) => c.id);
+      db.conversations = db.conversations.filter((c) => !solo.includes(c.id));
+      for (const t of ["resources", "student_profiles", "student_tasks", "focus_sessions", "student_events", "activity_log", "student_goals"]) {
+        if (db[t]) db[t] = db[t].filter((r) => (r.owner_id || r.user_id) !== uid);
+      }
       db.messages = db.messages.filter((m) => m.user_id !== uid);
       db.conversation_participants = db.conversation_participants.filter((p) => p.user_id !== uid);
       db.profiles = db.profiles.filter((p) => p.id !== uid);
@@ -961,6 +979,7 @@
   window.__qa = {
     db,
     ready,
+    storageKeys: () => [...storageMeta.entries()].map(([k, m]) => ({ key: k, owner: m.owner })),
     async receive(convName, fromUser, text) {
       await ready;
       const conv = db.conversations.find((c) => c.name === convName);

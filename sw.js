@@ -9,7 +9,7 @@
 // (even a background one). Notifications with the browser fully closed need Web
 // Push (VAPID keys + a server to push from) — see ROADMAP Phase 9.
 
-const CACHE = "panalo-shell-v6";
+const CACHE = "panalo-shell-v7";
 
 // The app shell only. Messages and images are never cached: they're private,
 // and stale chat content would be worse than none.
@@ -52,6 +52,9 @@ self.addEventListener("fetch", (event) => {
   if (request.method !== "GET") return;
   const url = new URL(request.url);
   if (url.origin !== self.location.origin) return;
+  // The API (files, relay credentials) is never cached: private files must
+  // not outlive signing out or deleting the account.
+  if (url.pathname.startsWith("/api/")) return;
 
   event.respondWith(
     fetch(request)

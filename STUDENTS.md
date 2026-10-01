@@ -98,7 +98,7 @@ landing ──► the crossing (sign in / sign up) ──► first time? the bir
 | --- | --- | --- |
 | `student_profiles` | you | world name, interests, born_at |
 | `student_tasks`, `focus_sessions`, `student_events`, `activity_log`, `student_goals` | you | capped per person; a focus session can't claim more minutes than elapsed, or point at someone else's task |
-| `resources` + bucket `student-resources` (**private**) | you, or members of the conversation it's shared with — and a shared file only while it is listed | path `u/<you>/…` or `c/<conversation>/…` decides scope; size taken from Storage; 200 MB and 1,000 files per person, counted from Storage itself; room hosts can take shared files down |
+| `resources` + bucket `student-resources` (**private**) | you, or members of the conversation it's shared with — and a shared file only while it is listed | path `u/<you>/…` or `c/<conversation>/…` decides scope (on R2: `o/<you>/u/…` or `o/<you>/c/<conversation>/…`, see HOSTING.md); size taken from Storage; 200 MB and 1,000 files per person, counted from Storage itself; room hosts can take shared files down |
 | `blocks` | the blocker | blocked senders' messages are hidden from you (restrictive policy); a person who blocked you can't add you |
 | `reports` | the reporter (and the operator) | status can't be set by the reporter; 20 a day |
 | `conversations.kind / ends_at / posting` | as before | ended rooms hidden at once, purged a day later (pg_cron) |

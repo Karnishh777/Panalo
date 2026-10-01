@@ -104,7 +104,7 @@ PIN. A user on two devices effectively has two different apps.
   without unwrapping a key per message. A 👍 leaks little, but it is plaintext.
 - **Attachment URLs are unguessable, not private.** The bucket is public: the
   bytes are ciphertext now, but anyone holding a URL can fetch that ciphertext.
-- **Three `SECURITY DEFINER` functions stay callable by signed-in users**, and
+- **Four `SECURITY DEFINER` functions stay callable by signed-in users**, and
   cannot be otherwise. `find_profile_by_username` is how you start a chat
   with someone you don't already share one with — as `SECURITY INVOKER` it
   would be subject to the profiles policy and return nothing for exactly the
@@ -115,6 +115,9 @@ PIN. A user on two devices effectively has two different apps.
   `request_to_join(code)`, for the same reason as the lookup: a join code has
   to find a room the caller can't see yet. It takes one exact code and
   returns at most that room's name; it never adds anyone to anything.
+  Phase 18 added `my_storage_objects()`, which lists only the caller's own
+  uploads (Storage hides its owner column from the API) so deleting an
+  account can remove them.
 - **Leaked-password protection is unavailable** on the Supabase free plan.
 - **Deleting a chat is "delete for me."** Your copy goes; the other person
   keeps theirs. There is no delete-for-everyone, and none could be enforced.
@@ -124,8 +127,9 @@ PIN. A user on two devices effectively has two different apps.
   everyone at once and deleted within fifteen minutes by a `pg_cron` job.
   **Its photos and files are not deleted**: Storage objects can only be
   removed through the Storage API, not by a database job, so the encrypted
-  blob stays in the bucket under its random name. Nobody who was not already
-  in the chat has its address, but it still counts against the 1 GB limit.
+  blob stays in the bucket (Supabase or R2) under its random name. Nobody who
+  was not already in the chat has its address, but it still counts against
+  the storage limit until its sender deletes their account.
 - **Getting a chat key back is a person's choice, not automatic.** After a
   password reset on a device that did not hold the old key, chats encrypted
   to the old key cannot be read until someone else in them presses "Share
@@ -146,7 +150,9 @@ PIN. A user on two devices effectively has two different apps.
   indexed stay unsearchable.
 - **Free tier ceilings:** 500 MB database, **1 GB file storage**, 5 GB egress,
   50,000 monthly users, and projects **pause after one week of inactivity**.
-  Storage is the first wall — roughly 20 large attachments.
+  Storage is the first wall — roughly 20 large attachments — unless
+  Cloudflare R2 is bound ([HOSTING.md](HOSTING.md)), which raises it to
+  10 GB with a per-person quota (300 MB by default).
 - **The sidebar scans the newest 500 messages globally.** Chats missed by that
   window each cost their own follow-up query.
 - **Conversation keys are RSA-unwrapped once per conversation per session.**
@@ -269,9 +275,16 @@ PIN. A user on two devices effectively has two different apps.
 - **Files outlive their rooms.** When a room is purged a day after it ends,
   its messages go, but archive files shared into it stay in Storage (a
   database job cannot delete Storage objects) until their uploader deletes
-  them. Deleting an account also leaves that person's archive files.
+  them or their account.
+- **Deleting an account removes files from the device it is done on.** The
+  app deletes every file the person uploaded (Supabase and R2) and then the
+  account. If the browser closes between the two, the account remains and
+  deleting again finishes the job. Files that belonged to accounts deleted
+  before phase 18 have to be removed in the Supabase dashboard.
+- **Reports outlive their authors.** Reports someone filed or received are
+  kept for moderation with the deleted person's id set to empty.
 - **The 200 MB archive quota is per person, not per project.** Five busy
-  users can fill the free tier's 1 GB.
+  users can fill Supabase's free 1 GB; with R2 bound the ceiling is 10 GB.
 - **Letting someone into a room shares the key to whoever the server says
   they are.** The same trust as adding a member by name in Panalo Chat.
 - **Students has no service worker.** It needs a connection to start, and
@@ -302,7 +315,8 @@ PIN. A user on two devices effectively has two different apps.
 
 ## Top five by real risk
 
-1. **Storage ceiling** — 1 GB, and attachments are the most-used feature.
+1. **Storage ceiling** — 1 GB on Supabase alone (10 GB with R2 bound), and
+   attachments are the most-used feature.
 2. **No moderation tooling** — no blocking, reporting or suspension, before
    any growth.
 3. **Calls unreliable** without TURN, on exactly the networks phones use.

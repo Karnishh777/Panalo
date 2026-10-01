@@ -21,6 +21,7 @@ import { state } from "./state.js";
 import { rewrapPrivateKey, idbDelKey } from "./encryption.js";
 import { confirmDelete } from "./chatinfo.js";
 import { deleteAttachment, clearAttachmentCache } from "./attachments.js";
+import { deleteAllMyFiles } from "./filestore.js";
 import { normalizeSettings, accentVars } from "./appearance-core.js";
 import { applyRootAppearance, watchSystemTheme, paintAccent, accentPreset, paintFavicon } from "./appearance.js";
 import { ensureFont, ensureAllFonts } from "./fonts.js";
@@ -254,8 +255,8 @@ async function deleteAccount() {
   const confirmed = await confirmDelete({
     title: "Delete your account?",
     body:
-      "This removes your profile, your messages, your encryption keys and every file you've uploaded. " +
-      "Messages you sent to other people stay in their copy of the chat — we can only delete what's yours. " +
+      "This removes your account entirely: your profile, every message you sent (in every chat), your encryption keys, " +
+      "every file you've uploaded, your study data, and any chat only you were in. Chats with other people carry on without you. " +
       "This cannot be undone.",
     danger: "Delete everything",
   });
@@ -279,6 +280,9 @@ async function deleteAccount() {
     // Best-effort: a file that refuses to delete must not strand someone in
     // an account they have asked to leave.
     await mapLimited(urls, 5, (url) => deleteAttachment(url).catch(() => false));
+    // And anything else of theirs in Storage or on R2 (archive files,
+    // uploads whose message is already gone) -- phase 18 lists them.
+    await deleteAllMyFiles().catch(() => 0);
 
     const { error } = await supabaseClient.rpc("delete_my_account");
     if (error) throw error;
