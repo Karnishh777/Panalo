@@ -114,9 +114,11 @@ function paintPlate(rand, palette, W = 900, H = 560) {
 
 /**
  * @param {HTMLElement} host        where the film's canvas goes
- * @param {{seed: string, layers: object, cues: Array<{at: number, run: Function}>, onFallbackWorld?: Function}} opts
+ * @param {{seed: string, layers: object, cues: Array<{at: number, run: Function}>, plates?: object|Promise<object>, onFallbackWorld?: Function}} opts
+ *   plates: optional video plates by shot ({void, genesis, worldfall}), from
+ *   media/film.json -- filmed backgrounds that go through the same grade.
  */
-export function createFilm(host, { seed, layers, cues = [], onFallbackWorld } = {}) {
+export function createFilm(host, { seed, layers, cues = [], plates = {}, onFallbackWorld } = {}) {
   const out = document.createElement("canvas");
   out.className = "film-out";
   out.setAttribute("aria-hidden", "true");
@@ -159,7 +161,7 @@ export function createFilm(host, { seed, layers, cues = [], onFallbackWorld } = 
   window.addEventListener("resize", resize);
 
   const rand = seeded(seed || "panalo");
-  const plates = [
+  const nebulae = [
     paintPlate(rand, [[40, 120, 255], [60, 200, 230], [120, 90, 255]]),
     paintPlate(rand, [[255, 80, 160], [180, 70, 255], [255, 140, 200]]),
     paintPlate(rand, [[255, 170, 80], [255, 110, 60], [255, 220, 150]]),
@@ -172,6 +174,53 @@ export function createFilm(host, { seed, layers, cues = [], onFallbackWorld } = 
   const stars = Array.from({ length: big ? 700 : 360 }, () => star(0.05 + Math.random() * 0.95));
   const bokeh = Array.from({ length: 9 }, () => ({ x: Math.random(), y: Math.random(), r: 0.025 + Math.random() * 0.07, s: 0.2 + Math.random() * 0.6, hue: Math.random() }));
   const disk = Array.from({ length: big ? 900 : 420 }, () => ({ th: Math.random() * TAU, r: 0, band: Math.random(), size: 0.5 + Math.random() * 1.6, warm: Math.random() }));
+
+  // Video plates: muted, inline, preloaded; each starts with its shot. A
+  // plate that hasn't loaded in time is simply not drawn.
+  const videos = {};
+  const SHOT_START = { void: 0, genesis: IGNITION, worldfall: WORLDFALL - 600 };
+  Promise.resolve(plates).then((p) => {
+    for (const k of Object.keys(SHOT_START)) {
+      if (!p?.[k] || stopped) continue;
+      const v = document.createElement("video");
+      v.muted = true;
+      v.defaultMuted = true;
+      v.playsInline = true;
+      v.setAttribute("playsinline", "");
+      v.preload = "auto";
+      v.loop = k === "worldfall";
+      v.src = p[k];
+      videos[k] = { v, started: false };
+    }
+  });
+  function plate(name, e, alpha = 1) {
+    const p = videos[name];
+    if (!p) return false;
+    if (!p.started && (e >= SHOT_START[name] || holding)) {
+      p.started = true;
+      p.v.play().catch(() => {});
+    }
+    if (!p.started || p.v.readyState < 2 || alpha <= 0) return false;
+    // Cover the frame, centred: the subject stays in the middle on any screen.
+    const vw = p.v.videoWidth || 16, vh = p.v.videoHeight || 9;
+    const k = Math.max(w / vw, h / vh);
+    ctx.save();
+    ctx.globalAlpha = alpha;
+    ctx.drawImage(p.v, (w - vw * k) / 2, (h - vh * k) / 2, vw * k, vh * k);
+    ctx.restore();
+    return true;
+  }
+  function drawPlates(e) {
+    if (holding) return plate("worldfall", e);
+    const a = e - IGNITION;
+    let any = false;
+    if (e < 8200) any = plate("void", e, smooth(e, 0, 1500)) || any;
+    if (a >= 0) any = plate("genesis", e, 1 - smooth(e, WORLDFALL - 600, WORLDFALL + 600)) || any;
+    if (e >= WORLDFALL - 600) any = plate("worldfall", e, smooth(e, WORLDFALL - 600, WORLDFALL + 600)) || any;
+    return any;
+  }
+  let stopped = false;
+  let filmed = false; // a plate is on screen: the drawn nebulae step back
 
   const queue = [...cues].sort((a, b) => a.at - b.at);
   let e = 0;
@@ -288,13 +337,13 @@ export function createFilm(host, { seed, layers, cues = [], onFallbackWorld } = 
     const a = e - IGNITION;
     const open = holding ? 0.55 : smooth(a, 600, 3600) * (1 - 0.45 * smooth(e, WORLDFALL, WORLDFALL + 4000));
     if (open <= 0) return;
-    plates.forEach((p, i) => {
+    nebulae.forEach((p, i) => {
       // Fly through: each plate grows past the camera at its own depth.
       const depth = 1 + i * 0.6;
       const k = (holding ? 1.1 : 0.9 + (a / 1000) * 0.06 / depth) * (1 + i * 0.25);
       const D = Math.hypot(w, h) * k;
       ctx.save();
-      ctx.globalAlpha = open * (i === 2 ? 0.7 : 0.85);
+      ctx.globalAlpha = open * (i === 2 ? 0.7 : 0.85) * (filmed ? 0.3 : 1);
       ctx.translate(w / 2 + Math.sin(e / 9000 + i) * w * 0.04, h / 2 + Math.cos(e / 11000 + i) * h * 0.04);
       ctx.rotate(e * 0.000012 * (i % 2 ? -1 : 1) + i * 1.9);
       ctx.drawImage(p, -D / 2, -D * 0.31, D, D * 0.62);
@@ -439,6 +488,7 @@ export function createFilm(host, { seed, layers, cues = [], onFallbackWorld } = 
     ctx.globalAlpha = 1;
     ctx.fillStyle = "#010103";
     ctx.fillRect(-20, -20, w + 40, h + 40);
+    filmed = drawPlates(e);
 
     if (e < 8200 && !holding) {
       drawStars(e, dt);
@@ -480,6 +530,12 @@ export function createFilm(host, { seed, layers, cues = [], onFallbackWorld } = 
       holdAt = e;
     },
     stop() {
+      stopped = true;
+      for (const { v } of Object.values(videos)) {
+        v.pause();
+        v.removeAttribute("src");
+        v.load();
+      }
       loop.destroy();
       window.removeEventListener("resize", resize);
       globe?.destroy();

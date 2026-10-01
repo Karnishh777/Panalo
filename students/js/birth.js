@@ -11,7 +11,7 @@ import { el, chipGroup, showToast, reportError } from "./ui.js";
 import { reducedMotion } from "./motion.js";
 import { createGlobe } from "./world-render.js";
 import { createFilm, IGNITION, WORLDFALL, TITLE, LENGTH } from "./film.js";
-import { createScore, setSoundWanted, speak, warmVoice } from "./birth-score.js";
+import { createScore, setSoundWanted } from "./birth-score.js";
 import { INTERESTS } from "./model/drift-library.js";
 import { api, store } from "./store.js";
 import { state } from "../../src/state.js";
@@ -20,15 +20,31 @@ const $ = (id) => document.getElementById(id);
 const NAMES = ["Halcyon", "Tamarind", "Velora", "Nadir", "Lumen", "Arka", "Cinder", "Meridian", "Solace", "Kestrel", "Aurel", "Thaliya"];
 const NEW_WORLD = { land: 0.07, clouds: 0.05, atmosphere: 0.35, forest: 0.3 };
 
-// The voice-over, with the moment each line begins.
-const SCRIPT = [
-  { at: 1400, text: "Before anything, there was a question." },
-  { at: 4700, text: "What will you become?" },
-  { at: IGNITION + 1700, text: "Every hour you focus. Every idea you chase." },
-  { at: WORLDFALL + 1100, text: "Every small thing you finish…" },
-  { at: WORLDFALL + 3700, text: "…becomes something you can see." },
-  { at: TITLE + 600, text: "This one is yours." },
+// The voice-over, with the moment each line begins and the longest it may
+// run before the next beat. Recordings are listed in media/film.json by id
+// (see FILM.md); a line without one is captioned only.
+export const SCRIPT = [
+  { id: "01", at: 1400, max: 3.1, text: "Before anything, there was a question." },
+  { id: "02", at: 4700, max: 3.3, text: "What will you become?" },
+  { id: "03", at: IGNITION + 1700, max: 4.6, text: "Every hour you focus. Every idea you chase." },
+  { id: "04", at: WORLDFALL + 1100, max: 2.4, text: "Every small thing you finish…" },
+  { id: "05", at: WORLDFALL + 3700, max: 3.2, text: "…becomes something you can see." },
+  { id: "06", at: TITLE + 600, max: 3.4, text: "This one is yours." },
 ];
+
+// What the film may use beyond what it draws itself: recorded voice lines
+// and video plates. Missing or empty is normal -- the film is complete
+// without them.
+async function filmMedia() {
+  try {
+    const res = await fetch("media/film.json", { cache: "no-cache" });
+    if (!res.ok) return {};
+    const m = await res.json();
+    return { voice: m.voice || {}, plates: m.plates || {} };
+  } catch {
+    return {};
+  }
+}
 
 function suggestions(seed) {
   let h = 0;
@@ -245,19 +261,19 @@ export function runBirth({ replay = false, onDone }) {
     ])
   );
   let captionTimer = 0;
-  const say = (text) => {
+  const voices = new Map(); // line id -> decoded recording
+  const say = (line) => {
     caption.classList.remove("on");
     clearTimeout(captionTimer);
     requestAnimationFrame(() => {
-      caption.textContent = text;
+      caption.textContent = line.text;
       caption.classList.add("on");
     });
-    captionTimer = setTimeout(() => caption.classList.remove("on"), Math.max(2600, text.length * 75));
-    speak(text, { score });
+    const spoken = score?.voice(voices.get(line.id)) || 0;
+    captionTimer = setTimeout(() => caption.classList.remove("on"), Math.max(2600, line.text.length * 75, spoken * 1000 + 500));
   };
 
   score = createScore();
-  warmVoice();
   if (score) {
     const sound = add(el("button", { type: "button", class: "btn btn-quiet btn-sm birth-sound" }));
     const label = () => {
@@ -291,13 +307,20 @@ export function runBirth({ replay = false, onDone }) {
     { at: WORLDFALL + 400, run: () => score?.pad([110, 164.8, 220, 277.2, 329.6], 8, 0.07) },
     { at: TITLE - 200, run: () => score?.resolve() },
     { at: TITLE, run: () => root.classList.add("titled") },
-    ...SCRIPT.map((l) => ({ at: l.at, run: () => say(l.text) })),
+    ...SCRIPT.map((l) => ({ at: l.at, run: () => say(l) })),
     { at: LENGTH, run: () => !ended && (replay ? end() : ask()) },
   ];
 
+  // Recordings and plates load while the film starts; whatever isn't ready
+  // when its moment comes is simply left out.
+  const media = filmMedia();
+  media.then(({ voice = {} }) => {
+    for (const l of SCRIPT) if (voice[l.id] && score) score.load(voice[l.id]).then((b) => b && voices.set(l.id, b));
+  });
+
   root.classList.add("cinema");
   try {
-    film = createFilm(root, { seed: state.currentUser?.id || "panalo", layers: NEW_WORLD, cues, onFallbackWorld: showWorld });
+    film = createFilm(root, { seed: state.currentUser?.id || "panalo", layers: NEW_WORLD, cues, plates: media.then((m) => m.plates || {}), onFallbackWorld: showWorld });
     extras.push(root.querySelector(".film-out"));
   } catch (e) {
     console.error(e);

@@ -74,7 +74,8 @@ landing ──► the crossing (sign in / sign up) ──► first time? the bir
 | `js/birth.js` | First entry: plays the film, its score, voice-over and captions, then the three questions over it. |
 | `js/film.js` | "Origin", the ~26 s film: the void, genesis, worldfall (your real world, a sunrise over its limb), title. |
 | `js/film-grade.js` | The film's lab: procedural 3D LUTs (void, ignition, nebula, gold) crossfaded per shot, bloom, halation, anamorphic streaks, aberration, grain, vignette, 2.39:1 bars. |
-| `js/birth-score.js` | The score, mixed live with Web Audio (reverb hall, drone, heartbeat, riser, braam/boom/crack/sub hit, whoosh, pads, resolve; music ducks under the voice) and the voice-over (the device's best English voice). One sound switch, remembered per device. |
+| `js/birth-score.js` | The score, mixed live with Web Audio (reverb hall, drone, heartbeat, riser, braam/boom/crack/sub hit, whoosh, pads, resolve; music ducks under the voice) and recorded voice-over playback. One sound switch, remembered per device. |
+| `media/film.json` | Optional recorded voice lines and video plates for the film; see FILM.md. |
 | `js/fx.js` | Hand-drawn action effects: speed lines, impact frames, punches, ink-slash reveals, water and flame ribbons, petals and embers. Off in the Study Room and with reduced motion. |
 | `js/globe-dock.js` | A world's controls: play/pause, direction, speed, zoom, reset, and the light panel. |
 | `js/world-light.js` | Where the sun is (Day, Dusk, Night, Live with your clock, or by hand) and how bright the night side is; saved per device, shared by every globe. |

@@ -9,9 +9,10 @@
 // drop), a whoosh, pads and a shimmer, and a resolve. Everything is
 // synthesized here -- there are no audio files to download.
 //
-// The voice-over uses the best English voice this device has (speech
-// synthesis); the lines are fixed text, never anything you wrote. Captions
-// always show. Sound is on unless turned off; the choice is remembered.
+// The voice-over is recorded narration served by this site (listed in
+// media/film.json); until it exists the film is captioned only -- a
+// synthetic voice sounded robotic. Captions always show. Sound is on
+// unless turned off; the choice is remembered.
 import { getPrefs, setPrefs } from "./ui.js";
 
 const LEVEL = 0.8;
@@ -144,7 +145,6 @@ export function createScore() {
       muted = m;
       if (!m) this.resume();
       master.gain.setTargetAtTime(m ? 0 : LEVEL, ctx.currentTime, 0.08);
-      if (m) window.speechSynthesis?.cancel();
     },
 
     // A sub drone that breathes: low fifths, opening slowly.
@@ -326,9 +326,40 @@ export function createScore() {
       sfx.gain.setTargetAtTime(on ? 0.6 : 1, ctx.currentTime, on ? 0.08 : 0.5);
     },
 
-    close() {
-      window.speechSynthesis?.cancel();
-      const t = ctx.currentTime;
+    // Decode a recorded clip (the voice-over); null if it can't be had.
+    async load(url) {
+      try {
+        const res = await fetch(url);
+        if (!res.ok) return null;
+        return await ctx.decodeAudioData(await res.arrayBuffer());
+      } catch {
+        return null;
+      }
+    },
+
+    // Play a recorded line: the music steps back for exactly as long as
+    // it speaks, and a little of the hall around it so it sits in the mix.
+    voice(buffer) {
+      if (!buffer || !ready()) return 0;
+      const t = now();
+      const src = keep(ctx.createBufferSource());
+      src.buffer = buffer;
+      const g = ctx.createGain();
+      g.gain.value = 1.15;
+      src.connect(g).connect(master);
+      const wet = ctx.createGain();
+      wet.gain.value = 0.12;
+      g.connect(wet).connect(verb);
+      this.duck(true);
+      src.onended = () => {
+        live.delete(src);
+        this.duck(false);
+      };
+      src.start(t);
+      return buffer.duration;
+    },
+
+    close() {      const t = ctx.currentTime;
       master.gain.cancelScheduledValues(t);
       master.gain.setTargetAtTime(0, t, 0.25);
       setTimeout(() => {
@@ -346,57 +377,3 @@ export function createScore() {
   };
 }
 
-// ---- The voice-over ---------------------------------------------------------------------------
-
-let chosen = null;
-function pickVoice() {
-  const synth = window.speechSynthesis;
-  if (!synth) return null;
-  const voices = synth.getVoices().filter((v) => /^en(-|_|$)/i.test(v.lang));
-  if (!voices.length) return null;
-  const score = (v) => {
-    let s = 0;
-    if (/natural|neural|premium|enhanced|siri/i.test(v.name)) s += 6;
-    if (/daniel|arthur|oliver|ryan|guy|andrew|brian|aaron|alex|george|google uk english male/i.test(v.name)) s += 3;
-    if (/en-gb/i.test(v.lang)) s += 1;
-    if (v.localService) s += 1;
-    if (/compact|eloquence|novelty|whisper|bad news|bells|boing|bubbles|cellos|zarvox|trinoids|albert|jester|organ|superstar/i.test(v.name)) s -= 10;
-    return s;
-  };
-  return voices.sort((a, b) => score(b) - score(a))[0];
-}
-
-/** Ready the voice list early; some browsers load it asynchronously. */
-export function warmVoice() {
-  const synth = window.speechSynthesis;
-  if (!synth) return;
-  chosen = pickVoice();
-  if (!chosen) synth.addEventListener?.("voiceschanged", () => (chosen = pickVoice()), { once: true });
-}
-
-/**
- * Speak one line in a low, unhurried voice. Resolves when it ends (or at
- * once if there is no speech synthesis or the sound is off).
- */
-export function speak(line, { score } = {}) {
-  const synth = window.speechSynthesis;
-  if (!synth || !line || score?.muted || !soundWanted()) return Promise.resolve();
-  return new Promise((resolve) => {
-    const u = new SpeechSynthesisUtterance(line);
-    chosen ||= pickVoice();
-    if (chosen) u.voice = chosen;
-    u.lang = chosen?.lang || "en-GB";
-    u.rate = 0.84;
-    u.pitch = 0.7;
-    u.volume = 1;
-    const done = () => {
-      score?.duck(false);
-      resolve();
-    };
-    u.onstart = () => score?.duck(true);
-    u.onend = done;
-    u.onerror = done;
-    synth.speak(u);
-    setTimeout(done, 9000); // never hang on a voice that never ends
-  });
-}

@@ -289,13 +289,10 @@ PIN. A user on two devices effectively has two different apps.
   sign-up, which browsers count as permission to play audio; a browser that
   still refuses plays it silently. The switch is on screen and remembered
   per device; reduced motion skips the film, and its sound, entirely.
-- **The intro's sound is synthesized, and its narrator is the device's
-  speech voice.** There are no recorded samples or a recorded voice actor:
-  the score is generated live, and the voice-over quality depends on the
-  voices the browser has (Safari/macOS and Edge "Natural" voices sound best;
-  some Linux browsers have none, and then only captions show). Some
-  browsers make their best voices on their own servers; they receive the
-  fixed script only (see privacy.html).
+- **The intro's score is synthesized; its narration must be recorded.**
+  There are no sampled instruments. The voice-over plays only from
+  recordings listed in `students/media/film.json` (see FILM.md); until they
+  exist the film is captioned only.
 - **The graded film needs WebGL on a real GPU.** Elsewhere the same film
   plays ungraded, with the world drawn by the 2D renderer. Phones with weak
   GPUs may drop frames; the film's clock follows the frames, so it slows
