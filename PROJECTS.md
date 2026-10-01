@@ -4,6 +4,11 @@
 chat for everyone, with no phone number needed. Friends, family, classmates,
 the people you work with.
 
+**Panalo Students** (`students/` in this repository) is the second one to be
+built. It shares Panalo Chat's accounts, database and encryption, and takes
+two ideas below with it: event rooms with a door and an end (from Rooms), and
+circles that separate classes from friends (from Class). See `STUDENTS.md`.
+
 The other ideas are **separate projects**, each with its own reason to exist.
 They are not features to squeeze into Panalo Chat. Each would get its own
 repository and site, and reuse what Panalo Chat already proves works: the

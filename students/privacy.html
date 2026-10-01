@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Privacy notes · Panalo Students</title>
+  <meta name="description" content="What Panalo Students stores, who can see it, what is encrypted and what is not.">
+  <meta name="theme-color" content="#070912">
+  <link rel="icon" type="image/svg+xml" href="mark.svg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400..700&family=Unbounded:wght@300..600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/tokens.css">
+  <link rel="stylesheet" href="css/base.css">
+  <link rel="stylesheet" href="css/public.css">
+</head>
+<body>
+  <main class="doc">
+    <a class="wordmark" href="./"><img src="mark.svg" width="28" height="28" alt=""><span class="wm-name">panalo</span><span class="wm-sub">Students</span></a>
+    <p class="kicker" style="margin-top:40px">Privacy notes</p>
+    <h1>What we keep, who can see it, and what we can't promise.</h1>
+
+    <p class="notice">This page describes how the Panalo Students software works. It is <b>not</b> a reviewed legal privacy policy. Whoever runs a Panalo deployment for real students is responsible for publishing their own policy and terms, and for checking the rules that apply to them — for example on data protection and on parental consent for young users — before inviting anyone.</p>
+
+    <h2 id="stored">What is stored</h2>
+    <table>
+      <tr><th>What</th><th>Where</th><th>Who can read it</th></tr>
+      <tr><td>Email and password</td><td>The authentication service. Passwords are stored as hashes.</td><td>Nobody else using Panalo. Your email is never shown to other people.</td></tr>
+      <tr><td>Username</td><td>Your profile.</td><td>People you share a conversation with. Others can only find you by typing your exact username.</td></tr>
+      <tr><td>Messages and files sent in conversations</td><td>The database and file storage, <b>as ciphertext</b>.</td><td>The people in that conversation, on their devices. See <a href="#encryption">encryption</a>.</td></tr>
+      <tr><td>Who is in which conversation, when messages were sent, read markers, reactions</td><td>The database, in the clear.</td><td>The server. This “metadata” is not encrypted.</td></tr>
+      <tr><td>Tasks, focus sessions, calendar, goals, activity log, world name, interests</td><td>The database, in the clear.</td><td>Only your account. Access rules on the server stop anyone else reading them.</td></tr>
+      <tr><td>Archive files</td><td>A private file store, in the clear.</td><td>You, or everyone in the conversation you shared a file with. Not end-to-end encrypted.</td></tr>
+      <tr><td>Blocks and reports</td><td>The database.</td><td>Your own blocks and reports are visible to you; reports are visible to whoever runs this Panalo.</td></tr>
+      <tr><td>Timer state, sound and motion preferences, which Drift items you opened</td><td>Your browser only (local storage).</td><td>Only this device. Clearing your browser data removes them.</td></tr>
+    </table>
+
+    <h2 id="encryption">Encryption, exactly</h2>
+    <ul>
+      <li>Messages and chat attachments are encrypted in your browser before they are sent. Each conversation has its own key, and only members hold a copy.</li>
+      <li>Your private key is kept on the server, <b>encrypted with a key derived from your password</b>. That is what lets your history follow you to a new device. It also means that anyone who obtained both that stored key and your password could read your messages. For that reason we don't describe Panalo as “end-to-end encrypted”.</li>
+      <li>The app itself is delivered by a web host. A compromised host could serve modified code — no browser-based app can rule that out.</li>
+      <li>If you reset your password on a device that doesn't have your key cached, older encrypted messages can no longer be opened by you. Someone else in the conversation can share the key with you again.</li>
+      <li>Archive files, study data and metadata are protected by server-side access rules, not by end-to-end encryption.</li>
+    </ul>
+
+    <h2 id="not">What Panalo does not do</h2>
+    <ul>
+      <li>No advertising, and no selling or sharing of data with advertisers.</li>
+      <li>No analytics or tracking scripts.</li>
+      <li>No AI: nothing you write is sent to an AI service, and nothing is generated about you by one.</li>
+      <li>No public profiles, follower counts or public feed.</li>
+    </ul>
+
+    <h2 id="rooms">Rooms, codes and blocking</h2>
+    <ul>
+      <li>A room's join code lets someone <i>ask</i> to join. A host decides who gets in; letting someone in is what gives them the room's key.</li>
+      <li>Rooms end at the time their host set. After that they are hidden from everyone, and deleted a day later together with their messages. Files shared into a room stay in storage until their uploader deletes them.</li>
+      <li>Blocking someone hides their messages from you everywhere in Panalo and stops them adding you to conversations or rooms. They aren't told.</li>
+    </ul>
+
+    <h2 id="delete">Deleting things</h2>
+    <ul>
+      <li>You can delete your account from Safety &amp; privacy. Your profile, keys, study data and your copies of conversations are removed. Messages you sent stay with the people you sent them to, as in any messaging app.</li>
+      <li>Delete archive files you want gone before deleting your account.</li>
+      <li>“Delete for everyone” removes a message from the server, but anyone could already have read or copied it.</li>
+    </ul>
+
+    <h2 id="limits">What it can't do yet</h2>
+    <ul>
+      <li>Reports are stored for the people who run this Panalo to review; there is no automated moderation and no round-the-clock monitoring.</li>
+      <li>There is no verified teacher role: a “class” is a group whose hosts are whoever created it or was made a host.</li>
+      <li>No notifications reach you when the app is closed.</li>
+      <li>Some preferences live only on the device you set them on.</li>
+      <li>The full technical list is in the project's <code>LIMITATIONS.md</code>.</li>
+    </ul>
+
+    <p style="margin-top:48px"><a href="./">← Back to Panalo Students</a> · <a href="rules.html">Community rules</a></p>
+  </main>
+</body>
+</html>

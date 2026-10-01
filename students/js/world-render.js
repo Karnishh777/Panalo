@@ -2,7 +2,8 @@
 //
 // Cost model, because this runs on school laptops and old phones:
 //   - The planet's surface is generated ONCE per seed into a 256x128
-//     texture (3D value noise sampled on the sphere, so there is no seam).
+//     texture (3D value noise sampled on the sphere, so there is no seam),
+//     while the browser is idle, and cached for the rest of the session.
 //   - Changing a layer (more land, more lights) recolours that texture;
 //     nothing is regenerated.
 //   - The projection from screen pixel to latitude/longitude is computed
@@ -74,7 +75,18 @@ function makeNoise(seed) {
   };
 }
 
-// Everything that depends only on the seed.
+// Everything that depends only on the seed -- cached, so moving from Now to
+// World doesn't generate the same planet twice.
+const surfaces = new Map();
+function surfaceFor(seedText) {
+  const key = String(seedText || "panalo");
+  if (!surfaces.has(key)) {
+    if (surfaces.size > 4) surfaces.delete(surfaces.keys().next().value);
+    surfaces.set(key, makeSurface(key));
+  }
+  return surfaces.get(key);
+}
+
 function makeSurface(seedText) {
   const seed = hashString(String(seedText || "panalo"));
   const fbm = makeNoise(seed);
@@ -187,7 +199,34 @@ function paint(surface, L) {
     const n = Math.min(L.lights, cand.length);
     for (let m = 0; m < n; m++) lights[cand[m]] = 0.65 + 0.35 * key[cand[m]];
   }
-  return { color, lights };
+  return { color: upsample(color), lights };
+}
+
+// Bilinear 2x upsample of the painted colours, once per repaint, so coasts
+// read as curves rather than stairs. Frames still do one lookup per pixel.
+const UW = TW * 2;
+const UH = TH * 2;
+function upsample(src) {
+  const out = new Uint8ClampedArray(UW * UH * 3);
+  for (let y = 0; y < UH; y++) {
+    const sy = Math.max(0, Math.min(TH - 1, (y + 0.5) / 2 - 0.5));
+    const y0 = Math.floor(sy);
+    const y1 = Math.min(TH - 1, y0 + 1);
+    const fy = sy - y0;
+    for (let x = 0; x < UW; x++) {
+      const sx = (x + 0.5) / 2 - 0.5;
+      const x0 = ((Math.floor(sx) % TW) + TW) % TW;
+      const x1 = (x0 + 1) % TW;
+      const fx = sx - Math.floor(sx);
+      const o = (y * UW + x) * 3;
+      for (let c = 0; c < 3; c++) {
+        const a = src[(y0 * TW + x0) * 3 + c] * (1 - fx) + src[(y0 * TW + x1) * 3 + c] * fx;
+        const b = src[(y1 * TW + x0) * 3 + c] * (1 - fx) + src[(y1 * TW + x1) * 3 + c] * fx;
+        out[o + c] = a * (1 - fy) + b * fy;
+      }
+    }
+  }
+  return out;
 }
 
 /**
@@ -196,10 +235,13 @@ function paint(surface, L) {
  */
 export function createGlobe(canvas, { seed, tilt = 0.38, interactive = false, maxDisk = 300, spin = 0.00006 } = {}) {
   const ctx = canvas.getContext("2d");
-  const surface = makeSurface(seed);
+  // Generating a planet takes a moment on a slow device, so it happens when
+  // the browser is idle; until then only the atmosphere is drawn.
+  let surface = surfaces.get(String(seed || "panalo")) || null;
   let layers = { land: 0.2, lights: 0, aurora: 0, forest: 0.4, glow: 0, atmosphere: 0.4, clouds: 0.1, ring: 0 };
   let moons = [];
-  let painted = paint(surface, layers);
+  let painted = surface ? paint(surface, layers) : null;
+  let destroyed = false;
   let rot = 0;
   let cloudShift = 0;
   let D = 0;
@@ -251,6 +293,7 @@ export function createGlobe(canvas, { seed, tilt = 0.38, interactive = false, ma
   }
 
   function renderDisk() {
+    if (!painted) return false;
     const { color, lights } = painted;
     const data = img.data;
     const cl = layers.clouds;
@@ -262,15 +305,19 @@ export function createGlobe(canvas, { seed, tilt = 0.38, interactive = false, ma
         continue;
       }
       const lon = table.lon[p] + rot;
-      let u = Math.floor(((lon / TAU) % 1 + 1) % 1 * TW);
-      const v = Math.min(TH - 1, Math.floor(((table.lat[p] + Math.PI / 2) / Math.PI) * TH));
-      const k = v * TW + u;
+      const fu = ((lon / TAU) % 1 + 1) % 1;
+      const fv = (table.lat[p] + Math.PI / 2) / Math.PI;
+      const u2 = Math.floor(fu * UW);
+      const v2 = Math.min(UH - 1, Math.floor(fv * UH));
+      const c2 = (v2 * UW + u2) * 3;
+      const v = v2 >> 1;
+      const k = v * TW + (u2 >> 1);
       const s = table.shade[p];
       const day = Math.max(0, s);
       const lit = 0.07 + 0.93 * Math.pow(day, 0.8);
-      let r = color[k * 3] * lit;
-      let g = color[k * 3 + 1] * lit;
-      let b = color[k * 3 + 2] * lit;
+      let r = color[c2] * lit;
+      let g = color[c2 + 1] * lit;
+      let b = color[c2 + 2] * lit;
       // City lights on the night side only.
       const night = Math.max(0, Math.min(1, (0.12 - s) * 4));
       if (night > 0 && lights[k] > 0) {
@@ -292,6 +339,7 @@ export function createGlobe(canvas, { seed, tilt = 0.38, interactive = false, ma
       data[o] = r * limb; data[o + 1] = g * limb; data[o + 2] = b * limb; data[o + 3] = 255;
     }
     diskCtx.putImageData(img, 0, 0);
+    return true;
   }
 
   function ellipse(cx, cy, rx, ry, rotA, half) {
@@ -364,9 +412,10 @@ export function createGlobe(canvas, { seed, tilt = 0.38, interactive = false, ma
 
     drawRing(cx, cy, R, "back");
     drawMoons(cx, cy, R, t, true);
-    renderDisk();
-    ctx.imageSmoothingEnabled = true;
-    ctx.drawImage(disk, cx - R, cy - R, R * 2, R * 2);
+    if (renderDisk()) {
+      ctx.imageSmoothingEnabled = true;
+      ctx.drawImage(disk, cx - R, cy - R, R * 2, R * 2);
+    }
 
     // Aurora at the poles: things you made, in the last month.
     if (layers.aurora > 0.02) {
@@ -442,16 +491,26 @@ export function createGlobe(canvas, { seed, tilt = 0.38, interactive = false, ma
   build();
   redrawStill();
   if (!still()) loop.start();
+  if (!surface) {
+    const idle = window.requestIdleCallback || ((fn) => setTimeout(fn, 60));
+    idle(() => {
+      if (destroyed) return;
+      surface = surfaceFor(seed);
+      painted = paint(surface, layers);
+      redrawStill();
+    }, { timeout: 800 });
+  }
 
   return {
     setLayers(next, nextMoons = moons) {
       const repaint = ["land", "lights", "forest", "glow"].some((k) => next[k] !== layers[k]);
       layers = { ...layers, ...next };
       moons = nextMoons || [];
-      if (repaint) painted = paint(surface, layers);
+      if (repaint && surface) painted = paint(surface, layers);
       redrawStill();
     },
     destroy() {
+      destroyed = true;
       loop.destroy();
       ro?.disconnect();
     },

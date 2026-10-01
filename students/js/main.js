@@ -15,6 +15,9 @@ import { state } from "../../src/state.js";
 const $ = (id) => document.getElementById(id);
 const JOIN_KEY = "panalo.students.join";
 let inside = false;
+// Restoring a stored session and a fast manual sign-in can both finish;
+// only the first may enter, or two births would run on top of each other.
+let entering = false;
 
 // An invite link: /students/#join=ABCD2345. Remember it through sign-in.
 function captureJoin() {
@@ -54,6 +57,8 @@ async function crossOver() {
 }
 
 async function onReady(session, { fresh }) {
+  if (entering || inside) return;
+  entering = true;
   document.body.classList.add("ready");
   await crossOver();
   $("auth").hidden = true;
@@ -102,6 +107,7 @@ function popJoin() {
 
 function onSignedOut() {
   inside = false;
+  entering = false;
   resetStore();
   leaveShell();
   document.body.classList.remove("in-app");
@@ -136,7 +142,8 @@ window.addEventListener("hashchange", () => {
   if (!inside) showOutside();
 });
 
-// Forms are handled in JS; none should ever navigate.
+// Forms are handled in JS; none should ever navigate (boot.js also guards
+// this before the modules load).
 document.addEventListener("submit", (e) => e.preventDefault());
 
 restoreSession()

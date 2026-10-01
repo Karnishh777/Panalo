@@ -937,6 +937,18 @@
       persist();
       return row.id;
     },
+    // Someone else asks to join a room by its code (Panalo Students).
+    async knock(fromUser, code) {
+      await ready;
+      const from = db.profiles.find((p) => p.username === fromUser);
+      const rc = db.room_codes.find((r) => r.code === String(code).replace(/[^A-Za-z0-9]/g, "").toUpperCase());
+      if (!from || !rc) return false;
+      const row = { conversation_id: rc.conversation_id, user_id: from.id, username: fromUser, created_at: nowIso() };
+      db.room_requests.push(row);
+      emitChange("room_requests", "INSERT", row, null);
+      persist();
+      return true;
+    },
     typing(convName) {
       const conv = db.conversations.find((c) => c.name === convName);
       broadcast(`room:${conv.id}`, "typing", {});

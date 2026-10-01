@@ -235,7 +235,7 @@
   margin-bottom: 10px;
 }
 .now-big b {
-  font: 500 26px/1.1 var(--f-display);
+  font: 400 24px/1.1 var(--f-display);
   letter-spacing: -0.03em;
 }
 .now-live {
@@ -377,7 +377,7 @@ body[data-view="study"] .sky {
   text-align: center;
 }
 .study-readout {
-  font: 300 clamp(52px, 12vw, 76px) / 1 var(--f-display);
+  font: 300 clamp(48px, 11vw, 70px) / 1 var(--f-display);
   letter-spacing: -0.04em;
 }
 .study[data-status="paused"] .study-readout {
@@ -1047,7 +1047,7 @@ body.midnight .sky {
   margin: 12px 0;
 }
 .door-code .code {
-  font: 500 clamp(28px, 6vw, 40px) / 1 var(--f-display);
+  font: 400 clamp(26px, 5vw, 36px) / 1 var(--f-display);
   letter-spacing: 0.06em;
   color: var(--time);
 }
@@ -1551,7 +1551,7 @@ body[data-view="drift"].in-app {
   border-color: color-mix(in srgb, var(--tone) 45%, transparent);
 }
 .drift-card h2 {
-  font: 500 20px/1.2 var(--f-display);
+  font: 400 18px/1.25 var(--f-display);
   letter-spacing: -0.03em;
 }
 .drift-card > .btn {
@@ -1846,4 +1846,7 @@ body[data-view="drift"].in-app {
 .key-banner-icon,
 .key-request-icon {
   color: var(--time);
+}
+.now-next .tag {
+  justify-self: start;
 }

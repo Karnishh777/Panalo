@@ -3,7 +3,8 @@
 //
 //   1. If a Supabase session is stored, show a splash instead of flashing
 //      the landing page at someone who is about to be signed straight in.
-//   2. Apply the in-app "reduce motion" choice before any animation starts.
+//   2. Stop forms submitting natively before the app's modules arrive.
+//   3. Apply the in-app "reduce motion" choice before any animation starts.
 (function () {
   var root = document.documentElement;
   var signedIn = false;
@@ -15,6 +16,13 @@
     });
   } catch (e) {}
   root.setAttribute("data-boot", signedIn ? "app" : "public");
+
+  // Every form here is handled by the app's modules. Until they have loaded
+  // (a slow connection), pressing Enter must not fall through to a native
+  // submission, which would reload the page and lose what was typed.
+  document.addEventListener("submit", function (e) {
+    e.preventDefault();
+  }, true);
 
   try {
     var prefs = JSON.parse(localStorage.getItem("panalo.students.prefs") || "{}") || {};

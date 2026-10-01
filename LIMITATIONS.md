@@ -104,14 +104,17 @@ PIN. A user on two devices effectively has two different apps.
   without unwrapping a key per message. A 👍 leaks little, but it is plaintext.
 - **Attachment URLs are unguessable, not private.** The bucket is public: the
   bytes are ciphertext now, but anyone holding a URL can fetch that ciphertext.
-- **Two `SECURITY DEFINER` functions stay callable by signed-in users**, and
+- **Three `SECURITY DEFINER` functions stay callable by signed-in users**, and
   cannot be otherwise. `find_profile_by_username` is how you start a chat
   with someone you don't already share one with — as `SECURITY INVOKER` it
   would be subject to the profiles policy and return nothing for exactly the
   strangers it exists to find. `delete_my_account` needs privileges the
   browser must never hold, takes no arguments, and can only delete the
   caller. The RLS helpers were moved to a non-exposed schema in phase 13, so
-  these two are the only ones left.
+  these are the only ones left. Phase 16 added the third,
+  `request_to_join(code)`, for the same reason as the lookup: a join code has
+  to find a room the caller can't see yet. It takes one exact code and
+  returns at most that room's name; it never adds anyone to anything.
 - **Leaked-password protection is unavailable** on the Supabase free plan.
 - **Deleting a chat is "delete for me."** Your copy goes; the other person
   keeps theirs. There is no delete-for-everyone, and none could be enforced.
@@ -249,6 +252,38 @@ PIN. A user on two devices effectively has two different apps.
   own font-size setting.
 
 ---
+
+## 9. Panalo Students (`students/`) 🟡
+
+- **Moderation is reports in a table.** Blocking and reporting work (phase
+  16), but reports are only readable in the dashboard; there is no reviewer
+  UI, no suspension, and nobody is notified when one arrives.
+- **No verified roles.** A "class" is a group whose hosts are whoever made
+  it. There is no teacher verification, no school accounts, no parent view.
+- **Age is self-declared.** Sign-up asks people to confirm they are 13 or
+  over; nothing checks it, and there is no parental-consent flow. The
+  privacy page says so and tells operators to check what applies to them.
+- **Archive files are not end-to-end encrypted.** They live in a private
+  bucket guarded by Storage policies; the server can read them. Shared files
+  are readable by everyone in the conversation, including people added later.
+- **Files outlive their rooms.** When a room is purged a day after it ends,
+  its messages go, but archive files shared into it stay in Storage (a
+  database job cannot delete Storage objects) until their uploader deletes
+  them. Deleting an account also leaves that person's archive files.
+- **The 200 MB archive quota is per person, not per project.** Five busy
+  users can fill the free tier's 1 GB.
+- **Letting someone into a room shares the key to whoever the server says
+  they are.** The same trust as adding a member by name in Panalo Chat.
+- **Students has no service worker.** It needs a connection to start, and
+  sends no notification when the app is closed. The focus-end notification
+  only works while the tab is open in the background.
+- **Timer, sound, motion and Drift progress are per device** (localStorage).
+  Study data itself syncs.
+- **The world is drawn on the main thread.** Generating a planet takes
+  about 180 ms at a 4x CPU slowdown; it runs while the browser is idle, once
+  per session.
+- **Fonts and the QR library come from CDNs.** If they fail, the app falls
+  back to system fonts and shows the join code without a QR.
 
 ## Top five by real risk
 

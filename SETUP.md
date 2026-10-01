@@ -75,6 +75,7 @@ For each: **SQL Editor → New query** → paste the whole file → **Run**.
 | 11 | [`supabase-phase13.sql`](supabase-phase13.sql) | Moves RLS helpers out of the exposed API schema | No |
 | 12 | [`supabase-phase14.sql`](supabase-phase14.sql) | Repairs chat creation, leaving and account deletion; signup creates the profile | No |
 | 13 | [`supabase-phase15.sql`](supabase-phase15.sql) | Disappearing messages (24 hours / 7 days / 90 days per chat) | No |
+| 14 | [`supabase-phase16.sql`](supabase-phase16.sql) | Panalo Students: study data, private archive bucket, blocking and reports, rooms with join codes | Only if you don't use `students/` |
 
 Phase 8 is self-contained and re-applies everything phase 7 does, so running 8
 is enough if you are starting fresh. Run 7 anyway if you prefer the history to
@@ -90,6 +91,14 @@ database that already has everything.
 Most of these end with a `select` that prints what changed — if the output does
 not match what the file says to expect, stop and fix it before moving on rather
 than continuing onto the next one.
+
+### Panalo Students
+
+`students/` is a second app on the same project (see [`STUDENTS.md`](STUDENTS.md)).
+It needs phase 16, and one more dashboard setting: add your site's
+`/students/` URL (e.g. `https://your-site.pages.dev/students/`) under
+**Authentication → URL Configuration → Redirect URLs**, so sign-up
+confirmation and password-reset links can land there.
 
 ### Before you rely on it
 

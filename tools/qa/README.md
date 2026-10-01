@@ -4,7 +4,8 @@ Drive the real Panalo UI in Chromium without touching the production
 Supabase project.
 
 ```sh
-node tools/qa/smoke.mjs                       # pass/fail checks, exit 1 on failure
+node tools/qa/smoke.mjs                       # Panalo Chat: pass/fail checks, exit 1 on failure
+node tools/qa/students.mjs                    # Panalo Students (students/)
 QA_SHOTS=/tmp/shots node tools/qa/smoke.mjs   # also save screenshots
 ```
 
@@ -31,9 +32,14 @@ Seeded account: `qa@panalo.test` / `correct-horse-42` (username `alex`), with
 chats with `maya`, `jordan`, `sam` and two groups. These exist only inside the
 mock; they are not real credentials.
 
+The mock also implements phase 16 (Panalo Students): the study tables, the
+private `student-resources` bucket with its path rules, blocks, reports,
+room codes and the `request_to_join` RPC.
+
 Test hooks inside the page: `window.__qa.receive(chatName, fromUser, text)`
 delivers an encrypted incoming message; `window.__qa.typing(chatName)` shows
-the other side typing; `window.__qa.db` is the raw data.
+the other side typing; `window.__qa.knock(user, code)` makes another user ask
+to join a room; `window.__qa.db` is the raw data.
 
 ## Safety
 
