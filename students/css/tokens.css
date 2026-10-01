@@ -1,0 +1,103 @@
+/* Panalo Students — design tokens.
+ *
+ * One rule above the others: colour means something. Each part of the
+ * universe has ONE hue, used for that part and nothing else, so a glance at
+ * the day orbit tells you what kind of thing an arc is before you read it.
+ *
+ *   time     amber   classes, deadlines, the clock, "now"
+ *   focus    ice     the Study Room, focus sessions
+ *   signal   violet  people, circles, rooms, unread
+ *   world    green   your world, goals, growth
+ *   archive  sand    files
+ *   drift    rose    rest and play
+ *
+ * Interactive things are near-white. Glow is reserved for "this is live"
+ * (an unread pulse, a running timer), never for decoration.
+ */
+:root {
+  color-scheme: dark;
+
+  /* Space, from deepest to nearest. Never pure black: pure black makes
+     white text vibrate and hides the depth between layers. */
+  --void: #03040a;
+  --bg: #070912;
+  --bg-2: #0a0d19;
+  --surface: #0f1322;
+  --surface-2: #151a2d;
+  --surface-3: #1d2339;
+  --line: rgba(170, 185, 255, 0.1);
+  --line-2: rgba(170, 185, 255, 0.2);
+  --line-3: rgba(170, 185, 255, 0.34);
+
+  /* Text. --text-3 still clears 4.5:1 on --bg. */
+  --text: #eef0fa;
+  --text-2: #b3bad5;
+  --text-3: #858dad;
+
+  --time: #ffc47a;
+  --focus: #9ad8ff;
+  --signal: #b9a3ff;
+  --world: #86e8b4;
+  --archive: #e7d19b;
+  --drift: #ff9fc6;
+  --alert: #ff8f80;
+
+  --accent: #e4eaff;
+  --on-accent: #070912;
+
+  --f-display: "Unbounded", "Segoe UI", system-ui, sans-serif;
+  --f-serif: "Instrument Serif", "Iowan Old Style", Georgia, serif;
+  --f-body: "Inter", "Segoe UI", system-ui, -apple-system, sans-serif;
+
+  --r-1: 8px;
+  --r-2: 14px;
+  --r-3: 22px;
+  --r-pill: 999px;
+
+  --s-1: 4px;
+  --s-2: 8px;
+  --s-3: 12px;
+  --s-4: 16px;
+  --s-5: 24px;
+  --s-6: 32px;
+  --s-7: 48px;
+  --s-8: 72px;
+
+  --shadow-1: 0 1px 0 rgba(255, 255, 255, 0.04) inset, 0 10px 30px -12px rgba(0, 0, 0, 0.6);
+  --shadow-2: 0 1px 0 rgba(255, 255, 255, 0.05) inset, 0 24px 60px -20px rgba(0, 0, 0, 0.75);
+
+  --ease-out: cubic-bezier(0.2, 0.8, 0.2, 1);
+  --ease-cine: cubic-bezier(0.7, 0, 0.2, 1);
+  --dur-1: 160ms;
+  --dur-2: 320ms;
+  --dur-3: 700ms;
+
+  --bar-h: 64px;
+  --dock-h: 68px;
+  --gutter: clamp(16px, 4vw, 40px);
+  --measure: 68ch;
+}
+
+/* Motion is meaning, never required to understand anything. Both the OS
+   setting and the in-app switch turn it all off. */
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --dur-1: 0ms;
+    --dur-2: 0ms;
+    --dur-3: 0ms;
+  }
+}
+:root[data-motion="reduce"] {
+  --dur-1: 0ms;
+  --dur-2: 0ms;
+  --dur-3: 0ms;
+}
+
+/* Tone helpers: put `tone-time` etc. on anything and use var(--tone). */
+.tone-time { --tone: var(--time); }
+.tone-focus { --tone: var(--focus); }
+.tone-signal { --tone: var(--signal); }
+.tone-world { --tone: var(--world); }
+.tone-archive { --tone: var(--archive); }
+.tone-drift { --tone: var(--drift); }
+.tone-alert { --tone: var(--alert); }
