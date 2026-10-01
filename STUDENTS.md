@@ -71,33 +71,36 @@ landing ──► the crossing (sign in / sign up) ──► first time? the bir
 | --- | --- |
 | `js/main.js` | Outside → crossing → birth → inside. |
 | `js/auth.js` | Sign-in, sign-up, unlock, recovery, sign-out. |
-| `js/birth.js` | The first-entry sequence and onboarding questions. |
+| `js/birth.js` | The first-entry film (slate, countdown, bang, warp, nebula, a disk falling into your world, lock-on) and the onboarding questions. |
+| `js/birth-score.js` | The film's sound, synthesized with Web Audio; one switch, remembered per device. |
 | `js/shell.js` | Router, top bar, dock, account menu, Warp. |
 | `js/store.js` | In-memory study data + pub/sub; all writes. |
 | `js/signals-data.js` | Conversations, unread, sending, circles, rooms, door, block, report. |
 | `js/archive-data.js` | Private-bucket uploads, downloads, previews. |
-| `js/world-render.js` | Canvas globe (precomputed projection, idle-time generation, cached). |
+| `js/world-surface.js` | The world's terrain, colour and night lights, generated once per seed in idle time and cached. |
+| `js/world-gl.js` | The world in WebGL: one fragment shader ray-traces the planet (relief, sun glint on water, cloud shadows, night lights, aurora, atmosphere), the ring with the planet's shadow on it and its shadow on the planet, and the moons, depth-sorted. |
+| `js/world-render.js` | Picks WebGL when the GPU is real, otherwise the 2D canvas globe; same `setLayers()` contract either way. |
 | `js/dayorbit.js` | The SVG day orbit. |
 | `js/ambient.js` | Generated study sound (Web Audio, no files). |
 | `js/surfaces/*.js` | Now, Study, Signals, World, Calendar, Archive, Drift, Safety, Settings. |
 | `css/tokens.css` … `surfaces.css` | The design system (below). |
 | `privacy.html`, `rules.html` | Plain-language privacy notes and community rules. |
 
-## Data (phase 16 — `supabase-phase16.sql`)
+## Data (phases 16 and 17 — `supabase-phase16.sql`, `supabase-phase17.sql`)
 
 | Table | Who can read | Notes |
 | --- | --- | --- |
 | `student_profiles` | you | world name, interests, born_at |
 | `student_tasks`, `focus_sessions`, `student_events`, `activity_log`, `student_goals` | you | capped per person; a focus session can't claim more minutes than elapsed, or point at someone else's task |
-| `resources` + bucket `student-resources` (**private**) | you, or members of the conversation it's shared with | path `u/<you>/…` or `c/<conversation>/…` decides scope; size taken from Storage; 200 MB per person |
+| `resources` + bucket `student-resources` (**private**) | you, or members of the conversation it's shared with — and a shared file only while it is listed | path `u/<you>/…` or `c/<conversation>/…` decides scope; size taken from Storage; 200 MB and 1,000 files per person, counted from Storage itself; room hosts can take shared files down |
 | `blocks` | the blocker | blocked senders' messages are hidden from you (restrictive policy); a person who blocked you can't add you |
 | `reports` | the reporter (and the operator) | status can't be set by the reporter; 20 a day |
 | `conversations.kind / ends_at / posting` | as before | ended rooms hidden at once, purged a day later (pg_cron) |
 | `room_codes` | hosts | 8 characters, no lookalikes |
-| `room_requests` | the requester and hosts | created only by `request_to_join(code)` |
+| `room_requests` | the requester and hosts | created only by `request_to_join(code)`, 30 attempts an hour (wrong codes count); not broadcast over realtime — the door polls |
 
 Every rule above is replayed against real Postgres in
-`tests/migrations.test.mjs` (42 Students tests).
+`tests/migrations.test.mjs` (49 Students tests, phase 17 included).
 
 ## Security and privacy decisions
 

@@ -79,7 +79,18 @@ try {
     check("the age and rules confirmation is required", /13 or older/.test(await page.textContent("#auth-message")));
     await page.check("#signup-age");
     await page.click("#signup-submit");
+    await page.waitForSelector("#birth-skip:not([hidden])", { timeout: 20000 });
+    check("the intro is a film: an observer's log and a countdown", (await page.isVisible(".birth-hud")) && (await page.locator(".birth-count").count()) === 1);
+    if (await page.isVisible(".birth-sound")) {
+      await page.click(".birth-sound");
+      const muted = await page.evaluate(() => ({
+        pressed: document.querySelector(".birth-sound").getAttribute("aria-pressed"),
+        saved: JSON.parse(localStorage.getItem("panalo.students.prefs") || "{}").introSound,
+      }));
+      check("the intro's sound can be turned off, and that is remembered", muted.pressed === "false" && muted.saved === false);
+    } else check("the intro's sound can be turned off, and that is remembered", false);
     await finishBirth(page);
+    check("the film's pieces are cleared away once it ends", (await page.locator(".birth-hud, .birth-sound, .birth-reticle").count()) === 0);
     const prof = await page.evaluate(() => window.__qa.db.student_profiles[0]);
     check("the birth saves a named world with interests", prof?.world_name === "Kepler QA" && prof.interests.includes("space"));
     const goal = await page.evaluate(() => window.__qa.db.student_goals[0]);
@@ -359,6 +370,51 @@ try {
     check("no console errors (auth paths)", b.errors.length === 0);
     if (b.errors.length) console.log(b.errors.join("\n"));
     await b.close();
+  }
+
+  // ---- The world renderer: WebGL where it's fast, 2D everywhere else ----------------------
+  {
+    const probe = (pref) => async (page) => page.evaluate(async () => {
+      const { createGlobe } = await import("/students/js/world-render.js");
+      const c = document.createElement("canvas");
+      c.style.cssText = "width:300px;height:300px;position:fixed;left:0;top:0";
+      document.body.append(c);
+      const g = createGlobe(c, { seed: "probe" });
+      g.setLayers({ land: 0.4, lights: 0.3, aurora: 0.5, clouds: 0.3, ring: 1 }, [{ value: 0.5, done: false }]);
+      await new Promise((r) => setTimeout(r, 1500));
+      // Something was actually drawn: sample the middle of the planet. A
+      // WebGL canvas can only be read in the frame it was drawn, so look
+      // across a few frames.
+      const copy = document.createElement("canvas");
+      copy.width = c.width;
+      copy.height = c.height;
+      const x = copy.getContext("2d");
+      let drawn = false;
+      for (let i = 0; i < 90 && !drawn; i++) {
+        await new Promise((r) => requestAnimationFrame(r));
+        x.clearRect(0, 0, copy.width, copy.height);
+        x.drawImage(c, 0, 0);
+        const px = x.getImageData(c.width >> 1, c.height >> 1, 1, 1).data;
+        drawn = px[3] > 0 && px[0] + px[1] + px[2] > 0;
+      }
+      const out = { renderer: g.renderer, drawn };
+      g.destroy();
+      c.remove();
+      return out;
+    });
+    const gl = await qa.open({ viewport: "laptop", path: "students/", storage: { "panalo.students.gl": "force" } });
+    await gl.waitForTimeout(400);
+    const a = await probe()(gl);
+    check("the world renders with WebGL when it's allowed", a.renderer === "webgl" && a.drawn);
+    check("no console errors (WebGL world)", gl.errors.length === 0);
+    if (gl.errors.length) console.log(gl.errors.join("\n"));
+    await gl.close();
+    const flat = await qa.open({ viewport: "laptop", path: "students/", storage: { "panalo.students.gl": "off" } });
+    await flat.waitForTimeout(400);
+    const b = await probe()(flat);
+    check("the world falls back to the 2D renderer", b.renderer === "2d" && b.drawn);
+    check("no console errors (2D world)", flat.errors.length === 0);
+    await flat.close();
   }
 
   // ---- Reduced motion -----------------------------------------------------------------------

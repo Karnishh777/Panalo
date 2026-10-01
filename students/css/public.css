@@ -912,6 +912,179 @@ input[type="range"].range {
   text-transform: uppercase;
   color: var(--text-3);
 }
+/* The film: letterbox bars, a vignette, an observer's log, a countdown,
+   the age of the universe, and a lock-on around the world. */
+.birth::before,
+.birth::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  z-index: 2;
+  height: 0;
+  background: #000;
+  transition: height 1.1s var(--ease-out);
+  pointer-events: none;
+}
+.birth::before {
+  top: 0;
+}
+.birth::after {
+  bottom: 0;
+}
+.birth.cinema::before,
+.birth.cinema::after {
+  height: 9vh;
+}
+.birth-canvas {
+  -webkit-mask-image: radial-gradient(ellipse at center, #000 55%, rgba(0, 0, 0, 0.55) 100%);
+  mask-image: radial-gradient(ellipse at center, #000 55%, rgba(0, 0, 0, 0.55) 100%);
+}
+.birth-hud,
+.birth-age {
+  position: absolute;
+  z-index: 3;
+  left: max(18px, 3vw);
+  margin: 0;
+  font: 500 11px/1.7 ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
+  letter-spacing: 0.12em;
+  color: rgba(170, 200, 255, 0.7);
+  white-space: pre;
+  pointer-events: none;
+}
+.birth-hud {
+  top: calc(9vh + 14px);
+}
+.birth-hud p {
+  margin: 0;
+  min-height: 1.7em;
+}
+.birth-age {
+  bottom: calc(9vh + 14px);
+  color: rgba(255, 214, 160, 0.85);
+  opacity: 0;
+  transform: translateY(4px);
+  transition: opacity 0.4s, transform 0.4s var(--ease-out);
+}
+.birth-age::before {
+  content: "AGE OF THE UNIVERSE  ";
+  color: rgba(170, 200, 255, 0.55);
+}
+.birth-age.on {
+  opacity: 1;
+  transform: none;
+}
+.birth-count {
+  position: absolute;
+  z-index: 2;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  pointer-events: none;
+}
+.birth-count span {
+  font: 300 clamp(90px, 22vmin, 220px) / 1 var(--f-display);
+  color: rgba(225, 236, 255, 0.92);
+  text-shadow: 0 0 40px rgba(120, 170, 255, 0.55);
+  animation: count-in 0.9s var(--ease-out) both;
+}
+@keyframes count-in {
+  0% {
+    opacity: 0;
+    transform: scale(1.35);
+    filter: blur(8px);
+  }
+  25% {
+    opacity: 1;
+    transform: scale(1);
+    filter: none;
+  }
+  80% {
+    opacity: 0.9;
+  }
+  100% {
+    opacity: 0;
+    transform: scale(0.82);
+  }
+}
+.birth-reticle {
+  position: absolute;
+  z-index: 2;
+  left: 50%;
+  top: 50%;
+  width: min(48vmin, 360px);
+  height: min(48vmin, 360px);
+  transform: translate(-50%, -50%) scale(1.6);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.5s, transform 0.9s var(--ease-out);
+}
+.birth.locked .birth-reticle {
+  opacity: 1;
+  transform: translate(-50%, -50%) scale(1);
+}
+.birth-reticle i {
+  position: absolute;
+  width: 26px;
+  height: 26px;
+  border: 0 solid rgba(150, 210, 255, 0.85);
+}
+.birth-reticle i:nth-child(1) {
+  left: 0;
+  top: 0;
+  border-width: 2px 0 0 2px;
+}
+.birth-reticle i:nth-child(2) {
+  right: 0;
+  top: 0;
+  border-width: 2px 2px 0 0;
+}
+.birth-reticle i:nth-child(3) {
+  left: 0;
+  bottom: 0;
+  border-width: 0 0 2px 2px;
+}
+.birth-reticle i:nth-child(4) {
+  right: 0;
+  bottom: 0;
+  border-width: 0 2px 2px 0;
+}
+.birth-reticle span {
+  position: absolute;
+  left: 50%;
+  top: calc(100% + 12px);
+  transform: translateX(-50%);
+  font: 500 10px/1.4 ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
+  letter-spacing: 0.16em;
+  white-space: nowrap;
+  color: rgba(150, 210, 255, 0.85);
+}
+.birth.locked .birth-line.low {
+  margin-bottom: calc(9vh + 44px);
+}
+.birth-sound {
+  position: absolute;
+  right: 90px;
+  top: 18px;
+  z-index: 3;
+}
+@media (max-width: 560px) {
+  .birth-hud {
+    font-size: 9.5px;
+  }
+  .birth-age {
+    font-size: 9.5px;
+    right: 18px;
+    white-space: normal;
+  }
+  .birth-reticle span {
+    width: 86vw;
+    font-size: 8.5px;
+    white-space: normal;
+    text-align: center;
+  }
+}
+
 .birth.leaving {
   opacity: 0;
   transition: opacity 0.7s ease;

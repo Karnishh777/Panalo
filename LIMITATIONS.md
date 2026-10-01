@@ -279,9 +279,16 @@ PIN. A user on two devices effectively has two different apps.
   only works while the tab is open in the background.
 - **Timer, sound, motion and Drift progress are per device** (localStorage).
   Study data itself syncs.
-- **The world is drawn on the main thread.** Generating a planet takes
+- **The world is generated on the main thread.** Generating a planet takes
   about 180 ms at a 4x CPU slowdown; it runs while the browser is idle, once
-  per session.
+  per session. Drawing it uses WebGL only on a real GPU: a browser that
+  offers only software WebGL (some VMs, remote desktops, old drivers) gets
+  the simpler 2D globe, with no ring shadows or relief. `localStorage`
+  `panalo.students.gl` = `force` or `off` overrides the choice for testing.
+- **The intro plays sound unless turned off.** It starts right after
+  sign-up, which browsers count as permission to play audio; a browser that
+  still refuses plays it silently. The switch is on screen and remembered
+  per device; reduced motion skips the film, and its sound, entirely.
 - **Fonts and the QR library come from CDNs.** If they fail, the app falls
   back to system fonts and shows the join code without a QR.
 

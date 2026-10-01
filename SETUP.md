@@ -76,6 +76,7 @@ For each: **SQL Editor → New query** → paste the whole file → **Run**.
 | 12 | [`supabase-phase14.sql`](supabase-phase14.sql) | Repairs chat creation, leaving and account deletion; signup creates the profile | No |
 | 13 | [`supabase-phase15.sql`](supabase-phase15.sql) | Disappearing messages (24 hours / 7 days / 90 days per chat) | No |
 | 14 | [`supabase-phase16.sql`](supabase-phase16.sql) | Panalo Students: study data, private archive bucket, blocking and reports, rooms with join codes | Only if you don't use `students/` |
+| 15 | [`supabase-phase17.sql`](supabase-phase17.sql) | Students hardening: archive files readable only while listed, a storage quota that can't be sidestepped, hosts can take shared files down, join codes rate-limited, door requests no longer broadcast, hosts-only posting limited to groups | Required with phase 16 |
 
 Phase 8 is self-contained and re-applies everything phase 7 does, so running 8
 is enough if you are starting fresh. Run 7 anyway if you prefer the history to
@@ -95,7 +96,7 @@ than continuing onto the next one.
 ### Panalo Students
 
 `students/` is a second app on the same project (see [`STUDENTS.md`](STUDENTS.md)).
-It needs phase 16, and one more dashboard setting: add your site's
+It needs phases 16 and 17, and one more dashboard setting: add your site's
 `/students/` URL (e.g. `https://your-site.pages.dev/students/`) under
 **Authentication → URL Configuration → Redirect URLs**, so sign-up
 confirmation and password-reset links can land there.
