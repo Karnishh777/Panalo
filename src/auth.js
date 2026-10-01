@@ -2,7 +2,7 @@
 import { supabaseClient, setRemember } from "./client.js";
 import { state, conversationKeys } from "./state.js";
 import { withBusy, showToast, redirectUrl } from "./util.js";
-import { ensureUserKeys, idbDelKey, idbGetKey, rewrapPrivateKey, regenerateKeypair, clearKeyProblems } from "./encryption.js";
+import { ensureUserKeys, idbDelKey, idbGetKey, rewrapPrivateKey, clearKeyProblems } from "./encryption.js";
 import { clearAttachmentCache } from "./attachments.js";
 import { clearPersistedIndex } from "./search.js";
 import { fetchConversations } from "./chat.js";
@@ -14,6 +14,7 @@ import { startCalls, stopCalls } from "./calls.js";
 import { startTour } from "./tour.js";
 import { refreshMyProfile } from "./profile.js";
 import { OTP_LENGTH } from "./config.js";
+import { keysAfterPasswordReset } from "./keyflow.js";
 import { validatePassword, describePasswordPolicy } from "./password.js";
 import { enterApp, leaveApp, showPublic } from "./public.js";
 
@@ -393,24 +394,19 @@ export function initAuth() {
       // Try to keep old messages readable: if the private key sits in IndexedDB
       // from a previous session on this device, re-wrap it with the new
       // password. Otherwise, generate new keys and accept the loss.
+      // (src/keyflow.js, shared with Panalo Students.)
       state.currentUser = userData.user;
-      const cached = await idbGetKey(state.currentUser.id);
-      if (cached) {
-        state.myPrivateKey = cached;
-        const result = await rewrapPrivateKey(next);
-        if (result !== "ready") {
-          showToast("Password set, but the encryption key didn't move with it. Try again while still signed in.");
-          return;
-        }
-        showToast("Password updated — your messages moved with it.", "success");
-      } else {
-        const result = await regenerateKeypair(next);
-        if (result !== "ready") {
-          showToast("Password set, but couldn't create new keys. Try again.");
-          return;
-        }
-        showToast("New password and fresh keys. Older encrypted messages are no longer readable — new ones will work.", "");
+      const moved = await keysAfterPasswordReset(next);
+      if (moved === "move-failed") {
+        showToast("Password set, but the encryption key didn't move with it. Try again while still signed in.");
+        return;
       }
+      if (moved === "regenerate-failed") {
+        showToast("Password set, but couldn't create new keys. Try again.");
+        return;
+      }
+      if (moved === "moved") showToast("Password updated — your messages moved with it.", "success");
+      else showToast("New password and fresh keys. Older encrypted messages are no longer readable — new ones will work.", "");
 
       recoveryModal.classList.add("hidden");
       inRecovery = false;

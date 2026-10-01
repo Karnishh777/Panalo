@@ -3,6 +3,9 @@
 How the interface is put together, and where to change it. For what the app
 can't do, see `LIMITATIONS.md`.
 
+This file describes **Panalo Chat** (the root of the repository). Panalo
+Students has its own design system in `students/css/` — see `STUDENTS.md`.
+
 ## Files
 
 | File | What's in it |

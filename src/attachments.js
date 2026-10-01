@@ -32,6 +32,7 @@
 
 import { supabaseClient } from "./client.js";
 import { safeImageUrl } from "./util.js";
+import { r2Available, newKey, r2Put, r2Url, isR2Url, r2KeyOf, r2Get, r2Delete } from "./filestore.js";
 
 const BUCKET = "chat-files";
 // Encrypted uploads live under this prefix. Anything outside it predates
@@ -49,6 +50,8 @@ const MAX_CACHED = 40;
 const cache = new Map(); // storage url -> { objectUrl, name, size, type }
 
 export function isEncryptedAttachment(url) {
+  // On R2 (filestore.js), chat attachments are always ciphertext.
+  if (isR2Url(url)) return r2KeyOf(url).split("/")[2] === "a";
   return typeof url === "string" && url.includes(`/${BUCKET}/${ENC_PREFIX}`);
 }
 
@@ -91,6 +94,15 @@ export async function uploadEncrypted(file, convKey) {
   blob.set(iv, 1);
   blob.set(new Uint8Array(ciphertext), 1 + IV_BYTES);
 
+  // On R2 when the site has it (10 GB free): the key carries only the
+  // uploader and a random id.
+  if (await r2Available()) {
+    const key = await newKey("a");
+    const { error } = await r2Put(key, new Blob([blob]), { type: "application/octet-stream", name: "attachment" });
+    if (error) throw new Error(error.message);
+    return r2Url(key);
+  }
+
   // The path carries nothing: no name, no extension, no size. Everything
   // describing the file is inside the ciphertext.
   const path = `${ENC_PREFIX}${Date.now()}_${crypto.randomUUID()}`;
@@ -125,11 +137,12 @@ export function primeAttachmentCache(url, file) {
 // image icon with no explanation.
 export async function loadEncrypted(url, convKey) {
   if (cache.has(url)) return cache.get(url);
-  const safe = safeImageUrl(url); // same origin allow-list as everything else
+  const r2 = isR2Url(url);
+  const safe = r2 ? url : safeImageUrl(url); // same origin allow-list as everything else
   if (!safe || !convKey) return null;
 
   try {
-    const response = await fetch(safe);
+    const response = r2 ? await r2Get(r2KeyOf(url)) : await fetch(safe);
     if (!response.ok) return null;
     const raw = new Uint8Array(await response.arrayBuffer());
     if (raw.length < 1 + IV_BYTES || raw[0] !== FORMAT_VERSION) return null;
@@ -176,6 +189,14 @@ export async function loadEncrypted(url, convKey) {
 // outcome than leaving an orphaned file behind. Returns whether it worked so
 // callers can decide, and drops the local decrypted copy either way.
 export async function deleteAttachment(url) {
+  if (isR2Url(url)) {
+    const entry = cache.get(url);
+    if (entry) {
+      URL.revokeObjectURL(entry.objectUrl);
+      cache.delete(url);
+    }
+    return r2Delete(r2KeyOf(url)).catch(() => false);
+  }
   const path = storagePathFrom(url);
   if (!path) return false;
 

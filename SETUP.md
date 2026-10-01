@@ -75,6 +75,10 @@ For each: **SQL Editor → New query** → paste the whole file → **Run**.
 | 11 | [`supabase-phase13.sql`](supabase-phase13.sql) | Moves RLS helpers out of the exposed API schema | No |
 | 12 | [`supabase-phase14.sql`](supabase-phase14.sql) | Repairs chat creation, leaving and account deletion; signup creates the profile | No |
 | 13 | [`supabase-phase15.sql`](supabase-phase15.sql) | Disappearing messages (24 hours / 7 days / 90 days per chat) | No |
+| 14 | [`supabase-phase16.sql`](supabase-phase16.sql) | Panalo Students: study data, private archive bucket, blocking and reports, rooms with join codes | Only if you don't use `students/` |
+| 15 | [`supabase-phase17.sql`](supabase-phase17.sql) | Students hardening: archive files readable only while listed, a storage quota that can't be sidestepped, hosts can take shared files down, join codes rate-limited, door requests no longer broadcast, hosts-only posting limited to groups | Required with phase 16 |
+| 16 | [`supabase-phase18.sql`](supabase-phase18.sql) | Deleting an account deletes everything: conversations only you were in, sign-in records, and (through the app) every file you uploaded; archive files may live on Cloudflare R2 (see [HOSTING.md](HOSTING.md)) | No |
+| 17 | [`supabase-phase19.sql`](supabase-phase19.sql) | Launch tuning: policies work out who you are once per query instead of once per row, and every foreign key gets an index (faster deletes). No behaviour change | No |
 
 Phase 8 is self-contained and re-applies everything phase 7 does, so running 8
 is enough if you are starting fresh. Run 7 anyway if you prefer the history to
@@ -90,6 +94,14 @@ database that already has everything.
 Most of these end with a `select` that prints what changed — if the output does
 not match what the file says to expect, stop and fix it before moving on rather
 than continuing onto the next one.
+
+### Panalo Students
+
+`students/` is a second app on the same project (see [`STUDENTS.md`](STUDENTS.md)).
+It needs phases 16 and 17, and one more dashboard setting: add your site's
+`/students/` URL (e.g. `https://your-site.pages.dev/students/`) under
+**Authentication → URL Configuration → Redirect URLs**, so sign-up
+confirmation and password-reset links can land there.
 
 ### Before you rely on it
 

@@ -25,6 +25,7 @@
 
   const SUPA = "https://zqtvqobonmpxffjxbjpt.supabase.co";
   const STORAGE_PUBLIC = `${SUPA}/storage/v1/object/public/`;
+  const STORAGE_SIGN = `${SUPA}/storage/v1/object/sign/`;
   const uuid = () => crypto.randomUUID();
   const nowIso = () => new Date().toISOString();
   const ago = (mins) => new Date(Date.now() - mins * 60000).toISOString();
@@ -42,7 +43,21 @@
     messages: [],
     message_reactions: [],
     call_invites: [],
+    // Panalo Students (phase 16)
+    student_profiles: [],
+    student_tasks: [],
+    focus_sessions: [],
+    student_events: [],
+    activity_log: [],
+    student_goals: [],
+    resources: [],
+    blocks: [],
+    reports: [],
+    room_codes: [],
+    room_requests: [],
   };
+  const OWNED_BY_USER = ["student_profiles", "student_tasks", "focus_sessions", "student_events", "activity_log", "student_goals"];
+  const NO_ID = ["user_keys", "conversation_keys", "conversation_reads", "conversation_participants", "student_profiles", "blocks", "room_codes", "room_requests"];
   const authUsers = []; // { id, email, password, user_metadata }
   const storage = new Map(); // "bucket/path" -> Blob
   const privateKeys = new Map(); // seeded users' private keys, for __qa.receive
@@ -57,11 +72,17 @@
     conversation_reads: [["conversation_id", "user_id"]],
     message_reactions: [["message_id", "user_id", "emoji"]],
     messages: [["id"], ["client_id"]],
+    student_profiles: [["user_id"]],
+    blocks: [["blocker_id", "blocked_id"]],
+    room_codes: [["conversation_id"], ["code"]],
+    room_requests: [["conversation_id", "user_id"]],
+    resources: [["object_path"]],
   };
   const CONFLICT_KEY = {
     profiles: ["id"],
     user_keys: ["user_id"],
     conversation_reads: ["conversation_id", "user_id"],
+    student_profiles: ["user_id"],
   };
 
   // ------------------------------------------------------------------ auth
@@ -98,15 +119,35 @@
     const uid = me();
     return new Set(db.conversation_participants.filter((p) => p.user_id === uid).map((p) => p.conversation_id));
   }
+  function roleIn(convId, uid = me()) {
+    return db.conversation_participants.find((p) => p.conversation_id === convId && p.user_id === uid)?.role || null;
+  }
+  const ended = (convId) => {
+    const c = db.conversations.find((x) => x.id === convId);
+    return !!(c && c.ends_at && Date.parse(c.ends_at) <= Date.now());
+  };
   function visible(table, row) {
     const uid = me();
     if (!uid) return false;
     const mine = myConvIds();
+    if (OWNED_BY_USER.includes(table)) return row.user_id === uid;
     switch (table) {
       case "messages":
-        return mine.has(row.conversation_id) && (!row.expires_at || Date.parse(row.expires_at) > Date.now());
+        return mine.has(row.conversation_id) && (!row.expires_at || Date.parse(row.expires_at) > Date.now())
+          && !ended(row.conversation_id)
+          && !db.blocks.some((b) => b.blocker_id === uid && b.blocked_id === row.user_id);
       case "conversations":
-        return mine.has(row.id);
+        return mine.has(row.id) && !(row.ends_at && Date.parse(row.ends_at) <= Date.now());
+      case "resources":
+        return row.owner_id === uid || (row.conversation_id && mine.has(row.conversation_id));
+      case "blocks":
+        return row.blocker_id === uid;
+      case "reports":
+        return row.reporter_id === uid;
+      case "room_codes":
+        return ["owner", "admin"].includes(roleIn(row.conversation_id));
+      case "room_requests":
+        return row.user_id === uid || ["owner", "admin"].includes(roleIn(row.conversation_id));
       case "conversation_participants":
       case "conversation_reads":
         return mine.has(row.conversation_id);
@@ -295,13 +336,27 @@
 
   function applyDefaults(table, row) {
     if (table === "profiles") row.username_lc = String(row.username || "").toLowerCase();
-    if (!("id" in row) && table !== "user_keys" && table !== "conversation_keys" && table !== "conversation_reads" && table !== "conversation_participants") row.id = uuid();
+    if (!("id" in row) && !NO_ID.includes(table)) row.id = uuid();
+    if (OWNED_BY_USER.includes(table)) row.user_id = row.user_id || me();
+    if ([...OWNED_BY_USER, "resources", "blocks", "reports", "room_codes", "room_requests"].includes(table) && !row.created_at) row.created_at = nowIso();
+    if (table === "student_profiles") { row.born_at = row.born_at || nowIso(); row.interests = row.interests || []; }
+    if (table === "student_tasks") { row.done_at = row.done_at ?? null; row.due_at = row.due_at ?? null; row.subject = row.subject ?? null; }
+    if (table === "student_goals") { row.done_at = row.done_at ?? null; row.weekly_minutes = row.weekly_minutes ?? null; row.subject = row.subject ?? null; }
+    if (table === "student_events") { row.repeat_weekly = !!row.repeat_weekly; row.ends_at = row.ends_at ?? null; row.location = row.location ?? null; }
+    if (table === "activity_log") row.occurred_on = row.occurred_on || new Date().toISOString().slice(0, 10);
+    if (table === "resources") row.owner_id = row.owner_id || me();
+    if (table === "blocks") row.blocker_id = row.blocker_id || me();
+    if (table === "reports") { row.reporter_id = row.reporter_id || me(); row.status = row.status || "open"; }
+    if (table === "room_codes") row.created_by = row.created_by || me();
     if (["messages", "conversations", "call_invites", "message_reactions", "conversation_participants"].includes(table) && !row.created_at) row.created_at = nowIso();
     if (table === "conversations") {
       row.created_by = row.created_by || me();
       row.theme = row.theme ?? null;
       row.disappear_after = row.disappear_after ?? null;
       row.description = row.description ?? null;
+      row.kind = row.kind ?? null;
+      row.ends_at = row.ends_at ?? null;
+      row.posting = row.posting || "everyone";
     }
     if (table === "conversation_participants") {
       const conv = db.conversations.find((c) => c.id === row.conversation_id);
@@ -314,6 +369,39 @@
       row.edited_at = row.edited_at ?? null;
       row.reply_to = row.reply_to ?? null;
     }
+  }
+
+  // The phase 16 rules a client could actually trip over.
+  function insertRule(t, row) {
+    const uid = me();
+    const deny = (message, code = "42501") => ({ message, code });
+    if (OWNED_BY_USER.includes(t) && row.user_id !== uid) return deny("new row violates row-level security policy");
+    if (t === "student_goals" && db.student_goals.filter((g) => g.user_id === uid).length >= 24) return deny("You have reached the limit of 24 here. Remove something old first.", "54000");
+    if (t === "messages") {
+      if (ended(row.conversation_id)) return deny("new row violates row-level security policy");
+      const c = db.conversations.find((x) => x.id === row.conversation_id);
+      const keyRequest = row.iv == null && row.content === "[[keyrequest]]";
+      if (c && c.posting === "hosts" && !["owner", "admin"].includes(roleIn(c.id)) && !keyRequest) return deny("new row violates row-level security policy");
+    }
+    if (t === "conversation_participants" && row.user_id !== uid && db.blocks.some((b) => b.blocker_id === row.user_id && b.blocked_id === uid)) {
+      return deny("This person can't be added.");
+    }
+    if (t === "conversations" && row.ends_at) {
+      if (Date.parse(row.ends_at) <= Date.now()) return deny("A room has to end in the future.", "22023");
+      if (Date.parse(row.ends_at) > Date.now() + 60 * 86400000) return deny("A temporary room can last at most 60 days.", "22023");
+    }
+    if (t === "room_codes" && !["owner", "admin"].includes(roleIn(row.conversation_id))) return deny("new row violates row-level security policy");
+    if (t === "resources") {
+      const obj = storageMeta.get(`student-resources/${row.object_path}`);
+      if (!obj) return deny("Upload the file before adding it to the archive.", "23503");
+      if (obj.owner !== uid) return deny("That file was uploaded by someone else.");
+      if (row.conversation_id && !myConvIds().has(row.conversation_id)) return deny("new row violates row-level security policy");
+      row.size_bytes = obj.size;
+      const used = db.resources.filter((r) => r.owner_id === uid).reduce((a, r) => a + r.size_bytes, 0);
+      if (used + row.size_bytes > 200 * 1024 * 1024) return deny("Your archive is full (200 MB). Remove something to make room.", "54000");
+    }
+    if (t === "reports" && row.conversation_id && !myConvIds().has(row.conversation_id)) return deny("new row violates row-level security policy");
+    return null;
   }
 
   class Query {
@@ -443,6 +531,8 @@
             }
           }
           applyDefaults(t, row);
+          const refused = insertRule(t, row);
+          if (refused) return { error: refused };
           const bad = uniqueViolation(t, row, staged);
           if (bad) return { error: bad }; // multi-row inserts are atomic
           staged.push(row);
@@ -451,6 +541,13 @@
           db[t].push(row);
           out.push(row);
           emitChange(t, "INSERT", row, null);
+          if (t === "conversation_participants") {
+            const req = db.room_requests.find((r) => r.conversation_id === row.conversation_id && r.user_id === row.user_id);
+            if (req) {
+              db.room_requests = db.room_requests.filter((r) => r !== req);
+              emitChange("room_requests", "DELETE", null, req);
+            }
+          }
         }
         return { rows: this.returning ? out.map((r) => project(t, r, this.selectStr)) : [] };
       }
@@ -488,8 +585,26 @@
       const p = db.profiles.find((x) => x.username_lc === n);
       return { data: p ? [{ id: p.id, username: p.username, public_key: p.public_key || null }] : [], error: null };
     }
+    if (name === "my_storage_objects") {
+      const uid = me();
+      const out = [];
+      for (const [k, m] of storageMeta) if (m.owner === uid) {
+        const at = k.indexOf("/");
+        out.push({ bucket: k.slice(0, at), name: k.slice(at + 1) });
+      }
+      return { data: out, error: null };
+    }
     if (name === "delete_my_account") {
       const uid = me();
+      // Phase 18: conversations only they were in go too.
+      const solo = db.conversations.filter((c) => {
+        const ps = db.conversation_participants.filter((p) => p.conversation_id === c.id);
+        return ps.some((p) => p.user_id === uid) && ps.every((p) => p.user_id === uid);
+      }).map((c) => c.id);
+      db.conversations = db.conversations.filter((c) => !solo.includes(c.id));
+      for (const t of ["resources", "student_profiles", "student_tasks", "focus_sessions", "student_events", "activity_log", "student_goals"]) {
+        if (db[t]) db[t] = db[t].filter((r) => (r.owner_id || r.user_id) !== uid);
+      }
       db.messages = db.messages.filter((m) => m.user_id !== uid);
       db.conversation_participants = db.conversation_participants.filter((p) => p.user_id !== uid);
       db.profiles = db.profiles.filter((p) => p.id !== uid);
@@ -498,24 +613,94 @@
       if (i >= 0) authUsers.splice(i, 1);
       return { data: null, error: null };
     }
+    if (name === "request_to_join") {
+      const uid = me();
+      const code = String(args?.code || "").replace(/[^A-Za-z0-9]/g, "").toUpperCase();
+      const rc = db.room_codes.find((r) => r.code === code);
+      const conv = rc && db.conversations.find((c) => c.id === rc.conversation_id && !(c.ends_at && Date.parse(c.ends_at) <= Date.now()));
+      if (!conv || db.blocks.some((b) => b.blocker_id === conv.created_by && b.blocked_id === uid)) {
+        return { data: [{ conversation_id: null, name: null, status: "invalid" }], error: null };
+      }
+      if (roleIn(conv.id, uid)) return { data: [{ conversation_id: conv.id, name: conv.name, status: "member" }], error: null };
+      if (!db.room_requests.some((r) => r.conversation_id === conv.id && r.user_id === uid)) {
+        const row = { conversation_id: conv.id, user_id: uid, username: db.profiles.find((p) => p.id === uid)?.username || "someone", created_at: nowIso() };
+        db.room_requests.push(row);
+        emitChange("room_requests", "INSERT", row, null);
+        persist();
+      }
+      return { data: [{ conversation_id: conv.id, name: conv.name, status: "pending" }], error: null };
+    }
     throw new Error(`supabase-mock: unsupported rpc ${name}`);
   }
 
   // --------------------------------------------------------------- storage
+  const storageMeta = new Map(); // "bucket/path" -> { owner, size }
+  // The student-resources policies: u/<you>/... or c/<a circle you're in>/...
+  function mayUseResourcePath(path) {
+    const [scope, id] = String(path).split("/");
+    if (scope === "u") return id === me();
+    if (scope === "c") return myConvIds().has(id);
+    return false;
+  }
+  // Phase 17: shared files are readable only while listed; uploaders can
+  // always read their own; the bucket enforces the quota; hosts may remove.
+  function mayReadResourceObject(path) {
+    const meta = storageMeta.get(`student-resources/${path}`);
+    if (meta?.owner === me()) return true;
+    const [scope, id] = String(path).split("/");
+    if (scope === "u") return id === me();
+    if (scope === "c") return myConvIds().has(id) && db.resources.some((r) => r.object_path === path);
+    return false;
+  }
+  function storageQuotaOk() {
+    let bytes = 0;
+    let n = 0;
+    for (const [k, m] of storageMeta) if (k.startsWith("student-resources/") && m.owner === me()) { bytes += m.size; n++; }
+    return bytes < 200 * 1024 * 1024 && n < 1000;
+  }
+  function mayRemoveResourceObject(path) {
+    const meta = storageMeta.get(`student-resources/${path}`);
+    if (meta?.owner === me()) return true;
+    const [scope, id] = String(path).split("/");
+    return scope === "c" && ["owner", "admin"].includes(roleIn(id));
+  }
   const storageApi = {
     from(bucket) {
       return {
         async upload(path, blob) {
           await sleep(QA.latency ?? 15);
+          if (bucket === "student-resources" && (!mayUseResourcePath(path) || !storageQuotaOk())) {
+            return { data: null, error: { message: "new row violates row-level security policy", statusCode: "403" } };
+          }
+          if (storage.has(`${bucket}/${path}`)) return { data: null, error: { message: "The resource already exists", statusCode: "409" } };
           storage.set(`${bucket}/${path}`, blob);
+          storageMeta.set(`${bucket}/${path}`, { owner: me(), size: blob.size });
           return { data: { path }, error: null };
+        },
+        async download(path) {
+          await sleep(QA.latency ?? 15);
+          const blob = storage.get(`${bucket}/${path}`);
+          if (!blob || (bucket === "student-resources" && !mayReadResourceObject(path))) return { data: null, error: { message: "Object not found", statusCode: "404" } };
+          return { data: blob, error: null };
+        },
+        // Signed links answer from memory (see fetch below), carrying the
+        // type the file was stored with.
+        async createSignedUrl(path, expiresIn, opts = {}) {
+          await sleep(QA.latency ?? 15);
+          if (!storage.has(`${bucket}/${path}`) || (bucket === "student-resources" && !mayReadResourceObject(path))) return { data: null, error: { message: "Object not found", statusCode: "404" } };
+          const q = opts?.download ? `&download=${encodeURIComponent(opts.download === true ? "" : opts.download)}` : "";
+          return { data: { signedUrl: `${STORAGE_SIGN}${bucket}/${path}?token=qa${q}` }, error: null };
         },
         getPublicUrl(path) {
           return { data: { publicUrl: `${STORAGE_PUBLIC}${bucket}/${path}` } };
         },
         async remove(paths) {
-          paths.forEach((p) => storage.delete(`${bucket}/${p}`));
-          return { data: paths, error: null };
+          const gone = paths.filter((p) => bucket === "chat-files" || mayRemoveResourceObject(p));
+          gone.forEach((p) => {
+            storage.delete(`${bucket}/${p}`);
+            storageMeta.delete(`${bucket}/${p}`);
+          });
+          return { data: gone, error: null };
         },
       };
     },
@@ -528,6 +713,12 @@
     if (url.startsWith(STORAGE_PUBLIC)) {
       const blob = storage.get(url.slice(STORAGE_PUBLIC.length));
       return blob ? new Response(blob, { status: 200 }) : new Response("not found", { status: 404 });
+    }
+    if (url.startsWith(STORAGE_SIGN)) {
+      const blob = storage.get(url.slice(STORAGE_SIGN.length).split("?")[0]);
+      const headers = { "content-type": blob?.type || "application/octet-stream" };
+      if (!blob) return new Response("not found", { status: 404 });
+      return (init?.method || "GET").toUpperCase() === "HEAD" ? new Response(null, { status: 200, headers }) : new Response(blob, { status: 200, headers });
     }
     if (url.startsWith(SUPA)) throw new Error("supabase-mock: blocked a real Supabase request");
     return realFetch(input, init);
@@ -788,6 +979,7 @@
   window.__qa = {
     db,
     ready,
+    storageKeys: () => [...storageMeta.entries()].map(([k, m]) => ({ key: k, owner: m.owner })),
     async receive(convName, fromUser, text) {
       await ready;
       const conv = db.conversations.find((c) => c.name === convName);
@@ -800,6 +992,18 @@
       emitChange("messages", "INSERT", row, null);
       persist();
       return row.id;
+    },
+    // Someone else asks to join a room by its code (Panalo Students).
+    async knock(fromUser, code) {
+      await ready;
+      const from = db.profiles.find((p) => p.username === fromUser);
+      const rc = db.room_codes.find((r) => r.code === String(code).replace(/[^A-Za-z0-9]/g, "").toUpperCase());
+      if (!from || !rc) return false;
+      const row = { conversation_id: rc.conversation_id, user_id: from.id, username: fromUser, created_at: nowIso() };
+      db.room_requests.push(row);
+      emitChange("room_requests", "INSERT", row, null);
+      persist();
+      return true;
     },
     typing(convName) {
       const conv = db.conversations.find((c) => c.name === convName);

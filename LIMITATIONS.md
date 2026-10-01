@@ -104,14 +104,20 @@ PIN. A user on two devices effectively has two different apps.
   without unwrapping a key per message. A 👍 leaks little, but it is plaintext.
 - **Attachment URLs are unguessable, not private.** The bucket is public: the
   bytes are ciphertext now, but anyone holding a URL can fetch that ciphertext.
-- **Two `SECURITY DEFINER` functions stay callable by signed-in users**, and
+- **Four `SECURITY DEFINER` functions stay callable by signed-in users**, and
   cannot be otherwise. `find_profile_by_username` is how you start a chat
   with someone you don't already share one with — as `SECURITY INVOKER` it
   would be subject to the profiles policy and return nothing for exactly the
   strangers it exists to find. `delete_my_account` needs privileges the
   browser must never hold, takes no arguments, and can only delete the
   caller. The RLS helpers were moved to a non-exposed schema in phase 13, so
-  these two are the only ones left.
+  these are the only ones left. Phase 16 added the third,
+  `request_to_join(code)`, for the same reason as the lookup: a join code has
+  to find a room the caller can't see yet. It takes one exact code and
+  returns at most that room's name; it never adds anyone to anything.
+  Phase 18 added `my_storage_objects()`, which lists only the caller's own
+  uploads (Storage hides its owner column from the API) so deleting an
+  account can remove them.
 - **Leaked-password protection is unavailable** on the Supabase free plan.
 - **Deleting a chat is "delete for me."** Your copy goes; the other person
   keeps theirs. There is no delete-for-everyone, and none could be enforced.
@@ -121,8 +127,9 @@ PIN. A user on two devices effectively has two different apps.
   everyone at once and deleted within fifteen minutes by a `pg_cron` job.
   **Its photos and files are not deleted**: Storage objects can only be
   removed through the Storage API, not by a database job, so the encrypted
-  blob stays in the bucket under its random name. Nobody who was not already
-  in the chat has its address, but it still counts against the 1 GB limit.
+  blob stays in the bucket (Supabase or R2) under its random name. Nobody who
+  was not already in the chat has its address, but it still counts against
+  the storage limit until its sender deletes their account.
 - **Getting a chat key back is a person's choice, not automatic.** After a
   password reset on a device that did not hold the old key, chats encrypted
   to the old key cannot be read until someone else in them presses "Share
@@ -143,7 +150,9 @@ PIN. A user on two devices effectively has two different apps.
   indexed stay unsearchable.
 - **Free tier ceilings:** 500 MB database, **1 GB file storage**, 5 GB egress,
   50,000 monthly users, and projects **pause after one week of inactivity**.
-  Storage is the first wall — roughly 20 large attachments.
+  Storage is the first wall — roughly 20 large attachments — unless
+  Cloudflare R2 is bound ([HOSTING.md](HOSTING.md)), which raises it to
+  10 GB with a per-person quota (300 MB by default).
 - **The sidebar scans the newest 500 messages globally.** Chats missed by that
   window each cost their own follow-up query.
 - **Conversation keys are RSA-unwrapped once per conversation per session.**
@@ -250,9 +259,64 @@ PIN. A user on two devices effectively has two different apps.
 
 ---
 
+## 9. Panalo Students (`students/`) 🟡
+
+- **Moderation is reports in a table.** Blocking and reporting work (phase
+  16), but reports are only readable in the dashboard; there is no reviewer
+  UI, no suspension, and nobody is notified when one arrives.
+- **No verified roles.** A "class" is a group whose hosts are whoever made
+  it. There is no teacher verification, no school accounts, no parent view.
+- **Age is self-declared.** Sign-up asks people to confirm they are 13 or
+  over; nothing checks it, and there is no parental-consent flow. The
+  privacy page says so and tells operators to check what applies to them.
+- **Archive files are not end-to-end encrypted.** They live in a private
+  bucket guarded by Storage policies; the server can read them. Shared files
+  are readable by everyone in the conversation, including people added later.
+- **Files outlive their rooms.** When a room is purged a day after it ends,
+  its messages go, but archive files shared into it stay in Storage (a
+  database job cannot delete Storage objects) until their uploader deletes
+  them or their account.
+- **Deleting an account removes files from the device it is done on.** The
+  app deletes every file the person uploaded (Supabase and R2) and then the
+  account. If the browser closes between the two, the account remains and
+  deleting again finishes the job. Files that belonged to accounts deleted
+  before phase 18 have to be removed in the Supabase dashboard.
+- **Reports outlive their authors.** Reports someone filed or received are
+  kept for moderation with the deleted person's id set to empty.
+- **The 200 MB archive quota is per person, not per project.** Five busy
+  users can fill Supabase's free 1 GB; with R2 bound the ceiling is 10 GB.
+- **Letting someone into a room shares the key to whoever the server says
+  they are.** The same trust as adding a member by name in Panalo Chat.
+- **Students has no service worker.** It needs a connection to start, and
+  sends no notification when the app is closed. The focus-end notification
+  only works while the tab is open in the background.
+- **Timer, sound, motion and Drift progress are per device** (localStorage).
+  Study data itself syncs.
+- **The world is generated on the main thread.** Generating a planet takes
+  about 180 ms at a 4x CPU slowdown; it runs while the browser is idle, once
+  per session. Drawing it uses WebGL only on a real GPU: a browser that
+  offers only software WebGL (some VMs, remote desktops, old drivers) gets
+  the simpler 2D globe, with no ring shadows or relief. `localStorage`
+  `panalo.students.gl` = `force` or `off` overrides the choice for testing.
+- **The intro plays sound unless turned off.** It starts right after
+  sign-up, which browsers count as permission to play audio; a browser that
+  still refuses plays it silently. The switch is on screen and remembered
+  per device; reduced motion skips the film, and its sound, entirely.
+- **The intro's score is synthesized; its narration must be recorded.**
+  There are no sampled instruments. The voice-over plays only from
+  recordings listed in `students/media/film.json` (see FILM.md); until they
+  exist the film is captioned only.
+- **The graded film needs WebGL on a real GPU.** Elsewhere the same film
+  plays ungraded, with the world drawn by the 2D renderer. Phones with weak
+  GPUs may drop frames; the film's clock follows the frames, so it slows
+  rather than skips.
+- **Fonts and the QR library come from CDNs.** If they fail, the app falls
+  back to system fonts and shows the join code without a QR.
+
 ## Top five by real risk
 
-1. **Storage ceiling** — 1 GB, and attachments are the most-used feature.
+1. **Storage ceiling** — 1 GB on Supabase alone (10 GB with R2 bound), and
+   attachments are the most-used feature.
 2. **No moderation tooling** — no blocking, reporting or suspension, before
    any growth.
 3. **Calls unreliable** without TURN, on exactly the networks phones use.

@@ -1,0 +1,400 @@
+/* Panalo Students — the inside: bar, dock, menus, Warp, surface frame. */
+
+.app {
+  position: relative;
+  z-index: 1;
+  min-height: 100vh;
+  min-height: 100dvh;
+}
+body.in-app {
+  background: radial-gradient(ellipse 80% 60% at 70% -10%, rgba(185, 163, 255, 0.07), transparent 60%), radial-gradient(ellipse 60% 50% at 0% 100%, rgba(154, 216, 255, 0.05), transparent 60%), var(--bg);
+  background-attachment: fixed;
+}
+
+/* ---- Top bar ------------------------------------------------------------------ */
+
+.bar {
+  position: fixed;
+  inset: 0 0 auto;
+  z-index: 40;
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  height: var(--bar-h);
+  padding: 0 var(--gutter);
+  background: rgba(7, 9, 18, 0.84);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--line);
+}
+.brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  text-decoration: none;
+  color: var(--text);
+}
+.bar-nav {
+  display: flex;
+  gap: 2px;
+  margin: 0 auto;
+}
+.bar-nav a {
+  position: relative;
+  padding: 8px 13px;
+  border-radius: var(--r-pill);
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--text-2);
+  text-decoration: none;
+  transition: color var(--dur-1), background var(--dur-1);
+}
+.bar-nav a:hover {
+  color: var(--text);
+  background: rgba(255, 255, 255, 0.04);
+}
+/* The current destination: its colour, and a small body in orbit under it. */
+.bar-nav a[aria-current="page"] {
+  color: var(--text);
+}
+.bar-nav a[aria-current="page"]::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  bottom: -2px;
+  width: 5px;
+  height: 5px;
+  margin-left: -2.5px;
+  border-radius: 50%;
+  background: var(--tone);
+  box-shadow: 0 0 8px var(--tone);
+}
+.pulse-count {
+  display: inline-grid;
+  place-items: center;
+  min-width: 18px;
+  height: 18px;
+  margin-left: 6px;
+  padding: 0 5px;
+  border-radius: 9px;
+  background: var(--signal);
+  color: var(--on-accent);
+  font-size: 11px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  vertical-align: 1px;
+}
+.bar-right {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.bar-clock {
+  font-size: 13px;
+  color: var(--time);
+  letter-spacing: 0.04em;
+}
+.warp-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  height: 34px;
+  padding: 0 8px 0 12px;
+  border: 1px solid var(--line-2);
+  border-radius: var(--r-pill);
+  background: none;
+  color: var(--text-2);
+  font-size: 13px;
+}
+.warp-btn:hover {
+  color: var(--text);
+  border-color: var(--line-3);
+}
+.warp-btn kbd {
+  padding: 2px 6px;
+  border-radius: 6px;
+  background: var(--surface-2);
+  font: 600 11px/1.3 var(--f-body);
+  color: var(--text-3);
+}
+.me-btn {
+  display: grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  border: 1px solid var(--line-2);
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 30%, var(--surface-3), var(--surface));
+  font-weight: 700;
+  font-size: 14px;
+}
+
+.menu {
+  position: absolute;
+  right: 0;
+  top: calc(100% + 10px);
+  z-index: 50;
+  min-width: 230px;
+  padding: 6px;
+  border: 1px solid var(--line-2);
+  border-radius: var(--r-2);
+  background: var(--surface-2);
+  box-shadow: var(--shadow-2);
+}
+.menu.pop {
+  position: fixed;
+  right: auto;
+  top: 0;
+}
+.menu a,
+.menu button {
+  display: block;
+  width: 100%;
+  padding: 10px 12px;
+  border: 0;
+  border-radius: var(--r-1);
+  background: none;
+  text-align: left;
+  font-size: 14px;
+  color: var(--text);
+  text-decoration: none;
+}
+.menu a:hover,
+.menu button:hover,
+.menu a:focus-visible,
+.menu button:focus-visible {
+  background: rgba(255, 255, 255, 0.06);
+  outline: none;
+}
+.menu .danger {
+  color: var(--alert);
+}
+.menu-head {
+  padding: 10px 12px 8px;
+  margin-bottom: 4px;
+  border-bottom: 1px solid var(--line);
+  font-size: 14px;
+}
+
+@media (max-width: 1100px) {
+  .bar-clock {
+    display: none;
+  }
+}
+@media (max-width: 899px) {
+  .bar-nav {
+    display: none;
+  }
+  .bar-right {
+    margin-left: auto;
+  }
+  .warp-btn kbd {
+    display: none;
+  }
+}
+
+/* ---- Phone dock ----------------------------------------------------------------- */
+
+.dock {
+  display: none;
+}
+@media (max-width: 899px) {
+  .dock {
+    position: fixed;
+    inset: auto 0 0;
+    z-index: 40;
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    height: calc(var(--dock-h) + env(safe-area-inset-bottom));
+    padding-bottom: env(safe-area-inset-bottom);
+    background: rgba(7, 9, 18, 0.94);
+    backdrop-filter: blur(12px);
+    border-top: 1px solid var(--line);
+  }
+  .dock a,
+  .dock button {
+    position: relative;
+    display: grid;
+    justify-items: center;
+    align-content: center;
+    gap: 6px;
+    border: 0;
+    background: none;
+    color: var(--text-3);
+    font-size: 11.5px;
+    font-weight: 600;
+    text-decoration: none;
+  }
+  .dock-glyph {
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    border: 1.5px solid currentColor;
+    position: relative;
+  }
+  .dock-glyph::after {
+    content: "";
+    position: absolute;
+    width: 5px;
+    height: 5px;
+    right: -4px;
+    top: -2px;
+    border-radius: 50%;
+    background: currentColor;
+  }
+  .dock a[aria-current="page"] {
+    color: var(--tone);
+  }
+  .dock a[aria-current="page"] .dock-glyph {
+    background: color-mix(in srgb, var(--tone) 25%, transparent);
+    box-shadow: 0 0 12px color-mix(in srgb, var(--tone) 60%, transparent);
+  }
+  .dock .pulse-count {
+    position: absolute;
+    top: 8px;
+    left: calc(50% + 6px);
+    margin: 0;
+  }
+}
+
+.more-grid {
+  display: grid;
+  gap: 8px;
+  padding-bottom: 16px;
+}
+.more-link {
+  display: grid;
+  gap: 2px;
+  padding: 14px 16px;
+  border: 1px solid var(--line);
+  border-left: 3px solid var(--tone);
+  border-radius: var(--r-2);
+  text-decoration: none;
+}
+.more-link small {
+  color: var(--text-3);
+}
+
+/* ---- Warp ------------------------------------------------------------------------ */
+
+dialog.warp {
+  margin-top: 12vh;
+}
+.warp-input {
+  font-size: 17px;
+}
+.warp-list {
+  list-style: none;
+  margin: 10px 0 16px;
+  padding: 0;
+  max-height: 46vh;
+  overflow-y: auto;
+}
+.warp-list li {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 11px 12px;
+  border-radius: var(--r-1);
+  cursor: pointer;
+}
+.warp-list li small {
+  color: var(--text-3);
+}
+.warp-list li[aria-selected="true"] {
+  background: rgba(154, 216, 255, 0.1);
+  box-shadow: inset 2px 0 0 var(--focus);
+}
+
+/* ---- Stage and surface frame ------------------------------------------------------- */
+
+.stage {
+  padding: calc(var(--bar-h) + 8px) 0 40px;
+  outline: none;
+}
+@media (max-width: 899px) {
+  .stage {
+    padding-bottom: calc(var(--dock-h) + 24px + env(safe-area-inset-bottom));
+  }
+}
+.surface {
+  max-width: 1320px;
+  margin: 0 auto;
+  padding: 18px var(--gutter) 0;
+  animation: surface-in var(--dur-2) var(--ease-out);
+}
+@keyframes surface-in {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+}
+.surface-loading {
+  padding-top: 60px;
+  max-width: 280px;
+}
+.s-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 16px;
+  margin: 10px 0 26px;
+}
+.s-head h1 {
+  margin-top: 8px;
+  font: 400 clamp(24px, 3vw, 36px) / 1.1 var(--f-display);
+  letter-spacing: -0.04em;
+}
+.s-head .s-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.s-head p.s-sub {
+  margin-top: 8px;
+  color: var(--text-2);
+  max-width: 60ch;
+}
+
+.schema-banner {
+  max-width: 1320px;
+  margin: 14px auto 0;
+  padding: 14px var(--gutter);
+  border-top: 1px solid rgba(255, 196, 122, 0.35);
+  border-bottom: 1px solid rgba(255, 196, 122, 0.35);
+  background: rgba(255, 196, 122, 0.07);
+  font-size: 14px;
+  color: var(--text-2);
+}
+.schema-banner b {
+  color: var(--time);
+}
+
+/* A panel is just a region with a top rule and a label -- not a card. */
+.panel {
+  padding-top: 14px;
+  border-top: 1px solid var(--line);
+}
+.panel + .panel {
+  margin-top: 30px;
+}
+.panel-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+.panel-head h2 {
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--tone, var(--text-3));
+}
+.panel-head a,
+.panel-head button.link-btn {
+  font-size: 13px;
+  color: var(--text-2);
+}

@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+<html lang="en" data-boot="public">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>Panalo Students — your student life is a universe</title>
+  <meta name="description" content="Panalo Students is a study, communication and creative space for intensely curious students. A calm study room, circles and event rooms without phone numbers, a private archive, and a world that grows from what you actually do.">
+  <meta name="theme-color" content="#070912">
+  <meta property="og:title" content="Panalo Students — your student life is a universe">
+  <meta property="og:description" content="Study, talk, keep your files, and watch your own world grow from what you actually do.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://panalo-5dk.pages.dev/students/">
+  <meta property="og:site_name" content="Panalo">
+  <meta property="og:image" content="https://panalo-5dk.pages.dev/students/og.jpg">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:image:alt" content="Panalo Students: “Your student life is a universe”, beside a ringed world.">
+  <meta name="twitter:card" content="summary_large_image">
+  <link rel="canonical" href="https://panalo-5dk.pages.dev/students/">
+  <link rel="icon" type="image/svg+xml" href="mark.svg">
+  <link rel="manifest" href="manifest.webmanifest">
+  <!-- Before first paint: is someone signed in, and is motion reduced?
+       External because the CSP forbids inline scripts. -->
+  <script src="js/boot.js"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@400..700&family=Unbounded:wght@300..600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/tokens.css">
+  <link rel="stylesheet" href="css/base.css">
+  <link rel="stylesheet" href="css/public.css">
+  <link rel="stylesheet" href="css/app.css">
+  <link rel="stylesheet" href="css/surfaces.css">
+  <link rel="stylesheet" href="css/fx.css">
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+
+  <!-- One starfield for the whole outside of Panalo (landing and the
+       crossing). Inside the app it dims to almost nothing. -->
+  <canvas id="sky" class="sky" aria-hidden="true"></canvas>
+
+  <div id="splash" class="splash" aria-hidden="true">
+    <svg width="56" height="56" viewBox="0 0 64 64"><use href="#mark"/></svg>
+  </div>
+
+  <svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+    <defs>
+      <radialGradient id="mark-body" cx=".35" cy=".3" r=".75">
+        <stop offset="0" stop-color="#f4f6ff"/><stop offset=".55" stop-color="#9ad8ff"/><stop offset="1" stop-color="#3b4f9a"/>
+      </radialGradient>
+      <!-- The mark: a world with one orbit and one moon. -->
+      <symbol id="mark" viewBox="0 0 64 64">
+        <path d="M5 38A28 9 -16 0 1 59 23" fill="none" stroke="#ffc47a" stroke-width="2.2" opacity=".42"/>
+        <circle cx="32" cy="31" r="15" fill="url(#mark-body)"/>
+        <path d="M5 38A28 9 -16 0 0 59 23" fill="none" stroke="#ffc47a" stroke-width="2.4" stroke-linecap="round"/>
+        <circle cx="55" cy="17" r="3.4" fill="#eef0fa"/>
+      </symbol>
+    </defs>
+  </svg>
+
+  <!-- =====================================================================
+       OUTSIDE: the landing
+       ===================================================================== -->
+  <div id="landing" class="landing">
+    <!-- The gate: a count to 100 while the hero world wakes up. First visit
+         of a session only; purely visual (clicks pass through). -->
+    <div class="gate" aria-hidden="true">
+      <div class="gate-core">
+        <svg width="44" height="44" viewBox="0 0 64 64"><use href="#mark"/></svg>
+        <p class="gate-n"><span>000</span><small>%</small></p>
+        <p class="gate-cap">Calibrating your universe</p>
+        <i class="gate-bar"><b></b></i>
+      </div>
+    </div>
+    <!-- The HUD: corner brackets, the chapter you're in, how far you've come,
+         and the thread: one star per chapter, lit as you pass it. -->
+    <div class="hud" aria-hidden="true">
+      <i class="hud-c tl"></i><i class="hud-c tr"></i><i class="hud-c bl"></i><i class="hud-c br"></i>
+      <p class="hud-chapter"><span class="hud-no">00</span><span class="hud-name">Arrival</span></p>
+      <p class="hud-pct"><span>000</span>%</p>
+      <i class="hud-progress"><b></b></i>
+    </div>
+    <nav class="thread" aria-label="Chapters">
+      <i class="thread-line"><b></b></i>
+      <ol class="thread-stars"></ol>
+    </nav>
+    <header class="land-bar">
+      <a class="wordmark" href="#top" aria-label="Panalo Students, home">
+        <svg width="30" height="30" viewBox="0 0 64 64" aria-hidden="true"><use href="#mark"/></svg>
+        <span class="wm-name">panalo</span><span class="wm-sub">Students</span>
+      </a>
+      <nav class="land-links" aria-label="Sections">
+        <a href="#idea">The idea</a>
+        <a href="#inside">Inside</a>
+        <a href="#safety">Safety</a>
+        <a href="#faq">Questions</a>
+      </nav>
+      <div class="land-cta">
+        <a class="btn btn-quiet" href="#login">Log in</a>
+        <a class="btn btn-primary" href="#signup">Launch</a>
+      </div>
+    </header>
+
+    <main id="top" class="land">
+      <section class="hero" aria-labelledby="hero-title" data-chapter="Arrival">
+        <canvas class="hero-drift" aria-hidden="true"></canvas>
+        <div class="ignition" aria-hidden="true"></div>
+        <div class="hero-copy">
+          <p class="kicker hero-kicker">Panalo Students · for the intensely curious</p>
+          <h1 id="hero-title" class="hero-title">
+            <span class="ht-line">Your student life</span>
+            <span class="ht-line ht-serif serif">is a universe.</span>
+          </h1>
+          <p class="hero-sub"><b>Focus.</b> <b>Talk.</b> <b>Keep.</b> <span>Grow a world.</span></p>
+          <div class="hero-actions">
+            <a class="btn btn-primary btn-lg fx-cta" href="#signup">Launch my universe</a>
+            <a class="btn btn-ghost btn-lg" href="#login">I already have one</a>
+          </div>
+        </div>
+        <div class="hero-stage">
+        <div class="hero-world">
+          <canvas class="rib rib-back" aria-hidden="true"></canvas>
+          <canvas id="hero-globe" width="720" height="720" tabindex="0" role="img" aria-label="A world you can turn: drag it, or use the arrow keys."></canvas>
+          <canvas class="rib rib-front" aria-hidden="true"></canvas>
+        </div>
+        <!-- The world's controls are added here once it exists (globe-dock.js). -->
+        </div>
+        <a class="scroll-cue" href="#idea"><span>What is this?</span><i aria-hidden="true"></i></a>
+      </section>
+
+      <section class="idea" id="idea" aria-labelledby="idea-title" data-chapter="The idea">
+        <p class="kicker" data-fx="slash"><span class="kanji" aria-hidden="true">壱</span>01 — The idea</p>
+        <h2 id="idea-title" class="idea-quote serif" data-fx="slash" data-scramble>Most apps want your attention.<br>This one wants your curiosity back.</h2>
+        <div class="idea-cards">
+          <div class="slash-card tone-time" data-fx="slash"><h3>One place</h3><p>Study, timetable, chats, files, rest.</p></div>
+          <div class="slash-card tone-focus" data-fx="slash"><h3>For the curious</h3><p>Neutron stars at 1 a.m. Margins full of drawings.</p></div>
+          <div class="slash-card tone-drift" data-fx="slash"><h3>Kinder by design</h3><p>No feed. No streak to feel guilty about.</p></div>
+        </div>
+      </section>
+      <svg class="brush" data-fx="ink" viewBox="0 0 1200 40" preserveAspectRatio="none" aria-hidden="true"><path d="M6 24C160 8 300 30 470 18S820 6 980 20 1150 26 1194 14"/></svg>
+
+      <section class="inside" id="inside" aria-labelledby="inside-title" data-chapter="Inside">
+        <p class="kicker" data-fx="slash"><span class="kanji" aria-hidden="true">弐</span>02 — Inside</p>
+        <h2 id="inside-title" class="section-title display" data-fx="slash" data-scramble>A world made of<br>what you actually do.</h2>
+
+        <div class="world-demo" id="world-demo">
+          <div class="wd-globe"><canvas id="demo-globe" width="420" height="420" aria-label="A sample world" role="img" tabindex="0"></canvas></div>
+          <div class="wd-controls">
+            <p class="wd-lead">Every number is real. Try it:</p>
+            <label class="wd-slider tone-focus"><span><b>Focus hours</b><output id="wd-focus-out">8 h</output></span>
+              <input type="range" id="wd-focus" min="0" max="200" value="8"><small>grows land</small></label>
+            <label class="wd-slider tone-time"><span><b>Tasks finished</b><output id="wd-tasks-out">20</output></span>
+              <input type="range" id="wd-tasks" min="0" max="300" value="20"><small>city lights</small></label>
+            <label class="wd-slider tone-drift"><span><b>Hours making things</b><output id="wd-create-out">2 h</output></span>
+              <input type="range" id="wd-create" min="0" max="20" value="2"><small>aurora</small></label>
+            <label class="wd-slider tone-signal"><span><b>Days away</b><output id="wd-away-out">0</output></span>
+              <input type="range" id="wd-away" min="0" max="21" value="0"><small>clouds — they clear when you're back</small></label>
+          </div>
+        </div>
+
+        <ol class="systems">
+          <li class="tone-time" data-fx="slash"><span class="sys-k" aria-hidden="true">壱</span><span class="sys-n">Now</span><p>Your day as an orbit.</p></li>
+          <li class="tone-focus" data-fx="slash"><span class="sys-k" aria-hidden="true">弐</span><span class="sys-n">Study Room</span><p>Deep space at midnight. A timer that survives reloads.</p></li>
+          <li class="tone-signal" data-fx="slash"><span class="sys-k" aria-hidden="true">参</span><span class="sys-n">Signals</span><p>Circles, classes and event rooms. Encrypted.</p></li>
+          <li class="tone-archive" data-fx="slash"><span class="sys-k" aria-hidden="true">肆</span><span class="sys-n">Archive</span><p>Your files, catalogued. Private unless shared.</p></li>
+          <li class="tone-world" data-fx="slash"><span class="sys-k" aria-hidden="true">伍</span><span class="sys-n">World</span><p>A record you can see — and spin.</p></li>
+          <li class="tone-drift" data-fx="slash"><span class="sys-k" aria-hidden="true">陸</span><span class="sys-n">Drift</span><p>Three small things a day. Then the door closes.</p></li>
+        </ol>
+      </section>
+      <svg class="brush" data-fx="ink" viewBox="0 0 1200 40" preserveAspectRatio="none" aria-hidden="true"><path d="M6 24C160 8 300 30 470 18S820 6 980 20 1150 26 1194 14"/></svg>
+      <section class="numbers" id="numbers" aria-labelledby="numbers-title" data-chapter="In numbers">
+        <p class="kicker" data-fx="slash"><span class="kanji" aria-hidden="true">参</span>03 — In numbers</p>
+        <h2 id="numbers-title" class="section-title display" data-fx="slash" data-scramble>Small numbers,<br>on purpose.</h2>
+        <dl class="stats">
+          <div class="stat tone-time" data-fx="slash"><dt>spaces, one place</dt><dd><span data-count="6" data-pad="2">06</span></dd></div>
+          <div class="stat tone-drift" data-fx="slash"><dt>small things a day, then Drift closes</dt><dd><span data-count="3" data-pad="2">03</span></dd></div>
+          <div class="stat tone-signal" data-fx="slash"><dt>phone numbers needed</dt><dd><span data-count="0" data-from="99" data-pad="2">00</span></dd></div>
+          <div class="stat tone-focus" data-fx="slash"><dt>ads, feeds or algorithms</dt><dd><span data-count="0" data-from="99" data-pad="2">00</span></dd></div>
+        </dl>
+      </section>
+      <svg class="brush" data-fx="ink" viewBox="0 0 1200 40" preserveAspectRatio="none" aria-hidden="true"><path d="M6 24C160 8 300 30 470 18S820 6 980 20 1150 26 1194 14"/></svg>
+
+      <section class="for" id="for" aria-labelledby="for-title" data-chapter="For you">
+        <p class="kicker" data-fx="slash"><span class="kanji" aria-hidden="true">肆</span>04 — Is this for you?</p>
+        <h2 id="for-title" class="section-title display" data-fx="slash" data-scramble>Probably, if you…</h2>
+        <div class="marquee" aria-hidden="true">
+          <div class="mq-row"><span>have tabs about black holes</span><span>draw in the margins</span><span>study better in quiet</span><span>build things at 2 a.m.</span><span>collect obscure music</span><span>write fiction nobody's read yet</span></div>
+          <div class="mq-row rev"><span>hate swapping phone numbers</span><span>lose your notes</span><span>like strange interfaces</span><span>run a hackathon chat</span><span>fall down Wikipedia holes</span><span>keep sketches and recordings</span></div>
+        </div>
+        <ul class="sr-only">
+          <li>have more tabs open than finished assignments, and the tabs are about black holes</li>
+          <li>want a group chat for a hackathon that doesn't need strangers' phone numbers</li>
+          <li>study better when the room is quiet and the clock is honest</li>
+          <li>keep notes, sketches and recordings you'd like to find again</li>
+          <li>like interfaces that are a little strange, as long as they make sense</li>
+        </ul>
+        <p class="for-not" data-fx="slash"><span class="serif">Probably not,</span> if you want another feed. There isn't one.</p>
+      </section>
+      <svg class="brush" data-fx="ink" viewBox="0 0 1200 40" preserveAspectRatio="none" aria-hidden="true"><path d="M6 24C160 8 300 30 470 18S820 6 980 20 1150 26 1194 14"/></svg>
+      <section class="letter-wrap" id="letter" aria-labelledby="letter-title" data-chapter="A letter">
+        <p class="kicker" data-fx="slash"><span class="kanji" aria-hidden="true">伍</span>05 — A letter</p>
+        <article class="letter" data-fx="slash">
+          <h2 id="letter-title" class="letter-to serif">To whoever is reading this at an odd hour,</h2>
+          <p>You don't need another app that counts your screen time against you, or a feed that decides what you care about tonight.</p>
+          <p>You need a quiet room, a few people you chose, a shelf for the things you made, and proof that the hours went somewhere. Every hour you focus becomes land. Every thing you finish becomes a light. Rest, and clouds roll in; come back, and they clear.</p>
+          <p class="letter-sign"><span class="serif">Take your time. The universe will wait.</span><span class="letter-from">— Panalo</span></p>
+        </article>
+      </section>
+      <svg class="brush" data-fx="ink" viewBox="0 0 1200 40" preserveAspectRatio="none" aria-hidden="true"><path d="M6 24C160 8 300 30 470 18S820 6 980 20 1150 26 1194 14"/></svg>
+
+      <section class="safety" id="safety" aria-labelledby="safety-title" data-chapter="Safety">
+        <p class="kicker" data-fx="slash"><span class="kanji" aria-hidden="true">陸</span>06 — Safety and privacy</p>
+        <h2 id="safety-title" class="section-title display" data-fx="slash" data-scramble>Built for students,<br>so built to be careful.</h2>
+        <div class="safety-grid">
+          <div data-fx="slash"><h3>No phone numbers</h3><p>You're a username. Nobody can browse the list.</p></div>
+          <div data-fx="slash"><h3>Rooms with a door</h3><p>A code to knock, a host to let you in.</p></div>
+          <div data-fx="slash"><h3>Encrypted on your device</h3><p>The server stores ciphertext. <a href="privacy.html#encryption">What that covers.</a></p></div>
+          <div data-fx="slash"><h3>Block and report</h3><p>Hide someone, stop them adding you.</p></div>
+          <div data-fx="slash"><h3>Files stay yours</h3><p>Private unless you share with a circle.</p></div>
+          <div data-fx="slash"><h3>No ads, no AI, no feed</h3><p>Nothing sold. No algorithm.</p></div>
+        </div>
+      </section>
+      <svg class="brush" data-fx="ink" viewBox="0 0 1200 40" preserveAspectRatio="none" aria-hidden="true"><path d="M6 24C160 8 300 30 470 18S820 6 980 20 1150 26 1194 14"/></svg>
+      <section class="faq" id="faq" aria-labelledby="faq-title" data-chapter="Questions">
+        <p class="kicker" data-fx="slash"><span class="kanji" aria-hidden="true">漆</span>07 — Questions</p>
+        <h2 id="faq-title" class="section-title display" data-fx="slash" data-scramble>Questions,<br>answered.</h2>
+        <div class="faq-list">
+          <details data-fx="slash"><summary>Is it free?</summary><p>Yes. No ads, no paid tier, nothing sold.</p></details>
+          <details data-fx="slash"><summary>Do I need a phone number?</summary><p>No. You pick a username; people find you only if you tell them it, or through a room's join code.</p></details>
+          <details data-fx="slash"><summary>Who can read my messages?</summary><p>The people in the conversation. Messages are encrypted on your device before they're sent. <a href="privacy.html#encryption">What that does and doesn't cover.</a></p></details>
+          <details data-fx="slash"><summary>Who can see my files?</summary><p>Only you, unless you share one with a circle. Archive files aren't end-to-end encrypted, so we say so.</p></details>
+          <details data-fx="slash"><summary>What happens if I stop for a while?</summary><p>Nothing bad. Clouds gather over your world while you're away and clear when you come back. No streaks to lose.</p></details>
+          <details data-fx="slash"><summary>Can I delete everything?</summary><p>Yes, from Safety &amp; privacy: your account, every message you sent, every file you uploaded and your world. It can't be undone.</p></details>
+        </div>
+      </section>
+
+      <section class="final" id="launch" aria-labelledby="final-title" data-chapter="Launch">
+        <div class="final-lines" aria-hidden="true"></div>
+        <h2 id="final-title" class="final-title" data-fx="slash"><span class="serif">Ready when you are.</span></h2>
+        <a class="btn btn-primary btn-lg fx-cta" href="#signup">Launch my universe</a>
+        <p class="final-note">Free · ages 13+ · any browser</p>
+      </section>
+    </main>
+
+    <footer class="land-foot">
+      <span class="wordmark small"><svg width="22" height="22" viewBox="0 0 64 64" aria-hidden="true"><use href="#mark"/></svg><span class="wm-name">panalo</span><span class="wm-sub">Students</span></span>
+      <nav aria-label="Footer">
+        <a href="privacy.html">Privacy</a>
+        <a href="rules.html">Community rules</a>
+        <a href="#safety">Safety</a>
+        <a href="privacy.html#limits">What it can't do yet</a>
+        <a href="../">Panalo Chat</a>
+      </nav>
+    </footer>
+  </div>
+
+  <!-- =====================================================================
+       THE CROSSING: log in, create an account
+       ===================================================================== -->
+  <div id="auth" class="crossing" hidden>
+    <div class="horizon" aria-hidden="true">
+      <div class="h-disk"></div>
+      <div class="h-photon"></div>
+      <div class="h-hole"></div>
+    </div>
+    <a class="crossing-back" href="#top">← Back to the surface</a>
+
+    <div class="airlock" role="region" aria-label="Sign in or create an account">
+      <a class="wordmark airlock-mark" href="#top" tabindex="-1" aria-hidden="true">
+        <svg width="28" height="28" viewBox="0 0 64 64"><use href="#mark"/></svg><span class="wm-name">panalo</span><span class="wm-sub">Students</span>
+      </a>
+
+      <form id="login-form" class="airlock-form" novalidate aria-labelledby="login-title">
+        <p class="kicker toned tone-time">Re-entry</p>
+        <h1 id="login-title" class="airlock-title">Welcome back to orbit.</h1>
+        <p class="airlock-lead">Your world kept turning while you were away.</p>
+        <label class="field"><span>Email</span><input type="email" id="login-email" autocomplete="email" inputmode="email" required></label>
+        <div class="field">
+          <span class="label-row"><label class="field-label" for="login-password">Password</label><button type="button" class="link-btn" id="forgot-open">Forgot it?</button></span>
+          <div class="pw"><input type="password" id="login-password" autocomplete="current-password" required><button type="button" class="pw-reveal" data-reveal="login-password" aria-label="Show password" aria-pressed="false">Show</button></div>
+        </div>
+        <label class="check"><input type="checkbox" id="login-remember" checked><span>Keep me signed in on this device</span></label>
+        <button type="submit" class="btn btn-primary btn-lg btn-block" id="login-submit">Cross over</button>
+        <p class="airlock-switch">No universe yet? <a href="#signup">Begin one</a></p>
+      </form>
+
+      <form id="forgot-form" class="airlock-form" novalidate hidden aria-labelledby="forgot-title">
+        <p class="kicker toned tone-time">Lost the key?</p>
+        <h1 id="forgot-title" class="airlock-title">Reset your password.</h1>
+        <p class="airlock-lead">We'll email a link. If this device has your encryption key cached, your messages move to the new password; otherwise older encrypted messages can't be recovered.</p>
+        <label class="field"><span>Email</span><input type="email" id="forgot-email" autocomplete="email" required></label>
+        <button type="submit" class="btn btn-primary btn-lg btn-block" id="forgot-submit">Send the link</button>
+        <p class="airlock-switch"><button type="button" class="link-btn" id="forgot-back">Back to log in</button></p>
+      </form>
+
+      <form id="signup-form" class="airlock-form" novalidate hidden aria-labelledby="signup-title">
+        <p class="kicker toned tone-world">A new universe</p>
+        <h1 id="signup-title" class="airlock-title">It starts with a name.</h1>
+        <p class="airlock-lead">Your username is how people find you. There are no phone numbers here.</p>
+        <label class="field"><span>Username</span>
+          <span class="prefixed"><i aria-hidden="true">@</i><input type="text" id="signup-username" autocomplete="username" autocapitalize="off" spellcheck="false" maxlength="30" required aria-describedby="username-hint"></span>
+          <small id="username-hint" class="field-hint">Letters, numbers, dots and underscores. Don't use your full real name.</small>
+        </label>
+        <label class="field"><span>Email</span><input type="email" id="signup-email" autocomplete="email" inputmode="email" required aria-describedby="email-hint"><small id="email-hint" class="field-hint">Never shown to anyone.</small></label>
+        <div class="field">
+          <label class="field-label" for="signup-password">Password</label>
+          <div class="pw"><input type="password" id="signup-password" autocomplete="new-password" required aria-describedby="password-hint"><button type="button" class="pw-reveal" data-reveal="signup-password" aria-label="Show password" aria-pressed="false">Show</button></div>
+          <small id="password-hint" class="field-hint"></small>
+        </div>
+        <label class="check"><input type="checkbox" id="signup-age" required><span>I'm 13 or older, and I'll follow the <a href="rules.html" target="_blank" rel="noopener">community rules</a>.</span></label>
+        <button type="submit" class="btn btn-primary btn-lg btn-block" id="signup-submit">Create my universe</button>
+        <p class="airlock-switch">Already have one? <a href="#login">Log in</a></p>
+      </form>
+
+      <form id="otp-form" class="airlock-form" novalidate hidden aria-labelledby="otp-title">
+        <p class="kicker toned tone-world">Almost there</p>
+        <h1 id="otp-title" class="airlock-title">Check your email.</h1>
+        <p class="airlock-lead">Enter the 6-digit code we sent. It can take a minute — look in spam too.</p>
+        <label class="field"><span>Code</span><input type="text" id="otp-code" class="otp" inputmode="numeric" autocomplete="one-time-code" maxlength="6" pattern="[0-9]*" required></label>
+        <button type="submit" class="btn btn-primary btn-lg btn-block" id="otp-submit">Verify and cross over</button>
+      </form>
+
+      <form id="unlock-form" class="airlock-form" novalidate hidden aria-labelledby="unlock-title">
+        <p class="kicker toned tone-signal">Locked on this device</p>
+        <h1 id="unlock-title" class="airlock-title">Unlock your messages.</h1>
+        <p class="airlock-lead" id="unlock-lead">Your messages are encrypted. Enter your password to open them on this device.</p>
+        <div class="field"><label class="field-label" for="unlock-password">Password</label>
+          <div class="pw"><input type="password" id="unlock-password" autocomplete="current-password" required><button type="button" class="pw-reveal" data-reveal="unlock-password" aria-label="Show password" aria-pressed="false">Show</button></div></div>
+        <button type="submit" class="btn btn-primary btn-lg btn-block" id="unlock-submit">Unlock</button>
+        <p class="airlock-switch"><button type="button" class="link-btn" id="unlock-signout">Sign out instead</button></p>
+      </form>
+
+      <form id="recovery-form" class="airlock-form" novalidate hidden aria-labelledby="recovery-title">
+        <p class="kicker toned tone-time">New key</p>
+        <h1 id="recovery-title" class="airlock-title">Choose a new password.</h1>
+        <p class="airlock-lead" id="recovery-lead"></p>
+        <label class="field"><span>New password</span><input type="password" id="recovery-password" autocomplete="new-password" required></label>
+        <label class="field"><span>Again</span><input type="password" id="recovery-confirm" autocomplete="new-password" required></label>
+        <button type="submit" class="btn btn-primary btn-lg btn-block" id="recovery-submit">Set password</button>
+      </form>
+
+      <p id="auth-message" class="auth-message" role="alert" aria-live="assertive"></p>
+    </div>
+  </div>
+
+  <!-- =====================================================================
+       FIRST ENTRY: a universe begins
+       ===================================================================== -->
+  <div id="birth" class="birth" hidden>
+    <p id="birth-line" class="birth-line" aria-live="polite"></p>
+    <button type="button" id="birth-skip" class="btn btn-quiet btn-sm birth-skip">Skip</button>
+    <form id="birth-form" class="birth-form" novalidate hidden aria-labelledby="birth-title"></form>
+  </div>
+
+  <!-- =====================================================================
+       INSIDE
+       ===================================================================== -->
+  <div id="app" class="app" hidden>
+    <header class="bar">
+      <a class="brand" href="#/now" aria-label="Now">
+        <svg width="28" height="28" viewBox="0 0 64 64" aria-hidden="true"><use href="#mark"/></svg>
+        <span class="wm-name">panalo</span>
+      </a>
+      <nav class="bar-nav" aria-label="Destinations">
+        <a href="#/now" data-route="now" class="tone-time">Now</a>
+        <a href="#/study" data-route="study" class="tone-focus">Study</a>
+        <a href="#/signals" data-route="signals" class="tone-signal">Signals<span class="pulse-count" data-unread hidden></span></a>
+        <a href="#/world" data-route="world" class="tone-world">World</a>
+        <a href="#/calendar" data-route="calendar" class="tone-time">Calendar</a>
+        <a href="#/archive" data-route="archive" class="tone-archive">Archive</a>
+        <a href="#/drift" data-route="drift" class="tone-drift">Drift</a>
+      </nav>
+      <div class="bar-right">
+        <span class="bar-clock num" id="bar-clock" aria-hidden="true"></span>
+        <button type="button" class="warp-btn" id="warp-open" aria-label="Warp: jump anywhere (Ctrl K)"><span>Warp</span><kbd>⌘K</kbd></button>
+        <button type="button" class="me-btn" id="me-open" aria-haspopup="menu" aria-expanded="false" aria-controls="me-menu"><span id="me-initial">?</span><span class="sr-only">Account and safety</span></button>
+        <div id="me-menu" class="menu" role="menu" hidden>
+          <p class="menu-head"><b id="me-name"></b><span id="me-world" class="faint"></span></p>
+          <a role="menuitem" href="#/safety">Safety &amp; privacy</a>
+          <a role="menuitem" href="#/settings">Settings</a>
+          <a role="menuitem" href="../" target="_blank" rel="noopener">Open Panalo Chat</a>
+          <button role="menuitem" type="button" id="signout-btn">Sign out</button>
+        </div>
+      </div>
+    </header>
+
+    <main id="main" class="stage" tabindex="-1">
+      <section class="surface" data-surface="now" aria-label="Now" hidden></section>
+      <section class="surface" data-surface="study" aria-label="Study Room" hidden></section>
+      <section class="surface" data-surface="signals" aria-label="Signals" hidden></section>
+      <section class="surface" data-surface="world" aria-label="World" hidden></section>
+      <section class="surface" data-surface="calendar" aria-label="Calendar" hidden></section>
+      <section class="surface" data-surface="archive" aria-label="Archive" hidden></section>
+      <section class="surface" data-surface="drift" aria-label="Drift" hidden></section>
+      <section class="surface" data-surface="safety" aria-label="Safety and privacy" hidden></section>
+      <section class="surface" data-surface="settings" aria-label="Settings" hidden></section>
+    </main>
+
+    <nav class="dock" aria-label="Destinations">
+      <a href="#/now" data-route="now" class="tone-time"><i class="dock-glyph" aria-hidden="true"></i>Now</a>
+      <a href="#/study" data-route="study" class="tone-focus"><i class="dock-glyph" aria-hidden="true"></i>Study</a>
+      <a href="#/signals" data-route="signals" class="tone-signal"><i class="dock-glyph" aria-hidden="true"></i>Signals<span class="pulse-count" data-unread hidden></span></a>
+      <a href="#/world" data-route="world" class="tone-world"><i class="dock-glyph" aria-hidden="true"></i>World</a>
+      <button type="button" id="dock-more" aria-haspopup="dialog"><i class="dock-glyph" aria-hidden="true"></i>More</button>
+    </nav>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="../crypto.js"></script>
+  <script type="module" src="js/main.js"></script>
+</body>
+</html>

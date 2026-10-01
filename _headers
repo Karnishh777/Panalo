@@ -18,7 +18,9 @@
   # Leaflet + OpenStreetMap tiles (lazy-loaded only when location is shared).
   # style-src needs 'unsafe-inline' because the app uses inline style="" on a
   # handful of elements; script-src does not, and stays strict.
-  Content-Security-Policy: default-src 'self'; script-src 'self' https://cdn.jsdelivr.net https://unpkg.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://unpkg.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: blob: https://*.supabase.co https://tile.openstreetmap.org; media-src 'self' blob: https://*.supabase.co; connect-src 'self' https://*.supabase.co wss://*.supabase.co; object-src 'none'; base-uri 'self'; frame-ancestors 'none'
+  # connect-src allows blob: so a decrypted file the app itself created can be
+  # read back (Panalo Students: text previews, saving a chat file to the archive).
+  Content-Security-Policy: default-src 'self'; script-src 'self' https://cdn.jsdelivr.net https://unpkg.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://unpkg.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: blob: https://*.supabase.co https://tile.openstreetmap.org; media-src 'self' blob: https://*.supabase.co; connect-src 'self' blob: https://*.supabase.co wss://*.supabase.co; object-src 'none'; base-uri 'self'; frame-ancestors 'none'
 
 # A stale service worker is worse than none: it can keep serving an old app
 # long after a deploy. Always revalidate this one.
