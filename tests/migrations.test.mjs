@@ -113,6 +113,24 @@ async function migrationTests() {
      and i.indisunique and pg_get_indexdef(i.indexrelid) ilike '%lower(username%'`
   );
   ok("exactly one unique index on lower(username)", dupes[0].n === 1, `found ${dupes[0].n}`);
+
+  // Phase 19: auth.uid() once per query, and an index under every foreign key.
+  const { rows: perRow } = await db.query(
+    `select policyname from pg_policies where schemaname = 'public'
+       and replace(coalesce(qual, '') || ' ' || coalesce(with_check, ''), '( SELECT auth.uid() AS uid)', '') ~ 'auth\\.uid\\(\\)'`
+  );
+  ok("no policy calls auth.uid() once per row", perRow.length === 0, perRow.map((p) => p.policyname).join(", "));
+  const { rows: doubled } = await db.query(
+    `select policyname from pg_policies where schemaname = 'public'
+       and (coalesce(qual, '') || coalesce(with_check, '')) ~ 'SELECT \\( SELECT auth'`
+  );
+  ok("re-running phase 19 doesn't wrap auth.uid() twice", doubled.length === 0, doubled.map((p) => p.policyname).join(", "));
+  const { rows: bare } = await db.query(
+    `select c.conrelid::regclass::text || '.' || c.conname as fk from pg_constraint c
+     where c.contype = 'f' and c.connamespace = 'public'::regnamespace
+       and not exists (select 1 from pg_index i where i.indrelid = c.conrelid and i.indkey[0] = c.conkey[1])`
+  );
+  ok("every foreign key in public has an index", bare.length === 0, bare.map((r) => r.fk).join(", "));
 }
 
 // ---- starting and leaving chats ------------------------------------------
