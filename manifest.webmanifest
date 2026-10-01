@@ -1,7 +1,7 @@
 {
-  "name": "Panalo",
+  "name": "Panalo Chat",
   "short_name": "Panalo",
-  "description": "Encrypted chat for friends, classmates and study groups.",
+  "description": "Private, encrypted chat for everyone. No phone number needed.",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",

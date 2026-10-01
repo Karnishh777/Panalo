@@ -4,7 +4,7 @@
 import { state } from "./state.js";
 
 const LAST_READ_KEY = "panalo.lastRead";
-const BASE_TITLE = "Panalo";
+const BASE_TITLE = "Panalo Chat";
 
 function readMap() {
   try {

@@ -31,7 +31,7 @@ const slides = () => [
     // sentence can finally be accurate -- but it still says "messages and
     // files" rather than "everything", because who you talk to and when
     // remains visible to the server.
-    body: "Welcome to Panalo. Your messages and the files you send are scrambled on your device before they leave — the server just stores expensive-looking gibberish. Nice for it.",
+    body: "Welcome to Panalo Chat. Your messages and the files you send are scrambled on your device before they leave — the server just stores expensive-looking gibberish. Nice for it.",
   },
   {
     icon: "plus",

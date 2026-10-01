@@ -84,7 +84,7 @@ function render() {
 
   const today = new Date().toLocaleDateString([], { weekday: "long", day: "numeric", month: "long" });
   const summary = !visibleChats.length
-    ? "Welcome to Panalo."
+    ? "Welcome to Panalo Chat."
     : totalUnread
       ? `${totalUnread} unread message${totalUnread === 1 ? "" : "s"} in ${unread.length} chat${unread.length === 1 ? "" : "s"}.`
       : "You're all caught up.";

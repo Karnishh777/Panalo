@@ -67,6 +67,11 @@ body.in-app {
 .wordmark.light {
   color: #fff;
 }
+/* "Panalo Chat": the family name bold, the product name lighter. */
+.wordmark .wm-sub {
+  font-weight: 600;
+  opacity: 0.7;
+}
 
 .eyebrow {
   display: inline-flex;

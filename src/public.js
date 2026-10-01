@@ -47,7 +47,7 @@ function route() {
   if (AUTH_ROUTES.has(hash)) {
     showAuth(hash.slice(1));
   } else {
-    document.title = "Panalo — chat that's actually yours";
+    document.title = "Panalo Chat — chat that's actually yours";
     showLanding();
   }
 }
@@ -66,7 +66,7 @@ export function enterApp() {
   $("landing").classList.add("hidden");
   $("auth-screen").classList.add("hidden");
   $("chat-app").classList.remove("hidden");
-  document.title = "Panalo";
+  document.title = "Panalo Chat";
   // A #login left over from the sign-in form shouldn't linger in the URL.
   if (AUTH_ROUTES.has(location.hash)) history.replaceState(null, "", location.pathname + location.search);
 }
