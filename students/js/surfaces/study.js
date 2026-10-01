@@ -11,7 +11,7 @@
 import { el, showToast, getPrefs, setPrefs, reportError, shortDate } from "../ui.js";
 import { store, on, api } from "../store.js";
 import * as T from "../model/focus-timer.js";
-import { loadTimer, saveTimer, onTimer, settleTimer } from "../timer-state.js";
+import { loadTimer, saveTimer, onTimer, settleTimer, recordSession } from "../timer-state.js";
 import { SOUNDS, playAmbient, setVolume, chime, currentSound } from "../ambient.js";
 import { startOfDay, startOfWeek, addDays, formatMinutes, clockTime, DAY, relTime } from "../model/time.js";
 
@@ -126,8 +126,12 @@ async function endEarly() {
   if (timer.phase === "focus") {
     const row = T.sessionRow(timer, now);
     if (row) {
-      const { error } = await api.addSession(row);
-      if (error) return reportError(error, "Couldn't save the session.");
+      const { error, transient } = await recordSession(row);
+      if (error && transient) return reportError(error, "You're offline — the session wasn't saved yet. Try again.");
+      if (error) {
+        reportError(error, "That session couldn't be saved.");
+        return update(T.idle());
+      }
       showToast(`${formatMinutes(row.focused_minutes)} of focus recorded.`, "success");
     } else showToast("Under a minute — nothing recorded.", "");
   }

@@ -44,6 +44,7 @@ const META_FIELDS = "id, conversation_id, user_id, username, content, iv, file_u
 let openConversationId = null;
 let channel = null;
 let pollTimer = null;
+let requestTimer = null;
 const messageListeners = new Set();
 
 export function setOpenConversation(id) {
@@ -165,11 +166,18 @@ export async function startInbox() {
     .on("postgres_changes", { event: "INSERT", schema: "public", table: "conversation_participants", filter: `user_id=eq.${me}` }, () => {
       refreshConversations();
     })
-    .on("postgres_changes", { event: "*", schema: "public", table: "room_requests" }, () => refreshRequests())
     .subscribe();
 
   // Realtime is best effort; a slow poll and a refresh on return cover gaps.
   pollTimer = setInterval(() => !document.hidden && refreshConversations(), 90000);
+  // Waiting rooms are never broadcast (Realtime ignores RLS on deletes, so
+  // it would tell everyone who asked to join what -- see phase 17). Anyone
+  // who hosts a room, or is waiting at a door, checks every 15 seconds.
+  requestTimer = setInterval(() => {
+    if (document.hidden) return;
+    const hosting = store.conversations.some((c) => c.isHost && c.type === "group");
+    if (hosting || store.myRequests.length) refreshRequests();
+  }, 15000);
   document.addEventListener("visibilitychange", onVisible);
   window.addEventListener("online", onVisible);
 }
@@ -182,6 +190,7 @@ export function stopInbox() {
   if (channel) supabaseClient.removeChannel(channel);
   channel = null;
   clearInterval(pollTimer);
+  clearInterval(requestTimer);
   document.removeEventListener("visibilitychange", onVisible);
   window.removeEventListener("online", onVisible);
 }

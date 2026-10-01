@@ -99,11 +99,12 @@ export async function updateResource(r, patch) {
 }
 
 export async function deleteResource(r) {
+  // The bytes first, then the listing. Reading a shared file requires its
+  // listing (phase 17), so once the row is gone a host could no longer see
+  // the object to remove it. The uploader, or a host of the circle, may.
+  await supabaseClient.storage.from(BUCKET).remove([r.object_path]);
   const { error } = await supabaseClient.from("resources").delete().eq("id", r.id);
   if (error) return { error };
-  // Only the uploader can remove the bytes; a host removing someone else's
-  // file removes the listing, which is what makes it unreachable in the app.
-  if (r.owner_id === state.currentUser.id) await supabaseClient.storage.from(BUCKET).remove([r.object_path]);
   const url = blobs.get(r.id);
   if (url) URL.revokeObjectURL(url);
   blobs.delete(r.id);

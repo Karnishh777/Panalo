@@ -607,6 +607,10 @@ async function doorBlock(conv, cleanups) {
   };
   await draw();
   cleanups.push(on("requests", draw));
+  // While a host is looking at the door, check it often. (The waiting room
+  // is polled, never broadcast -- see phase 17.)
+  const poll = setInterval(() => !document.hidden && S.refreshRequests(), 5000);
+  cleanups.push(() => clearInterval(poll));
   return block;
 }
 

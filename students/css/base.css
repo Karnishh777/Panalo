@@ -445,6 +445,33 @@ dialog.sheet::backdrop {
 
 /* ---- Toasts (src/util.js showToast) ------------------------------------- */
 
+#toast-container[popover] {
+  /* The top layer, not a dialog: undo the popover defaults. */
+  inset: auto auto calc(var(--dock-h) + 16px + env(safe-area-inset-bottom)) 50%;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  overflow: visible;
+  color: inherit;
+}
+@media (min-width: 900px) {
+  #toast-container[popover] {
+    bottom: 24px;
+  }
+}
+.sheet-alert {
+  margin: 0 0 14px;
+  padding: 10px 14px;
+  border: 1px solid rgba(255, 143, 128, 0.45);
+  border-radius: var(--r-2);
+  background: rgba(255, 143, 128, 0.08);
+  color: var(--text);
+  font-size: 14px;
+}
+.sheet-alert:empty {
+  display: none;
+}
 #toast-container {
   position: fixed;
   left: 50%;

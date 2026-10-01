@@ -11,12 +11,14 @@
 import { supabaseClient, setRemember } from "../../src/client.js";
 import { state, conversationKeys } from "../../src/state.js";
 import { withBusy, showToast, redirectUrl } from "../../src/util.js";
-import { ensureUserKeys, idbDelKey, idbGetKey, rewrapPrivateKey, regenerateKeypair, clearKeyProblems } from "../../src/encryption.js";
+import { ensureUserKeys, idbDelKey, idbGetKey, rewrapPrivateKey, clearKeyProblems } from "../../src/encryption.js";
 import { clearAttachmentCache } from "../../src/attachments.js";
 import { clearPersistedIndex } from "../../src/search.js";
 import { stopPresence } from "../../src/presence.js";
 import { validatePassword, describePasswordPolicy } from "../../src/password.js";
 import { OTP_LENGTH } from "../../src/config.js";
+import { clearTimer } from "./timer-state.js";
+import { keysAfterPasswordReset } from "../../src/keyflow.js";
 
 const $ = (id) => document.getElementById(id);
 const FORMS = ["login-form", "forgot-form", "signup-form", "otp-form", "unlock-form", "recovery-form"];
@@ -68,6 +70,9 @@ async function ready(session, { fresh = false } = {}) {
 }
 
 export async function signOut() {
+  // Nothing typed during sign-in or recovery outlives the session.
+  pending = { email: "", password: "", session: null, rewrap: "" };
+  clearTimer();
   if (state.currentUser) await idbDelKey(state.currentUser.id);
   stopPresence();
   state.myPrivateKey = null;
@@ -235,15 +240,11 @@ export function initAuth(h) {
       const { data, error } = await supabaseClient.auth.updateUser({ password: next });
       if (error) return message(error.message);
       state.currentUser = data.user;
-      const cached = await idbGetKey(state.currentUser.id);
-      if (cached) {
-        state.myPrivateKey = cached;
-        if ((await rewrapPrivateKey(next)) !== "ready") return message("Password set, but your key didn't move with it. Try again while signed in.");
-        showToast("Password updated — your messages moved with it.", "success");
-      } else {
-        if ((await regenerateKeypair(next)) !== "ready") return message("Password set, but new keys couldn't be created. Try again.");
-        showToast("New password and new keys. Older encrypted messages can't be read any more.", "");
-      }
+      // The same rule as Panalo Chat, from the same code (src/keyflow.js).
+      const moved = await keysAfterPasswordReset(next);
+      if (moved === "move-failed") return message("Password set, but your key didn't move with it. Try again while signed in.");
+      if (moved === "regenerate-failed") return message("Password set, but new keys couldn't be created. Try again.");
+      showToast(moved === "moved" ? "Password updated — your messages moved with it." : "New password and new keys. Older encrypted messages can't be read any more.", moved === "moved" ? "success" : "");
       inRecovery = false;
       history.replaceState(null, "", location.pathname);
       const { data: { session } } = await supabaseClient.auth.getSession();

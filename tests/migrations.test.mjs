@@ -560,6 +560,29 @@ async function studentsTests() {
     objects: (await tx.query("select id from storage.objects where name = $1", [shared])).rows.length,
   }));
   ok("people outside the circle cannot", outsider.rows === 0 && outsider.objects === 0, JSON.stringify(outsider));
+  // A host takes a file down: the listing goes, and so does every member's
+  // access to the bytes -- not just the row.
+  const hostile = `c/${circle}/hostile`;
+  await as(db, maya, async (tx) => {
+    await upload(tx, hostile, maya, 10);
+    await tx.query("insert into resources (title, object_path, file_name, size_bytes, conversation_id) values ('bad', $1, 'bad.png', 10, $2)", [hostile, circle]);
+  });
+  // Bytes first, then the listing: once the listing is gone, the host can
+  // no longer see the object (reads are gated on it), so can't delete it.
+  const takedown = await attempt(db, alex, async (tx) => {
+    const n = (await tx.query("delete from storage.objects where name = $1", [hostile])).affectedRows;
+    await tx.query("delete from resources where object_path = $1", [hostile]);
+    return n;
+  });
+  ok("a host can take a shared file down, bytes included", takedown.ok && takedown.value === 1, takedown.error || takedown.value);
+  // And if only the listing goes (an older client), members still lose access.
+  await as(db, alex, (tx) => tx.query("delete from resources where object_path = $1", [hostile]));
+  const stillVisible = await db.query("select count(*)::int as n from storage.objects where name = $1", [hostile]);
+  const memberSees = await as(db, alex, async (tx) => (await tx.query("select id from storage.objects where name = $1", [hostile])).rows.length);
+  ok("an unlisted shared file is unreadable to members", stillVisible.rows[0].n === 1 && memberSees === 0, `exists=${stillVisible.rows[0].n} seen=${memberSees}`);
+  const uploaderSees = await as(db, maya, async (tx) => (await tx.query("select id from storage.objects where name = $1", [hostile])).rows.length);
+  ok("its uploader can still reach their own bytes", uploaderSees === 1);
+
   const sneak = await attempt(db, sam, (tx) => upload(tx, `c/${circle}/x`, sam, 1));
   ok("outsiders cannot upload into a circle", !sneak.ok);
   const badPath = await attempt(db, sam, (tx) => upload(tx, "c/not-a-uuid/x", sam, 1));
@@ -572,7 +595,25 @@ async function studentsTests() {
       await tx.query("insert into resources (title, object_path, file_name, size_bytes) values ('b', $1, 'b', 1)", [p]);
     }
   });
-  ok("each archive is capped at 200 MB", !full.ok && /archive is full/.test(full.error || ""), full.error);
+  ok("each archive is capped at 200 MB", !full.ok && /archive is full|row-level security/.test(full.error || ""), full.error);
+
+  // -- phase 17: the bucket itself enforces the quota, with or without rows
+  const rowless = await attempt(db, sam, async (tx) => {
+    for (let i = 0; i < 5; i++) await upload(tx, `u/${sam}/raw${i}`, sam, 50 * 1024 * 1024);
+  });
+  ok("uploading without creating rows still hits the quota", !rowless.ok && /row-level security/.test(rowless.error || ""), rowless.error);
+
+  // Leaving a circle doesn't lock you out of your own file.
+  const leaver = await createUser(db, "s_leaver");
+  const circle2 = await startGroup(db, alex, [leaver]);
+  const mine2 = `c/${circle2}/mine`;
+  await as(db, leaver, async (tx) => {
+    await upload(tx, mine2, leaver, 5);
+    await tx.query("insert into resources (title, object_path, file_name, size_bytes, conversation_id) values ('m', $1, 'm.pdf', 5, $2)", [mine2, circle2]);
+    await tx.query("delete from conversation_participants where conversation_id = $1 and user_id = $2", [circle2, leaver]);
+  });
+  const keeps = await as(db, leaver, async (tx) => (await tx.query("select id from storage.objects where name = $1", [mine2])).rows.length);
+  ok("after leaving a circle you can still download what you shared", keeps === 1);
 
   // -- blocking
   const dm = await startDirect(db, alex, maya);
@@ -637,6 +678,15 @@ async function studentsTests() {
   ok("letting someone in clears their request", left.rows[0].n === 0);
   const again = await as(db, sam, async (tx) => (await tx.query("select status from request_to_join('HACK2345')")).rows[0].status);
   ok("a member asking again is told they are in", again === "member", again);
+
+  const pub = await db.query("select count(*)::int as n from pg_publication_tables where tablename = 'room_requests'");
+  ok("the waiting room is not broadcast over realtime", pub.rows[0].n === 0);
+  const guesses = await attempt(db, maya, async (tx) => {
+    for (let i = 0; i < 31; i++) await tx.query("select * from request_to_join($1)", [`ZZZZ${String(2000 + i)}`]);
+  });
+  ok("guessing join codes is rate-limited", !guesses.ok && /Too many join attempts/.test(guesses.error || ""), guesses.error);
+  const hushDm = await attempt(db, alex, (tx) => tx.query("update conversations set posting = 'hosts' where id = $1", [dm]));
+  ok("a 1:1 chat cannot be made hosts-only", !hushDm.ok);
 
   const memberPost = await attempt(db, sam, (tx) => tx.query("insert into messages (conversation_id, content) values ($1, 'hi all')", [room]));
   ok("in a hosts-only room members cannot post", !memberPost.ok);

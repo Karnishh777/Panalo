@@ -1,9 +1,40 @@
 // Shared interface pieces for Panalo Students: sheets (dialogs), confirm,
 // menus, small builders. Rendering goes through src/util.js `el()`, which
 // assigns text with textContent -- user content is never parsed as HTML.
-import { el, showToast } from "../../src/util.js";
+import { el, showToast as pageToast } from "../../src/util.js";
 
-export { el, showToast };
+export { el };
+
+// Messages must be seen where the person is looking. A modal sheet puts
+// the rest of the page under a backdrop and makes it inert, so a toast in
+// the page would be dimmed and skipped by screen readers. While a sheet is
+// open, errors appear inside it, as an alert; everything else is raised
+// into the top layer (a popover), above any sheet.
+export function showToast(message, type = "error") {
+  const open = [...document.querySelectorAll("dialog[open]")].pop();
+  if (open && type === "error") {
+    let slot = open.querySelector(".sheet-alert");
+    if (!slot) {
+      slot = el("p", { class: "sheet-alert", role: "alert" });
+      (open.querySelector(".sheet-body") || open).prepend(slot);
+    }
+    slot.textContent = "";
+    // Re-set on the next frame so a repeated message is announced again.
+    requestAnimationFrame(() => (slot.textContent = message));
+    return;
+  }
+  pageToast(message, type);
+  const box = document.getElementById("toast-container");
+  if (box && typeof box.showPopover === "function") {
+    if (!box.hasAttribute("popover")) box.setAttribute("popover", "manual");
+    try {
+      if (box.matches(":popover-open")) box.hidePopover();
+      box.showPopover();
+    } catch {
+      /* older browsers: the toast still shows in the page */
+    }
+  }
+}
 
 let sheetCount = 0;
 

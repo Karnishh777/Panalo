@@ -27,6 +27,7 @@ const SURFACES = {
 const TITLES = { now: "Now", study: "Study Room", signals: "Signals", world: "World", calendar: "Calendar", archive: "Archive", drift: "Drift", safety: "Safety", settings: "Settings" };
 
 const mounted = new Map(); // name -> module
+const loading = new Map(); // name -> pending import
 let current = null;
 let hooks = {};
 let clockTimer = null;
@@ -60,18 +61,28 @@ async function route() {
 
   let mod = mounted.get(name);
   if (!mod) {
+    // Two routes racing for the same surface share one load and one mount.
+    if (loading.has(name)) return; // the route already loading it will show it
     section.replaceChildren(el("div", { class: "surface-loading" }, [el("div", { class: "loading-line" })]));
+    const load = SURFACES[name]();
+    loading.set(name, load.catch(() => null));
     try {
-      mod = await SURFACES[name]();
+      mod = await load;
     } catch (e) {
+      loading.delete(name);
       console.error(e);
       section.replaceChildren(el("div", { class: "empty" }, [el("h3", { text: "This part didn't load." }), el("p", { text: "Check your connection and try again." }), el("button", { class: "btn btn-ghost", type: "button", text: "Retry", onClick: () => route() })]));
       return;
     }
-    if (current !== name) return; // navigated away while loading
+    loading.delete(name);
     section.replaceChildren();
     mod.mount(section, { navigate, signOut: hooks.signOut, replayBirth: hooks.replayBirth });
     mounted.set(name, mod);
+    if (current !== name) return; // navigated away while loading
+    // Show what the address says NOW: another route may have arrived while
+    // this one was loading the surface.
+    mod.show?.(parseRoute().param);
+    return;
   }
   mod.show?.(param);
 }
@@ -254,12 +265,11 @@ export async function enterShell({ firstTime = false, pendingJoin = null } = {})
     settle();
     settleTimerId = setInterval(settle, 20000);
   }
-  if (pendingJoin) {
-    location.hash = `#/signals/join=${encodeURIComponent(pendingJoin)}`;
-  } else if (!location.hash.startsWith("#/")) {
-    location.hash = "#/now";
-  }
-  await route();
+  // Changing the hash routes (hashchange); only route by hand when it
+  // doesn't change, or the surface would be shown twice.
+  const target = pendingJoin ? `#/signals/join=${encodeURIComponent(pendingJoin)}` : location.hash.startsWith("#/") ? location.hash : "#/now";
+  if (location.hash !== target) location.hash = target;
+  else await route();
   if (firstTime) showToast("Welcome to your universe. Press Warp (Ctrl K) to go anywhere.", "success");
 }
 

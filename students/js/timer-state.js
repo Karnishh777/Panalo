@@ -4,22 +4,34 @@
 // `storage` event; this tab through a DOM event.
 import { revive, idle, isDone, sessionRow } from "./model/focus-timer.js";
 import { api } from "./store.js";
+import { state } from "../../src/state.js";
 
 const KEY = "panalo.students.timer";
 const EVENT = "panalo:timer";
 
+// A timer belongs to the account that started it. On a shared device the
+// next person to sign in must never inherit -- or be credited with -- it.
 export function loadTimer() {
   try {
-    return revive(JSON.parse(localStorage.getItem(KEY) || "null"));
+    const raw = JSON.parse(localStorage.getItem(KEY) || "null");
+    if (!raw || raw.owner !== state.currentUser?.id) return idle();
+    return revive(raw);
   } catch {
     return idle();
   }
 }
 
-export function saveTimer(state) {
+export function clearTimer() {
   try {
-    if (!state || state.phase === "idle") localStorage.removeItem(KEY);
-    else localStorage.setItem(KEY, JSON.stringify(state));
+    localStorage.removeItem(KEY);
+  } catch {}
+  document.dispatchEvent(new CustomEvent(EVENT));
+}
+
+export function saveTimer(timer) {
+  try {
+    if (!timer || timer.phase === "idle") localStorage.removeItem(KEY);
+    else localStorage.setItem(KEY, JSON.stringify({ ...timer, owner: state.currentUser?.id }));
   } catch {
     /* storage unavailable: the timer still runs, it just won't survive a reload */
   }
@@ -39,6 +51,19 @@ export function onTimer(fn) {
 // If a focus block finished while nobody was looking (the tab was closed,
 // the laptop asleep), record it once, wherever the app happens to be.
 // `recorded` in the saved state stops two tabs recording the same block.
+// Store a finished focus block. If the task it was for has been deleted
+// since, the session still counts -- just without the task. A refusal that
+// is not about the network is final: retrying it forever helps nobody.
+export async function recordSession(row) {
+  let { error } = await api.addSession(row);
+  if (error && row.task_id && !/fetch|network/i.test(error.message || "")) {
+    ({ error } = await api.addSession({ ...row, task_id: null }));
+  }
+  if (!error) return {};
+  const transient = /fetch|network|timeout/i.test(error.message || "");
+  return { error, transient };
+}
+
 let recording = false;
 export async function settleTimer(now = Date.now(), { clear = false } = {}) {
   const t = loadTimer();
@@ -52,9 +77,10 @@ export async function settleTimer(now = Date.now(), { clear = false } = {}) {
     const row = sessionRow(t, now);
     saveTimer({ ...t, recorded: true });
     if (!row) return null;
-    const { error } = await api.addSession(row);
+    const { error, transient } = await recordSession(row);
     if (error) {
-      saveTimer({ ...t, recorded: false });
+      // Offline: try again later. Refused for good: let it go.
+      saveTimer(transient ? { ...t, recorded: false } : idle());
       return { error };
     }
     if (clear) saveTimer(idle());

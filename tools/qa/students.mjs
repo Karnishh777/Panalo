@@ -187,7 +187,8 @@ try {
   await page.waitForSelector("dialog .door-code", { timeout: 5000 }).catch(() => {});
   check("the host sees the code", (await page.textContent("dialog .door-code").catch(() => "")).replace("-", "") === code);
   await page.evaluate((c) => window.__qa.knock("jordan", c), code);
-  await page.waitForTimeout(900);
+  // Polled, not broadcast (phase 17): it shows within one poll.
+  await page.waitForSelector("dialog >> text=@jordan", { timeout: 9000 }).catch(() => {});
   check("someone knocking appears in the waiting room", await page.isVisible("dialog >> text=@jordan"));
   await shot(page, "door");
   await page.click("dialog button >> text=Let in");
@@ -203,6 +204,14 @@ try {
   check("letting someone in adds them and shares the room's key", admitted.member && admitted.key && admitted.waiting === 0);
   await page.keyboard.press("Escape");
   await page.waitForTimeout(300);
+
+  // An error inside a sheet is shown inside the sheet, not under its backdrop.
+  await go(page, "#/signals/join", 900);
+  await page.fill("dialog .code-input", "BADC0DE9");
+  await page.click("dialog .btn-primary");
+  await page.waitForTimeout(600);
+  check("errors appear inside the open dialog, as an alert", /doesn't open anything/.test(await page.textContent("dialog .sheet-alert").catch(() => "")));
+  await page.keyboard.press("Escape");
 
   await go(page, "#/signals", 600);
   await page.click(".sig-row >> text=Physics study group");
@@ -326,10 +335,15 @@ try {
     await b.click("#unlock-submit");
     await b.waitForSelector("#app:not([hidden])", { timeout: 15000 }).catch(() => {});
     check("unlocking opens the universe", await b.isVisible("#app"));
+    await b.evaluate(() => (location.hash = "#/study"));
+    await b.waitForSelector("#study-start", { timeout: 8000 });
+    await b.click("#study-start");
+    await b.waitForTimeout(300);
     await b.click("#me-open");
     await b.click("#signout-btn");
     await b.waitForTimeout(800);
     check("signing out returns to the crossing", (await b.isVisible("#login-form")) && !(await b.isVisible("#app")));
+    check("a running focus timer doesn't outlive the account that started it", await b.evaluate(() => localStorage.getItem("panalo.students.timer") === null));
     check("signing out locks the key on this device", await b.evaluate(() => new Promise((r) => { const q = indexedDB.open("panalo-keys", 1); q.onsuccess = () => { const g = q.result.transaction("keys").objectStore("keys").count(); g.onsuccess = () => r(g.result === 0); }; q.onerror = () => r(true); })));
 
     // An invite link opened while signed out survives the sign-in.

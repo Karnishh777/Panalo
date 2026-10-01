@@ -623,12 +623,34 @@
     if (scope === "c") return myConvIds().has(id);
     return false;
   }
+  // Phase 17: shared files are readable only while listed; uploaders can
+  // always read their own; the bucket enforces the quota; hosts may remove.
+  function mayReadResourceObject(path) {
+    const meta = storageMeta.get(`student-resources/${path}`);
+    if (meta?.owner === me()) return true;
+    const [scope, id] = String(path).split("/");
+    if (scope === "u") return id === me();
+    if (scope === "c") return myConvIds().has(id) && db.resources.some((r) => r.object_path === path);
+    return false;
+  }
+  function storageQuotaOk() {
+    let bytes = 0;
+    let n = 0;
+    for (const [k, m] of storageMeta) if (k.startsWith("student-resources/") && m.owner === me()) { bytes += m.size; n++; }
+    return bytes < 200 * 1024 * 1024 && n < 1000;
+  }
+  function mayRemoveResourceObject(path) {
+    const meta = storageMeta.get(`student-resources/${path}`);
+    if (meta?.owner === me()) return true;
+    const [scope, id] = String(path).split("/");
+    return scope === "c" && ["owner", "admin"].includes(roleIn(id));
+  }
   const storageApi = {
     from(bucket) {
       return {
         async upload(path, blob) {
           await sleep(QA.latency ?? 15);
-          if (bucket === "student-resources" && !mayUseResourcePath(path)) {
+          if (bucket === "student-resources" && (!mayUseResourcePath(path) || !storageQuotaOk())) {
             return { data: null, error: { message: "new row violates row-level security policy", statusCode: "403" } };
           }
           if (storage.has(`${bucket}/${path}`)) return { data: null, error: { message: "The resource already exists", statusCode: "409" } };
@@ -639,14 +661,14 @@
         async download(path) {
           await sleep(QA.latency ?? 15);
           const blob = storage.get(`${bucket}/${path}`);
-          if (!blob || (bucket === "student-resources" && !mayUseResourcePath(path))) return { data: null, error: { message: "Object not found", statusCode: "404" } };
+          if (!blob || (bucket === "student-resources" && !mayReadResourceObject(path))) return { data: null, error: { message: "Object not found", statusCode: "404" } };
           return { data: blob, error: null };
         },
         getPublicUrl(path) {
           return { data: { publicUrl: `${STORAGE_PUBLIC}${bucket}/${path}` } };
         },
         async remove(paths) {
-          const gone = paths.filter((p) => storageMeta.get(`${bucket}/${p}`)?.owner === me() || bucket === "chat-files");
+          const gone = paths.filter((p) => bucket === "chat-files" || mayRemoveResourceObject(p));
           gone.forEach((p) => {
             storage.delete(`${bucket}/${p}`);
             storageMeta.delete(`${bucket}/${p}`);

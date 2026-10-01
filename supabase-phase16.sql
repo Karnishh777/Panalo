@@ -277,9 +277,13 @@ create policy "resources delete" on public.resources
 -- The row must describe a file that really is in the bucket, uploaded by
 -- the same person; its size is taken from Storage, not from the client; and
 -- each person's archive is capped. On UPDATE only the label fields move.
+-- Definer so it can see the object regardless of the caller's read access
+-- (phase 17 gates reads on a row existing); it still checks the owner.
+-- Kept IDENTICAL to supabase-phase17.sql.
 create or replace function private.check_resource_row()
 returns trigger
 language plpgsql
+security definer
 set search_path = ''
 as $$
 declare
@@ -354,20 +358,13 @@ $$;
 revoke execute on function private.may_use_resource_path(text) from public, anon;
 grant execute on function private.may_use_resource_path(text) to authenticated;
 
+-- The bucket's read, upload and remove policies are in
+-- supabase-phase17.sql. They used to be here, and were too wide: reads
+-- checked only the path (a host-removed file stayed downloadable) and
+-- uploads had no quota. Until phase 17 runs, the bucket refuses everyone.
 drop policy if exists "student-resources read" on storage.objects;
-create policy "student-resources read" on storage.objects
-  for select to authenticated
-  using (bucket_id = 'student-resources' and private.may_use_resource_path(name));
-
 drop policy if exists "student-resources upload" on storage.objects;
-create policy "student-resources upload" on storage.objects
-  for insert to authenticated
-  with check (bucket_id = 'student-resources' and private.may_use_resource_path(name));
-
 drop policy if exists "student-resources delete own" on storage.objects;
-create policy "student-resources delete own" on storage.objects
-  for delete to authenticated
-  using (bucket_id = 'student-resources' and owner = auth.uid());
 
 
 -- ############################################################################
@@ -643,6 +640,15 @@ create policy "room_requests delete" on public.room_requests
 -- has to find a room the caller cannot see yet. It reveals nothing else:
 -- one exact code in, at most that room's name out, and only to someone who
 -- was given the code. Statuses: 'pending', 'member', 'invalid'.
+-- Every attempt counts toward 30 an hour, so codes can't be guessed.
+-- Kept IDENTICAL to supabase-phase17.sql.
+create table if not exists private.join_attempts (
+  user_id uuid not null,
+  at      timestamptz not null default now()
+);
+create index if not exists idx_join_attempts_user on private.join_attempts (user_id, at desc);
+revoke all on private.join_attempts from public, anon, authenticated;
+
 create or replace function public.request_to_join(code text)
 returns table (conversation_id uuid, name text, status text)
 language plpgsql
@@ -658,10 +664,12 @@ begin
     raise exception 'Sign in first.' using errcode = '42501';
   end if;
 
-  if (select count(*) from public.room_requests r
-      where r.user_id = auth.uid() and r.created_at > now() - interval '1 hour') >= 20 then
-    raise exception 'Too many join requests. Wait a while and try again.' using errcode = '54000';
+  delete from private.join_attempts a where a.at < now() - interval '1 day';
+  if (select count(*) from private.join_attempts a
+      where a.user_id = auth.uid() and a.at > now() - interval '1 hour') >= 30 then
+    raise exception 'Too many join attempts. Wait a while and try again.' using errcode = '54000';
   end if;
+  insert into private.join_attempts (user_id) values (auth.uid());
 
   select c.id, c.name, c.created_by into room
   from public.room_codes rc
@@ -719,16 +727,10 @@ create trigger trg_clear_room_request
   after insert on public.conversation_participants
   for each row execute function private.clear_room_request();
 
--- Hosts see requests arrive live.
-do $$
-begin
-  if not exists (
-    select 1 from pg_publication_tables
-    where pubname = 'supabase_realtime' and schemaname = 'public' and tablename = 'room_requests'
-  ) then
-    alter publication supabase_realtime add table public.room_requests;
-  end if;
-end $$;
+-- room_requests is deliberately NOT in the realtime publication: Realtime
+-- does not apply RLS to DELETE events, so it would broadcast who asked to
+-- join which room to everyone. Hosts poll instead. (Phase 17 removes it
+-- from databases that ran an earlier version of this file.)
 
 -- Ended rooms are deleted a day after they end (and everything in them, by
 -- cascade). Archive FILES shared into them stay in Storage, for the same
