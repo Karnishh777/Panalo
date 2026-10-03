@@ -9,7 +9,7 @@
 // (even a background one). Notifications with the browser fully closed need Web
 // Push (VAPID keys + a server to push from) — see ROADMAP Phase 9.
 
-const CACHE = "panalo-shell-v10";
+const CACHE = "panalo-shell-v11";
 
 // The app shell only. Messages and images are never cached: they're private,
 // and stale chat content would be worse than none.

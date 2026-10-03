@@ -33,6 +33,7 @@
       <tr><td>Who is in which conversation, when messages were sent, read markers, reactions</td><td>The database, in the clear.</td><td>The server. This “metadata” is not encrypted.</td></tr>
       <tr><td>Tasks, focus sessions, calendar, goals, activity log, world name, interests</td><td>The database, in the clear.</td><td>Only your account. Access rules on the server stop anyone else reading them.</td></tr>
       <tr><td>Archive files</td><td>A private file store (Supabase Storage, or Cloudflare R2 where the site has it turned on), in the clear.</td><td>You, or everyone in the conversation you shared a file with. Not end-to-end encrypted.</td></tr>
+      <tr><td>Security logs: when the app was used, the IP address and browser it was used from, sign-ins and errors</td><td>The database, in a locked table. Kept for 180 days, then erased automatically.</td><td>Only the people who run this Panalo, to investigate attacks or abuse, and the authorities when Indian law requires it (CERT-In Directions 2022). Never message content: that is encrypted.</td></tr>
       <tr><td>Blocks and reports</td><td>The database.</td><td>Your own blocks and reports are visible to you; reports are visible to whoever runs this Panalo.</td></tr>
       <tr><td>Timer state, sound and motion preferences, world lighting, which Drift items you opened</td><td>Your browser, and a copy on your account so they follow you to your other devices.</td><td>Only your account.</td></tr>
     </table>
@@ -90,6 +91,7 @@
     </ul>
 
     <h2 id="grievance">Grievance Officer</h2>
+    <p><b>K.V.Karnishh</b>, Grievance Officer, Panalo · <a href="mailto:karnishh.education@gmail.com">karnishh.education@gmail.com</a></p>
     <p>For complaints about content, your data or a decision we made: email <a href="mailto:karnishh.education@gmail.com">karnishh.education@gmail.com</a>, or use <i>Questions or complaints about your data</i> in Safety &amp; privacy. We acknowledge within 24 hours and resolve within 15 days (IT Rules 2021, rule 3(2)). Reports of intimate images shared without consent are acted on within 24 hours.</p>
 
     <h2 id="limits">What it can't do yet</h2>

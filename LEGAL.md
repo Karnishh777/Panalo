@@ -42,7 +42,7 @@ officer, monthly reports) don't apply.
 | Requirement | Panalo | |
 |---|---|---|
 | Publish a privacy policy, user agreement and rules telling users what they must not post (r.3(1)(a)–(b)) | `privacy.html`, `rules.html`. Sign-up requires agreeing to the rules. | ✅ |
-| **Publish a Grievance Officer's name and contact details**; acknowledge complaints within 24 hours and resolve them within 15 days (r.3(2)(a)) | Privacy page → "Grievance Officer": an email address, the 24-hour and 15-day promises, and the in-app route. Data requests show an answer-by date on the moderation page. **The officer's name isn't published yet.** | ⚠️ Add a name (§4) |
+| **Publish a Grievance Officer's name and contact details**; acknowledge complaints within 24 hours and resolve them within 15 days (r.3(2)(a)) | Privacy page → "Grievance Officer": **K.V.Karnishh**, an email address, the 24-hour and 15-day promises, and the in-app route. Data requests show an answer-by date on the moderation page. | ✅ |
 | Remove intimate or sexual images of someone within 24 hours of a complaint (r.3(2)(b)) | Moderators can remove any reported message and suspend the sender (phase 20). | ⚠️ Possible, but only as fast as you check reports. Turn on email alerts by checking the moderation page daily. |
 | Act on a court or government order within 36 hours; give information to authorised agencies within 72 hours (r.3(1)(d), (j)) | You can remove content and suspend accounts. Message text is encrypted, so you can only hand over metadata and the evidence reporters attached. | ⚠️ A process, not code: see §4 |
 | **Keep registration information for 180 days after an account is deleted** (r.3(1)(h)) | Email, username and the join and leave dates go into a locked table, erased by a nightly job after 180 days. Everything else is deleted at once. The privacy page says so. | ✅ |
@@ -53,7 +53,7 @@ officer, monthly reports) don't apply.
 | Requirement | Panalo | |
 |---|---|---|
 | Report cyber-security incidents to CERT-In **within 6 hours** of noticing them | INCIDENT.md §A: who to email, what to say. | ✅ (a process; follow it) |
-| **Keep ICT system logs for 180 days, in India** | Supabase's free plan keeps logs for about a day; Cloudflare's for a few days. The project's region is not India. | ❌ Not possible on the free plan. A paid plan with log drains, or a project in Mumbai (`ap-south-1`), would be needed. |
+| **Keep ICT system logs for a rolling 180 days** | An hourly GitHub Action copies Supabase's logs (API requests with IP addresses, sign-ins, database errors, file storage) into a locked table; a nightly job erases them after 180 days (phase 23). About 60 MB at the 180-day mark. CERT-In's FAQ (Q35) allows logs to be kept outside India if they're produced to CERT-In in reasonable time. **Not covered:** visits to the static website itself (Cloudflare keeps those only briefly on the free plan); the app's data all flows through Supabase, which is covered. | ✅ Once `SUPABASE_ACCESS_TOKEN` is set (HOSTING.md) |
 
 ### DPDP Act + Rules: full force from 13 May 2027
 
@@ -61,10 +61,10 @@ officer, monthly reports) don't apply.
 |---|---|---|
 | A clear, standalone notice: each item of data, what it's for, how to withdraw consent and use your rights (s.5, r.3) | The privacy page itemises what is stored and who sees it. Sign-up now links to it. | ✅ Mostly. A "purpose" column could be added. |
 | Consent that is free, specific and can be withdrawn as easily as given (s.6) | Withdrawing consent means deleting the account, which takes one button. | ✅ |
-| Reasonable security safeguards: encryption, access control, logging, backups (s.8(5), r.6) | Messages are end-to-end-style encrypted on the device; row-level security on every table; bot protection; leaked-password check; encrypted weekly backups. **Access logs aren't kept for a year (r.6).** | ⚠️ Logs: same limit as CERT-In above |
+| Reasonable security safeguards: encryption, access control, logging, backups (s.8(5), r.6) | Messages are end-to-end-style encrypted on the device; row-level security on every table; bot protection; leaked-password check; encrypted weekly backups; access logs kept 180 days. **Rule 6 asks for logs to be kept one year** from May 2027: change `180 days` to `1 year` in `private.purge_access_logs()` then (about 120 MB). | ⚠️ Raise to a year by May 2027 |
 | Tell affected users and the Data Protection Board about a breach; full details to the Board **within 72 hours** (s.8(6), r.7) | INCIDENT.md §A. | ✅ (a process) |
 | Erase data when its purpose is served or the user withdraws consent (s.8(7)) | Full deletion of everything, including files and messages (phase 18). | ✅ (but see the 180-day IT Rules conflict) |
-| Publish who can answer questions about personal data (r.9) | The Grievance Officer contact on the privacy page and in Safety. | ⚠️ Add a name |
+| Publish who can answer questions about personal data (r.9) | The Grievance Officer, K.V.Karnishh, with contact details, on the privacy page and in Safety. | ✅ |
 | Rights to access, correct and erase data, and to a grievance answer **within 90 days** (s.11–13, r.14) | Erase ✅. Correct ✅. Access ✅: Safety → "Download my data" (everything the account holds, as JSON). Grievances ✅: in-app and by email, answered within 15 days. | ✅ |
 | **Children (under 18): verifiable parental consent** before processing their data (s.9(1), r.10) | Everyone gives a month and year of birth (set once; only a moderator can change it). Under 13 is refused. For 13–17:<br>• the student names a parent, who is emailed a one-time code;<br>• the parent signs in with it (proving they control that address), reads the notice, gives name, relationship and year of birth (18+), ticks three declarations, and approves or declines;<br>• the decision is recorded;<br>• the database refuses to store anything for the student until then;<br>• the parent can withdraw later, which deletes the student's account. | ⚠️ **Strong, not the strongest.** Rule 10 also expects the parent's identity and age to be *reliably* verified, via details you already hold or a DigiLocker age token. An email code proves control of an inbox, not adulthood: a determined teenager with a second email address could approve themselves. DigiLocker needs registration as a requester (§4). |
 | No tracking, behavioural monitoring or targeted advertising directed at children (s.9(3)) | No ads, no analytics, no third-party trackers, no profiling. The "world" is drawn from the person's own study data, shown only to them. | ✅ Arguably. A lawyer should confirm that a self-view of your own activity isn't "behavioural monitoring". |
@@ -81,9 +81,33 @@ exposure is real.
 
 **A. Users aged 13–17. DONE, except DigiLocker.** The email-based parent
 consent flow is built and enforced (above). What's left for full Rule 10
-strength is a DigiLocker age token for the parent, which needs Panalo to
-register as a DigiLocker requester (a registered organisation; see
-partners.digitallocker.gov.in). The options below were the original choices.
+strength is a DigiLocker age token for the parent. Rule 10 doesn't mandate
+DigiLocker (it asks for due diligence, "such as" a token), but it's the
+strongest answer. The path:
+
+1. **Become an organisation.** DigiLocker partners must be registered in
+   India: a company, LLP, partnership, trust or society, or a sole
+   proprietorship with **Udyam (MSME) registration** (free, online at
+   udyamregistration.gov.in, needs the owner's Aadhaar and PAN) or a
+   Startup India recognition.
+2. **Register as a partner/requester**, using the email of the authorised
+   person: partners.digitallocker.gov.in (or through API Setu,
+   apisetu.gov.in). Expect a short verification call, then sign the Terms
+   of Use.
+3. **Get API credentials** (a client ID and secret) and the redirect URL
+   approved (`https://panalo-5dk.pages.dev/students/`, and your own domain
+   later).
+4. **Build the flow** (code work, once credentials exist): on the parent
+   page, "Verify with DigiLocker" → the parent signs in to DigiLocker and
+   consents → a Cloudflare Pages Function exchanges the code for a token
+   (the secret never reaches the browser) → reads only name and year of
+   birth → the database records "verified adult" with the consent. No
+   Aadhaar number or document is stored.
+5. Ask about fees during onboarding; questions to
+   partners@digitallocker.gov.in. Paid resellers (KYC companies that offer
+   DigiLocker as an API) are a faster but per-check-paid alternative.
+
+The options below were the original choices.
 
 *Original note:*
 From 13 May 2027, anyone under 18 needs a parent's *verifiable* consent: a
@@ -118,8 +142,7 @@ but it changes what the privacy page promises, so it's your call.
 
 ## 4. What to do, in order
 
-1. **Add the Grievance Officer's name** next to the published email
-   (privacy page → Grievance Officer).
+1. ✅ Grievance Officer: K.V.Karnishh, published.
 2. ✅ 180-day retention: built.
 3. ✅ Under-18s: parent consent built. **DigiLocker** remains for full strength.
 4. ✅ **Two one-page processes:** written in INCIDENT.md.
@@ -133,8 +156,9 @@ but it changes what the privacy page promises, so it's your call.
    many reports are waiting).
 6. ✅ Yearly rules reminder.
 7. ✅ "Download my data".
-8. **Logs for 180 days in India** (CERT-In). Not possible on free plans;
-   revisit when you move to paid hosting.
+8. ✅ **Logs for 180 days** (CERT-In): phase 23 + the hourly Action. Set
+   `SUPABASE_ACCESS_TOKEN` (HOSTING.md) to switch it on.
+9. **DigiLocker for parents** (§3A): needs a registered organisation.
 
 ---
 
