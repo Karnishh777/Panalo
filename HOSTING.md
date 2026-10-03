@@ -217,6 +217,11 @@ then the variable.
   GitHub emails you.
 - **Sundays (or by hand: Actions → Keep alive and back up → Run):** an
   encrypted dump of the database, kept for 30 days as a workflow artifact.
+- **Every hour:** copies Supabase's logs (API requests with IP addresses,
+  sign-ins, database errors, file storage) into `private.access_logs`,
+  where they're kept 180 days for CERT-In and then erased
+  (`supabase-phase23.sql`). The free plan only keeps logs for a day, so
+  this is what makes 180 days possible without paying.
 
 Backups need two repository secrets (**Settings → Secrets and variables →
 Actions → New repository secret**):
@@ -225,6 +230,20 @@ Actions → New repository secret**):
   your database password in it.
 - `BACKUP_PASSPHRASE`: a long random passphrase. **Keep a copy outside
   GitHub.** Without it the backups can't be opened.
+
+Security logs need `SUPABASE_DB_URL` and one more:
+
+- `SUPABASE_ACCESS_TOKEN`: supabase.com → your avatar → **Account
+  preferences → Access Tokens → Generate new token** (name it
+  `panalo-logs`). It can manage your Supabase account, so it lives only
+  in this secret. Revoke it there if it ever leaks.
+
+To hand logs to CERT-In, run in the SQL Editor and export the result:
+
+```sql
+select at, source, message from private.access_logs
+where at between '2026-10-01' and '2026-10-03' order by at;
+```
 
 The repository is public, so the dump is encrypted before upload and
 nothing from it is printed in the log. To restore:

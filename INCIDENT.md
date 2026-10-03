@@ -17,7 +17,9 @@ data showing up where it shouldn't, or the site defaced.
    - If the database itself is exposed, pause the project (Supabase →
      Project Settings → General → Pause).
 2. **Report to CERT-In within 6 hours of noticing** (CERT-In Directions,
-   28 April 2022). Email `incident@cert-in.org.in` with:
+   28 April 2022). If CERT-In asks for logs, export them from
+   `private.access_logs` (query in HOSTING.md); they go back 180 days.
+   Email `incident@cert-in.org.in` with:
    - what happened and when you noticed;
    - what systems are affected (Supabase project, Cloudflare Pages site);
    - what you've done so far.
@@ -54,8 +56,9 @@ data showing up where it shouldn't, or the site defaced.
 
 ## C. Grievances
 
-Complaints arrive at karnishh.education@gmail.com and on the moderation
-page (marked *Data request*).
+Grievance Officer: **K.V.Karnishh**. Complaints arrive at
+karnishh.education@gmail.com and on the moderation page (marked *Data
+request*).
 
 - Acknowledge within **24 hours**.
 - Resolve within **15 days** (IT Rules); the DPDP outer limit is 90 days.

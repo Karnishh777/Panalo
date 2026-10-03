@@ -961,8 +961,33 @@ async function consentTests() {
   ok("kept registration details aren't readable from the API", !peek.ok);
 }
 
+// Phase 23: security logs copied in by the GitHub Action, kept 180 days.
+async function logTests() {
+  const db = await freshDb();
+  const u = await createUser(db, "l_user");
+  const now = Date.now();
+  const batch = [
+    { id: "a1", timestamp: now * 1000, event_message: "POST | 200 | 203.0.113.9 | /rest/v1/messages" },
+    { id: "a2", timestamp: new Date(now - 1000).toISOString(), event_message: "GET | 401 | 203.0.113.9 | /auth/v1/user" },
+    { timestamp: now * 1000, event_message: "no id: skipped" },
+  ];
+  const n1 = (await db.query("select private.store_logs($1::jsonb, 'edge_logs') as n", [JSON.stringify(batch)])).rows[0].n;
+  ok("a batch of logs is stored", n1 === 2, String(n1));
+  const n2 = (await db.query("select private.store_logs($1::jsonb, 'edge_logs') as n", [JSON.stringify(batch)])).rows[0].n;
+  ok("copying the same logs again adds nothing", n2 === 0, String(n2));
+  const at = (await db.query("select abs(extract(epoch from at) * 1000 - $1) < 5 as close from private.access_logs where id = 'a1'", [now])).rows[0];
+  ok("microsecond timestamps are read correctly", at && at.close);
+  await db.query("update private.access_logs set at = now() - interval '181 days' where id = 'a2'");
+  const purged = (await db.query("select private.purge_access_logs() as n")).rows[0].n;
+  ok("logs older than 180 days are erased", purged === 1 && (await db.query("select count(*)::int as n from private.access_logs")).rows[0].n === 1);
+  const peek = await attempt(db, u, (tx) => tx.query("select * from private.access_logs"));
+  ok("logs aren't readable from the API", !peek.ok);
+  const write = await attempt(db, u, (tx) => tx.query("select private.store_logs('[]'::jsonb, 'edge_logs')"));
+  ok("nobody signed in can add logs", !write.ok);
+}
+
 async function main() {
-  const sections = [migrationTests, chatTests, takeoverTests, callTests, accountTests, backfillTests, historyTests, disappearTests, studentsTests, moderationTests, deviceStateTests, consentTests];
+  const sections = [migrationTests, chatTests, takeoverTests, callTests, accountTests, backfillTests, historyTests, disappearTests, studentsTests, moderationTests, deviceStateTests, consentTests, logTests];
   for (const run of sections) {
     try {
       await run();

@@ -14,12 +14,20 @@
 #   BACKUP_PASSPHRASE   a long random passphrase; keep it somewhere safe --
 #                       without it the backups can't be opened
 # Without them, only the daily wake-up runs. Restoring: see HOSTING.md.
+#
+# - Every hour: copies Supabase's logs (API requests, sign-ins, database
+#   errors, file storage) into the database, where they're kept 180 days
+#   for CERT-In (supabase-phase23.sql). The free plan keeps them a day.
+#   Needs SUPABASE_DB_URL and one more secret:
+#   SUPABASE_ACCESS_TOKEN  supabase.com → Account → Access Tokens → Generate
+#   Nothing from the logs is ever printed here: only counts.
 name: Keep alive and back up
 
 on:
   schedule:
     - cron: "17 3 * * *"   # every day, 03:17 UTC (wake-up)
     - cron: "41 4 * * 0"   # Sundays, 04:41 UTC (backup)
+    - cron: "7 * * * *"    # every hour (security logs)
   workflow_dispatch:
     inputs:
       backup:
@@ -32,6 +40,7 @@ permissions:
 
 jobs:
   wake:
+    if: github.event.schedule != '7 * * * *'
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:
@@ -105,3 +114,67 @@ jobs:
           path: out/*.tar.gpg
           retention-days: 30
           if-no-files-found: error
+
+  logs:
+    if: github.event.schedule == '7 * * * *' || github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Check the secrets are set
+        id: check
+        env:
+          DB: ${{ secrets.SUPABASE_DB_URL }}
+          TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
+        run: |
+          if [ -z "$DB" ] || [ -z "$TOKEN" ]; then
+            echo "::warning::Security logs aren't being kept: set SUPABASE_DB_URL and SUPABASE_ACCESS_TOKEN."
+            echo "ready=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "ready=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Copy the last three hours of logs into the database
+        if: steps.check.outputs.ready == 'true'
+        env:
+          DB: ${{ secrets.SUPABASE_DB_URL }}
+          TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
+          REF: zqtvqobonmpxffjxbjpt
+        run: |
+          set -euo pipefail
+          umask 077
+          command -v psql >/dev/null || { sudo apt-get update -qq && sudo apt-get install -y -qq postgresql-client >/dev/null; }
+          # Three hours back, every hour: a late or skipped run loses nothing,
+          # and rows already copied are ignored (same id).
+          start=$(date -u -d '-3 hours' +%Y-%m-%dT%H:%M:%SZ)
+          end=$(date -u +%Y-%m-%dT%H:%M:%SZ)
+          failed=0
+          for src in edge_logs auth_logs postgres_logs storage_logs; do
+            if ! curl -sS --fail --max-time 60 -G \
+                 "https://api.supabase.com/v1/projects/$REF/analytics/endpoints/logs.all" \
+                 -H "Authorization: Bearer $TOKEN" \
+                 --data-urlencode "sql=select id, timestamp, event_message from $src order by timestamp desc limit 1000" \
+                 --data-urlencode "iso_timestamp_start=$start" \
+                 --data-urlencode "iso_timestamp_end=$end" \
+                 -o rows.json 2>/dev/null; then
+              echo "::error::Couldn't read $src from Supabase (check SUPABASE_ACCESS_TOKEN)."
+              failed=1; continue
+            fi
+            if ! jq -e '.result | type == "array"' rows.json >/dev/null; then
+              echo "::error::Supabase didn't return $src (the answer had no result)."
+              failed=1; continue
+            fi
+            jq -c '.result' rows.json > batch.json
+            got=$(jq 'length' batch.json)
+            if [ "$got" -ge 1000 ]; then
+              echo "::warning::$src hit 1000 rows in three hours; some may be missing. Run this job more often."
+            fi
+            # Read the batch from the file inside psql: no size limit, never echoed.
+            stored=$(psql "$DB" -X -q -t -A -v ON_ERROR_STOP=1 -v src="$src" <<'SQL'
+          \set rows `cat batch.json`
+          select private.store_logs(:'rows'::jsonb, :'src');
+          SQL
+            )
+            echo "$src: $got read, $stored new"
+          done
+          rm -f rows.json batch.json
+          exit $failed
