@@ -1014,3 +1014,51 @@
 .captcha-box:empty {
   pointer-events: none;
 }
+
+/* Date of birth on sign-up, and the age wall (src/age-gate.js). */
+.birth-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr);
+  gap: 10px;
+}
+.birth-row select,
+.birth-row input {
+  width: 100%;
+}
+.age-wall {
+  position: fixed;
+  inset: 0;
+  z-index: 9000;
+  display: grid;
+  place-items: center;
+  padding: 16px;
+  background: color-mix(in srgb, var(--bg, #070b16) 92%, transparent);
+  backdrop-filter: blur(6px);
+}
+.age-wall-card {
+  display: grid;
+  gap: 14px;
+  width: min(440px, 100%);
+  padding: 26px;
+  border-radius: 18px;
+  background: var(--surface, #111827);
+  color: var(--text, #eef0fa);
+  box-shadow: 0 30px 80px -20px rgba(0, 0, 0, 0.6);
+}
+.age-wall-card h2 {
+  margin: 0;
+  font-size: 22px;
+}
+.age-wall-card p {
+  margin: 0;
+  color: var(--text-2, #b3bad5);
+}
+.age-wall-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr);
+  gap: 10px;
+}
+.age-wall-msg {
+  min-height: 1em;
+  color: var(--danger, #ff8f80) !important;
+}

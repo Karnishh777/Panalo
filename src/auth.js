@@ -13,10 +13,10 @@ import { stopReceipts } from "./receipts.js";
 import { startCalls, stopCalls } from "./calls.js";
 import { startTour } from "./tour.js";
 import { refreshMyProfile } from "./profile.js";
-import { OTP_LENGTH } from "./config.js";
 import { keysAfterPasswordReset } from "./keyflow.js";
 import { validatePassword, describePasswordPolicy, breachedPassword } from "./password.js";
 import { captcha } from "./captcha.js";
+import { chatAgeGate, ageFrom } from "./age-gate.js";
 import { enterApp, leaveApp, showPublic } from "./public.js";
 
 const chatApp = document.getElementById("chat-app");
@@ -75,6 +75,13 @@ const UNLOCK_COPY = {
 
 // ---- App bootstrap ----
 async function initApp(session) {
+  // Age, and a parent's consent for 13 to 17 (age-gate.js, phase 22).
+  const allowed = await chatAgeGate(session, async () => {
+    await supabaseClient.auth.signOut();
+    location.hash = "#login";
+    location.reload();
+  });
+  if (!allowed) return;
   state.currentUser = session.user;
   state.currentUsername = state.currentUser.user_metadata?.username || state.currentUser.email.split("@")[0];
   myProfileName.textContent = state.currentUsername;
@@ -152,13 +159,28 @@ export function initAuth() {
         setAuthMessage(leaked);
         return;
       }
+      const by = Number(document.getElementById("signup-birth-year").value);
+      const bm = Number(document.getElementById("signup-birth-month").value);
+      if (!by || !bm) {
+        setAuthMessage("Enter your month and year of birth.");
+        return;
+      }
+      const age = ageFrom(by, bm);
+      if (by > new Date().getFullYear() || age > 120) {
+        setAuthMessage("That date of birth doesn't look right.");
+        return;
+      }
+      if (age < 13) {
+        setAuthMessage("Panalo is for people 13 and over.");
+        return;
+      }
 
       setRemember(true);
 
       const { data, error } = await supabaseClient.auth.signUp({
         email,
         password,
-        options: { data: { username }, emailRedirectTo: redirectUrl(), ...(await captcha()) },
+        options: { data: { username, birth_year: by, birth_month: bm }, emailRedirectTo: redirectUrl(), ...(await captcha()) },
       });
 
       if (error) {
@@ -198,8 +220,9 @@ export function initAuth() {
   verifyOtpBtn.addEventListener("click", () =>
     withBusy(verifyOtpBtn, "Verifying…", async () => {
       const token = document.getElementById("otp-code-input").value.trim();
-      if (token.length !== OTP_LENGTH) {
-        setAuthMessage(`Enter the ${OTP_LENGTH}-digit code.`);
+      // 6 to 10 digits, depending on the project's setting.
+      if (!/^\d{6,10}$/.test(token)) {
+        setAuthMessage("Enter the code from the email.");
         return;
       }
 

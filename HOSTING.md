@@ -154,6 +154,37 @@ sends 300 emails a day:
 6. **Authentication → Rate Limits**: raise "emails per hour" from 30 if you
    expect a launch-day rush.
 
+### The two email templates (Authentication → Emails → Templates)
+
+Both apps ask for a **code**, not a link. Supabase sends 6 digits by
+default; the apps accept 6 to 10.
+
+**Confirm signup.** New students, and parents who are new to Panalo:
+
+```html
+<h2>Your Panalo code</h2>
+<p style="font-size:28px;font-weight:bold;letter-spacing:6px;">{{ .Token }}</p>
+<p>Enter it in Panalo to continue.</p>
+<p>A parent or guardian approving a child's account? Enter it at
+<a href="https://panalo-5dk.pages.dev/students/#parent">panalo-5dk.pages.dev/students/#parent</a>.</p>
+<p>Didn't ask for this? Ignore it.</p>
+```
+
+**Magic Link.** Parents who already have an account:
+
+```html
+<h2>Your Panalo sign-in code</h2>
+<p style="font-size:28px;font-weight:bold;letter-spacing:6px;">{{ .Token }}</p>
+<p>If your child asked you to approve their Panalo account, open
+<a href="https://panalo-5dk.pages.dev/students/#parent">panalo-5dk.pages.dev/students/#parent</a>
+and enter this code with this email address.</p>
+<p>Didn't ask for this? Ignore it.</p>
+```
+
+Check it works: create an account. The next screen must be **"Check your
+email"** with a code box. If the app goes straight in instead, **Confirm
+email** is still off (Authentication → Sign In / Providers → Email).
+
 ## Bot protection (free Cloudflare Turnstile)
 
 Stops scripts mass-creating accounts (which would burn your email quota

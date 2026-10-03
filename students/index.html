@@ -282,6 +282,7 @@
         <label class="check"><input type="checkbox" id="login-remember" checked><span>Keep me signed in on this device</span></label>
         <button type="submit" class="btn btn-primary btn-lg btn-block" id="login-submit">Cross over</button>
         <p class="airlock-switch">No universe yet? <a href="#signup">Begin one</a></p>
+        <p class="airlock-switch faint">A parent or guardian? <a href="#parent">Approve your child's account</a></p>
       </form>
 
       <form id="forgot-form" class="airlock-form" novalidate hidden aria-labelledby="forgot-title">
@@ -307,7 +308,15 @@
           <div class="pw"><input type="password" id="signup-password" autocomplete="new-password" required aria-describedby="password-hint"><button type="button" class="pw-reveal" data-reveal="signup-password" aria-label="Show password" aria-pressed="false">Show</button></div>
           <small id="password-hint" class="field-hint"></small>
         </div>
-        <label class="check"><input type="checkbox" id="signup-age" required><span>I'm 13 or older, I'll follow the <a href="rules.html" target="_blank" rel="noopener">community rules</a>, and I've read <a href="privacy.html" target="_blank" rel="noopener">what Panalo keeps about me</a>.</span></label>
+        <fieldset class="field birth-field">
+          <legend class="field-label">Date of birth</legend>
+          <div class="birth-row">
+            <select id="signup-birth-month" aria-label="Month of birth" required><option value="" disabled selected>Month</option><option value="1">January</option><option value="2">February</option><option value="3">March</option><option value="4">April</option><option value="5">May</option><option value="6">June</option><option value="7">July</option><option value="8">August</option><option value="9">September</option><option value="10">October</option><option value="11">November</option><option value="12">December</option></select>
+            <input type="number" id="signup-birth-year" aria-label="Year of birth" inputmode="numeric" min="1900" max="2100" placeholder="Year" required>
+          </div>
+          <small class="field-hint">Never shown to anyone. Under 18? A parent or guardian will be asked to agree.</small>
+        </fieldset>
+        <label class="check"><input type="checkbox" id="signup-age" required><span>I'll follow the <a href="rules.html" target="_blank" rel="noopener">community rules</a>, and I've read <a href="privacy.html" target="_blank" rel="noopener">what Panalo keeps about me</a>.</span></label>
         <button type="submit" class="btn btn-primary btn-lg btn-block" id="signup-submit">Create my universe</button>
         <p class="airlock-switch">Already have one? <a href="#login">Log in</a></p>
       </form>
@@ -315,8 +324,8 @@
       <form id="otp-form" class="airlock-form" novalidate hidden aria-labelledby="otp-title">
         <p class="kicker toned tone-world">Almost there</p>
         <h1 id="otp-title" class="airlock-title">Check your email.</h1>
-        <p class="airlock-lead">Enter the 6-digit code we sent. It can take a minute — look in spam too.</p>
-        <label class="field"><span>Code</span><input type="text" id="otp-code" class="otp" inputmode="numeric" autocomplete="one-time-code" maxlength="6" pattern="[0-9]*" required></label>
+        <p class="airlock-lead" id="otp-lead">Enter the code we sent. It can take a minute — look in spam too.</p>
+        <label class="field"><span>Code</span><input type="text" id="otp-code" class="otp" inputmode="numeric" autocomplete="one-time-code" maxlength="10" pattern="[0-9]*" required></label>
         <button type="submit" class="btn btn-primary btn-lg btn-block" id="otp-submit">Verify and cross over</button>
         <button type="button" class="btn btn-quiet btn-block" id="otp-resend">Send a new code</button>
       </form>
@@ -339,6 +348,68 @@
         <label class="field"><span>Again</span><input type="password" id="recovery-confirm" autocomplete="new-password" required></label>
         <button type="submit" class="btn btn-primary btn-lg btn-block" id="recovery-submit">Set password</button>
       </form>
+
+      <!-- Age (supabase-phase22.sql). Asked once, of accounts made before it. -->
+      <form id="age-form" class="airlock-form" novalidate hidden aria-labelledby="age-title">
+        <p class="kicker toned tone-time">One question</p>
+        <h1 id="age-title" class="airlock-title">When were you born?</h1>
+        <p class="airlock-lead">The law asks us to know whether you're under 18. Only the month and year, never shown to anyone, and it can't be changed later.</p>
+        <div class="birth-row">
+          <select id="age-month" aria-label="Month of birth" required><option value="" disabled selected>Month</option><option value="1">January</option><option value="2">February</option><option value="3">March</option><option value="4">April</option><option value="5">May</option><option value="6">June</option><option value="7">July</option><option value="8">August</option><option value="9">September</option><option value="10">October</option><option value="11">November</option><option value="12">December</option></select>
+          <input type="number" id="age-year" aria-label="Year of birth" inputmode="numeric" min="1900" max="2100" placeholder="Year" required>
+        </div>
+        <button type="submit" class="btn btn-primary btn-lg btn-block" id="age-submit">Continue</button>
+      </form>
+
+      <!-- 13 to 17: a parent or guardian agrees first. -->
+      <form id="guardian-form" class="airlock-form" novalidate hidden aria-labelledby="guardian-title">
+        <p class="kicker toned tone-signal">One more person</p>
+        <h1 id="guardian-title" class="airlock-title">Ask a parent to say yes.</h1>
+        <p class="airlock-lead" id="guardian-lead">Because you're under 18, a parent or legal guardian has to agree before you can use Panalo. Enter their email: we'll send them a code and a link.</p>
+        <label class="field"><span>Your parent's or guardian's email</span><input type="email" id="guardian-email" autocomplete="off" inputmode="email" required></label>
+        <button type="submit" class="btn btn-primary btn-lg btn-block" id="guardian-submit">Send to my parent</button>
+        <div class="guardian-wait" id="guardian-wait" hidden>
+          <p class="guardian-status" id="guardian-status" role="status"></p>
+          <p class="faint">They open <b id="guardian-link-text">panalo-5dk.pages.dev/students/#parent</b> on their own phone or computer and enter the code from the email.</p>
+          <div class="chips">
+            <button type="button" class="btn btn-ghost btn-sm" id="guardian-copy">Copy the link</button>
+            <button type="button" class="btn btn-ghost btn-sm" id="guardian-check">They've said yes — check</button>
+          </div>
+        </div>
+        <p class="airlock-switch"><button type="button" class="link-btn" id="guardian-signout">Sign out</button> · <button type="button" class="link-btn" id="guardian-delete">Delete this account</button></p>
+      </form>
+
+      <!-- Under 13. -->
+      <form id="young-form" class="airlock-form" novalidate hidden aria-labelledby="young-title">
+        <p class="kicker toned tone-drift">Not yet</p>
+        <h1 id="young-title" class="airlock-title">Panalo is for people 13 and over.</h1>
+        <p class="airlock-lead">We'd love to see you again when you're 13. Until then, we can't keep an account for you.</p>
+        <button type="button" class="btn btn-primary btn-lg btn-block" id="young-delete">Delete this account</button>
+      </form>
+
+      <!-- Parents and guardians (#parent). -->
+      <form id="parent-start-form" class="airlock-form" novalidate hidden aria-labelledby="parent-title">
+        <p class="kicker toned tone-signal">For parents and guardians</p>
+        <h1 id="parent-title" class="airlock-title">Your child asked to join Panalo.</h1>
+        <p class="airlock-lead">Enter the email address your child gave. We'll send you a one-time code to prove it's yours. Then you can read what Panalo keeps, and say yes or no.</p>
+        <label class="field"><span>Your email</span><input type="email" id="parent-email" autocomplete="email" inputmode="email" required></label>
+        <button type="submit" class="btn btn-primary btn-lg btn-block" id="parent-send">Email me a code</button>
+        <p class="airlock-switch"><button type="button" class="link-btn" id="parent-have-code">I already have a code</button></p>
+      </form>
+      <form id="parent-code-form" class="airlock-form" novalidate hidden aria-labelledby="parent-code-title">
+        <p class="kicker toned tone-signal">For parents and guardians</p>
+        <h1 id="parent-code-title" class="airlock-title">Enter your code.</h1>
+        <p class="airlock-lead" id="parent-code-lead">Check your email (and spam).</p>
+        <label class="field" id="parent-code-email-field" hidden><span>Your email</span><input type="email" id="parent-code-email" autocomplete="email" inputmode="email"></label>
+        <label class="field"><span>Code</span><input type="text" id="parent-code" class="otp" inputmode="numeric" autocomplete="one-time-code" maxlength="10" pattern="[0-9]*" required></label>
+        <button type="submit" class="btn btn-primary btn-lg btn-block" id="parent-verify">Continue</button>
+      </form>
+      <div id="parent-decide" class="airlock-form parent-decide" hidden aria-labelledby="parent-decide-title" role="region">
+        <p class="kicker toned tone-signal">For parents and guardians</p>
+        <h1 id="parent-decide-title" class="airlock-title">Requests for you</h1>
+        <div id="parent-requests"></div>
+        <p class="airlock-switch"><button type="button" class="link-btn" id="parent-done">Done — sign out</button></p>
+      </div>
 
       <p id="auth-message" class="auth-message" role="alert" aria-live="assertive"></p>
     </div>

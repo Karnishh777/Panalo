@@ -21,6 +21,11 @@ const check = (label, cond) => {
 const shot = async (page, name) => SHOTS && page.screenshot({ path: `${SHOTS}/students-${name}.png` });
 // The app is interactive once main.js has decided what to show.
 const appReady = (page) => page.waitForSelector("body.ready", { timeout: 20000 });
+// Date of birth on the sign-up form (phase 22). `age` in whole years.
+const fillBirth = async (page, age, prefix = "#signup-birth") => {
+  await page.selectOption(`${prefix}-month`, "1");
+  await page.fill(`${prefix}-year`, String(new Date().getFullYear() - age - 1));
+};
 const go = async (page, route, wait = 900) => {
   await page.evaluate((r) => (location.hash = r), route);
   await page.waitForTimeout(wait);
@@ -104,7 +109,15 @@ try {
     await page.fill("#signup-password", "a-long-enough-pass");
     await page.click("#signup-submit");
     await page.waitForTimeout(400);
-    check("the age and rules confirmation is required", /13 or older/.test(await page.textContent("#auth-message")));
+    check("a date of birth is required", /month and year of birth/.test(await page.textContent("#auth-message")));
+    await fillBirth(page, 11);
+    await page.click("#signup-submit");
+    await page.waitForTimeout(400);
+    check("under 13 can't sign up", /13 and over/.test(await page.textContent("#auth-message")) && !(await page.isVisible("#birth")));
+    await fillBirth(page, 24);
+    await page.click("#signup-submit");
+    await page.waitForTimeout(400);
+    check("agreeing to the rules is required", /community rules/.test(await page.textContent("#auth-message")));
     await page.check("#signup-age");
     await page.click("#signup-submit");
     await page.waitForSelector("#birth-skip:not([hidden])", { timeout: 20000 });
@@ -380,6 +393,7 @@ try {
     await a.fill("#signup-username", "orbit_two");
     await a.fill("#signup-email", "two@panalo.test");
     await a.fill("#signup-password", LEAKED_PASSWORD);
+    await fillBirth(a, 30);
     await a.check("#signup-age");
     await a.click("#signup-submit");
     await a.waitForTimeout(600);
@@ -512,6 +526,7 @@ try {
     await d.fill("#signup-username", "leaving_q");
     await d.fill("#signup-email", "leaving@panalo.test");
     await d.fill("#signup-password", "a-long-enough-pass");
+    await fillBirth(d, 40);
     await d.check("#signup-age");
     await d.click("#signup-submit");
     await finishBirth(d);
@@ -621,6 +636,75 @@ try {
     check("no console errors (moderation)", p.errors.length === 0);
     if (p.errors.length) console.log(p.errors.join("\n"));
     await p.close();
+  }
+
+  // ---- Under 18: a parent or guardian agrees first (phase 22) ----------------------------
+  {
+    const t = await qa.open({ viewport: "laptop", path: "students/#signup" });
+    await t.evaluate(() => window.__qa.ready);
+    await appReady(t);
+    await t.fill("#signup-username", "teen_q");
+    await t.fill("#signup-email", "teen@panalo.test");
+    await t.fill("#signup-password", "a-long-enough-pass");
+    await fillBirth(t, 15);
+    await t.check("#signup-age");
+    await t.click("#signup-submit");
+    await t.waitForSelector("#guardian-form:not([hidden])", { timeout: 15000 }).catch(() => {});
+    check("a 15-year-old is asked for a parent before anything else", (await t.isVisible("#guardian-form")) && !(await t.isVisible("#birth")) && !(await t.isVisible("#app")));
+    const blocked = await t.evaluate(async () => (await window.supabase.createClient("x", "y").from("student_tasks").insert([{ title: "x" }])).error?.message || "");
+    check("nothing can be stored for them yet", /parent or guardian/.test(blocked));
+    await t.fill("#guardian-email", "teen@panalo.test");
+    await t.click("#guardian-submit");
+    await t.waitForTimeout(400);
+    check("their own email isn't accepted as the parent's", /own email/.test(await t.textContent("#auth-message")));
+    await t.fill("#guardian-email", "mum@panalo.test");
+    await t.click("#guardian-submit");
+    await t.waitForSelector("#guardian-wait:not([hidden])", { timeout: 5000 }).catch(() => {});
+    check("the parent is emailed a code, and the student sees they're waiting", (await t.evaluate(() => window.__qa.otpSent || [])).includes("mum@panalo.test") && /Waiting for mum@panalo.test/.test(await t.textContent("#guardian-status")));
+    await shot(t, "ask-a-parent");
+
+    // The parent, on the same device: #parent.
+    await t.evaluate(() => (location.hash = "#parent"));
+    await t.reload();
+    await t.evaluate(() => window.__qa.ready);
+    await t.waitForSelector("#parent-start-form:not([hidden])", { timeout: 10000 }).catch(() => {});
+    check("#parent opens the parent's page, not the app", (await t.isVisible("#parent-start-form")) && !(await t.isVisible("#app")));
+    await t.fill("#parent-email", "mum@panalo.test");
+    await t.click("#parent-send");
+    await t.waitForSelector("#parent-code-form:not([hidden])", { timeout: 5000 }).catch(() => {});
+    await t.fill("#parent-code", "000000");
+    await t.click("#parent-verify");
+    await t.waitForTimeout(400);
+    check("a wrong code is refused", /didn't work/.test(await t.textContent("#auth-message")));
+    await t.fill("#parent-code", "123456");
+    await t.click("#parent-verify");
+    await t.waitForSelector(".parent-card", { timeout: 5000 }).catch(() => {});
+    check("the parent sees their child's request and what Panalo keeps", (await t.isVisible(".parent-card")) && /@teen_q/.test(await t.textContent(".parent-card")) && /What Panalo keeps/.test(await t.textContent(".parent-card")));
+    await t.click(".parent-card .btn-primary");
+    await t.waitForTimeout(300);
+    check("approving needs their name and all three declarations", /full name/.test(await t.textContent("#auth-message")));
+    await t.fill(".parent-card input[autocomplete=name]", "Asha Rao");
+    await t.fill(".parent-card input[type=number]", "1980");
+    for (const c of await t.$$(".parent-card input[type=checkbox]")) await c.check();
+    await shot(t, "parent-approve");
+    await t.click(".parent-card .btn-primary");
+    await t.waitForTimeout(600);
+    check("the parent can approve", /can now use Panalo/.test(await t.textContent("#auth-message")) && (await t.evaluate(() => window.__qa.db.account_age.find((a) => a.parent_email === "mum@panalo.test")?.consent)) === "approved");
+    check("and later withdraw (shown once approved)", await t.isVisible(".parent-card.approved .btn-danger"));
+    await t.click("#parent-done");
+    await t.waitForTimeout(1200);
+
+    // The student logs in again and gets in.
+    await t.evaluate(() => (location.hash = "#login"));
+    await t.waitForSelector("#login-form:not([hidden])", { timeout: 8000 }).catch(() => {});
+    await t.fill("#login-email", "teen@panalo.test");
+    await t.fill("#login-password", "a-long-enough-pass");
+    await t.click("#login-submit");
+    await finishBirth(t);
+    check("with a parent's consent, the student gets in", await t.isVisible("#app"));
+    check("no console errors (parent consent)", t.errors.length === 0);
+    if (t.errors.length) console.log(t.errors.join("\n"));
+    await t.close();
   }
 
   // ---- Reduced motion -----------------------------------------------------------------------

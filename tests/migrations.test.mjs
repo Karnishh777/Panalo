@@ -106,9 +106,11 @@ async function migrationTests() {
   );
   // Phase 20's moderation_* functions each check for a moderator first
   // (moderation_claim and moderation_status excepted, by design).
-  const EXPECTED_DEFINERS = ["delete_my_account", "find_profile_by_username", "moderation_claim", "moderation_delete_message",
-    "moderation_history", "moderation_reports", "moderation_set_passphrase", "moderation_set_status", "moderation_status",
-    "moderation_suspend", "my_storage_objects", "request_to_join"];
+  // Phase 22's age and consent functions check who's asking themselves.
+  const EXPECTED_DEFINERS = ["decide_parent_consent", "delete_my_account", "find_profile_by_username", "moderation_claim", "moderation_delete_message",
+    "moderation_history", "moderation_reports", "moderation_set_birth", "moderation_set_passphrase", "moderation_set_status", "moderation_status",
+    "moderation_suspend", "my_age_status", "my_children_requests", "my_storage_objects", "request_parent_consent", "request_to_join",
+    "set_my_birth", "withdraw_parent_consent"];
   ok("only the known SECURITY DEFINER functions are callable by signed-in users",
      JSON.stringify(exposed.map((r) => r.proname)) === JSON.stringify(EXPECTED_DEFINERS),
      exposed.map((r) => r.proname).join(", "));
@@ -872,8 +874,95 @@ async function deviceStateTests() {
   ok("the same focus block can't be recorded twice (two devices)", !twice.ok && /duplicate|unique/i.test(twice.error));
 }
 
+// ---- age and a parent's consent (phase 22) ---------------------------------
+
+// As `as`, with the email and sign-in method a real Supabase token carries.
+async function asWith(db, userId, claims, fn) {
+  return db.transaction(async (tx) => {
+    await tx.query("select set_config('request.jwt.claim.sub', $1, true)", [userId]);
+    await tx.query("select set_config('request.jwt.claims', $1, true)", [JSON.stringify({ sub: userId, role: "authenticated", ...claims })]);
+    await tx.exec("set local role authenticated");
+    return fn(tx);
+  });
+}
+async function attemptWith(db, userId, claims, fn) {
+  try {
+    const value = await asWith(db, userId, claims, async (tx) => {
+      const v = await fn(tx);
+      throw Object.assign(new Error("__rollback__"), { v });
+    });
+    return { ok: true, value };
+  } catch (e) {
+    return e.message === "__rollback__" ? { ok: true, value: e.v } : { ok: false, error: e.message };
+  }
+}
+
+async function consentTests() {
+  const db = await freshDb();
+  const year = new Date().getFullYear();
+  const adult = await createUser(db, "c_adult");
+  const teen = await createUser(db, "c_teen");
+  const kid = await createUser(db, "c_kid");
+  const mum = await createUser(db, "c_mum");
+  const stranger = await createUser(db, "c_stranger");
+  const birth = (u, y, m = 1) => as(db, u, async (tx) => (await tx.query("select set_my_birth($1, $2) as r", [y, m])).rows[0].r);
+  const task = (u) => attempt(db, u, (tx) => tx.query("insert into student_tasks (title) values ('x')"));
+
+  ok("an adult's date of birth needs nothing more", (await birth(adult, year - 30)) === "adult");
+  ok("adults can use Panalo", (await task(adult)).ok);
+  const again = await attempt(db, adult, (tx) => tx.query("select set_my_birth($1, 1)", [year - 15]));
+  ok("a date of birth can't be changed by its owner (no becoming 18 by editing)", !again.ok);
+  ok("13 to 17 needs a parent", (await birth(teen, year - 15)) === "needs_consent");
+  ok("under 13 isn't allowed", (await birth(kid, year - 11)) === "under13");
+
+  ok("nothing is stored for a student without a parent's consent", !(await task(teen)).ok);
+  const conv = await startGroup(db, adult, [stranger]);
+  const added = await attempt(db, adult, (tx) => tx.query("insert into conversation_participants (conversation_id, user_id) values ($1, $2)", [conv, teen]));
+  ok("they can't be added to conversations either", !added.ok);
+  const rep = await attempt(db, teen, (tx) => tx.query("insert into reports (reason) values ('safety')"));
+  ok("but they can still report (safety first)", rep.ok, rep.error);
+  ok("the under-13 can't use it at all", !(await task(kid)).ok);
+
+  const ownMail = await attempt(db, teen, (tx) => tx.query("select request_parent_consent('c_teen@example.test')"));
+  ok("a student can't name themselves as the parent", !ownMail.ok);
+  await as(db, teen, (tx) => tx.query("select request_parent_consent('C_Mum@Example.test')"));
+  const status = await as(db, teen, async (tx) => (await tx.query("select * from my_age_status()")).rows[0]);
+  ok("the student sees they're waiting, with the parent named", status.minor && status.consent === "pending" && status.parent_email === "c_mum@example.test", JSON.stringify(status));
+
+  const now = Math.floor(Date.now() / 1000);
+  const byCode = { email: "c_mum@example.test", amr: [{ method: "otp", timestamp: now }] };
+  const byPassword = { email: "c_mum@example.test", amr: [{ method: "password", timestamp: now }] };
+  const seen = await asWith(db, mum, byCode, async (tx) => (await tx.query("select * from my_children_requests()")).rows);
+  ok("the parent sees the request", seen.length === 1 && seen[0].child_username === "c_teen" && seen[0].verified === true, JSON.stringify(seen));
+  const pw = await attemptWith(db, mum, byPassword, (tx) => tx.query("select decide_parent_consent($1, true, 'Asha Rao', 'parent', $2)", [teen, year - 45]));
+  ok("deciding needs a fresh sign-in by emailed code, not just a password", !pw.ok);
+  const strangerTry = await attemptWith(db, stranger, { email: "c_stranger@example.test", amr: byCode.amr }, (tx) => tx.query("select decide_parent_consent($1, true, 'X Y', 'parent', $2)", [teen, year - 40]));
+  ok("nobody else can decide", !strangerTry.ok);
+  const young = await attemptWith(db, mum, byCode, (tx) => tx.query("select decide_parent_consent($1, true, 'Asha Rao', 'parent', $2)", [teen, year - 16]));
+  ok("the parent must be 18 or over", !young.ok);
+  const noName = await attemptWith(db, mum, byCode, (tx) => tx.query("select decide_parent_consent($1, true, ' ', 'parent', $2)", [teen, year - 45]));
+  ok("the parent must give their name", !noName.ok);
+  await asWith(db, mum, byCode, (tx) => tx.query("select decide_parent_consent($1, true, 'Asha Rao', 'parent', $2)", [teen, year - 45]));
+  ok("with consent, the student can use Panalo", (await task(teen)).ok);
+  const rec = (await db.query("select parent_name, relation, decision from private.parental_consents where child_id = $1", [teen])).rows[0];
+  ok("the consent is recorded", rec && rec.parent_name === "Asha Rao" && rec.decision === "approved", JSON.stringify(rec));
+
+  await asWith(db, mum, byCode, (tx) => tx.query("select withdraw_parent_consent($1)", [teen]));
+  const gone = (await db.query("select (select count(*)::int from auth.users where id = $1) as u, (select count(*)::int from private.deleted_registrations where user_id = $1) as r", [teen])).rows[0];
+  ok("withdrawing consent deletes the student's account, keeping only registration details", gone.u === 0 && gone.r === 1, JSON.stringify(gone));
+
+  await as(db, adult, (tx) => tx.query("select delete_my_account()"));
+  const kept = (await db.query("select email, username from private.deleted_registrations where user_id = $1", [adult])).rows[0];
+  ok("deleting an account keeps email and username for 180 days", kept && kept.username === "c_adult" && kept.email === "c_adult@example.test", JSON.stringify(kept));
+  await db.query("update private.deleted_registrations set deleted_at = now() - interval '181 days' where user_id = $1", [adult]);
+  const purged = (await db.query("select private.purge_deleted_registrations() as n")).rows[0].n;
+  ok("and erases them after 180 days", purged === 1 && (await db.query("select count(*)::int as n from private.deleted_registrations where user_id = $1", [adult])).rows[0].n === 0);
+  const peek = await attempt(db, mum, (tx) => tx.query("select * from private.deleted_registrations"));
+  ok("kept registration details aren't readable from the API", !peek.ok);
+}
+
 async function main() {
-  const sections = [migrationTests, chatTests, takeoverTests, callTests, accountTests, backfillTests, historyTests, disappearTests, studentsTests, moderationTests, deviceStateTests];
+  const sections = [migrationTests, chatTests, takeoverTests, callTests, accountTests, backfillTests, historyTests, disappearTests, studentsTests, moderationTests, deviceStateTests, consentTests];
   for (const run of sections) {
     try {
       await run();

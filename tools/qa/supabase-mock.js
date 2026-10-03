@@ -53,6 +53,8 @@
     resources: [],
     blocks: [],
     reports: [],
+    account_age: [], // phase 22: { user_id, birth_year, birth_month, consent, parent_email }
+    parental_consents: [],
     room_codes: [],
     room_requests: [],
   };
@@ -90,9 +92,12 @@
   const authListeners = new Set();
   const SESSION_KEY = "qa.mock.session";
 
-  function makeSession(user) {
+  function makeSession(user, method = "password") {
+    const amr = [{ method, timestamp: Math.floor(Date.now() / 1000) }];
+    const payload = btoa(JSON.stringify({ sub: user.id, email: user.email, amr })).replace(/=+$/, "");
     return {
-      access_token: "qa-token",
+      access_token: `qa.${payload}.sig`,
+      amr,
       token_type: "bearer",
       user: { id: user.id, email: user.email, user_metadata: clone(user.user_metadata) },
     };
@@ -113,6 +118,17 @@
     authListeners.forEach((cb) => setTimeout(() => cb(event, s), 0));
   }
   const me = () => session?.user?.id || null;
+  // Phase 22, as the database does it.
+  const ageOf = (y, m) => {
+    const d = new Date();
+    return d.getFullYear() - y - (d.getMonth() + 1 <= m ? 1 : 0);
+  };
+  const mayProcess = (uid) => {
+    const a = (db.account_age || []).find((r) => r.user_id === uid);
+    if (!a) return true;
+    const age = ageOf(a.birth_year, a.birth_month);
+    return !(age < 13 || (age < 18 && a.consent !== "approved"));
+  };
 
   // RLS, approximately: you see rows of conversations you belong to.
   function myConvIds() {
@@ -401,6 +417,9 @@
       if (used + row.size_bytes > 200 * 1024 * 1024) return deny("Your archive is full (200 MB). Remove something to make room.", "54000");
     }
     if (t === "reports" && row.conversation_id && !myConvIds().has(row.conversation_id)) return deny("new row violates row-level security policy");
+    const CONSENTED = ["messages", "conversations", "student_profiles", "student_tasks", "focus_sessions", "student_events", "activity_log", "student_goals", "resources"];
+    if (CONSENTED.includes(t) && !mayProcess(uid)) return deny("A parent or guardian needs to agree before Panalo can be used.");
+    if (t === "conversation_participants" && !mayProcess(row.user_id)) return deny("A parent or guardian needs to agree before Panalo can be used.");
     return null;
   }
 
@@ -584,6 +603,54 @@
       const n = String(args?.name || "").trim().toLowerCase();
       const p = db.profiles.find((x) => x.username_lc === n);
       return { data: p ? [{ id: p.id, username: p.username, public_key: p.public_key || null }] : [], error: null };
+    }
+    // ---- age and a parent's consent (phase 22) ----
+    if (name === "my_age_status") {
+      const a = db.account_age.find((r) => r.user_id === me());
+      if (!a) return { data: [{ needs_birth: true, age: null, minor: false, under13: false, consent: "not_needed", parent_email: null }], error: null };
+      const age = ageOf(a.birth_year, a.birth_month);
+      return { data: [{ needs_birth: false, age, minor: age < 18, under13: age < 13, consent: a.consent, parent_email: a.parent_email }], error: null };
+    }
+    if (name === "set_my_birth") {
+      if (db.account_age.some((r) => r.user_id === me())) return { data: null, error: { message: "Your date of birth is already set. Ask a moderator if it's wrong." } };
+      const age = ageOf(args.p_year, args.p_month);
+      db.account_age.push({ user_id: me(), birth_year: args.p_year, birth_month: args.p_month, consent: age >= 13 && age < 18 ? "pending" : "not_needed", parent_email: null });
+      persist();
+      return { data: age < 13 ? "under13" : age < 18 ? "needs_consent" : "adult", error: null };
+    }
+    if (name === "request_parent_consent") {
+      const a = db.account_age.find((r) => r.user_id === me());
+      const mail = String(args.p_parent_email || "").trim().toLowerCase();
+      if (mail === String(session?.user?.email || "").toLowerCase()) return { data: null, error: { message: "That's your own email. Enter your parent's." } };
+      a.parent_email = mail;
+      if (a.consent === "declined") a.consent = "pending";
+      persist();
+      return { data: null, error: null };
+    }
+    if (name === "my_children_requests") {
+      const mail = String(session?.user?.email || "").toLowerCase();
+      const verified = (session?.amr || []).some((m) => m.method === "otp");
+      const rows = db.account_age.filter((r) => r.parent_email === mail && r.user_id !== me() && ageOf(r.birth_year, r.birth_month) < 18).map((r) => ({
+        child_id: r.user_id, child_username: db.profiles.find((p) => p.id === r.user_id)?.username, child_age: ageOf(r.birth_year, r.birth_month), consent: r.consent, requested_at: nowIso(), verified,
+      }));
+      return { data: rows, error: null };
+    }
+    if (name === "decide_parent_consent" || name === "withdraw_parent_consent") {
+      if (!(session?.amr || []).some((m) => m.method === "otp")) return { data: null, error: { message: "Sign in with the code we email you, then try again." } };
+      const a = db.account_age.find((r) => r.user_id === args.p_child);
+      if (!a || a.parent_email !== String(session.user.email).toLowerCase()) return { data: null, error: { message: "There's no request for you from that account." } };
+      if (name === "withdraw_parent_consent") {
+        db.parental_consents.push({ child_id: a.user_id, decision: "withdrawn" });
+        db.account_age = db.account_age.filter((r) => r !== a);
+        db.profiles = db.profiles.filter((p) => p.id !== a.user_id);
+        persist();
+        return { data: null, error: null };
+      }
+      if (args.p_approve && (!args.p_parent_name || args.p_parent_birth_year > new Date().getFullYear() - 18)) return { data: null, error: { message: "A parent or guardian must be 18 or over." } };
+      a.consent = args.p_approve ? "approved" : "declined";
+      db.parental_consents.push({ child_id: a.user_id, parent_name: args.p_parent_name, relation: args.p_relation, decision: a.consent });
+      persist();
+      return { data: a.consent, error: null };
     }
     if (name === "merge_device_state") {
       const row = (db.student_profiles || []).find((r) => r.user_id === me());
@@ -828,7 +895,7 @@
         if (db.profiles.some((p) => p.username_lc === username.toLowerCase())) {
           return { data: { user: null, session: null }, error: { message: "Database error saving new user" } };
         }
-        const u = { id: uuid(), email, password, user_metadata: { username } };
+        const u = { id: uuid(), email, password, user_metadata: { ...(options?.data || {}), username } };
         authUsers.push(u);
         const prof = { id: u.id, username, bio: null, avatar_url: null, public_key: null };
         applyDefaults("profiles", prof);
@@ -844,12 +911,31 @@
       },
       async verifyOtp({ email, token }) {
         await sleep(200);
-        const u = pendingOtp.get(String(email).toLowerCase());
+        const mail = String(email).toLowerCase();
+        const u = pendingOtp.get(mail) || otpLogins.get(mail);
         if (!u || token !== "123456") return { data: { session: null }, error: { message: "Token has expired or is invalid" } };
-        pendingOtp.delete(String(email).toLowerCase());
-        const s = makeSession(u);
+        pendingOtp.delete(mail);
+        otpLogins.delete(mail);
+        const s = makeSession(u, "otp");
         setSession(s, "SIGNED_IN");
         return { data: { session: s, user: s.user }, error: null };
+      },
+      // Email one-time code (phase 22: parents). Makes the account if new.
+      async signInWithOtp({ email, options } = {}) {
+        await sleep(120);
+        const mail = String(email).toLowerCase();
+        let u = authUsers.find((x) => x.email.toLowerCase() === mail);
+        if (!u) {
+          u = { id: uuid(), email: mail, password: null, user_metadata: { ...(options?.data || {}) } };
+          authUsers.push(u);
+          const prof = { id: u.id, username: options?.data?.username || mail.split("@")[0], bio: null, avatar_url: null, public_key: null };
+          applyDefaults("profiles", prof);
+          db.profiles.push(prof);
+        }
+        otpLogins.set(mail, u);
+        (window.__qa.otpSent ||= []).push(mail);
+        persist();
+        return { data: {}, error: null };
       },
       async resend({ email } = {}) {
         await sleep(150);
@@ -887,6 +973,7 @@
     getChannels: () => [...channels],
   };
   const pendingOtp = new Map();
+  const otpLogins = new Map();
 
   // ----------------------------------------------------------- persistence
   // The "server" survives a reload within the same tab, so reload flows
@@ -944,6 +1031,7 @@
       applyDefaults("profiles", prof);
       db.profiles.push(prof);
       p.id = id;
+      if (!QA.noBirth) db.account_age.push({ user_id: id, birth_year: 1996, birth_month: 6, consent: "not_needed", parent_email: null });
       if (p.email) {
         authUsers.push({ id, email: p.email, password: p.password, user_metadata: { username: p.username } });
         const stored = await C.protectPrivateKey(kp.privateKey, p.password);
