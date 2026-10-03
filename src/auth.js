@@ -1,7 +1,7 @@
 // Authentication, app bootstrap (initApp), the unlock screen, and session restore.
 import { supabaseClient, setRemember } from "./client.js";
 import { state, conversationKeys } from "./state.js";
-import { withBusy, showToast, redirectUrl } from "./util.js";
+import { withBusy, showToast, redirectUrl, authErrorText } from "./util.js";
 import { ensureUserKeys, idbDelKey, idbGetKey, rewrapPrivateKey, clearKeyProblems } from "./encryption.js";
 import { clearAttachmentCache } from "./attachments.js";
 import { clearPersistedIndex } from "./search.js";
@@ -194,7 +194,7 @@ export function initAuth() {
         setAuthMessage(
           /database error saving new user/i.test(error.message)
             ? `"${username}" is already taken. Try a different username.`
-            : error.message
+            : authErrorText(error)
         );
         return;
       }

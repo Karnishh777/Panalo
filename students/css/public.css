@@ -1891,9 +1891,11 @@ html[data-motion="reduce"] .gate {
 
 /* ---- Age and a parent's consent ---------------------------------------------- */
 .birth-field {
+  display: grid;
+  gap: 6px;
   border: 0;
   padding: 0;
-  margin: 0;
+  margin: 0 0 14px;
   min-width: 0;
 }
 .birth-field legend {
@@ -1905,9 +1907,25 @@ html[data-motion="reduce"] .gate {
   grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr);
   gap: 10px;
 }
-.birth-row select,
-.birth-row input {
-  width: 100%;
+.birth-row select:invalid {
+  color: var(--text-3);
+}
+.birth-row option {
+  color: var(--text);
+  background: var(--bg-2);
+}
+/* A year, not a quantity: no spinner arrows. */
+.birth-row input[type="number"] {
+  appearance: textfield;
+  -moz-appearance: textfield;
+}
+.birth-row input[type="number"]::-webkit-inner-spin-button,
+.birth-row input[type="number"]::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+#age-form .birth-field {
+  margin-bottom: 22px;
 }
 .guardian-wait {
   display: grid;
