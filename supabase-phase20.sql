@@ -80,6 +80,13 @@ alter table public.reports add column if not exists handled_at timestamptz;
 
 revoke all on private.moderators, private.moderator_passphrase, private.moderator_claims, private.moderation_log
   from public, anon, authenticated;
+-- Row-level security too, with no policies: even a grant added by mistake
+-- later would show nothing. The functions below own these tables, so they
+-- are unaffected.
+alter table private.moderators enable row level security;
+alter table private.moderator_passphrase enable row level security;
+alter table private.moderator_claims enable row level security;
+alter table private.moderation_log enable row level security;
 
 
 -- ############################################################################
