@@ -1206,6 +1206,11 @@ input[type="range"].range {
 .birth.asking .birth-globe {
   top: 30%;
 }
+/* With the title (2D fallback world), the world sinks like a horizon so
+   the type has the sky above it -- as the film's own world does. */
+.birth.titled:not(.asking) .birth-globe {
+  top: 78%;
+}
 .birth.asking .birth-line {
   max-width: none;
   align-self: start;

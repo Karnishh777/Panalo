@@ -43,6 +43,13 @@ landing ──► the crossing (sign in / sign up) ──► first time? the bir
   that decode as they arrive. All of it steps aside for reduced motion. `#login`
   and `#signup` open the crossing; `#join=CODE` remembers an invite through
   sign-in.
+- **Moderation** (`#/moderate`): reports and data requests for moderators;
+  a passphrase door for anyone else (HOSTING.md → Moderation).
+- **Effects with a purpose**: ink, petals and button hits only on Now,
+  World and Drift. Signals, Calendar, Archive, Settings, Safety and
+  Moderation stay still; the Study Room is the quietest of all.
+- **Settings follow you** (`js/sync.js`, phase 21): preferences, lighting,
+  Drift and a running timer, newest change wins.
 - **Crossing**: an event horizon beside an airlock form. Crossing over
   collapses the horizon into the app. Handles login, sign-up (+ email code),
   forgot password, the unlock prompt, and password recovery — with exactly

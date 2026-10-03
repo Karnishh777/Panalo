@@ -1001,3 +1001,16 @@
     opacity: 0.4;
   }
 }
+
+/* Turnstile bot check (src/captcha.js): invisible for most people; when a
+   visitor must interact, it sits in the middle of the screen. */
+.captcha-box {
+  position: fixed;
+  left: 50%;
+  top: 50%;
+  z-index: 10000;
+  transform: translate(-50%, -50%);
+}
+.captcha-box:empty {
+  pointer-events: none;
+}

@@ -4,7 +4,8 @@
 // needed). The rules for what a valid setting is live in appearance-core.js
 // and are unit-tested; this file wires them to the controls.
 import { THEME_PRESETS, WALLPAPER_PRESETS, EFFECT_PRESETS, FONT_PRESETS, LOOK_PRESETS } from "./config.js";
-import { validatePassword } from "./password.js";
+import { validatePassword, breachedPassword } from "./password.js";
+import { captcha } from "./captcha.js";
 import { el, showToast, withBusy, mapLimited } from "./util.js";
 import { icon } from "./icons.js";
 import {
@@ -697,6 +698,8 @@ export function initSettings() {
       if (weakNew) return showToast(weakNew);
       if (next !== confirm) return showToast("The new passwords don't match.");
       if (next === current) return showToast("That's already your password.");
+      const leakedNew = await breachedPassword(next);
+      if (leakedNew) return showToast(leakedNew);
 
       // Refuse while messages are locked: without the private key in memory we
       // can't re-protect it, and changing the password would strand every
@@ -709,6 +712,7 @@ export function initSettings() {
       const { error: authError } = await supabaseClient.auth.signInWithPassword({
         email: state.currentUser.email,
         password: current,
+        options: await captcha(),
       });
       if (authError) return showToast("Your current password isn't right.");
 

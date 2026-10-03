@@ -193,7 +193,9 @@ export function runBirth({ replay = false, onDone }) {
   const extras = [];
   const add = (node) => (extras.push(node), root.append(node), node);
 
+  let stopSync = () => {};
   const stopSound = () => {
+    stopSync();
     score?.close();
     score = null;
   };
@@ -299,6 +301,9 @@ export function runBirth({ replay = false, onDone }) {
     });
     label();
     score.resume();
+    const sync = () => (document.hidden ? score?.pause() : !ended && score?.resume());
+    document.addEventListener("visibilitychange", sync);
+    stopSync = () => document.removeEventListener("visibilitychange", sync);
   }
 
   const shot = (name) => () => (root.dataset.shot = name);

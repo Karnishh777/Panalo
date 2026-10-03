@@ -13,6 +13,7 @@
 // Playwright is resolved from the project if installed, else from the global
 // npm root (it is preinstalled globally in the Claude Code cloud image).
 import http from "node:http";
+import { createHash } from "node:crypto";
 import fs from "node:fs";
 import path from "node:path";
 import { createRequire } from "node:module";
@@ -21,6 +22,9 @@ import { fileURLToPath } from "node:url";
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../..");
 const MOCK = path.join(ROOT, "tools/qa/supabase-mock.js");
+// A password the stubbed breach list knows (see the route in open()).
+export const LEAKED_PASSWORD = "password1234";
+const LEAKED_SHA1 = createHash("sha1").update(LEAKED_PASSWORD).digest("hex").toUpperCase();
 
 function loadPlaywright() {
   const require = createRequire(import.meta.url);
@@ -98,6 +102,14 @@ export async function launch({ headless = true } = {}) {
       route.fulfill({ status: 200, contentType: "text/javascript", body: fs.readFileSync(MOCK, "utf8") })
     );
     await context.route(/supabase\.co/, (route) => route.abort());
+    // Have I Been Pwned (src/password.js): one known-leaked password, and the
+    // bot check off (no site key), so a run never touches the network.
+    await context.route(/api\.pwnedpasswords\.com\/range\//, (route) => {
+      const prefix = route.request().url().split("/range/")[1];
+      const body = prefix === LEAKED_SHA1.slice(0, 5) ? `${LEAKED_SHA1.slice(5)}:52000\r\n` : "";
+      return route.fulfill({ status: 200, contentType: "text/plain", body });
+    });
+    await context.route(/challenges\.cloudflare\.com/, (route) => route.abort());
     // Fonts are cosmetic; don't let a slow network stall a run.
     await context.route(/fonts\.(googleapis|gstatic)\.com/, (route) =>
       process.env.QA_FONTS ? route.continue() : route.abort()

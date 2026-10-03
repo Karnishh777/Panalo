@@ -1,10 +1,12 @@
-// How the worlds are lit, chosen by the person and remembered on this
-// device: where the sun is (angle around, height above), how bright the
+// How the worlds are lit, chosen by the person and remembered (on this
+// device, and on the account through sync.js): where the sun is (angle around, height above), how bright the
 // night side is, or "live" -- the sun follows your clock, so your world is
 // in daylight at noon and shows its city lights at midnight.
 //
 // Every globe on the page listens for changes, so moving the sun on the
 // landing page or in World moves it everywhere.
+import { localChange } from "./local-change.js";
+
 const KEY = "panalo.students.light";
 const EVENT = "panalo:light";
 
@@ -44,6 +46,7 @@ export function setLight(patch) {
   } catch {
     /* storage unavailable: this page only */
   }
+  localChange("light");
   window.dispatchEvent(new CustomEvent(EVENT, { detail: next }));
   return next;
 }

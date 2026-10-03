@@ -14,6 +14,9 @@ import { state } from "../../src/state.js";
 
 const $ = (id) => document.getElementById(id);
 const JOIN_KEY = "panalo.students.join";
+// A link to somewhere inside (e.g. #/moderate) opened while signed out:
+// remember it through sign-in and go there afterwards.
+const AFTER_KEY = "panalo.students.after";
 let inside = false;
 // Restoring a stored session and a fast manual sign-in can both finish;
 // only the first may enter, or two births would run on top of each other.
@@ -29,8 +32,16 @@ function captureJoin() {
   return true;
 }
 
+let deepLink = false;
 function showOutside() {
   if (inside) return;
+  if (/^#\/[a-z]+/.test(location.hash)) {
+    try {
+      sessionStorage.setItem(AFTER_KEY, location.hash);
+    } catch {}
+    history.replaceState(null, "", "#login");
+    deepLink = true;
+  }
   const h = location.hash;
   const auth = h === "#login" || h === "#signup" || h.startsWith("#join=");
   $("landing").hidden = auth;
@@ -38,6 +49,12 @@ function showOutside() {
   $("app").hidden = true;
   if (auth) {
     showForm(h === "#signup" ? "signup-form" : "login-form");
+    if (deepLink) {
+      deepLink = false;
+      const msg = $("auth-message");
+      msg.dataset.tone = "ok";
+      msg.textContent = "Log in, or create an account, to continue to that page.";
+    }
     if (h.startsWith("#join=")) {
       const msg = $("auth-message");
       msg.dataset.tone = "ok";
@@ -91,6 +108,12 @@ async function onReady(session, { fresh }) {
 
 function enter({ firstTime = false } = {}) {
   inside = true;
+  let after = null;
+  try {
+    after = sessionStorage.getItem(AFTER_KEY);
+    sessionStorage.removeItem(AFTER_KEY);
+  } catch {}
+  if (after) history.replaceState(null, "", after);
   document.body.classList.add("in-app");
   enterShell({ firstTime, pendingJoin: popJoin() });
 }

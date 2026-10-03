@@ -1,6 +1,7 @@
 // Shared interface pieces for Panalo Students: sheets (dialogs), confirm,
 // menus, small builders. Rendering goes through src/util.js `el()`, which
 // assigns text with textContent -- user content is never parsed as HTML.
+import { localChange } from "./local-change.js";
 import { el, showToast as pageToast } from "../../src/util.js";
 
 export { el };
@@ -228,7 +229,7 @@ export function reportError(error, fallback = "Something went wrong. Try again."
   else showToast(fallback);
 }
 
-// Persisted per-device conveniences (never anything that must sync).
+// Preferences: kept in this browser, and copied to the account (sync.js).
 const PREFS_KEY = "panalo.students.prefs";
 export function getPrefs() {
   try {
@@ -244,5 +245,6 @@ export function setPrefs(patch) {
   } catch {
     /* storage unavailable: the preference lasts this session only */
   }
+  localChange("prefs");
   return next;
 }

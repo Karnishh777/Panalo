@@ -15,7 +15,8 @@ import { startTour } from "./tour.js";
 import { refreshMyProfile } from "./profile.js";
 import { OTP_LENGTH } from "./config.js";
 import { keysAfterPasswordReset } from "./keyflow.js";
-import { validatePassword, describePasswordPolicy } from "./password.js";
+import { validatePassword, describePasswordPolicy, breachedPassword } from "./password.js";
+import { captcha } from "./captcha.js";
 import { enterApp, leaveApp, showPublic } from "./public.js";
 
 const chatApp = document.getElementById("chat-app");
@@ -146,13 +147,18 @@ export function initAuth() {
         setAuthMessage(weak);
         return;
       }
+      const leaked = await breachedPassword(password);
+      if (leaked) {
+        setAuthMessage(leaked);
+        return;
+      }
 
       setRemember(true);
 
       const { data, error } = await supabaseClient.auth.signUp({
         email,
         password,
-        options: { data: { username }, emailRedirectTo: redirectUrl() },
+        options: { data: { username }, emailRedirectTo: redirectUrl(), ...(await captcha()) },
       });
 
       if (error) {
@@ -227,9 +233,9 @@ export function initAuth() {
 
       setRemember(rememberCheckbox ? rememberCheckbox.checked : true);
 
-      const { data, error } = await supabaseClient.auth.signInWithPassword({ email, password });
+      const { data, error } = await supabaseClient.auth.signInWithPassword({ email, password, options: await captcha() });
       if (error) {
-        setAuthMessage(error.message);
+        setAuthMessage(/not confirmed/i.test(error.message) ? "Your email isn't confirmed yet. Sign up again with the same email to get a new code." : error.message);
       } else {
         state.currentUser = data.session.user;
         const keyStatus = await ensureUserKeys(password);
@@ -350,7 +356,7 @@ export function initAuth() {
     withBusy(sendResetBtn, "Sending…", async () => {
       const email = document.getElementById("forgot-email").value.trim();
       if (!email) return showToast("Enter your email.");
-      const { error } = await supabaseClient.auth.resetPasswordForEmail(email, { redirectTo: redirectUrl() });
+      const { error } = await supabaseClient.auth.resetPasswordForEmail(email, { redirectTo: redirectUrl(), ...(await captcha()) });
       if (error) return showToast(error.message);
       // Always the same message whether or not the email exists, so this can't
       // be used to probe which addresses have accounts.
@@ -387,6 +393,8 @@ export function initAuth() {
       const weakNext = validatePassword(next);
       if (weakNext) return showToast(weakNext);
       if (next !== confirm) return showToast("Passwords don't match.");
+      const leakedNext = await breachedPassword(next);
+      if (leakedNext) return showToast(leakedNext);
 
       const { data: userData, error } = await supabaseClient.auth.updateUser({ password: next });
       if (error) return showToast(error.message);

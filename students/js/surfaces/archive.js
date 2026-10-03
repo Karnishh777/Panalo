@@ -157,11 +157,14 @@ function render() {
       toolbar,
       all.length
         ? emptyState("Nothing matches.", "Try another word, or clear the filters.")
-        : emptyState(
-            "The archive is empty.",
-            "Notes, past papers, slides, recordings, sketches — drop a file anywhere on this page, or upload one. Files are private until you share them.",
-            el("button", { type: "button", class: "btn btn-primary", text: "Upload a file", onClick: () => openUpload() })
-          )
+        : el("div", { class: "archive-empty" }, [
+            el("div", { class: "shelf-art", "aria-hidden": "true" }, ["PDF", "Slides", "Audio", "Image", "Notes", "Code"].map((t, i) => el("span", { class: `shelf-file f${i}`, text: t }))),
+            el("div", { class: "archive-empty-copy" }, [
+              el("h3", { text: "Your shelves are waiting." }),
+              el("p", { text: "Notes, past papers, slides, recordings, sketches. Drop a file anywhere on this page, or upload one. Everything is private until you share it with a circle." }),
+              el("button", { type: "button", class: "btn btn-primary", text: "Upload your first file", onClick: () => openUpload() }),
+            ]),
+          ])
     );
     return;
   }

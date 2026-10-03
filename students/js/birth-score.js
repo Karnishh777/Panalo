@@ -138,6 +138,11 @@ export function createScore() {
     resume() {
       if (ctx.state !== "running") ctx.resume?.().catch(() => {});
     },
+    // The film stops drawing in a hidden tab; the sound must stop with it,
+    // or the voice and music run ahead of the picture.
+    pause() {
+      if (ctx.state === "running") ctx.suspend?.().catch(() => {});
+    },
     get muted() {
       return muted;
     },

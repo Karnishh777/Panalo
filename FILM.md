@@ -10,6 +10,21 @@ every shot, grades it, and scores it. Two things can be added from outside:
 Anything missing is simply left out: no voice means captions only; no plate
 means the drawn background.
 
+## Quality by device
+
+The film picks one of three levels before its first frame
+(`js/device-tier.js`), from CPU cores, memory, the GPU's name, whether it's
+a phone, and Data Saver:
+
+| Level | Who gets it | What changes |
+| --- | --- | --- |
+| low | budget phones, weak or software GPUs, Data Saver | ~60% resolution at 1x, fewer stars and particles, smaller nebula plates, no far galaxies. Same shots, grade, flash and sound: it still hits. |
+| normal | most laptops and good phones | as designed |
+| high | desktops with 8+ cores or a strong GPU | up to 2x density, sharper plates and world, half again as many stars, sparks and dust, more far galaxies |
+
+If the first seconds run under ~33 fps, it steps down a level by itself.
+To review a level: `localStorage.setItem("panalo.students.filmtier", "low")`.
+
 ## Adding the files
 
 1. Put voice lines in `students/media/vo/` and clips in `students/media/plates/`.

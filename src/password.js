@@ -61,3 +61,37 @@ export function validatePassword(password) {
 
   return problems.length ? `Your password needs ${readableList(problems)}.` : null;
 }
+
+// Has this exact password appeared in a known data breach? Asks Have I Been
+// Pwned with k-anonymity: only the first five characters of the password's
+// SHA-1 leave the device, and the answer is a list of hash endings to compare
+// against here. Padding hides how many matches came back. Supabase's own
+// version of this check needs a paid plan; this one is free.
+//
+// Resolves a sentence to show when the password is known to be leaked, or
+// null when it isn't -- or when the check can't run (offline, blocked), so a
+// network problem never stops someone signing up.
+export async function breachedPassword(password) {
+  try {
+    if (!password || !crypto?.subtle) return null;
+    const digest = await crypto.subtle.digest("SHA-1", new TextEncoder().encode(password));
+    const hex = [...new Uint8Array(digest)].map((b) => b.toString(16).padStart(2, "0")).join("").toUpperCase();
+    const ctrl = new AbortController();
+    const t = setTimeout(() => ctrl.abort(), 4000);
+    const res = await fetch(`https://api.pwnedpasswords.com/range/${hex.slice(0, 5)}`, {
+      headers: { "Add-Padding": "true" },
+      signal: ctrl.signal,
+    }).finally(() => clearTimeout(t));
+    if (!res.ok) return null;
+    const rest = hex.slice(5);
+    for (const line of (await res.text()).split("\n")) {
+      const [suffix, count] = line.trim().split(":");
+      if (suffix === rest && Number(count) > 0) {
+        return "That password has appeared in a data breach, so attackers try it first. Please choose a different one.";
+      }
+    }
+    return null;
+  } catch {
+    return null;
+  }
+}

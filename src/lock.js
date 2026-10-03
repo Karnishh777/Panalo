@@ -10,6 +10,7 @@
 // doesn't reveal it.
 import { showToast } from "./util.js";
 import { supabaseClient } from "./client.js";
+import { captcha } from "./captcha.js";
 import { state } from "./state.js";
 import { promptSecret } from "./dialogs.js";
 
@@ -203,6 +204,7 @@ export function askPin({ purpose = "app", title = "Enter your PIN", subtitle = "
       const { error } = await supabaseClient.auth.signInWithPassword({
         email: state.currentUser.email,
         password,
+        options: await captcha(),
       });
       if (error) {
         showToast("That password doesn't match.");

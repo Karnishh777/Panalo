@@ -54,7 +54,14 @@ function renderDay() {
       el("div", { class: "cal-agenda" }, [
         el("section", { class: "panel tone-time" }, [
           el("div", { class: "panel-head" }, [el("h2", { text: sameDay(day, Date.now()) ? "Today" : day.toLocaleDateString(undefined, { weekday: "long" }) }), el("button", { type: "button", class: "link-btn", text: "Add", onClick: () => openEvent(null) })]),
-          occ.length ? el("ul", { class: "agenda" }, occ.map((o) => occLine(o))) : emptyState("Nothing on this day.", "Add a class, a study block, a deadline or a plan."),
+          occ.length
+            ? el("ul", { class: "agenda" }, occ.map((o) => occLine(o)))
+            : el("div", { class: "cal-empty" }, [
+                el("p", { class: "cal-empty-lead", text: "A clear orbit. What goes on it?" }),
+                el("div", { class: "quick-add" }, Object.entries(EVENT_KINDS).map(([k, v]) =>
+                  el("button", { type: "button", class: `quick-chip tone-${v.tone}`, onClick: () => openEvent(null, k) }, [el("i", { "aria-hidden": "true" }), el("span", { text: v.label })]))),
+                el("p", { class: "faint", text: "Classes can repeat every week — add your timetable once and it fills every orbit." }),
+              ]),
         ]),
         el("section", { class: "panel tone-focus" }, [
           el("div", { class: "panel-head" }, [el("h2", { text: "Focus done" })]),
@@ -134,9 +141,9 @@ function step(n) {
   render();
 }
 
-function openEvent(ev) {
+function openEvent(ev, presetKind = null) {
   const editing = !!ev;
-  let kind = ev?.kind || "class";
+  let kind = ev?.kind || presetKind || "class";
   const start = ev ? new Date(ev.starts_at) : (() => {
     const d = new Date(day);
     const now = new Date();

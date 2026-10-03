@@ -8,7 +8,7 @@
 // messaging, a room with a door, the archive, blocking and reporting, Drift,
 // and the phone layout. Nothing here can reach a real Supabase project
 // (see tools/qa/README.md).
-import { launch } from "./harness.mjs";
+import { launch, LEAKED_PASSWORD } from "./harness.mjs";
 import fs from "node:fs";
 
 const SHOTS = process.env.QA_SHOTS;
@@ -286,7 +286,7 @@ try {
 
   // ---- Archive ------------------------------------------------------------------------
   await go(page, "#/archive", 1000);
-  check("the empty archive says what it is for", await page.isVisible("text=The archive is empty."));
+  check("the empty archive says what it is for", await page.isVisible("text=Your shelves are waiting."));
   await page.click(".s-actions button >> text=Upload");
   await page.setInputFiles("dialog input[type=file]", { name: "optics-notes.md", mimeType: "text/markdown", buffer: Buffer.from("# Optics\nSnell's law: n1 sin θ1 = n2 sin θ2") });
   await page.fill("dialog input[list]", "Physics");
@@ -379,11 +379,26 @@ try {
     await appReady(a);
     await a.fill("#signup-username", "orbit_two");
     await a.fill("#signup-email", "two@panalo.test");
-    await a.fill("#signup-password", "a-long-enough-pass");
+    await a.fill("#signup-password", LEAKED_PASSWORD);
     await a.check("#signup-age");
+    await a.click("#signup-submit");
+    await a.waitForTimeout(600);
+    check("a password from a known data breach is refused", /data breach/.test(await a.textContent("#auth-message")) && !(await a.isVisible("#otp-form")));
+    await a.fill("#signup-password", "a-long-enough-pass");
     await a.click("#signup-submit");
     await a.waitForSelector("#otp-form:not([hidden])", { timeout: 5000 }).catch(() => {});
     check("with email confirmation on, sign-up asks for the code", await a.isVisible("#otp-form"));
+    // Leaving and logging in before entering the code comes back here.
+    await a.evaluate(() => (location.hash = "#login"));
+    await a.waitForSelector("#login-form:not([hidden])", { timeout: 5000 }).catch(() => {});
+    await a.fill("#login-email", "two@panalo.test");
+    await a.fill("#login-password", "a-long-enough-pass");
+    await a.click("#login-submit");
+    await a.waitForSelector("#otp-form:not([hidden])", { timeout: 5000 }).catch(() => {});
+    check("logging in before confirming leads back to the code", (await a.isVisible("#otp-form")) && /isn't confirmed/.test(await a.textContent("#auth-message")));
+    await a.click("#otp-resend");
+    await a.waitForTimeout(500);
+    check("a new code can be sent", (await a.evaluate(() => window.__qa.resent || [])).includes("two@panalo.test"));
     await a.fill("#otp-code", "123456");
     await a.click("#otp-submit");
     await a.waitForSelector("#birth:not([hidden])", { timeout: 15000 }).catch(() => {});
@@ -522,6 +537,90 @@ try {
     check("no console errors (account deletion)", d.errors.length === 0);
     if (d.errors.length) console.log(d.errors.join("\n"));
     await d.close();
+  }
+
+  // ---- Moderation -------------------------------------------------------------------------
+  {
+    const p = await qa.open({ viewport: "laptop", path: "students/#/moderate" });
+    await p.evaluate(() => window.__qa.ready);
+    await appReady(p);
+    await p.waitForSelector("#login-form:not([hidden])", { timeout: 5000 }).catch(() => {});
+    check("a link inside the app, opened signed out, asks to log in first", (await p.isVisible("#login-form")) && /continue to that page/.test(await p.textContent("#auth-message")));
+    await p.fill("#login-email", "qa@panalo.test");
+    await p.fill("#login-password", "correct-horse-42");
+    await p.click("#login-submit");
+    await finishBirth(p);
+    await p.waitForTimeout(800);
+    check("after logging in (even a first time) it goes where the link pointed", await p.evaluate(() => location.hash === "#/moderate"));
+    check("someone who isn't a moderator sees no reports and no menu entry", (await p.isVisible(".mod-door")) && !(await p.isVisible(".mod-card")) && (await p.isHidden("#mod-link")));
+
+    // Something to moderate: maya reported for a message in a shared chat.
+    await p.evaluate(async () => {
+      const db = window.__qa.db;
+      const maya = db.profiles.find((x) => x.username === "maya");
+      const conv = db.conversations.find((c) => c.name);
+      const msg = { id: crypto.randomUUID(), conversation_id: conv.id, user_id: maya.id, username: "maya", content: "x", iv: null, created_at: new Date().toISOString() };
+      db.messages.push(msg);
+      db.reports.push({ id: crypto.randomUUID(), reporter_id: db.profiles.find((x) => x.username === "sam")?.id || null, reported_user_id: maya.id, conversation_id: conv.id, message_id: msg.id, reason: "harassment", details: "kept messaging after I asked them to stop", evidence: "the words", status: "open", created_at: new Date().toISOString() });
+      window.__qa.makeModerator("alex");
+    });
+    await go(p, "#/now");
+    await go(p, "#/moderate");
+    await p.waitForSelector(".mod-card", { timeout: 5000 }).catch(() => {});
+    check("a moderator sees the report, with who and what", (await p.isVisible(".mod-card")) && /@maya/.test(await p.textContent(".mod-card")) && /the words/.test(await p.textContent(".mod-card")));
+    await p.click(".mod-card button:has-text('Start reviewing')");
+    await p.waitForTimeout(400);
+    check("a report can be moved to reviewing", /Reviewing/.test(await p.textContent(".mod-card .mod-status")));
+    await p.click(".mod-card button:has-text('Remove message')");
+    await p.click("dialog[open] .btn-danger");
+    await p.waitForTimeout(500);
+    check("a reported message can be removed", /already removed/.test(await p.textContent(".mod-card")));
+    await p.click(".mod-card button:has-text('Suspend')");
+    await p.click("dialog[open] .chip >> text=7 days");
+    await p.click("dialog[open] .btn-danger");
+    await p.waitForTimeout(500);
+    check("the reported account can be suspended", /suspended until/.test(await p.textContent(".mod-card")));
+    await p.click("#me-open");
+    check("moderators get a Moderation entry with the count waiting", (await p.isVisible("#mod-link")) && (await p.textContent("#mod-link [data-mod-count]")) === "1");
+    await p.keyboard.press("Escape");
+    await shot(p, "moderation");
+
+    // The passphrase, and taking the role back after losing it.
+    await p.fill(".mod-side input[autocomplete=new-password] >> nth=0", "orbit lantern quiet harbour");
+    await p.fill(".mod-side input[autocomplete=new-password] >> nth=1", "orbit lantern quiet harbour");
+    await p.click(".mod-side button:has-text('Save passphrase')");
+    await p.waitForTimeout(300);
+    await p.evaluate(() => (window.__qa.moderation().moderators.length = 0));
+    await go(p, "#/now");
+    await go(p, "#/moderate");
+    await p.waitForSelector(".mod-door input", { timeout: 5000 }).catch(() => {});
+    await p.fill(".mod-door input", "not it at all, sorry");
+    await p.click(".mod-door button[type=submit]");
+    await p.waitForTimeout(300);
+    check("a wrong passphrase is refused", /isn't the passphrase/.test(await p.textContent(".mod-door")));
+    await p.fill(".mod-door input", "orbit lantern quiet harbour");
+    await p.click(".mod-door button[type=submit]");
+    await p.waitForSelector(".mod-card", { timeout: 5000 }).catch(() => {});
+    check("the passphrase makes this account the moderator again", await p.isVisible(".mod-card"));
+
+    // Settings follow the account (phase 21): a change here goes up...
+    await go(p, "#/study");
+    await p.click(".chip:has-text('Custom')").catch(() => {});
+    await p.waitForTimeout(1800);
+    const up = await p.evaluate(() => window.__qa.db.student_profiles.find((r) => r.device_state)?.device_state?.prefs?.v?.studyPreset);
+    check("a setting changed on this device is saved to the account", up === "custom");
+    // ...and a newer change from another device comes down.
+    await p.evaluate(() => {
+      const row = window.__qa.db.student_profiles.find((r) => r.device_state);
+      row.device_state.light = { v: { mode: "night", azimuth: 155, elevation: 12, night: 0.4 }, at: Date.now() + 60000 };
+      document.dispatchEvent(new Event("visibilitychange"));
+    });
+    await p.waitForTimeout(600);
+    const down = await p.evaluate(() => JSON.parse(localStorage.getItem("panalo.students.light") || "{}").mode);
+    check("a newer change from another device arrives here", down === "night");
+    check("no console errors (moderation)", p.errors.length === 0);
+    if (p.errors.length) console.log(p.errors.join("\n"));
+    await p.close();
   }
 
   // ---- Reduced motion -----------------------------------------------------------------------
