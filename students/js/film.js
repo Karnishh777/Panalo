@@ -19,6 +19,7 @@
 import { animationLoop } from "./motion.js";
 import { createGrader, LUT } from "./film-grade.js";
 import { createGlobeGL, glSupported } from "./world-gl.js";
+import { deviceTier, FILM_QUALITY } from "./device-tier.js";
 
 export const IGNITION = 8650;
 export const WORLDFALL = 15500;
@@ -49,6 +50,9 @@ function seeded(seed) {
 // dust lanes, embedded stars. Three of these at different depths make the
 // flight-through.
 function paintPlate(rand, palette, W = 1400, H = 860) {
+  // Painted at any size from the same random sequence, so every tier gets
+  // the same nebula, just sharper or softer.
+  const sx = W / 1400, sy = H / 860;
   const c = document.createElement("canvas");
   c.width = W;
   c.height = H;
@@ -75,12 +79,12 @@ function paintPlate(rand, palette, W = 1400, H = 860) {
     const [cr, cg, cb] = palette[Math.floor(rand() * palette.length)];
     const x0 = W * rand(), y0 = band(x0 / W) + (rand() - 0.5) * H * 0.3;
     g.strokeStyle = `rgba(${cr},${cg},${cb},${0.015 + rand() * 0.03})`;
-    g.lineWidth = 4 + rand() * 14;
+    g.lineWidth = (4 + rand() * 14) * sx;
     g.shadowColor = `rgba(${cr},${cg},${cb},0.35)`;
-    g.shadowBlur = 30;
+    g.shadowBlur = 30 * sx;
     g.beginPath();
     g.moveTo(x0, y0);
-    g.bezierCurveTo(x0 + (rand() - 0.5) * 300, y0 + (rand() - 0.5) * 200, x0 + (rand() - 0.5) * 400, y0 + (rand() - 0.5) * 200, x0 + (rand() - 0.5) * 500, y0 + (rand() - 0.5) * 160);
+    g.bezierCurveTo(x0 + (rand() - 0.5) * 300 * sx, y0 + (rand() - 0.5) * 200 * sy, x0 + (rand() - 0.5) * 400 * sx, y0 + (rand() - 0.5) * 200 * sy, x0 + (rand() - 0.5) * 500 * sx, y0 + (rand() - 0.5) * 160 * sy);
     g.stroke();
   }
   g.shadowBlur = 0;
@@ -89,7 +93,7 @@ function paintPlate(rand, palette, W = 1400, H = 860) {
   for (let i = 0; i < 22; i++) {
     const u = rand();
     const x = W * u, y = band(u) + (rand() - 0.5) * H * 0.12;
-    const r = 18 + rand() * 70;
+    const r = (18 + rand() * 70) * sx;
     const grad = g.createRadialGradient(x, y, 0, x, y, r);
     grad.addColorStop(0, "rgba(0,0,0,0.55)");
     grad.addColorStop(1, "rgba(0,0,0,0)");
@@ -101,7 +105,9 @@ function paintPlate(rand, palette, W = 1400, H = 860) {
   for (let i = 0; i < 320; i++) {
     const u = rand();
     const x = W * u, y = band(u) + (rand() - 0.5) * H * 0.5;
-    const r = rand() < 0.08 ? 2 + rand() * 2.5 : 0.6 + rand() * 0.9;
+    // Scaled with the plate, so a small plate (low tier) doesn't turn its
+    // stars into blobs when it's drawn large.
+    const r = Math.max(0.45, (rand() < 0.08 ? 2 + rand() * 2.5 : 0.6 + rand() * 0.9) * sx);
     const grad = g.createRadialGradient(x, y, 0, x, y, r * 3);
     grad.addColorStop(0, "rgba(255,255,255,0.95)");
     grad.addColorStop(0.3, "rgba(220,235,255,0.4)");
@@ -124,8 +130,15 @@ export function createFilm(host, { seed, layers, cues = [], plates = {}, onFallb
   out.setAttribute("aria-hidden", "true");
   host.prepend(out);
 
+  // How much this device can draw (device-tier.js); stepped down below if
+  // the first seconds run slow.
+  const device = deviceTier();
+  let tier = device.tier;
+  let Q = FILM_QUALITY[tier];
+  host.dataset.tier = tier;
+
   const useGL = glSupported();
-  const grader = useGL ? createGrader(out) : null;
+  const grader = useGL ? createGrader(out, Q) : null;
   const scene = grader ? document.createElement("canvas") : out;
   const ctx = scene.getContext("2d");
   if (!ctx) throw new Error("2D canvas unavailable");
@@ -134,7 +147,7 @@ export function createFilm(host, { seed, layers, cues = [], plates = {}, onFallb
   let globe = null;
   if (useGL) {
     const gc = document.createElement("canvas");
-    const gs = Math.min(1536, Math.max(1024, Math.round(Math.min(window.innerWidth, window.innerHeight) * Math.min(2, window.devicePixelRatio || 1))));
+    const gs = Math.min(Q.globe, Math.max(Math.min(1024, Q.globe), Math.round(Math.min(window.innerWidth, window.innerHeight) * Math.min(2, window.devicePixelRatio || 1))));
     gc.width = gc.height = gs;
     globe = createGlobeGL(gc, { seed, manual: true, maxPixels: gs });
     globe?.setLayers(layers);
@@ -150,7 +163,7 @@ export function createFilm(host, { seed, layers, cues = [], plates = {}, onFallb
       scene.width = W;
       scene.height = H;
     } else {
-      const dpr = Math.min(1.5, window.devicePixelRatio || 1);
+      const dpr = Math.min(Q.dprCap, window.devicePixelRatio || 1) * Q.res;
       scene.width = Math.round(w * dpr);
       scene.height = Math.round(h * dpr);
     }
@@ -165,21 +178,22 @@ export function createFilm(host, { seed, layers, cues = [], plates = {}, onFallb
 
   const rand = seeded(seed || "panalo");
   const nebulae = [
-    paintPlate(rand, [[40, 120, 255], [60, 200, 230], [120, 90, 255]]),
-    paintPlate(rand, [[255, 80, 160], [180, 70, 255], [255, 140, 200]]),
-    paintPlate(rand, [[255, 170, 80], [255, 110, 60], [255, 220, 150]]),
+    paintPlate(rand, [[40, 120, 255], [60, 200, 230], [120, 90, 255]], ...Q.plate),
+    paintPlate(rand, [[255, 80, 160], [180, 70, 255], [255, 140, 200]], ...Q.plate),
+    paintPlate(rand, [[255, 170, 80], [255, 110, 60], [255, 220, 150]], ...Q.plate),
   ];
   // Real stars have colours: hot blue-white, white, yellow, orange, red.
   const TEMPS = ["200,220,255", "225,235,255", "255,250,240", "255,232,190", "255,200,150", "255,170,130"];
   const star = (z) => {
     const a = Math.random() * TAU, r = Math.sqrt(Math.random()) * 1.6;
     const q = Math.random();
-    return { x: Math.cos(a) * r, y: Math.sin(a) * r, z, tw: Math.random() * TAU, col: TEMPS[Math.min(5, Math.floor(q * q * 6.5))], big: Math.random() < 0.05 };
+    return { x: Math.cos(a) * r, y: Math.sin(a) * r, z, tw: Math.random() * TAU, col: TEMPS[Math.min(5, Math.floor(q * q * 6.5))], big: Math.random() < Q.spikes };
   };
   const big = w * h > 500000;
-  const stars = Array.from({ length: big ? 700 : 360 }, () => star(0.05 + Math.random() * 0.95));
+  const count = (base, k) => Math.max(8, Math.round(base * k));
+  const stars = Array.from({ length: count(big ? 700 : 360, Q.stars) }, () => star(0.05 + Math.random() * 0.95));
   const bokeh = Array.from({ length: 9 }, () => ({ x: Math.random(), y: Math.random(), r: 0.025 + Math.random() * 0.07, s: 0.2 + Math.random() * 0.6, hue: Math.random() }));
-  const disk = Array.from({ length: big ? 900 : 420 }, () => ({ th: Math.random() * TAU, r: 0, band: Math.random(), size: 0.5 + Math.random() * 1.6, warm: Math.random() }));
+  const disk = Array.from({ length: count(big ? 900 : 420, Q.disk) }, () => ({ th: Math.random() * TAU, r: 0, band: Math.random(), size: 0.5 + Math.random() * 1.6, warm: Math.random() }));
 
   // Video plates: muted, inline, preloaded; each starts with its shot. A
   // plate that hasn't loaded in time is simply not drawn.
@@ -289,7 +303,12 @@ export function createFilm(host, { seed, layers, cues = [], plates = {}, onFallb
     for (const st of stars) {
       const z0 = st.z;
       st.z -= v * dt;
-      if (st.z <= 0.04) Object.assign(st, star(1));
+      // A star that passed the camera starts again far away. Not drawn this
+      // frame: its streak would join its old place to its new one.
+      if (st.z <= 0.04) {
+        Object.assign(st, star(1));
+        continue;
+      }
       const x1 = cx + (st.x / st.z) * F, y1 = cy + (st.y / st.z) * F;
       const x0 = cx + (st.x / z0) * F, y0 = cy + (st.y / z0) * F;
       if (x1 < -20 || x1 > w + 20 || y1 < -20 || y1 > h + 20) continue;
@@ -338,7 +357,7 @@ export function createFilm(host, { seed, layers, cues = [], plates = {}, onFallb
 
   // Fine dust between us and the light, lit from the front: it glints as
   // it drifts, brighter the nearer it is to the light's line.
-  const motes = Array.from({ length: 140 }, () => ({ x: Math.random(), y: Math.random(), z: 0.3 + Math.random() * 0.7, s: Math.random() }));
+  const motes = Array.from({ length: count(140, Q.motes) }, () => ({ x: Math.random(), y: Math.random(), z: 0.3 + Math.random() * 0.7, s: Math.random() }));
   function drawMotes(e) {
     const fade = smooth(e, 900, 3500) * (1 - smooth(e, 7600, 8200));
     if (fade <= 0) return;
@@ -367,7 +386,9 @@ export function createFilm(host, { seed, layers, cues = [], plates = {}, onFallb
       ctx.fillStyle = g;
       ctx.fillRect(w / 2 - H, h / 2 - H, H * 2, H * 2);
     }
-    const shake = e > 5000 ? (Math.random() - 0.5) * 2 * smooth(e, 5000, 8100) : 0;
+    // The light trembles as the riser climbs: smooth noise, not per-frame
+    // randomness (which read as a rendering glitch).
+    const shake = e > 5000 ? (Math.sin(e / 37) * 0.6 + Math.sin(e / 23 + 1.3) * 0.4) * 1.6 * smooth(e, 5000, 8100) : 0;
     const cx = w / 2 + shake, cy = h / 2 + shake * 0.6;
     const r = S * (0.004 + 0.02 * grow * grow) * (1 + 0.08 * Math.sin(e / 90));
     const g = ctx.createRadialGradient(cx, cy, 0, cx, cy, r * 9);
@@ -407,8 +428,8 @@ export function createFilm(host, { seed, layers, cues = [], plates = {}, onFallb
     ctx.rotate(a * 0.00004);
     // Volumetric light through the debris: many thin, faint shafts in two
     // soft layers, so no edge reads as a drawn line.
-    for (let i = 0; i < 28; i++) {
-      const ang = (i / 28) * TAU + Math.sin(i * 7.3) * 0.35;
+    for (let i = 0; i < Q.rays; i++) {
+      const ang = (i / Q.rays) * TAU + Math.sin(i * 7.3) * 0.35;
       const strength = 0.4 + 0.6 * Math.abs(Math.sin(i * 2.17 + 1));
       for (const [wdt, al] of [[0.006 + 0.012 * Math.abs(Math.sin(i * 3.7)), 0.06], [0.025 + 0.02 * Math.abs(Math.sin(i * 1.3)), 0.025]]) {
         const g = ctx.createRadialGradient(0, 0, 0, 0, 0, R * (0.5 + 0.5 * strength));
@@ -427,7 +448,7 @@ export function createFilm(host, { seed, layers, cues = [], plates = {}, onFallb
 
   // Debris from the first instant: sparks flung outwards, cooling from
   // white through gold to red, with motion blur.
-  const sparks = Array.from({ length: big ? 260 : 140 }, () => ({ a: Math.random() * TAU, v: 0.25 + Math.random() * 1.1, len: 0.5 + Math.random(), w: 0.6 + Math.random() * 1.8 }));
+  const sparks = Array.from({ length: count(big ? 260 : 140, Q.sparks) }, () => ({ a: Math.random() * TAU, v: 0.25 + Math.random() * 1.1, len: 0.5 + Math.random(), w: 0.6 + Math.random() * 1.8 }));
   function drawSparks(e) {
     const a = e - IGNITION;
     if (a < 0 || a > 4200) return;
@@ -525,7 +546,8 @@ export function createFilm(host, { seed, layers, cues = [], plates = {}, onFallb
     const dolly = 1 + 0.12 * smooth(e, WORLDFALL, TITLE + 3000);
     // At the title the world settles lower in frame, so the type has the
     // sky above it.
-    const titled = holding ? 0 : smooth(e, TITLE - 400, TITLE + 1600);
+    // It settles before the title fades in, so the type never lies over it.
+    const titled = holding ? 0 : smooth(e, TITLE - 1600, TITLE + 300);
     const size = lerp(S * 0.95 * dolly * (1 - 0.08 * titled), Math.min(S * 0.78, h * 0.62), k);
     // The world sinks until its top clears the type; it rises out of the
     // bottom of the frame like a horizon.
@@ -610,9 +632,65 @@ export function createFilm(host, { seed, layers, cues = [], plates = {}, onFallb
     }
   }
 
+  // Far galaxies in the void: small tilted smudges that make the dark deep.
+  // A detail for devices with room for it (none on the low tier).
+  const galaxies = Array.from({ length: Q.galaxies }, () => ({
+    x: Math.random(), y: Math.random(), r: 0.006 + Math.random() * 0.016, tilt: Math.random() * Math.PI, flat: 0.25 + Math.random() * 0.5, warm: Math.random() < 0.5,
+  }));
+  function drawGalaxies(e) {
+    const fade = smooth(e, 1200, 4200) * (1 - smooth(e, 7400, 8200));
+    if (fade <= 0 || !galaxies.length) return;
+    const push = 1 + (e / 8000) * 0.08;
+    for (const gx of galaxies) {
+      const x = w / 2 + (gx.x - 0.5) * w * push, y = h / 2 + (gx.y - 0.5) * h * push;
+      const R = gx.r * S * push;
+      ctx.save();
+      ctx.translate(x, y);
+      ctx.rotate(gx.tilt);
+      ctx.scale(1, gx.flat);
+      const g = ctx.createRadialGradient(0, 0, 0, 0, 0, R);
+      g.addColorStop(0, `rgba(255,${gx.warm ? 236 : 245},${gx.warm ? 205 : 255},${0.32 * fade})`);
+      g.addColorStop(0.35, `rgba(${gx.warm ? "230,190,160" : "170,190,255"},${0.1 * fade})`);
+      g.addColorStop(1, "rgba(0,0,0,0)");
+      ctx.fillStyle = g;
+      ctx.fillRect(-R, -R, R * 2, R * 2);
+      ctx.restore();
+    }
+  }
+
+  // If the first seconds run slow, step down a tier (once per step): fewer
+  // particles and a smaller frame, the same film.
+  let samples = 0, sampleSum = 0;
+  function watchSpeed(frameDt) {
+    if (tier === "low" || holding || e < 1500 || e > 9000) return;
+    samples++;
+    sampleSum += frameDt;
+    if (samples < 60) return;
+    const avg = sampleSum / samples;
+    samples = sampleSum = 0;
+    if (avg <= 30) return;
+    tier = tier === "high" ? "normal" : "low";
+    Q = FILM_QUALITY[tier];
+    host.dataset.tier = tier;
+    grader?.setQuality(Q);
+    resize();
+    stars.length = Math.min(stars.length, count(big ? 700 : 360, Q.stars));
+    disk.length = Math.min(disk.length, count(big ? 900 : 420, Q.disk));
+    sparks.length = Math.min(sparks.length, count(big ? 260 : 140, Q.sparks));
+    motes.length = Math.min(motes.length, count(140, Q.motes));
+    galaxies.length = Math.min(galaxies.length, Q.galaxies);
+  }
+
   // ---- the loop -------------------------------------------------------------------------
   let fallbackShown = false;
-  const loop = animationLoop(out, (t, frameDt) => {
+  let lastT = 0;
+  const loop = animationLoop(out, (t, loopDt) => {
+    // Keep real time on slow devices: the shared loop caps a step at 64 ms,
+    // which at under 15 fps would let the picture fall behind the voice.
+    // A gap of over a second is the tab coming back: don't jump ahead.
+    const real = lastT ? t - lastT : loopDt;
+    lastT = t;
+    const frameDt = real > 1000 ? loopDt : Math.min(200, real);
     const dt = frameDt * rate;
     e += dt;
     while (queue.length && queue[0].at <= e) queue.shift().run();
@@ -623,7 +701,9 @@ export function createFilm(host, { seed, layers, cues = [], plates = {}, onFallb
     const a = e - IGNITION;
     const shake = a > 0 && a < 900 ? 16 * (1 - a / 900) ** 2 : 0;
     ctx.setTransform(scene.width / w, 0, 0, scene.height / h, 0, 0);
-    ctx.translate((Math.random() - 0.5) * shake, (Math.random() - 0.5) * shake);
+    // The impact's camera shake: fast, but continuous.
+    if (shake) ctx.translate((Math.sin(e / 13) + Math.sin(e / 7.3 + 1)) * 0.25 * shake, (Math.cos(e / 11) + Math.sin(e / 6.1 + 2)) * 0.25 * shake);
+    watchSpeed(frameDt);
     ctx.globalCompositeOperation = "source-over";
     ctx.globalAlpha = 1;
     ctx.fillStyle = "#010103";
@@ -631,6 +711,7 @@ export function createFilm(host, { seed, layers, cues = [], plates = {}, onFallb
     filmed = drawPlates(e);
 
     if (e < 8200 && !holding) {
+      drawGalaxies(e);
       drawStars(e, dt);
       drawBokeh(e);
       drawPoint(e);
@@ -686,6 +767,9 @@ export function createFilm(host, { seed, layers, cues = [], plates = {}, onFallb
       grader?.destroy();
     },
     graded: !!grader,
+    get tier() {
+      return tier;
+    },
     speed: () => speedAcc,
   };
 }

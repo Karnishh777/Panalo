@@ -5,6 +5,7 @@
 import { revive, idle, isDone, sessionRow } from "./model/focus-timer.js";
 import { api } from "./store.js";
 import { state } from "../../src/state.js";
+import { localChange } from "./local-change.js";
 
 const KEY = "panalo.students.timer";
 const EVENT = "panalo:timer";
@@ -21,10 +22,13 @@ export function loadTimer() {
   }
 }
 
-export function clearTimer() {
+// `{ everywhere: false }` (signing out) forgets the timer on this device
+// only; it keeps running on the person's other devices.
+export function clearTimer({ everywhere = true } = {}) {
   try {
     localStorage.removeItem(KEY);
   } catch {}
+  if (everywhere) localChange("timer");
   document.dispatchEvent(new CustomEvent(EVENT));
 }
 
@@ -35,6 +39,7 @@ export function saveTimer(timer) {
   } catch {
     /* storage unavailable: the timer still runs, it just won't survive a reload */
   }
+  localChange("timer");
   document.dispatchEvent(new CustomEvent(EVENT));
 }
 
@@ -56,6 +61,8 @@ export function onTimer(fn) {
 // is not about the network is final: retrying it forever helps nobody.
 export async function recordSession(row) {
   let { error } = await api.addSession(row);
+  // Another device recorded this same block first (phase 21): it counts once.
+  if (error && (error.code === "23505" || /duplicate|unique/i.test(error.message || ""))) return {};
   if (error && row.task_id && !/fetch|network/i.test(error.message || "")) {
     ({ error } = await api.addSession({ ...row, task_id: null }));
   }

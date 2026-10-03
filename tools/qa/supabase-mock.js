@@ -585,6 +585,76 @@
       const p = db.profiles.find((x) => x.username_lc === n);
       return { data: p ? [{ id: p.id, username: p.username, public_key: p.public_key || null }] : [], error: null };
     }
+    if (name === "merge_device_state") {
+      const row = (db.student_profiles || []).find((r) => r.user_id === me());
+      if (!row) return { data: null, error: null };
+      const cur = row.device_state || {};
+      if (Number(cur[args.p_section]?.at || 0) > Number(args.p_at)) return { data: null, error: null };
+      row.device_state = { ...cur, [args.p_section]: { v: args.p_value, at: args.p_at } };
+      persist();
+      return { data: clone(row.device_state), error: null };
+    }
+    // ---- moderation (phase 20) ----
+    if (name.startsWith("moderation_")) {
+      const uid = me();
+      const M = (db.__mod ||= { moderators: [], passphrase: null, log: [], banned: {} });
+      const isMod = M.moderators.includes(uid);
+      const refuse = () => ({ data: null, error: { message: "Only a moderator can do that.", code: "42501" } });
+      const uname = (id) => db.profiles.find((p) => p.id === id)?.username || null;
+      if (name === "moderation_status") return { data: [{ is_moderator: isMod, passphrase_set: Boolean(M.passphrase) }], error: null };
+      if (name === "moderation_claim") {
+        const ok = Boolean(M.passphrase) && args.p_passphrase === M.passphrase;
+        if (ok && !M.moderators.includes(uid)) M.moderators.push(uid);
+        if (ok) M.log.unshift({ at: nowIso(), moderator_username: uname(uid), action: "claimed-role" });
+        return { data: ok, error: null };
+      }
+      if (!isMod) return refuse();
+      if (name === "moderation_reports") {
+        const out = db.reports.map((r) => ({
+          ...r,
+          reporter_username: uname(r.reporter_id),
+          reported_username: uname(r.reported_user_id),
+          reported_banned_until: M.banned[r.reported_user_id] || null,
+          reported_report_count: db.reports.filter((x) => x.reported_user_id && x.reported_user_id === r.reported_user_id).length,
+          conversation_name: db.conversations.find((c) => c.id === r.conversation_id)?.name || null,
+          conversation_type: db.conversations.find((c) => c.id === r.conversation_id)?.type || null,
+          message_exists: Boolean(r.message_id && db.messages.some((m) => m.id === r.message_id)),
+        }));
+        return { data: out.sort((a, b) => (a.status === "closed") - (b.status === "closed") || (a.created_at < b.created_at ? 1 : -1)), error: null };
+      }
+      if (name === "moderation_set_status") {
+        const r = db.reports.find((x) => x.id === args.p_report);
+        r.status = args.p_status;
+        if (args.p_note) r.moderator_note = args.p_note;
+        r.handled_at = args.p_status === "open" ? null : nowIso();
+        M.log.unshift({ at: nowIso(), moderator_username: uname(uid), action: `status:${args.p_status}` });
+        persist();
+        return { data: null, error: null };
+      }
+      if (name === "moderation_delete_message") {
+        const i = db.messages.findIndex((m) => m.id === args.p_message);
+        if (i < 0) return { data: null, error: { message: "That message is already gone." } };
+        const [gone] = db.messages.splice(i, 1);
+        emitChange("messages", "DELETE", null, gone);
+        M.log.unshift({ at: nowIso(), moderator_username: uname(uid), action: "delete-message", target_username: uname(gone.user_id) });
+        persist();
+        return { data: null, error: null };
+      }
+      if (name === "moderation_suspend") {
+        if (args.p_user === uid) return { data: null, error: { message: "You can't suspend yourself." } };
+        const until = args.p_days === 0 ? null : new Date(Date.now() + (args.p_days == null ? 36500 : args.p_days) * 86400000).toISOString();
+        M.banned[args.p_user] = until;
+        M.log.unshift({ at: nowIso(), moderator_username: uname(uid), action: until ? "suspend" : "unsuspend", target_username: uname(args.p_user) });
+        return { data: until, error: null };
+      }
+      if (name === "moderation_history") return { data: M.log.slice(0, 200), error: null };
+      if (name === "moderation_set_passphrase") {
+        if (String(args.p_passphrase || "").length < 12) return { data: null, error: { message: "Use a passphrase of at least 12 characters." } };
+        M.passphrase = args.p_passphrase;
+        M.log.unshift({ at: nowIso(), moderator_username: uname(uid), action: "set-passphrase" });
+        return { data: null, error: null };
+      }
+    }
     if (name === "my_storage_objects") {
       const uid = me();
       const out = [];
@@ -743,6 +813,7 @@
         await sleep(200);
         const u = authUsers.find((x) => x.email.toLowerCase() === String(email).toLowerCase());
         if (!u || u.password !== password) return { data: { session: null, user: null }, error: { message: "Invalid login credentials" } };
+        if (pendingOtp.get(String(email).toLowerCase()) === u) return { data: { session: null, user: null }, error: { message: "Email not confirmed" } };
         const s = makeSession(u);
         setSession(s, "SIGNED_IN");
         return { data: { session: s, user: s.user }, error: null };
@@ -775,12 +846,14 @@
         await sleep(200);
         const u = pendingOtp.get(String(email).toLowerCase());
         if (!u || token !== "123456") return { data: { session: null }, error: { message: "Token has expired or is invalid" } };
+        pendingOtp.delete(String(email).toLowerCase());
         const s = makeSession(u);
         setSession(s, "SIGNED_IN");
         return { data: { session: s, user: s.user }, error: null };
       },
-      async resend() {
+      async resend({ email } = {}) {
         await sleep(150);
+        (window.__qa.resent ||= []).push(email);
         return { data: {}, error: null };
       },
       async signOut() {
@@ -979,6 +1052,14 @@
   window.__qa = {
     db,
     ready,
+    // Make someone the moderator, or set the claim passphrase (phase 20).
+    makeModerator(username) {
+      const M = (db.__mod ||= { moderators: [], passphrase: null, log: [], banned: {} });
+      const p = db.profiles.find((x) => x.username === username);
+      if (p && !M.moderators.includes(p.id)) M.moderators.push(p.id);
+      persist();
+    },
+    moderation: () => db.__mod || null,
     storageKeys: () => [...storageMeta.entries()].map(([k, m]) => ({ key: k, owner: m.owner })),
     async receive(convName, fromUser, text) {
       await ready;

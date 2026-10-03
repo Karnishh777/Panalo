@@ -104,7 +104,7 @@ PIN. A user on two devices effectively has two different apps.
   without unwrapping a key per message. A 👍 leaks little, but it is plaintext.
 - **Attachment URLs are unguessable, not private.** The bucket is public: the
   bytes are ciphertext now, but anyone holding a URL can fetch that ciphertext.
-- **Four `SECURITY DEFINER` functions stay callable by signed-in users**, and
+- **Twelve `SECURITY DEFINER` functions stay callable by signed-in users**, and
   cannot be otherwise. `find_profile_by_username` is how you start a chat
   with someone you don't already share one with — as `SECURITY INVOKER` it
   would be subject to the profiles policy and return nothing for exactly the
@@ -117,8 +117,16 @@ PIN. A user on two devices effectively has two different apps.
   returns at most that room's name; it never adds anyone to anything.
   Phase 18 added `my_storage_objects()`, which lists only the caller's own
   uploads (Storage hides its owner column from the API) so deleting an
-  account can remove them.
-- **Leaked-password protection is unavailable** on the Supabase free plan.
+  account can remove them. Phase 20 added eight `moderation_*` functions;
+  each checks that the caller is a moderator before doing anything, except
+  `moderation_status` (says only whether *you* are one) and
+  `moderation_claim` (checks a passphrase against a bcrypt hash, 5 tries an
+  hour).
+- **Leaked-password protection is the app's, not Supabase's.** Supabase's own
+  check needs a paid plan, so the apps ask Have I Been Pwned themselves
+  (k-anonymity: only 5 characters of a hash leave the device) when a password
+  is set. Someone calling the Supabase API directly skips it, and the
+  security advisor still flags the setting.
 - **Deleting a chat is "delete for me."** Your copy goes; the other person
   keeps theirs. There is no delete-for-everyone, and none could be enforced.
 - **Disappearing messages cannot stop a copy.** Anyone in the chat can
@@ -137,8 +145,12 @@ PIN. A user on two devices effectively has two different apps.
   it contains no typed text, but the server can see that it was sent. Sharing
   wraps the chat key to the public key the server returns for that person,
   so it trusts the server exactly as much as adding a member does.
-- **No admin or moderation tooling.** No way to suspend an abusive account, no
-  reporting, no audit log. With real users this becomes urgent quickly.
+- **Moderation is one person checking a page.** Reports, notes, removing a
+  message and suspending an account all work, with a history of every
+  action (phase 20), but nothing alerts the moderator: someone has to open
+  `#/moderate`. A suspension takes effect within the hour (the access token
+  that is already issued stays valid until it expires). Message text is
+  encrypted, so a moderator sees only what the reporter chose to attach.
 
 ---
 
@@ -290,8 +302,12 @@ PIN. A user on two devices effectively has two different apps.
 - **Students has no service worker.** It needs a connection to start, and
   sends no notification when the app is closed. The focus-end notification
   only works while the tab is open in the background.
-- **Timer, sound, motion and Drift progress are per device** (localStorage).
-  Study data itself syncs.
+- **Settings sync by "newest wins", not live.** Preferences, world lighting,
+  today's Drift and a running timer are copied to the account (phase 21) and
+  picked up on sign-in, when a tab comes back into view, and every two
+  minutes. Two devices changing the same setting within that window: the
+  later change wins. Device clocks that disagree by minutes can pick the
+  wrong one.
 - **The world is generated on the main thread.** Generating a planet takes
   about 180 ms at a 4x CPU slowdown; it runs while the browser is idle, once
   per session. Drawing it uses WebGL only on a real GPU: a browser that
@@ -317,10 +333,9 @@ PIN. A user on two devices effectively has two different apps.
 
 1. **Storage ceiling** — 1 GB on Supabase alone (10 GB with R2 bound), and
    attachments are the most-used feature.
-2. **No moderation tooling** — no blocking, reporting or suspension, before
-   any growth.
+2. **Moderation depends on someone looking** — the tools exist, alerts don't.
 3. **Calls unreliable** without TURN, on exactly the networks phones use.
-4. **No CI, no integration tests, no backups** — nothing catches a regression
-   before users do.
+4. **No CI** — the tests exist but run by hand. Backups are weekly
+   (GitHub Action) once its two secrets are set.
 5. **Per-device state** — clearing browser data wipes every preference and PIN
    with no warning.

@@ -5,7 +5,7 @@ import { store, api } from "../store.js";
 import { INTERESTS } from "../model/drift-library.js";
 import { supabaseClient } from "../../../src/client.js";
 import { rewrapPrivateKey } from "../../../src/encryption.js";
-import { validatePassword, describePasswordPolicy } from "../../../src/password.js";
+import { validatePassword, describePasswordPolicy, breachedPassword } from "../../../src/password.js";
 import { state } from "../../../src/state.js";
 
 let root;
@@ -59,6 +59,8 @@ function passwordBlock() {
       const weak = validatePassword(next.value);
       if (weak) return showToast(weak);
       if (next.value !== again.value) return showToast("The passwords don't match.");
+      const leaked = await breachedPassword(next.value);
+      if (leaked) return showToast(leaked);
       const { error } = await supabaseClient.auth.updateUser({ password: next.value });
       if (error) return showToast(error.message);
       // The private key is protected by the password; without this, a new
@@ -81,7 +83,7 @@ export function show() {
   const p = getPrefs();
   const notifySupported = "Notification" in window;
   root.replaceChildren(
-    el("div", { class: "s-head" }, [el("div", {}, [el("p", { class: "kicker toned tone-focus", text: "Settings" }), el("h1", { text: "How Panalo behaves for you" }), el("p", { class: "s-sub", text: `Signed in as @${state.currentUsername}${state.currentUser?.email ? ` · ${state.currentUser.email}` : ""}. Settings on this page are saved on this device unless they say otherwise.` })])]),
+    el("div", { class: "s-head" }, [el("div", {}, [el("p", { class: "kicker toned tone-focus", text: "Settings" }), el("h1", { text: "How Panalo behaves for you" }), el("p", { class: "s-sub", text: `Signed in as @${state.currentUsername}${state.currentUser?.email ? ` · ${state.currentUser.email}` : ""}. Your settings follow you to every device you sign in on.` })])]),
     el("div", { class: "settings-cols" }, [
       el("section", { class: "panel tone-focus" }, [
         el("div", { class: "panel-head" }, [el("h2", { text: "Motion and sound" })]),

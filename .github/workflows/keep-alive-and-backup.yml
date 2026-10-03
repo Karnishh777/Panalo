@@ -1,0 +1,107 @@
+# Keeps the free Supabase project awake, and keeps encrypted backups of it.
+#
+# - Every day: one small read through the public API. Supabase pauses free
+#   projects after 7 days with no activity; this is activity.
+# - Every Sunday (or by hand): a dump of the database (schemas public and
+#   private, plus the accounts in auth), encrypted with a passphrase only
+#   you know, kept as a workflow artifact for 30 days.
+#
+# This repository is public, so the dump is encrypted BEFORE it is uploaded
+# and nothing from it is ever printed to the log. Set two repository
+# secrets (Settings → Secrets and variables → Actions) to turn backups on:
+#   SUPABASE_DB_URL     Supabase → Connect → "Session pooler" URI (port 5432),
+#                       with your database password filled in
+#   BACKUP_PASSPHRASE   a long random passphrase; keep it somewhere safe --
+#                       without it the backups can't be opened
+# Without them, only the daily wake-up runs. Restoring: see HOSTING.md.
+name: Keep alive and back up
+
+on:
+  schedule:
+    - cron: "17 3 * * *"   # every day, 03:17 UTC (wake-up)
+    - cron: "41 4 * * 0"   # Sundays, 04:41 UTC (backup)
+  workflow_dispatch:
+    inputs:
+      backup:
+        description: "Also make a backup now"
+        type: boolean
+        default: true
+
+permissions:
+  contents: read
+
+jobs:
+  wake:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Touch the database through the API
+        env:
+          URL: https://zqtvqobonmpxffjxbjpt.supabase.co
+          KEY: sb_publishable_TQ1NrHUU3HaIcFRkOWXHuQ_yC3REquy # the public key the apps ship with
+        run: |
+          code=$(curl -sS -o /dev/null -w '%{http_code}' --max-time 30 \
+            -H "apikey: $KEY" -H "Authorization: Bearer $KEY" \
+            "$URL/rest/v1/profiles?select=id&limit=1")
+          echo "Supabase answered $code"
+          if [ "$code" = "540" ] || [ "$code" = "503" ]; then
+            echo "::error::The project looks paused. Restore it from the Supabase dashboard."
+            exit 1
+          fi
+
+  backup:
+    if: github.event.schedule == '41 4 * * 0' || (github.event_name == 'workflow_dispatch' && inputs.backup)
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Check the secrets are set
+        id: check
+        env:
+          DB: ${{ secrets.SUPABASE_DB_URL }}
+          PASS: ${{ secrets.BACKUP_PASSPHRASE }}
+        run: |
+          if [ -z "$DB" ] || [ -z "$PASS" ]; then
+            echo "::warning::Backups are off: set SUPABASE_DB_URL and BACKUP_PASSPHRASE to turn them on."
+            echo "ready=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "ready=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Install the Postgres 17 client
+        if: steps.check.outputs.ready == 'true'
+        run: |
+          sudo install -d /usr/share/postgresql-common/pgdg
+          sudo curl -fsSL -o /usr/share/postgresql-common/pgdg/apt.postgresql.org.asc https://www.postgresql.org/media/keys/ACCC4CF8.asc
+          echo "deb [signed-by=/usr/share/postgresql-common/pgdg/apt.postgresql.org.asc] https://apt.postgresql.org/pub/repos/apt $(lsb_release -cs)-pgdg main" | sudo tee /etc/apt/sources.list.d/pgdg.list >/dev/null
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq postgresql-client-17 >/dev/null
+
+      - name: Dump and encrypt
+        if: steps.check.outputs.ready == 'true'
+        env:
+          DB: ${{ secrets.SUPABASE_DB_URL }}
+          PASS: ${{ secrets.BACKUP_PASSPHRASE }}
+        run: |
+          set -euo pipefail
+          umask 077
+          stamp=$(date -u +%Y-%m-%d)
+          mkdir -p out work
+          PG=/usr/lib/postgresql/17/bin
+          # Your tables, functions and policies, with their data.
+          "$PG/pg_dump" "$DB" --no-owner --no-privileges --schema=public --schema=private -Fc -f work/app.dump
+          # Accounts (emails and password hashes), data only.
+          "$PG/pg_dump" "$DB" --data-only -t auth.users -t auth.identities -Fc -f work/auth.dump
+          tar -C work -cf - app.dump auth.dump \
+            | gpg --batch --yes --symmetric --cipher-algo AES256 --pinentry-mode loopback \
+                  --passphrase-fd 3 3<<<"$PASS" -o "out/panalo-$stamp.tar.gpg"
+          rm -rf work
+          ls -la out | sed 's/^/  /'
+
+      - name: Keep it for 30 days
+        if: steps.check.outputs.ready == 'true'
+        uses: actions/upload-artifact@v4
+        with:
+          name: panalo-backup
+          path: out/*.tar.gpg
+          retention-days: 30
+          if-no-files-found: error

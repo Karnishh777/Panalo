@@ -20,7 +20,9 @@
   # handful of elements; script-src does not, and stays strict.
   # connect-src allows blob: so a decrypted file the app itself created can be
   # read back (Panalo Students: text previews, saving a chat file to the archive).
-  Content-Security-Policy: default-src 'self'; script-src 'self' https://cdn.jsdelivr.net https://unpkg.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://unpkg.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: blob: https://*.supabase.co https://tile.openstreetmap.org; media-src 'self' blob: https://*.supabase.co; connect-src 'self' blob: https://*.supabase.co wss://*.supabase.co; object-src 'none'; base-uri 'self'; frame-ancestors 'none'
+  # challenges.cloudflare.com is the Turnstile bot check (src/captcha.js), and
+  # api.pwnedpasswords.com the leaked-password check (src/password.js).
+  Content-Security-Policy: default-src 'self'; script-src 'self' https://cdn.jsdelivr.net https://unpkg.com https://challenges.cloudflare.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://unpkg.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: blob: https://*.supabase.co https://tile.openstreetmap.org; media-src 'self' blob: https://*.supabase.co; connect-src 'self' blob: https://*.supabase.co wss://*.supabase.co https://api.pwnedpasswords.com https://challenges.cloudflare.com; frame-src 'self' https://challenges.cloudflare.com; object-src 'none'; base-uri 'self'; frame-ancestors 'none'
 
 # A stale service worker is worse than none: it can keep serving an old app
 # long after a deploy. Always revalidate this one.

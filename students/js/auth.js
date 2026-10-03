@@ -15,9 +15,11 @@ import { ensureUserKeys, idbDelKey, idbGetKey, rewrapPrivateKey, clearKeyProblem
 import { clearAttachmentCache } from "../../src/attachments.js";
 import { clearPersistedIndex } from "../../src/search.js";
 import { stopPresence } from "../../src/presence.js";
-import { validatePassword, describePasswordPolicy } from "../../src/password.js";
+import { validatePassword, describePasswordPolicy, breachedPassword } from "../../src/password.js";
+import { captcha } from "../../src/captcha.js";
 import { OTP_LENGTH } from "../../src/config.js";
 import { clearTimer } from "./timer-state.js";
+import { stopSync } from "./sync.js";
 import { keysAfterPasswordReset } from "../../src/keyflow.js";
 
 const $ = (id) => document.getElementById(id);
@@ -72,7 +74,11 @@ async function ready(session, { fresh = false } = {}) {
 export async function signOut() {
   // Nothing typed during sign-in or recovery outlives the session.
   pending = { email: "", password: "", session: null, rewrap: "" };
-  clearTimer();
+  stopSync();
+  clearTimer({ everywhere: false });
+  try {
+    localStorage.removeItem("panalo.students.synced");
+  } catch {}
   if (state.currentUser) await idbDelKey(state.currentUser.id);
   stopPresence();
   state.myPrivateKey = null;
@@ -115,7 +121,14 @@ export function initAuth(h) {
       const password = $("login-password").value;
       if (!email || !password) return message("Enter your email and password.");
       setRemember($("login-remember").checked);
-      const { data, error } = await supabaseClient.auth.signInWithPassword({ email, password });
+      const { data, error } = await supabaseClient.auth.signInWithPassword({ email, password, options: await captcha() });
+      if (error && /not confirmed/i.test(error.message)) {
+        // Signed up but never entered the code: finish that instead.
+        pending.email = email;
+        pending.password = password;
+        showForm("otp-form");
+        return message("Your email isn't confirmed yet. Enter the code we sent, or send a new one.");
+      }
       if (error) return message(/invalid/i.test(error.message) ? "That email and password don't match." : error.message);
       state.currentUser = data.session.user;
       const status = await ensureUserKeys(password);
@@ -138,12 +151,14 @@ export function initAuth(h) {
       if (!email) return message("Enter your email.");
       const weak = validatePassword(password);
       if (weak) return message(weak);
+      const leaked = await breachedPassword(password);
+      if (leaked) return message(leaked);
       if (!$("signup-age").checked) return message("Please confirm you're 13 or older and agree to the community rules.");
       setRemember(true);
       const { data, error } = await supabaseClient.auth.signUp({
         email,
         password,
-        options: { data: { username }, emailRedirectTo: redirectUrl() },
+        options: { data: { username }, emailRedirectTo: redirectUrl(), ...(await captcha()) },
       });
       if (error) {
         // The profile is created by a trigger in the same transaction
@@ -158,6 +173,15 @@ export function initAuth(h) {
       pending.email = email;
       pending.password = password;
       showForm("otp-form");
+    });
+  });
+
+  $("otp-resend").addEventListener("click", () => {
+    withBusy($("otp-resend"), "Sending…", async () => {
+      if (!pending.email) return message("Start again from sign-up or log in.");
+      const { error } = await supabaseClient.auth.resend({ type: "signup", email: pending.email, options: { emailRedirectTo: redirectUrl(), ...(await captcha()) } });
+      if (error) return message(/rate|seconds/i.test(error.message) ? "Wait a minute before asking for another code." : error.message);
+      message("A new code is on its way.", true);
     });
   });
 
@@ -181,7 +205,7 @@ export function initAuth(h) {
     withBusy($("forgot-submit"), "Sending…", async () => {
       const email = $("forgot-email").value.trim();
       if (!email) return message("Enter your email.");
-      const { error } = await supabaseClient.auth.resetPasswordForEmail(email, { redirectTo: redirectUrl() });
+      const { error } = await supabaseClient.auth.resetPasswordForEmail(email, { redirectTo: redirectUrl(), ...(await captcha()) });
       if (error) return message(error.message);
       // The same words whether or not the address has an account.
       showForm("login-form");
@@ -237,6 +261,8 @@ export function initAuth(h) {
       const weak = validatePassword(next);
       if (weak) return message(weak);
       if (next !== $("recovery-confirm").value) return message("The passwords don't match.");
+      const leaked = await breachedPassword(next);
+      if (leaked) return message(leaked);
       const { data, error } = await supabaseClient.auth.updateUser({ password: next });
       if (error) return message(error.message);
       state.currentUser = data.user;

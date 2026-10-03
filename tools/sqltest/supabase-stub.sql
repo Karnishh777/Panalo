@@ -29,7 +29,15 @@ create table auth.users (
   id                 uuid primary key default gen_random_uuid(),
   email              text,
   raw_user_meta_data jsonb not null default '{}'::jsonb,
+  banned_until       timestamptz,
   created_at         timestamptz not null default now()
+);
+
+-- Signed-in sessions, as Supabase keeps them (refresh tokens hang off these).
+create table auth.sessions (
+  id         uuid primary key default gen_random_uuid(),
+  user_id    uuid not null references auth.users (id) on delete cascade,
+  created_at timestamptz not null default now()
 );
 
 -- Same definition Supabase ships: PostgREST sets the JWT claims per request.

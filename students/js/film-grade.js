@@ -167,7 +167,10 @@ function buildLutTexture() {
  * Grade `scene` (a 2D canvas whose size is a power of two) onto `out`.
  * Returns null if WebGL isn't available; callers then show the scene raw.
  */
-export function createGrader(out) {
+export function createGrader(out, quality = {}) {
+  // Resolution scale and the highest pixel density drawn (device-tier.js).
+  let res = quality.res ?? 1;
+  let dprCap = quality.dprCap ?? 1.5;
   const gl = out.getContext("webgl", { alpha: false, antialias: false, premultipliedAlpha: false });
   if (!gl) return null;
   const sh = (type, src) => {
@@ -225,8 +228,8 @@ export function createGrader(out) {
       // The nearest power of two to the screen: never far from 1:1, and
       // mipmaps (the bloom) need powers of two in WebGL 1.
       // Scaled by the screen's density, so it stays sharp on high-DPI.
-      const dpr = Math.min(1.5, window.devicePixelRatio || 1);
-      const near = (n) => Math.max(256, Math.min(2048, 2 ** Math.round(Math.log2(Math.max(2, n * dpr * 1.15)))));
+      const dpr = Math.min(dprCap, window.devicePixelRatio || 1);
+      const near = (n) => Math.max(256, Math.min(2048, 2 ** Math.round(Math.log2(Math.max(2, n * dpr * 1.15 * res)))));
       return [near(w), near(h)];
     },
     /**
@@ -234,7 +237,7 @@ export function createGrader(out) {
      * @param {{a: number, b: number, mix: number, exposure: number, bloom: number, streak: number, grain: number, time: number, aberr?: number, vignette?: number, bars?: number, weave?: number}} p
      */
     render(scene, p) {
-      const dpr = Math.min(1.5, window.devicePixelRatio || 1);
+      const dpr = Math.min(dprCap, window.devicePixelRatio || 1) * Math.max(0.75, res);
       const w = Math.round(out.clientWidth * dpr), h = Math.round(out.clientHeight * dpr);
       if (out.width !== w || out.height !== h) {
         out.width = w;
@@ -261,6 +264,11 @@ export function createGrader(out) {
       gl.uniform1f(U.uWeave, p.weave ?? 1);
       gl.uniform1f(U.uFrame, p.frame ?? 2.39);
       gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
+    },
+    /** Step resolution down (or up) without rebuilding anything. */
+    setQuality(q) {
+      res = q.res ?? res;
+      dprCap = q.dprCap ?? dprCap;
     },
     destroy() {
       gl.getExtension("WEBGL_lose_context")?.loseContext();

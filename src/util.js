@@ -55,6 +55,11 @@ export async function withBusy(button, busyLabel, fn) {
   if (busyLabel) button.textContent = busyLabel;
   try {
     return await fn();
+  } catch (e) {
+    // Anything that escapes (a network failure, the bot check refusing) is
+    // said out loud rather than leaving the button to quietly do nothing.
+    console.error(e);
+    showToast(e?.message || "Something went wrong. Try again.");
   } finally {
     button.disabled = false;
     button.removeAttribute("aria-busy");

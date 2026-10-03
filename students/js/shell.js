@@ -12,6 +12,8 @@ import { startInbox, stopInbox } from "./signals-data.js";
 import { settleTimer } from "./timer-state.js";
 import { reducedMotion } from "./motion.js";
 import { drift, punch, burstOn, calm } from "./fx.js";
+import { startModeration, stopModeration } from "./moderation-badge.js";
+import { startSync, stopSync } from "./sync.js";
 
 const $ = (id) => document.getElementById(id);
 
@@ -25,19 +27,25 @@ const SURFACES = {
   drift: () => import("./surfaces/drift.js"),
   safety: () => import("./surfaces/safety.js"),
   settings: () => import("./surfaces/settings.js"),
+  moderate: () => import("./surfaces/moderate.js"),
 };
-const TITLES = { now: "Now", study: "Study Room", signals: "Signals", world: "World", calendar: "Calendar", archive: "Archive", drift: "Drift", safety: "Safety", settings: "Settings" };
+const TITLES = { now: "Now", study: "Study Room", signals: "Signals", world: "World", calendar: "Calendar", archive: "Archive", drift: "Drift", safety: "Safety", settings: "Settings", moderate: "Moderation" };
 
 // Each surface's colour, for the ink that wipes across when you arrive.
 const TONES = { now: "#ffc47a", signals: "#b59cff", world: "#7ee2a8", calendar: "#ffc47a", archive: "#e7d19b", drift: "#ff9ec4", safety: "#b59cff", settings: "#9ad8ff" };
 let ambient = null;
 
-// Arriving somewhere: an ink slash in that surface's colour, and its parts
-// cut in one after another. Never into the Study Room, never with reduced
-// motion.
+// Where effects belong. The expressive places -- your day, your world, and
+// Drift, which is play -- get the ink and the drifting petals. Everywhere
+// you read, file, plan or configure stays still: effects there were noise.
+// The Study Room is the quietest of all (css/surfaces.css).
+const EXPRESSIVE = new Set(["now", "world", "drift"]);
+
+// Arriving somewhere expressive: an ink slash in that surface's colour, and
+// its parts cut in one after another. Never with reduced motion.
 function arrive(name, section) {
-  ambient?.setPaused(name === "study");
-  if (reducedMotion() || name === "study") return;
+  ambient?.setPaused(!EXPRESSIVE.has(name));
+  if (reducedMotion() || !EXPRESSIVE.has(name)) return;
   const wipe = el("div", { class: "fx-wipe", "aria-hidden": "true", style: `--wipe:${TONES[name] || "#9ad8ff"}` }, [el("i"), el("i")]);
   document.body.append(wipe);
   setTimeout(() => wipe.remove(), 800);
@@ -259,10 +267,11 @@ export function initShell(h) {
     }
   });
   if (!/Mac|iPhone|iPad/.test(navigator.platform || "")) document.querySelector(".warp-btn kbd").textContent = "Ctrl K";
-  // Primary actions and the main navigation land with a small hit.
+  // Primary actions land with a small hit -- only where effects belong, and
+  // never on plain navigation.
   document.addEventListener("pointerdown", (e) => {
-    if (!active || calm()) return;
-    const b = e.target.closest?.("#app .btn-primary, #app [data-route]");
+    if (!active || calm() || !EXPRESSIVE.has(current)) return;
+    const b = e.target.closest?.("#app .stage .btn-primary");
     if (!b) return;
     punch(b);
     burstOn(b, { count: 14, dur: 300 });
@@ -291,13 +300,15 @@ export async function enterShell({ firstTime = false, pendingJoin = null } = {})
     if (!reducedMotion() && !ambient) {
       const c = el("canvas", { class: "fx-ambient", "aria-hidden": "true" });
       $("app").prepend(c);
-      ambient = drift(c, { count: 18, wind: 0.6 });
+      ambient = drift(c, { count: 12, wind: 0.5 });
     }
     tickClock();
     clockTimer = setInterval(tickClock, 15000);
     startPresence(state.currentUser);
     // Signals keeps the unread count live everywhere, so start it now.
     startInbox().catch((e) => console.error(e));
+    startModeration();
+    startSync();
     // A focus block that ended while the app was elsewhere still counts.
     const settle = () => document.body.dataset.view !== "study" && settleTimer(Date.now(), { clear: true }).then((r) => r?.minutes && showToast(`Focus session finished — ${r.minutes} min recorded.`, "success"));
     settle();
@@ -317,6 +328,8 @@ export function leaveShell() {
   clearInterval(settleTimerId);
   stopPresence();
   stopInbox();
+  stopModeration();
+  stopSync();
   for (const [, mod] of mounted) mod.destroy?.();
   mounted.clear();
   document.querySelectorAll("[data-surface]").forEach((s) => {

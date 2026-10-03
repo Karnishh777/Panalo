@@ -307,7 +307,7 @@
           <div class="pw"><input type="password" id="signup-password" autocomplete="new-password" required aria-describedby="password-hint"><button type="button" class="pw-reveal" data-reveal="signup-password" aria-label="Show password" aria-pressed="false">Show</button></div>
           <small id="password-hint" class="field-hint"></small>
         </div>
-        <label class="check"><input type="checkbox" id="signup-age" required><span>I'm 13 or older, and I'll follow the <a href="rules.html" target="_blank" rel="noopener">community rules</a>.</span></label>
+        <label class="check"><input type="checkbox" id="signup-age" required><span>I'm 13 or older, I'll follow the <a href="rules.html" target="_blank" rel="noopener">community rules</a>, and I've read <a href="privacy.html" target="_blank" rel="noopener">what Panalo keeps about me</a>.</span></label>
         <button type="submit" class="btn btn-primary btn-lg btn-block" id="signup-submit">Create my universe</button>
         <p class="airlock-switch">Already have one? <a href="#login">Log in</a></p>
       </form>
@@ -318,6 +318,7 @@
         <p class="airlock-lead">Enter the 6-digit code we sent. It can take a minute — look in spam too.</p>
         <label class="field"><span>Code</span><input type="text" id="otp-code" class="otp" inputmode="numeric" autocomplete="one-time-code" maxlength="6" pattern="[0-9]*" required></label>
         <button type="submit" class="btn btn-primary btn-lg btn-block" id="otp-submit">Verify and cross over</button>
+        <button type="button" class="btn btn-quiet btn-block" id="otp-resend">Send a new code</button>
       </form>
 
       <form id="unlock-form" class="airlock-form" novalidate hidden aria-labelledby="unlock-title">
@@ -373,11 +374,12 @@
       <div class="bar-right">
         <span class="bar-clock num" id="bar-clock" aria-hidden="true"></span>
         <button type="button" class="warp-btn" id="warp-open" aria-label="Warp: jump anywhere (Ctrl K)"><span>Warp</span><kbd>⌘K</kbd></button>
-        <button type="button" class="me-btn" id="me-open" aria-haspopup="menu" aria-expanded="false" aria-controls="me-menu"><span id="me-initial">?</span><span class="sr-only">Account and safety</span></button>
+        <button type="button" class="me-btn" id="me-open" aria-haspopup="menu" aria-expanded="false" aria-controls="me-menu"><span id="me-initial">?</span><i id="me-mod-dot" class="me-dot" hidden aria-hidden="true"></i><span class="sr-only">Account and safety</span></button>
         <div id="me-menu" class="menu" role="menu" hidden>
           <p class="menu-head"><b id="me-name"></b><span id="me-world" class="faint"></span></p>
           <a role="menuitem" href="#/safety">Safety &amp; privacy</a>
           <a role="menuitem" href="#/settings">Settings</a>
+          <a role="menuitem" href="#/moderate" id="mod-link" hidden>Moderation <span class="pulse-count" data-mod-count hidden></span></a>
           <a role="menuitem" href="../" target="_blank" rel="noopener">Open Panalo Chat</a>
           <button role="menuitem" type="button" id="signout-btn">Sign out</button>
         </div>
@@ -394,6 +396,7 @@
       <section class="surface" data-surface="drift" aria-label="Drift" hidden></section>
       <section class="surface" data-surface="safety" aria-label="Safety and privacy" hidden></section>
       <section class="surface" data-surface="settings" aria-label="Settings" hidden></section>
+      <section class="surface" data-surface="moderate" aria-label="Moderation" hidden></section>
     </main>
 
     <nav class="dock" aria-label="Destinations">

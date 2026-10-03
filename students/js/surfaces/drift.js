@@ -5,6 +5,7 @@
 // scrolling. When you've seen them, Drift says so and offers the way back.
 // Nothing here is personalised beyond the interests you picked, nothing is
 // tracked, and there is no "more".
+import { localChange } from "../local-change.js";
 import { el, showToast, reportError } from "../ui.js";
 import { store, api } from "../store.js";
 import { pickDrift } from "../model/drift-pick.js";
@@ -33,6 +34,7 @@ function markSeen(id) {
   try {
     localStorage.setItem(SEEN_KEY, JSON.stringify({ day: dayKey(new Date()), items: [...s] }));
   } catch {}
+  localChange("drift");
 }
 
 function stopAll() {
@@ -176,7 +178,7 @@ function card({ id, label, tone, title, hint, reveal }) {
   const opened = seen().has(id);
   const body = el("div", { class: "drift-body" });
   const btn = el("button", { type: "button", class: "btn btn-toned btn-sm", text: opened ? "Again" : "Open", "aria-expanded": "false" });
-  const node = el("section", { class: `drift-card ${tone}${opened ? " opened" : ""}`, "aria-label": label }, [el("p", { class: "kicker toned", text: label }), el("h2", { text: title }), hint ? el("p", { class: "faint drift-hint", text: hint }) : null, body, btn]);
+  const node = el("section", { class: `drift-card ${tone}${opened ? " opened" : ""}`, "aria-label": label, "data-glyph": { fact: "✶", prompt: "✎", play: "✦" }[id] || "✶" }, [el("p", { class: "kicker toned", text: label }), el("h2", { text: title }), hint ? el("p", { class: "faint drift-hint", text: hint }) : null, body, btn]);
   btn.addEventListener("click", () => {
     stopAll();
     root.querySelectorAll(".drift-card").forEach((c) => c !== node && c.classList.remove("open"));
@@ -191,7 +193,24 @@ function card({ id, label, tone, title, hint, reveal }) {
   return node;
 }
 
+// "2 of 3 today · the door closes in 9 h 12 min"
+function renderProgress() {
+  const box = root.querySelector(".drift-progress");
+  if (!box) return;
+  const n = Math.min(3, seen().size);
+  const midnight = new Date();
+  midnight.setHours(24, 0, 0, 0);
+  const left = Math.max(0, midnight - Date.now());
+  const h = Math.floor(left / 3600000), m = Math.floor((left % 3600000) / 60000);
+  box.replaceChildren(
+    el("span", { class: "drift-dots", "aria-hidden": "true" }, [0, 1, 2].map((i) => el("i", { class: i < n ? "on" : "" }))),
+    el("span", { text: n >= 3 ? "All three done today" : `${n} of 3 today` }),
+    el("span", { class: "faint", text: `· new ones in ${h ? `${h} h ` : ""}${m} min` })
+  );
+}
+
 function renderClosing() {
+  renderProgress();
   const s = seen();
   const closing = root.querySelector(".drift-closing");
   if (s.size < 3) {
@@ -230,6 +249,7 @@ export function show() {
         el("p", { class: "kicker toned tone-drift", text: "Drift" }),
         el("h1", { text: "Recover, discover, return." }),
         el("p", { class: "s-sub", text: "Three small things for today. No feed, nothing to scroll — when they're done, the door closes until midnight." }),
+        el("p", { class: "drift-progress", role: "status" }),
       ]),
     ]),
     el("div", { class: "drift-row" }, [

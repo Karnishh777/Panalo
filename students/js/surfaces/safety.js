@@ -111,6 +111,37 @@ function deleteAccount() {
   });
 }
 
+// A grievance or data request: a report about nobody, read by moderators.
+function askAboutData() {
+  const kind = el("select", {}, [
+    ["question", "A question about my data"],
+    ["correct", "Please correct something"],
+    ["remove", "Please remove something"],
+    ["complaint", "A complaint"],
+  ].map(([v, t]) => el("option", { value: v, text: t })));
+  const text = el("textarea", { rows: "5", maxlength: "900", required: "", placeholder: "What would you like us to know or do?" });
+  openSheet({
+    title: "Questions or complaints about your data",
+    lead: "Only the people who run this Panalo read this. Don't include passwords.",
+    body: [el("label", { class: "field" }, [el("span", { text: "About" }), kind]), el("label", { class: "field" }, [el("span", { text: "Message" }), text])],
+    actions: [
+      { label: "Cancel", kind: "btn-quiet" },
+      {
+        label: "Send",
+        kind: "btn-primary",
+        submit: true,
+        onClick: async () => {
+          if (!text.value.trim()) return showToast("Write a message first."), false;
+          const { error } = await supabaseClient.from("reports").insert([{ reason: "other", details: `[Data request: ${kind.value}] ${text.value.trim()}` }]);
+          if (error) return showToast(error.code === "54000" ? error.message : "Couldn't send it. Try again."), false;
+          showToast("Sent. You'll hear back within 15 days.", "success");
+          loadReports();
+        },
+      },
+    ],
+  });
+}
+
 export function mount(section, c) {
   ctx = c;
   root = el("div", { class: "safety-page" });
@@ -124,6 +155,7 @@ export function mount(section, c) {
         el("section", { class: "panel tone-alert" }, [el("div", { class: "panel-head" }, [el("h2", { text: "Blocked" })]), blockedEl]),
         el("section", { class: "panel tone-time" }, [el("div", { class: "panel-head" }, [el("h2", { text: "Reports you've sent" })]), reportsEl]),
         el("section", { class: "panel tone-world" }, [el("div", { class: "panel-head" }, [el("h2", { text: "Staying safe here" }), el("a", { href: "rules.html", target: "_blank", rel: "noopener", text: "Community rules" })]), el("ul", { class: "tips" }, TIPS.map((t) => el("li", { text: t })))]),
+        el("section", { class: "panel tone-focus" }, [el("div", { class: "panel-head" }, [el("h2", { text: "Questions or complaints about your data" })]), el("p", { class: "muted", text: "Ask what's kept about you, ask for something to be corrected or removed, or complain about how your data or a report was handled. It goes to the people who run this Panalo; expect an answer within 15 days." }), el("button", { type: "button", class: "btn btn-ghost btn-sm", text: "Write to us", onClick: askAboutData })]),
         el("section", { class: "panel tone-alert" }, [el("div", { class: "panel-head" }, [el("h2", { text: "Leaving" })]), el("p", { class: "muted", text: "You can delete your account at any time." }), el("button", { type: "button", class: "btn btn-danger btn-sm", text: "Delete my account", onClick: deleteAccount })]),
       ]),
     ])

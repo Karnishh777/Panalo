@@ -130,6 +130,102 @@ How it is guarded:
 
 ---
 
+## Email that reaches everyone (free SMTP)
+
+Supabase's built-in email only delivers to members of your Supabase team,
+and only a few an hour. Until custom SMTP is set, **password resets fail
+for everyone else** ("Email address not authorized"). Brevo's free plan
+sends 300 emails a day:
+
+1. brevo.com → sign up → *Senders, Domains & Dedicated IPs* → add and
+   verify the address emails will come from.
+2. *SMTP & API → SMTP* → generate an SMTP key.
+3. Supabase → **Authentication → Emails → SMTP Settings** → enable custom
+   SMTP: host `smtp-relay.brevo.com`, port `587`, username = your Brevo
+   login, password = the SMTP key, sender = the verified address, name
+   `Panalo`.
+4. **Authentication → Emails → Templates → Confirm signup**: use the
+   6-digit code template in [SETUP.md](SETUP.md) §4 (the apps ask for the
+   code, not a link).
+5. **Authentication → Sign In / Providers → Email**: turn **Confirm email**
+   on. New accounts then prove they own their address; someone who logs
+   in before confirming is taken back to the code screen, with a button to
+   send a new one.
+6. **Authentication → Rate Limits**: raise "emails per hour" from 30 if you
+   expect a launch-day rush.
+
+## Bot protection (free Cloudflare Turnstile)
+
+Stops scripts mass-creating accounts (which would burn your email quota
+and reputation). Do these **in this order**, or sign-in breaks:
+
+1. Cloudflare → **Turnstile → Add widget**: name `Panalo`, hostname
+   `panalo-5dk.pages.dev` (and your own domain later), mode **Managed**.
+   You get a *site key* and a *secret key*.
+2. **Workers & Pages → panalo → Settings → Variables and secrets → Add**:
+   `TURNSTILE_SITE_KEY` (plain text) = the site key. **Retry deployment.**
+   Check `https://<site>/api/captcha` shows the key.
+3. Only now: Supabase → **Authentication → Attack Protection → Enable
+   Captcha protection** → provider **Cloudflare Turnstile**, paste the
+   *secret* key, save.
+
+Most people never see the check; a suspicious visitor gets a small box in
+the middle of the screen. To turn it off, reverse the order: Supabase first,
+then the variable.
+
+## Backups and staying awake (GitHub Action)
+
+`.github/workflows/keep-alive-and-backup.yml` runs from the `main` branch:
+
+- **Daily:** one small read through the API, so the free project is never
+  paused for inactivity. If the project *is* paused, the run fails and
+  GitHub emails you.
+- **Sundays (or by hand: Actions → Keep alive and back up → Run):** an
+  encrypted dump of the database, kept for 30 days as a workflow artifact.
+
+Backups need two repository secrets (**Settings → Secrets and variables →
+Actions → New repository secret**):
+
+- `SUPABASE_DB_URL`: Supabase → **Connect** → *Session pooler* URI, with
+  your database password in it.
+- `BACKUP_PASSPHRASE`: a long random passphrase. **Keep a copy outside
+  GitHub.** Without it the backups can't be opened.
+
+The repository is public, so the dump is encrypted before upload and
+nothing from it is printed in the log. To restore:
+
+```bash
+gpg --decrypt panalo-YYYY-MM-DD.tar.gpg | tar -xf -        # asks for the passphrase
+pg_restore --no-owner --clean --if-exists -d "$NEW_DB_URL" app.dump
+pg_restore --data-only -d "$NEW_DB_URL" auth.dump          # accounts, into a fresh project
+```
+
+GitHub stops scheduled workflows in a public repository after 60 days with
+no commits; any push restarts them.
+
+## Moderation
+
+Reports go to the moderation page, `/students/#/moderate`. Only moderators
+see reports there; the account menu shows them a **Moderation** entry with
+the number waiting. From a report a moderator can:
+
+- add a note and mark it reviewing or closed;
+- remove the reported message for everyone;
+- suspend the account for 1, 7 or 30 days, or until lifted (they're signed
+  out everywhere within the hour), and lift a suspension.
+
+Every action is recorded in the page's history. Questions and complaints
+from Safety → "Questions or complaints about your data" arrive here too,
+marked *Data request* with the date they should be answered by.
+
+**If the moderator's account is ever deleted:** sign up or log in with any
+account, open `/students/#/moderate`, and enter the moderator passphrase.
+Set the passphrase on the moderation page beforehand ("If this account is
+ever deleted"). Only a bcrypt hash of it is stored, and guesses are limited
+to 5 an hour.
+
+---
+
 ## Notes
 
 - **Your Netlify site stays up.** Running out of credits stops new *builds*,

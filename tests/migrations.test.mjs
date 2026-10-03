@@ -104,8 +104,13 @@ async function migrationTests() {
      where n.nspname = 'public' and p.prosecdef and has_function_privilege('authenticated', p.oid, 'EXECUTE')
      order by 1`
   );
-  ok("only delete_my_account, find_profile_by_username, my_storage_objects and request_to_join are callable SECURITY DEFINER functions",
-     JSON.stringify(exposed.map((r) => r.proname)) === JSON.stringify(["delete_my_account", "find_profile_by_username", "my_storage_objects", "request_to_join"]),
+  // Phase 20's moderation_* functions each check for a moderator first
+  // (moderation_claim and moderation_status excepted, by design).
+  const EXPECTED_DEFINERS = ["delete_my_account", "find_profile_by_username", "moderation_claim", "moderation_delete_message",
+    "moderation_history", "moderation_reports", "moderation_set_passphrase", "moderation_set_status", "moderation_status",
+    "moderation_suspend", "my_storage_objects", "request_to_join"];
+  ok("only the known SECURITY DEFINER functions are callable by signed-in users",
+     JSON.stringify(exposed.map((r) => r.proname)) === JSON.stringify(EXPECTED_DEFINERS),
      exposed.map((r) => r.proname).join(", "));
 
   const { rows: dupes } = await db.query(
@@ -767,8 +772,108 @@ async function studentsTests() {
   ok("but keeps conversations other people are still in", L.circle === 1, JSON.stringify(L));
 }
 
+// ---- moderation (phase 20) -------------------------------------------------
+
+async function moderationTests() {
+  const db = await freshDb();
+  const mod = await createUser(db, "m_mod");
+  const bad = await createUser(db, "m_bad");
+  const kind = await createUser(db, "m_kind");
+  const conv = await startGroup(db, kind, [bad]);
+  const msg = await as(db, bad, async (tx) =>
+    (await tx.query("insert into messages (conversation_id, content) values ($1, 'mean words') returning id", [conv])).rows[0].id);
+  const report = await as(db, kind, async (tx) =>
+    (await tx.query("insert into reports (reported_user_id, conversation_id, message_id, reason, evidence) values ($1, $2, $3, 'harassment', 'mean words') returning id",
+      [bad, conv, msg])).rows[0].id);
+
+  const status = await attempt(db, kind, async (tx) => (await tx.query("select * from moderation_status()")).rows[0]);
+  ok("an ordinary account is not a moderator, and nothing can be claimed yet", status.ok && !status.value.is_moderator && !status.value.passphrase_set, status.error);
+  const peek = await attempt(db, kind, (tx) => tx.query("select * from moderation_reports()"));
+  ok("non-moderators can't read reports", !peek.ok && /moderator/.test(peek.error));
+  const direct = await attempt(db, kind, (tx) => tx.query("select * from private.moderators"));
+  ok("the moderator list isn't readable from the API", !direct.ok);
+  const early = await attempt(db, kind, async (tx) => (await tx.query("select moderation_claim('anything at all') as ok")).rows[0].ok);
+  ok("without a passphrase set, claiming fails", early.ok && early.value === false, early.error);
+
+  await db.query("insert into private.moderators (user_id) values ($1)", [mod]);
+  const list = await attempt(db, mod, async (tx) => (await tx.query("select * from moderation_reports()")).rows);
+  const row = list.value?.[0] || {};
+  ok("a moderator sees the report with names and context", list.ok && row.id === report && row.reporter_username === "m_kind" && row.reported_username === "m_bad" && row.message_exists === true, list.error);
+
+  await as(db, mod, (tx) => tx.query("select moderation_set_status($1, 'reviewing', 'looking into it')", [report]));
+  const set = (await db.query("select status, moderator_note, handled_at from reports where id = $1", [report])).rows[0];
+  ok("a moderator can change a report's status with a note", set.status === "reviewing" && set.moderator_note === "looking into it" && set.handled_at);
+
+  await as(db, mod, (tx) => tx.query("select moderation_delete_message($1, $2)", [msg, report]));
+  ok("a moderator can remove a reported message", (await db.query("select count(*)::int as n from messages where id = $1", [msg])).rows[0].n === 0);
+
+  await db.query("insert into auth.sessions (user_id) values ($1)", [bad]);
+  await as(db, mod, (tx) => tx.query("select moderation_suspend($1, 7, $2, 'harassment')", [bad, report]));
+  const sus = (await db.query("select (select banned_until from auth.users where id = $1) > now() + interval '6 days' as banned, (select count(*)::int from auth.sessions where user_id = $1) as sessions", [bad])).rows[0];
+  ok("suspending sets a ban and signs them out everywhere", sus.banned && sus.sessions === 0, JSON.stringify(sus));
+  const self = await attempt(db, mod, (tx) => tx.query("select moderation_suspend($1, 1)", [mod]));
+  ok("a moderator can't suspend themself", !self.ok);
+  const notMod = await attempt(db, kind, (tx) => tx.query("select moderation_suspend($1, 1)", [bad]));
+  ok("only moderators can suspend", !notMod.ok);
+
+  const shortPass = await attempt(db, mod, (tx) => tx.query("select moderation_set_passphrase('short')"));
+  ok("a short passphrase is refused", !shortPass.ok);
+  await as(db, mod, (tx) => tx.query("select moderation_set_passphrase('orbit lantern quiet harbour')"));
+  const stored = (await db.query("select hash from private.moderator_passphrase")).rows[0]?.hash || "";
+  ok("the passphrase is stored only as a bcrypt hash", stored.startsWith("$2") && !stored.includes("orbit"));
+
+  // The moderator's account is deleted: the role goes with it...
+  await as(db, mod, (tx) => tx.query("select delete_my_account()"));
+  ok("deleting the moderator's account removes the role", (await db.query("select count(*)::int as n from private.moderators")).rows[0].n === 0);
+  // ...and a new account takes it back with the passphrase.
+  const fresh = await createUser(db, "m_fresh");
+  const wrong = await as(db, fresh, async (tx) => (await tx.query("select moderation_claim('not the passphrase') as ok")).rows[0].ok);
+  ok("a wrong passphrase claims nothing", wrong === false);
+  const right = await as(db, fresh, async (tx) => (await tx.query("select moderation_claim('orbit lantern quiet harbour') as ok")).rows[0].ok);
+  const now = await as(db, fresh, async (tx) => (await tx.query("select * from moderation_status()")).rows[0]);
+  ok("the right passphrase makes the new account a moderator", right === true && now.is_moderator === true);
+  const hist = await as(db, fresh, async (tx) => (await tx.query("select action from moderation_history()")).rows.map((r) => r.action));
+  ok("every moderator action is in the history", ["claimed-role", "set-passphrase", "suspend", "delete-message", "status:reviewing"].every((a) => hist.includes(a)), hist.join(","));
+
+  const guesser = await createUser(db, "m_guess");
+  for (let i = 0; i < 5; i++) await as(db, guesser, (tx) => tx.query("select moderation_claim('guess " + i + "')"));
+  const sixth = await attempt(db, guesser, (tx) => tx.query("select moderation_claim('orbit lantern quiet harbour')"));
+  ok("guessing is limited to 5 an hour", !sixth.ok && /Too many/.test(sixth.error));
+}
+
+// ---- settings that follow you (phase 21) -----------------------------------
+
+async function deviceStateTests() {
+  const db = await freshDb();
+  const a = await createUser(db, "d_a");
+  const b = await createUser(db, "d_b");
+  for (const u of [a, b]) await as(db, u, (tx) => tx.query("insert into student_profiles (world_name) values ('W')"));
+  const put = (u, section, v, at) => as(db, u, async (tx) => (await tx.query("select merge_device_state($1, $2::jsonb, $3) as s", [section, JSON.stringify(v), at])).rows[0].s);
+  await put(a, "prefs", { studyPreset: "50" }, 2000);
+  await put(a, "light", { mode: "night" }, 2000);
+  const older = await put(a, "prefs", { studyPreset: "25" }, 1000);
+  const st = (await db.query("select device_state from student_profiles where user_id = $1", [a])).rows[0].device_state;
+  ok("a newer setting is kept; an older write from another tab is ignored", st.prefs.v.studyPreset === "50" && st.light.v.mode === "night" && older === null, JSON.stringify(st));
+  await put(a, "timer", null, 3000);
+  const t = (await db.query("select device_state -> 'timer' as t from student_profiles where user_id = $1", [a])).rows[0].t;
+  ok("a stopped timer is recorded as stopped", t && t.v === null && Number(t.at) === 3000, JSON.stringify(t));
+  const bogus = await attempt(db, a, async (tx) => (await tx.query("select merge_device_state('anything', '1'::jsonb, 5000) as s")).rows[0].s);
+  ok("only the known sections can be written", bogus.ok && bogus.value === null, bogus.error);
+  const theirs = (await db.query("select device_state from student_profiles where user_id = $1", [b])).rows[0].device_state;
+  ok("nobody writes anyone else's settings", Object.keys(theirs).length === 0);
+  const big = await attempt(db, a, (tx) => tx.query("select merge_device_state('prefs', $1::jsonb, 9000)", [JSON.stringify({ x: "y".repeat(40000) })]));
+  ok("settings stay small", !big.ok);
+
+  const now = Date.now();
+  const iso = (ms) => new Date(ms).toISOString();
+  const row = [iso(now - 26 * 60000), iso(now)];
+  await as(db, a, (tx) => tx.query("insert into focus_sessions (started_at, ended_at, planned_minutes, focused_minutes) values ($1, $2, 25, 25)", row));
+  const twice = await attempt(db, a, (tx) => tx.query("insert into focus_sessions (started_at, ended_at, planned_minutes, focused_minutes) values ($1, $2, 25, 25)", row));
+  ok("the same focus block can't be recorded twice (two devices)", !twice.ok && /duplicate|unique/i.test(twice.error));
+}
+
 async function main() {
-  const sections = [migrationTests, chatTests, takeoverTests, callTests, accountTests, backfillTests, historyTests, disappearTests, studentsTests];
+  const sections = [migrationTests, chatTests, takeoverTests, callTests, accountTests, backfillTests, historyTests, disappearTests, studentsTests, moderationTests, deviceStateTests];
   for (const run of sections) {
     try {
       await run();
