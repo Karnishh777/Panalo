@@ -14,6 +14,7 @@ import { reducedMotion } from "./motion.js";
 import { drift, punch, burstOn, calm } from "./fx.js";
 import { startModeration, stopModeration } from "./moderation-badge.js";
 import { startSync, stopSync } from "./sync.js";
+import { rulesReminder } from "./rules-reminder.js";
 
 const $ = (id) => document.getElementById(id);
 
@@ -320,6 +321,7 @@ export async function enterShell({ firstTime = false, pendingJoin = null } = {})
   if (location.hash !== target) location.hash = target;
   else await route();
   if (firstTime) showToast("Welcome to your universe. Press Warp (Ctrl K) to go anywhere.", "success");
+  rulesReminder({ firstTime });
 }
 
 export function leaveShell() {

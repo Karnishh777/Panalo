@@ -5,6 +5,7 @@
 import { startSky } from "./sky.js";
 import { initLanding } from "./landing.js";
 import { initAuth, restoreSession, showForm, signOut } from "./auth.js";
+import { showParent } from "./parent.js";
 import { runBirth, needsBirth } from "./birth.js";
 import { store, loadStudentProfile, loadAll, resetStore } from "./store.js";
 import { initShell, enterShell, leaveShell } from "./shell.js";
@@ -43,6 +44,15 @@ function showOutside() {
     deepLink = true;
   }
   const h = location.hash;
+  if (h === "#parent") {
+    // A parent or guardian approving their child's account.
+    $("landing").hidden = true;
+    $("auth").hidden = false;
+    $("app").hidden = true;
+    showParent({ show: showForm });
+    window.scrollTo(0, 0);
+    return;
+  }
   const auth = h === "#login" || h === "#signup" || h.startsWith("#join=");
   $("landing").hidden = auth;
   $("auth").hidden = !auth;
@@ -169,7 +179,9 @@ window.addEventListener("hashchange", () => {
 // this before the modules load).
 document.addEventListener("submit", (e) => e.preventDefault());
 
-restoreSession()
+// A parent's link never signs anyone into the app.
+const boot = location.hash === "#parent" ? Promise.resolve("signed-out") : restoreSession();
+boot
   .then((result) => {
     if (result === "signed-out") {
       document.body.classList.add("ready");

@@ -76,7 +76,7 @@ function deleteAccount() {
   const input = el("input", { type: "text", autocapitalize: "off", spellcheck: "false", placeholder: state.currentUsername });
   openSheet({
     title: "Delete your account?",
-    lead: "Everything goes: your profile and keys, every message you sent (in every chat), every file you uploaded, your study data and world, and any conversation only you were in. Chats with other people carry on without you. This can't be undone.",
+    lead: "Everything goes: your profile and keys, every message you sent (in every chat), every file you uploaded, your study data and world, and any conversation only you were in. Chats with other people carry on without you. Only your email and username are kept, locked away, for the 180 days the law requires. This can't be undone.",
     body: [el("label", { class: "field" }, [el("span", { text: `Type your username (${state.currentUsername}) to confirm` }), input])],
     actions: [
       { label: "Keep my account", kind: "btn-quiet" },
@@ -109,6 +109,53 @@ function deleteAccount() {
       },
     ],
   });
+}
+
+// Everything the account holds that the database will hand back, as one
+// JSON file (DPDP Act s.11, the right to a summary of your data). Messages
+// come as stored: encrypted, with their dates and conversations.
+async function downloadMyData(btn) {
+  btn.disabled = true;
+  btn.textContent = "Gathering…";
+  try {
+    const me = state.currentUser?.id;
+    const get = async (table, q = (x) => x) => {
+      const { data, error } = await q(supabaseClient.from(table).select("*"));
+      return error ? { error: error.message } : data;
+    };
+    const out = {
+      exported_at: new Date().toISOString(),
+      note: "Your Panalo data. Messages are stored encrypted; their text is only readable in the app on your devices.",
+      account: { id: me, email: state.currentUser?.email, username: state.currentUsername },
+      profile: await get("profiles", (q) => q.eq("id", me)),
+      age_and_consent: await get("account_age", (q) => q.eq("user_id", me)),
+      student_profile: await get("student_profiles", (q) => q.eq("user_id", me)),
+      tasks: await get("student_tasks", (q) => q.eq("user_id", me)),
+      focus_sessions: await get("focus_sessions", (q) => q.eq("user_id", me)),
+      calendar: await get("student_events", (q) => q.eq("user_id", me)),
+      activity: await get("activity_log", (q) => q.eq("user_id", me)),
+      goals: await get("student_goals", (q) => q.eq("user_id", me)),
+      archive_files: await get("resources", (q) => q.eq("owner_id", me)),
+      conversations: await get("conversation_participants", (q) => q.eq("user_id", me)),
+      messages_sent: await get("messages", (q) => q.eq("user_id", me).order("created_at", { ascending: true }).limit(10000)),
+      blocked: await get("blocks", (q) => q.eq("blocker_id", me)),
+      reports_sent: await get("reports", (q) => q.eq("reporter_id", me)),
+    };
+    const blob = new Blob([JSON.stringify(out, null, 2)], { type: "application/json" });
+    const a = document.createElement("a");
+    a.href = URL.createObjectURL(blob);
+    a.download = `panalo-my-data-${new Date().toISOString().slice(0, 10)}.json`;
+    document.body.append(a);
+    a.click();
+    a.remove();
+    setTimeout(() => URL.revokeObjectURL(a.href), 10_000);
+    showToast("Your data is downloading.", "success");
+  } catch (e) {
+    showToast("Couldn't gather it. Try again.");
+  } finally {
+    btn.disabled = false;
+    btn.textContent = "Download my data";
+  }
 }
 
 // A grievance or data request: a report about nobody, read by moderators.
@@ -155,7 +202,8 @@ export function mount(section, c) {
         el("section", { class: "panel tone-alert" }, [el("div", { class: "panel-head" }, [el("h2", { text: "Blocked" })]), blockedEl]),
         el("section", { class: "panel tone-time" }, [el("div", { class: "panel-head" }, [el("h2", { text: "Reports you've sent" })]), reportsEl]),
         el("section", { class: "panel tone-world" }, [el("div", { class: "panel-head" }, [el("h2", { text: "Staying safe here" }), el("a", { href: "rules.html", target: "_blank", rel: "noopener", text: "Community rules" })]), el("ul", { class: "tips" }, TIPS.map((t) => el("li", { text: t })))]),
-        el("section", { class: "panel tone-focus" }, [el("div", { class: "panel-head" }, [el("h2", { text: "Questions or complaints about your data" })]), el("p", { class: "muted", text: "Ask what's kept about you, ask for something to be corrected or removed, or complain about how your data or a report was handled. It goes to the people who run this Panalo; expect an answer within 15 days." }), el("button", { type: "button", class: "btn btn-ghost btn-sm", text: "Write to us", onClick: askAboutData })]),
+        el("section", { class: "panel tone-world" }, [el("div", { class: "panel-head" }, [el("h2", { text: "Your data" })]), el("p", { class: "muted", text: "Download everything your account holds, as a file you can keep." }), el("button", { type: "button", class: "btn btn-ghost btn-sm", text: "Download my data", onClick: (e) => downloadMyData(e.currentTarget) })]),
+        el("section", { class: "panel tone-focus" }, [el("div", { class: "panel-head" }, [el("h2", { text: "Questions or complaints about your data" })]), el("p", { class: "muted", text: "Ask what's kept about you, ask for something to be corrected or removed, or complain about how your data or a report was handled. It goes to the people who run this Panalo; expect an answer within 15 days." }), el("button", { type: "button", class: "btn btn-ghost btn-sm", text: "Write to us", onClick: askAboutData }), el("p", { class: "faint", text: "Or email the Grievance Officer: karnishh.education@gmail.com" })]),
         el("section", { class: "panel tone-alert" }, [el("div", { class: "panel-head" }, [el("h2", { text: "Leaving" })]), el("p", { class: "muted", text: "You can delete your account at any time." }), el("button", { type: "button", class: "btn btn-danger btn-sm", text: "Delete my account", onClick: deleteAccount })]),
       ]),
     ])

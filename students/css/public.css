@@ -1888,3 +1888,74 @@ html.gate-js[data-gate="on"] .ignition {
 html[data-motion="reduce"] .gate {
   display: none !important;
 }
+
+/* ---- Age and a parent's consent ---------------------------------------------- */
+.birth-field {
+  border: 0;
+  padding: 0;
+  margin: 0;
+  min-width: 0;
+}
+.birth-field legend {
+  padding: 0;
+  margin-bottom: 6px;
+}
+.birth-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr);
+  gap: 10px;
+}
+.birth-row select,
+.birth-row input {
+  width: 100%;
+}
+.guardian-wait {
+  display: grid;
+  gap: 10px;
+  padding: 14px 16px;
+  border: 1px solid var(--line-2);
+  border-radius: var(--r-2);
+  background: color-mix(in srgb, var(--signal) 7%, transparent);
+}
+.guardian-status {
+  margin: 0;
+  font-weight: 600;
+  color: var(--signal);
+}
+.parent-decide {
+  max-height: none;
+}
+#parent-requests {
+  display: grid;
+  gap: 16px;
+}
+.parent-card {
+  display: grid;
+  gap: 12px;
+  padding: 18px;
+  border: 1px solid var(--line-2);
+  border-radius: var(--r-2);
+  background: var(--surface);
+}
+.parent-card h2 {
+  margin: 0;
+  font: 500 20px/1.2 var(--f-display);
+}
+.parent-card .field-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+.parent-notice ul {
+  margin: 8px 0;
+  padding-left: 18px;
+  color: var(--text-2);
+  font-size: 14px;
+}
+.parent-notice summary {
+  cursor: pointer;
+  font-weight: 600;
+}
+.parent-card.approved {
+  border-color: color-mix(in srgb, var(--world) 45%, var(--line));
+}

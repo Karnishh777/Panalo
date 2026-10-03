@@ -81,6 +81,7 @@ For each: **SQL Editor → New query** → paste the whole file → **Run**.
 | 17 | [`supabase-phase19.sql`](supabase-phase19.sql) | Launch tuning: policies work out who you are once per query instead of once per row, and every foreign key gets an index (faster deletes). No behaviour change | No |
 | 18 | [`supabase-phase20.sql`](supabase-phase20.sql) | Moderation: a moderator role, the moderation page's functions (reports, notes, removing messages, suspending accounts), a passphrase to reclaim the role, and a record of every action | No |
 | 19 | [`supabase-phase21.sql`](supabase-phase21.sql) | Your Study Room settings, world lighting, Drift progress and a running focus timer follow you across devices; a focus block is recorded once even with two devices open | No |
+| 20 | [`supabase-phase22.sql`](supabase-phase22.sql) | Age and a parent's consent: date of birth once, under-13s refused, 13–17 wait for a parent's approval (enforced by the database); registration details kept 180 days after deletion, then erased | No |
 
 Phase 8 is self-contained and re-applies everything phase 7 does, so running 8
 is enough if you are starting fresh. Run 7 anyway if you prefer the history to

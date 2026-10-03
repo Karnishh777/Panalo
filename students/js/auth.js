@@ -17,13 +17,13 @@ import { clearPersistedIndex } from "../../src/search.js";
 import { stopPresence } from "../../src/presence.js";
 import { validatePassword, describePasswordPolicy, breachedPassword } from "../../src/password.js";
 import { captcha } from "../../src/captcha.js";
-import { OTP_LENGTH } from "../../src/config.js";
+import { ageGate, validCode } from "./age-gate.js";
 import { clearTimer } from "./timer-state.js";
 import { stopSync } from "./sync.js";
 import { keysAfterPasswordReset } from "../../src/keyflow.js";
 
 const $ = (id) => document.getElementById(id);
-const FORMS = ["login-form", "forgot-form", "signup-form", "otp-form", "unlock-form", "recovery-form"];
+const FORMS = ["login-form", "forgot-form", "signup-form", "otp-form", "unlock-form", "recovery-form", "age-form", "guardian-form", "young-form", "parent-start-form", "parent-code-form", "parent-decide"];
 const USERNAME_RE = /^[a-z0-9._]{3,30}$/i;
 
 let hooks = { onReady: () => {}, onSignedOut: () => {} };
@@ -68,6 +68,9 @@ function showUnlock(session, reason) {
 async function ready(session, { fresh = false } = {}) {
   state.currentUser = session.user;
   state.currentUsername = session.user.user_metadata?.username || session.user.email?.split("@")[0] || "you";
+  // How old, and if under 18, has a parent agreed? (age-gate.js)
+  // The crossing is shown only if there's a question to ask.
+  await ageGate({ show: (id) => (hooks.onNeedsUnlock?.(), showForm(id)), signOut: async () => { await signOut(); location.hash = "#login"; location.reload(); } });
   await hooks.onReady(session, { fresh });
 }
 
@@ -153,12 +156,18 @@ export function initAuth(h) {
       if (weak) return message(weak);
       const leaked = await breachedPassword(password);
       if (leaked) return message(leaked);
-      if (!$("signup-age").checked) return message("Please confirm you're 13 or older and agree to the community rules.");
+      const by = Number($("signup-birth-year").value), bm = Number($("signup-birth-month").value);
+      if (!bm || !by) return message("Enter your month and year of birth.");
+      const now = new Date();
+      const age = now.getFullYear() - by - (now.getMonth() + 1 <= bm ? 1 : 0);
+      if (by > now.getFullYear() || age > 120) return message("That date of birth doesn't look right.");
+      if (age < 13) return message("Panalo is for people 13 and over. We'd love to see you when you're 13.");
+      if (!$("signup-age").checked) return message("Please agree to the community rules to continue.");
       setRemember(true);
       const { data, error } = await supabaseClient.auth.signUp({
         email,
         password,
-        options: { data: { username }, emailRedirectTo: redirectUrl(), ...(await captcha()) },
+        options: { data: { username, birth_year: by, birth_month: bm }, emailRedirectTo: redirectUrl(), ...(await captcha()) },
       });
       if (error) {
         // The profile is created by a trigger in the same transaction
@@ -189,7 +198,7 @@ export function initAuth(h) {
     e.preventDefault();
     withBusy($("otp-submit"), "Verifying…", async () => {
       const token = $("otp-code").value.trim();
-      if (token.length !== OTP_LENGTH) return message(`Enter the ${OTP_LENGTH}-digit code.`);
+      if (!validCode(token)) return message("Enter the code from the email.");
       const { data, error } = await supabaseClient.auth.verifyOtp({ email: pending.email, token, type: "signup" });
       if (error) return message(error.message);
       if (!data.session) return message("That code didn't sign you in. Try logging in.");
