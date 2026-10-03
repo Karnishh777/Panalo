@@ -1021,9 +1021,66 @@
   grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr);
   gap: 10px;
 }
+/* Month and year look like every other field (base.css only styles text
+   inputs), with a drawn arrow and no number spinners. */
 .birth-row select,
-.birth-row input {
+.birth-row input,
+.age-wall-row select,
+.age-wall-row input {
   width: 100%;
+  min-height: 48px;
+  padding: 12px 16px;
+  background: var(--surface-2);
+  border: 1.5px solid var(--border);
+  border-radius: var(--r-md);
+  color: var(--text);
+  font-size: 1rem;
+  transition: border-color var(--dur-2) var(--ease), background-color var(--dur-2) var(--ease), box-shadow var(--dur-2) var(--ease);
+}
+.birth-row select,
+.age-wall-row select {
+  appearance: none;
+  padding-right: 36px;
+  background-image: linear-gradient(45deg, transparent 50%, var(--text-3) 50%), linear-gradient(135deg, var(--text-3) 50%, transparent 50%);
+  background-position: calc(100% - 20px) 50%, calc(100% - 15px) 50%;
+  background-size: 5px 5px;
+  background-repeat: no-repeat;
+}
+.birth-row select:invalid,
+.age-wall-row select:invalid {
+  color: var(--text-3);
+}
+.birth-row option,
+.age-wall-row option {
+  color: var(--text);
+  background: var(--surface);
+}
+.birth-row select:hover,
+.birth-row input:hover,
+.age-wall-row select:hover,
+.age-wall-row input:hover {
+  border-color: var(--border-strong);
+}
+.birth-row select:focus,
+.birth-row input:focus,
+.age-wall-row select:focus,
+.age-wall-row input:focus {
+  outline: none;
+  border-color: var(--primary);
+  background-color: var(--surface);
+  box-shadow: 0 0 0 4px var(--primary-soft);
+}
+.birth-row input[type="number"],
+.age-wall-row input[type="number"] {
+  appearance: textfield;
+  -moz-appearance: textfield;
+}
+.birth-row input[type="number"]::-webkit-inner-spin-button,
+.birth-row input[type="number"]::-webkit-outer-spin-button,
+.age-wall-row input[type="number"]::-webkit-inner-spin-button,
+.age-wall-row input[type="number"]::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
 }
 .age-wall {
   position: fixed;

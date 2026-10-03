@@ -139,7 +139,11 @@ sends 300 emails a day:
 
 1. brevo.com → sign up → *Senders, Domains & Dedicated IPs* → add and
    verify the address emails will come from.
-2. *SMTP & API → SMTP* → generate an SMTP key.
+2. *SMTP & API → SMTP* → generate an SMTP key. Then **Security →
+   Authorized IPs**: turn IP blocking **off**. Supabase sends from
+   changing addresses, and with blocking on Brevo refuses every email
+   (`525 5.7.1 Unauthorized IP address`; the apps say "We couldn't send
+   the email just now").
 3. Supabase → **Authentication → Emails → SMTP Settings** → enable custom
    SMTP: host `smtp-relay.brevo.com`, port `587`, username = your Brevo
    login, password = the SMTP key, sender = the verified address, name

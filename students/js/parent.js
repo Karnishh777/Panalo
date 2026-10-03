@@ -7,7 +7,7 @@
 // own Panalo account (made by signing in with the code) is never entered:
 // when they're done, they're signed out.
 import { supabaseClient } from "../../src/client.js";
-import { withBusy, showToast } from "../../src/util.js";
+import { withBusy, showToast, authErrorText } from "../../src/util.js";
 import { el } from "./ui.js";
 import { emailParentCode, validCode } from "./age-gate.js";
 
@@ -128,7 +128,7 @@ function wire() {
       email = $("parent-email").value.trim().toLowerCase();
       if (!/^[^@\s]+@[^@\s]+\.[^@\s]{2,}$/.test(email)) return message("Enter your email address.");
       const { error } = await emailParentCode(email);
-      if (error) return message(/rate|seconds/i.test(error.message) ? "A code was sent a moment ago. Check your email, or wait a minute." : error.message);
+      if (error) return message(authErrorText(error));
       $("parent-code-email-field").hidden = true;
       $("parent-code-lead").textContent = `We sent a code to ${email}. Check spam too.`;
       show("parent-code-form");

@@ -10,7 +10,7 @@
 //     says plainly that older messages are gone.
 import { supabaseClient, setRemember } from "../../src/client.js";
 import { state, conversationKeys } from "../../src/state.js";
-import { withBusy, showToast, redirectUrl } from "../../src/util.js";
+import { withBusy, showToast, redirectUrl, authErrorText } from "../../src/util.js";
 import { ensureUserKeys, idbDelKey, idbGetKey, rewrapPrivateKey, clearKeyProblems } from "../../src/encryption.js";
 import { clearAttachmentCache } from "../../src/attachments.js";
 import { clearPersistedIndex } from "../../src/search.js";
@@ -172,7 +172,7 @@ export function initAuth(h) {
       if (error) {
         // The profile is created by a trigger in the same transaction
         // (phase 14); a taken username is the only thing it refuses.
-        return message(/database error saving new user/i.test(error.message) ? `@${username} is taken. Try another.` : error.message);
+        return message(/database error saving new user/i.test(error.message) ? `@${username} is taken. Try another.` : authErrorText(error));
       }
       if (data.session) {
         state.currentUser = data.session.user;
@@ -189,7 +189,7 @@ export function initAuth(h) {
     withBusy($("otp-resend"), "Sending…", async () => {
       if (!pending.email) return message("Start again from sign-up or log in.");
       const { error } = await supabaseClient.auth.resend({ type: "signup", email: pending.email, options: { emailRedirectTo: redirectUrl(), ...(await captcha()) } });
-      if (error) return message(/rate|seconds/i.test(error.message) ? "Wait a minute before asking for another code." : error.message);
+      if (error) return message(authErrorText(error));
       message("A new code is on its way.", true);
     });
   });

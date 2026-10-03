@@ -24,7 +24,7 @@ function wall(children) {
 
 function askBirth() {
   return new Promise((resolve) => {
-    const month = el("select", { "aria-label": "Month of birth" }, [el("option", { value: "", text: "Month", disabled: "", selected: "" }), ...MONTHS.map((m, i) => el("option", { value: String(i + 1), text: m }))]);
+    const month = el("select", { "aria-label": "Month of birth", required: "" }, [el("option", { value: "", text: "Month", disabled: "", selected: "" }), ...MONTHS.map((m, i) => el("option", { value: String(i + 1), text: m }))]);
     const year = el("input", { type: "number", inputmode: "numeric", placeholder: "Year", "aria-label": "Year of birth" });
     const msg = el("p", { class: "age-wall-msg", role: "alert" });
     const go = el("button", { type: "button", class: "btn btn-primary btn-block", text: "Continue" });

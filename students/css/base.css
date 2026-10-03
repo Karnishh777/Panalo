@@ -251,7 +251,9 @@ button {
 .input,
 .field input,
 .field select,
-.field textarea {
+.field textarea,
+.birth-row select,
+.birth-row input {
   width: 100%;
   min-height: 46px;
   padding: 11px 14px;
@@ -267,18 +269,22 @@ button {
 }
 .input::placeholder,
 .field input::placeholder,
+.birth-row input::placeholder,
 .field textarea::placeholder {
   color: var(--text-3);
 }
 .input:focus,
 .field input:focus,
 .field select:focus,
-.field textarea:focus {
+.field textarea:focus,
+.birth-row select:focus,
+.birth-row input:focus {
   outline: none;
   border-color: var(--focus);
   box-shadow: 0 0 0 3px rgba(154, 216, 255, 0.16);
 }
-.field select {
+.field select,
+.birth-row select {
   appearance: none;
   background-image: linear-gradient(45deg, transparent 50%, var(--text-3) 50%), linear-gradient(135deg, var(--text-3) 50%, transparent 50%);
   background-position: calc(100% - 20px) 50%, calc(100% - 15px) 50%;

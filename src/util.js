@@ -44,6 +44,16 @@ export function redirectUrl() {
   return window.location.origin + window.location.pathname;
 }
 
+// Supabase Auth's own wording when the mail server refuses a message
+// ("Error sending confirmation email", "Error sending magic link email") means
+// nothing to the person reading it. Say what happened and what to do.
+export function authErrorText(error) {
+  const text = error?.message || "";
+  if (/error sending .*email/i.test(text)) return "We couldn't send the email just now. Try again in a few minutes.";
+  if (/rate|seconds/i.test(text)) return "A code was sent a moment ago. Check your email (and spam), or wait a minute.";
+  return text || "Something went wrong. Try again.";
+}
+
 // Run an async action while showing a busy state on `button`, preventing
 // double-submits. Restores the original content afterward no matter what --
 // the nodes themselves, not just the text, so a button's icon survives.
