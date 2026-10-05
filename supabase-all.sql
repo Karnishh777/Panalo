@@ -5100,9 +5100,11 @@ create index if not exists access_logs_at on private.access_logs (at);
 revoke all on private.access_logs from public, anon, authenticated;
 alter table private.access_logs enable row level security;
 
--- Store a batch from the log API: [{id, timestamp, event_message}, ...].
--- The timestamp arrives as microseconds since 1970, or as text.
-create or replace function private.store_logs(p_rows jsonb, p_source text)
+-- Store a batch from the log API: [{id, timestamp, source, event_message}, ...].
+-- The timestamp arrives as text in UTC ("2026-10-05T10:31:24.940000"), with
+-- or without a zone, or as microseconds since 1970. Each row names its own
+-- source; p_source is the fallback.
+create or replace function private.store_logs(p_rows jsonb, p_source text default null)
 returns integer
 language sql
 security definer
@@ -5111,10 +5113,12 @@ as $$
   with incoming as (
     insert into private.access_logs (id, source, at, message)
     select r ->> 'id',
-           p_source,
+           coalesce(r ->> 'source', p_source, 'unknown'),
            case when jsonb_typeof(r -> 'timestamp') = 'number'
-                then to_timestamp((r ->> 'timestamp')::numeric / 1000000)
-                else (r ->> 'timestamp')::timestamptz end,
+                  then to_timestamp((r ->> 'timestamp')::numeric / 1000000)
+                when (r ->> 'timestamp') ~ '(Z|[+-][0-9]{2}(:?[0-9]{2})?)$'
+                  then (r ->> 'timestamp')::timestamptz
+                else (r ->> 'timestamp')::timestamp at time zone 'UTC' end,
            left(coalesce(r ->> 'event_message', ''), 4000)
     from jsonb_array_elements(coalesce(p_rows, '[]'::jsonb)) r
     where r ->> 'id' is not null

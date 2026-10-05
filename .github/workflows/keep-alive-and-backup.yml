@@ -148,40 +148,43 @@ jobs:
           # and rows already copied are ignored (same id).
           start=$(date -u -d '-3 hours' +%Y-%m-%dT%H:%M:%SZ)
           end=$(date -u +%Y-%m-%dT%H:%M:%SZ)
-          failed=0
-          for src in edge_logs auth_logs postgres_logs storage_logs; do
-            code=$(curl -sS --max-time 60 -G -w '%{http_code}' \
-                 "https://api.supabase.com/v1/projects/$REF/analytics/endpoints/logs.all" \
-                 -H "Authorization: Bearer $TOKEN" \
-                 --data-urlencode "sql=select id, timestamp, event_message from $src order by timestamp desc limit 1000" \
-                 --data-urlencode "iso_timestamp_start=$start" \
-                 --data-urlencode "iso_timestamp_end=$end" \
-                 -o rows.json 2>/dev/null) || code=000
-            if [ "$code" = 401 ] || [ "$code" = 403 ]; then
-              # Tokens last 90 days at most.
-              echo "::error::Supabase refused the access token (HTTP $code). It has probably expired: make a new one (read-only is enough) and replace the SUPABASE_ACCESS_TOKEN secret."
-              exit 1
-            fi
-            if [ "$code" != 200 ]; then
-              echo "::error::Couldn't read $src from Supabase (HTTP $code)."
-              failed=1; continue
-            fi
-            if ! jq -e '.result | type == "array"' rows.json >/dev/null; then
-              echo "::error::Supabase didn't return $src (the answer had no result)."
-              failed=1; continue
-            fi
-            jq -c '.result' rows.json > batch.json
-            got=$(jq 'length' batch.json)
-            if [ "$got" -ge 1000 ]; then
-              echo "::warning::$src hit 1000 rows in three hours; some may be missing. Run this job more often."
-            fi
-            # Read the batch from the file inside psql: no size limit, never echoed.
-            stored=$(psql "$DB" -X -q -t -A -v ON_ERROR_STOP=1 -v src="$src" <<'SQL'
+          # One query over Supabase's unified log table (ClickHouse SQL; the
+          # old logs.all endpoint was removed on 23 Sep 2026). API requests
+          # get the caller's IP address and country added; routine database
+          # checkpoint and timer lines are left out.
+          sql="select id, timestamp, source, if(source = 'edge_logs', concat(event_message, ' | ip ', log_attributes['request.headers.cf_connecting_ip'], ' | ', log_attributes['request.cf.country']), event_message) as event_message from logs where source in ('edge_logs', 'auth_logs', 'postgres_logs', 'storage_logs') and not (source = 'postgres_logs' and (startsWith(event_message, 'checkpoint ') or startsWith(event_message, 'cron job '))) order by timestamp desc limit 1000"
+          code=$(curl -sS --max-time 60 -G -w '%{http_code}' \
+               "https://api.supabase.com/v1/projects/$REF/analytics/endpoints/logs" \
+               -H "Authorization: Bearer $TOKEN" \
+               --data-urlencode "sql=$sql" \
+               --data-urlencode "iso_timestamp_start=$start" \
+               --data-urlencode "iso_timestamp_end=$end" \
+               -o rows.json 2>/dev/null) || code=000
+          if [ "$code" = 401 ] || [ "$code" = 403 ]; then
+            # Tokens last 90 days at most.
+            echo "::error::Supabase refused the access token (HTTP $code). It has probably expired, or lacks logs read access: make a new one (read-only is enough) and replace the SUPABASE_ACCESS_TOKEN secret."
+            exit 1
+          fi
+          if [ "$code" != 200 ]; then
+            echo "::error::Couldn't read the logs from Supabase (HTTP $code)."
+            exit 1
+          fi
+          if ! jq -e '.result | type == "array"' rows.json >/dev/null; then
+            # The query's own error, never the log contents.
+            echo "::error::Supabase didn't return logs: $(jq -r '.error // "no result" | tostring' rows.json | head -c 300)"
+            exit 1
+          fi
+          jq -c '.result' rows.json > batch.json
+          got=$(jq 'length' batch.json)
+          if [ "$got" -ge 1000 ]; then
+            echo "::warning::1000 log lines in three hours; some may be missing. Run this job more often."
+          fi
+          # Read the batch from the file inside psql: no size limit, never echoed.
+          stored=$(psql "$DB" -X -q -t -A -v ON_ERROR_STOP=1 <<'SQL'
           \set rows `cat batch.json`
-          select private.store_logs(:'rows'::jsonb, :'src');
+          select private.store_logs(:'rows'::jsonb);
           SQL
-            )
-            echo "$src: $got read, $stored new"
-          done
+          )
+          echo "$got log lines read, $stored new"
+          jq -r 'group_by(.source)[] | "  \(.[0].source): \(length)"' batch.json
           rm -f rows.json batch.json
-          exit $failed
