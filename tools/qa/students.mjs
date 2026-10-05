@@ -150,9 +150,17 @@ try {
   await page.click("#login-submit");
   await page.waitForTimeout(500);
   check("a wrong password is reported plainly", /don't match/.test(await page.textContent("#auth-message")));
+  // Phase 25: a username works too, but only with the right password.
+  await page.fill("#login-email", "@alex");
+  await page.fill("#login-password", "not-it");
+  await page.click("#login-submit");
+  await page.waitForTimeout(400);
+  check("a wrong password with a username says so, and reveals nothing", /username and password don't match/.test(await page.textContent("#auth-message")));
+  await page.fill("#login-email", "Alex");
   await page.fill("#login-password", "correct-horse-42");
   await page.click("#login-submit");
   await finishBirth(page);
+  check("you can log in with your username", await page.isVisible("#app"));
   check("Now shows the day orbit", await page.isVisible(".orbit-svg"));
   check("Now shows live unread signals", /unread signal/.test(await page.textContent(".s-sub")));
   await shot(page, "now");

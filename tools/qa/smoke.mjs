@@ -34,7 +34,12 @@ try {
     await page.fill("#login-password", "nope");
     await page.press("#login-password", "Enter");
     await page.waitForTimeout(600);
-    check("a wrong password is reported", /invalid/i.test(await page.textContent("#auth-message")));
+    check("a wrong password is reported", /email and password don't match/i.test(await page.textContent("#auth-message")));
+    // Phase 25: usernames log in too, and a wrong password reveals nothing.
+    await page.fill("#login-email", "alex");
+    await page.press("#login-password", "Enter");
+    await page.waitForTimeout(600);
+    check("a username with a wrong password is refused plainly", /username and password don't match/i.test(await page.textContent("#auth-message")));
     await login(page);
     check("home renders from real data", /Good|Up late/.test(await page.textContent(".home-greeting")));
     await shot(page, "home");

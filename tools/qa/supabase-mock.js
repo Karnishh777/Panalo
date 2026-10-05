@@ -62,6 +62,7 @@
   const OWNED_BY_USER = ["student_profiles", "student_tasks", "focus_sessions", "student_events", "activity_log", "student_goals", "daily_entries"];
   const NO_ID = ["user_keys", "conversation_keys", "conversation_reads", "conversation_participants", "student_profiles", "blocks", "room_codes", "room_requests"];
   const authUsers = []; // { id, email, password, user_metadata }
+  const loginMisses = {}; // phase 25: username -> wrong tries
   const storage = new Map(); // "bucket/path" -> Blob
   const privateKeys = new Map(); // seeded users' private keys, for __qa.receive
   const convKeys = new Map(); // convId -> AES key (seeded chats)
@@ -605,6 +606,17 @@
   async function rpc(name, args) {
     await ready;
     await sleep(QA.latency ?? 15);
+    if (name === "login_email") {
+      // Phase 25: the email only with the right password; ten misses an hour lock it.
+      const n = String(args?.p_username || "").trim().replace(/^@/, "").toLowerCase();
+      loginMisses[n] = loginMisses[n] || 0;
+      if (loginMisses[n] >= 10) return { data: null, error: { message: "Too many tries with this username. Use your email, or try again in an hour.", code: "54000" } };
+      const p = db.profiles.find((x) => x.username_lc === n);
+      const u = p && authUsers.find((x) => x.id === p.id);
+      if (u && u.password === args?.p_password) return { data: u.email, error: null };
+      loginMisses[n]++;
+      return { data: null, error: null };
+    }
     if (name === "find_profile_by_username") {
       const n = String(args?.name || "").trim().toLowerCase();
       const p = db.profiles.find((x) => x.username_lc === n);

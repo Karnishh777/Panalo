@@ -2,6 +2,7 @@
 import { supabaseClient, setRemember } from "./client.js";
 import { state, conversationKeys } from "./state.js";
 import { withBusy, showToast, redirectUrl, authErrorText } from "./util.js";
+import { loginEmail, looksLikeEmail } from "./login-id.js";
 import { ensureUserKeys, idbDelKey, idbGetKey, rewrapPrivateKey, clearKeyProblems } from "./encryption.js";
 import { clearAttachmentCache } from "./attachments.js";
 import { clearPersistedIndex } from "./search.js";
@@ -251,14 +252,26 @@ export function initAuth() {
   // Log in
   loginBtn.addEventListener("click", () =>
     withBusy(loginBtn, "Logging in…", async () => {
-      const email = document.getElementById("login-email").value.trim();
+      const typed = document.getElementById("login-email").value.trim();
       const password = document.getElementById("login-password").value;
 
       setRemember(rememberCheckbox ? rememberCheckbox.checked : true);
 
+      const found = await loginEmail(typed, password);
+      if (found.error) {
+        setAuthMessage(found.error);
+        return;
+      }
+      const email = found.email;
       const { data, error } = await supabaseClient.auth.signInWithPassword({ email, password, options: await captcha() });
       if (error) {
-        setAuthMessage(/not confirmed/i.test(error.message) ? "Your email isn't confirmed yet. Sign up again with the same email to get a new code." : error.message);
+        setAuthMessage(
+          /not confirmed/i.test(error.message)
+            ? "Your email isn't confirmed yet. Sign up again with the same email to get a new code."
+            : /invalid/i.test(error.message)
+              ? `That ${looksLikeEmail(typed) ? "email" : "username"} and password don't match.`
+              : authErrorText(error)
+        );
       } else {
         state.currentUser = data.session.user;
         const keyStatus = await ensureUserKeys(password);
@@ -368,7 +381,8 @@ export function initAuth() {
   const forgotModal = document.getElementById("forgot-password-modal");
   document.getElementById("forgot-password").addEventListener("click", (e) => {
     e.preventDefault();
-    document.getElementById("forgot-email").value = document.getElementById("login-email").value || "";
+    const typed = document.getElementById("login-email").value || "";
+    document.getElementById("forgot-email").value = looksLikeEmail(typed) ? typed.trim() : "";
     forgotModal.classList.remove("hidden");
     document.getElementById("forgot-email").focus();
   });
