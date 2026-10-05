@@ -990,8 +990,35 @@ async function logTests() {
   ok("nobody signed in can add logs", !write.ok);
 }
 
+// Phase 24: one entry per person per day, private.
+async function dailyTests() {
+  const db = await freshDb();
+  const year = new Date().getFullYear();
+  const me = await createUser(db, "d_me");
+  const other = await createUser(db, "d_other");
+  const teen = await createUser(db, "d_teen");
+  await as(db, teen, (tx) => tx.query("select set_my_birth($1, 1)", [year - 15]));
+  const up = (u, sql, args = []) => attempt(db, u, (tx) => tx.query(sql, args));
+
+  await as(db, me, (tx) => tx.query("insert into daily_entries (day, opened_at, intention) values (current_date, now(), 'Finish the essay')"));
+  const closed = await as(db, me, async (tx) =>
+    (await tx.query("insert into daily_entries (day, mood, energy, learned, intention_done, closed_at) values (current_date, 4, 3, 'Mitochondria', 'yes', now()) on conflict (user_id, day) do update set mood = excluded.mood, energy = excluded.energy, learned = excluded.learned, intention_done = excluded.intention_done, closed_at = excluded.closed_at returning intention, mood, closed_at is not null as closed")).rows[0]
+  );
+  ok("closing the day updates the morning's entry, keeping the intention", closed.intention === "Finish the essay" && closed.mood === 4 && closed.closed, JSON.stringify(closed));
+  const count = await as(db, me, async (tx) => (await tx.query("select count(*)::int as n from daily_entries")).rows[0].n);
+  ok("one entry per day", count === 1, String(count));
+  const peek = await as(db, other, async (tx) => (await tx.query("select count(*)::int as n from daily_entries")).rows[0].n);
+  ok("nobody else can read your days", peek === 0);
+  const forge = await up(other, "insert into daily_entries (user_id, day) values ($1, current_date - 1)", [me]);
+  ok("nobody can write a day for you", !forge.ok);
+  ok("mood is 1 to 5", !(await up(me, "insert into daily_entries (day, mood) values (current_date - 1, 6)")).ok);
+  ok("intention outcome is yes, partly or no", !(await up(me, "insert into daily_entries (day, intention_done) values (current_date - 1, 'maybe')")).ok);
+  ok("no entries far in the future", !(await up(me, "insert into daily_entries (day) values (current_date + 30)")).ok);
+  ok("a student waiting for a parent can't keep a journal yet", !(await up(teen, "insert into daily_entries (day) values (current_date)")).ok);
+}
+
 async function main() {
-  const sections = [migrationTests, chatTests, takeoverTests, callTests, accountTests, backfillTests, historyTests, disappearTests, studentsTests, moderationTests, deviceStateTests, consentTests, logTests];
+  const sections = [migrationTests, chatTests, takeoverTests, callTests, accountTests, backfillTests, historyTests, disappearTests, studentsTests, moderationTests, deviceStateTests, consentTests, logTests, dailyTests];
   for (const run of sections) {
     try {
       await run();

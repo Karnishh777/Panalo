@@ -18,6 +18,8 @@ and everything it encodes is also available in plain words.
 | **Rooms with a door** | Temporary event rooms: a join code lets you *ask* to join, a host lets you in (which is what shares the room's key), the room can be hosts-only, and it ends on schedule. | Signals |
 | **Artifacts and strata** | Files catalogued with a type glyph and a label (what, type, size, who, when, who can see it, previewable or not), laid down in monthly layers. | Archive |
 | **Deep space at midnight** | The quietest room: one ring, one number, one task. | Study Room |
+| **The day, as a ritual** | The first open of each day plays a short dawn over your own world: which day of it this is, and what changed since you were last here. Then one intention ("the one thing for today"). In the evening, closing the day takes twenty seconds: how it felt, energy, one tap for what else you did (logged to your world), one thing learned, one good thing. A closed day lights a star. | Now, World → Journal |
+| **This month, in stars** | Each day of the month has a fixed place in a constellation; a day you showed up on (focus, a finished task, a log, a closed day) lights its star, joined in order. A missed day stays dark — nothing resets, there is no streak. | World |
 | **Drift** | Three things a day — something true, something to make, something to play — then the door closes. | Drift |
 
 What stays conventional on purpose: the week timetable is a grid, forms are
@@ -92,6 +94,9 @@ landing ──► the crossing (sign in / sign up) ──► first time? the bir
 | `js/globe-dock.js` | A world's controls: play/pause, direction, speed, zoom, reset, and the light panel. |
 | `js/world-light.js` | Where the sun is (Day, Dusk, Night, Live with your clock, or by hand) and how bright the night side is; saved per device, shared by every globe. |
 | `js/shell.js` | Router, top bar, dock, account menu, Warp. |
+| `js/dawn.js` | The first seconds of each day: a sunrise over your world, the day number, what changed since your last visit, then one question. Once a day across devices (daily_entries.opened_at). |
+| `js/checkin.js` | The morning intention and closing the day. |
+| `js/model/daily.js` | Pure: today's entry, last visit, what changed, the week's rhythm, the month as a constellation, the journal. |
 | `js/store.js` | In-memory study data + pub/sub; all writes. |
 | `js/signals-data.js` | Conversations, unread, sending, circles, rooms, door, block, report. |
 | `js/archive-data.js` | Private-bucket uploads, downloads, previews. |

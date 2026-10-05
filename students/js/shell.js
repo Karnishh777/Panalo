@@ -15,6 +15,8 @@ import { drift, punch, burstOn, calm } from "./fx.js";
 import { startModeration, stopModeration } from "./moderation-badge.js";
 import { startSync, stopSync } from "./sync.js";
 import { rulesReminder } from "./rules-reminder.js";
+import { maybeDawn, dawnDue } from "./dawn.js";
+import { openCheckin, openIntention } from "./checkin.js";
 
 const $ = (id) => document.getElementById(id);
 
@@ -153,6 +155,11 @@ function warpItems() {
     { label: "Now", hint: "your day at a glance", run: go("now") },
     { label: "Study Room", hint: "focus timer and tasks", run: go("study") },
     { label: "Start a 25-minute focus", hint: "Study Room", run: () => navigate("study/start-25") },
+    ...(store.entriesMissing ? [] : [
+      { label: "Close the day", hint: "mood, what you did, what you learned", run: () => openCheckin() },
+      { label: "Set today's intention", hint: "the one thing for today", run: () => openIntention() },
+      { label: "Journal", hint: "World · the days you've kept", run: () => navigate("world/journal") },
+    ]),
     { label: "Add a task", hint: "Study Room", run: () => navigate("study/add-task") },
     { label: "Signals", hint: "messages, circles, rooms", run: go("signals") },
     { label: "Join a room with a code", hint: "Signals", run: () => navigate("signals/join") },
@@ -321,8 +328,16 @@ export async function enterShell({ firstTime = false, pendingJoin = null } = {})
   if (location.hash !== target) location.hash = target;
   else await route();
   if (firstTime) showToast("Welcome to your universe. Press Warp (Ctrl K) to go anywhere.", "success");
+  // The first open of each day: the dawn (the day a world is born, the
+  // film was enough; the open is still recorded).
+  await maybeDawn({ quiet: firstTime }).catch((e) => console.error(e));
   rulesReminder({ firstTime });
 }
+
+// Left open overnight: the next morning still gets its dawn.
+document.addEventListener("visibilitychange", () => {
+  if (active && !document.hidden && dawnDue()) maybeDawn().catch((e) => console.error(e));
+});
 
 export function leaveShell() {
   active = false;

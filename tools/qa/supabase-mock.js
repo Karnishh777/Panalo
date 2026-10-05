@@ -50,6 +50,7 @@
     student_events: [],
     activity_log: [],
     student_goals: [],
+    daily_entries: [], // phase 24
     resources: [],
     blocks: [],
     reports: [],
@@ -58,7 +59,7 @@
     room_codes: [],
     room_requests: [],
   };
-  const OWNED_BY_USER = ["student_profiles", "student_tasks", "focus_sessions", "student_events", "activity_log", "student_goals"];
+  const OWNED_BY_USER = ["student_profiles", "student_tasks", "focus_sessions", "student_events", "activity_log", "student_goals", "daily_entries"];
   const NO_ID = ["user_keys", "conversation_keys", "conversation_reads", "conversation_participants", "student_profiles", "blocks", "room_codes", "room_requests"];
   const authUsers = []; // { id, email, password, user_metadata }
   const storage = new Map(); // "bucket/path" -> Blob
@@ -85,6 +86,7 @@
     user_keys: ["user_id"],
     conversation_reads: ["conversation_id", "user_id"],
     student_profiles: ["user_id"],
+    daily_entries: ["user_id", "day"],
   };
 
   // ------------------------------------------------------------------ auth
@@ -360,6 +362,10 @@
     if (table === "student_goals") { row.done_at = row.done_at ?? null; row.weekly_minutes = row.weekly_minutes ?? null; row.subject = row.subject ?? null; }
     if (table === "student_events") { row.repeat_weekly = !!row.repeat_weekly; row.ends_at = row.ends_at ?? null; row.location = row.location ?? null; }
     if (table === "activity_log") row.occurred_on = row.occurred_on || new Date().toISOString().slice(0, 10);
+    if (table === "daily_entries") {
+      for (const k of ["opened_at", "intention", "intention_done", "mood", "energy", "learned", "win", "closed_at"]) row[k] = row[k] ?? null;
+      row.updated_at = nowIso();
+    }
     if (table === "resources") row.owner_id = row.owner_id || me();
     if (table === "blocks") row.blocker_id = row.blocker_id || me();
     if (table === "reports") { row.reporter_id = row.reporter_id || me(); row.status = row.status || "open"; }
@@ -417,7 +423,7 @@
       if (used + row.size_bytes > 200 * 1024 * 1024) return deny("Your archive is full (200 MB). Remove something to make room.", "54000");
     }
     if (t === "reports" && row.conversation_id && !myConvIds().has(row.conversation_id)) return deny("new row violates row-level security policy");
-    const CONSENTED = ["messages", "conversations", "student_profiles", "student_tasks", "focus_sessions", "student_events", "activity_log", "student_goals", "resources"];
+    const CONSENTED = ["messages", "conversations", "student_profiles", "student_tasks", "focus_sessions", "student_events", "activity_log", "student_goals", "daily_entries", "resources"];
     if (CONSENTED.includes(t) && !mayProcess(uid)) return deny("A parent or guardian needs to agree before Panalo can be used.");
     if (t === "conversation_participants" && !mayProcess(row.user_id)) return deny("A parent or guardian needs to agree before Panalo can be used.");
     return null;
@@ -739,7 +745,7 @@
         return ps.some((p) => p.user_id === uid) && ps.every((p) => p.user_id === uid);
       }).map((c) => c.id);
       db.conversations = db.conversations.filter((c) => !solo.includes(c.id));
-      for (const t of ["resources", "student_profiles", "student_tasks", "focus_sessions", "student_events", "activity_log", "student_goals"]) {
+      for (const t of ["resources", "student_profiles", "student_tasks", "focus_sessions", "student_events", "activity_log", "student_goals", "daily_entries"]) {
         if (db[t]) db[t] = db[t].filter((r) => (r.owner_id || r.user_id) !== uid);
       }
       db.messages = db.messages.filter((m) => m.user_id !== uid);
@@ -1040,6 +1046,19 @@
     }
     const byName = Object.fromEntries(people.map((p) => [p.username, p]));
     const alex = byName.alex;
+
+    // Phase 24: today's dawn has already played for the seeded account,
+    // unless a test wants to see it (QA.dawn); then yesterday's visit is
+    // what "since you were last here" counts from.
+    const localDay = (d) => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+    const yesterday = new Date(Date.now() - 86400000);
+    db.daily_entries.push({ id: uuid(), user_id: alex.id, day: localDay(yesterday), opened_at: yesterday.toISOString(), intention: null, intention_done: null, mood: null, energy: null, learned: null, win: null, closed_at: null, created_at: yesterday.toISOString(), updated_at: yesterday.toISOString() });
+    if (QA.dawn) {
+      // A world born nine days ago, and an hour of focus since yesterday's visit.
+      db.student_profiles.push({ user_id: alex.id, world_name: "Kepler QA", interests: ["physics"], born_at: ago(9 * 1440), device_state: {}, created_at: ago(9 * 1440) });
+      db.focus_sessions.push({ id: uuid(), user_id: alex.id, started_at: ago(70), ended_at: ago(10), focused_minutes: 60, planned_minutes: 60, completed: true, subject: "Physics", task_id: null, created_at: ago(10) });
+    }
+    if (!QA.dawn) db.daily_entries.push({ id: uuid(), user_id: alex.id, day: localDay(new Date()), opened_at: nowIso(), intention: null, intention_done: null, mood: null, energy: null, learned: null, win: null, closed_at: null, created_at: nowIso(), updated_at: nowIso() });
 
     async function makeConv({ type, name, members, theme = null, created, timer = null }) {
       const conv = { id: uuid(), type, name, created_at: ago(created), created_by: alex.id, theme, disappear_after: timer, description: null };

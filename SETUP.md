@@ -83,6 +83,7 @@ For each: **SQL Editor → New query** → paste the whole file → **Run**.
 | 19 | [`supabase-phase21.sql`](supabase-phase21.sql) | Your Study Room settings, world lighting, Drift progress and a running focus timer follow you across devices; a focus block is recorded once even with two devices open | No |
 | 20 | [`supabase-phase22.sql`](supabase-phase22.sql) | Age and a parent's consent: date of birth once, under-13s refused, 13–17 wait for a parent's approval (enforced by the database); registration details kept 180 days after deletion, then erased | No |
 | 21 | [`supabase-phase23.sql`](supabase-phase23.sql) | Security logs kept 180 days (CERT-In): a locked table the hourly GitHub Action fills from Supabase's log API, erased nightly after 180 days | No |
+| 22 | [`supabase-phase24.sql`](supabase-phase24.sql) | The day as a ritual: one private entry per day (first open, intention, mood and energy, one thing learned, one good thing). Powers the dawn, closing the day and the journal | No |
 
 Phase 8 is self-contained and re-applies everything phase 7 does, so running 8
 is enough if you are starting fresh. Run 7 anyway if you prefer the history to

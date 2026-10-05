@@ -42,12 +42,13 @@ function within(rows, field, since) {
 }
 
 // Every local day on which you did something that counts: a focus session,
-// a finished task, or a logged activity.
-export function activeDays({ sessions = [], tasks = [], logs = [] }) {
+// a finished task, a logged activity, or a day you closed (phase 24).
+export function activeDays({ sessions = [], tasks = [], logs = [], entries = [] }) {
   const days = new Set();
   for (const s of sessions) if (s.focused_minutes > 0) days.add(dayKey(s.started_at));
   for (const t of tasks) if (t.done_at) days.add(dayKey(t.done_at));
   for (const l of logs) days.add(l.occurred_on);
+  for (const e of entries) if (e.closed_at) days.add(e.day);
   return days;
 }
 
@@ -69,7 +70,7 @@ export function goalProgress(goal, sessions, now) {
  * @param {{sessions?: object[], tasks?: object[], logs?: object[], goals?: object[],
  *          sentMessages?: object[], bornAt?: string|null, now?: number}} input
  */
-export function buildWorld({ sessions = [], tasks = [], logs = [], goals = [], sentMessages = [], bornAt = null, now = Date.now() } = {}) {
+export function buildWorld({ sessions = [], tasks = [], logs = [], goals = [], sentMessages = [], entries = [], bornAt = null, now = Date.now() } = {}) {
   const today = startOfDay(now).getTime();
   const d7 = today - 6 * DAY;
   const d30 = today - 29 * DAY;
@@ -91,7 +92,7 @@ export function buildWorld({ sessions = [], tasks = [], logs = [], goals = [], s
   const connectMinutes7 = minutesOf(logs7, ["connect"]);
   const messages7 = within(sentMessages, "created_at", d7).length;
 
-  const days = activeDays({ sessions, tasks, logs });
+  const days = activeDays({ sessions, tasks, logs, entries });
   let active7 = 0;
   for (let i = 0; i < 7; i++) if (days.has(dayKey(today - i * DAY))) active7++;
   let lastActive = null;
@@ -136,7 +137,7 @@ export function buildWorld({ sessions = [], tasks = [], logs = [], goals = [], s
       daysSinceActive,
       ageDays,
     },
-    discoveries: discoveries({ sessions, tasks, logs, goals, now }),
+    discoveries: discoveries({ sessions, tasks, logs, goals, entries, now }),
   };
 }
 
@@ -158,7 +159,14 @@ const TASK_MARKS = [
   [200, "A network", "Two hundred. The night side is mapped in light."],
 ];
 
-export function discoveries({ sessions = [], tasks = [], logs = [], goals = [], now = Date.now() }) {
+const PAGE_MARKS = [
+  [1, "First page", "You closed a day. Your world keeps its pages."],
+  [7, "A week of pages", "Seven days written down. Look back at them sometime."],
+  [30, "Thirty pages", "A month of days, kept. That's a journal."],
+  [100, "A hundred pages", "A hundred days remembered. Most of a school year, in your own words."],
+];
+
+export function discoveries({ sessions = [], tasks = [], logs = [], goals = [], entries = [], now = Date.now() }) {
   const out = [];
   const byTime = sessions
     .filter((s) => s.focused_minutes > 0)
@@ -185,7 +193,7 @@ export function discoveries({ sessions = [], tasks = [], logs = [], goals = [], 
   if (created.length) out.push({ id: "first-aurora", title: "First aurora", detail: "You made something. The poles lit up.", at: parseDayKey(created[0].occurred_on).toISOString() });
 
   // Seven days in a row, any time in history.
-  const days = [...activeDays({ sessions, tasks, logs })].sort();
+  const days = [...activeDays({ sessions, tasks, logs, entries })].sort();
   let run = 0;
   let prev = null;
   for (const k of days) {
@@ -196,6 +204,12 @@ export function discoveries({ sessions = [], tasks = [], logs = [], goals = [], 
       out.push({ id: "streak-7", title: "A ring", detail: "Seven days in a row. A ring formed around your world.", at: new Date(t).toISOString() });
       break;
     }
+  }
+
+  // Closed days: the journal's pages.
+  const pages = entries.filter((e) => e.closed_at).sort((a, b) => (a.day < b.day ? -1 : 1));
+  for (const [n, title, detail] of PAGE_MARKS) {
+    if (pages.length >= n) out.push({ id: `pages-${n}`, title, detail, at: pages[n - 1].closed_at });
   }
 
   const moon = goals.filter((g) => g.done_at).sort((a, b) => Date.parse(a.done_at) - Date.parse(b.done_at))[0];
