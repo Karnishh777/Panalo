@@ -4,7 +4,7 @@
 // queries ask for "mine" only for clarity, the database enforces it.
 import { supabaseClient } from "../../src/client.js";
 import { state } from "../../src/state.js";
-import { DAY } from "./model/time.js";
+import { DAY, dayKey } from "./model/time.js";
 
 export const store = {
   me: null, // { id, username }
@@ -15,6 +15,8 @@ export const store = {
   logs: [],
   goals: [],
   sent: [], // my messages in the last 7 days (for the atmosphere)
+  entries: [], // daily_entries (phase 24): one per day, newest first
+  entriesMissing: false, // phase 24 not run yet: no dawn or check-in
   // True when the database hasn't run supabase-phase16.sql yet.
   schemaMissing: false,
   loaded: false,
@@ -62,8 +64,9 @@ export async function loadAll() {
     supabaseClient.from("activity_log").select("*").order("occurred_on", { ascending: false }).limit(3000),
     supabaseClient.from("student_goals").select("*").order("created_at"),
     supabaseClient.from("messages").select("id, created_at").eq("user_id", uid).gt("created_at", since7).limit(1000),
+    supabaseClient.from("daily_entries").select("*").order("day", { ascending: false }).limit(800),
   ]);
-  const [tasks, sessions, events, logs, goals, sent] = queries;
+  const [tasks, sessions, events, logs, goals, sent, entries] = queries;
   if (queries.slice(0, 5).some((q) => missingTable(q.error))) {
     store.schemaMissing = true;
   }
@@ -73,9 +76,11 @@ export async function loadAll() {
   store.logs = logs.data || [];
   store.goals = goals.data || [];
   store.sent = sent.data || [];
+  store.entries = entries.data || [];
+  store.entriesMissing = missingTable(entries.error);
   store.loaded = true;
   emit("any");
-  return queries.find((q) => q.error && !missingTable(q.error))?.error || null;
+  return queries.slice(0, 6).find((q) => q.error && !missingTable(q.error))?.error || null;
 }
 
 // ---- writes -----------------------------------------------------------------
@@ -134,6 +139,19 @@ export const api = {
     return { data };
   },
 
+  /** Write today's (or `day`'s) entry: only the fields given change. */
+  async saveEntry(patch, day = null) {
+    const row = { user_id: state.currentUser.id, day: day || dayKey(new Date()), ...patch };
+    const { data, error } = await supabaseClient.from("daily_entries").upsert(row, { onConflict: "user_id,day" }).select().single();
+    if (error) return { error };
+    const i = store.entries.findIndex((e) => e.day === data.day);
+    if (i >= 0) store.entries[i] = data;
+    else store.entries.unshift(data);
+    store.entries.sort((a, b) => (a.day < b.day ? 1 : -1));
+    emit("entries");
+    return { data };
+  },
+
   noteSent(msg) {
     store.sent.push({ id: msg.id, created_at: msg.created_at });
     emit("sent");
@@ -142,7 +160,7 @@ export const api = {
 
 export function resetStore() {
   Object.assign(store, {
-    me: null, student: null, tasks: [], sessions: [], events: [], logs: [], goals: [], sent: [],
+    me: null, student: null, tasks: [], sessions: [], events: [], logs: [], goals: [], sent: [], entries: [], entriesMissing: false,
     conversations: [], unreadTotal: 0, requests: [], myRequests: [], resources: null,
     schemaMissing: false, loaded: false,
   });

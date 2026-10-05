@@ -385,6 +385,88 @@ try {
     if (m.errors.length) console.log(m.errors.join("\n"));
   }
 
+  // ---- The day as a ritual: dawn, intention, closing the day (phase 24) ----------------
+  {
+    const d = await qa.open({ viewport: "laptop", path: "students/#login", qa: { dawn: true } });
+    await d.evaluate(() => window.__qa.ready);
+    await appReady(d);
+    await d.fill("#login-email", "qa@panalo.test");
+    await d.fill("#login-password", "correct-horse-42");
+    await d.click("#login-submit");
+    await d.waitForSelector(".dawn", { timeout: 15000 }).catch(() => {});
+    check("the first open of the day plays the dawn", await d.isVisible(".dawn"));
+    check("the dawn names the day of your world", /Day \d+/.test(await d.textContent(".dawn-title").catch(() => "")));
+    check("the dawn says what changed since you were last here", (await d.locator(".dawn-lines li").count()) >= 1);
+    await d.waitForTimeout(2800);
+    check("the dawn asks one question: an intention, or closing the day", (await d.isVisible("#dawn-intention")) || (await d.isVisible("#dawn-close-day")));
+    await shot(d, "dawn");
+    const opened = await d.evaluate(() => window.__qa.db.daily_entries.filter((e) => e.opened_at && e.day === new Date().toLocaleDateString("en-CA")).length);
+    check("the open is recorded before the dawn plays", opened === 1);
+    await d.click(".dawn-skip");
+    await d.waitForTimeout(700);
+    check("the dawn can be skipped", !(await d.isVisible(".dawn")));
+    await d.reload();
+    await d.waitForSelector("#app:not([hidden])", { timeout: 15000 });
+    await d.waitForTimeout(1200);
+    check("it plays once a day, not on every visit", !(await d.isVisible(".dawn")));
+
+    await d.click("#intention-set");
+    await d.fill("input[aria-label=\"Today's intention\"]", "Finish the optics problem set");
+    await d.click("#intention-save");
+    await d.waitForTimeout(500);
+    check("an intention is set for today and shown on Now", /Finish the optics problem set/.test(await d.textContent(".intention-text").catch(() => "")));
+    await d.click("#intention-done");
+    await d.waitForTimeout(400);
+    check("the intention can be marked done", await d.evaluate(() => window.__qa.db.daily_entries.some((e) => e.intention_done === "yes")));
+
+    await d.click("#close-day");
+    await d.waitForSelector("#checkin-save");
+    await d.click("#checkin-save");
+    await d.waitForTimeout(300);
+    check("closing the day needs only how it felt", await d.isVisible("#checkin-save"));
+    await d.click(".chips.scale .chip.tone-drift[data-v='4']");
+    await d.click(".chips.scale .chip.tone-focus[data-v='3']");
+    await d.click(".checkin-acts [data-kind='read']");
+    await d.fill("input[aria-label='One thing you learned']", "Light bends more in glass than in water");
+    await d.click("#checkin-save");
+    await d.waitForTimeout(700);
+    const closed = await d.evaluate(() => {
+      const today = new Date().toLocaleDateString("en-CA");
+      const e = window.__qa.db.daily_entries.find((x) => x.day === today);
+      return { mood: e?.mood, energy: e?.energy, closed: !!e?.closed_at, learned: e?.learned, read: window.__qa.db.activity_log.filter((l) => l.kind === "read" && l.occurred_on === today).reduce((n, l) => n + l.minutes, 0) };
+    });
+    check("closing the day keeps mood, energy and what you learned", closed.closed && closed.mood === 4 && closed.energy === 3 && /glass/.test(closed.learned || ""));
+    check("what you tapped is logged to your world", closed.read === 30);
+    check("Now shows the day closed", /Day closed · Good/.test(await d.textContent(".closed-line").catch(() => "")));
+    check("today's star is lit in the week", await d.isVisible(".rhythm li.today.lit"));
+
+    await go(d, "#/world/journal", 1000);
+    check("the month is drawn in stars, today lit", (await d.isVisible(".month-sky")) && (await d.locator(".sky-star.today.lit").count()) === 1);
+    check("the journal keeps the page", /Light bends more in glass/.test(await d.textContent(".journal")));
+    check("the first closed day is a discovery", /First page/.test(await d.textContent(".disc-log")));
+    await shot(d, "journal");
+    await d.keyboard.press("Control+k");
+    await d.fill(".warp-input", "close the day");
+    check("Warp can close the day", (await d.locator(".warp-list li").count()) >= 1);
+    await d.keyboard.press("Escape");
+    check("no console errors (the daily ritual)", d.errors.length === 0);
+    if (d.errors.length) console.log(d.errors.join("\n"));
+    await d.close();
+
+    // Reduced motion: the same card, still.
+    const r = await qa.open({ viewport: "mobile", path: "students/#login", qa: { dawn: true }, reducedMotion: "reduce" });
+    await r.evaluate(() => window.__qa.ready);
+    await appReady(r);
+    await r.fill("#login-email", "qa@panalo.test");
+    await r.fill("#login-password", "correct-horse-42");
+    await r.click("#login-submit");
+    await r.waitForSelector(".dawn", { timeout: 15000 }).catch(() => {});
+    check("under reduced motion the dawn is a still card", await r.isVisible(".dawn.still"));
+    check("…with its question there at once", (await r.isVisible("#dawn-intention")) || (await r.isVisible("#dawn-close-day")));
+    await shot(r, "dawn-phone");
+    await r.close();
+  }
+
   // ---- Auth paths: email code, unlock on a new device, invite links, sign-out ----
   {
     const a = await qa.open({ viewport: "laptop", path: "students/#signup", qa: { confirmEmail: true } });

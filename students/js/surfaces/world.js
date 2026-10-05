@@ -11,6 +11,9 @@ import { globeDock } from "../globe-dock.js";
 import { buildWorld, weatherLine } from "../model/world-model.js";
 import { formatMinutes, dayKey, parseDayKey } from "../model/time.js";
 import { state } from "../../../src/state.js";
+import { activeDays } from "../model/world-model.js";
+import { monthSky, journal, MOODS, ENERGY, DONE } from "../model/daily.js";
+import { openCheckin } from "../checkin.js";
 
 let root;
 let legendEl;
@@ -19,6 +22,9 @@ let discEl;
 let logsEl;
 let titleEl;
 let subEl;
+let skyEl;
+let journalEl;
+let journalShown = 14;
 let dock = null;
 let globe = null;
 let unsubs = [];
@@ -32,7 +38,7 @@ const LOG_KINDS = [
 ];
 
 function world() {
-  return buildWorld({ sessions: store.sessions, tasks: store.tasks, logs: store.logs, goals: store.goals, sentMessages: store.sent, bornAt: store.student?.born_at });
+  return buildWorld({ sessions: store.sessions, tasks: store.tasks, logs: store.logs, goals: store.goals, sentMessages: store.sent, entries: store.entries, bornAt: store.student?.born_at });
 }
 
 function row(tone, name, value, explain) {
@@ -96,6 +102,11 @@ function render() {
       : [el("p", { class: "faint", text: "Nothing discovered yet. Your first hour of focus is the first one." })])
   );
 
+  if (!store.entriesMissing) {
+    renderSky();
+    renderJournal();
+  }
+
   // Recent logs.
   const recent = store.logs.slice(0, 8);
   logsEl.replaceChildren(
@@ -116,6 +127,88 @@ function render() {
           ),
         ]
       : [el("p", { class: "faint", text: "Read a chapter, made a sketch, went for a run? Log it — it shapes your world too." })])
+  );
+}
+
+// This month as a constellation: a star for every day, lit where you
+// showed up, joined in the order you lit them. Missing days stay dark;
+// nothing is lost.
+function renderSky() {
+  const NS = "http://www.w3.org/2000/svg";
+  const days = activeDays({ sessions: store.sessions, tasks: store.tasks, logs: store.logs, entries: store.entries });
+  const sky = monthSky(days, Date.now(), state.currentUser.id);
+  const svg = document.createElementNS(NS, "svg");
+  svg.setAttribute("viewBox", "0 0 100 60");
+  svg.setAttribute("class", "month-sky");
+  svg.setAttribute("role", "img");
+  svg.setAttribute("aria-label", `${sky.name}: you showed up on ${sky.lit} day${sky.lit === 1 ? "" : "s"}. Each lit star is one of them.`);
+  const byDay = new Map(sky.stars.map((st) => [st.day, st]));
+  for (const [a, b] of sky.links) {
+    const p = byDay.get(a), q = byDay.get(b);
+    const line = document.createElementNS(NS, "line");
+    line.setAttribute("x1", p.x); line.setAttribute("y1", p.y);
+    line.setAttribute("x2", q.x); line.setAttribute("y2", q.y);
+    line.setAttribute("class", "sky-link");
+    svg.append(line);
+  }
+  for (const st of sky.stars) {
+    const g = document.createElementNS(NS, "g");
+    g.setAttribute("class", `sky-star${st.active ? " lit" : ""}${st.today ? " today" : ""}${st.future ? " future" : ""}`);
+    const c = document.createElementNS(NS, "circle");
+    c.setAttribute("cx", st.x); c.setAttribute("cy", st.y);
+    c.setAttribute("r", st.active ? (0.9 * st.mag).toFixed(2) : "0.45");
+    const t = document.createElementNS(NS, "title");
+    t.textContent = `${st.day} ${sky.name.split(" ")[0]}${st.active ? ": you showed up" : st.future ? "" : ": a quiet day"}`;
+    c.append(t);
+    g.append(c);
+    if (st.active || st.today) {
+      const n = document.createElementNS(NS, "text");
+      n.setAttribute("x", st.x);
+      n.setAttribute("y", (st.y + 3.4).toFixed(1));
+      n.setAttribute("class", "sky-num");
+      n.textContent = String(st.day);
+      g.append(n);
+    }
+    if (st.today) {
+      const ring = document.createElementNS(NS, "circle");
+      ring.setAttribute("cx", st.x); ring.setAttribute("cy", st.y);
+      ring.setAttribute("r", "2.2");
+      ring.setAttribute("class", "sky-today");
+      g.append(ring);
+    }
+    svg.append(g);
+  }
+  skyEl.replaceChildren(
+    svg,
+    el("p", { class: "muted sky-caption" }, [el("b", { text: sky.name }), ` · ${sky.lit} of ${sky.stars.filter((x) => !x.future).length} days so far. A star lights for any day you focus, finish a task, log something or close the day.`])
+  );
+}
+
+function renderJournal() {
+  const pages = journal(store.entries);
+  const label = (list, v) => list.find((x) => x.v === v)?.label;
+  journalEl.replaceChildren(
+    ...(pages.length
+      ? [
+          el(
+            "ol",
+            { class: "journal" },
+            pages.slice(0, journalShown).map((e) =>
+              el("li", { class: "page" }, [
+                el("div", { class: "page-head" }, [
+                  el("b", { class: "page-date", text: parseDayKey(e.day).toLocaleDateString(undefined, { weekday: "short", day: "numeric", month: "short" }) }),
+                  e.mood ? el("span", { class: "tag tone-drift", text: label(MOODS, e.mood) }) : null,
+                  e.energy ? el("span", { class: "tag tone-focus", text: label(ENERGY, e.energy) }) : null,
+                ]),
+                e.intention ? el("p", { class: "page-line" }, [el("span", { class: "faint", text: "One thing: " }), e.intention, e.intention_done ? el("span", { class: "faint", text: ` — ${label(DONE, e.intention_done)?.toLowerCase()}` }) : null]) : null,
+                e.learned ? el("p", { class: "page-line" }, [el("span", { class: "faint", text: "Learned: " }), e.learned]) : null,
+                e.win ? el("p", { class: "page-line" }, [el("span", { class: "faint", text: "Good thing: " }), e.win]) : null,
+              ])
+            )
+          ),
+          pages.length > journalShown ? el("button", { type: "button", class: "link-btn", text: `Show older pages (${pages.length - journalShown})`, onClick: () => { journalShown += 30; renderJournal(); } }) : null,
+        ].filter(Boolean)
+      : [el("p", { class: "faint", text: "No pages yet. Close a day (it takes twenty seconds) and it's kept here, for you only." })])
   );
 }
 
@@ -224,6 +317,8 @@ export function mount(section) {
   moonsEl = el("ul", { class: "moons" });
   discEl = el("div");
   logsEl = el("div");
+  skyEl = el("div", { class: "sky-wrap" });
+  journalEl = el("div");
   const canvas = el("canvas", { class: "world-globe", tabindex: "0", role: "img", "aria-label": "Your world. Drag it, or use the arrow keys to turn and tip it. The legend lists what each feature means." });
   const stage = el("div", { class: "world-stage" }, [canvas]);
   root.append(
@@ -241,6 +336,13 @@ export function mount(section) {
       el("section", { class: "panel tone-drift" }, [el("div", { class: "panel-head" }, [el("h2", { text: "Logged lately" }), el("button", { type: "button", class: "link-btn", text: "Log", onClick: openLog })]), logsEl]),
     ])
   );
+  if (!store.entriesMissing)
+    root.append(
+      el("div", { class: "world-days" }, [
+          el("section", { class: "panel tone-time", "aria-labelledby": "w-sky" }, [el("div", { class: "panel-head" }, [el("h2", { id: "w-sky", text: "This month, in stars" })]), skyEl]),
+          el("section", { class: "panel tone-drift", id: "journal", "aria-labelledby": "w-journal" }, [el("div", { class: "panel-head" }, [el("h2", { id: "w-journal", text: "Journal" }), el("button", { type: "button", class: "link-btn", text: "Close today", onClick: () => openCheckin() })]), journalEl]),
+      ])
+    );
   section.append(root);
   try {
     globe = createGlobe(canvas, { seed: state.currentUser.id, interactive: true, maxDisk: 320, onMotion: (m) => dock?.sync(m) });
@@ -257,6 +359,7 @@ export function mount(section) {
 export function show(param) {
   render();
   if (param === "log") openLog();
+  if (param === "journal") requestAnimationFrame(() => root.querySelector("#journal")?.scrollIntoView({ block: "start", behavior: "smooth" }));
 }
 
 export function destroy() {

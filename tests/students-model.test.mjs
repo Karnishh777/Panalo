@@ -6,6 +6,7 @@ import * as T from "../students/js/model/focus-timer.js";
 import { pickDrift, dayNumber } from "../students/js/model/drift-pick.js";
 import { LIBRARY } from "../students/js/model/drift-library.js";
 import { safeBlobType } from "../students/js/model/safe-type.js";
+import * as D from "../students/js/model/daily.js";
 import { relTime, formatMinutes, startOfWeek, dayKey, parseDayKey, MINUTE, HOUR, DAY } from "../students/js/model/time.js";
 
 let passed = 0;
@@ -149,6 +150,59 @@ ok("a real photo keeps its type", T_("image/jpeg", "a.jpg") === "image/jpeg");
 ok("audio and video keep theirs", T_("audio/mpeg", "a.mp3") === "audio/mpeg" && T_("video/mp4", "a.mp4") === "video/mp4");
 ok("plain text is plain", T_("", "notes.md") === "text/plain;charset=utf-8");
 ok("anything else is just bytes", T_("application/zip", "a.zip") === "application/octet-stream" && T_("", "") === "application/octet-stream");
+
+// ---- the daily ritual (phase 24) ----------------------------------------------
+{
+  const key = (daysAgo) => dayKey(new Date(Date.parse(at(daysAgo))));
+  const entries = [
+    { day: key(0), opened_at: at(0, 7), intention: "Essay" },
+    { day: key(1), opened_at: at(1, 8), closed_at: at(1, 21), mood: 4 },
+    { day: key(3), opened_at: at(3, 9) },
+  ];
+  ok("today's entry is found", D.todayEntry(entries, NOW)?.intention === "Essay");
+  ok("the last visit is the latest open before today", D.lastVisit(entries, NOW) === Date.parse(at(1, 8)));
+  ok("no earlier visit, no last visit", D.lastVisit([entries[0]], NOW) === null);
+
+  const since = D.sinceLast(
+    {
+      sessions: [session(0, 40), session(2, 30)],
+      tasks: [{ done_at: at(0, 9) }, { done_at: at(5) }],
+      logs: [{ kind: "read", minutes: 20, occurred_on: key(1) }, { kind: "read", minutes: 10, occurred_on: key(0) }, { kind: "move", minutes: 30, occurred_on: key(4) }],
+      discoveries: [{ title: "First hour", at: at(0, 8) }],
+    },
+    Date.parse(at(1, 8)),
+    NOW
+  );
+  ok("since last: focus after then", since.focusMinutes === 40, String(since.focusMinutes));
+  ok("since last: tasks after then", since.tasksDone === 1);
+  ok("since last: logs from that day on", since.logged.read === 30 && !since.logged.move, JSON.stringify(since.logged));
+  const lines = D.sinceLines(since);
+  ok("discoveries lead the dawn", lines[0] === "Discovery: First hour", lines.join(" | "));
+  ok("at most four lines", lines.length <= 4);
+  ok("a quiet day still gets a kind line", /unwritten/.test(D.sinceLines({ focusMinutes: 0, tasksDone: 0, logged: {}, discoveries: [], daysAway: 1 })[0]));
+  ok("a long absence says so, gently", /days away/.test(D.sinceLines({ focusMinutes: 0, tasksDone: 0, logged: {}, discoveries: [], daysAway: 9 })[0]));
+
+  const days = new Set([key(0), key(2), key(3)]);
+  const r = D.rhythm(days, NOW);
+  ok("rhythm is seven days, oldest first, today last", r.week.length === 7 && r.week[6].today && r.week[6].active);
+  ok("rhythm counts days shown up", r.count === 3);
+  ok("the rhythm line never scolds", !/miss|lost|broke|fail/i.test([0, 1, 3, 5].map((n) => D.rhythmLine(n, false)).join(" ")));
+
+  const sky = D.monthSky(days, NOW, "user-1");
+  ok("one star per day of the month", sky.stars.length === 31 && sky.count === 31);
+  ok("stars stay inside the box", sky.stars.every((s) => s.x > 0 && s.x < 100 && s.y > 0 && s.y < 60));
+  ok("lit stars are the days shown up this month", sky.lit === sky.stars.filter((s) => days.has(s.key)).length);
+  ok("the same month draws the same sky", JSON.stringify(D.monthSky(days, NOW, "user-1").stars) === JSON.stringify(sky.stars));
+  ok("another person's sky is a different shape", JSON.stringify(D.monthSky(days, NOW, "user-2").stars) !== JSON.stringify(sky.stars));
+  ok("links join lit stars in order", sky.links.length === Math.max(0, sky.lit - 1));
+
+  ok("a closed day counts toward the ring", buildWorld({ entries: [{ day: key(0), closed_at: at(0, 21) }], now: NOW }).stats.active7 === 1);
+  ok("an opened-but-not-closed day doesn't", buildWorld({ entries: [{ day: key(0), opened_at: at(0, 7) }], now: NOW }).stats.active7 === 0);
+  ok("the first closed day is a discovery", discoveries({ entries: [{ day: key(1), closed_at: at(1, 21) }], now: NOW }).some((d) => d.id === "pages-1"));
+  ok("day numbers count from one", D.dayNumber(at(0, 1), NOW) === 1 && D.dayNumber(at(9), NOW) === 10);
+  ok("parts of the day", D.dayPart(new Date(2026, 0, 1, 8).getTime()) === "morning" && D.dayPart(new Date(2026, 0, 1, 20).getTime()) === "evening" && D.dayPart(new Date(2026, 0, 1, 2).getTime()) === "evening");
+  ok("the journal lists closed days, newest first", D.journal(entries).length === 1 && D.journal(entries)[0].mood === 4);
+}
 
 console.log(`\n${passed} passed, ${failures.length} failed`);
 if (failures.length) {

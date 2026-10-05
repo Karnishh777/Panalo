@@ -18,6 +18,9 @@ import * as T from "../model/focus-timer.js";
 import { loadTimer, onTimer } from "../timer-state.js";
 import { titleOf } from "../signals-data.js";
 import { state } from "../../../src/state.js";
+import { activeDays } from "../model/world-model.js";
+import { todayEntry, rhythm, rhythmLine, dayPart, MOODS } from "../model/daily.js";
+import { openCheckin, openIntention } from "../checkin.js";
 
 let root;
 let orbitSlot;
@@ -40,7 +43,7 @@ function allEvents() {
 }
 
 function world() {
-  return buildWorld({ sessions: store.sessions, tasks: store.tasks, logs: store.logs, goals: store.goals, sentMessages: store.sent, bornAt: store.student?.born_at });
+  return buildWorld({ sessions: store.sessions, tasks: store.tasks, logs: store.logs, goals: store.goals, sentMessages: store.sent, entries: store.entries, bornAt: store.student?.born_at });
 }
 
 function panel(tone, title, link, children) {
@@ -63,11 +66,51 @@ function renderOrbit() {
   );
 }
 
+function todayPanel(now) {
+  const entry = todayEntry(store.entries, now);
+  const days = activeDays({ sessions: store.sessions, tasks: store.tasks, logs: store.logs, entries: store.entries });
+  const r = rhythm(days, now);
+  const dots = el(
+    "ol",
+    { class: "rhythm", "aria-label": `Days you showed up: ${r.count} of the last 7` },
+    r.week.map((d) => el("li", { class: `${d.active ? "lit" : ""}${d.today ? " today" : ""}`, title: `${d.name}${d.active ? ": showed up" : ""}` }, [el("i", { "aria-hidden": "true" }), el("span", { text: d.label })]))
+  );
+
+  let intention;
+  if (entry?.intention) {
+    const done = entry.intention_done;
+    intention = el("div", { class: `intention${done === "yes" ? " done" : ""}` }, [
+      el("span", { class: "intention-label faint", text: "Today's one thing" }),
+      el("b", { class: "intention-text", text: entry.intention }),
+      done === "yes"
+        ? el("span", { class: "tag tone-world", text: "Done" })
+        : el("button", { type: "button", class: "btn btn-ghost btn-sm", id: "intention-done", text: "Done", onClick: async () => { const { error } = await api.saveEntry({ intention_done: "yes" }); if (error) reportError(error); } }),
+    ]);
+  } else {
+    intention = el("button", { type: "button", class: "link-btn intention-set", id: "intention-set", text: "Set today's one thing", onClick: () => openIntention() });
+  }
+
+  const closedMood = entry?.closed_at ? MOODS.find((m) => m.v === entry.mood)?.label : null;
+  const evening = dayPart(now) === "evening";
+  const close = entry?.closed_at
+    ? el("p", { class: "closed-line" }, [el("span", { class: "tag tone-drift", text: `Day closed${closedMood ? ` · ${closedMood}` : ""}` }), " ", el("button", { type: "button", class: "link-btn", text: "Edit", onClick: () => openCheckin() })])
+    : el("button", { type: "button", class: `btn btn-sm ${evening ? "btn-primary" : "btn-quiet"}`, id: "close-day", text: "Close the day", onClick: () => openCheckin() });
+
+  return panel("tone-drift", "Today", { href: "#/world/journal", label: "Journal" }, [
+    intention,
+    el("div", { class: "rhythm-row" }, [dots, el("p", { class: "rhythm-line faint", text: rhythmLine(r.count, r.week[6].active) })]),
+    close,
+  ]);
+}
+
 function renderLog() {
   const now = Date.now();
   const w = world();
   const { current, next } = nextUp(allEvents(), now);
   const parts = [];
+
+  // 0. Today: the intention, the week's rhythm, closing the day (phase 24).
+  if (!store.entriesMissing) parts.push(todayPanel(now));
 
   // 1. Now / next.
   const whenLine = (o, isNow) =>
