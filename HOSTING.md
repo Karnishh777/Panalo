@@ -235,8 +235,11 @@ Security logs need `SUPABASE_DB_URL` and one more:
 
 - `SUPABASE_ACCESS_TOKEN`: supabase.com → your avatar → **Account
   preferences → Access Tokens → Generate new token** (name it
-  `panalo-logs`). It can manage your Supabase account, so it lives only
-  in this secret. Revoke it there if it ever leaks.
+  `panalo-logs`). Give it **read-only** access (logs/analytics read is
+  all it needs; everything else "no access"), and the longest expiry
+  (90 days). **Before it expires, generate a new one and replace the
+  secret**: when it lapses, the hourly job fails with "Supabase refused
+  the access token" and GitHub emails you. Revoke it if it ever leaks.
 
 To hand logs to CERT-In, run in the SQL Editor and export the result:
 
