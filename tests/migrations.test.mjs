@@ -107,7 +107,7 @@ async function migrationTests() {
   // Phase 20's moderation_* functions each check for a moderator first
   // (moderation_claim and moderation_status excepted, by design).
   // Phase 22's age and consent functions check who's asking themselves.
-  const EXPECTED_DEFINERS = ["decide_parent_consent", "delete_my_account", "find_profile_by_username", "moderation_claim", "moderation_delete_message",
+  const EXPECTED_DEFINERS = ["decide_parent_consent", "delete_my_account", "find_profile_by_username", "login_email", "moderation_claim", "moderation_delete_message",
     "moderation_history", "moderation_reports", "moderation_set_birth", "moderation_set_passphrase", "moderation_set_status", "moderation_status",
     "moderation_suspend", "my_age_status", "my_children_requests", "my_storage_objects", "request_parent_consent", "request_to_join",
     "set_my_birth", "withdraw_parent_consent"];
@@ -1017,8 +1017,33 @@ async function dailyTests() {
   ok("a student waiting for a parent can't keep a journal yet", !(await up(teen, "insert into daily_entries (day) values (current_date)")).ok);
 }
 
+// Phase 25: a username signs in only with the right password.
+async function usernameLoginTests() {
+  const db = await freshDb();
+  const u = await createUser(db, "Ada_L");
+  await db.query("update auth.users set encrypted_password = crypt('right-horse-42', gen_salt('bf', 4)) where id = $1", [u]);
+  const anon = async (name, pass) => {
+    try {
+      return { ok: true, v: await db.transaction(async (tx) => { await tx.exec("set local role anon"); return (await tx.query("select login_email($1, $2) as e", [name, pass])).rows[0].e; }) };
+    } catch (e) {
+      return { ok: false, error: e.message };
+    }
+  };
+  ok("the right username and password give the email", (await anon("ada_l", "right-horse-42")).v === "Ada_L@example.test");
+  ok("an @ and any capitals are fine", (await anon("@ADA_L", "right-horse-42")).v === "Ada_L@example.test");
+  ok("a wrong password reveals nothing", (await anon("ada_l", "wrong")).v === null);
+  ok("an unknown username reveals nothing", (await anon("nobody_here", "right-horse-42")).v === null);
+  for (let i = 0; i < 9; i++) await anon("ada_l", `guess-${i}`);
+  const locked = await anon("ada_l", "right-horse-42");
+  ok("ten wrong tries in an hour lock the username (email still works)", !locked.ok && /Too many tries/.test(locked.error), JSON.stringify(locked));
+  const peek = await attempt(db, u, (tx) => tx.query("select * from private.login_attempts"));
+  ok("the attempts aren't readable from the API", !peek.ok);
+  await db.query("update private.login_attempts set at = now() - interval '2 days'");
+  ok("old attempts are erased", (await db.query("select private.purge_login_attempts() as n")).rows[0].n === 11);
+}
+
 async function main() {
-  const sections = [migrationTests, chatTests, takeoverTests, callTests, accountTests, backfillTests, historyTests, disappearTests, studentsTests, moderationTests, deviceStateTests, consentTests, logTests, dailyTests];
+  const sections = [migrationTests, chatTests, takeoverTests, callTests, accountTests, backfillTests, historyTests, disappearTests, studentsTests, moderationTests, deviceStateTests, consentTests, logTests, dailyTests, usernameLoginTests];
   for (const run of sections) {
     try {
       await run();

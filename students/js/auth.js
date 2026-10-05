@@ -17,6 +17,7 @@ import { clearPersistedIndex } from "../../src/search.js";
 import { stopPresence } from "../../src/presence.js";
 import { validatePassword, describePasswordPolicy, breachedPassword } from "../../src/password.js";
 import { captcha } from "../../src/captcha.js";
+import { loginEmail, looksLikeEmail } from "../../src/login-id.js";
 import { ageGate, validCode } from "./age-gate.js";
 import { clearTimer } from "./timer-state.js";
 import { stopSync } from "./sync.js";
@@ -112,7 +113,8 @@ export function initAuth(h) {
   });
 
   $("forgot-open").addEventListener("click", () => {
-    $("forgot-email").value = $("login-email").value;
+    // A username can't receive a reset email; only carry an address over.
+    $("forgot-email").value = looksLikeEmail($("login-email").value) ? $("login-email").value.trim() : "";
     showForm("forgot-form");
   });
   $("forgot-back").addEventListener("click", () => showForm("login-form"));
@@ -120,10 +122,13 @@ export function initAuth(h) {
   $("login-form").addEventListener("submit", (e) => {
     e.preventDefault();
     withBusy($("login-submit"), "Crossing…", async () => {
-      const email = $("login-email").value.trim();
+      const typed = $("login-email").value.trim();
       const password = $("login-password").value;
-      if (!email || !password) return message("Enter your email and password.");
+      if (!typed || !password) return message("Enter your email or username, and your password.");
       setRemember($("login-remember").checked);
+      const found = await loginEmail(typed, password);
+      if (found.error) return message(found.error);
+      const email = found.email;
       const { data, error } = await supabaseClient.auth.signInWithPassword({ email, password, options: await captcha() });
       if (error && /not confirmed/i.test(error.message)) {
         // Signed up but never entered the code: finish that instead.
@@ -132,7 +137,7 @@ export function initAuth(h) {
         showForm("otp-form");
         return message("Your email isn't confirmed yet. Enter the code we sent, or send a new one.");
       }
-      if (error) return message(/invalid/i.test(error.message) ? "That email and password don't match." : error.message);
+      if (error) return message(/invalid/i.test(error.message) ? `That ${looksLikeEmail(typed) ? "email" : "username"} and password don't match.` : authErrorText(error));
       state.currentUser = data.session.user;
       const status = await ensureUserKeys(password);
       if (status === "wrong-password") {
