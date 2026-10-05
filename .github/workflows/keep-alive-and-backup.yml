@@ -20,6 +20,7 @@
 #   for CERT-In (supabase-phase23.sql). The free plan keeps them a day.
 #   Needs SUPABASE_DB_URL and one more secret:
 #   SUPABASE_ACCESS_TOKEN  supabase.com → Account → Access Tokens → Generate
+#                          (read-only; it expires within 90 days: replace it)
 #   Nothing from the logs is ever printed here: only counts.
 name: Keep alive and back up
 
@@ -149,14 +150,20 @@ jobs:
           end=$(date -u +%Y-%m-%dT%H:%M:%SZ)
           failed=0
           for src in edge_logs auth_logs postgres_logs storage_logs; do
-            if ! curl -sS --fail --max-time 60 -G \
+            code=$(curl -sS --max-time 60 -G -w '%{http_code}' \
                  "https://api.supabase.com/v1/projects/$REF/analytics/endpoints/logs.all" \
                  -H "Authorization: Bearer $TOKEN" \
                  --data-urlencode "sql=select id, timestamp, event_message from $src order by timestamp desc limit 1000" \
                  --data-urlencode "iso_timestamp_start=$start" \
                  --data-urlencode "iso_timestamp_end=$end" \
-                 -o rows.json 2>/dev/null; then
-              echo "::error::Couldn't read $src from Supabase (check SUPABASE_ACCESS_TOKEN)."
+                 -o rows.json 2>/dev/null) || code=000
+            if [ "$code" = 401 ] || [ "$code" = 403 ]; then
+              # Tokens last 90 days at most.
+              echo "::error::Supabase refused the access token (HTTP $code). It has probably expired: make a new one (read-only is enough) and replace the SUPABASE_ACCESS_TOKEN secret."
+              exit 1
+            fi
+            if [ "$code" != 200 ]; then
+              echo "::error::Couldn't read $src from Supabase (HTTP $code)."
               failed=1; continue
             fi
             if ! jq -e '.result | type == "array"' rows.json >/dev/null; then
