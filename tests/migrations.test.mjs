@@ -1042,8 +1042,25 @@ async function usernameLoginTests() {
   ok("old attempts are erased", (await db.query("select private.purge_login_attempts() as n")).rows[0].n === 11);
 }
 
+// Phase 26: exams on the calendar; how deep a block went.
+async function examQualityTests() {
+  const db = await freshDb();
+  const me = await createUser(db, "x_me");
+  const other = await createUser(db, "x_other");
+  const exam = await attempt(db, me, (tx) => tx.query("insert into student_events (title, kind, starts_at) values ('Physics paper 1', 'exam', now() + interval '10 days')"));
+  ok("an exam can go on the calendar", exam.ok, exam.error);
+  ok("unknown kinds still can't", !(await attempt(db, me, (tx) => tx.query("insert into student_events (title, kind, starts_at) values ('x', 'party', now())"))).ok);
+  const id = await as(db, me, async (tx) => (await tx.query("insert into focus_sessions (started_at, ended_at, focused_minutes, planned_minutes, completed) values (now() - interval '30 minutes', now(), 25, 25, true) returning id")).rows[0].id);
+  await as(db, me, (tx) => tx.query("update focus_sessions set quality = 3 where id = $1", [id]));
+  const q = await as(db, me, async (tx) => (await tx.query("select quality from focus_sessions where id = $1", [id])).rows[0].quality);
+  ok("a block can be marked deep", q === 3);
+  ok("quality is 1 to 3", !(await attempt(db, me, (tx) => tx.query("update focus_sessions set quality = 4 where id = $1", [id]))).ok);
+  const theirs = await as(db, other, async (tx) => (await tx.query("update focus_sessions set quality = 1 where id = $1 returning id", [id])).rows.length);
+  ok("nobody else can mark your blocks", theirs === 0);
+}
+
 async function main() {
-  const sections = [migrationTests, chatTests, takeoverTests, callTests, accountTests, backfillTests, historyTests, disappearTests, studentsTests, moderationTests, deviceStateTests, consentTests, logTests, dailyTests, usernameLoginTests];
+  const sections = [migrationTests, chatTests, takeoverTests, callTests, accountTests, backfillTests, historyTests, disappearTests, studentsTests, moderationTests, deviceStateTests, consentTests, logTests, dailyTests, usernameLoginTests, examQualityTests];
   for (const run of sections) {
     try {
       await run();

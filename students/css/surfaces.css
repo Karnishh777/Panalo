@@ -3174,3 +3174,136 @@ html[data-motion="reduce"] .sky-today {
 body.in-story .fx-ambient {
   opacity: 0;
 }
+
+/* ---- Surface upgrades (batch 3) ------------------------------------------------ */
+
+/* Calendar: quick add and exam countdowns. */
+.quick-add {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 6px 10px;
+  margin: 0 0 var(--s-4);
+}
+.quick-foot {
+  grid-column: 1 / -1;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 4px 12px;
+  min-height: 1.4em;
+}
+.quick-preview {
+  margin: 0;
+  font-size: 13px;
+}
+.countdowns {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin: 0 0 var(--s-4);
+}
+.countdown {
+  display: grid;
+  grid-template-columns: auto auto;
+  align-items: baseline;
+  gap: 0 6px;
+  padding: 10px 14px;
+  border: 1px solid color-mix(in srgb, var(--drift) 35%, transparent);
+  border-radius: var(--r-2);
+  background: color-mix(in srgb, var(--drift) 7%, transparent);
+  color: var(--text);
+  text-align: left;
+}
+.countdown b {
+  font: 400 28px / 1 var(--f-display);
+  letter-spacing: -0.03em;
+  color: var(--drift);
+}
+.countdown-title {
+  grid-column: 1 / -1;
+  font-size: 13px;
+  color: var(--text-2);
+}
+.now-list.exams li {
+  display: grid;
+  grid-template-columns: 5.5em 1fr auto;
+  gap: 10px;
+  align-items: baseline;
+}
+.exam-days {
+  color: var(--drift);
+}
+
+/* Study: plan, reflection, subjects. */
+.plan-label {
+  align-self: center;
+  margin-right: 4px;
+}
+.reflect {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 12px;
+  margin: 10px 0;
+}
+.subj-bars {
+  list-style: none;
+  margin: 10px 0 0;
+  padding: 0;
+  display: grid;
+  gap: 6px;
+  font-size: 13px;
+}
+.subj-bars li {
+  display: grid;
+  grid-template-columns: minmax(5rem, 9rem) 1fr auto;
+  gap: 8px;
+  align-items: center;
+}
+.subj-name {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.subj-bar {
+  height: 6px;
+  border-radius: 3px;
+  background: var(--line);
+  overflow: hidden;
+}
+.subj-bar i {
+  display: block;
+  height: 100%;
+  background: var(--focus);
+}
+
+/* Drift: kept facts. */
+.drift-save {
+  margin-top: 8px;
+}
+.drift-saved {
+  margin-top: var(--s-5);
+}
+.drift-saved summary {
+  cursor: pointer;
+  font-weight: 600;
+}
+.saved-list {
+  list-style: none;
+  margin: 12px 0 0;
+  padding: 0;
+  display: grid;
+  gap: 12px;
+}
+.saved-list p {
+  margin: 0 0 2px;
+}
+
+/* Archive: kinds and the count. */
+.kind-chips {
+  margin-top: 8px;
+}
+.arch-count {
+  align-self: center;
+  font-size: 13px;
+}

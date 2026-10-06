@@ -91,7 +91,7 @@ function slides(c, wk, d) {
         num,
         el("p", { class: "story-sub", text: vs }),
         bars,
-        c.best ? el("p", { class: "faint", text: `Best day: ${parseDayKey(c.best.key).toLocaleDateString(undefined, { weekday: "long" })}, ${formatMinutes(c.best.minutes)}.` }) : null,
+        c.best ? el("p", { class: "faint", text: `Best day: ${parseDayKey(c.best.key).toLocaleDateString(undefined, { weekday: "long" })}, ${formatMinutes(c.best.minutes)}.${c.deep ? ` ${c.deep} block${c.deep === 1 ? "" : "s"} you called deep.` : ""}` }) : null,
       ]),
       enter: () => {
         count(num, c.focusMinutes, formatMinutes);

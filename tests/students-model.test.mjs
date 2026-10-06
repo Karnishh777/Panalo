@@ -8,6 +8,8 @@ import { LIBRARY } from "../students/js/model/drift-library.js";
 import { safeBlobType } from "../students/js/model/safe-type.js";
 import * as D from "../students/js/model/daily.js";
 import * as C from "../students/js/model/chronicle.js";
+import { parseQuickAdd } from "../students/js/model/quick-add.js";
+import { countdowns } from "../students/js/model/timeline.js";
 import { relTime, formatMinutes, startOfWeek, dayKey, parseDayKey, MINUTE, HOUR, DAY } from "../students/js/model/time.js";
 
 let passed = 0;
@@ -258,6 +260,44 @@ ok("anything else is just bytes", T_("application/zip", "a.zip") === "applicatio
   ok("new moments are recent and unseen", m.fresh.length === 1 && m.fresh[0].id === "a");
   ok("old unseen ones are quietly retired", m.stale.length === 1 && m.stale[0].id === "b");
   ok("weeks of a world count from one", C.weekNumber(at(0), NOW) === 1 && C.weekNumber(at(8), NOW) === 2);
+}
+
+// ---- quick add and countdowns (batch 3) -------------------------------------------
+{
+  const P = (t) => parseQuickAdd(t, NOW); // Wednesday 1 Oct 2026, 10:00
+  const hm = (d) => `${d.getHours()}:${String(d.getMinutes()).padStart(2, "0")}`;
+  let r = P("Physics test fri 10am");
+  ok("an exam on a weekday at a time", r.kind === "exam" && r.title === "Physics test" && r.start.getDay() === 5 && hm(r.start) === "10:00" && r.start.getDate() === 2);
+  r = P("Maths class every mon 9-10");
+  ok("a weekly class with a range", r.kind === "class" && r.repeat_weekly && r.start.getDay() === 1 && hm(r.start) === "9:00" && hm(r.end) === "10:00");
+  r = P("Essay due 12/10");
+  ok("dates read day first (India)", r.kind === "deadline" && r.title === "Essay" && r.start.getDate() === 12 && r.start.getMonth() === 9 && hm(r.start) === "23:59");
+  r = P("Robotics club tomorrow 4:30pm");
+  ok("tomorrow, half past four", r.kind === "event" && r.start.getDate() === 2 && hm(r.start) === "16:30");
+  r = P("Chem lab 3-5");
+  ok("a bare afternoon range", r.kind === "class" && hm(r.start) === "15:00" && hm(r.end) === "17:00");
+  r = P("Bio quiz 15 oct");
+  ok("a day and month in words", r.kind === "exam" && r.start.getDate() === 15 && r.start.getMonth() === 9);
+  r = P("Paper 2 exam on 20th 9:30am-12:30pm");
+  ok("the 20th, a morning paper", r.kind === "exam" && r.start.getDate() === 20 && hm(r.start) === "9:30" && hm(r.end) === "12:30");
+  r = P("Hackathon 12-10");
+  ok("12-10 alone is a date, not a time", r.start.getDate() === 12 && r.start.getMonth() === 9);
+  r = P("Revision at 9am");
+  ok("a time already gone today means tomorrow", r.start.getDate() === 2 && hm(r.start) === "9:00");
+  r = P("Holiday 5/1");
+  ok("a date already gone this year is next year", r.start.getFullYear() === 2027);
+  ok("an empty line is nothing", P("   ") === null);
+  ok("31/02 doesn't become March", P("Thing 31/02").start.getMonth() !== 2 || P("Thing 31/02").start.getDate() !== 3);
+
+  const exams = [
+    { kind: "exam", title: "Physics", starts_at: new Date(2026, 9, 13, 9).toISOString() },
+    { kind: "exam", title: "Chemistry", starts_at: new Date(2026, 9, 3, 9).toISOString() },
+    { kind: "class", title: "Maths", starts_at: new Date(2026, 9, 2, 9).toISOString() },
+    { kind: "exam", title: "Old", starts_at: new Date(2026, 8, 20, 9).toISOString() },
+  ];
+  const cd = countdowns(exams, NOW);
+  ok("countdowns list upcoming exams only, soonest first", cd.length === 2 && cd[0].title === "Chemistry" && cd[1].title === "Physics");
+  ok("…in whole days", cd[0].days === 2 && cd[1].days === 12);
 }
 
 console.log(`\n${passed} passed, ${failures.length} failed`);

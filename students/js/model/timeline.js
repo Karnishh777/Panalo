@@ -10,6 +10,7 @@ export const EVENT_KINDS = {
   deadline: { label: "Deadline", tone: "alert" },
   event: { label: "Event", tone: "signal" },
   personal: { label: "Personal", tone: "world" },
+  exam: { label: "Exam", tone: "drift" },
 };
 
 // How long an entry without an end lasts on the orbit. A deadline is a
@@ -97,4 +98,23 @@ export function tasksAsDeadlines(tasks) {
       repeat_weekly: false,
       _task: t,
     }));
+}
+
+/**
+ * Exams coming up in the next `days` days, soonest first, with whole days to
+ * go (0 = today). Weekly entries count their next occurrence.
+ */
+export function countdowns(events, now = Date.now(), days = 60) {
+  const from = new Date(now);
+  const until = new Date(now + days * 86400000);
+  return occurrencesBetween(events.filter((e) => e.kind === "exam"), from, until)
+    .filter((o) => o.start.getTime() >= now - 3600000)
+    .map((o) => {
+      const d0 = new Date(now);
+      d0.setHours(0, 0, 0, 0);
+      const d1 = new Date(o.start);
+      d1.setHours(0, 0, 0, 0);
+      return { title: o.event.title, at: o.start, days: Math.round((d1 - d0) / 86400000), event: o.event };
+    })
+    .sort((a, b) => a.at - b.at);
 }

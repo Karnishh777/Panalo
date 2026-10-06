@@ -59,7 +59,7 @@ export async function loadAll() {
   const since7 = new Date(Date.now() - 7 * DAY).toISOString();
   const queries = await Promise.all([
     supabaseClient.from("student_tasks").select("*").order("created_at", { ascending: false }).limit(2000),
-    supabaseClient.from("focus_sessions").select("id, started_at, ended_at, focused_minutes, planned_minutes, completed, subject, task_id").order("started_at", { ascending: false }).limit(5000),
+    supabaseClient.from("focus_sessions").select("id, started_at, ended_at, focused_minutes, planned_minutes, completed, subject, task_id, quality").order("started_at", { ascending: false }).limit(5000),
     supabaseClient.from("student_events").select("*").order("starts_at").limit(3000),
     supabaseClient.from("activity_log").select("*").order("occurred_on", { ascending: false }).limit(3000),
     supabaseClient.from("student_goals").select("*").order("created_at"),
@@ -118,6 +118,7 @@ export const api = {
   deleteTask: (id) => remove("student_tasks", id, "tasks", "tasks"),
 
   addSession: (s) => insert("focus_sessions", s, "sessions", "sessions"),
+  updateSession: (id, patch) => update("focus_sessions", id, patch, "sessions", "sessions"),
 
   addEvent: (e) => insert("student_events", e, "events", "events", { prepend: false }),
   updateEvent: (id, patch) => update("student_events", id, patch, "events", "events"),

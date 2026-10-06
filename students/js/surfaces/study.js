@@ -13,7 +13,7 @@ import { store, on, api } from "../store.js";
 import * as T from "../model/focus-timer.js";
 import { loadTimer, saveTimer, onTimer, settleTimer, recordSession } from "../timer-state.js";
 import { SOUNDS, playAmbient, setVolume, chime, currentSound } from "../ambient.js";
-import { startOfDay, startOfWeek, addDays, formatMinutes, clockTime, DAY, relTime } from "../model/time.js";
+import { startOfDay, startOfWeek, addDays, formatMinutes, clockTime, DAY, relTime, dayKey } from "../model/time.js";
 
 let root;
 let timer = T.idle();
@@ -37,6 +37,20 @@ const CIRC = 2 * Math.PI * R;
 function prefs() {
   const p = getPrefs();
   return { preset: p.studyPreset || "25", custom: p.studyCustom || 40, sound: p.studySound || "off", volume: p.studyVolume ?? 0.5 };
+}
+
+// A plan for today: how many focus blocks (prefs, so it follows you).
+function plan() {
+  const p = getPrefs().studyPlan;
+  return p && p.day === dayKey(new Date()) && p.total > 0 ? p : null;
+}
+function setPlan(total) {
+  setPrefs({ studyPlan: total ? { day: dayKey(new Date()), total, done: plan()?.done || 0 } : null });
+}
+function planStep() {
+  const p = plan();
+  if (p) setPrefs({ studyPlan: { ...p, done: Math.min(p.total, p.done + 1) } });
+  return plan();
 }
 
 function planFor(phase) {
@@ -83,7 +97,9 @@ function draw() {
   ring.body.setAttribute("cy", String(130 + Math.sin(a) * R));
   root.dataset.phase = timer.phase;
   root.dataset.status = running ? timer.status : "idle";
-  phaseEl.textContent = !running ? "Ready when you are" : timer.phase === "focus" ? (timer.status === "paused" ? "Paused" : "Focus") : timer.status === "paused" ? "Rest, paused" : "Rest";
+  const pl = plan();
+  const blockOf = pl ? ` · block ${Math.min(pl.total, pl.done + (timer.phase === "focus" ? 1 : 0))} of ${pl.total}` : "";
+  phaseEl.textContent = (!running ? (pl ? (pl.done >= pl.total ? `All ${pl.total} blocks done today` : `Block ${pl.done + 1} of ${pl.total} next`) : "Ready when you are") : timer.phase === "focus" ? (timer.status === "paused" ? "Paused" : "Focus") : timer.status === "paused" ? "Rest, paused" : "Rest") + (running ? blockOf : "");
   if (running && document.body.dataset.view === "study") {
     const t = `${T.readout(left)} · ${timer.phase === "focus" ? "Focus" : "Rest"}`;
     if (t !== lastTitle) document.title = lastTitle = t;
@@ -112,13 +128,13 @@ function update(next) {
   draw();
 }
 
-function begin(phase) {
+function begin(phase, { keepNotice = false } = {}) {
   playAmbientFromPrefs();
   const taskId = taskSelect.value || null;
   const task = taskId && store.tasks.find((t) => t.id === taskId);
   const subject = subjectInput.value.trim() || task?.subject || null;
   update(T.start(phase, planFor(phase), Date.now(), { subject, taskId }));
-  noticeEl.replaceChildren();
+  if (!keepNotice) noticeEl.replaceChildren();
 }
 
 async function endEarly() {
@@ -162,14 +178,61 @@ async function finishOnce() {
   renderControls();
   draw();
   if (was.phase === "focus") {
+    const p = planStep();
+    const more = p && p.done < p.total;
+    const allDone = p && p.done >= p.total;
     noticeEl.replaceChildren(
-      el("p", { class: "study-notice-text" }, [el("b", { text: `${formatMinutes(Math.round(was.plannedMs / 60000))} of focus — added to your world.` }), " Rest your eyes for a few minutes."]),
+      el("p", { class: "study-notice-text" }, [
+        el("b", { text: `${formatMinutes(Math.round(was.plannedMs / 60000))} of focus — added to your world.` }),
+        p ? ` Block ${p.done} of ${p.total}.` : "",
+        allDone ? " That's the plan, kept." : " Rest your eyes for a few minutes.",
+      ]),
+      reflection(),
       el("div", { class: "chips" }, [
-        el("button", { type: "button", class: "btn btn-primary btn-sm", text: `Rest ${planFor("rest")} min`, onClick: () => begin("rest") }),
+        more ? null : el("button", { type: "button", class: "btn btn-primary btn-sm", text: `Rest ${planFor("rest")} min`, onClick: () => begin("rest") }),
         el("button", { type: "button", class: "btn btn-quiet btn-sm", text: "See my world", onClick: () => navigate("world") }),
       ])
     );
+    // With blocks still to go, the rest starts by itself.
+    if (more) begin("rest", { keepNotice: true });
+  } else if (was.phase === "rest") {
+    const p = plan();
+    if (p && p.done < p.total) {
+      noticeEl.replaceChildren(
+        el("p", { class: "study-notice-text" }, [el("b", { text: `Rest's over. Block ${p.done + 1} of ${p.total}.` })]),
+        el("div", { class: "chips" }, [el("button", { type: "button", class: "btn btn-primary btn-sm", id: "study-next-block", text: `Begin block ${p.done + 1}`, onClick: () => begin("focus") })])
+      );
+    }
   }
+}
+
+// How deep was it? Saved on the block just recorded (phase 26); optional.
+function reflection() {
+  const latest = store.sessions.slice().sort((a, b) => Date.parse(b.started_at) - Date.parse(a.started_at))[0];
+  if (!latest) return null;
+  const box = el("div", { class: "reflect" }, [el("span", { class: "faint", text: "How deep was it?" })]);
+  const chips = el("div", { class: "chips", role: "radiogroup", "aria-label": "How deep was it?" });
+  const draw = (cur) =>
+    chips.replaceChildren(
+      ...[[1, "Scattered"], [2, "Okay"], [3, "Deep"]].map(([v, label]) =>
+        el("button", {
+          type: "button",
+          role: "radio",
+          class: "chip tone-focus",
+          "aria-checked": String(cur === v),
+          "data-quality": String(v),
+          text: label,
+          onClick: async () => {
+            draw(v);
+            const { error } = await api.updateSession(latest.id, { quality: v });
+            if (error) reportError(error, "Couldn't save that.");
+          },
+        })
+      )
+    );
+  draw(latest.quality || null);
+  box.append(chips);
+  return box;
 }
 
 function notify(text) {
@@ -265,6 +328,16 @@ function renderHistory() {
   const max = Math.max(60, ...minutes);
   const week = store.sessions.filter((s) => Date.parse(s.started_at) >= startOfWeek(Date.now()).getTime()).reduce((n, s) => n + s.focused_minutes, 0);
   const todays = store.sessions.filter((s) => Date.parse(s.started_at) >= today);
+  // This week, by subject.
+  const bySubject = new Map();
+  for (const s of store.sessions) {
+    if (Date.parse(s.started_at) < startOfWeek(Date.now()).getTime()) continue;
+    const k = (s.subject || "").trim() || "Unlabelled";
+    bySubject.set(k, (bySubject.get(k) || 0) + s.focused_minutes);
+  }
+  const subjects = [...bySubject].sort((a, b) => b[1] - a[1]).slice(0, 4);
+  const topMin = subjects[0]?.[1] || 1;
+  const deep = store.sessions.filter((s) => Date.parse(s.started_at) >= startOfWeek(Date.now()).getTime() && s.quality === 3).length;
   historyEl.replaceChildren(
     el("div", { class: "hist-bars", role: "img", "aria-label": `Focus over the last seven days: ${days.map((d, i) => `${d.toLocaleDateString(undefined, { weekday: "short" })} ${minutes[i]} minutes`).join(", ")}` },
       days.map((d, i) =>
@@ -274,7 +347,10 @@ function renderHistory() {
         ])
       )
     ),
-    el("p", { class: "hist-sum" }, [el("b", { class: "num", text: formatMinutes(week) }), " this week · ", el("span", { class: "num", text: formatMinutes(minutes[6]) }), " today"]),
+    el("p", { class: "hist-sum" }, [el("b", { class: "num", text: formatMinutes(week) }), " this week · ", el("span", { class: "num", text: formatMinutes(minutes[6]) }), " today", deep ? ` · ${deep} deep block${deep === 1 ? "" : "s"}` : ""]),
+    subjects.length > 1 || (subjects.length === 1 && subjects[0][0] !== "Unlabelled")
+      ? el("ul", { class: "subj-bars", "aria-label": "This week by subject" }, subjects.map(([name, m]) => el("li", {}, [el("span", { class: "subj-name", text: name }), el("span", { class: "subj-bar" }, [el("i", { style: `width:${Math.round((m / topMin) * 100)}%` })]), el("span", { class: "num faint", text: formatMinutes(m) })])))
+      : null,
     todays.length
       ? el("ul", { class: "log hist-log" }, todays.map((s) => el("li", {}, [el("span", { class: "t", text: clockTime(s.started_at) }), el("span", { text: `${formatMinutes(s.focused_minutes)}${s.subject ? ` · ${s.subject}` : ""}${s.completed ? "" : " · ended early"}` })])))
       : el("p", { class: "faint", text: "No sessions yet today." })
@@ -314,6 +390,17 @@ export function mount(section, ctx) {
   });
   drawPresets();
 
+  // A plan for today: 1 to 4 blocks, rests in between start by themselves.
+  const planGroup = el("div", { class: "chips", role: "radiogroup", "aria-label": "Blocks today" });
+  const drawPlan = () => {
+    const cur = plan()?.total || 0;
+    planGroup.replaceChildren(
+      el("span", { class: "faint small plan-label", text: "Blocks today" }),
+      ...[0, 1, 2, 3, 4].map((n) => el("button", { type: "button", role: "radio", class: "chip tone-focus", "aria-checked": String(cur === n), "data-plan": String(n), text: n ? String(n) : "Free", onClick: () => { setPlan(n); drawPlan(); draw(); } }))
+    );
+  };
+  drawPlan();
+
   const sound = el("select", { class: "input", "aria-label": "Ambient sound" }, SOUNDS.map((s) => el("option", { value: s.id, text: s.label })));
   sound.value = p.sound;
   sound.addEventListener("change", () => {
@@ -334,7 +421,14 @@ export function mount(section, ctx) {
     dark.textContent = on ? "Come back" : "Go dark";
   };
   dark.addEventListener("click", () => setDark(!document.body.classList.contains("midnight")));
-  const esc = (e) => e.key === "Escape" && document.body.classList.contains("midnight") && setDark(false);
+  const esc = (e) => {
+    if (e.key === "Escape" && document.body.classList.contains("midnight")) return setDark(false);
+    // Space starts, pauses and resumes -- unless you're typing.
+    if (e.key === " " && document.body.dataset.view === "study" && !e.target.closest?.("input, textarea, select, button, [contenteditable]") && !document.querySelector("dialog[open]")) {
+      e.preventDefault();
+      controls.querySelector(".btn-primary, .btn-ghost")?.click();
+    }
+  };
   document.addEventListener("keydown", esc);
   unsubs.push(() => document.removeEventListener("keydown", esc), () => setDark(false));
 
@@ -355,8 +449,9 @@ export function mount(section, ctx) {
       el("section", { class: "study-panel", "aria-labelledby": "st-set" }, [
         el("h2", { id: "st-set", text: "Length and sound" }),
         presetGroup,
+        planGroup,
         el("div", { class: "sound-row" }, [sound, volume]),
-        el("p", { class: "faint small", text: "Sounds are generated on your device. Nothing to download." }),
+        el("p", { class: "faint small", text: "Sounds are generated on your device. Nothing to download. Space starts and pauses." }),
       ]),
       el("section", { class: "study-panel", "aria-labelledby": "st-hist" }, [el("h2", { id: "st-hist", text: "Your sessions" }), historyEl]),
     ])
