@@ -20,6 +20,10 @@ and everything it encodes is also available in plain words.
 | **Deep space at midnight** | The quietest room: one ring, one number, one task. | Study Room |
 | **The day, as a ritual** | The first open of each day plays a short dawn over your own world: which day of it this is, and what changed since you were last here. Then one intention ("the one thing for today"). In the evening, closing the day takes twenty seconds: how it felt, energy, one tap for what else you did (logged to your world), one thing learned, one good thing. A closed day lights a star. | Now, World → Journal |
 | **This month, in stars** | Each day of the month has a fixed place in a constellation; a day you showed up on (focus, a finished task, a log, a closed day) lights its star, joined in order. A missed day stays dark — nothing resets, there is no streak. | World |
+| **The weekly chronicle** | The first visit of a new week plays last week as a few full-screen slides: focus against the week before, the best day, where it went by subject, what you finished and logged, the days you showed up and how they felt, what you wrote down, and your world on Monday beside Sunday. A quiet week isn't played (no report card for rest). Replay from World or Warp. | after the dawn, World |
+| **Moments** | Reaching a discovery (first hour, a ring, a moon completed, a hundred pages) stops the screen for a second: a flash, its name, what it means, your world behind it. Once each, never during a focus block. | anywhere |
+| **Seasons** | Every 28 days from your world's birth is a season with a name (First Light, Tides, Ember…). The dawn and World say which, and how far in. | World, the dawn |
+| **Watch it grow** | Your world from the day it was born to today in eight seconds, with a slider to stop at any day. | World |
 | **Drift** | Three things a day — something true, something to make, something to play — then the door closes. | Drift |
 
 What stays conventional on purpose: the week timetable is a grid, forms are
@@ -96,6 +100,10 @@ landing ──► the crossing (sign in / sign up) ──► first time? the bir
 | `js/shell.js` | Router, top bar, dock, account menu, Warp. |
 | `js/dawn.js` | The first seconds of each day: a sunrise over your world, the day number, what changed since your last visit, then one question. Once a day across devices (daily_entries.opened_at). |
 | `js/checkin.js` | The morning intention and closing the day. |
+| `js/chronicle.js` | Last week as a story (once per week, after the dawn; on demand from World and Warp). |
+| `js/moment.js` | A full-screen moment for each new discovery, once each (seen ones follow your preferences across devices). |
+| `js/timelapse.js` | Watch it grow: the world from birth to now, with a scrubber. |
+| `js/model/chronicle.js` | Pure: a week's chronicle, the world at any moment, the time-lapse frames, seasons, which moments are new. |
 | `js/model/daily.js` | Pure: today's entry, last visit, what changed, the week's rhythm, the month as a constellation, the journal. |
 | `js/store.js` | In-memory study data + pub/sub; all writes. |
 | `js/signals-data.js` | Conversations, unread, sending, circles, rooms, door, block, report. |
