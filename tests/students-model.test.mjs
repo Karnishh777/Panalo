@@ -7,6 +7,7 @@ import { pickDrift, dayNumber } from "../students/js/model/drift-pick.js";
 import { LIBRARY } from "../students/js/model/drift-library.js";
 import { safeBlobType } from "../students/js/model/safe-type.js";
 import * as D from "../students/js/model/daily.js";
+import * as C from "../students/js/model/chronicle.js";
 import { relTime, formatMinutes, startOfWeek, dayKey, parseDayKey, MINUTE, HOUR, DAY } from "../students/js/model/time.js";
 
 let passed = 0;
@@ -202,6 +203,61 @@ ok("anything else is just bytes", T_("application/zip", "a.zip") === "applicatio
   ok("day numbers count from one", D.dayNumber(at(0, 1), NOW) === 1 && D.dayNumber(at(9), NOW) === 10);
   ok("parts of the day", D.dayPart(new Date(2026, 0, 1, 8).getTime()) === "morning" && D.dayPart(new Date(2026, 0, 1, 20).getTime()) === "evening" && D.dayPart(new Date(2026, 0, 1, 2).getTime()) === "evening");
   ok("the journal lists closed days, newest first", D.journal(entries).length === 1 && D.journal(entries)[0].mood === 4);
+}
+
+// ---- weeks, seasons, the world over time (batch 2) ------------------------------
+{
+  // NOW is Wednesday 1 Oct 2026; last week is Mon 21 – Sun 27 Sep... check by weekday.
+  const lw = C.lastWeek(NOW);
+  ok("last week is seven days ending at this Monday", lw.end - lw.start >= 6.9 * DAY && lw.end - lw.start <= 7.1 * DAY && new Date(lw.end).getDay() === 1);
+  const inLast = (dayOffset, h = 9) => { const d = new Date(lw.start); d.setDate(d.getDate() + dayOffset); d.setHours(h); return d.toISOString(); };
+  const data = {
+    sessions: [
+      { started_at: inLast(0), focused_minutes: 50, subject: "Physics" },
+      { started_at: inLast(2), focused_minutes: 90, subject: "Physics" },
+      { started_at: inLast(2, 15), focused_minutes: 30, subject: "Chemistry" },
+      { started_at: inLast(-3), focused_minutes: 60, subject: "Physics" },
+    ],
+    tasks: [{ created_at: inLast(0), done_at: inLast(1) }, { created_at: inLast(0), done_at: null }],
+    logs: [{ kind: "read", minutes: 40, occurred_on: dayKey(new Date(inLast(3))) }],
+    entries: [
+      { day: dayKey(new Date(inLast(1))), closed_at: inLast(1, 21), mood: 4, intention: "Lab report", intention_done: "yes", learned: "Snell's law" },
+      { day: dayKey(new Date(inLast(4))), closed_at: inLast(4, 21), mood: 3, intention: "Revise", intention_done: "no", win: "Helped Maya" },
+    ],
+    discoveries: [{ id: "first-focus", title: "First session", at: inLast(0) }],
+  };
+  const c = C.chronicle(data, lw);
+  ok("the week's focus is summed", c.focusMinutes === 170, String(c.focusMinutes));
+  ok("…and the week before, for comparison", c.prevFocusMinutes === 60);
+  ok("the best day is found", c.best && c.best.minutes === 120);
+  ok("top subjects, biggest first", c.subjects[0].subject === "Physics" && c.subjects[0].minutes === 140 && c.subjects[1].subject === "Chemistry");
+  ok("tasks finished that week", c.tasksDone === 1);
+  ok("logged time by kind", c.logged.read === 40);
+  ok("days shown up", c.shown.length === 5, String(c.shown.length));
+  ok("how the days felt, on average", c.mood === 3.5);
+  ok("intentions set and kept", c.intentions === 2 && c.kept === 1);
+  ok("what you wrote is kept for the chronicle", c.words.length === 2 && c.words.some((w) => w.text === "Snell's law"));
+  ok("discoveries that week", c.discoveries.length === 1);
+  ok("an empty week says so", C.chronicle({}, lw).empty);
+
+  const before = C.worldAt({ ...data, bornAt: inLast(-10) }, lw.start);
+  const after = C.worldAt({ ...data, bornAt: inLast(-10) }, lw.end);
+  ok("the world before the week is smaller than after", after.layers.land > before.layers.land && after.stats.tasksDone === 1 && before.stats.tasksDone === 0);
+  const frames = C.timeline({ ...data, bornAt: inLast(-10) }, NOW, 12);
+  ok("the time-lapse has the frames asked for", frames.length === 12);
+  ok("land only ever grows through the time-lapse", frames.every((f, i) => i === 0 || f.layers.land >= frames[i - 1].layers.land));
+  ok("the last frame is the world today", frames[11].focusMinutes === 230);
+
+  const s1 = C.season(at(3), NOW);
+  ok("a new world is in season one, First Light", s1.number === 1 && s1.name === "First Light" && s1.day === 4);
+  const s2 = C.season(at(30), NOW);
+  ok("seasons are 28 days", s2.number === 2 && s2.day === 3 && s2.left === 25);
+
+  const disc = [{ id: "a", at: at(1) }, { id: "b", at: at(40) }, { id: "c", at: at(2) }];
+  const m = C.newMoments(disc, ["c"], NOW);
+  ok("new moments are recent and unseen", m.fresh.length === 1 && m.fresh[0].id === "a");
+  ok("old unseen ones are quietly retired", m.stale.length === 1 && m.stale[0].id === "b");
+  ok("weeks of a world count from one", C.weekNumber(at(0), NOW) === 1 && C.weekNumber(at(8), NOW) === 2);
 }
 
 console.log(`\n${passed} passed, ${failures.length} failed`);

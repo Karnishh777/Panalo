@@ -10,6 +10,7 @@
 // (see tools/qa/README.md).
 import { launch, LEAKED_PASSWORD } from "./harness.mjs";
 import fs from "node:fs";
+import { lastWeek } from "../../students/js/model/chronicle.js";
 
 const SHOTS = process.env.QA_SHOTS;
 if (SHOTS) fs.mkdirSync(SHOTS, { recursive: true });
@@ -59,6 +60,13 @@ async function finishBirth(page) {
 }
 
 const qa = await launch();
+// Batch 2's discovery moments and weekly chronicle are full-screen and would
+// land in the middle of the older flows: every page starts with them seen,
+// unless a test asks for them (storage: { "panalo.students.prefs": "{}" }).
+const ALL_MOMENTS = ["first-focus", "focus-1", "focus-10", "focus-25", "focus-50", "focus-100", "focus-250", "tasks-1", "tasks-10", "tasks-50", "tasks-200", "first-aurora", "streak-7", "first-moon", "pages-1", "pages-7", "pages-30", "pages-100"];
+const QUIET = { "panalo.students.prefs": JSON.stringify({ momentsSeen: ALL_MOMENTS, chronicleSeen: lastWeek().key }) };
+const openPage = qa.open;
+qa.open = (o = {}) => openPage({ ...o, storage: { ...QUIET, ...(o.storage || {}) } });
 try {
   // ---- Outside, sign-up, birth ------------------------------------------------
   {
@@ -473,6 +481,87 @@ try {
     check("…with its question there at once", (await r.isVisible("#dawn-intention")) || (await r.isVisible("#dawn-close-day")));
     await shot(r, "dawn-phone");
     await r.close();
+  }
+
+  // ---- Weeks, moments, seasons, time (batch 2) ---------------------------------------------
+  {
+    const w = await qa.open({ viewport: "laptop", path: "students/#login", qa: { dawn: true }, storage: { "panalo.students.prefs": "{}" } });
+    await w.evaluate(() => window.__qa.ready);
+    await appReady(w);
+    await w.fill("#login-email", "qa@panalo.test");
+    await w.fill("#login-password", "correct-horse-42");
+    await w.click("#login-submit");
+    await w.waitForSelector(".dawn", { timeout: 15000 }).catch(() => {});
+    check("the dawn names the season", /Season 1, First Light/.test(await w.textContent(".dawn-date").catch(() => "")));
+    await w.click(".dawn-skip");
+    await w.waitForSelector(".story", { timeout: 8000 }).catch(() => {});
+    check("a new week opens with last week's chronicle", await w.isVisible(".story"));
+    check("it starts with the week's number", /Week \d+/.test(await w.textContent(".story-title").catch(() => "")));
+    await w.keyboard.press("ArrowRight");
+    await w.waitForTimeout(1400);
+    check("then last week's focus, counted up", /2 h 45 min|2h 45|165/.test(await w.textContent(".story-stage")));
+    check("…with the best day marked", (await w.locator(".story-bars-chart .sb.best").count()) === 1);
+    await shot(w, "chronicle-focus");
+    await w.keyboard.press("ArrowRight");
+    await w.waitForTimeout(500);
+    check("then where it went, by subject", /Physics/.test(await w.textContent(".story-stage")) && /Chemistry/.test(await w.textContent(".story-stage")));
+    let words = false, world = false;
+    for (let k = 0; k < 6; k++) {
+      await w.keyboard.press("ArrowRight");
+      await w.waitForTimeout(500);
+      const t = await w.textContent(".story-stage").catch(() => "");
+      if (/Snell's law, finally/.test(t)) words = true;
+      if (/Monday/.test(t) && (await w.locator(".story-globe").count()) === 2) { world = true; await shot(w, "chronicle-world"); }
+    }
+    check("what you wrote down comes back", words);
+    check("and your world on Monday beside Sunday", world);
+    await w.waitForSelector(".story", { state: "detached", timeout: 8000 }).catch(() => {});
+    check("the chronicle ends on its own", !(await w.isVisible(".story")));
+    check("it's marked seen (it won't replay)", await w.evaluate(() => !!JSON.parse(localStorage.getItem("panalo.students.prefs") || "{}").chronicleSeen));
+
+    // Closing today is a first page this session... last week's was the first; a
+    // moment for a fresh discovery: finishing a first task today isn't one either,
+    // so make one: a moon, completed.
+    await go(w, "#/world", 1000);
+    check("World shows the season", /Season 1 · First Light/.test(await w.textContent(".season-line")));
+    await w.click("text=Add a moon");
+    await w.click(".sheet .chip >> text=A milestone");
+    await w.fill(".sheet input[placeholder^='e.g.']", "Finish the robotics demo");
+    await w.click(".sheet .btn-primary");
+    await w.waitForTimeout(500);
+    await w.click(".moons >> text=Mark done");
+    await w.waitForSelector(".moment", { timeout: 8000 }).catch(() => {});
+    check("reaching something stops the screen for a moment", await w.isVisible(".moment"));
+    check("…named, with what it means", (await w.getAttribute(".moment-title", "aria-label").catch(() => "")) === "A moon, completed" && /robotics demo/.test(await w.textContent(".moment-detail").catch(() => "")));
+    await shot(w, "moment");
+    await w.waitForTimeout(1000);
+    await w.click("#moment-on");
+    await w.waitForTimeout(600);
+    check("and gets out of the way", !(await w.isVisible(".moment")));
+    await w.reload();
+    await w.waitForSelector("#app:not([hidden])", { timeout: 15000 });
+    await w.waitForTimeout(2500);
+    check("each moment plays once", !(await w.isVisible(".moment")) && !(await w.isVisible(".story")));
+
+    await go(w, "#/world", 1000);
+    await w.click("#world-timelapse");
+    await w.waitForTimeout(600);
+    check("your world can be watched growing", await w.isVisible(".timelapse"));
+    await w.waitForTimeout(8600);
+    check("the time-lapse ends today, with today's totals", /lights?/.test(await w.textContent(".timelapse-stats")) && (await w.inputValue(".timelapse input[type=range]")) === "31");
+    await shot(w, "timelapse");
+    await w.fill(".timelapse input[type=range]", "0");
+    await w.dispatchEvent(".timelapse input[type=range]", "input");
+    check("…and scrubbed back to the start", /^0 min/.test(await w.textContent(".timelapse-stats")));
+    await w.click(".timelapse-close");
+    await w.click("#world-chronicle");
+    await w.waitForTimeout(500);
+    check("last week can be replayed from World", await w.isVisible(".story"));
+    await w.keyboard.press("Escape");
+    await w.waitForTimeout(600);
+    check("no console errors (batch 2)", w.errors.length === 0);
+    if (w.errors.length) console.log(w.errors.join("\n"));
+    await w.close();
   }
 
   // ---- Auth paths: email code, unlock on a new device, invite links, sign-out ----

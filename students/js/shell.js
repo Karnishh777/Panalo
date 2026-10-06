@@ -17,6 +17,9 @@ import { startSync, stopSync } from "./sync.js";
 import { rulesReminder } from "./rules-reminder.js";
 import { maybeDawn, dawnDue } from "./dawn.js";
 import { openCheckin, openIntention } from "./checkin.js";
+import { maybeChronicle, playChronicle } from "./chronicle.js";
+import { checkMomentsSoon } from "./moment.js";
+import { openTimelapse } from "./timelapse.js";
 
 const $ = (id) => document.getElementById(id);
 
@@ -160,6 +163,8 @@ function warpItems() {
       { label: "Set today's intention", hint: "the one thing for today", run: () => openIntention() },
       { label: "Journal", hint: "World · the days you've kept", run: () => navigate("world/journal") },
     ]),
+    { label: "Last week's chronicle", hint: "your week, as a story", run: () => playChronicle() },
+    { label: "Watch your world grow", hint: "World · a time-lapse from day one", run: () => openTimelapse() },
     { label: "Add a task", hint: "Study Room", run: () => navigate("study/add-task") },
     { label: "Signals", hint: "messages, circles, rooms", run: go("signals") },
     { label: "Join a room with a code", hint: "Signals", run: () => navigate("signals/join") },
@@ -331,12 +336,17 @@ export async function enterShell({ firstTime = false, pendingJoin = null } = {})
   // The first open of each day: the dawn (the day a world is born, the
   // film was enough; the open is still recorded).
   await maybeDawn({ quiet: firstTime }).catch((e) => console.error(e));
+  // A new week: last week's chronicle, once.
+  if (!firstTime) await maybeChronicle().catch((e) => console.error(e));
   rulesReminder({ firstTime });
+  // Discoveries reached since last time, then whenever something changes.
+  checkMomentsSoon(firstTime ? 6000 : 900);
+  if (!wasActive) on("any", () => checkMomentsSoon());
 }
 
 // Left open overnight: the next morning still gets its dawn.
 document.addEventListener("visibilitychange", () => {
-  if (active && !document.hidden && dawnDue()) maybeDawn().catch((e) => console.error(e));
+  if (active && !document.hidden && dawnDue()) maybeDawn().then(() => maybeChronicle()).catch((e) => console.error(e));
 });
 
 export function leaveShell() {

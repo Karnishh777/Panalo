@@ -14,6 +14,9 @@ import { state } from "../../../src/state.js";
 import { activeDays } from "../model/world-model.js";
 import { monthSky, journal, MOODS, ENERGY, DONE } from "../model/daily.js";
 import { openCheckin } from "../checkin.js";
+import { season } from "../model/chronicle.js";
+import { playChronicle } from "../chronicle.js";
+import { openTimelapse } from "../timelapse.js";
 
 let root;
 let legendEl;
@@ -23,6 +26,7 @@ let logsEl;
 let titleEl;
 let subEl;
 let skyEl;
+let seasonEl;
 let journalEl;
 let journalShown = 14;
 let dock = null;
@@ -50,6 +54,12 @@ function render() {
   const s = w.stats;
   titleEl.textContent = store.student?.world_name || "Your world";
   subEl.textContent = `${s.ageDays === 0 ? "Born today" : `${s.ageDays} day${s.ageDays === 1 ? "" : "s"} old`}. Every feature here is something you actually did — drag to turn it.`;
+  const se = season(store.student?.born_at);
+  seasonEl.replaceChildren(
+    el("span", { class: "tag tone-world", text: `Season ${se.number} · ${se.name}` }),
+    el("span", { class: "season-meter", role: "progressbar", "aria-valuemin": "1", "aria-valuemax": String(se.length), "aria-valuenow": String(se.day), "aria-label": `Day ${se.day} of ${se.length} of this season` }, [el("i", { style: `width:${Math.round((se.day / se.length) * 100)}%` })]),
+    el("span", { class: "faint", text: se.left ? `day ${se.day} of ${se.length} · ${se.left} to go` : `last day of ${se.name}` })
+  );
   globe?.setLayers(w.layers, w.moons);
 
   legendEl.replaceChildren(
@@ -313,6 +323,7 @@ export function mount(section) {
   root = el("div", { class: "world" });
   titleEl = el("h1");
   subEl = el("p", { class: "s-sub" });
+  seasonEl = el("p", { class: "season-line" });
   legendEl = el("ul", { class: "legend" });
   moonsEl = el("ul", { class: "moons" });
   discEl = el("div");
@@ -323,8 +334,13 @@ export function mount(section) {
   const stage = el("div", { class: "world-stage" }, [canvas]);
   root.append(
     el("div", { class: "s-head" }, [
-      el("div", {}, [el("p", { class: "kicker toned tone-world", text: "World" }), titleEl, subEl]),
-      el("div", { class: "s-actions" }, [el("button", { type: "button", class: "btn btn-quiet btn-sm", text: "Rename", onClick: rename }), el("button", { type: "button", class: "btn btn-primary", text: "Log an activity", onClick: openLog })]),
+      el("div", {}, [el("p", { class: "kicker toned tone-world", text: "World" }), titleEl, subEl, seasonEl]),
+      el("div", { class: "s-actions" }, [
+        el("button", { type: "button", class: "btn btn-quiet btn-sm", text: "Rename", onClick: rename }),
+        el("button", { type: "button", class: "btn btn-ghost btn-sm", id: "world-timelapse", text: "Watch it grow", onClick: () => openTimelapse() }),
+        el("button", { type: "button", class: "btn btn-ghost btn-sm", id: "world-chronicle", text: "Last week", onClick: () => playChronicle() }),
+        el("button", { type: "button", class: "btn btn-primary", text: "Log an activity", onClick: openLog }),
+      ]),
     ]),
     el("div", { class: "world-grid" }, [
       stage,

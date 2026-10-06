@@ -1067,8 +1067,18 @@
     db.daily_entries.push({ id: uuid(), user_id: alex.id, day: localDay(yesterday), opened_at: yesterday.toISOString(), intention: null, intention_done: null, mood: null, energy: null, learned: null, win: null, closed_at: null, created_at: yesterday.toISOString(), updated_at: yesterday.toISOString() });
     if (QA.dawn) {
       // A world born nine days ago, and an hour of focus since yesterday's visit.
-      db.student_profiles.push({ user_id: alex.id, world_name: "Kepler QA", interests: ["physics"], born_at: ago(9 * 1440), device_state: {}, created_at: ago(9 * 1440) });
+      db.student_profiles.push({ user_id: alex.id, world_name: "Kepler QA", interests: ["physics"], born_at: ago(15 * 1440), device_state: {}, created_at: ago(15 * 1440) });
       db.focus_sessions.push({ id: uuid(), user_id: alex.id, started_at: ago(70), ended_at: ago(10), focused_minutes: 60, planned_minutes: 60, completed: true, subject: "Physics", task_id: null, created_at: ago(10) });
+      // Last week (batch 2's chronicle): two subjects, a finished task, a closed day.
+      const monday = new Date();
+      monday.setHours(0, 0, 0, 0);
+      monday.setDate(monday.getDate() - ((monday.getDay() + 6) % 7));
+      const lw = (d, h) => { const x = new Date(monday); x.setDate(x.getDate() - 7 + d); x.setHours(h, 0, 0, 0); return x; };
+      for (const [d, h, m, subject] of [[0, 9, 90, "Physics"], [2, 16, 30, "Chemistry"], [3, 10, 45, "Physics"]]) {
+        db.focus_sessions.push({ id: uuid(), user_id: alex.id, started_at: lw(d, h).toISOString(), ended_at: new Date(lw(d, h).getTime() + m * 60000).toISOString(), focused_minutes: m, planned_minutes: m, completed: true, subject, task_id: null, created_at: lw(d, h).toISOString() });
+      }
+      db.student_tasks.push({ id: uuid(), user_id: alex.id, title: "Lab report", subject: "Physics", due_at: null, done_at: lw(2, 18).toISOString(), created_at: lw(0, 8).toISOString() });
+      db.daily_entries.push({ id: uuid(), user_id: alex.id, day: localDay(lw(3, 12)), opened_at: lw(3, 8).toISOString(), intention: "Finish the lab report", intention_done: "yes", mood: 4, energy: 3, learned: "Snell's law, finally", win: null, closed_at: lw(3, 21).toISOString(), created_at: lw(3, 8).toISOString(), updated_at: lw(3, 21).toISOString() });
     }
     if (!QA.dawn) db.daily_entries.push({ id: uuid(), user_id: alex.id, day: localDay(new Date()), opened_at: nowIso(), intention: null, intention_done: null, mood: null, energy: null, learned: null, win: null, closed_at: null, created_at: nowIso(), updated_at: nowIso() });
 
