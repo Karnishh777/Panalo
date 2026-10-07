@@ -1275,3 +1275,15 @@ html[data-motion="reduce"] .hero-flare {
 html[data-look="verse"] canvas[data-renderer="2d"] {
   filter: contrast(1.35) saturate(1.5) drop-shadow(-3px 0 0 rgba(41, 240, 255, 0.7)) drop-shadow(3px 0 0 rgba(255, 46, 99, 0.7));
 }
+
+/* The landing, in Verse: the second line sprayed in Verse's own inks. */
+html[data-look="verse"] .ht-serif {
+  background: linear-gradient(100deg, #f7f4ff 0%, #ff2e63 45%, #f7f4ff 70%, #29f0ff 100%);
+  background-size: 200% 100%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  filter: drop-shadow(-3px 0 0 rgba(41, 240, 255, 0.7)) drop-shadow(3px 0 0 rgba(255, 46, 99, 0.6));
+}
+html[data-look="verse"] .hero-kicker {
+  color: var(--ink);
+}
