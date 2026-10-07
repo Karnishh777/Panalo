@@ -11,7 +11,8 @@ import { state } from "../../src/state.js";
 import { startInbox, stopInbox } from "./signals-data.js";
 import { settleTimer } from "./timer-state.js";
 import { reducedMotion } from "./motion.js";
-import { drift, punch, burstOn, calm } from "./fx.js";
+import { drift, punch, burstOn, calm, comic } from "./fx.js";
+import { enter, LOOKS, setLook } from "./looks.js";
 import { startModeration, stopModeration } from "./moderation-badge.js";
 import { startSync, stopSync } from "./sync.js";
 import { rulesReminder } from "./rules-reminder.js";
@@ -49,17 +50,19 @@ const EXPRESSIVE = new Set(["now", "world", "drift"]);
 
 // Arriving somewhere expressive: an ink slash in that surface's colour, and
 // its parts cut in one after another. Never with reduced motion.
+//
+// Every surface arrives in the look's own way (js/looks.js): Glass out of a
+// soft focus, Signal dot by dot, Verse in a glitch with its panels slammed
+// down. The Study Room just appears. In Verse, the expressive places also
+// get the ink slash in their colour.
 function arrive(name, section) {
   ambient?.setPaused(!EXPRESSIVE.has(name));
-  if (reducedMotion() || !EXPRESSIVE.has(name)) return;
+  if (reducedMotion() || name === "study") return;
+  enter(section);
+  if (!EXPRESSIVE.has(name) || !comic()) return;
   const wipe = el("div", { class: "fx-wipe", "aria-hidden": "true", style: `--wipe:${TONES[name] || "#9ad8ff"}` }, [el("i"), el("i")]);
   document.body.append(wipe);
   setTimeout(() => wipe.remove(), 800);
-  section.classList.remove("fx-enter");
-  void section.offsetWidth;
-  section.classList.add("fx-enter");
-  clearTimeout(section.fxTimer);
-  section.fxTimer = setTimeout(() => section.classList.remove("fx-enter"), 1400);
 }
 
 const mounted = new Map(); // name -> module
@@ -164,6 +167,7 @@ function warpItems() {
       { label: "Journal", hint: "World · the days you've kept", run: () => navigate("world/journal") },
     ]),
     { label: "Last week's chronicle", hint: "your week, as a story", run: () => playChronicle() },
+    ...LOOKS.map((l) => ({ label: `Look: ${l.name}`, hint: l.line, run: () => setLook(l.id) })),
     { label: "Watch your world grow", hint: "World · a time-lapse from day one", run: () => openTimelapse() },
     { label: "Add a task", hint: "Study Room", run: () => navigate("study/add-task") },
     { label: "Signals", hint: "messages, circles, rooms", run: go("signals") },

@@ -9,6 +9,7 @@ import { showParent } from "./parent.js";
 import { runBirth, needsBirth } from "./birth.js";
 import { store, loadStudentProfile, loadAll, resetStore } from "./store.js";
 import { initShell, enterShell, leaveShell } from "./shell.js";
+import { initLooks } from "./looks.js";
 import { reducedMotion } from "./motion.js";
 import { showToast } from "./ui.js";
 import { state } from "../../src/state.js";
@@ -164,6 +165,7 @@ initAuth({
     $("auth").hidden = false;
   },
 });
+initLooks();
 initShell({ signOut, replayBirth: () => runBirth({ replay: true, onDone: () => {} }) });
 
 captureJoin();

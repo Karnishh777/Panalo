@@ -7,6 +7,7 @@ import { supabaseClient } from "../../../src/client.js";
 import { rewrapPrivateKey } from "../../../src/encryption.js";
 import { validatePassword, describePasswordPolicy, breachedPassword } from "../../../src/password.js";
 import { state } from "../../../src/state.js";
+import { lookPicker } from "../looks.js";
 
 let root;
 let ctx;
@@ -84,6 +85,11 @@ export function show() {
   const notifySupported = "Notification" in window;
   root.replaceChildren(
     el("div", { class: "s-head" }, [el("div", {}, [el("p", { class: "kicker toned tone-focus", text: "Settings" }), el("h1", { text: "How Panalo behaves for you" }), el("p", { class: "s-sub", text: `Signed in as @${state.currentUsername}${state.currentUser?.email ? ` · ${state.currentUser.email}` : ""}. Your settings follow you to every device you sign in on.` })])]),
+    el("section", { class: "panel tone-world settings-look" }, [
+      el("div", { class: "panel-head" }, [el("h2", { text: "Look" })]),
+      el("p", { class: "muted", text: "How all of Panalo looks and moves. Your choice is the default on every device you sign in on; the Look button in the top bar switches it any time." }),
+      lookPicker(),
+    ]),
     el("div", { class: "settings-cols" }, [
       el("section", { class: "panel tone-focus" }, [
         el("div", { class: "panel-head" }, [el("h2", { text: "Motion and sound" })]),

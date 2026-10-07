@@ -25,10 +25,23 @@ import { getLight, onLight, lightVector } from "./world-light.js";
  * otherwise with the 2D renderer below. Same contract either way.
  */
 export function createGlobe(canvas, opts = {}) {
+  // Which renderer drew it is marked on the canvas: the Verse look inks the
+  // 2D one with CSS, the GPU one in its own composite pass.
   if (!opts.force2d && glSupported()) {
     const g = createGlobeGL(canvas, opts);
-    if (g) return g;
+    if (g) {
+      canvas.dataset.renderer = "webgl";
+      return g;
+    }
   }
+  // A canvas that has handed out a WebGL context can never draw in 2D: if
+  // the GPU path gave up after taking it, draw on a fresh copy instead.
+  if (!canvas.getContext("2d")) {
+    const fresh = canvas.cloneNode(false);
+    canvas.replaceWith(fresh);
+    canvas = fresh;
+  }
+  canvas.dataset.renderer = "2d";
   return createGlobe2D(canvas, opts);
 }
 

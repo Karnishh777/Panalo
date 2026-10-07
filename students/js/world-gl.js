@@ -500,18 +500,98 @@ void main() {
   gl_FragColor = vec4(c, 1.0);
 }`;
 
+// The composite: bloom added back, then the look's way of seeing the world.
+//   style 0  filmed (Glass): as rendered.
+//   style 1  comic (Verse): inks printed out of register, light cut into cel
+//            bands, halftone in the shade, an ink line round every edge.
+//   style 2  dot matrix (Signal): the world as a field of round LEDs, white
+//            and grey by brightness, red where it glows warm (cities, dusk).
+//   style 3  noir (another universe, glimpsed in Verse): black and white,
+//            hard contrast, heavy screen.
+//   style 4  8-bit (another universe): big pixels, a tiny palette.
 const COMPOSITE = `
 precision mediump float;
 varying vec2 vP;
 uniform sampler2D uTex;
 uniform sampler2D uBloom;
 uniform float uBloomK;
-void main() {
-  vec2 uv = vP * 0.5 + 0.5;
+uniform float uStyle;
+uniform vec2 uPx;      // one pixel, in uv
+uniform float uDot;    // halftone / LED cell, in pixels
+float lum(vec3 c) { return dot(c, vec3(0.299, 0.587, 0.114)); }
+vec4 scene(vec2 uv) {
   vec4 s = texture2D(uTex, uv);
   vec3 b = texture2D(uBloom, uv).rgb * uBloomK;
   vec3 c = s.rgb + b * (1.0 - s.rgb);            // screen, so it never clips
-  float a = max(s.a, max(c.r, max(c.g, c.b)));
+  return vec4(c, max(s.a, max(c.r, max(c.g, c.b))));
+}
+float halftone(float l, float cell, float lo) {
+  vec2 q = mat2(0.7071, -0.7071, 0.7071, 0.7071) * gl_FragCoord.xy / cell;
+  float d = length(fract(q) - 0.5);
+  float r = clamp((lo - l) * 0.9, 0.0, 0.5);
+  return smoothstep(r, r - 0.08, d) * step(0.02, r);
+}
+float edges(vec2 uv, float k) {
+  float lx = lum(texture2D(uTex, uv + vec2(uPx.x * k, 0.0)).rgb) - lum(texture2D(uTex, uv - vec2(uPx.x * k, 0.0)).rgb);
+  float ly = lum(texture2D(uTex, uv + vec2(0.0, uPx.y * k)).rgb) - lum(texture2D(uTex, uv - vec2(0.0, uPx.y * k)).rgb);
+  float ax = texture2D(uTex, uv + vec2(uPx.x * k * 1.3, 0.0)).a - texture2D(uTex, uv - vec2(uPx.x * k * 1.3, 0.0)).a;
+  float ay = texture2D(uTex, uv + vec2(0.0, uPx.y * k * 1.3)).a - texture2D(uTex, uv - vec2(0.0, uPx.y * k * 1.3)).a;
+  return max(smoothstep(0.1, 0.3, length(vec2(lx, ly))) * 0.8, smoothstep(0.25, 0.6, length(vec2(ax, ay))));
+}
+void main() {
+  vec2 uv = vP * 0.5 + 0.5;
+  vec4 s = scene(uv);
+  vec3 c = s.rgb;
+  float a = s.a;
+  if (uStyle > 0.5 && uStyle < 1.5) {
+    // Comic.
+    vec2 off = vec2(uPx.x * 2.5, uPx.y * 0.8);
+    vec4 sr = scene(uv + off);
+    vec4 sb = scene(uv - off);
+    c = vec3(sr.r, c.g, sb.b);
+    a = max(a, max(sr.a, sb.a) * 0.9);
+    float l = lum(c);
+    float cel = floor(l * 4.0 + 0.55) / 4.0;
+    c *= mix(1.0, cel / max(l, 0.02), 0.65);
+    float l2 = lum(c);
+    c = clamp(mix(vec3(l2), c, 1.5), 0.0, 1.0);
+    c = mix(c, c * vec3(0.55, 0.18, 0.5), halftone(l, uDot, 0.62) * 0.85);
+    float ink = edges(uv, 1.5);
+    c = mix(c, vec3(0.02, 0.01, 0.04), ink);
+    a = max(a, ink * step(0.05, s.a));
+  } else if (uStyle > 1.5 && uStyle < 2.5) {
+    // Dot matrix: one LED per cell, sized by the light at its centre.
+    vec2 cell = floor(gl_FragCoord.xy / uDot);
+    vec2 centre = (cell + 0.5) * uDot;
+    vec4 m = scene(centre * uPx);
+    float l = lum(m.rgb);
+    // Red only for real glow -- city lights, the sunset band -- not ochre land.
+    float warm = smoothstep(0.26, 0.38, m.r - m.g) * step(0.3, m.r);
+    float d = length(gl_FragCoord.xy - centre) / uDot;
+    float r = m.a > 0.04 ? mix(0.13, 0.46, sqrt(clamp(l * 1.4, 0.0, 1.0))) : 0.0;
+    float led = smoothstep(r, r - 0.09, d);
+    vec3 col = mix(vec3(0.3 + 0.7 * clamp(l * 1.5, 0.0, 1.0)), vec3(1.0, 0.23, 0.19), warm);
+    c = col * led;
+    a = led * clamp(m.a * 1.6, 0.0, 1.0);
+    c *= a > 0.0 ? 1.0 : 0.0;
+  } else if (uStyle > 2.5 && uStyle < 3.5) {
+    // Noir.
+    float l = lum(c);
+    float v = smoothstep(0.18, 0.5, l);
+    v = max(v - halftone(l, uDot * 0.8, 0.75) * 0.9, 0.0);
+    float ink = edges(uv, 1.5);
+    c = vec3(v * (1.0 - ink));
+    a = max(a, ink * step(0.05, s.a));
+  } else if (uStyle > 3.5) {
+    // 8-bit.
+    float big = uDot * 1.6;
+    vec2 centre = (floor(gl_FragCoord.xy / big) + 0.5) * big;
+    vec4 m = scene(centre * uPx);
+    c = floor(m.rgb * 4.0 + 0.5) / 4.0;
+    a = step(0.3, m.a);
+    c *= a;
+  }
+  c = min(c, vec3(a));
   gl_FragColor = vec4(c, a);
 }`;
 
@@ -637,6 +717,20 @@ export function createGlobeGL(canvas, { seed, tilt = 0.38, interactive = false, 
   // frame (a turning world judders at 30), and the glow.
   const low = deviceTier().tier === "low";
   const wantBloom = bloom ?? !low;
+  // Each look sees the world its own way (in the composite pass), so the
+  // passes exist wherever that might be wanted -- not in the film, whose
+  // own grade does the work. Verse is drawn as a comic, and now and then
+  // the world slips into another universe's style for a moment.
+  const styleOk = bloom !== false;
+  const STYLE = { glass: 0, verse: 1, signal: 2 };
+  let slip = null; // { style, until }
+  const styleNow = (t) => {
+    if (!styleOk) return 0;
+    const look = document.documentElement.dataset.look;
+    if (look === "verse" && slip && t < slip.until) return slip.style;
+    return STYLE[look] || 0;
+  };
+  const comicNow = () => styleOk && document.documentElement.dataset.look === "verse";
   let prog;
   let u = {};
   let post = null; // the bloom passes, when on
@@ -653,7 +747,7 @@ export function createGlobeGL(canvas, { seed, tilt = 0.38, interactive = false, 
     for (const name of ["uExtent", "uAspect", "uRot", "uCloudShift", "uTime", "uTilt", "uSea", "uAtmo", "uAurora", "uCloudCover", "uRing", "uForest", "uGlow", "uNight", "uLight", "uRingN", "uMoon", "uMoonVal", "uRes"]) u[name] = U(name);
     ["uHeight", "uLights", "uClouds", "uMoist", "uNoise"].forEach((name, i) => gl.uniform1i(U(name), i + 1));
     post = null;
-    if (wantBloom) {
+    if (wantBloom || styleOk) {
       try {
         const mk = (frag, names) => {
           const p = program(gl, frag);
@@ -664,7 +758,7 @@ export function createGlobeGL(canvas, { seed, tilt = 0.38, interactive = false, 
         post = {
           bright: mk(BRIGHT, ["uTex", "uTexel"]),
           blur: mk(BLUR, ["uTex", "uDir"]),
-          comp: mk(COMPOSITE, ["uTex", "uBloom", "uBloomK"]),
+          comp: mk(COMPOSITE, ["uTex", "uBloom", "uBloomK", "uStyle", "uPx", "uDot"]),
           scene: null, a: null, b: null,
         };
       } catch (e) {
@@ -827,7 +921,8 @@ export function createGlobeGL(canvas, { seed, tilt = 0.38, interactive = false, 
   function draw(t) {
     if (destroyed || lost) return;
     size();
-    const bloomNow = post && ready && targetsFor(canvas.width, canvas.height);
+    const style = styleNow(t);
+    const bloomNow = post && ready && (wantBloom || style) && targetsFor(canvas.width, canvas.height);
     gl.bindFramebuffer(gl.FRAMEBUFFER, bloomNow ? post.scene.fb : null);
     gl.viewport(0, 0, canvas.width, canvas.height);
     gl.clearColor(0, 0, 0, 0);
@@ -865,7 +960,10 @@ export function createGlobeGL(canvas, { seed, tilt = 0.38, interactive = false, 
       gl.activeTexture(gl.TEXTURE7);
       gl.bindTexture(gl.TEXTURE_2D, a.t);
       gl.uniform1i(comp.loc.uBloom, 7);
-      gl.uniform1f(comp.loc.uBloomK, 0.7);
+      gl.uniform1f(comp.loc.uBloomK, wantBloom ? 0.7 : 0);
+      gl.uniform1f(comp.loc.uStyle, style);
+      gl.uniform2f(comp.loc.uPx, 1 / canvas.width, 1 / canvas.height);
+      gl.uniform1f(comp.loc.uDot, Math.max(4, Math.round(canvas.width / (style === 2 ? 64 : 90))));
     });
   }
 
@@ -885,6 +983,21 @@ export function createGlobeGL(canvas, { seed, tilt = 0.38, interactive = false, 
   const loop = animationLoop(canvas, (t, dt) => {
     const lively = dragging || Math.abs(fling) > 0.01 || Math.abs(pitchNow - motion.pitch) > 0.001 || Math.abs(zoomNow - motion.zoom) > 0.001;
     acc += dt;
+    // Verse: every so often the world slips into another universe.
+    if (comicNow() && !reducedMotion()) {
+      if (!slip) slip = { style: 1, until: 0, next: t + 6000 + Math.random() * 5000 };
+      if (t > slip.next) {
+        slip = { style: [2, 3, 4][Math.floor(Math.random() * 3)], until: t + 450, next: t + 7000 + Math.random() * 6000 };
+        canvas.dispatchEvent(new CustomEvent("universe-slip", { bubbles: true, detail: { style: slip.style } }));
+      }
+    }
+    // Verse animates on twos, like the comic it is: 12 drawings a second.
+    if (comicNow() && !lively && !(slip && t < slip.until)) {
+      if (acc < 1000 / 12) return;
+      const step = acc / 1000;
+      acc = 0;
+      return advance(t, step);
+    }
     skip = low && !skip;
     if (skip && !lively) return;
     const step = acc / 1000;
@@ -963,6 +1076,10 @@ export function createGlobeGL(canvas, { seed, tilt = 0.38, interactive = false, 
     if (!still()) loop.start();
   });
 
+  // A change of look redraws a still world (reduced motion) at once.
+  const onLookChange = () => draw(performance.now());
+  window.addEventListener("panalo:look", onLookChange);
+
   let ro = null;
   if ("ResizeObserver" in window) {
     ro = new ResizeObserver(() => draw(performance.now()));
@@ -1018,6 +1135,7 @@ export function createGlobeGL(canvas, { seed, tilt = 0.38, interactive = false, 
     },
     destroy() {
       destroyed = true;
+      window.removeEventListener("panalo:look", onLookChange);
       dropTargets();
       loop.destroy();
       ro?.disconnect();

@@ -54,6 +54,32 @@ landing ──► the crossing (sign in / sign up) ──► first time? the bir
   sign-in.
 - **Moderation** (`#/moderate`): reports and data requests for moderators;
   a passphrase door for anyone else (HOSTING.md → Moderation).
+- **Looks** (`js/looks.js`, `css/looks.css`): three complete ways the whole
+  app (and the landing) looks and moves, chosen from the Look button in the
+  top bar or on the landing, from Warp ("Look: …"), or in Settings, where
+  it's your default. It's a preference, so it follows you to every device;
+  `js/boot.js` applies it (and loads its fonts) before the first paint.
+  - **Glass** (default): frosted, layered panels over your world, Instrument
+    Serif headlines, light that catches the glass under your pointer; the
+    photoreal world; arrivals dissolve in from a soft focus; light glints
+    and soft exposure blooms instead of comic hits; dust in a sunbeam.
+  - **Signal** (after Nothing): black, white, grey and one red (for what's
+    live, now or waiting); Doto dot-matrix display type, Space Grotesk and
+    Space Mono; rounded tiles with LED glyph strips that light as you come
+    near; Nothing-style switches; the world drawn as a field of LEDs (red
+    only where it glows: cities, dusk); arrivals resolve dot by dot.
+  - **Verse** (the special one): your day in orbit -- on wide screens the
+    Now log's panels hang either side of your world -- drawn like a modern
+    comic torn between universes. Ink black, hot pink, electric cyan, paper
+    white; Anton poster headlines printed out of register and twitching on
+    twos; torn-tape labels; white ink frames with offset shadows that glitch
+    when touched; spray paint where your pointer goes; rifts flickering in
+    the dark; lettered sound effects and speed lines on actions; the world
+    printed as a comic (cel bands, halftone, ink, misregistration),
+    animated on twos, and now and then slipping for a moment into another
+    universe's style (Signal, noir, 8-bit) with a label saying which.
+  Everything that moves stands still with reduced motion; the Study Room
+  stays quiet in every look.
 - **Effects with a purpose**: ink, petals and button hits only on Now,
   World and Drift. Signals, Calendar, Archive, Settings, Safety and
   Moderation stay still; the Study Room is the quietest of all.
