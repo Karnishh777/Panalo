@@ -338,7 +338,8 @@ function renderHistory() {
   const subjects = [...bySubject].sort((a, b) => b[1] - a[1]).slice(0, 4);
   const topMin = subjects[0]?.[1] || 1;
   const deep = store.sessions.filter((s) => Date.parse(s.started_at) >= startOfWeek(Date.now()).getTime() && s.quality === 3).length;
-  historyEl.replaceChildren(
+  // (Filtered: replaceChildren would print a null as the word "null".)
+  historyEl.replaceChildren(...[
     el("div", { class: "hist-bars", role: "img", "aria-label": `Focus over the last seven days: ${days.map((d, i) => `${d.toLocaleDateString(undefined, { weekday: "short" })} ${minutes[i]} minutes`).join(", ")}` },
       days.map((d, i) =>
         el("div", { class: `hist-bar${i === 6 ? " today" : ""}` }, [
@@ -353,8 +354,8 @@ function renderHistory() {
       : null,
     todays.length
       ? el("ul", { class: "log hist-log" }, todays.map((s) => el("li", {}, [el("span", { class: "t", text: clockTime(s.started_at) }), el("span", { text: `${formatMinutes(s.focused_minutes)}${s.subject ? ` · ${s.subject}` : ""}${s.completed ? "" : " · ended early"}` })])))
-      : el("p", { class: "faint", text: "No sessions yet today." })
-  );
+      : el("p", { class: "faint", text: "No sessions yet today." }),
+  ].filter(Boolean));
 }
 
 // ---- mount ---------------------------------------------------------------------
