@@ -119,7 +119,7 @@ landing ──► the crossing (sign in / sign up) ──► first time? the bir
 | `js/signals-data.js` | Conversations, unread, sending, circles, rooms, door, block, report. |
 | `js/archive-data.js` | Private-bucket uploads, downloads, previews. |
 | `js/world-surface.js` | The world's terrain, colour and night lights, generated once per seed in idle time and cached. |
-| `js/world-gl.js` | The world in WebGL: one fragment shader ray-traces the planet, ring and moons. Continents come from the seeded textures; finer detail is made per pixel from a tiling noise sampled three ways round the sphere (fractal coasts, ridges, beaches and shallows, torn cloud edges, city lights, cratered moons). Drag to spin and tip, with momentum; speed, direction, zoom; a manual mode the film drives. |
+| `js/world-gl.js` | The world in WebGL: one fragment shader ray-traces the planet, ring and moons. Continents come from the seeded textures; finer detail is made per pixel from a tiling noise sampled three ways round the sphere (fractal coasts, ridges, floes, wind-stretched cloud and cirrus, clustered city lights and roads, cratered moons). Lit like a photograph: linear light with Earth-like colours, a scattering atmosphere (blue limb, gold terminator, backlit glow), a cloud deck above the ground, filmic tone curve, dither, anti-aliased edges, and a bloom pass with 60 fps away from weak devices (`device-tier.js`). Drag to spin and tip, with momentum; speed, direction, zoom; a manual mode the film drives. |
 | `js/world-render.js` | Picks WebGL when the GPU is real, otherwise the 2D canvas globe; same `setLayers()` contract either way. |
 | `js/dayorbit.js` | The SVG day orbit. |
 | `js/ambient.js` | Generated study sound (Web Audio, no files). |

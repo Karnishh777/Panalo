@@ -149,7 +149,7 @@ export function createFilm(host, { seed, layers, cues = [], plates = {}, onFallb
     const gc = document.createElement("canvas");
     const gs = Math.min(Q.globe, Math.max(Math.min(1024, Q.globe), Math.round(Math.min(window.innerWidth, window.innerHeight) * Math.min(2, window.devicePixelRatio || 1))));
     gc.width = gc.height = gs;
-    globe = createGlobeGL(gc, { seed, manual: true, maxPixels: gs });
+    globe = createGlobeGL(gc, { seed, manual: true, maxPixels: gs, bloom: false }); // the grade blooms the whole frame
     globe?.setLayers(layers);
   }
 

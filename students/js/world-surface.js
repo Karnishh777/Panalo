@@ -152,24 +152,26 @@ export function paint(surface, L) {
       if (isLand[k]) {
         const up = Math.min(1, (h - sea) / 0.18);
         const green = moistRank[k] < L.forest;
+        // The same palette as the GPU world: olive and forest-dark where
+        // it's green, ochre where it's dry, grey rock, then snow.
         if (green) {
-          r = mix(46, 92, up); g = mix(118, 140, up); b = mix(84, 96, up);
+          r = mix(40, 88, up); g = mix(58, 82, up); b = mix(28, 62, up);
         } else {
-          r = mix(150, 176, up); g = mix(128, 160, up); b = mix(96, 140, up);
+          r = mix(158, 120, up); g = mix(116, 100, up); b = mix(72, 80, up);
         }
-        if (up > 0.82) { r = mix(r, 236, (up - 0.82) * 5); g = mix(g, 240, (up - 0.82) * 5); b = mix(b, 246, (up - 0.82) * 5); }
+        if (up > 0.82) { r = mix(r, 214, (up - 0.82) * 5); g = mix(g, 220, (up - 0.82) * 5); b = mix(b, 228, (up - 0.82) * 5); }
       } else {
         const depth = Math.min(1, (sea - h) / 0.22);
-        r = mix(30, 8, depth); g = mix(84, 26, depth); b = mix(140, 70, depth);
+        r = mix(16, 4, depth); g = mix(54, 16, depth); b = mix(82, 40, depth);
         // Reading lights the shallows: a cyan glow along the coasts.
         if (L.glow > 0) {
           const near = Math.max(0, 1 - depth * 3.2) * L.glow;
-          r = mix(r, 70, near); g = mix(g, 230, near); b = mix(b, 220, near);
+          r = mix(r, 24, near); g = mix(g, 120, near); b = mix(b, 112, near);
         }
       }
       if (lat > 0.86) { // ice caps
         const ice = Math.min(1, (lat - 0.86) * 9);
-        r = mix(r, 232, ice); g = mix(g, 240, ice); b = mix(b, 250, ice);
+        r = mix(r, 196, ice); g = mix(g, 206, ice); b = mix(b, 218, ice);
       }
       color[k * 3] = r; color[k * 3 + 1] = g; color[k * 3 + 2] = b;
     }

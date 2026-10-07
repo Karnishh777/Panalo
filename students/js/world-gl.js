@@ -16,11 +16,22 @@
 // Every layer of your life (land, lights, aurora...) is a uniform, so a
 // change is a few numbers, not a new texture.
 //
+// It's lit like a photograph, not painted: colours are Earth-like
+// reflectances in linear light; sunlight is reddened by the air it crosses;
+// the atmosphere is a thin shell that scatters blue (Rayleigh) and glows
+// forward when backlit (Mie), hazing the limb and gilding the terminator;
+// the clouds are a separate deck above the ground (parallax, tops past the
+// edge, wind-stretched, wispy); then a filmic curve, gamma, a light grade,
+// and dither against banding. Edges are anti-aliased analytically. Away
+// from weak devices a bloom pass lets the glint, the cities, the aurora and
+// the backlit air glow, and it draws every frame.
+//
 // WebGL 1, so it runs on old phones and school laptops. If anything about it
 // fails, createGlobe() falls back to the 2D renderer.
 import { reducedMotion, animationLoop } from "./motion.js";
 import { surfaceFor, paint, thresholdFor, TW, TH } from "./world-surface.js";
 import { getLight, onLight, lightVector } from "./world-light.js";
+import { deviceTier } from "./device-tier.js";
 
 const MAX_MOONS = 6;
 const EXTENT = 1.7; // half the canvas, in planet radii, at zoom 1
@@ -44,6 +55,7 @@ uniform sampler2D uMoist;   // where forests grow
 uniform sampler2D uNoise;   // tiling detail noise, 3 channels
 uniform float uExtent, uAspect, uRot, uCloudShift, uTime, uTilt, uSea;
 uniform float uAtmo, uAurora, uCloudCover, uRing, uForest, uGlow, uNight;
+uniform vec2 uRes;           // the canvas, in pixels
 uniform vec3 uLight;        // towards the sun, view space
 uniform vec3 uRingN;        // ring plane normal, view space
 uniform vec4 uMoon[${MAX_MOONS}];     // xyz centre, w radius (0 = none)
@@ -94,7 +106,33 @@ float fbm(vec3 p, int oct) {
   return s / n;
 }
 
-vec4 shadePlanet(vec2 p, float zp) {
+const vec3 BETA = vec3(0.17, 0.42, 1.0);  // how strongly the air scatters red, green, blue
+const float SUN = 2.6;                    // sunlight, in the same units as the colours
+
+// Sunlight after crossing the air to a point where the sun stands at mu
+// (the cosine of its height): white overhead, gold low, red at the edge of
+// night, nothing past it.
+vec3 sunThrough(float mu) {
+  vec3 T = exp(-BETA * 0.32 / max(mu + 0.16, 0.03));
+  return T * smoothstep(-0.2, 0.06, mu);
+}
+
+// The ring's shadow on a point n (view space): follow the sunlight back to
+// the ring plane.
+float ringShadow(vec3 n) {
+  if (uRing <= 0.0) return 1.0;
+  vec3 Lv = normalize(uLight);
+  float den = dot(Lv, uRingN);
+  if (abs(den) < 1e-3) return 1.0;
+  float t = -dot(n, uRingN) / den;
+  if (t <= 0.0) return 1.0;
+  float rd = length(n + Lv * t);
+  float rb = 0.55 + 0.45 * sin(rd * 70.0) * sin(rd * 23.0 + 1.3);
+  float re = smoothstep(1.3, 1.34, rd) * smoothstep(1.68, 1.62, rd);
+  return 1.0 - uRing * re * rb * 0.6;
+}
+
+vec3 shadePlanet(vec2 p, float zp) {
   vec3 n = vec3(p, zp);
   vec3 f = toPlanet(n);
   vec3 L = normalize(toPlanet(uLight));
@@ -129,129 +167,223 @@ vec4 shadePlanet(vec2 p, float zp) {
   float green = smoothstep(uForest + 0.14, uForest - 0.1, moist);
   float lush = smoothstep(uForest - 0.05, uForest - 0.3, moist);
   float fine = fbm(P * 48.0, 2);
-  vec3 dry = mix(vec3(0.7, 0.58, 0.4), vec3(0.58, 0.47, 0.33), fbm(P * 15.0, 2));
-  vec3 grass = mix(vec3(0.36, 0.5, 0.27), vec3(0.12, 0.33, 0.17), lush);
+  // Colours are reflectances, in linear light, close to Earth's as seen from
+  // orbit: ochre deserts, olive grassland, near-black forest, grey rock.
+  float sand = fbm(P * 15.0, 2);
+  vec3 dry = mix(vec3(0.26, 0.17, 0.09), vec3(0.17, 0.11, 0.06), sand);
+  dry = mix(dry, vec3(0.32, 0.22, 0.12), smoothstep(0.7, 0.9, fbm(P * 31.0, 2)) * 0.5);
+  vec3 grass = mix(vec3(0.1, 0.11, 0.045), vec3(0.03, 0.055, 0.022), lush);
   vec3 lowland = mix(dry, grass, green);
-  lowland = mix(lowland, lowland * vec3(0.8, 0.9, 0.82), smoothstep(0.45, 0.75, fine) * green);
-  vec3 rock = mix(vec3(0.48, 0.4, 0.32), vec3(0.38, 0.33, 0.28), ridge);
+  lowland *= mix(1.0, 0.72, smoothstep(0.45, 0.75, fine) * green);
+  vec3 rock = mix(vec3(0.15, 0.13, 0.11), vec3(0.08, 0.07, 0.065), ridge);
   vec3 landCol = mix(lowland, rock, smoothstep(0.5, 0.85, up + (ridge - 0.5) * 0.2));
-  landCol *= 0.84 + 0.32 * fine;
-  landCol = mix(vec3(0.84, 0.77, 0.58), landCol, smoothstep(0.0, 0.025, up));
+  landCol *= 0.78 + 0.44 * fine;
+  // Valleys a little darker than ridges, as relief reads from orbit.
+  landCol *= 0.8 + 0.3 * ridge * smoothstep(0.1, 0.5, up);
+  landCol = mix(vec3(0.3, 0.24, 0.16), landCol, smoothstep(0.0, 0.02, up));
   float snow = smoothstep(0.9, 0.97, up + (d1 - 0.5) * 0.2 + ridge * 0.05);
-  landCol = mix(landCol, vec3(0.95, 0.97, 1.0), snow);
+  landCol = mix(landCol, vec3(0.72, 0.75, 0.8), snow);
 
   // Sea: deep blue, turquoise shallows, a glow along the coasts from reading.
+  // Open ocean is nearly black; only a thin rim of shallows shows colour.
   float depth = clamp((uSea - hd) / 0.22, 0.0, 1.0);
-  vec3 seaCol = mix(vec3(0.07, 0.3, 0.52), vec3(0.015, 0.07, 0.2), sqrt(depth));
-  seaCol = mix(vec3(0.1, 0.5, 0.58), seaCol, smoothstep(0.0, 0.06, depth));
-  seaCol = mix(seaCol, vec3(0.3, 0.95, 0.88), uGlow * max(0.0, 1.0 - depth * 3.2));
+  vec3 seaCol = mix(vec3(0.007, 0.028, 0.06), vec3(0.002, 0.008, 0.024), sqrt(depth));
+  seaCol = mix(vec3(0.012, 0.05, 0.058), seaCol, smoothstep(0.0, 0.025, depth));
+  seaCol = mix(seaCol, vec3(0.02, 0.13, 0.12), uGlow * max(0.0, 1.0 - depth * 5.0));
 
   vec3 albedo = mix(seaCol, landCol, land);
-  float ice = smoothstep(0.962, 0.982, abs(P.y) + (d1 - 0.5) * 0.04);
-  albedo = mix(albedo, vec3(0.92, 0.95, 1.0), ice);
+  // Polar ice: a ragged edge of floes breaking up into the sea, greyer
+  // where it's thin sea ice, bright where it's packed.
+  float floes = fbm(P * 34.0, 3);
+  float ice = smoothstep(0.958, 0.975, abs(P.y) + (d1 - 0.5) * 0.05 + (floes - 0.5) * 0.035);
+  float pack = smoothstep(0.972, 0.99, abs(P.y) + (d1 - 0.5) * 0.04);
+  albedo = mix(albedo, mix(vec3(0.42, 0.47, 0.54), vec3(0.72, 0.76, 0.82), max(pack, land)) * (0.85 + 0.3 * floes), ice);
 
   // Waves: a moving ripple on the water's normal, for the glint to break on.
   vec3 wp = P * 140.0 + vec3(uTime * 0.25, 0.0, uTime * 0.18);
   vec3 wv = tn3(wp) - 0.5;
   vec3 nw = normalize(nb + (1.0 - land) * (1.0 - ice) * 0.09 * (wv.x * east + wv.y * north));
 
-  // Clouds: big systems from the texture, torn edges from detail noise.
-  vec3 C = spinY(f, uRot + uCloudShift);
-  vec2 cuv = uvOf(f, uRot + uCloudShift);
-  vec3 warp = tn3(C * 4.0) - 0.5;
-  float cdet = fbm(C * 13.0 + warp * 3.0, 4);
-  float cbase = texture2D(uClouds, cuv).r;
-  float dens = cbase * 0.62 + cdet * 0.52 - 0.07;
+  // The shadow the clouds above cast on the ground: the cloud field, looked
+  // up a little way towards the sun.
+  float on = step(0.09, uCloudCover) * 0.85;
   float cut = 0.74 - uCloudCover * 0.55;
-  float on = step(0.09, uCloudCover);
-  float cover = on * smoothstep(cut, cut + 0.07, dens);
-  float thick = on * smoothstep(cut, cut + 0.28, dens);
   vec3 fs = normalize(f - L * 0.03);
   vec3 S = spinY(fs, uRot + uCloudShift);
-  float sdens = texture2D(uClouds, uvOf(fs, uRot + uCloudShift)).r * 0.62 + fbm(S * 13.0 + warp * 3.0, 2) * 0.52 - 0.07;
+  vec3 swarp = tn3(S * 4.0) - 0.5;
+  float sdens = texture2D(uClouds, uvOf(fs, uRot + uCloudShift)).r * 0.62 + fbm(S * 13.0 + swarp * 3.0, 2) * 0.52 - 0.07;
   float shadow = on * smoothstep(cut, cut + 0.1, sdens);
 
-  // The ring's shadow on the planet: follow the sunlight back to the ring plane.
-  float ringShade = 1.0;
-  if (uRing > 0.0) {
-    vec3 Lv = normalize(uLight);
-    float den = dot(Lv, uRingN);
-    if (abs(den) > 1e-3) {
-      float t = -dot(n, uRingN) / den;
-      if (t > 0.0) {
-        float rd = length(n + Lv * t);
-        float rb = 0.55 + 0.45 * sin(rd * 70.0) * sin(rd * 23.0 + 1.3);
-        float re = smoothstep(1.3, 1.34, rd) * smoothstep(1.68, 1.62, rd);
-        ringShade = 1.0 - uRing * re * rb * 0.6;
-      }
-    }
-  }
-
+  float ringShade = ringShadow(n);
   float d = dot(f, L);                         // the terminator
   float diff = max(dot(nw, L), 0.0);
-  vec3 sun = mix(vec3(1.0, 0.6, 0.36), vec3(1.0), smoothstep(0.0, 0.35, d));
+  // Sunlight reaching the ground has crossed the air: warmer and dimmer low.
+  vec3 sun = sunThrough(d) * SUN;
   // The night side: as dark as space, or lit by a cool moonlight -- your choice.
-  vec3 moonlit = vec3(0.5, 0.62, 1.0) * (0.025 + 0.42 * uNight * uNight) * (0.6 + 0.4 * max(dot(nw, -L) * 0.5 + 0.5, 0.0));
-  vec3 col = albedo * (sun * 1.08 * diff * ringShade + moonlit) * (1.0 - 0.4 * shadow * step(0.0, d));
+  vec3 moonlit = vec3(0.25, 0.38, 1.0) * (0.004 + 0.22 * uNight * uNight) * (0.6 + 0.4 * max(dot(nw, -L) * 0.5 + 0.5, 0.0));
+  vec3 col = albedo * (sun * diff * ringShade + moonlit) * (1.0 - 0.45 * shadow * step(0.0, d));
 
-  // Sun on water: a tight glint and a broad sheen, brighter towards the rim.
+  // Sun on water: a tight glint and a broad sheen, brighter towards the rim,
+  // and the sky mirrored at grazing angles (Fresnel).
   vec3 H = normalize(L + V);
   float nh = max(dot(nw, H), 0.0);
-  float water = (1.0 - land) * (1.0 - ice) * smoothstep(-0.05, 0.2, d) * ringShade * (1.0 - cover);
+  float water = (1.0 - land) * (1.0 - ice) * smoothstep(-0.05, 0.2, d) * ringShade * (1.0 - 0.8 * shadow);
   float fw = 0.25 + 0.75 * pow(1.0 - zp, 4.0);
-  col += vec3(1.0, 0.93, 0.8) * (pow(nh, 420.0) * 0.4 + pow(nh, 26.0) * 0.1 * fw) * water;
-  col = mix(col, col * vec3(0.8, 0.9, 1.08), (1.0 - land) * (1.0 - zp) * 0.6);
+  // (Waves roughen it: a broad soft sheen, not a mirror's pinpoint.)
+  col += sun * (pow(nh, 180.0) * 0.18 + pow(nh, 34.0) * 0.045 + pow(nh, 10.0) * 0.015 * fw) * water;
+  float fresnel = 0.02 + 0.98 * pow(1.0 - max(dot(nw, V), 0.0), 5.0);
+  col += vec3(0.06, 0.16, 0.45) * fresnel * 0.5 * water;
 
-  // Night side: cities where the lights are, sparkling in clusters.
+  // Night side: cities where the lights are, sparkling in clusters, a warm
+  // haze around the brightest.
   float night = smoothstep(0.12, -0.18, d);
-  float lights = texture2D(uLights, uv).r;
-  float town = smoothstep(0.5, 0.78, tn(P * 95.0)) + 0.5 * smoothstep(0.62, 0.8, tn(P * 210.0));
-  float city = min(1.0, lights * 3.0) * (0.25 + 1.4 * town) * land;
-  col += vec3(1.0, 0.7, 0.36) * city * night * 1.5 * (1.0 - 0.75 * cover);
+  // The lights map is coarse: blur it into a soft density of settlement,
+  // then let the detail noise place the actual lights -- bright clustered
+  // towns, sparse sparkle, and threads of road between them.
+  vec2 lt = vec2(1.6 / ${TW}.0, 1.6 / ${TH}.0);
+  float lights = (texture2D(uLights, uv).r * 2.0
+    + texture2D(uLights, uv + vec2(lt.x, 0.0)).r + texture2D(uLights, uv - vec2(lt.x, 0.0)).r
+    + texture2D(uLights, uv + vec2(0.0, lt.y)).r + texture2D(uLights, uv - vec2(0.0, lt.y)).r) / 6.0;
+  float settled = smoothstep(0.02, 0.4, lights) * land;
+  float towns = smoothstep(0.5, 0.82, tn(P * 120.0)) * 0.9 + smoothstep(0.66, 0.9, tn(P * 340.0));
+  float roads = smoothstep(0.955, 0.995, 1.0 - abs(2.0 * tn(P * 55.0) - 1.0)) * 0.45;
+  float city = settled * (towns + roads) * (0.6 + 0.6 * smoothstep(0.2, 0.7, lights));
+  col += vec3(1.0, 0.55, 0.2) * city * night * 2.6;
+  col += vec3(1.0, 0.45, 0.15) * settled * night * 0.03;
+  return col;
+}
 
-  // Clouds over everything: lit tops, darker undersides at the edges.
-  vec3 cloudCol = mix(vec3(0.72, 0.76, 0.84), vec3(1.0), thick) * (sun * 0.95 * max(d, 0.0) * ringShade + 0.03 + moonlit * 1.4);
-  col = mix(col, cloudCol, cover * (0.55 + 0.4 * thick));
+// Light scattered towards us by od of air whose sun stands at mu:
+// blue sky (Rayleigh) and the bright forward glow of haze (Mie) when the
+// sun is behind.
+vec3 scatter(float od, float mu, vec3 L) {
+  float c = -L.z;                                 // the angle between our view and the sun
+  float ray = 0.75 * (1.0 + c * c);
+  float g = 0.78;
+  float mie = (1.0 - g * g) / pow(1.0 + g * g - 2.0 * g * c, 1.5) * 0.06;
+  vec3 s = (1.0 - exp(-BETA * od)) * ray + (1.0 - exp(-od * 0.45)) * mie * vec3(1.0, 0.86, 0.7);
+  // Air just past the terminator still holds the sunset.
+  return s * sunThrough(mu) * SUN * 0.75;
+}
 
-  // Aurora: things you made, curtains over both poles.
+// The cloud deck: a shell just above the ground, so it moves over the land
+// with parallax and its tops stand out past the planet's edge.
+vec4 shadeClouds(vec3 nc) {
+  vec3 f = toPlanet(nc);
+  vec3 L = normalize(toPlanet(uLight));
+  vec3 C = spinY(f, uRot + uCloudShift);
+  vec2 cuv = uvOf(f, uRot + uCloudShift);
+  // The winds stretch weather east-west: detail is squeezed in latitude,
+  // warped twice so it swirls, then eroded so the edges go to wisps.
+  vec3 Cs = C * vec3(1.0, 2.3, 1.0);
+  weights(C);
+  vec3 warp = tn3(Cs * 3.0) - 0.5;
+  vec3 warp2 = tn3(Cs * 7.0 + warp * 2.0) - 0.5;
+  float cdet = fbm(Cs * 10.0 + warp * 3.5 + warp2 * 1.5, 5);
+  float wisp = fbm(Cs * 34.0 + warp2 * 5.0, 2);
+  float cbase = texture2D(uClouds, cuv).r;
+  float dens = cbase * 0.6 + cdet * 0.56 - 0.08 - (wisp - 0.5) * 0.2;
+  float cut = 0.74 - uCloudCover * 0.55;
+  float cover = smoothstep(cut - 0.04, cut + 0.24, dens);
+  float thick = smoothstep(cut + 0.06, cut + 0.4, dens);
+  // A faint veil of high cirrus, streaked by the jet streams, over it all.
+  float streak = fbm(C * vec3(1.3, 9.0, 1.3) + warp * 1.2, 4);
+  float cirrus = smoothstep(0.56, 0.86, streak) * smoothstep(0.25, 0.6, cbase + cdet * 0.3) * (0.05 + 0.16 * uCloudCover);
+  float d = dot(f, L);
+  // Tops lit from above, a little past the ground's terminator (the deck is
+  // higher); thick cloud brighter, thin cloud letting the ground through.
+  float lit = clamp((d + 0.1) / 1.1, 0.0, 1.0);
+  vec3 body = vec3(0.62 + 0.28 * thick);
+  vec3 moonlit = vec3(0.25, 0.38, 1.0) * (0.004 + 0.22 * uNight * uNight);
+  vec3 col = body * (sunThrough(d + 0.05) * lit * SUN + moonlit);
+  // Silver lining: thin edges glow when the sun is behind them.
+  float back = pow(max(-normalize(uLight).z, 0.0), 2.0);
+  col += sunThrough(d + 0.1) * SUN * (1.0 - thick) * back * pow(1.0 - nc.z, 1.5) * 0.9;
+  col *= ringShadow(nc);
+  float a = max(cover * (0.22 + 0.74 * thick), cirrus);
+  return vec4(col * a, a);
+}
+
+// Aurora: things you made, curtains over both poles, glowing in the dark.
+vec3 aurora(vec3 n) {
+  vec3 f = toPlanet(n);
+  vec3 L = normalize(toPlanet(uLight));
+  vec3 P = spinY(f, uRot);
+  weights(P);
+  float lat = asin(clamp(f.y, -1.0, 1.0));
   float alat = abs(lat) * 180.0 / PI;
-  float band = smoothstep(58.0, 65.0, alat) * smoothstep(80.0, 70.0, alat);
   float plon = atan(P.x, P.z);
-  float curtain = 0.5 + 0.5 * sin(plon * 9.0 + uTime * 1.3 + sin(plon * 3.0 - uTime * 0.7) * 2.4);
-  curtain *= 0.6 + 0.4 * tn(vec3(plon * 6.0, uTime * 0.6, alat * 0.3));
-  vec3 auroraCol = mix(vec3(0.3, 1.0, 0.7), vec3(0.75, 0.45, 1.0), 0.5 + 0.5 * sin(plon * 2.0 + uTime * 0.4));
-  col += auroraCol * uAurora * band * curtain * (0.35 + 1.0 * night);
+  // A thin oval round each pole that wanders and folds, hung with rays.
+  float centre = 67.0 + 2.6 * sin(plon * 3.0 + uTime * 0.21) + 1.2 * sin(plon * 8.0 - uTime * 0.37);
+  float dl = alat - centre;
+  float ribbon = exp(-dl * dl / 4.5) + 0.4 * exp(-(dl - 2.5) * (dl - 2.5) / 9.0);
+  float rays = 0.5 + 0.5 * tn(vec3(plon * 30.0, uTime * 0.5, 3.0));
+  rays *= 0.75 + 0.25 * sin(plon * 23.0 + uTime * 1.7);
+  // Green below, violet on the poleward tops.
+  vec3 col = mix(vec3(0.12, 1.0, 0.4), vec3(0.6, 0.25, 0.75), 0.4 * smoothstep(0.5, 4.0, dl));
+  float night = smoothstep(0.12, -0.18, dot(f, L));
+  // Seen edge-on near the limb the curtain is deeper, so brighter.
+  float edge = 1.0 + 1.8 * pow(1.0 - n.z, 2.0);
+  return col * uAurora * ribbon * rays * edge * (0.1 + 0.9 * night) * 0.26;
+}
 
-  // Atmosphere: a blue rim, warm where day turns to night.
-  float fres = pow(1.0 - zp, 3.0);
-  vec3 sky = mix(vec3(0.95, 0.5, 0.28), vec3(0.42, 0.7, 1.0), smoothstep(-0.1, 0.35, d));
-  col += sky * fres * (0.22 + 0.9 * uAtmo) * smoothstep(-0.25, 0.25, d);
-  // Backlit: with the sun behind the world, the air at the rim lights up.
-  float fwd = pow(max(dot(-V, L), 0.0), 3.0);
-  col += vec3(1.0, 0.74, 0.48) * pow(fres, 1.4) * fwd * (0.6 + 0.9 * uAtmo);
-  return vec4(col, 1.0);
+float hash(vec2 q) {
+  return fract(52.9829189 * fract(dot(q, vec2(0.06711056, 0.00583715))));
 }
 
 void main() {
   vec2 p = vec2(vP.x * uAspect, vP.y) * uExtent;
+  float px = 2.0 * uExtent / uRes.y;             // one pixel, in planet radii
   float r2 = dot(p, p);
+  float r = sqrt(r2);
   vec3 L = normalize(uLight);
+  // The air: thicker with more time spent with people.
+  float Hs = 0.02 + 0.022 * uAtmo;                // scale height: a thin shell
+  float K = 2.0 + 3.2 * uAtmo;                    // density
 
-  // Halo outside the planet: thicker with more time spent with people.
+  // The sky around the world: the air seen edge-on, brightest at the limb.
   vec3 col = vec3(0.0);
   float a = 0.0;
-  if (r2 > 1.0) {
-    float r = sqrt(r2);
-    float lit = 0.3 + 0.7 * max(dot(normalize(vec3(p, 0.0)), L), 0.0);
-    float back = pow(max(-L.z, 0.0), 1.5); // the sun behind: a ring of fire
-    float g = exp(-(r - 1.0) * (14.0 - 6.0 * uAtmo)) * (0.18 + 0.62 * uAtmo) * (lit + 2.2 * back * (0.35 + 0.65 * max(dot(normalize(vec3(p, 0.0)), normalize(vec3(L.xy, 0.0) + 1e-4)), 0.0)));
-    col = mix(vec3(0.45, 0.7, 1.0), vec3(1.0, 0.72, 0.45), back * 0.7) * g;
-    a = g;
+  if (r > 1.0 - px) {
+    float h = max(r - 1.0, 0.0);
+    float od = K * exp(-h / Hs) * sqrt(6.2832 * Hs * r);
+    vec3 q = vec3(p / max(r, 1e-4), 0.0);
+    vec3 glow = scatter(od, dot(q, L), L) * 0.55;
+    col = glow;
+    a = clamp(max(glow.r, max(glow.g, glow.b)), 0.0, 1.0);
   }
 
-  // Planet.
-  float zp = r2 <= 1.0 ? sqrt(1.0 - r2) : -1e9;
-  vec4 planet = zp > -1e8 ? shadePlanet(p, zp) : vec4(0.0);
+  // The ground, with the cloud deck over it, seen through the air.
+  vec4 planet = vec4(0.0);
+  float zPl = -1e9;
+  if (r < 1.0 + px) {
+    float cov = clamp((1.0 - r) / px + 0.5, 0.0, 1.0);
+    vec2 ps = r > 0.9995 ? p * (0.9995 / r) : p;
+    float zs = sqrt(max(1.0 - dot(ps, ps), 0.0));
+    vec3 g = shadePlanet(ps, zs);
+    planet = vec4(g * cov, cov);
+    zPl = zs;
+  }
+  float RC = 1.0 + 0.011;
+  if (uCloudCover >= 0.09 && r < RC + px) {
+    float covc = clamp((RC - r) / px + 0.5, 0.0, 1.0);
+    vec2 pc = r > RC * 0.9995 ? p * (RC * 0.9995 / r) : p;
+    float zc = sqrt(max(RC * RC - dot(pc, pc), 0.0));
+    vec4 cl = shadeClouds(vec3(pc, zc) / RC) * covc;
+    planet = cl + planet * (1.0 - cl.a);
+    if (r >= 1.0) zPl = zc;
+  }
+  if (r < 1.0 + px) {
+    vec2 ps = r > 0.9995 ? p * (0.9995 / r) : p;
+    float zs = sqrt(max(1.0 - dot(ps, ps), 0.0));
+    vec3 n = vec3(ps, zs);
+    // Looking down through the air: little straight down, a lot towards
+    // the edge (a Chapman-style path length), so the limb goes hazy blue.
+    float od = K * Hs / sqrt(zs * zs + 2.0 * Hs / PI);
+    vec3 ext = exp(-BETA * od * 0.14);
+    planet.rgb = planet.rgb * ext + scatter(od, dot(n, L), L) * 0.16 * planet.a;
+    planet.rgb += aurora(n) * planet.a;
+  }
 
   // Ring: where this pixel's ray crosses the ring plane. Many fine bands,
   // one dark gap, and a glow when the sun is behind it.
@@ -266,14 +398,16 @@ void main() {
       bands *= smoothstep(0.004, 0.014, abs(d - 1.5));       // the gap
       bands *= mix(0.55, 1.0, smoothstep(1.3, 1.42, d));      // a fainter inner ring
       float edge = smoothstep(1.3, 1.33, d) * smoothstep(1.68, 1.63, d);
-      float alpha = clamp(uRing * edge * bands * 0.95, 0.0, 1.0);
+      float alpha = clamp(uRing * edge * bands * 0.7, 0.0, 1.0);
       float b = dot(q, L);
       float c = dot(q, q) - 1.0;
       float shade = (b * b - c > 0.0 && -b + sqrt(b * b - c) > 0.0 && b < 0.0) ? 0.18 : 1.0;
       float facing = abs(dot(uRingN, L));
       shade *= 0.5 + 0.5 * facing;
-      vec3 tint = mix(vec3(0.86, 0.72, 0.56), vec3(1.0, 0.9, 0.74), 0.5 + 0.5 * sin(d * 37.0));
-      ring = vec4(tint * shade * (1.0 + 0.6 * pow(1.0 - facing, 3.0)), alpha);
+      vec3 tint = mix(vec3(0.42, 0.33, 0.24), vec3(0.62, 0.52, 0.4), 0.5 + 0.5 * sin(d * 37.0)) * SUN * 0.55;
+      // Backlit, the ring's dust lights up.
+      float fwdR = pow(max(-L.z, 0.0), 3.0);
+      ring = vec4(tint * shade * (1.0 + 0.6 * pow(1.0 - facing, 3.0) + 1.6 * fwdR) * alpha, alpha);
       zr = z;
     }
   }
@@ -286,40 +420,99 @@ void main() {
     if (m.w <= 0.0) continue;
     vec2 dp = p - m.xy;
     float dd = dot(dp, dp);
-    if (dd < m.w * m.w) {
-      float z = m.z + sqrt(m.w * m.w - dd);
+    float rr = m.w + px;
+    if (dd < rr * rr) {
+      float mcov = clamp((m.w - sqrt(dd)) / px + 0.5, 0.0, 1.0);
+      float z = m.z + sqrt(max(m.w * m.w - dd, 0.0));
       if (z > zm) {
         vec3 mn = vec3(dp, z - m.z) / m.w;
+        mn.z = max(mn.z, 0.0);
+        mn = normalize(mn + vec3(0.0, 0.0, 1e-4));
         weights(mn);
         float crater = fbm(mn * 3.0 + float(i) * 7.0, 3);
         float pits = smoothstep(0.62, 0.7, tn(mn * 7.0 + float(i) * 3.0));
         vec3 mb = mn + 0.35 * (tn3(mn * 7.0 + float(i) * 3.0) - 0.5) * pits;
         float lit = max(dot(normalize(mb), L), 0.0);
         float val = uMoonVal[i].x;
-        vec3 base = mix(vec3(0.45, 0.48, 0.58), vec3(0.98, 0.95, 0.88), val) * (0.75 + 0.45 * crater);
-        vec3 mc = base * (0.08 + 1.0 * lit);
+        vec3 base = mix(vec3(0.09, 0.095, 0.11), vec3(0.3, 0.28, 0.25), val) * (0.65 + 0.6 * crater);
+        vec3 mc = base * (0.01 + SUN * lit);
         if (uMoonVal[i].y > 0.5) mc += vec3(1.0, 0.85, 0.55) * 0.3 * pow(1.0 - mn.z, 2.0);
-        moon = vec4(mc, 1.0);
+        moon = vec4(mc * mcov, mcov);
         zm = z;
       }
     }
   }
 
-  // Back to front: sort the three depths, then lay them over the halo.
-  vec4 l0 = planet; float z0 = zp;
+  // Back to front: sort the three depths, then lay them over the sky.
+  // (All premultiplied.)
+  vec4 l0 = planet; float z0 = zPl;
   vec4 l1 = ring;   float z1 = zr;
   vec4 l2 = moon;   float z2 = zm;
   vec4 t; float tz;
   if (z0 > z1) { t = l0; l0 = l1; l1 = t; tz = z0; z0 = z1; z1 = tz; }
   if (z1 > z2) { t = l1; l1 = l2; l2 = t; tz = z1; z1 = z2; z2 = tz; }
   if (z0 > z1) { t = l0; l0 = l1; l1 = t; tz = z0; z0 = z1; z1 = tz; }
-  col = l0.rgb * l0.a + col * (1.0 - l0.a); a = l0.a + a * (1.0 - l0.a);
-  col = l1.rgb * l1.a + col * (1.0 - l1.a); a = l1.a + a * (1.0 - l1.a);
-  col = l2.rgb * l2.a + col * (1.0 - l2.a); a = l2.a + a * (1.0 - l2.a);
+  col = l0.rgb + col * (1.0 - l0.a); a = l0.a + a * (1.0 - l0.a);
+  col = l1.rgb + col * (1.0 - l1.a); a = l1.a + a * (1.0 - l1.a);
+  col = l2.rgb + col * (1.0 - l2.a); a = l2.a + a * (1.0 - l2.a);
 
-  // A filmic curve so lights and glints roll off instead of clipping.
+  // Everything above is linear light. A filmic curve so lights and glints
+  // roll off instead of clipping, then encoded for the screen, then a
+  // light grade: cool shadows, warm highlights.
   col = clamp((col * (2.51 * col + 0.03)) / (col * (2.43 * col + 0.59) + 0.14), 0.0, 1.0);
-  gl_FragColor = vec4(col, clamp(a, 0.0, 1.0));
+  col = pow(col, vec3(1.0 / 2.2));
+  float lum = dot(col, vec3(0.2126, 0.7152, 0.0722));
+  col *= mix(vec3(0.95, 0.99, 1.05), vec3(1.03, 1.0, 0.96), smoothstep(0.2, 0.75, lum));
+  a = clamp(max(a, max(col.r, max(col.g, col.b))), 0.0, 1.0);
+  // Dither, so the dark gradients of the air never band.
+  col += (hash(gl_FragCoord.xy) - 0.5) / 255.0 * step(0.002, a);
+  gl_FragColor = vec4(clamp(col, 0.0, a), a);
+}`;
+
+// Bloom: the brightest parts of the frame (the glint on the sea, city
+// lights, aurora, the backlit air) spill a soft glow, as they do through a
+// real lens. Bright pass and blur at a quarter of the size, so it's cheap.
+const BRIGHT = `
+precision mediump float;
+varying vec2 vP;
+uniform sampler2D uTex;
+uniform vec2 uTexel;
+void main() {
+  vec2 uv = vP * 0.5 + 0.5;
+  vec4 c = texture2D(uTex, uv + uTexel * vec2(-1.0, -1.0)) + texture2D(uTex, uv + uTexel * vec2(1.0, -1.0))
+         + texture2D(uTex, uv + uTexel * vec2(-1.0, 1.0)) + texture2D(uTex, uv + uTexel * vec2(1.0, 1.0));
+  c *= 0.25;
+  float m = max(c.r, max(c.g, c.b));
+  gl_FragColor = vec4(c.rgb * smoothstep(0.72, 1.0, m), 1.0);
+}`;
+
+const BLUR = `
+precision mediump float;
+varying vec2 vP;
+uniform sampler2D uTex;
+uniform vec2 uDir;
+void main() {
+  vec2 uv = vP * 0.5 + 0.5;
+  vec2 o1 = uDir * 1.3846, o2 = uDir * 3.2308;
+  vec3 c = texture2D(uTex, uv).rgb * 0.2270
+         + (texture2D(uTex, uv + o1).rgb + texture2D(uTex, uv - o1).rgb) * 0.3162
+         + (texture2D(uTex, uv + o2).rgb + texture2D(uTex, uv - o2).rgb) * 0.0703;
+  gl_FragColor = vec4(c, 1.0);
+}`;
+
+const COMPOSITE = `
+precision mediump float;
+varying vec2 vP;
+uniform sampler2D uTex;
+uniform sampler2D uBloom;
+uniform float uBloomK;
+void main() {
+  vec2 uv = vP * 0.5 + 0.5;
+  vec4 s = texture2D(uTex, uv);
+  vec3 b = texture2D(uBloom, uv).rgb * uBloomK;
+  vec3 c = s.rgb + b * (1.0 - s.rgb);            // screen, so it never clips
+  float a = max(s.a, max(c.r, max(c.g, c.b)));
+  gl_FragColor = vec4(c, a);
 }`;
 
 function compile(gl, type, src) {
@@ -334,10 +527,11 @@ function compile(gl, type, src) {
   return s;
 }
 
-function program(gl) {
+function program(gl, frag = FRAG) {
   const p = gl.createProgram();
   gl.attachShader(p, compile(gl, gl.VERTEX_SHADER, VERT));
-  gl.attachShader(p, compile(gl, gl.FRAGMENT_SHADER, FRAG));
+  gl.attachShader(p, compile(gl, gl.FRAGMENT_SHADER, frag));
+  gl.bindAttribLocation(p, 0, "aPos");
   gl.linkProgram(p);
   if (!gl.getProgramParameter(p, gl.LINK_STATUS)) throw new Error(`World shader: ${gl.getProgramInfoLog(p)}`);
   return p;
@@ -436,24 +630,103 @@ function rot(v, axis, a) {
  * `spin` is a speed multiplier (1 = one turn in about 40 seconds).
  * Returns null if WebGL can't be used on this canvas.
  */
-export function createGlobeGL(canvas, { seed, tilt = 0.38, interactive = false, spin = 1, maxPixels = 1400, onMotion, manual = false } = {}) {
+export function createGlobeGL(canvas, { seed, tilt = 0.38, interactive = false, spin = 1, maxPixels = 1400, onMotion, manual = false, bloom } = {}) {
   const gl = canvas.getContext("webgl", { premultipliedAlpha: true, alpha: true, antialias: false });
   if (!gl) return null;
+  // Weak devices: every other frame, and no bloom. Everyone else: every
+  // frame (a turning world judders at 30), and the glow.
+  const low = deviceTier().tier === "low";
+  const wantBloom = bloom ?? !low;
   let prog;
   let u = {};
+  let post = null; // the bloom passes, when on
   function setup() {
     prog = program(gl);
     gl.useProgram(prog);
     const buf = gl.createBuffer();
     gl.bindBuffer(gl.ARRAY_BUFFER, buf);
     gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1, -1, 1, -1, -1, 1, 1, 1]), gl.STATIC_DRAW);
-    const aPos = gl.getAttribLocation(prog, "aPos");
-    gl.enableVertexAttribArray(aPos);
-    gl.vertexAttribPointer(aPos, 2, gl.FLOAT, false, 0, 0);
+    gl.enableVertexAttribArray(0);
+    gl.vertexAttribPointer(0, 2, gl.FLOAT, false, 0, 0);
     const U = (n) => gl.getUniformLocation(prog, n);
     u = {};
-    for (const name of ["uExtent", "uAspect", "uRot", "uCloudShift", "uTime", "uTilt", "uSea", "uAtmo", "uAurora", "uCloudCover", "uRing", "uForest", "uGlow", "uNight", "uLight", "uRingN", "uMoon", "uMoonVal"]) u[name] = U(name);
+    for (const name of ["uExtent", "uAspect", "uRot", "uCloudShift", "uTime", "uTilt", "uSea", "uAtmo", "uAurora", "uCloudCover", "uRing", "uForest", "uGlow", "uNight", "uLight", "uRingN", "uMoon", "uMoonVal", "uRes"]) u[name] = U(name);
     ["uHeight", "uLights", "uClouds", "uMoist", "uNoise"].forEach((name, i) => gl.uniform1i(U(name), i + 1));
+    post = null;
+    if (wantBloom) {
+      try {
+        const mk = (frag, names) => {
+          const p = program(gl, frag);
+          const loc = {};
+          for (const n of names) loc[n] = gl.getUniformLocation(p, n);
+          return { p, loc };
+        };
+        post = {
+          bright: mk(BRIGHT, ["uTex", "uTexel"]),
+          blur: mk(BLUR, ["uTex", "uDir"]),
+          comp: mk(COMPOSITE, ["uTex", "uBloom", "uBloomK"]),
+          scene: null, a: null, b: null,
+        };
+      } catch (e) {
+        console.warn("World: no bloom.", e);
+        post = null;
+      }
+    }
+  }
+
+  // An offscreen picture to draw into.
+  function target(w, h) {
+    const t = gl.createTexture();
+    gl.activeTexture(gl.TEXTURE0);
+    gl.bindTexture(gl.TEXTURE_2D, t);
+    gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, w, h, 0, gl.RGBA, gl.UNSIGNED_BYTE, null);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+    const fb = gl.createFramebuffer();
+    gl.bindFramebuffer(gl.FRAMEBUFFER, fb);
+    gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, t, 0);
+    const ok = gl.checkFramebufferStatus(gl.FRAMEBUFFER) === gl.FRAMEBUFFER_COMPLETE;
+    gl.bindFramebuffer(gl.FRAMEBUFFER, null);
+    if (!ok) throw new Error("framebuffer incomplete");
+    return { t, fb, w, h };
+  }
+  function dropTargets() {
+    for (const k of ["scene", "a", "b"]) {
+      const x = post?.[k];
+      if (!x) continue;
+      gl.deleteTexture(x.t);
+      gl.deleteFramebuffer(x.fb);
+      post[k] = null;
+    }
+  }
+  function targetsFor(w, h) {
+    if (post.scene && post.scene.w === w && post.scene.h === h) return true;
+    dropTargets();
+    try {
+      const qw = Math.max(8, Math.round(w / 4));
+      const qh = Math.max(8, Math.round(h / 4));
+      post.scene = target(w, h);
+      post.a = target(qw, qh);
+      post.b = target(qw, qh);
+      return true;
+    } catch (e) {
+      console.warn("World: no bloom.", e);
+      dropTargets();
+      post = null;
+      return false;
+    }
+  }
+  function pass(prg, into, src, set) {
+    gl.bindFramebuffer(gl.FRAMEBUFFER, into ? into.fb : null);
+    gl.viewport(0, 0, into ? into.w : canvas.width, into ? into.h : canvas.height);
+    gl.useProgram(prg.p);
+    gl.activeTexture(gl.TEXTURE6);
+    gl.bindTexture(gl.TEXTURE_2D, src.t);
+    gl.uniform1i(prg.loc.uTex, 6);
+    set?.();
+    gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
   }
   try {
     setup();
@@ -532,7 +805,6 @@ export function createGlobeGL(canvas, { seed, tilt = 0.38, interactive = false, 
       canvas.width = w;
       canvas.height = h;
     }
-    gl.viewport(0, 0, w, h);
   }
 
   function moonUniforms(t) {
@@ -555,9 +827,14 @@ export function createGlobeGL(canvas, { seed, tilt = 0.38, interactive = false, 
   function draw(t) {
     if (destroyed || lost) return;
     size();
+    const bloomNow = post && ready && targetsFor(canvas.width, canvas.height);
+    gl.bindFramebuffer(gl.FRAMEBUFFER, bloomNow ? post.scene.fb : null);
+    gl.viewport(0, 0, canvas.width, canvas.height);
     gl.clearColor(0, 0, 0, 0);
     gl.clear(gl.COLOR_BUFFER_BIT);
     if (!ready) return;
+    gl.useProgram(prog);
+    gl.uniform2f(u.uRes, canvas.width, canvas.height);
     gl.uniform1f(u.uExtent, EXTENT / zoomNow);
     gl.uniform1f(u.uAspect, canvas.width / canvas.height);
     gl.uniform1f(u.uRot, rotA);
@@ -576,9 +853,24 @@ export function createGlobeGL(canvas, { seed, tilt = 0.38, interactive = false, 
     gl.uniform3fv(u.uRingN, rot(ringBase, "x", pitchNow));
     moonUniforms(t);
     gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
+    if (!bloomNow) return;
+    const { bright, blur, comp, scene, a, b } = post;
+    pass(bright, a, scene, () => gl.uniform2f(bright.loc.uTexel, 1 / scene.w, 1 / scene.h));
+    // Two rounds of blur, the second wider: a tight core and a soft spill.
+    for (const spread of [1, 2.2]) {
+      pass(blur, b, a, () => gl.uniform2f(blur.loc.uDir, spread / a.w, 0));
+      pass(blur, a, b, () => gl.uniform2f(blur.loc.uDir, 0, spread / a.h));
+    }
+    pass(comp, null, scene, () => {
+      gl.activeTexture(gl.TEXTURE7);
+      gl.bindTexture(gl.TEXTURE_2D, a.t);
+      gl.uniform1i(comp.loc.uBloom, 7);
+      gl.uniform1f(comp.loc.uBloomK, 0.7);
+    });
   }
 
-  // ~30 fps while it simply turns; every frame while someone is handling it.
+  // On a weak device, ~30 fps while it simply turns; every frame while
+  // someone is handling it. Elsewhere, every frame.
   let skip = false;
   let acc = 0;
   function advance(t, step) {
@@ -593,7 +885,7 @@ export function createGlobeGL(canvas, { seed, tilt = 0.38, interactive = false, 
   const loop = animationLoop(canvas, (t, dt) => {
     const lively = dragging || Math.abs(fling) > 0.01 || Math.abs(pitchNow - motion.pitch) > 0.001 || Math.abs(zoomNow - motion.zoom) > 0.001;
     acc += dt;
-    skip = !skip;
+    skip = low && !skip;
     if (skip && !lively) return;
     const step = acc / 1000;
     acc = 0;
@@ -726,6 +1018,7 @@ export function createGlobeGL(canvas, { seed, tilt = 0.38, interactive = false, 
     },
     destroy() {
       destroyed = true;
+      dropTargets();
       loop.destroy();
       ro?.disconnect();
       offLight();
