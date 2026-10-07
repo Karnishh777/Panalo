@@ -54,7 +54,7 @@ landing ──► the crossing (sign in / sign up) ──► first time? the bir
   sign-in.
 - **Moderation** (`#/moderate`): reports and data requests for moderators;
   a passphrase door for anyone else (HOSTING.md → Moderation).
-- **Looks** (`js/looks.js`, `css/looks.css`): three complete ways the whole
+- **Looks** (`js/looks.js`, `css/looks.css`): four complete ways the whole
   app (and the landing) looks and moves, chosen from the Look button in the
   top bar or on the landing, from Warp ("Look: …"), or in Settings, where
   it's your default. It's a preference, so it follows you to every device;
@@ -78,6 +78,23 @@ landing ──► the crossing (sign in / sign up) ──► first time? the bir
     printed as a comic (cel bands, halftone, ink, misregistration),
     animated on twos, and now and then slipping for a moment into another
     universe's style (Signal, noir, 8-bit) with a label saying which.
+  - **Odyssey** (cinema; for powerful screens): one continuous camera
+    through space. The app sits on a stage (`js/cinema/odyssey.js`,
+    `css/cinema.css`): your world, a sun, a deep starfield with parallax.
+    Every page is a station the camera flies to -- Now on your world's
+    horizon, the Study Room with the world far and small, Calendar as an
+    arc below, Archive a wall at the edge -- with warp streaks, the
+    letterbox squeezing and a rack focus on arrival. Subtitles narrate the
+    page from your data in words ("Next: Chemistry, in forty minutes."); a
+    first visit (once a session) plays its chapter card. Cormorant
+    Garamond, Syncopate and Manrope. One fixed grade, large-format film
+    (`js/cinema/grades.js`): sunk blacks, warm sun, colour held back and
+    halation, applied to the world on the GPU (`world-gl.js` composite
+    pass) and over the frame in CSS, with grain, gate weave, a light leak
+    on flights and panels that move with your scroll.
+  Cinema looks have an engine each (`js/cinema/index.js` downloads and
+  starts the one for your look while the app is open, and stops it when
+  you switch or sign out); the other looks pay nothing for them.
   Everything that moves stands still with reduced motion; the Study Room
   stays quiet in every look.
 - **Effects with a purpose**: ink, petals and button hits only on Now,

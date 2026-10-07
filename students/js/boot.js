@@ -30,6 +30,7 @@
   var FONTS = {
     glass: "family=Instrument+Serif:ital@0;1&family=Geist:wght@300..700&family=Geist+Mono:wght@400;500",
     signal: "family=Doto:wght@600..900&family=Space+Grotesk:wght@400..700&family=Space+Mono:wght@400;700",
+    odyssey: "family=Cormorant+Garamond:ital,wght@0,300;0,500;1,300;1,400&family=Syncopate:wght@400;700&family=Manrope:wght@400;500;600;700",
     verse: "family=Anton&family=Archivo:wdth,wght@62..125,400..900&family=Permanent+Marker&family=Space+Mono:wght@400;700"
   };
   var look = "glass";

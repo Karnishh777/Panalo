@@ -13,6 +13,7 @@ import { settleTimer } from "./timer-state.js";
 import { reducedMotion } from "./motion.js";
 import { drift, punch, burstOn, calm, comic } from "./fx.js";
 import { enter, LOOKS, setLook } from "./looks.js";
+import { startCinema, stopCinema } from "./cinema/index.js";
 import { startModeration, stopModeration } from "./moderation-badge.js";
 import { startSync, stopSync } from "./sync.js";
 import { rulesReminder } from "./rules-reminder.js";
@@ -56,6 +57,8 @@ const EXPRESSIVE = new Set(["now", "world", "drift"]);
 // down. The Study Room just appears. In Verse, the expressive places also
 // get the ink slash in their colour.
 function arrive(name, section) {
+  // The cinematic looks move their camera here (js/cinema/).
+  window.dispatchEvent(new CustomEvent("panalo:arrive", { detail: { name } }));
   ambient?.setPaused(!EXPRESSIVE.has(name));
   if (reducedMotion() || name === "study") return;
   enter(section);
@@ -321,6 +324,7 @@ export async function enterShell({ firstTime = false, pendingJoin = null } = {})
     }
     tickClock();
     clockTimer = setInterval(tickClock, 15000);
+    startCinema();
     startPresence(state.currentUser);
     // Signals keeps the unread count live everywhere, so start it now.
     startInbox().catch((e) => console.error(e));
@@ -355,6 +359,7 @@ document.addEventListener("visibilitychange", () => {
 
 export function leaveShell() {
   active = false;
+  stopCinema();
   clearInterval(clockTimer);
   clearInterval(settleTimerId);
   stopPresence();
