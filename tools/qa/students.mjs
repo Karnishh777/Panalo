@@ -74,7 +74,9 @@ try {
     await page.waitForTimeout(600);
     check("the landing page is shown to a visitor", await page.isVisible("#landing"));
     check("the landing explains who it is for", /intensely curious/i.test(await page.textContent(".hero")));
-    await page.fill("#wd-focus", "120").catch(() => {});
+    // The demo mounts after the landing's first paint: wait for it, don't race it.
+    await page.waitForSelector("#wd-focus", { timeout: 10000 });
+    await page.fill("#wd-focus", "120");
     await page.dispatchEvent("#wd-focus", "input");
     check("the world demo responds to its sliders", (await page.textContent("#wd-focus-out")) === "120 h");
     await shot(page, "landing");
@@ -562,6 +564,81 @@ try {
     check("no console errors (batch 2)", w.errors.length === 0);
     if (w.errors.length) console.log(w.errors.join("\n"));
     await w.close();
+  }
+
+  // ---- Surface upgrades: calendar, study, drift, archive (batch 3) ----------------------------
+  {
+    const u = await qa.open({ viewport: "laptop", path: "students/#login", qa: { dawn: true } });
+    await u.evaluate(() => window.__qa.ready);
+    await appReady(u);
+    await u.fill("#login-email", "qa@panalo.test");
+    await u.fill("#login-password", "correct-horse-42");
+    await u.click("#login-submit");
+    await u.waitForSelector(".dawn", { timeout: 15000 }).catch(() => {});
+    await u.click(".dawn-skip").catch(() => {});
+    await u.waitForTimeout(600);
+
+    // Calendar: a line in plain words becomes an entry.
+    await go(u, "#/calendar", 900);
+    await u.fill("#quick-add", "Physics test fri 10am");
+    await u.waitForTimeout(150);
+    check("quick add previews what it understood", /^Exam · .*10:00 — “Physics test”/.test(await u.textContent("#quick-add-preview")));
+    await u.press("#quick-add", "Enter");
+    await u.waitForTimeout(600);
+    const ev = await u.evaluate(() => window.__qa.db.student_events.find((e) => e.title === "Physics test"));
+    check("…and adds it, an exam on Friday at ten", ev && ev.kind === "exam" && new Date(ev.starts_at).getDay() === 5 && new Date(ev.starts_at).getHours() === 10);
+    check("exams get a countdown", /Physics test/.test(await u.textContent(".countdowns")));
+    await u.fill("#quick-add", "Maths class every mon 9-10");
+    await u.click(".quick-foot .link-btn");
+    await u.waitForTimeout(300);
+    check("Details… opens the full form, filled in", (await u.inputValue(".sheet input[placeholder^='e.g. Physics']")) === "Maths class");
+    await u.keyboard.press("Escape");
+    await shot(u, "calendar-quick");
+    await go(u, "#/now", 900);
+    check("Now counts down to exams", /Exams ahead/.test(await u.textContent(".now-log")) && /Physics test/.test(await u.textContent(".now-list.exams")));
+
+    // Study: a plan of two blocks; the rest starts itself; how deep was it?
+    await go(u, "#/study", 900);
+    await u.click("[data-plan='2']");
+    check("a plan for today shows the next block", /Block 1 of 2 next/.test(await u.textContent(".study-phase")));
+    await u.keyboard.press(" ");
+    await u.waitForTimeout(400);
+    check("Space starts a block", await u.isVisible("#study-pause"));
+    await u.evaluate(() => {
+      const t = JSON.parse(localStorage.getItem("panalo.students.timer"));
+      t.startedAt -= 26 * 60000;
+      t.segmentStart -= 26 * 60000;
+      localStorage.setItem("panalo.students.timer", JSON.stringify(t));
+      document.dispatchEvent(new CustomEvent("panalo:timer"));
+    });
+    await u.waitForTimeout(1500);
+    check("after a planned block, the rest starts by itself", /Rest/.test(await u.textContent(".study-phase")) && /Block 1 of 2/.test(await u.textContent(".study-notice")));
+    await u.click("[data-quality='3']");
+    await u.waitForTimeout(400);
+    check("a block can be called deep", await u.evaluate(() => window.__qa.db.focus_sessions.some((s) => s.quality === 3)));
+    check("this week's focus is broken down by subject", (await u.locator(".subj-bars li").count()) >= 1);
+    await shot(u, "study-plan");
+    // End the rest early to leave the timer idle for what follows.
+    await u.click(".study-controls .btn-quiet").catch(() => {});
+
+    // Drift: make the thing, keep the fact.
+    await go(u, "#/drift", 800);
+    await u.click(".drift-card >> nth=1 >> button");
+    await u.click("#drift-made");
+    await u.waitForTimeout(500);
+    check("Drift's prompt can be logged in one tap", await u.evaluate(() => window.__qa.db.activity_log.some((l) => l.kind === "create" && l.note === "Drift prompt")));
+    await u.click(".drift-card >> nth=0 >> button");
+    await u.click(".drift-save");
+    await u.waitForTimeout(300);
+    check("a fact can be kept", (await u.textContent(".drift-saved summary").catch(() => "")) === "Facts you kept (1)");
+
+    // Archive: "/" jumps to search.
+    await go(u, "#/archive", 1200);
+    await u.keyboard.press("/");
+    check("/ jumps to the archive search", await u.evaluate(() => document.activeElement?.classList.contains("arch-search")));
+    check("no console errors (batch 3)", u.errors.length === 0);
+    if (u.errors.length) console.log(u.errors.join("\n"));
+    await u.close();
   }
 
   // ---- Auth paths: email code, unlock on a new device, invite links, sign-out ----

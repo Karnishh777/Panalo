@@ -24,6 +24,9 @@ and everything it encodes is also available in plain words.
 | **Moments** | Reaching a discovery (first hour, a ring, a moon completed, a hundred pages) stops the screen for a second: a flash, its name, what it means, your world behind it. Once each, never during a focus block. | anywhere |
 | **Seasons** | Every 28 days from your world's birth is a season with a name (First Light, Tides, Ember…). The dawn and World say which, and how far in. | World, the dawn |
 | **Watch it grow** | Your world from the day it was born to today in eight seconds, with a slider to stop at any day. | World |
+| **Quick add** | Type a line on Calendar — “Physics test fri 10am”, “Maths class every mon 9-10”, “Essay due 12/10” — see what it understood, press Enter. Dates are read day-first; a bare hour under 8 is the afternoon. Details… opens the full form, filled in. | Calendar |
+| **Exam countdowns** | Entries of kind Exam count down on Calendar and on Now (“12 days — Physics paper 1”). | Calendar, Now |
+| **A plan for today** | In the Study Room, choose 1–4 blocks; rests between them start by themselves, and the phase reads “block 2 of 3”. After each block: how deep was it? (scattered, okay, deep — the chronicle counts deep blocks). This week by subject sits under your sessions. Space starts and pauses. | Study Room |
 | **Drift** | Three things a day — something true, something to make, something to play — then the door closes. | Drift |
 
 What stays conventional on purpose: the week timetable is a grid, forms are
@@ -103,6 +106,7 @@ landing ──► the crossing (sign in / sign up) ──► first time? the bir
 | `js/chronicle.js` | Last week as a story (once per week, after the dawn; on demand from World and Warp). |
 | `js/moment.js` | A full-screen moment for each new discovery, once each (seen ones follow your preferences across devices). |
 | `js/timelapse.js` | Watch it grow: the world from birth to now, with a scrubber. |
+| `js/model/quick-add.js` | Pure: a line of plain words → a calendar entry (kind, day, time, range, weekly). |
 | `js/model/chronicle.js` | Pure: a week's chronicle, the world at any moment, the time-lapse frames, seasons, which moments are new. |
 | `js/model/daily.js` | Pure: today's entry, last visit, what changed, the week's rhythm, the month as a constellation, the journal. |
 | `js/store.js` | In-memory study data + pub/sub; all writes. |

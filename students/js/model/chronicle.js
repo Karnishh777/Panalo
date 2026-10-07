@@ -80,7 +80,8 @@ export function chronicle({ sessions = [], tasks = [], logs = [], entries = [], 
 
   const found = discoveries.filter((d) => inRange(d.at, start, end));
   const empty = !focusMinutes && !tasksDone && !weekLogs.length && !shown.length;
-  return { start, end, focusMinutes, prevFocusMinutes, sessions: week.length, days, best: best?.minutes ? best : null, subjects, tasksDone, logged, shown, mood, intentions: intentions.length, kept, words, discoveries: found, empty };
+  const deep = week.filter((s) => s.quality === 3).length;
+  return { start, end, focusMinutes, prevFocusMinutes, deep, sessions: week.length, days, best: best?.minutes ? best : null, subjects, tasksDone, logged, shown, mood, intentions: intentions.length, kept, words, discoveries: found, empty };
 }
 
 /** Your history as it stood at `at`: the world you had then. */

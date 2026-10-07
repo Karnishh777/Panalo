@@ -85,6 +85,7 @@ For each: **SQL Editor → New query** → paste the whole file → **Run**.
 | 21 | [`supabase-phase23.sql`](supabase-phase23.sql) | Security logs kept 180 days (CERT-In): a locked table the hourly GitHub Action fills from Supabase's log API, erased nightly after 180 days | No |
 | 22 | [`supabase-phase24.sql`](supabase-phase24.sql) | The day as a ritual: one private entry per day (first open, intention, mood and energy, one thing learned, one good thing). Powers the dawn, closing the day and the journal | No |
 | 23 | [`supabase-phase25.sql`](supabase-phase25.sql) | Log in with your username: the email comes back only with the right password (so nobody can look yours up); 10 wrong tries per username per hour, kept a day | No |
+| 24 | [`supabase-phase26.sql`](supabase-phase26.sql) | An Exam kind for the calendar (countdowns on Now), and how deep a focus block went (scattered, okay, deep) | No |
 
 Phase 8 is self-contained and re-applies everything phase 7 does, so running 8
 is enough if you are starting fresh. Run 7 anyway if you prefer the history to

@@ -10,7 +10,7 @@ import { store, on, api } from "../store.js";
 import { dayOrbit } from "../dayorbit.js";
 import { createGlobe } from "../world-render.js";
 import { buildWorld, weatherLine } from "../model/world-model.js";
-import { nextUp, tasksAsDeadlines, EVENT_KINDS } from "../model/timeline.js";
+import { nextUp, tasksAsDeadlines, EVENT_KINDS, countdowns } from "../model/timeline.js";
 import { relTime, clockTime, formatMinutes, DAY } from "../model/time.js";
 import { pickDrift } from "../model/drift-pick.js";
 import { LIBRARY } from "../model/drift-library.js";
@@ -111,6 +111,20 @@ function renderLog() {
 
   // 0. Today: the intention, the week's rhythm, closing the day (phase 24).
   if (!store.entriesMissing) parts.push(todayPanel(now));
+
+  // 0b. Exams ahead (batch 3): a countdown, calm, not an alarm.
+  const exams = countdowns(store.events, now, 45).slice(0, 3);
+  if (exams.length) {
+    parts.push(
+      panel("tone-drift", "Exams ahead", { href: "#/calendar", label: "Calendar" }, [
+        el(
+          "ul",
+          { class: "now-list exams" },
+          exams.map((c) => el("li", {}, [el("b", { class: "num exam-days", text: c.days === 0 ? "Today" : c.days === 1 ? "1 day" : `${c.days} days` }), el("span", { text: c.title }), el("span", { class: "faint", text: c.at.toLocaleDateString(undefined, { weekday: "short", day: "numeric", month: "short" }) })]))
+        ),
+      ])
+    );
+  }
 
   // 1. Now / next.
   const whenLine = (o, isNow) =>

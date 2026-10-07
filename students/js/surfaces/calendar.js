@@ -8,7 +8,8 @@
 import { el, openSheet, confirmSheet, showToast, chipGroup, reportError, emptyState, toLocalInput, longDate } from "../ui.js";
 import { store, on, api } from "../store.js";
 import { dayOrbit } from "../dayorbit.js";
-import { occurrencesOnDay, occurrencesBetween, tasksAsDeadlines, EVENT_KINDS } from "../model/timeline.js";
+import { occurrencesOnDay, occurrencesBetween, tasksAsDeadlines, EVENT_KINDS, countdowns } from "../model/timeline.js";
+import { parseQuickAdd } from "../model/quick-add.js";
 import { startOfDay, startOfWeek, addDays, clockTime, sameDay, formatMinutes, DAY, HOUR } from "../model/time.js";
 
 let root;
@@ -16,6 +17,7 @@ let day = startOfDay(new Date());
 let view = "day";
 let bodyEl;
 let titleEl;
+let countEl;
 let unsubs = [];
 let navigate;
 
@@ -123,8 +125,24 @@ function renderWeek() {
   bodyEl.replaceChildren(grid, list);
 }
 
+// Exams ahead, as a row of countdowns above everything.
+function renderCountdowns() {
+  const cd = countdowns(store.events, Date.now(), 90).slice(0, 4);
+  countEl.hidden = !cd.length;
+  countEl.replaceChildren(
+    ...cd.map((c) =>
+      el("button", { type: "button", class: "countdown tone-drift", onClick: () => openEvent(c.event) }, [
+        el("b", { class: "num", text: c.days === 0 ? "Today" : String(c.days) }),
+        el("span", { class: "countdown-unit faint", text: c.days === 0 ? "" : c.days === 1 ? "day" : "days" }),
+        el("span", { class: "countdown-title", text: c.title }),
+      ])
+    )
+  );
+}
+
 function render() {
   if (!bodyEl) return;
+  renderCountdowns();
   titleEl.textContent = view === "day" ? longDate(day) : `Week of ${startOfWeek(day).toLocaleDateString(undefined, { day: "numeric", month: "long" })}`;
   if (view === "day") renderDay();
   else renderWeek();
@@ -141,22 +159,23 @@ function step(n) {
   render();
 }
 
-function openEvent(ev, presetKind = null) {
+// `draft` (from quick add) fills the form for a new entry.
+function openEvent(ev, presetKind = null, draft = null) {
   const editing = !!ev;
-  let kind = ev?.kind || presetKind || "class";
-  const start = ev ? new Date(ev.starts_at) : (() => {
+  let kind = ev?.kind || draft?.kind || presetKind || "class";
+  const start = ev ? new Date(ev.starts_at) : draft ? new Date(draft.start) : (() => {
     const d = new Date(day);
     const now = new Date();
     d.setHours(sameDay(day, now) ? Math.min(22, now.getHours() + 1) : 9, 0, 0, 0);
     return d;
   })();
-  const end = ev?.ends_at ? new Date(ev.ends_at) : new Date(start.getTime() + HOUR);
-  const title = el("input", { type: "text", maxlength: "120", value: ev?.title || "", placeholder: "e.g. Physics — Lab 2" });
+  const end = ev?.ends_at ? new Date(ev.ends_at) : draft?.end ? new Date(draft.end) : new Date(start.getTime() + HOUR);
+  const title = el("input", { type: "text", maxlength: "120", value: ev?.title || draft?.title || "", placeholder: "e.g. Physics — Lab 2" });
   const date = el("input", { type: "date", value: toLocalInput(start, "date") });
   const from = el("input", { type: "time", value: toLocalInput(start, "time") });
   const to = el("input", { type: "time", value: toLocalInput(end, "time") });
   const repeat = el("input", { type: "checkbox" });
-  repeat.checked = ev ? !!ev.repeat_weekly : true;
+  repeat.checked = ev ? !!ev.repeat_weekly : draft ? !!draft.repeat_weekly : true;
   const location = el("input", { type: "text", maxlength: "80", value: ev?.location || "", placeholder: "Room, building or link (optional)" });
   const toField = el("label", { class: "field" }, [el("span", { text: "Ends" }), to]);
   const repeatRow = el("label", { class: "check" }, [repeat, el("span", { text: "Every week — part of my timetable" })]);
@@ -228,6 +247,42 @@ export function mount(section, ctx) {
   root = el("div", { class: "calendar" });
   titleEl = el("h1");
   bodyEl = el("div", { class: "cal-body" });
+  countEl = el("div", { class: "countdowns", "aria-label": "Exams coming up" });
+
+  // Quick add: type a line, see what it'll be, press Enter.
+  const qInput = el("input", { type: "text", class: "input", id: "quick-add", maxlength: "160", autocomplete: "off", placeholder: "Quick add: “Physics test fri 10am”, “Maths class every mon 9-10”, “Essay due 12/10”", "aria-label": "Quick add to the calendar", "aria-describedby": "quick-add-preview" });
+  const qPreview = el("p", { class: "quick-preview faint", id: "quick-add-preview", "aria-live": "polite" });
+  const qDetails = el("button", { type: "button", class: "link-btn", text: "Details…", hidden: "" });
+  let draft = null;
+  const describe = (d) => {
+    const when = d.start.toLocaleDateString(undefined, { weekday: "short", day: "numeric", month: "short" });
+    const time = d.kind === "deadline" ? (d.timed ? `due ${clockTime(d.start)}` : "end of the day") : `${clockTime(d.start)}${d.end ? `–${clockTime(d.end)}` : ""}`;
+    return `${EVENT_KINDS[d.kind]?.label} · ${d.repeat_weekly ? `every ${d.start.toLocaleDateString(undefined, { weekday: "long" })}, from ${when}` : when} · ${time} — “${d.title}”`;
+  };
+  qInput.addEventListener("input", () => {
+    draft = parseQuickAdd(qInput.value);
+    qPreview.textContent = draft ? describe(draft) : "";
+    qDetails.hidden = !draft;
+  });
+  qDetails.addEventListener("click", () => {
+    if (draft) openEvent(null, null, draft);
+  });
+  const qForm = el("form", { class: "quick-add", novalidate: "" }, [qInput, el("button", { type: "submit", class: "btn btn-ghost btn-sm", text: "Add" }), el("div", { class: "quick-foot" }, [qPreview, qDetails])]);
+  qForm.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    draft = parseQuickAdd(qInput.value);
+    if (!draft) return qInput.focus();
+    const row = { title: draft.title, kind: draft.kind, starts_at: draft.start.toISOString(), ends_at: draft.end ? draft.end.toISOString() : null, repeat_weekly: draft.repeat_weekly, location: null };
+    const { error } = await api.addEvent(row);
+    if (error) return reportError(error, "Couldn't add that.");
+    showToast(`Added: ${describe(draft)}`, "success");
+    day = startOfDay(draft.start);
+    qInput.value = "";
+    qPreview.textContent = "";
+    qDetails.hidden = true;
+    draft = null;
+    render();
+  });
   root.append(
     el("div", { class: "s-head" }, [
       el("div", {}, [el("p", { class: "kicker toned tone-time", text: "Calendar" }), titleEl]),
@@ -242,6 +297,8 @@ export function mount(section, ctx) {
         el("button", { type: "button", class: "btn btn-primary btn-sm", text: "Add", onClick: () => openEvent(null) }),
       ]),
     ]),
+    qForm,
+    countEl,
     bodyEl
   );
   section.append(root);
@@ -252,6 +309,7 @@ export function mount(section, ctx) {
 export function show(param) {
   render();
   if (param === "add") openEvent(null);
+  if (param === "quick") root.querySelector("#quick-add")?.focus();
 }
 
 export function destroy() {

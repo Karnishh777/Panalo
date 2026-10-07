@@ -6,7 +6,7 @@
 // Nothing here is personalised beyond the interests you picked, nothing is
 // tracked, and there is no "more".
 import { localChange } from "../local-change.js";
-import { el, showToast, reportError } from "../ui.js";
+import { el, showToast, reportError, getPrefs, setPrefs } from "../ui.js";
 import { store, api } from "../store.js";
 import { pickDrift } from "../model/drift-pick.js";
 import { LIBRARY, INTERESTS } from "../model/drift-library.js";
@@ -220,6 +220,58 @@ function renderClosing() {
   closing.hidden = false;
 }
 
+// Facts worth keeping: saved in your preferences (they follow you), newest
+// first, fifty at most.
+function savedFacts() {
+  const list = getPrefs().driftSaved;
+  return Array.isArray(list) ? list : [];
+}
+function saveButton(fact) {
+  const isSaved = () => savedFacts().some((f) => f.id === fact.id);
+  const b = el("button", { type: "button", class: "btn btn-ghost btn-sm drift-save", "aria-pressed": String(isSaved()) });
+  const draw = () => {
+    b.textContent = isSaved() ? "★ Kept" : "☆ Keep this";
+    b.setAttribute("aria-pressed", String(isSaved()));
+  };
+  b.addEventListener("click", () => {
+    const list = savedFacts();
+    setPrefs({ driftSaved: isSaved() ? list.filter((f) => f.id !== fact.id) : [{ id: fact.id, text: fact.text, at: Date.now() }, ...list].slice(0, 50) });
+    draw();
+    root.querySelector(".drift-saved")?.replaceWith(savedSection());
+  });
+  draw();
+  return b;
+}
+function savedSection() {
+  const list = savedFacts();
+  const box = el("details", { class: "drift-saved panel tone-focus" }, [el("summary", { text: `Facts you kept (${list.length})` })]);
+  if (!list.length) {
+    box.hidden = true;
+    return box;
+  }
+  box.append(el("ul", { class: "saved-list" }, list.map((f) => el("li", {}, [el("p", { class: "serif", text: f.text }), el("button", { type: "button", class: "link-btn", text: "Remove", onClick: () => { setPrefs({ driftSaved: savedFacts().filter((x) => x.id !== f.id) }); box.replaceWith(savedSection()); } })]))));
+  return box;
+}
+// Made the thing? One tap logs it: fifteen minutes of making, for the aurora.
+function madeIt() {
+  const b = el("button", {
+    type: "button",
+    class: "btn btn-toned tone-drift btn-sm",
+    id: "drift-made",
+    text: "I made it",
+    onClick: async () => {
+      b.disabled = true;
+      const { error } = await api.addLog({ kind: "create", minutes: 15, occurred_on: dayKey(new Date()), note: "Drift prompt" });
+      if (error) {
+        b.disabled = false;
+        return reportError(error);
+      }
+      b.textContent = "Logged — your aurora noticed";
+    },
+  });
+  return el("div", { class: "chips" }, [b]);
+}
+
 export function mount(section) {
   root = el("div", { class: "drift" });
   section.append(root);
@@ -253,10 +305,11 @@ export function show() {
       ]),
     ]),
     el("div", { class: "drift-row" }, [
-      card({ id: "fact", label: "Something true", tone: "tone-focus", title: "A thing to know", hint: `About ${today.fact.tags.map((t) => LIBRARY_TAG[t] || t).slice(0, 2).join(" and ").toLowerCase()}. Ten seconds to read.`, reveal: (b, done) => (b.replaceChildren(el("p", { class: "drift-fact serif", text: today.fact.text })), done()) }),
-      card({ id: "prompt", label: "Something to make", tone: "tone-drift", title: "A thing to make", hint: "A two-minute prompt. Any scrap of paper will do.", reveal: (b, done) => (b.replaceChildren(el("p", { class: "drift-prompt", text: today.prompt.text }), el("p", { class: "faint", text: "Made it? Log it from World as “Making something” — it lights your aurora." })), done()) }),
+      card({ id: "fact", label: "Something true", tone: "tone-focus", title: "A thing to know", hint: `About ${today.fact.tags.map((t) => LIBRARY_TAG[t] || t).slice(0, 2).join(" and ").toLowerCase()}. Ten seconds to read.`, reveal: (b, done) => (b.replaceChildren(el("p", { class: "drift-fact serif", text: today.fact.text }), saveButton(today.fact)), done()) }),
+      card({ id: "prompt", label: "Something to make", tone: "tone-drift", title: "A thing to make", hint: "A two-minute prompt. Any scrap of paper will do.", reveal: (b, done) => (b.replaceChildren(el("p", { class: "drift-prompt", text: today.prompt.text }), madeIt()), done()) }),
       card({ id: "play", label: "Something to play", tone: "tone-world", title: today.play.title, hint: today.play.text, reveal: (b, done) => { const slot = el("div", { class: "play-slot" }); b.replaceChildren(slot); plays[today.play.id](slot, done, today.day); } }),
     ]),
+    savedSection(),
     el("section", { class: "drift-closing", hidden: "" }, [
       el("p", { class: "serif drift-end", text: "That's today's drift." }),
       el("p", { class: "muted", text: "New things arrive at midnight. Until then, the rest of your universe is waiting." }),

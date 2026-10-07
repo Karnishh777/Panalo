@@ -16,7 +16,11 @@ import { titleOf } from "../signals-data.js";
 let root;
 let bodyEl;
 let headSub;
-let filter = { text: "", scope: "all", shelf: null };
+let filter = { text: "", scope: "all", shelf: null, kind: null };
+
+// Kinds you can filter by; "other" is everything else.
+const KIND_FILTERS = [["pdf", "PDFs"], ["image", "Images"], ["audio", "Audio"], ["video", "Video"], ["other", "Other"]];
+const kindGroup = (r) => (["pdf", "image", "audio", "video"].includes(kindOf(r)) ? kindOf(r) : "other");
 let unsubs = [];
 
 // prettyBytes() leaves zero blank (right for a file card); a quota needs "0 B".
@@ -116,6 +120,7 @@ function render() {
     (r) =>
       (filter.scope === "all" || (filter.scope === "mine" ? !r.conversation_id && r.owner_id === me : !!r.conversation_id)) &&
       (!filter.shelf || r.shelf === filter.shelf) &&
+      (!filter.kind || kindGroup(r) === filter.kind) &&
       (!q || `${r.title} ${r.file_name} ${r.shelf || ""} ${r.note || ""}`.toLowerCase().includes(q))
   );
 
@@ -134,6 +139,18 @@ function render() {
         render();
       },
     }).node,
+    (() => {
+      const present = new Set(all.map(kindGroup));
+      const kinds = KIND_FILTERS.filter(([k]) => present.has(k));
+      return kinds.length > 1
+        ? el(
+            "div",
+            { class: "chips kind-chips", role: "group", "aria-label": "Kind of file" },
+            kinds.map(([k, label]) => el("button", { type: "button", class: "chip tone-archive", "aria-pressed": String(filter.kind === k), "data-kind-filter": k, text: label, onClick: () => { filter.kind = filter.kind === k ? null : k; render(); } }))
+          )
+        : null;
+    })(),
+    q || filter.kind || filter.shelf || filter.scope !== "all" ? el("span", { class: "faint arch-count", role: "status", text: `${items.length} of ${all.length}` }) : null,
     shelves.length
       ? el("div", { class: "chips shelf-chips", role: "group", "aria-label": "Shelves" }, [
           ...shelves.map((s) =>
@@ -341,7 +358,16 @@ async function remove(r) {
 export function mount(section) {
   root = el("div", { class: "archive" });
   headSub = el("p", { class: "s-sub" });
-  const search = el("input", { type: "search", class: "input arch-search", placeholder: "Search titles, files, shelves, notes", "aria-label": "Search the archive" });
+  const search = el("input", { type: "search", class: "input arch-search", placeholder: "Search titles, files, shelves, notes  ( / )", "aria-label": "Search the archive", "aria-keyshortcuts": "/" });
+  // "/" jumps to the search box, as on most sites.
+  const slash = (e) => {
+    if (e.key === "/" && document.body.dataset.view === "archive" && !e.target.closest?.("input, textarea, select, [contenteditable]") && !document.querySelector("dialog[open]")) {
+      e.preventDefault();
+      search.focus();
+    }
+  };
+  document.addEventListener("keydown", slash);
+  unsubs.push(() => document.removeEventListener("keydown", slash));
   search.addEventListener("input", () => {
     filter.text = search.value;
     render();
