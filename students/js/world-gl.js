@@ -32,6 +32,7 @@ import { reducedMotion, animationLoop } from "./motion.js";
 import { surfaceFor, paint, thresholdFor, TW, TH } from "./world-surface.js";
 import { getLight, onLight, lightVector } from "./world-light.js";
 import { deviceTier } from "./device-tier.js";
+import { gradeFor } from "./cinema/grades.js";
 
 const MAX_MOONS = 6;
 const EXTENT = 1.7; // half the canvas, in planet radii, at zoom 1
@@ -516,6 +517,10 @@ uniform sampler2D uTex;
 uniform sampler2D uBloom;
 uniform float uBloomK;
 uniform float uStyle;
+uniform float uGradeOn;          // a colourist's grade (cinema/grades.js)
+uniform vec3 uLift, uGamma, uGain;
+uniform float uSat;
+uniform float uHalation;         // film's red glow round the brightest light
 uniform vec2 uPx;      // one pixel, in uv
 uniform float uDot;    // halftone / LED cell, in pixels
 float lum(vec3 c) { return dot(c, vec3(0.299, 0.587, 0.114)); }
@@ -590,6 +595,23 @@ void main() {
     c = floor(m.rgb * 4.0 + 0.5) / 4.0;
     a = step(0.3, m.a);
     c *= a;
+  }
+  if (uHalation > 0.0) {
+    // Halation: light that went through the film, bounced off its base and
+    // came back red -- a warm glow hugging every highlight.
+    vec3 hb = texture2D(uBloom, uv).rgb;
+    float hl = max(hb.r, max(hb.g, hb.b));
+    vec3 halo = vec3(1.0, 0.32, 0.12) * hl * uHalation;
+    c += halo * (1.0 - c);
+    a = max(a, min(1.0, max(halo.r, max(halo.g, halo.b))));
+  }
+  if (uGradeOn > 0.5) {
+    // Lift, gamma, gain per channel, then saturation -- on straight colour.
+    vec3 g = a > 0.001 ? c / a : vec3(0.0);
+    g = g * uGain + uLift * (1.0 - g);
+    g = pow(max(g, 0.0), 1.0 / uGamma);
+    g = mix(vec3(lum(g)), g, uSat);
+    c = clamp(g, 0.0, 1.0) * a;
   }
   c = min(c, vec3(a));
   gl_FragColor = vec4(c, a);
@@ -758,7 +780,7 @@ export function createGlobeGL(canvas, { seed, tilt = 0.38, interactive = false, 
         post = {
           bright: mk(BRIGHT, ["uTex", "uTexel"]),
           blur: mk(BLUR, ["uTex", "uDir"]),
-          comp: mk(COMPOSITE, ["uTex", "uBloom", "uBloomK", "uStyle", "uPx", "uDot"]),
+          comp: mk(COMPOSITE, ["uTex", "uBloom", "uBloomK", "uStyle", "uPx", "uDot", "uGradeOn", "uLift", "uGamma", "uGain", "uSat", "uHalation"]),
           scene: null, a: null, b: null,
         };
       } catch (e) {
@@ -922,7 +944,9 @@ export function createGlobeGL(canvas, { seed, tilt = 0.38, interactive = false, 
     if (destroyed || lost) return;
     size();
     const style = styleNow(t);
-    const bloomNow = post && ready && (wantBloom || style) && targetsFor(canvas.width, canvas.height);
+    // The cinema looks grade the world like a film (cinema/grades.js).
+    const grade = styleOk ? gradeFor(document.documentElement.dataset.look) : null;
+    const bloomNow = post && ready && (wantBloom || style || grade) && targetsFor(canvas.width, canvas.height);
     gl.bindFramebuffer(gl.FRAMEBUFFER, bloomNow ? post.scene.fb : null);
     gl.viewport(0, 0, canvas.width, canvas.height);
     gl.clearColor(0, 0, 0, 0);
@@ -962,6 +986,14 @@ export function createGlobeGL(canvas, { seed, tilt = 0.38, interactive = false, 
       gl.uniform1i(comp.loc.uBloom, 7);
       gl.uniform1f(comp.loc.uBloomK, wantBloom ? 0.7 : 0);
       gl.uniform1f(comp.loc.uStyle, style);
+      gl.uniform1f(comp.loc.uGradeOn, grade ? 1 : 0);
+      if (grade) {
+        gl.uniform3fv(comp.loc.uLift, grade.lift);
+        gl.uniform3fv(comp.loc.uGamma, grade.gamma);
+        gl.uniform3fv(comp.loc.uGain, grade.gain);
+        gl.uniform1f(comp.loc.uSat, grade.sat);
+      }
+      gl.uniform1f(comp.loc.uHalation, grade?.halation || 0);
       gl.uniform2f(comp.loc.uPx, 1 / canvas.width, 1 / canvas.height);
       gl.uniform1f(comp.loc.uDot, Math.max(4, Math.round(canvas.width / (style === 2 ? 64 : 90))));
     });
@@ -1080,6 +1112,7 @@ export function createGlobeGL(canvas, { seed, tilt = 0.38, interactive = false, 
   const onLookChange = () => draw(performance.now());
   window.addEventListener("panalo:look", onLookChange);
 
+
   let ro = null;
   if ("ResizeObserver" in window) {
     ro = new ResizeObserver(() => draw(performance.now()));
@@ -1136,6 +1169,7 @@ export function createGlobeGL(canvas, { seed, tilt = 0.38, interactive = false, 
     destroy() {
       destroyed = true;
       window.removeEventListener("panalo:look", onLookChange);
+
       dropTargets();
       loop.destroy();
       ro?.disconnect();

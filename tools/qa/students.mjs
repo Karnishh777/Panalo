@@ -434,6 +434,40 @@ try {
   await page.waitForTimeout(800);
   check("the session and data survive a reload", /Kepler QA|alex/.test(await page.textContent("#me-menu")) && (await page.evaluate(() => window.__qa.db.focus_sessions.length)) === 1);
   check("the look survives a reload, set before the first paint", (await page.evaluate(() => document.documentElement.dataset.look)) === "verse");
+  // Odyssey: the scene behind the app, a camera that moves between pages.
+  await page.evaluate(() => sessionStorage.removeItem("panalo.students.ody.seen"));
+  await page.keyboard.press("Control+k");
+  await page.waitForTimeout(300);
+  await page.fill(".warp-input", "look: odyssey");
+  await page.keyboard.press("Enter");
+  await page.waitForSelector(".ody-stage", { timeout: 8000 }).catch(() => {});
+  await page.waitForTimeout(700);
+  const ody = await page.evaluate(() => ({
+    stage: !!document.querySelector(".ody-stage"),
+    station: document.querySelector(".ody-stage")?.dataset.station,
+    caption: document.querySelector(".ody-line")?.textContent || "",
+    world: !!document.querySelector(".ody-globe[data-renderer]"),
+  }));
+  check("Odyssey builds its scene behind the app, with your world in it", ody.stage && ody.world);
+  check("Odyssey subtitles the page it stands at", ody.station === "now" && /\./.test(ody.caption));
+  await page.evaluate(() => (location.hash = "#/signals"));
+  await page.waitForTimeout(250);
+  const flight = await page.evaluate(() => ({
+    station: document.querySelector(".ody-stage").dataset.station,
+    flying: document.body.classList.contains("ody-flying"),
+    chapter: document.querySelector(".ody-chapter b")?.textContent || "",
+    caption: document.querySelector(".ody-line").textContent,
+  }));
+  check("going somewhere flies the camera to that page's station", flight.station === "signals" && flight.flying);
+  check("a first visit plays its chapter card", flight.chapter === "Signals");
+  check("the subtitle follows the page", /voice|quiet/i.test(flight.caption));
+  await page.waitForTimeout(1200);
+  await page.keyboard.press("Control+k");
+  await page.waitForTimeout(300);
+  await page.fill(".warp-input", "look: glass");
+  await page.keyboard.press("Enter");
+  await page.waitForTimeout(900);
+  check("leaving Odyssey takes its scene away", !(await page.evaluate(() => !!document.querySelector(".ody-stage, .ody-caption, .ody-grade"))));
   check("no console errors (desktop)", page.errors.length === 0);
   if (page.errors.length) console.log(page.errors.join("\n"));
   await page.close();
