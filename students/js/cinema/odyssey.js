@@ -199,6 +199,7 @@ export function start() {
     const s = STATIONS[name];
     if (!s) return;
     const card = el("div", { class: "ody-chapter", "aria-hidden": "true" }, [el("span", { text: ROMAN[s.n] || "" }), el("b", { text: s.title })]);
+    document.querySelectorAll(".ody-chapter").forEach((c) => c.remove()); // one title on screen at a time
     document.body.append(card);
     setTimeout(() => card.remove(), 1900);
   }

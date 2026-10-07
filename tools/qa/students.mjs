@@ -406,10 +406,10 @@ try {
   check("Warp jumps anywhere by typing", /Safety/.test(await page.title()));
   check("Safety lists the person you blocked", await page.isVisible("text=@priya"));
 
-  // ---- Looks: Glass (default), Signal, Verse ---------------------------------------------
+  // ---- Looks: Glass (default), Signal, Verse, Odyssey------------------------------------------
   check("the default look is Glass", (await page.evaluate(() => document.documentElement.dataset.look)) === "glass");
   await page.click("#look-open");
-  check("the Look button opens a choice of three", (await page.locator("#look-menu .look-opt").count()) === 3);
+  check("the Look button opens a choice of four", (await page.locator("#look-menu .look-opt").count()) === 4);
   await page.click("#look-menu .look-opt-signal");
   await page.waitForTimeout(700);
   check("choosing Signal switches the look", (await page.evaluate(() => document.documentElement.dataset.look)) === "signal");
@@ -423,7 +423,7 @@ try {
   check("Warp can change the look", (await page.evaluate(() => document.documentElement.dataset.look)) === "verse");
   await page.evaluate(() => (location.hash = "#/settings"));
   await page.waitForTimeout(900);
-  check("Settings offers the three looks, with yours chosen", (await page.locator(".settings-look .look-opt").count()) === 3 && (await page.isChecked(".settings-look .look-opt-verse input")));
+  check("Settings offers the four looks, with yours chosen", (await page.locator(".settings-look .look-opt").count()) === 4 && (await page.isChecked(".settings-look .look-opt-verse input")));
   await page.evaluate(() => (location.hash = "#/now"));
   await page.waitForTimeout(900);
   check("Verse lays Now out in orbit (the log's panels around the world)", await page.evaluate(() => getComputedStyle(document.querySelector(".now-log")).display === "contents"));
@@ -455,7 +455,7 @@ try {
   const flight = await page.evaluate(() => ({
     station: document.querySelector(".ody-stage").dataset.station,
     flying: document.body.classList.contains("ody-flying"),
-    chapter: document.querySelector(".ody-chapter b")?.textContent || "",
+    chapter: [...document.querySelectorAll(".ody-chapter b")].map((b) => b.textContent).join(","),
     caption: document.querySelector(".ody-line").textContent,
   }));
   check("going somewhere flies the camera to that page's station", flight.station === "signals" && flight.flying);
