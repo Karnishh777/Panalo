@@ -102,7 +102,14 @@ try {
       )
       .then(() => true, () => false);
     check("the world demo responds to its sliders", demoAnswers);
-    // The opening page has the same Look switch.
+    await shot(page, "landing");
+
+    // The gate counts to 100 once and gets out of the way.
+    check("the gate shows on first arrival", await page.evaluate(() => document.documentElement.hasAttribute("data-gate")));
+    await page.waitForFunction(() => !document.documentElement.hasAttribute("data-gate"), null, { timeout: 5000 }).catch(() => {});
+    check("the gate opens by itself", !(await page.evaluate(() => document.documentElement.hasAttribute("data-gate"))));
+    // The opening page has the same Look switch (after the gate, which it
+    // would otherwise race).
     await page.click("#land-look-open");
     await page.click("#land-look-menu .look-opt-signal");
     await page.waitForTimeout(700);
@@ -110,12 +117,6 @@ try {
     await page.click("#land-look-open");
     await page.click("#land-look-menu .look-opt-glass");
     await page.waitForTimeout(700);
-    await shot(page, "landing");
-
-    // The gate counts to 100 once and gets out of the way.
-    check("the gate shows on first arrival", await page.evaluate(() => document.documentElement.hasAttribute("data-gate")));
-    await page.waitForFunction(() => !document.documentElement.hasAttribute("data-gate"), null, { timeout: 5000 }).catch(() => {});
-    check("the gate opens by itself", !(await page.evaluate(() => document.documentElement.hasAttribute("data-gate"))));
     // The thread: a star per chapter, each a link; reaching a chapter lights it.
     const thread = await page.evaluate(() => {
       const hrefs = [...document.querySelectorAll(".thread-stars a")].map((a) => a.getAttribute("href"));
@@ -236,6 +237,7 @@ try {
   await page.click(".task-list input[type=checkbox]");
   await page.waitForTimeout(400);
   check("a task can be completed", await page.evaluate(() => !!window.__qa.db.student_tasks[0].done_at));
+  check("the Study Room never prints a stray \"null\"", !/\bnull\b/.test(await page.evaluate(() => document.querySelector(".study").innerText)));
   await shot(page, "study");
 
   await go(page, "#/world");

@@ -763,6 +763,9 @@ html[data-look="verse"] .s-head h1::after {
 html[data-look="verse"] .kicker,
 html[data-look="verse"] .kicker.toned {
   display: inline-block;
+  width: fit-content;
+  justify-self: start;
+  align-self: flex-start;
   padding: 5px 12px;
   background: var(--paper);
   color: var(--ink);
@@ -786,6 +789,10 @@ html[data-look="verse"] .panel {
   border-radius: 2px;
   background: radial-gradient(circle, color-mix(in srgb, var(--tone, var(--hot)) 55%, transparent) 1.3px, transparent 1.8px) 0 0 / 8px 8px, var(--surface);
   box-shadow: 6px 6px 0 var(--tone, var(--hot));
+}
+/* Only Now's satellites hang off true: a tilted wide frame steps its ink
+   line, and a transform would re-anchor anything fixed inside a panel. */
+html[data-look="verse"] .now-grid .panel {
   transform: rotate(var(--tilt, -0.4deg));
 }
 html[data-look="verse"] .panel::before {
@@ -1072,7 +1079,10 @@ html[data-look="verse"] .surface.look-enter .panel {
 @keyframes verse-slam {
   0% { opacity: 0; transform: scale(1.25) rotate(-6deg); }
   40% { opacity: 1; transform: scale(0.96) rotate(1deg); }
-  100% { transform: rotate(var(--tilt, -0.4deg)); }
+  100% { transform: var(--rest, none); }
+}
+html[data-look="verse"] .now-grid .panel {
+  --rest: rotate(var(--tilt, -0.4deg));
 }
 html[data-look="verse"] .surface.look-enter .s-head h1 {
   animation: verse-title 520ms steps(6) both, verse-twitch 2.4s steps(1) 520ms infinite;
