@@ -5,6 +5,7 @@
 //      the landing page at someone who is about to be signed straight in.
 //   2. Stop forms submitting natively before the app's modules arrive.
 //   3. Apply the in-app "reduce motion" choice before any animation starts.
+//   4. Apply the chosen look (and load its fonts).
 (function () {
   var root = document.documentElement;
   var signedIn = false;
@@ -24,10 +25,25 @@
     e.preventDefault();
   }, true);
 
+  // 4. The look (js/looks.js): Glass, Signal or Verse, and its fonts, before
+  //    the first paint so the page never flashes the wrong one.
+  var FONTS = {
+    glass: "family=Instrument+Serif:ital@0;1&family=Geist:wght@300..700&family=Geist+Mono:wght@400;500",
+    signal: "family=Doto:wght@600..900&family=Space+Grotesk:wght@400..700&family=Space+Mono:wght@400;700",
+    verse: "family=Anton&family=Archivo:wdth,wght@62..125,400..900&family=Permanent+Marker&family=Space+Mono:wght@400;700"
+  };
+  var look = "glass";
   try {
     var prefs = JSON.parse(localStorage.getItem("panalo.students.prefs") || "{}") || {};
     if (prefs.reduceMotion) root.setAttribute("data-motion", "reduce");
+    if (FONTS[prefs.look]) look = prefs.look;
   } catch (e) {}
+  root.setAttribute("data-look", look);
+  var fonts = document.createElement("link");
+  fonts.rel = "stylesheet";
+  fonts.href = "https://fonts.googleapis.com/css2?" + FONTS[look] + "&display=swap";
+  fonts.setAttribute("data-look-fonts", look);
+  document.head.appendChild(fonts);
 
   // The landing's gate (a count to 100) plays once a session, for visitors
   // who aren't signed in and haven't asked for less motion.

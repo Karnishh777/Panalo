@@ -102,6 +102,14 @@ try {
       )
       .then(() => true, () => false);
     check("the world demo responds to its sliders", demoAnswers);
+    // The opening page has the same Look switch.
+    await page.click("#land-look-open");
+    await page.click("#land-look-menu .look-opt-signal");
+    await page.waitForTimeout(700);
+    check("the landing can switch looks too", (await page.evaluate(() => document.documentElement.dataset.look)) === "signal");
+    await page.click("#land-look-open");
+    await page.click("#land-look-menu .look-opt-glass");
+    await page.waitForTimeout(700);
     await shot(page, "landing");
 
     // The gate counts to 100 once and gets out of the way.
@@ -396,11 +404,34 @@ try {
   check("Warp jumps anywhere by typing", /Safety/.test(await page.title()));
   check("Safety lists the person you blocked", await page.isVisible("text=@priya"));
 
+  // ---- Looks: Glass (default), Signal, Verse ---------------------------------------------
+  check("the default look is Glass", (await page.evaluate(() => document.documentElement.dataset.look)) === "glass");
+  await page.click("#look-open");
+  check("the Look button opens a choice of three", (await page.locator("#look-menu .look-opt").count()) === 3);
+  await page.click("#look-menu .look-opt-signal");
+  await page.waitForTimeout(700);
+  check("choosing Signal switches the look", (await page.evaluate(() => document.documentElement.dataset.look)) === "signal");
+  check("the look is saved as a preference (it syncs)", (await page.evaluate(() => JSON.parse(localStorage.getItem("panalo.students.prefs")).look)) === "signal");
+  check("the Look button names the look", /Signal/.test(await page.getAttribute("#look-open", "aria-label")));
+  await page.keyboard.press("Control+k");
+  await page.waitForTimeout(300);
+  await page.fill(".warp-input", "look: verse");
+  await page.keyboard.press("Enter");
+  await page.waitForTimeout(700);
+  check("Warp can change the look", (await page.evaluate(() => document.documentElement.dataset.look)) === "verse");
+  await page.evaluate(() => (location.hash = "#/settings"));
+  await page.waitForTimeout(900);
+  check("Settings offers the three looks, with yours chosen", (await page.locator(".settings-look .look-opt").count()) === 3 && (await page.isChecked(".settings-look .look-opt-verse input")));
+  await page.evaluate(() => (location.hash = "#/now"));
+  await page.waitForTimeout(900);
+  check("Verse lays Now out in orbit (the log's panels around the world)", await page.evaluate(() => getComputedStyle(document.querySelector(".now-log")).display === "contents"));
+
   // Reload: the session, the world and the data survive.
   await page.reload();
   await page.waitForSelector("#app:not([hidden])", { timeout: 15000 });
   await page.waitForTimeout(800);
   check("the session and data survive a reload", /Kepler QA|alex/.test(await page.textContent("#me-menu")) && (await page.evaluate(() => window.__qa.db.focus_sessions.length)) === 1);
+  check("the look survives a reload, set before the first paint", (await page.evaluate(() => document.documentElement.dataset.look)) === "verse");
   check("no console errors (desktop)", page.errors.length === 0);
   if (page.errors.length) console.log(page.errors.join("\n"));
   await page.close();

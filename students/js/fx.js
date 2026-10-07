@@ -14,6 +14,21 @@ import { reducedMotion, animationLoop } from "./motion.js";
 
 export const calm = () => reducedMotion() || document.body.dataset.view === "study";
 
+// The hand-drawn action language (speed lines, punches, impact frames, ink
+// ribbons) belongs to the Verse look, which is a comic. Glass and Signal are
+// cinematic: light glints across what you press, a soft exposure blooms.
+// (js/looks.js)
+export const comic = () => document.documentElement.dataset.look === "verse";
+
+// A light sweep across an element, as if it caught the sun.
+export function glint(elm) {
+  if (calm() || !elm) return;
+  elm.classList.remove("fx-glint");
+  void elm.offsetWidth;
+  elm.classList.add("fx-glint");
+  setTimeout(() => elm.classList.remove("fx-glint"), 900);
+}
+
 // ---- Speed lines -----------------------------------------------------------------
 
 let burstCanvas = null;
@@ -77,7 +92,7 @@ function drawBursts(t) {
  * @param {{reach?: number, gap?: number, count?: number, dur?: number, color?: string, ring?: boolean}} o
  */
 export function speedLines(x, y, o = {}) {
-  if (calm()) return;
+  if (calm() || !comic()) return;
   burstLayer();
   const count = o.count ?? 46;
   bursts.push({
@@ -101,6 +116,7 @@ export function speedLines(x, y, o = {}) {
 
 // A burst centred on an element.
 export function burstOn(elm, o = {}) {
+  if (!comic()) return glint(elm);
   const r = elm.getBoundingClientRect();
   speedLines(r.left + r.width / 2, r.top + r.height / 2, { gap: Math.max(r.width, r.height) * 0.55, reach: Math.max(160, Math.max(r.width, r.height) * 2.4), count: 30, dur: 360, ...o });
 }
@@ -114,7 +130,8 @@ export function impactFrame({ strong = false } = {}) {
   if (now - lastImpact < 1000) return; // never more than once a second
   lastImpact = now;
   const f = document.createElement("div");
-  f.className = `fx-impact${strong ? " strong" : ""}`;
+  // Outside the comic, a hit is a soft exposure bloom, not inverted ink.
+  f.className = comic() ? `fx-impact${strong ? " strong" : ""}` : "fx-bloom";
   f.setAttribute("aria-hidden", "true");
   document.body.append(f);
   f.addEventListener("animationend", () => f.remove(), { once: true });
@@ -124,6 +141,7 @@ export function impactFrame({ strong = false } = {}) {
 // A short punch on an element: scale, settle, with afterimages.
 export function punch(elm) {
   if (calm() || !elm) return;
+  if (!comic()) return glint(elm);
   elm.classList.remove("fx-punch");
   void elm.offsetWidth;
   elm.classList.add("fx-punch");
@@ -341,7 +359,12 @@ export function ribbons(back, front, { getMotion } = {}) {
 
 // ---- Petals and embers -----------------------------------------------------------------
 // A light drift across a canvas: pink petals tumbling, or embers rising.
-export function drift(canvas, { count = 28, kinds = ["petal", "ember"], wind = 1 } = {}) {
+// Each look's drift: dust turning in a sunbeam (Glass), pixels blinking on
+// and off (Signal), shards of colour slipping between universes (Verse).
+const LOOK_KINDS = { glass: ["mote"], signal: ["pixel"], verse: ["shard"] };
+const lookKinds = () => LOOK_KINDS[document.documentElement.dataset.look] || ["mote"];
+
+export function drift(canvas, { count = 28, kinds: fixed = null, wind = 1 } = {}) {
   if (reducedMotion()) return { destroy() {}, setPaused() {} };
   const ctx = canvas.getContext("2d");
   const dpr = Math.min(1.5, window.devicePixelRatio || 1);
@@ -356,14 +379,18 @@ export function drift(canvas, { count = 28, kinds = ["petal", "ember"], wind = 1
   fit();
   window.addEventListener("resize", fit);
   const spawn = (p, anywhere) => {
+    const kinds = fixed || lookKinds();
     const kind = kinds[Math.floor(Math.random() * kinds.length)];
+    const rises = kind === "ember" || kind === "mote";
     Object.assign(p, {
       kind,
       x: Math.random() * w,
-      y: anywhere ? Math.random() * h : kind === "ember" ? h + 10 : -10,
-      s: kind === "petal" ? 4 + Math.random() * 5 : 1 + Math.random() * 2,
-      vx: (Math.random() - 0.3) * 20 * wind,
-      vy: kind === "ember" ? -(14 + Math.random() * 26) : 16 + Math.random() * 22,
+      y: anywhere ? Math.random() * h : rises ? h + 10 : -10,
+      s: kind === "petal" ? 4 + Math.random() * 5 : kind === "shard" ? 3 + Math.random() * 5 : 1 + Math.random() * 2,
+      vx: (Math.random() - 0.3) * (kind === "mote" ? 6 : 20) * wind,
+      vy: kind === "mote" ? -(4 + Math.random() * 9) : kind === "ember" ? -(14 + Math.random() * 26) : kind === "pixel" ? 6 + Math.random() * 8 : 16 + Math.random() * 22,
+      hue: Math.floor(Math.random() * 3),
+      red: Math.random() < 0.12,
       a: Math.random() * Math.PI * 2,
       va: (Math.random() - 0.5) * 3,
       flip: Math.random() * Math.PI * 2,
@@ -383,6 +410,38 @@ export function drift(canvas, { count = 28, kinds = ["petal", "ember"], wind = 1
       p.a += p.va * s;
       p.flip += s * 3;
       if (p.y > h + 20 || p.y < -20 || p.x < -30 || p.x > w + 30) spawn(p, false);
+      if (p.kind === "pixel") {
+        // On a grid, blinking in steps.
+        if (Math.sin(t / 420 + p.flip * 3) < -0.3) continue;
+        const q = Math.max(2, Math.round(p.s * 1.5));
+        ctx.fillStyle = p.red ? "rgba(255,59,48,0.9)" : "rgba(255,255,255,0.55)";
+        ctx.fillRect(Math.round(p.x / 4) * 4, Math.round(p.y / 4) * 4, q, q);
+        continue;
+      }
+      if (p.kind === "mote") {
+        const tw = 0.55 + 0.45 * Math.sin(t / 700 + p.flip * 5);
+        const g = ctx.createRadialGradient(p.x, p.y, 0, p.x, p.y, p.s * 4);
+        g.addColorStop(0, `rgba(255,244,226,${0.5 * tw})`);
+        g.addColorStop(1, "rgba(255,244,226,0)");
+        ctx.fillStyle = g;
+        ctx.fillRect(p.x - p.s * 4, p.y - p.s * 4, p.s * 8, p.s * 8);
+        continue;
+      }
+      if (p.kind === "shard") {
+        // A chip of printed colour, misregistered, jumping on twos.
+        const jx = Math.round(Math.sin(Math.floor(t / 83) + p.flip * 9) * 2);
+        const cols = ["#29f0ff", "#ff2e63", "#f7f4ff"];
+        ctx.save();
+        ctx.translate(p.x + jx, p.y);
+        ctx.rotate(p.a);
+        ctx.globalAlpha = 0.7;
+        ctx.fillStyle = cols[(p.hue + 1) % 3];
+        ctx.fillRect(-p.s / 2 + 2, -p.s / 2, p.s, p.s);
+        ctx.fillStyle = cols[p.hue];
+        ctx.fillRect(-p.s / 2, -p.s / 2, p.s, p.s);
+        ctx.restore();
+        continue;
+      }
       ctx.save();
       ctx.translate(p.x, p.y);
       ctx.rotate(p.a);

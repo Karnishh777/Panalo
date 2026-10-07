@@ -31,6 +31,7 @@
   <link rel="stylesheet" href="css/app.css">
   <link rel="stylesheet" href="css/surfaces.css">
   <link rel="stylesheet" href="css/fx.css">
+  <link rel="stylesheet" href="css/looks.css">
 </head>
 <body>
   <a class="skip-link" href="#main">Skip to content</a>
@@ -96,6 +97,10 @@
         <a href="#faq">Questions</a>
       </nav>
       <div class="land-cta">
+        <div class="look-anchor">
+          <button type="button" class="look-btn" id="land-look-open" aria-haspopup="true" aria-expanded="false" aria-controls="land-look-menu"><span class="look-swatch" aria-hidden="true"><i></i><i></i><i></i></span><span class="look-name">Look</span></button>
+          <div id="land-look-menu" class="look-menu" hidden></div>
+        </div>
         <a class="btn btn-quiet" href="#login">Log in</a>
         <a class="btn btn-primary" href="#signup">Launch</a>
       </div>
@@ -448,6 +453,10 @@
       </nav>
       <div class="bar-right">
         <span class="bar-clock num" id="bar-clock" aria-hidden="true"></span>
+        <div class="look-anchor">
+          <button type="button" class="look-btn" id="look-open" aria-haspopup="true" aria-expanded="false" aria-controls="look-menu"><span class="look-swatch" aria-hidden="true"><i></i><i></i><i></i></span><span class="look-name">Look</span></button>
+          <div id="look-menu" class="look-menu" hidden></div>
+        </div>
         <button type="button" class="warp-btn" id="warp-open" aria-label="Warp: jump anywhere (Ctrl K)"><span>Warp</span><kbd>⌘K</kbd></button>
         <button type="button" class="me-btn" id="me-open" aria-haspopup="menu" aria-expanded="false" aria-controls="me-menu"><span id="me-initial">?</span><i id="me-mod-dot" class="me-dot" hidden aria-hidden="true"></i><span class="sr-only">Account and safety</span></button>
         <div id="me-menu" class="menu" role="menu" hidden>

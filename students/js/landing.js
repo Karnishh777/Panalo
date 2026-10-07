@@ -5,7 +5,9 @@
 import { createGlobe } from "./world-render.js";
 import { buildWorld } from "./model/world-model.js";
 import { DAY, dayKey } from "./model/time.js";
-import { ribbons, drift, reveal, speedLines, burstOn, impactFrame } from "./fx.js";
+import { ribbons, drift, reveal, speedLines, burstOn, impactFrame, comic } from "./fx.js";
+import { onLook } from "./looks.js";
+import { el } from "./ui.js";
 import { reducedMotion } from "./motion.js";
 import { globeDock, dockToggle } from "./globe-dock.js";
 import { initLandingHud } from "./landing-hud.js";
@@ -60,14 +62,30 @@ export function initLanding() {
       ]);
       const extra = [];
       if (!reducedMotion()) {
-        // Water and flame around the world; they follow its speed and direction.
+        // In the comic look (Verse), ink water and flame wind round the
+        // world, following its speed and direction. In Glass and Signal the
+        // world is filmed, not drawn: an anamorphic flare crosses it now and
+        // then instead (css/looks.css).
         const back = document.querySelector(".rib-back"), front = document.querySelector(".rib-front");
-        let fx = ribbons(back, front, { getMotion: () => hero.getMotion() });
+        const world = document.querySelector(".hero-world");
+        world.append(el("i", { class: "hero-flare", "aria-hidden": "true" }));
+        let fx = null;
+        let wanted = true;
+        const sync = () => {
+          const on = wanted && comic();
+          world.classList.toggle("no-ribbons", !on);
+          if (on && !fx) fx = ribbons(back, front, { getMotion: () => hero.getMotion() });
+          if (!on && fx) {
+            fx.destroy();
+            fx = null;
+          }
+        };
+        sync();
+        onLook(sync);
         extra.push(
-          dockToggle("≋", "Water and flame", true, (on) => {
-            document.querySelector(".hero-world").classList.toggle("no-ribbons", !on);
-            if (on) fx = ribbons(back, front, { getMotion: () => hero.getMotion() });
-            else fx.destroy();
+          dockToggle("≋", "Ink water and flame (Verse)", true, (on) => {
+            wanted = on;
+            sync();
           })
         );
         drift(document.querySelector(".hero-drift"), { count: 26 });
