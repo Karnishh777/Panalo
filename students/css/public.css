@@ -1977,3 +1977,130 @@ html[data-motion="reduce"] .gate {
 .parent-card.approved {
   border-color: color-mix(in srgb, var(--world) 45%, var(--line));
 }
+
+/* ---- The intro, personal (batch 4) --------------------------------------------- */
+
+/* Your name, in stars, under the title. */
+.ft-stars {
+  width: min(80vw, 560px);
+  height: clamp(44px, 7vw, 84px);
+  opacity: 0;
+  transition: opacity 600ms ease;
+}
+.birth.titled .ft-stars {
+  opacity: 1;
+}
+
+/* Camera language: a rack of focus at each cut, and the lens breathing
+   while the world turns. (The individual `scale` property, so the fall's
+   transform below is never fought.) */
+.birth[data-shot="genesis"] .film-out {
+  animation: rack-a 800ms cubic-bezier(0.2, 0.8, 0.2, 1) both;
+}
+.birth[data-shot="worldfall"] .film-out {
+  animation: rack-b 1100ms cubic-bezier(0.2, 0.8, 0.2, 1) both, breathe 7s ease-in-out 1.1s infinite alternate;
+}
+.birth[data-shot="title"] .film-out {
+  animation: rack-c 1400ms cubic-bezier(0.2, 0.8, 0.2, 1) both, breathe 7s ease-in-out 1.4s infinite alternate;
+}
+@keyframes rack-a { from { filter: blur(7px) brightness(1.35); } }
+@keyframes rack-b { from { filter: blur(5px); scale: 1.035; } }
+@keyframes rack-c { from { filter: blur(3px); scale: 1.02; } }
+@keyframes breathe { from { scale: 1; } to { scale: 1.012; } }
+
+/* The finale: first constellations, your world's name, the fall. */
+.finale {
+  position: absolute;
+  inset: 0;
+  z-index: 6;
+  cursor: pointer;
+}
+.finale-sky {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+.finale-const line {
+  stroke: rgba(255, 226, 184, 0.55);
+  stroke-width: 1;
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;
+  animation: const-draw 900ms cubic-bezier(0.2, 0.8, 0.2, 1) var(--d) forwards;
+}
+.finale-const circle {
+  fill: #fff;
+  opacity: 0;
+  filter: drop-shadow(0 0 4px rgba(255, 226, 184, 0.9));
+  animation: const-star 500ms ease var(--d) forwards;
+}
+.finale-const text {
+  font: 600 11px var(--f-body);
+  letter-spacing: 0.24em;
+  fill: rgba(255, 226, 184, 0.85);
+  opacity: 0;
+  animation: const-star 700ms ease calc(var(--d) + 700ms) forwards;
+}
+@keyframes const-draw { to { stroke-dashoffset: 0; } }
+@keyframes const-star { to { opacity: 1; } }
+.finale-name {
+  position: absolute;
+  left: 50%;
+  top: var(--name-y, calc(var(--film-bar, 0px) + clamp(16px, 5vh, 56px)));
+  transform: translate(-50%, -50%);
+  width: min(86vw, 720px);
+  height: clamp(56px, 10vw, 110px);
+}
+.finale-caption {
+  position: absolute;
+  left: 50%;
+  bottom: max(18px, calc(var(--film-bar, 0px) / 2));
+  transform: translate(-50%, 50%);
+  margin: 0;
+  font: italic 400 clamp(16px, 2vw, 22px) / 1.3 var(--f-serif);
+  color: rgba(230, 236, 255, 0.85);
+  animation: const-star 900ms ease 400ms both;
+}
+.finale-fog {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0;
+  background: radial-gradient(circle at var(--fall-x, 50%) var(--fall-y, 40%), #fff 0%, rgba(235, 242, 255, 0.95) 30%, rgba(200, 220, 255, 0.6) 60%, rgba(10, 14, 30, 0) 100%);
+}
+.birth.finale-on .birth-form,
+.birth.finale-on .birth-line {
+  opacity: 0;
+  pointer-events: none;
+}
+/* The fall: the world rushes up, the clouds go white. */
+.birth.falling .film-out,
+.birth.falling .birth-globe {
+  filter: blur(2px) brightness(1.3);
+  transition: transform 1.5s cubic-bezier(0.55, 0, 0.9, 0.5), filter 1.5s ease-in;
+}
+.birth.falling .film-out {
+  transform-origin: var(--fall-x, 50%) var(--fall-y, 40%);
+  transform: scale(6);
+}
+/* The 2D world keeps its centring translate; it grows about its own middle. */
+.birth.falling .birth-globe {
+  transform: translate(-50%, -50%) scale(6);
+}
+.birth.falling .finale-sky,
+.birth.falling .finale-name,
+.birth.falling .finale-caption {
+  opacity: 0;
+  animation: none;
+  transition: opacity 500ms ease;
+}
+.birth.falling .finale-fog {
+  opacity: 1;
+  transition: opacity 1.2s cubic-bezier(0.6, 0, 0.8, 0.4) 0.25s;
+}
+@media (prefers-reduced-motion: reduce) {
+  .birth .film-out { animation: none !important; }
+}
+html[data-motion="reduce"] .birth .film-out {
+  animation: none !important;
+}

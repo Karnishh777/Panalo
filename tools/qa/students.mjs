@@ -32,7 +32,8 @@ const go = async (page, route, wait = 900) => {
   await page.waitForTimeout(wait);
 };
 
-async function finishBirth(page) {
+let finaleSeen = null; // what the finale showed, the first time it's watched
+async function finishBirth(page, { watchFinale = false } = {}) {
   // The sequence may already have reached its questions on a slow machine,
   // where Skip is (correctly) gone. Accept either.
   try {
@@ -55,6 +56,18 @@ async function finishBirth(page) {
   await page.click("#birth-form .chip >> text=Space");
   await page.click("#birth-form button[type=submit]");
   await page.click("#birth-form button[type=submit]");
+  if (watchFinale) {
+    // Batch 4: your first constellations, your world's name in stars, the fall.
+    await page.waitForSelector(".finale", { timeout: 8000 }).catch(() => {});
+    await page.waitForTimeout(1600);
+    finaleSeen = await page.evaluate(() => ({
+      on: !!document.querySelector(".finale"),
+      labels: [...document.querySelectorAll(".finale-const text")].map((t) => t.textContent),
+      name: !!document.querySelector(".finale-name"),
+      caption: document.querySelector(".finale-caption")?.textContent || "",
+    }));
+    await page.waitForFunction(() => document.querySelector(".birth.falling"), null, { timeout: 8000 }).then(() => (finaleSeen.fell = true)).catch(() => {});
+  }
   await page.waitForSelector("#app:not([hidden])", { timeout: 15000 });
   await page.waitForTimeout(800);
 }
@@ -74,11 +87,21 @@ try {
     await page.waitForTimeout(600);
     check("the landing page is shown to a visitor", await page.isVisible("#landing"));
     check("the landing explains who it is for", /intensely curious/i.test(await page.textContent(".hero")));
-    // The demo mounts after the landing's first paint: wait for it, don't race it.
-    await page.waitForSelector("#wd-focus", { timeout: 10000 });
-    await page.fill("#wd-focus", "120");
-    await page.dispatchEvent("#wd-focus", "input");
-    check("the world demo responds to its sliders", (await page.textContent("#wd-focus-out")) === "120 h");
+    // The slider is in the page from the start, but the demo only starts
+    // listening once its globes are built: keep nudging until it answers.
+    const demoAnswers = await page
+      .waitForFunction(
+        () => {
+          const i = document.getElementById("wd-focus");
+          i.value = "120";
+          i.dispatchEvent(new Event("input"));
+          return document.getElementById("wd-focus-out").textContent === "120 h";
+        },
+        null,
+        { timeout: 15000, polling: 200 }
+      )
+      .then(() => true, () => false);
+    check("the world demo responds to its sliders", demoAnswers);
     await shot(page, "landing");
 
     // The gate counts to 100 once and gets out of the way.
@@ -140,7 +163,12 @@ try {
       }));
       check("the intro's sound can be turned off, and that is remembered", muted.pressed === "false" && muted.saved === false);
     } else check("the intro's sound can be turned off, and that is remembered", false);
-    await finishBirth(page);
+    await finishBirth(page, { watchFinale: true });
+    check("after the questions, your interests become your first constellations", finaleSeen?.on && finaleSeen.labels.includes("SPACE") && /first constellations/.test(finaleSeen.caption));
+    check("…your world's name is written in stars", finaleSeen?.name === true);
+    check("…and the camera falls into your world", finaleSeen?.fell === true);
+    const letters = await page.evaluate(async () => (await import("/students/js/starwriter.js")).letterPoints("alex", 400, 80).pts.length);
+    check("a name can be turned into stars (the title's)", letters > 40 && letters < 400);
     check("the film's pieces are cleared away once it ends", (await page.locator(".film-out, .film-caption, .film-title, .birth-sound").count()) === 0);
     const prof = await page.evaluate(() => window.__qa.db.student_profiles[0]);
     check("the birth saves a named world with interests", prof?.world_name === "Kepler QA" && prof.interests.includes("space"));

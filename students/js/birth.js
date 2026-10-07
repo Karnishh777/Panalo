@@ -15,6 +15,8 @@ import { createScore, setSoundWanted } from "./birth-score.js";
 import { INTERESTS } from "./model/drift-library.js";
 import { api, store } from "./store.js";
 import { state } from "../../src/state.js";
+import { playFinale } from "./finale.js";
+import { writeInStars } from "./starwriter.js";
 
 const $ = (id) => document.getElementById(id);
 const NAMES = ["Halcyon", "Tamarind", "Velora", "Nadir", "Lumen", "Arka", "Cinder", "Meridian", "Solace", "Kestrel", "Aurel", "Thaliya"];
@@ -159,7 +161,7 @@ function buildForm(form, { onDone }) {
       const g = await api.addGoal({ title: "Weekly focus", weekly_minutes: rhythm.value });
       if (g.error) reportError(g.error, "Your world is saved, but the weekly goal wasn't. Add it from World.");
     }
-    onDone();
+    onDone({ worldName, interests: skipped ? [] : [...interests], skipped });
   }
 
   form.onsubmit = (e) => {
@@ -218,6 +220,7 @@ export function runBirth({ replay = false, onDone }) {
   const end = () => {
     if (ended) return;
     ended = true;
+    nameStars?.stop();
     stopSound();
     root.classList.add("leaving");
     setTimeout(() => {
@@ -244,7 +247,18 @@ export function runBirth({ replay = false, onDone }) {
     line(`Universe № ${number} · age 0 seconds`);
     form.hidden = false;
     skip.hidden = true;
-    buildForm(form, { onDone: end });
+    buildForm(form, {
+      // Answered: your first constellations, your world's name in stars, and
+      // the fall into it (finale.js). Skipped: straight in.
+      onDone: async (info) => {
+        if (info && !info.skipped && film) {
+          form.hidden = true;
+          $("birth-line").classList.add("out");
+          await playFinale(root, { worldName: info.worldName, interests: info.interests, world: film.world, seed: state.currentUser?.id || "panalo" }).catch((e) => console.error(e));
+        }
+        end();
+      },
+    });
   };
 
   skip.hidden = false;
@@ -264,8 +278,15 @@ export function runBirth({ replay = false, onDone }) {
       el("span", { class: "ft-word", text: "PANALO" }),
       el("span", { class: "ft-sub", text: "STUDENTS" }),
       el("span", { class: "ft-num", text: `Universe № ${number} · age 0 seconds` }),
+      el("canvas", { class: "ft-stars", "aria-hidden": "true" }),
     ])
   );
+  // Your name, written in stars under the title.
+  let nameStars = null;
+  const writeName = () => {
+    const c = title.querySelector(".ft-stars");
+    if (c && state.currentUsername && !ended) nameStars = writeInStars(c, state.currentUsername, { seed: state.currentUser?.id, duration: 1800, color: [190, 215, 255] });
+  };
   let captionTimer = 0;
   const voices = new Map(); // line id -> decoded recording
   let speakingUntil = 0;
@@ -322,6 +343,7 @@ export function runBirth({ replay = false, onDone }) {
     { at: WORLDFALL + 400, run: () => score?.pad([110, 164.8, 220, 277.2, 329.6], 8, 0.07) },
     { at: TITLE - 200, run: () => score?.resolve() },
     { at: TITLE, run: () => root.classList.add("titled") },
+    { at: TITLE + 900, run: writeName },
     ...SCRIPT.map((l) => ({ at: l.at, run: () => say(l) })),
     { at: LENGTH, run: () => !ended && (replay ? end() : ask()) },
   ];
