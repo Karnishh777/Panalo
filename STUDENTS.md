@@ -65,7 +65,13 @@ landing ──► the crossing (sign in / sign up) ──► first time? the bir
   the key handling of Panalo Chat (`src/auth.js`).
 - **Birth**: ~8 s, one canvas, a few hundred particles, skippable, replaced
   by two lines of text under reduced motion. The world that forms is the
-  real one (seeded from the account id).
+  real one (seeded from the account id). It's personal at both ends: your
+  username is written in stars under the title (`js/starwriter.js`), and
+  after the three questions the finale (`js/finale.js`) draws one
+  constellation per interest you picked around your world, writes your
+  world's name in stars, and falls through the clouds into the app (about
+  six seconds; a click or Escape skips it; not played under reduced motion
+  or if you skip the questions).
 - **Navigation**: top bar on wide screens, a five-item dock on phones (Now,
   Study, Signals, World, More). **Warp** (Ctrl/⌘ K) jumps anywhere or does
   common things ("Start a 25-minute focus", "Join a room with a code").

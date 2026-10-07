@@ -767,6 +767,12 @@ export function createFilm(host, { seed, layers, cues = [], plates = {}, onFallb
       grader?.destroy();
     },
     graded: !!grader,
+    /** Where the world is on screen right now (CSS pixels): {cx, cy, size}. */
+    get world() {
+      const f = worldFrame(e);
+      const r = out.getBoundingClientRect();
+      return { cx: r.left + f.cx, cy: r.top + f.cy, size: f.size };
+    },
     get tier() {
       return tier;
     },

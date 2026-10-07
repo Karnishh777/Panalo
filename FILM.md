@@ -10,6 +10,12 @@ every shot, grades it, and scores it. Two things can be added from outside:
 Anything missing is simply left out: no voice means captions only; no plate
 means the drawn background.
 
+The film's timings are fixed by the recorded voice, so it gets personal
+around them rather than inside them: the account's username is written in
+stars under the title card (`js/starwriter.js`), and the camera racks focus
+at each cut and breathes while the world turns (CSS, on `data-shot`). The
+birth's finale (`js/finale.js`) plays after the questions, not in the film.
+
 ## Quality by device
 
 The film picks one of three levels before its first frame
