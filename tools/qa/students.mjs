@@ -446,7 +446,8 @@ try {
     stage: !!document.querySelector(".ody-stage"),
     station: document.querySelector(".ody-stage")?.dataset.station,
     caption: document.querySelector(".ody-line")?.textContent || "",
-    world: !!document.querySelector(".ody-globe[data-renderer]"),
+    // The GPU draws the world and stars on one canvas; without WebGL, still stars.
+    world: !!document.querySelector(".ody-sky[data-renderer='webgl'], .ody-flat-stars"),
   }));
   check("Odyssey builds its scene behind the app, with your world in it", ody.stage && ody.world);
   check("Odyssey subtitles the page it stands at", ody.station === "now" && /\./.test(ody.caption));

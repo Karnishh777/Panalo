@@ -23,24 +23,29 @@ import { reducedMotion } from "../motion.js";
 import { deviceTier } from "../device-tier.js";
 import { state } from "../../../src/state.js";
 
-// Where the camera stands at each page: the world's centre (vw, vh), its
-// scale, and where the sun hangs (vw, vh). The world's box is 220vh across
-// and the planet fills 1/1.7 of it, so its radius is 64.7vh x k.
+// Where the camera stands at each page: the planet's centre (vw, vh) and
+// radius (vh), which way its sunlight falls (towards the sun, view space:
+// x right, y up, z towards you), and where the sun hangs on screen (vw, vh;
+// null when it's off frame or would sit behind the words). A page with a dial of the day (Now,
+// Calendar) puts your world exactly inside it instead ("anchor").
 const STATIONS = {
-  now: { n: 1, title: "Now", cx: 76, cy: 112, k: 0.77, sun: [62, 9] }, // a horizon, lower right
-  study: { n: 2, title: "The Study Room", cx: 86, cy: 22, k: 0.124, sun: [12, 9] }, // far out, small
-  signals: { n: 3, title: "Signals", cx: 6, cy: 108, k: 0.71, sun: [80, 9] }, // swung to the left
-  world: { n: 4, title: "World", cx: 50, cy: 50, k: 0.5, sun: [82, 10], hide: true }, // the page has its own
-  calendar: { n: 5, title: "Calendar", cx: 50, cy: 172, k: 1.42, sun: [50, 7] }, // a vast arc below
-  archive: { n: 6, title: "Archive", cx: 106, cy: 50, k: 0.9, sun: [34, 9] }, // a wall of world, right
-  drift: { n: 7, title: "Drift", cx: 20, cy: 120, k: 0.83, sun: [86, 9] },
-  safety: { n: 8, title: "Safety", cx: 86, cy: 80, k: 0.37, sun: [28, 9] },
-  settings: { n: 9, title: "Settings", cx: 86, cy: 80, k: 0.37, sun: [28, 9] },
-  moderate: { n: 10, title: "Moderation", cx: 86, cy: 80, k: 0.37, sun: [28, 9] },
+  now: { n: 1, title: "Now", x: 74, y: 118, r: 62, L: [0.55, 0.5, 0.67], sun: [93, 22], anchor: ".now .orbit-wrap" },
+  study: { n: 2, title: "The Study Room", x: 84, y: 26, r: 6.5, L: [-0.75, 0.3, 0.45], sun: null }, // far out, quiet
+  signals: { n: 3, title: "Signals", x: 6, y: 112, r: 58, L: [0.85, 0.4, -0.45], sun: null }, // the night side, lit cities
+  world: { n: 4, title: "World", x: 150, y: 50, r: 40, L: [0.5, 0.4, 0.7], sun: [84, 20] }, // the page has its own
+  calendar: { n: 5, title: "Calendar", x: 50, y: 196, r: 118, L: [0.35, 0.6, 0.72], sun: null, anchor: ".cal-orbit" },
+  archive: { n: 6, title: "Archive", x: 104, y: 52, r: 46, L: [-0.6, 0.45, 0.66], sun: null }, // a wall of world, lit towards you
+  drift: { n: 7, title: "Drift", x: 20, y: 124, r: 56, L: [0.62, 0.48, 0.6], sun: [84, 22] },
+  safety: { n: 8, title: "Safety", x: 88, y: 84, r: 22, L: [-0.6, 0.5, 0.6], sun: null },
+  settings: { n: 9, title: "Settings", x: 88, y: 84, r: 22, L: [-0.6, 0.5, 0.6], sun: null },
+  moderate: { n: 10, title: "Moderation", x: 88, y: 84, r: 22, L: [-0.6, 0.5, 0.6], sun: null },
 };
+// The world inside a dial of the day: its radius as a share of the dial's
+// width (the same proportion the dial's own world is drawn at).
+const IN_DIAL = 0.84 / 1.7 / 2;
 const PATH = ["now", "study", "signals", "world", "calendar", "archive", "drift"];
 const ROMAN = ["", "I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX", "X"];
-const FLIGHT = 900; // ms: the warp's length; the page is readable by ~200 ms
+const FLIGHT = 1150; // ms: the camera's move; the page is readable by ~200 ms
 const SEEN = "panalo.students.ody.seen";
 
 // ---- Words, for subtitles ------------------------------------------------------------
@@ -101,47 +106,50 @@ function captionFor(name) {
 
 // ---- The engine ------------------------------------------------------------------------
 
+const ease = (q) => (q < 0.5 ? 4 * q * q * q : 1 - (-2 * q + 2) ** 3 / 2); // in-out cubic
+const lerp = (a, b, k) => a + (b - a) * k;
+const norm = (v) => {
+  const l = Math.hypot(v[0], v[1], v[2]) || 1;
+  return [v[0] / l, v[1] / l, v[2] / l];
+};
+
 export function start() {
   const still = reducedMotion();
   const tier = deviceTier().tier;
-  const STAR_COUNT = { low: 520, normal: 1100, high: 1700 }[tier] || 1100;
+  // The longest side of the scene, in pixels: the most each tier may draw.
+  // Lowered on the fly if frames run slow, raised again when there's room.
+  const CAP = { low: 1280, normal: 1920, high: 2600 }[tier] || 1920;
+  let maxPx = CAP;
 
-  // The scene, behind everything.
-  const stars = el("canvas", { class: "ody-stars" });
-  const globeCanvas = el("canvas", { class: "ody-globe" });
-  const worldBox = el("div", { class: "ody-world" }, [globeCanvas]);
+  // The scene, behind everything: a nebula, the sun, and one canvas the GPU
+  // draws -- your world, framed by the camera, with the stars behind it.
+  const sky = el("canvas", { class: "ody-sky" });
   const sun = el("div", { class: "ody-sun" }, [el("i", { class: "ody-flare" })]);
-  const stage = el("div", { class: "ody-stage", "aria-hidden": "true" }, [el("div", { class: "ody-nebula" }), stars, sun, worldBox, el("div", { class: "ody-vignette" })]);
-  const grain = el("div", { class: "ody-grain", "aria-hidden": "true" });
+  const nebula = el("div", { class: "ody-nebula" });
+  const stage = el("div", { class: "ody-stage", "aria-hidden": "true" }, [nebula, sun, sky, el("div", { class: "ody-vignette" }), el("div", { class: "ody-grain" })]);
   const line = el("p", { class: "ody-line" });
   const dots = el("ol", { class: "ody-path", "aria-hidden": "true" }, PATH.map((p) => el("li", { "data-station": p })));
   const caption = el("div", { class: "ody-caption" }, [line, dots]);
-  // The grade's light over the whole frame, and the leak that sweeps
-  // across it in flight (css/cinema.css).
-  // (Two separate layers: a blend inside a shared parent would only blend
-  // with its sibling, not with the frame.)
-  const gradeA = el("div", { class: "ody-grade ody-grade-a", "aria-hidden": "true" });
-  const gradeB = el("div", { class: "ody-grade ody-grade-b", "aria-hidden": "true" });
   const leak = el("div", { class: "ody-leak", "aria-hidden": "true" });
   document.body.prepend(stage);
-  document.body.append(gradeA, gradeB, leak, grain, caption);
+  document.body.append(leak, caption);
   document.documentElement.classList.add("ody-on");
 
-
-  // Your world: the real renderer, as large and sharp as the device allows.
+  // Your world: the real renderer, framed by this camera and driven by this
+  // loop (manual), so the world, the stars and the camera move in the same
+  // frame -- nothing lags behind anything else.
   let globe = null;
   try {
-    globe = createGlobe(globeCanvas, {
-      seed: state.currentUser?.id || "panalo",
-      maxPixels: tier === "high" ? 2048 : tier === "normal" ? 1500 : 900,
-      maxDisk: tier === "low" ? 520 : 760,
-      spin: 0.32,
-      // Tipped away from the camera: from a horizon you see coasts and
-      // cloud, not a polar cap.
-      tilt: -0.42,
-    });
+    globe = createGlobe(sky, { seed: state.currentUser?.id || "panalo", maxPixels: maxPx, spin: 0.32, tilt: -0.42, manual: true });
   } catch (e) {
     console.error("odyssey world", e);
+  }
+  const gpu = !!globe?.setFrame;
+  if (!gpu) {
+    // No WebGL: a still field of stars, and no world.
+    globe?.destroy();
+    globe = null;
+    stage.classList.add("ody-flat");
   }
   const refreshWorld = () => {
     if (!globe) return;
@@ -158,21 +166,35 @@ export function start() {
     captionTimer = setTimeout(() => setCaption(station, false), 400);
   });
 
-  // ---- Stations ----
+  // ---- The camera ----
+  let W = window.innerWidth;
+  let H = window.innerHeight;
   let station = null;
-  function frame(name, instant) {
+  // Where a station puts the planet, in px, right now (a dial moves as
+  // the page lays out and scrolls, so anchors are read every frame).
+  function shotFor(name) {
     const s = STATIONS[name] || STATIONS.now;
-    if (instant) stage.classList.add("ody-instant");
-    worldBox.style.setProperty("--cx", s.cx);
-    worldBox.style.setProperty("--cy", s.cy);
-    worldBox.style.setProperty("--k", s.k);
-    worldBox.classList.toggle("ody-hidden", !!s.hide);
-    sun.style.setProperty("--sx", s.sun[0]);
-    sun.style.setProperty("--sy", s.sun[1]);
-    stage.dataset.station = name;
-    dots.querySelectorAll("li").forEach((li) => li.classList.toggle("here", li.dataset.station === name));
-    if (instant) requestAnimationFrame(() => requestAnimationFrame(() => stage.classList.remove("ody-instant")));
+    let x = (s.x / 100) * W;
+    let y = (s.y / 100) * H;
+    let r = (s.r / 100) * H;
+    let anchored = false;
+    if (s.anchor) {
+      const a = document.querySelector(`.surface[data-surface="${name}"]:not([hidden]) ${s.anchor}`);
+      const b = a?.getBoundingClientRect();
+      if (b && b.width > 40) {
+        x = b.left + b.width / 2;
+        y = b.top + b.height / 2;
+        r = b.width * IN_DIAL;
+        anchored = true;
+      }
+    }
+    return { x, y, r, L: norm(s.L), sun: s.sun, anchored };
   }
+  let cam = null; // the shot now
+  let from = null; // the shot a flight left from
+  let flightStart = -1e9;
+  let flightTo = null;
+
   function setCaption(name, animate) {
     const text = captionFor(name);
     if (line.textContent === text) return;
@@ -204,120 +226,135 @@ export function start() {
     setTimeout(() => card.remove(), 1900);
   }
 
-  // ---- The camera: stars, parallax, warp ----
-  const ctx = stars.getContext("2d");
-  const dpr = Math.min(tier === "high" ? 2 : 1.5, window.devicePixelRatio || 1);
-  let W = 0, H = 0;
-  const fit = () => {
-    W = window.innerWidth;
-    H = window.innerHeight;
-    stars.width = Math.round(W * dpr);
-    stars.height = Math.round(H * dpr);
-    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-  };
-  fit();
-  // Stars: depth z (near ones move more), size, brightness, twinkle, a tint.
-  const field = Array.from({ length: STAR_COUNT }, () => {
-    const z = Math.random() ** 1.8;
-    const tint = Math.random();
-    return {
-      x: Math.random(),
-      y: Math.random(),
-      z: 0.15 + z * 0.85,
-      r: 0.35 + Math.random() ** 3 * 1.6 + z * 0.4,
-      b: 0.35 + Math.random() * 0.65,
-      tw: 0.4 + Math.random() * 1.6,
-      ph: Math.random() * 6.3,
-      c: tint < 0.12 ? "255,214,170" : tint < 0.3 ? "200,220,255" : "235,240,255",
-    };
-  });
-  // A soft glow sprite for the brightest stars.
-  const glow = document.createElement("canvas");
-  glow.width = glow.height = 32;
-  const gctx = glow.getContext("2d");
-  const grad = gctx.createRadialGradient(16, 16, 0, 16, 16, 16);
-  grad.addColorStop(0, "rgba(255,255,255,0.9)");
-  grad.addColorStop(0.25, "rgba(210,225,255,0.35)");
-  grad.addColorStop(1, "rgba(210,225,255,0)");
-  gctx.fillStyle = grad;
-  gctx.fillRect(0, 0, 32, 32);
-
+  // ---- Pointer and scroll: read raw, eased in the frame ----
   let par = { x: 0, y: 0 };
   let target = { x: 0, y: 0 };
-  let warp = 0;
-  let flightStart = -1e9;
-  let drift = 0;
   const onPointer = (e) => {
-    target = { x: (e.clientX / W - 0.5) * -26, y: (e.clientY / H - 0.5) * -16 };
+    target = { x: (e.clientX / W - 0.5) * -28, y: (e.clientY / H - 0.5) * -18 };
   };
-  // Scrolling dollies the camera: near stars slide past faster than far
-  // ones, and the world rises into frame.
-  let scroll = 0;
-  let scrollShown = 0;
-  const onScroll = () => {
-    scroll = window.scrollY || 0;
-  };
-  window.addEventListener("scroll", onScroll, { passive: true });
   if (!still) window.addEventListener("pointermove", onPointer, { passive: true });
 
-  function draw(t) {
-    const dt = 16;
-    par.x += (target.x - par.x) * 0.05;
-    par.y += (target.y - par.y) * 0.05;
-    scrollShown += (scroll - scrollShown) * 0.12;
+  // ---- A frame ----
+  let roll = 0;
+  function render(t, dt) {
+    const k = 1 - Math.exp(-dt / 140); // the camera's follow: smooth, never late
+    par.x += (target.x - par.x) * k;
+    par.y += (target.y - par.y) * k;
+    const scroll = Math.min(900, window.scrollY || 0);
+
+    const goal = shotFor(station || "now");
     const q = Math.min(1, Math.max(0, (t - flightStart) / FLIGHT));
-    warp = q < 1 ? Math.sin(Math.PI * q) ** 1.4 : 0;
-    const calm = stage.dataset.station === "study";
-    drift += dt * (calm ? 0.000004 : 0.000012);
-    ctx.clearRect(0, 0, W, H);
-    const vx = W / 2, vy = H / 2;
-    for (const s of field) {
-      let x = ((s.x + drift * s.z) % 1) * W + par.x * s.z;
-      let y = (((s.y * H + par.y * s.z - scrollShown * s.z * 0.35) % H) + H) % H;
-      const tw = still ? 1 : 0.65 + 0.35 * Math.sin(t * 0.001 * s.tw + s.ph);
-      const a = s.b * tw;
-      if (warp > 0.02) {
-        // Into the warp: every star streaks away from the centre.
-        const dx = x - vx, dy = y - vy;
-        const len = warp * s.z * 0.55;
-        ctx.strokeStyle = `rgba(${s.c},${Math.min(1, a * (0.6 + warp))})`;
-        ctx.lineWidth = s.r * (0.8 + warp * 0.6);
-        ctx.beginPath();
-        ctx.moveTo(x, y);
-        ctx.lineTo(x + dx * len, y + dy * len);
-        ctx.stroke();
-        continue;
-      }
-      if (s.r > 1.5) {
-        const g = s.r * 7;
-        ctx.globalAlpha = a;
-        ctx.drawImage(glow, x - g / 2, y - g / 2, g, g);
-        ctx.globalAlpha = 1;
-      }
-      ctx.fillStyle = `rgba(${s.c},${a})`;
-      ctx.fillRect(x - s.r / 2, y - s.r / 2, s.r, s.r);
+    const flying = q < 1 && from;
+    if (flying) {
+      // The move: ease in, ease out; the radius changes in log space, so a
+      // zoom feels like distance, not inflation; the light swings round.
+      const e = ease(q);
+      cam = {
+        x: lerp(from.x, goal.x, e),
+        y: lerp(from.y, goal.y, e),
+        r: Math.exp(lerp(Math.log(from.r), Math.log(goal.r), e)),
+        L: norm([lerp(from.L[0], goal.L[0], e), lerp(from.L[1], goal.L[1], e), lerp(from.L[2], goal.L[2], e)]),
+        sun: goal.sun && from.sun ? [lerp(from.sun[0], goal.sun[0], e), lerp(from.sun[1], goal.sun[1], e)] : goal.sun,
+        anchored: false,
+      };
+    } else {
+      cam = goal;
+      from = null;
     }
-    // The scene's other layers follow the camera too (less, being far).
-    stage.style.setProperty("--px", `${par.x.toFixed(2)}px`);
-    stage.style.setProperty("--py", `${par.y.toFixed(2)}px`);
-    stage.style.setProperty("--scroll", `${Math.min(900, scrollShown).toFixed(1)}px`);
+    const warp = flying && !still ? Math.sin(Math.PI * q) ** 1.6 : 0;
+    // A slight roll through the move, the way a ship banks.
+    roll = flying ? Math.sin(Math.PI * q) * (flightTo?.dir || 1) * 1.4 : 0;
+
+    // A dial's world is locked to the dial (it scrolls with it); a horizon
+    // rises as you scroll, and leans with the pointer.
+    const lean = cam.anchored ? 0 : 1;
+    const x = cam.x + par.x * 0.6 * lean;
+    const y = cam.y + (par.y * 0.6 - scroll * 0.3) * lean;
+    if (globe) {
+      globe.setFrame({ x, y, r: cam.r });
+      globe.setSun(cam.L, 0.55);
+      globe.setSky({ stars: 1, par: [par.x, par.y - scroll * 0.12], warp, warpAt: [W / 2, H / 2] });
+      globe.frame(t, dt);
+    }
+    sky.style.transform = roll ? `rotate(${roll.toFixed(3)}deg) scale(1.02)` : "";
+    nebula.style.transform = `translate3d(${(par.x * 0.3).toFixed(2)}px, ${(par.y * 0.3 - scroll * 0.05).toFixed(2)}px, 0)`;
+    if (cam.sun) {
+      sun.style.opacity = "1";
+      sun.style.transform = `translate3d(${((cam.sun[0] / 100) * W + par.x * 0.15).toFixed(1)}px, ${((cam.sun[1] / 100) * H + par.y * 0.15 - scroll * 0.1).toFixed(1)}px, 0)`;
+    } else {
+      sun.style.opacity = "0";
+    }
   }
+
+  // ---- The loop: one for everything; quality follows the frame rate ----
+  // While nothing moves (no flight, no pointer, no scroll for a moment), a
+  // mid-range device draws every other frame: the world turns slowly
+  // enough that no one sees it, and the page keeps its headroom.
   let raf = 0;
+  let last = 0;
+  let avg = 16.7;
+  let slowFor = 0;
+  let fastFor = 0;
+  let skip = false;
+  let owed = 0; // time not yet drawn (a skipped frame's)
+  let stirred = 0;
+  const stir = () => (stirred = performance.now());
+  window.addEventListener("pointermove", stir, { passive: true });
+  window.addEventListener("scroll", stir, { passive: true });
   const loop = (t) => {
     raf = 0;
     if (document.hidden) return;
-    draw(t);
+    const dt = last ? Math.min(100, t - last) : 16.7;
+    last = t;
+    const busy = t - flightStart < FLIGHT || t - stirred < 1200;
+    skip = tier !== "high" && !busy && !skip;
+    owed += dt;
+    if (!skip) {
+      render(t, owed);
+      owed = 0;
+    }
+    // Adaptive resolution, decided on time rather than frame counts so it
+    // reacts within a second even when frames are very slow: if frames run
+    // long, draw fewer pixels; when there's been room for a while, more.
+    avg += (dt - avg) * 0.1;
+    if (avg > 26) {
+      slowFor += dt;
+      if (slowFor > 700 && maxPx > 720) {
+        maxPx = Math.round(maxPx * (avg > 50 ? 0.7 : 0.85));
+        globe?.setMaxPixels(maxPx);
+        slowFor = 0;
+        avg = 18;
+      }
+    } else slowFor = 0;
+    if (avg < 18.5) {
+      fastFor += dt;
+      if (fastFor > 5000 && maxPx < CAP) {
+        maxPx = Math.min(CAP, Math.round(maxPx * 1.1));
+        globe?.setMaxPixels(maxPx);
+        fastFor = 0;
+      }
+    } else fastFor = 0;
     raf = requestAnimationFrame(loop);
   };
   const wake = () => {
-    if (!still && !raf && !document.hidden) raf = requestAnimationFrame(loop);
+    if (still) return render(performance.now(), 16);
+    if (!raf && !document.hidden) {
+      last = 0;
+      raf = requestAnimationFrame(loop);
+    }
   };
   document.addEventListener("visibilitychange", wake);
   const onResize = () => {
-    fit();
-    if (still) draw(0);
+    W = window.innerWidth;
+    H = window.innerHeight;
+    if (still) setTimeout(() => render(performance.now(), 16), 50);
   };
   window.addEventListener("resize", onResize);
+  // Still pictures move when you scroll (reduced motion: no loop).
+  const onScroll = () => still && render(performance.now(), 16);
+  window.addEventListener("scroll", onScroll, { passive: true });
+
+  if (!gpu) drawFlatStars(stage);
 
   // ---- Arrivals (shell.js) ----
   let flyTimer = 0;
@@ -325,46 +362,70 @@ export function start() {
     const name = e.detail?.name;
     if (!name || name === station) return;
     const first = station === null;
+    const prev = station;
     station = name;
-    frame(name, first || still);
+    stage.dataset.station = name;
+    dots.querySelectorAll("li").forEach((li) => li.classList.toggle("here", li.dataset.station === name));
     setCaption(name, !first);
     chapter(name);
-    if (first || still) return;
+    if (first || still || !cam) {
+      if (still) requestAnimationFrame(() => render(performance.now(), 16));
+      return;
+    }
+    // Fly from wherever the camera is now (mid-flight included).
+    from = { ...cam, x: cam.x, y: cam.y };
     flightStart = performance.now();
+    flightTo = { dir: PATH.indexOf(name) >= PATH.indexOf(prev) ? 1 : -1 };
     document.body.classList.add("ody-flying");
     clearTimeout(flyTimer);
-    flyTimer = setTimeout(() => document.body.classList.remove("ody-flying"), FLIGHT);
+    flyTimer = setTimeout(() => document.body.classList.remove("ody-flying"), FLIGHT - 250);
   };
   window.addEventListener("panalo:arrive", onArrive);
   // Already on a page when the look was chosen (or the app opened).
   onArrive({ detail: { name: document.body.dataset.view || "now" } });
-  if (still) draw(0);
-  else wake();
+  wake();
 
   return {
     stop() {
       cancelAnimationFrame(raf);
+      raf = 0;
       clearTimeout(flyTimer);
       clearTimeout(worldTimer);
       clearTimeout(captionTimer);
       offStore?.();
       window.removeEventListener("panalo:arrive", onArrive);
       window.removeEventListener("pointermove", onPointer);
+      window.removeEventListener("pointermove", stir);
+      window.removeEventListener("scroll", stir);
       window.removeEventListener("scroll", onScroll);
-
-      gradeA.remove();
-      gradeB.remove();
-      leak.remove();
-
       window.removeEventListener("resize", onResize);
       document.removeEventListener("visibilitychange", wake);
       globe?.destroy();
       stage.remove();
-      grain.remove();
+      leak.remove();
       caption.remove();
       document.querySelectorAll(".ody-chapter").forEach((c) => c.remove());
       document.body.classList.remove("ody-flying");
       document.documentElement.classList.remove("ody-on");
     },
   };
+}
+
+// Without WebGL: stars drawn once on a 2D canvas.
+function drawFlatStars(stage) {
+  const c = el("canvas", { class: "ody-flat-stars" });
+  stage.querySelector(".ody-sky")?.replaceWith(c);
+  const dpr = Math.min(2, window.devicePixelRatio || 1);
+  const w = window.innerWidth;
+  const h = window.innerHeight;
+  c.width = Math.round(w * dpr);
+  c.height = Math.round(h * dpr);
+  const ctx = c.getContext("2d");
+  ctx.scale(dpr, dpr);
+  for (let i = 0; i < 900; i++) {
+    const b = Math.random() ** 3;
+    ctx.fillStyle = `rgba(235,240,255,${0.25 + b * 0.75})`;
+    const r = 0.5 + b * 1.4;
+    ctx.fillRect(Math.random() * w, Math.random() * h, r, r);
+  }
 }
