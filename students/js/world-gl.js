@@ -57,6 +57,12 @@ uniform sampler2D uNoise;   // tiling detail noise, 3 channels
 uniform float uExtent, uAspect, uRot, uCloudShift, uTime, uTilt, uSea;
 uniform float uAtmo, uAurora, uCloudCover, uRing, uForest, uGlow, uNight;
 uniform vec2 uRes;           // the canvas, in pixels
+uniform vec2 uOffset;        // where the planet's centre is (0 = the middle)
+float gPx;                   // one pixel, in planet radii (set in main)
+// A sky behind the world (the cinema looks): stars in three depths, which
+// part for the camera (parallax, CSS px) and streak in a warp.
+uniform float uStars, uWarp, uDpr;
+uniform vec2 uStarPar, uWarpC;
 uniform vec3 uLight;        // towards the sun, view space
 uniform vec3 uRingN;        // ring plane normal, view space
 uniform vec4 uMoon[${MAX_MOONS}];     // xyz centre, w radius (0 = none)
@@ -146,6 +152,10 @@ vec3 shadePlanet(vec2 p, float zp) {
   float h = texture2D(uHeight, uv).r;
   float d1 = fbm(P * 9.0, 4);
   float hd = h + (d1 - 0.5) * 0.06;
+  // Seen large, the coast gets finer detail of its own (the map under it
+  // is coarse), so it stays a coastline, not a stair of texels.
+  float near = clamp(1.0 - gPx * 160.0, 0.0, 1.0);
+  if (near > 0.0) hd += (fbm(P * 41.0, 3) - 0.5) * 0.028 * near + (fbm(P * 130.0, 2) - 0.5) * 0.01 * near;
   float land = smoothstep(uSea - 0.0025, uSea + 0.0025, hd);
   float up = clamp((hd - uSea) / 0.18, 0.0, 1.0);
 
@@ -181,7 +191,7 @@ vec3 shadePlanet(vec2 p, float zp) {
   landCol *= 0.78 + 0.44 * fine;
   // Valleys a little darker than ridges, as relief reads from orbit.
   landCol *= 0.8 + 0.3 * ridge * smoothstep(0.1, 0.5, up);
-  landCol = mix(vec3(0.3, 0.24, 0.16), landCol, smoothstep(0.0, 0.02, up));
+  landCol = mix(vec3(0.3, 0.24, 0.16), landCol, smoothstep(0.0, 0.006, up));
   float snow = smoothstep(0.9, 0.97, up + (d1 - 0.5) * 0.2 + ridge * 0.05);
   landCol = mix(landCol, vec3(0.72, 0.75, 0.8), snow);
 
@@ -203,7 +213,10 @@ vec3 shadePlanet(vec2 p, float zp) {
   // Waves: a moving ripple on the water's normal, for the glint to break on.
   vec3 wp = P * 140.0 + vec3(uTime * 0.25, 0.0, uTime * 0.18);
   vec3 wv = tn3(wp) - 0.5;
-  vec3 nw = normalize(nb + (1.0 - land) * (1.0 - ice) * 0.09 * (wv.x * east + wv.y * north));
+  // (Seen large -- a world filling the screen -- the ripples would read as
+  // grit: they calm down as the world grows.)
+  float waveK = clamp(gPx * 70.0, 0.12, 1.0);
+  vec3 nw = normalize(nb + (1.0 - land) * (1.0 - ice) * 0.09 * waveK * (wv.x * east + wv.y * north));
 
   // The shadow the clouds above cast on the ground: the cloud field, looked
   // up a little way towards the sun.
@@ -231,7 +244,7 @@ vec3 shadePlanet(vec2 p, float zp) {
   float water = (1.0 - land) * (1.0 - ice) * smoothstep(-0.05, 0.2, d) * ringShade * (1.0 - 0.8 * shadow);
   float fw = 0.25 + 0.75 * pow(1.0 - zp, 4.0);
   // (Waves roughen it: a broad soft sheen, not a mirror's pinpoint.)
-  col += sun * (pow(nh, 180.0) * 0.18 + pow(nh, 34.0) * 0.045 + pow(nh, 10.0) * 0.015 * fw) * water;
+  col += sun * (pow(nh, 180.0) * 0.18 * waveK + pow(nh, 34.0) * 0.045 + pow(nh, 10.0) * 0.015 * fw) * water;
   float fresnel = 0.02 + 0.98 * pow(1.0 - max(dot(nw, V), 0.0), 5.0);
   col += vec3(0.06, 0.16, 0.45) * fresnel * 0.5 * water;
 
@@ -332,9 +345,47 @@ float hash(vec2 q) {
   return fract(52.9829189 * fract(dot(q, vec2(0.06711056, 0.00583715))));
 }
 
+// A cell hash for the stars (the dither hash above is too regular).
+float h21(vec2 c) {
+  return fract(sin(dot(c, vec2(127.1, 311.7))) * 43758.5453);
+}
+// One depth of stars: at most one per cell, a few of them bright.
+vec3 starLayer(vec2 q, float cell, float density, float seed) {
+  vec2 c = floor(q / cell);
+  float h = h21(c + seed);
+  if (h > density) return vec3(0.0);
+  float h2 = h21(c + seed + 17.3);
+  float h3 = h21(c + seed + 41.9);
+  vec2 sp = c * cell + 2.0 + vec2(h2, h3) * (cell - 4.0);
+  float d = length(q - sp);
+  float mag = pow(h21(c + seed + 73.1), 7.0);
+  float size = 0.5 + 1.3 * mag;
+  float core = exp(-d * d / (size * size));
+  float tw = 0.72 + 0.28 * sin(uTime * (0.5 + 2.2 * h2) + h3 * 40.0);
+  vec3 tint = h3 < 0.12 ? vec3(1.0, 0.8, 0.6) : h3 < 0.32 ? vec3(0.7, 0.8, 1.0) : vec3(0.93, 0.95, 1.0);
+  return tint * core * (0.035 + 2.4 * mag) * tw;
+}
+vec3 starsAt(vec2 q) {
+  return starLayer(q + uStarPar * 0.2, 7.0, 0.06, 3.0) * 0.6
+       + starLayer(q + uStarPar * 0.5, 14.0, 0.09, 11.0)
+       + starLayer(q + uStarPar * 1.0, 28.0, 0.14, 29.0) * 1.2;
+}
+vec3 sky() {
+  vec2 q = vec2(gl_FragCoord.x, uRes.y - gl_FragCoord.y) / uDpr; // CSS px
+  if (uWarp < 0.01) return starsAt(q);
+  // In a warp the stars streak out from the centre of travel.
+  vec2 dq = q - uWarpC;
+  vec2 dir = dq / max(length(dq), 1.0);
+  float len = uWarp * length(dq) * 0.08;
+  vec3 s = vec3(0.0);
+  for (int i = 0; i < 7; i++) s = max(s, starsAt(q - dir * len * float(i)) * (1.0 - float(i) / 8.0));
+  return s * (1.0 + 1.5 * uWarp);
+}
+
 void main() {
-  vec2 p = vec2(vP.x * uAspect, vP.y) * uExtent;
+  vec2 p = (vec2(vP.x * uAspect, vP.y) - uOffset) * uExtent;
   float px = 2.0 * uExtent / uRes.y;             // one pixel, in planet radii
+  gPx = px;
   float r2 = dot(p, p);
   float r = sqrt(r2);
   vec3 L = normalize(uLight);
@@ -345,7 +396,7 @@ void main() {
   // The sky around the world: the air seen edge-on, brightest at the limb.
   vec3 col = vec3(0.0);
   float a = 0.0;
-  if (r > 1.0 - px) {
+  if (r > 1.0 - px && r < 1.0 + 16.0 * Hs) {
     float h = max(r - 1.0, 0.0);
     float od = K * exp(-h / Hs) * sqrt(6.2832 * Hs * r);
     vec3 q = vec3(p / max(r, 1e-4), 0.0);
@@ -456,6 +507,12 @@ void main() {
   col = l0.rgb + col * (1.0 - l0.a); a = l0.a + a * (1.0 - l0.a);
   col = l1.rgb + col * (1.0 - l1.a); a = l1.a + a * (1.0 - l1.a);
   col = l2.rgb + col * (1.0 - l2.a); a = l2.a + a * (1.0 - l2.a);
+  // The sky, behind it all.
+  if (uStars > 0.0 && a < 0.995) {
+    vec3 s = sky() * uStars;
+    col += s * (1.0 - a);
+    a += clamp(max(s.r, max(s.g, s.b)), 0.0, 1.0) * (1.0 - a);
+  }
 
   // Everything above is linear light. A filmic curve so lights and glints
   // roll off instead of clipping, then encoded for the screen, then a
@@ -766,7 +823,7 @@ export function createGlobeGL(canvas, { seed, tilt = 0.38, interactive = false, 
     gl.vertexAttribPointer(0, 2, gl.FLOAT, false, 0, 0);
     const U = (n) => gl.getUniformLocation(prog, n);
     u = {};
-    for (const name of ["uExtent", "uAspect", "uRot", "uCloudShift", "uTime", "uTilt", "uSea", "uAtmo", "uAurora", "uCloudCover", "uRing", "uForest", "uGlow", "uNight", "uLight", "uRingN", "uMoon", "uMoonVal", "uRes"]) u[name] = U(name);
+    for (const name of ["uExtent", "uAspect", "uRot", "uCloudShift", "uTime", "uTilt", "uSea", "uAtmo", "uAurora", "uCloudCover", "uRing", "uForest", "uGlow", "uNight", "uLight", "uRingN", "uMoon", "uMoonVal", "uRes", "uOffset", "uStars", "uWarp", "uDpr", "uStarPar", "uWarpC"]) u[name] = U(name);
     ["uHeight", "uLights", "uClouds", "uMoist", "uNoise"].forEach((name, i) => gl.uniform1i(U(name), i + 1));
     post = null;
     if (wantBloom || styleOk) {
@@ -875,6 +932,8 @@ export function createGlobeGL(canvas, { seed, tilt = 0.38, interactive = false, 
   let lighting = getLight();
   let light = lightVector(lighting);
   let lightOverride = false; // a film directing its own sun
+  let framing = null; // { x, y, r }: a camera's framing, CSS px
+  let skyOn = {}; // { stars, par, warp, warpAt }
   const offLight = onLight((l) => {
     if (lightOverride) return;
     lighting = l;
@@ -909,11 +968,21 @@ export function createGlobeGL(canvas, { seed, tilt = 0.38, interactive = false, 
     draw(performance.now());
   }
 
+  // The canvas's size: its layout size (transforms don't count) times the
+  // pixel ratio, capped. Measured only when it changes (ResizeObserver), not
+  // every frame: measuring forces layout, and a size that changes mid-move
+  // would rebuild the buffers on every frame.
+  let sizeDirty = true;
+  let cssW = 0;
+  let cssH = 0;
   function size() {
-    const rect = canvas.getBoundingClientRect();
+    if (!sizeDirty) return;
+    sizeDirty = false;
+    cssW = canvas.clientWidth || cssW || canvas.width;
+    cssH = canvas.clientHeight || cssH || cssW;
     const dpr = Math.min(2, window.devicePixelRatio || 1);
-    let w = Math.max(40, Math.round((rect.width || canvas.width) * dpr));
-    let h = Math.max(40, Math.round((rect.height || rect.width || canvas.height) * dpr));
+    let w = Math.max(40, Math.round(cssW * dpr));
+    let h = Math.max(40, Math.round(cssH * dpr));
     const k = Math.min(1, maxPixels / Math.max(w, h));
     w = Math.round(w * k);
     h = Math.round(h * k);
@@ -954,7 +1023,20 @@ export function createGlobeGL(canvas, { seed, tilt = 0.38, interactive = false, 
     if (!ready) return;
     gl.useProgram(prog);
     gl.uniform2f(u.uRes, canvas.width, canvas.height);
-    gl.uniform1f(u.uExtent, EXTENT / zoomNow);
+    // Framed by a camera (cinema looks): the planet's centre and radius in
+    // CSS px of the canvas. Otherwise centred, filling 1/EXTENT of it.
+    if (framing && cssH) {
+      gl.uniform1f(u.uExtent, cssH / 2 / Math.max(1, framing.r));
+      gl.uniform2f(u.uOffset, (framing.x / cssW * 2 - 1) * (canvas.width / canvas.height), 1 - framing.y / cssH * 2);
+    } else {
+      gl.uniform1f(u.uExtent, EXTENT / zoomNow);
+      gl.uniform2f(u.uOffset, 0, 0);
+    }
+    gl.uniform1f(u.uStars, skyOn.stars || 0);
+    gl.uniform1f(u.uWarp, skyOn.warp || 0);
+    gl.uniform1f(u.uDpr, cssW ? canvas.width / cssW : 1);
+    gl.uniform2f(u.uStarPar, skyOn.par?.[0] || 0, skyOn.par?.[1] || 0);
+    gl.uniform2f(u.uWarpC, skyOn.warpAt?.[0] ?? cssW / 2, skyOn.warpAt?.[1] ?? cssH / 2);
     gl.uniform1f(u.uAspect, canvas.width / canvas.height);
     gl.uniform1f(u.uRot, rotA);
     gl.uniform1f(u.uCloudShift, cloudShift);
@@ -1115,7 +1197,10 @@ export function createGlobeGL(canvas, { seed, tilt = 0.38, interactive = false, 
 
   let ro = null;
   if ("ResizeObserver" in window) {
-    ro = new ResizeObserver(() => draw(performance.now()));
+    ro = new ResizeObserver(() => {
+      sizeDirty = true;
+      draw(performance.now());
+    });
     ro.observe(canvas);
   }
 
@@ -1150,6 +1235,22 @@ export function createGlobeGL(canvas, { seed, tilt = 0.38, interactive = false, 
       const l = Math.hypot(...vec) || 1;
       light = vec.map((x) => x / l);
       lighting = { ...lighting, night };
+    },
+    /** For a camera: put the planet's centre at (x, y) with radius r, in
+     *  CSS px of the canvas (null: centred, as usual). Drawn next frame. */
+    setFrame(f) {
+      framing = f;
+    },
+    /** The sky behind (cinema looks): { stars: 0..1, par: [x, y] px,
+     *  warp: 0..1, warpAt: [x, y] px }. */
+    setSky(next) {
+      skyOn = { ...skyOn, ...next };
+    },
+    /** The longest side, in pixels: lower it when frames run slow. */
+    setMaxPixels(n) {
+      if (Math.round(n) === maxPixels) return;
+      maxPixels = Math.round(n);
+      sizeDirty = true;
     },
     /** For a film: tip and zoom without easing. */
     setView({ pitch, zoom } = {}) {

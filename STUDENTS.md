@@ -80,18 +80,24 @@ landing ──► the crossing (sign in / sign up) ──► first time? the bir
     universe's style (Signal, noir, 8-bit) with a label saying which.
   - **Odyssey** (cinema; for powerful screens): one continuous camera
     through space. The app sits on a stage (`js/cinema/odyssey.js`,
-    `css/cinema.css`): your world, a sun, a deep starfield with parallax.
-    Every page is a station the camera flies to -- Now on your world's
-    horizon, the Study Room with the world far and small, Calendar as an
-    arc below, Archive a wall at the edge -- with warp streaks, the
-    letterbox squeezing and a rack focus on arrival. Subtitles narrate the
-    page from your data in words ("Next: Chemistry, in forty minutes."); a
-    first visit (once a session) plays its chapter card. Cormorant
-    Garamond, Syncopate and Manrope. One fixed grade, large-format film
-    (`js/cinema/grades.js`): sunk blacks, warm sun, colour held back and
-    halation, applied to the world on the GPU (`world-gl.js` composite
-    pass) and over the frame in CSS, with grain, gate weave, a light leak
-    on flights and panels that move with your scroll.
+    `css/cinema.css`): one GPU canvas draws your world and a three-depth
+    starfield together, framed by the camera (`setFrame`/`setSky` on the
+    world renderer), with a sun and its anamorphic flare. Every page is a
+    station: where the page has a dial of the day (Now, Calendar) your world
+    sits exactly inside it; elsewhere it's a horizon, a wall of world, or
+    far and small (the Study Room), each lit from its own side. Going
+    somewhere flies the camera there (eased, the light swinging round, the
+    stars streaking, a slight bank, the letterbox squeezing). Subtitles
+    narrate the page from your data in words ("Next: Chemistry, in forty
+    minutes."); a first visit (once a session) plays its chapter card.
+    Cormorant Garamond, Syncopate and Manrope. One fixed grade,
+    large-format film (`js/cinema/grades.js`), applied on the GPU.
+    Built to stay smooth: one animation loop drives the camera, the world
+    and the stars in the same frame (no CSS transitions to lag behind);
+    panels are solid deep glass (no backdrop blur over a moving scene);
+    effects are transforms and opacity only; the resolution adapts to the
+    frame rate within a second; mid-range devices draw every other frame
+    while nothing moves; a world hidden by a look stops drawing.
   Cinema looks have an engine each (`js/cinema/index.js` downloads and
   starts the one for your look while the app is open, and stops it when
   you switch or sign out); the other looks pay nothing for them.

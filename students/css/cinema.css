@@ -52,6 +52,9 @@ html[data-look="odyssey"] .fx-ambient {
 }
 
 /* ===== The scene =========================================================== */
+/* One GPU canvas draws the world and the stars together (js/cinema/odyssey.js
+   moves the camera and everything in the scene from one loop, with
+   transforms only -- nothing here transitions, so nothing lags). */
 
 .ody-stage {
   position: fixed;
@@ -62,110 +65,78 @@ html[data-look="odyssey"] .fx-ambient {
   background: #000;
 }
 .ody-stage,
-.ody-grain,
 .ody-caption {
   display: none;
 }
-html.ody-on body.in-app .ody-stage,
-html.ody-on body.in-app .ody-grain {
+html.ody-on body.in-app .ody-stage {
   display: block;
 }
 .ody-nebula {
   position: absolute;
-  inset: -6%;
+  inset: -4%;
   background:
-    radial-gradient(45% 40% at 78% 8%, rgba(46, 72, 150, 0.42), transparent 70%),
-    radial-gradient(40% 35% at 8% 30%, rgba(90, 50, 130, 0.22), transparent 70%),
-    radial-gradient(60% 45% at 50% 110%, rgba(20, 60, 110, 0.35), transparent 70%);
-  transform: translate(calc(var(--px, 0px) * 0.3), calc(var(--py, 0px) * 0.3));
+    radial-gradient(45% 40% at 78% 8%, rgba(46, 72, 150, 0.34), transparent 70%),
+    radial-gradient(40% 35% at 8% 30%, rgba(90, 50, 130, 0.18), transparent 70%),
+    radial-gradient(60% 45% at 50% 110%, rgba(20, 60, 110, 0.3), transparent 70%);
+  will-change: transform;
 }
-.ody-stars {
+.ody-sky,
+.ody-flat-stars {
   position: absolute;
   inset: 0;
   width: 100%;
   height: 100%;
+  will-change: transform;
 }
-/* Your world: 220vh across at scale 1, centred on the station's (cx, cy);
-   it follows the pointer a little (parallax) and rises as you scroll. */
-.ody-world {
+/* The sun (placed by the camera), and its anamorphic flare. */
+.ody-sun {
   position: absolute;
   left: 0;
   top: 0;
-  width: 220vh;
-  height: 220vh;
-  transform:
-    translate(calc(var(--cx, 76) * 1vw - 110vh + var(--px, 0px) * 0.6), calc(var(--cy, 112) * 1vh - 110vh + var(--py, 0px) * 0.6 - var(--scroll, 0px) * 0.32))
-    scale(var(--k, 0.77));
-  transition: transform 1.35s var(--ease-camera), opacity 0.9s ease, filter 0.5s ease;
-  will-change: transform;
-}
-.ody-world canvas {
-  width: 100%;
-  height: 100%;
-}
-.ody-world.ody-hidden {
-  opacity: 0;
-}
-.ody-stage.ody-instant .ody-world,
-.ody-stage.ody-instant .ody-sun {
-  transition: none;
-}
-/* The sun, and its anamorphic flare across the frame. */
-.ody-sun {
-  position: absolute;
-  left: calc(var(--sx, 62) * 1vw);
-  top: calc(var(--sy, 9) * 1vh);
   width: 0;
   height: 0;
-  transition: left 1.35s var(--ease-camera), top 1.35s var(--ease-camera);
-  translate: calc(var(--px, 0px) * 0.15) calc(var(--py, 0px) * 0.15);
+  opacity: 0;
+  transition: opacity 0.9s ease;
+  will-change: transform;
 }
 .ody-sun::before {
   content: "";
   position: absolute;
-  left: -110px;
-  top: -110px;
-  width: 220px;
-  height: 220px;
+  left: -120px;
+  top: -120px;
+  width: 240px;
+  height: 240px;
   border-radius: 50%;
-  background: radial-gradient(circle, rgba(255, 246, 230, 1) 0%, rgba(255, 214, 170, 0.45) 14%, rgba(255, 180, 130, 0.12) 36%, transparent 64%);
+  background: radial-gradient(circle, #fff8ec 0%, rgba(255, 220, 178, 0.5) 12%, rgba(255, 176, 120, 0.14) 34%, transparent 64%);
 }
 .ody-flare {
   position: absolute;
-  left: -70vw;
+  left: -60vw;
   top: -1px;
-  width: 140vw;
+  width: 120vw;
   height: 2px;
-  background: linear-gradient(90deg, transparent, rgba(120, 165, 255, 0.28) 30%, rgba(236, 243, 255, 0.92) 50%, rgba(120, 165, 255, 0.28) 70%, transparent);
-  box-shadow: 0 0 24px 3px rgba(120, 170, 255, 0.35);
-  animation: ody-flare 9s ease-in-out infinite alternate;
-}
-@keyframes ody-flare {
-  from { opacity: 0.55; scale: 0.92 1; }
-  to { opacity: 0.95; scale: 1.05 1; }
+  background: linear-gradient(90deg, transparent, rgba(120, 165, 255, 0.22) 30%, rgba(236, 243, 255, 0.85) 50%, rgba(120, 165, 255, 0.22) 70%, transparent);
+  box-shadow: 0 0 22px 2px rgba(120, 170, 255, 0.3);
 }
 .ody-vignette {
   position: absolute;
   inset: 0;
-  background: radial-gradient(120% 90% at 50% 50%, transparent 55%, rgba(0, 0, 0, 0.65) 100%);
+  background: radial-gradient(130% 100% at 50% 45%, transparent 55%, rgba(0, 0, 0, 0.55) 100%);
 }
-/* Film grain, over everything, alive. */
+/* Film grain: in the picture, never over the words. */
 .ody-grain {
-  position: fixed;
-  inset: -50%;
-  z-index: 70;
-  pointer-events: none;
-  opacity: 0.055;
+  position: absolute;
+  inset: -8%;
+  opacity: 0.05;
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='240'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 0.7 0'/%3E%3C/filter%3E%3Crect width='240' height='240' filter='url(%23n)'/%3E%3C/svg%3E");
-  animation: ody-grain 0.9s steps(6) infinite;
+  animation: ody-grain 0.5s steps(4) infinite;
+  will-change: transform;
 }
 @keyframes ody-grain {
-  0% { translate: 0 0; }
-  20% { translate: -4% 3%; }
-  40% { translate: 3% -5%; }
-  60% { translate: -6% -2%; }
-  80% { translate: 5% 4%; }
-  100% { translate: 0 0; }
+  0% { transform: translate3d(0, 0, 0); }
+  25% { transform: translate3d(-17px, 11px, 0); }
+  50% { transform: translate3d(13px, -19px, 0); }
+  75% { transform: translate3d(-9px, -7px, 0); }
 }
 html[data-look="odyssey"] .app {
   position: relative;
@@ -189,28 +160,32 @@ html[data-look="odyssey"] .wm-name {
 html[data-look="odyssey"] .brand svg {
   display: none;
 }
-/* The stations, joined like a flight path. */
+/* The stations, joined like a flight path: short rules between them that
+   give way first when the bar is narrow. */
 html[data-look="odyssey"] .bar-nav {
-  gap: 0;
+  gap: clamp(14px, 2vw, 40px);
   align-items: center;
+  min-width: 0;
 }
 html[data-look="odyssey"] .bar-nav a {
-  padding: 12px 6px;
+  position: relative;
+  padding: 12px 0;
   border-radius: 0;
   font: 400 10px var(--f-label);
-  letter-spacing: 0.28em;
+  letter-spacing: 0.22em;
   text-transform: uppercase;
+  white-space: nowrap;
   color: #7f8aa6;
   background: none;
 }
 html[data-look="odyssey"] .bar-nav a + a::before {
   content: "";
-  display: inline-block;
-  width: 26px;
+  position: absolute;
+  top: 50%;
+  right: calc(100% + clamp(4px, 0.5vw, 10px));
+  width: clamp(0px, calc(2vw - 14px), 22px);
   height: 1px;
-  margin: 0 14px 0 4px;
-  vertical-align: middle;
-  background: rgba(255, 255, 255, 0.22);
+  background: rgba(255, 255, 255, 0.2);
 }
 html[data-look="odyssey"] .bar-nav a:hover {
   color: #ffffff;
@@ -220,17 +195,42 @@ html[data-look="odyssey"] .bar-nav a[aria-current="page"] {
   color: #ffffff;
 }
 html[data-look="odyssey"] .bar-nav a[aria-current="page"]::after {
-  left: auto;
-  right: 6px;
-  width: calc(100% - 50px);
+  left: 0;
+  right: 0;
   bottom: 4px;
+  width: auto;
   height: 1px;
+  margin: 0;
   border-radius: 0;
   background: #ffffff;
   box-shadow: 0 0 10px rgba(255, 255, 255, 0.7);
 }
-html[data-look="odyssey"] .bar-nav a:first-child[aria-current="page"]::after {
-  width: calc(100% - 12px);
+html[data-look="odyssey"] .bar-nav .pulse-count {
+  height: 16px;
+  min-width: 16px;
+  margin-left: 6px;
+  font: 700 10px var(--f-body);
+  letter-spacing: 0;
+}
+@media (max-width: 1360px) {
+  html[data-look="odyssey"] .bar-nav a {
+    letter-spacing: 0.14em;
+  }
+  html[data-look="odyssey"] .wm-name {
+    letter-spacing: 0.3em;
+  }
+  html[data-look="odyssey"] .bar-clock {
+    display: none;
+  }
+}
+@media (max-width: 1100px) {
+  html[data-look="odyssey"] .bar-nav a {
+    font-size: 9px;
+    letter-spacing: 0.08em;
+  }
+  html[data-look="odyssey"] .look-name {
+    display: none;
+  }
 }
 html[data-look="odyssey"] .bar-clock {
   font: 400 11px var(--f-label);
@@ -319,9 +319,6 @@ html[data-look="odyssey"] body.ody-flying .bar {
 body.ody-flying .ody-caption {
   box-shadow: 0 -22px 0 #000;
 }
-body.ody-flying .ody-world {
-  filter: blur(1.5px) brightness(1.1);
-}
 /* Deep focus (the Study Room): the letterbox narrows for good. */
 html[data-look="odyssey"] body[data-view="study"] .bar {
   box-shadow: 0 10px 0 #000;
@@ -363,10 +360,10 @@ body[data-view="study"] .ody-caption {
   background: radial-gradient(50% 30% at 50% 50%, rgba(0, 0, 0, 0.55), transparent 70%);
 }
 @keyframes ody-chapter {
-  0% { opacity: 0; letter-spacing: 0.08em; filter: blur(10px); }
-  25% { opacity: 1; filter: blur(0); }
+  0% { opacity: 0; transform: scale(1.06); }
+  25% { opacity: 1; transform: scale(1); }
   70% { opacity: 1; }
-  100% { opacity: 0; letter-spacing: 0.02em; filter: blur(6px); }
+  100% { opacity: 0; transform: scale(0.98); }
 }
 
 /* ===== The app, as holograms ================================================ */
@@ -385,15 +382,18 @@ html[data-look="odyssey"] .s-head p.s-sub {
   font: italic 400 22px/1.3 var(--f-serif);
   color: #c7d3ee;
 }
+/* Panels: deep glass, lit along the edge that faces the light. No
+   backdrop blur: blurring a moving scene behind every panel, every frame,
+   is what makes a page stutter. */
 html[data-look="odyssey"] .panel {
   position: relative;
   padding: 20px 22px;
-  border: 1px solid rgba(160, 200, 255, 0.22);
+  border: 1px solid transparent;
   border-radius: 18px;
-  background: rgba(10, 16, 34, 0.46);
-  backdrop-filter: blur(16px) saturate(140%);
-  -webkit-backdrop-filter: blur(16px) saturate(140%);
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.07), 0 40px 90px -40px rgba(0, 0, 0, 0.95);
+  background:
+    linear-gradient(180deg, rgba(14, 20, 40, 0.86), rgba(6, 9, 20, 0.9)) padding-box,
+    linear-gradient(155deg, rgba(210, 226, 255, 0.42), rgba(160, 200, 255, 0.08) 35%, rgba(160, 200, 255, 0.05) 70%, rgba(255, 196, 150, 0.26)) border-box;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.06), 0 30px 80px -30px rgba(0, 0, 0, 0.95);
 }
 /* A hologram's scanline along its top edge. */
 html[data-look="odyssey"] .panel::before {
@@ -445,9 +445,8 @@ html[data-look="odyssey"] .btn-primary:hover:not(:disabled) {
 }
 html[data-look="odyssey"] .btn-ghost,
 html[data-look="odyssey"] .btn-toned {
-  background: rgba(255, 255, 255, 0.04);
+  background: rgba(10, 16, 34, 0.7);
   border-color: rgba(200, 220, 255, 0.26);
-  backdrop-filter: blur(10px);
 }
 html[data-look="odyssey"] .chip {
   background: rgba(255, 255, 255, 0.04);
@@ -464,10 +463,10 @@ html[data-look="odyssey"] dialog.sheet,
 html[data-look="odyssey"] .menu,
 html[data-look="odyssey"] .look-menu,
 html[data-look="odyssey"] .toast {
-  background: rgba(10, 16, 34, 0.82);
+  background: rgba(8, 12, 26, 0.96);
   border: 1px solid rgba(160, 200, 255, 0.22);
-  backdrop-filter: blur(24px) saturate(150%);
-  -webkit-backdrop-filter: blur(24px) saturate(150%);
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
   box-shadow: 0 40px 100px -30px rgba(0, 0, 0, 0.95);
 }
 
@@ -488,8 +487,10 @@ html[data-look="odyssey"] .toast {
     width: min(100%, 520px);
   }
 }
+/* A dial's own world gives way to the camera's, which sits exactly
+   inside it (and its renderer stops drawing). */
 html[data-look="odyssey"] .orbit-world {
-  opacity: 0;
+  visibility: hidden;
 }
 html[data-look="odyssey"] .orbit-svg {
   opacity: 0.9;
@@ -500,26 +501,12 @@ html[data-look="odyssey"] .orbit-svg text {
   font-weight: 600;
   letter-spacing: 0.08em;
 }
-/* Deep focus is calm: the sun dims and its flare goes. */
-.ody-stage[data-station="study"] .ody-flare {
-  opacity: 0;
-  animation: none;
-  transition: opacity 1s;
-}
-.ody-stage[data-station="study"] .ody-sun::before {
-  opacity: 0.45;
-}
-.ody-flare,
-.ody-sun::before {
-  transition: opacity 1s;
-}
-
 /* Arriving: the page racks into focus as the camera settles. */
 html[data-look="odyssey"] .surface.look-enter {
-  animation: ody-in 0.85s var(--ease-film) both;
+  animation: ody-in 0.6s var(--ease-film) both;
 }
 @keyframes ody-in {
-  from { opacity: 0; transform: scale(1.035); filter: blur(12px); }
+  from { opacity: 0; }
 }
 html[data-look="odyssey"] .surface.look-enter .s-head,
 html[data-look="odyssey"] .surface.look-enter .panel {
@@ -527,7 +514,7 @@ html[data-look="odyssey"] .surface.look-enter .panel {
   animation-delay: calc(var(--i, 0) * 55ms + 120ms);
 }
 @keyframes ody-rise {
-  from { opacity: 0; transform: translateY(26px) scale(0.985); filter: blur(8px); }
+  from { opacity: 0; transform: translate3d(0, 28px, 0) scale(0.985); }
 }
 
 /* The switch's picture of it: a horizon under a flare. */
@@ -575,70 +562,23 @@ html[data-look="odyssey"] .surface.look-enter .panel {
 
 @media (prefers-reduced-motion: reduce) {
   .ody-grain,
-  .ody-flare,
   .ody-chapter {
     animation: none !important;
   }
-  .ody-world,
-  .ody-sun {
-    transition: none !important;
-  }
 }
 html[data-motion="reduce"] .ody-grain,
-html[data-motion="reduce"] .ody-flare,
 html[data-motion="reduce"] .ody-chapter {
   animation: none !important;
 }
-html[data-motion="reduce"] .ody-world,
-html[data-motion="reduce"] .ody-sun {
-  transition: none !important;
-}
-
 
 /* ===== The grade: large-format film ======================================= */
-/* One grade, as a film has one (cinema/grades.js grades the world itself
-   on the GPU, with halation). Over the frame: warm sunlight falling from
-   the sun's side, the lens's natural fall-off into true black, colour held
-   back on the stars -- and halation on the brightest type. */
+/* One grade, as a film has one. cinema/grades.js grades the picture on the
+   GPU (lift, gamma, gain, held-back colour, halation round the brightest
+   light); here, only the halation on the brightest type. */
 
-.ody-grade {
-  position: fixed;
-  inset: 0;
-  z-index: 65;
-  pointer-events: none;
-  display: none;
-}
-html.ody-on body.in-app .ody-grade {
-  display: block;
-}
-.ody-grade-a {
-  background: radial-gradient(75% 65% at 62% 0%, rgba(255, 176, 104, 0.2), transparent 70%);
-  mix-blend-mode: soft-light;
-}
-.ody-grade-b {
-  background: radial-gradient(130% 100% at 50% 45%, transparent 52%, rgba(0, 0, 0, 0.42) 100%);
-  mix-blend-mode: multiply;
-}
-html[data-look="odyssey"] .ody-stars,
-html[data-look="odyssey"] .ody-nebula {
-  filter: sepia(0.12) saturate(0.88) contrast(1.06);
-}
 html[data-look="odyssey"] .s-head h1,
 html[data-look="odyssey"] .ody-chapter b {
   text-shadow: 0 0 22px rgba(255, 96, 48, 0.16), 0 0 2px rgba(255, 140, 90, 0.25);
-}
-/* Gate weave: the frame drifts a hair, as film does in a projector. */
-html.ody-on body.in-app .ody-stage {
-  animation: ody-weave 2.4s steps(1) infinite;
-}
-@keyframes ody-weave {
-  0% { translate: 0 0; }
-  13% { translate: 0.4px -0.3px; }
-  29% { translate: -0.3px 0.4px; }
-  41% { translate: 0.2px 0.2px; }
-  58% { translate: -0.4px -0.2px; }
-  72% { translate: 0.3px 0.4px; }
-  86% { translate: -0.2px -0.4px; }
 }
 
 /* ===== The light leak ======================================================= */
@@ -649,79 +589,56 @@ html.ody-on body.in-app .ody-stage {
   z-index: 64;
   pointer-events: none;
   opacity: 0;
-  background: linear-gradient(100deg, transparent 18%, rgba(255, 140, 70, 0.32) 38%, rgba(255, 224, 180, 0.26) 47%, rgba(110, 160, 255, 0.24) 60%, transparent 80%);
-  mix-blend-mode: screen;
+  background: linear-gradient(100deg, transparent 18%, rgba(255, 140, 70, 0.16) 38%, rgba(255, 224, 180, 0.14) 47%, rgba(110, 160, 255, 0.12) 60%, transparent 80%);
+  will-change: transform, opacity;
 }
 body.ody-flying .ody-leak {
   animation: ody-leak 0.9s cubic-bezier(0.45, 0, 0.2, 1) both;
 }
 @keyframes ody-leak {
-  0% { opacity: 0; translate: -55% 0; }
+  0% { opacity: 0; transform: translate3d(-55%, 0, 0); }
   35% { opacity: 1; }
-  100% { opacity: 0; translate: 55% 0; }
+  100% { opacity: 0; transform: translate3d(55%, 0, 0); }
 }
 
 /* ===== Motion graphics, driven by scrolling ================================ */
-/* Where the browser can tie animations to scrolling: panels fly in from
-   depth as they enter the frame and blur away as they leave it; their
-   scanline draws itself; the page's title recedes into space. */
+/* Where the browser can tie animations to scrolling: panels rise into the
+   frame from a little depth as they enter it, and their edge light draws
+   itself. Transform and opacity only (the compositor's work, never a
+   repaint), finished well before a panel is fully in view. */
 
 @supports (animation-timeline: view()) {
-  html[data-look="odyssey"] .surface {
-    perspective: 1400px;
-  }
   html[data-look="odyssey"] .surface:not(.look-enter) .panel {
-    animation: ody-scroll-in linear both, ody-scroll-out linear both;
-    animation-timeline: view(), view();
-    animation-range: entry 0% entry 85%, exit 15% exit 100%;
-    transform-origin: 50% 100%;
+    animation: ody-scroll-in linear both;
+    animation-timeline: view();
+    animation-range: entry 0% entry 70%;
   }
   html[data-look="odyssey"] .surface:not(.look-enter) .panel::before {
     animation: ody-scan linear both;
     animation-timeline: view();
-    animation-range: entry 30% cover 35%;
-  }
-  html[data-look="odyssey"] .surface:not(.look-enter) .s-head {
-    animation: ody-head linear both;
-    animation-timeline: scroll(root);
-    animation-range: 0 50vh;
+    animation-range: entry 20% entry 90%;
   }
 }
 @keyframes ody-scroll-in {
-  from { opacity: 0; transform: translateY(80px) scale(0.93) rotateX(12deg); filter: blur(8px); }
-}
-@keyframes ody-scroll-out {
-  to { opacity: 0; transform: translateY(-50px) scale(0.96) rotateX(-6deg); filter: blur(6px); }
+  from { opacity: 0.2; transform: translate3d(0, 48px, 0) scale(0.97); }
 }
 @keyframes ody-scan {
-  from { scale: 0 1; opacity: 0; }
-}
-@keyframes ody-head {
-  to { opacity: 0; transform: translateY(-60px) scale(0.9); filter: blur(12px); }
+  from { transform: scaleX(0); opacity: 0; }
 }
 
-/* The grade and the leak, still for reduced motion; scrolling stays still. */
 @media (prefers-reduced-motion: reduce) {
   .ody-leak {
     display: none;
   }
-  html.ody-on body.in-app .ody-stage {
-    animation: none;
-  }
   html[data-look="odyssey"] .surface .panel,
-  html[data-look="odyssey"] .surface .panel::before,
-  html[data-look="odyssey"] .surface .s-head {
+  html[data-look="odyssey"] .surface .panel::before {
     animation: none !important;
   }
 }
 html[data-motion="reduce"] .ody-leak {
   display: none;
 }
-html[data-motion="reduce"].ody-on body.in-app .ody-stage {
-  animation: none;
-}
 html[data-motion="reduce"][data-look="odyssey"] .surface .panel,
-html[data-motion="reduce"][data-look="odyssey"] .surface .panel::before,
-html[data-motion="reduce"][data-look="odyssey"] .surface .s-head {
+html[data-motion="reduce"][data-look="odyssey"] .surface .panel::before {
   animation: none !important;
 }
