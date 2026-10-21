@@ -336,9 +336,11 @@ export function mount(section) {
     el("div", { class: "s-head" }, [
       el("div", {}, [el("p", { class: "kicker toned tone-world", text: "World" }), titleEl, subEl, seasonEl]),
       el("div", { class: "s-actions" }, [
-        el("button", { type: "button", class: "btn btn-quiet btn-sm", text: "Rename", onClick: rename }),
-        el("button", { type: "button", class: "btn btn-ghost btn-sm", id: "world-timelapse", text: "Watch it grow", onClick: () => openTimelapse() }),
-        el("button", { type: "button", class: "btn btn-ghost btn-sm", id: "world-chronicle", text: "Last week", onClick: () => playChronicle() }),
+        el("div", { class: "s-more" }, [
+          el("button", { type: "button", class: "btn btn-quiet btn-sm", text: "Rename", onClick: rename }),
+          el("button", { type: "button", class: "btn btn-ghost btn-sm", id: "world-timelapse", text: "Watch it grow", onClick: () => openTimelapse() }),
+          el("button", { type: "button", class: "btn btn-ghost btn-sm", id: "world-chronicle", text: "Last week", onClick: () => playChronicle() }),
+        ]),
         el("button", { type: "button", class: "btn btn-primary", text: "Log an activity", onClick: openLog }),
       ]),
     ]),

@@ -278,7 +278,8 @@ export function start() {
     }
     sky.style.transform = roll ? `rotate(${roll.toFixed(3)}deg) scale(1.02)` : "";
     nebula.style.transform = `translate3d(${(par.x * 0.3).toFixed(2)}px, ${(par.y * 0.3 - scroll * 0.05).toFixed(2)}px, 0)`;
-    if (cam.sun) {
+    // On a narrow screen there's no empty sky beside the words: no sun.
+    if (cam.sun && W >= 700) {
       sun.style.opacity = "1";
       sun.style.transform = `translate3d(${((cam.sun[0] / 100) * W + par.x * 0.15).toFixed(1)}px, ${((cam.sun[1] / 100) * H + par.y * 0.15 - scroll * 0.1).toFixed(1)}px, 0)`;
     } else {

@@ -396,7 +396,6 @@ export function mount(section, ctx) {
   const drawPlan = () => {
     const cur = plan()?.total || 0;
     planGroup.replaceChildren(
-      el("span", { class: "faint small plan-label", text: "Blocks today" }),
       ...[0, 1, 2, 3, 4].map((n) => el("button", { type: "button", role: "radio", class: "chip tone-focus", "aria-checked": String(cur === n), "data-plan": String(n), text: n ? String(n) : "Free", onClick: () => { setPlan(n); drawPlan(); draw(); } }))
     );
   };
@@ -449,9 +448,9 @@ export function mount(section, ctx) {
       el("section", { class: "study-panel", "aria-labelledby": "st-tasks" }, [el("h2", { id: "st-tasks", text: "Tasks" }), form, tasksEl]),
       el("section", { class: "study-panel", "aria-labelledby": "st-set" }, [
         el("h2", { id: "st-set", text: "Length and sound" }),
-        presetGroup,
-        planGroup,
-        el("div", { class: "sound-row" }, [sound, volume]),
+        el("div", { class: "study-field" }, [el("span", { class: "field-label", "aria-hidden": "true", text: "Each block" }), presetGroup]),
+        el("div", { class: "study-field" }, [el("span", { class: "field-label", "aria-hidden": "true", text: "Blocks today" }), planGroup]),
+        el("div", { class: "study-field" }, [el("span", { class: "field-label", "aria-hidden": "true", text: "Sound" }), el("div", { class: "sound-row" }, [sound, volume])]),
         el("p", { class: "faint small", text: "Sounds are generated on your device. Nothing to download. Space starts and pauses." }),
       ]),
       el("section", { class: "study-panel", "aria-labelledby": "st-hist" }, [el("h2", { id: "st-hist", text: "Your sessions" }), historyEl]),

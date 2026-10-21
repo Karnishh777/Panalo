@@ -8,7 +8,7 @@
 //   13–17, no consent   → name a parent; we email them; wait (and check)
 //   otherwise           → in
 import { supabaseClient } from "../../src/client.js";
-import { redirectUrl, withBusy, showToast } from "../../src/util.js";
+import { withBusy, showToast } from "../../src/util.js";
 import { captcha } from "../../src/captcha.js";
 import { deleteAllMyFiles } from "../../src/filestore.js";
 

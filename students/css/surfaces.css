@@ -432,6 +432,12 @@ body[data-view="study"] .sky {
 .study-low:focus-within {
   opacity: 1;
 }
+/* No hover on a touch screen: never leave it looking switched off. */
+@media (hover: none) {
+  .study-low {
+    opacity: 1;
+  }
+}
 .study-panel h2 {
   font-size: 12px;
   letter-spacing: 0.16em;
@@ -3235,9 +3241,18 @@ body.in-story .fx-ambient {
 }
 
 /* Study: plan, reflection, subjects. */
-.plan-label {
-  align-self: center;
-  margin-right: 4px;
+.study-field + .study-field {
+  margin-top: 14px;
+}
+.field-label {
+  display: block;
+  margin-bottom: 7px;
+  font-size: 12px;
+  letter-spacing: 0.04em;
+  color: var(--text-3);
+}
+.study-field .sound-row {
+  margin-top: 0;
 }
 .reflect {
   display: flex;
