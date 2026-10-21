@@ -1,0 +1,256 @@
+/* Panalo Students — details and phones, for every look.
+ *
+ * Loaded last, so it settles what the looks leave rough: the same rhythm
+ * between panels on every page, controls grouped the way a thumb uses
+ * them, and nothing smaller than a fingertip. Rules are scoped with
+ * html[data-look] so they outrank a look's own (equal specificity, later
+ * in the cascade) only where they mean to.
+ */
+
+/* ---- Everywhere ------------------------------------------------------------------- */
+
+/* Calendar: Day/Week, then the day stepper, then Add. */
+.cal-step {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+.cal-add {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+.cal-add-plus {
+  display: none;
+  font-size: 20px;
+  line-height: 1;
+}
+/* World: the secondary actions sit in line with the primary on wide screens. */
+.s-more {
+  display: contents;
+}
+/* A panel's heading and its link: the link never breaks across lines. */
+.panel-head h2 {
+  min-width: 0;
+}
+.panel-head > a,
+.panel-head > button.link-btn {
+  flex: none;
+  white-space: nowrap;
+}
+
+/* No single word left alone on a line: headings balance, text wraps
+   with care. */
+:is(h1, h2, h3, .ody-chapter b) {
+  text-wrap: balance;
+}
+:is(p, li, dd, .s-sub) {
+  text-wrap: pretty;
+}
+
+/* ---- Phones ------------------------------------------------------------------------ */
+
+@media (max-width: 899px) {
+  /* One rhythm between panels, on every page and in every look. */
+  html[data-look] .panel + .panel,
+  html[data-look] .now-log .panel + .panel,
+  html[data-look] .settings-cols .panel + .panel,
+  html[data-look] .safety-cols > div .panel + .panel,
+  html[data-look] .world-lower .panel + .panel {
+    margin-top: 16px;
+  }
+  html[data-look] .now-log .panel {
+    margin-bottom: 0;
+  }
+  html[data-look] .settings-look {
+    margin-bottom: 16px;
+  }
+  html[data-look] .settings-cols,
+  html[data-look] .safety-cols,
+  html[data-look] .world-lower,
+  html[data-look] .world-days {
+    gap: 16px;
+  }
+  html[data-look] .world-lower,
+  html[data-look] .world-days {
+    margin-top: 16px;
+  }
+  /* In a grid the gap is the spacing: a panel's own margins would double it. */
+  html[data-look] :is(.settings-cols, .safety-cols, .world-lower, .world-days) > .panel,
+  html[data-look] :is(.settings-cols, .safety-cols, .world-lower, .world-days) > .panel + .panel {
+    margin-top: 0;
+    margin-bottom: 0;
+  }
+
+  /* Fingertip-sized targets, without moving anything: a link in a panel's
+     head gets a 44 px hit area around its text. */
+  html[data-look] .panel-head > a,
+  html[data-look] .panel-head > button.link-btn {
+    position: relative;
+  }
+  html[data-look] .panel-head > a::after,
+  html[data-look] .panel-head > button.link-btn::after {
+    content: "";
+    position: absolute;
+    inset: -12px -10px;
+  }
+  html[data-look] .panel-head {
+    flex-wrap: wrap;
+    row-gap: 4px;
+  }
+  html[data-look] .now-list li {
+    padding: 0;
+  }
+  html[data-look] .now-list li a {
+    min-height: 44px;
+  }
+  html[data-look] input[type="range"].range {
+    height: 32px;
+  }
+
+  /* Now: the dial's key, two by two, never one word left on its own. */
+  html[data-look] .orbit-legend {
+    display: grid;
+    grid-template-columns: repeat(2, max-content);
+    justify-content: center;
+    gap: 8px 22px;
+  }
+
+  /* A page's actions, the way a thumb reaches them. */
+  html[data-look] .s-head {
+    margin-bottom: 20px;
+  }
+  html[data-look] .s-head .s-actions {
+    width: 100%;
+  }
+  /* Calendar: [Day|Week]  [← Today →]  [+], one row. */
+  html[data-look] .calendar .s-actions,
+  html[data-look] [data-surface="calendar"] .s-actions {
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    align-items: center;
+    gap: 8px;
+  }
+  html[data-look] [data-surface="calendar"] .cal-step {
+    justify-self: center;
+  }
+  html[data-look] [data-surface="calendar"] .cal-add {
+    width: 44px;
+    height: 44px;
+    padding: 0;
+    justify-content: center;
+    border-radius: 50%;
+  }
+  html[data-look] [data-surface="calendar"] .cal-add-plus {
+    display: inline;
+  }
+  html[data-look] [data-surface="calendar"] .cal-add-label {
+    display: none;
+  }
+  /* World: the main action across the width, the rest in an even row. */
+  html[data-look] [data-surface="world"] .s-actions {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 8px;
+  }
+  html[data-look] [data-surface="world"] .s-actions > .btn-primary {
+    order: -1;
+    width: 100%;
+    justify-content: center;
+  }
+  html[data-look] [data-surface="world"] .s-more {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+  }
+  html[data-look] [data-surface="world"] .s-more .btn {
+    width: 100%;
+    justify-content: center;
+    padding-left: 6px;
+    padding-right: 6px;
+    white-space: nowrap;
+  }
+  html[data-look] [data-surface="world"] .s-more .btn-quiet {
+    border: 1px solid var(--line-2);
+  }
+
+  /* Study: a task on one line, its date and Add on the next. */
+  html[data-look] .task-form {
+    grid-template-columns: 1fr auto;
+  }
+  html[data-look] .task-form > :first-child {
+    grid-column: 1 / -1;
+  }
+  html[data-look] .task-form .btn {
+    min-height: 40px;
+    padding-left: 18px;
+    padding-right: 18px;
+  }
+  html[data-look] .sound-row {
+    grid-template-columns: 1fr 1.2fr;
+  }
+}
+
+/* The narrowest phones: the day stepper's label gives way first. */
+@media (max-width: 359px) {
+  html[data-look] [data-surface="calendar"] .cal-step .btn {
+    padding-left: 8px;
+    padding-right: 8px;
+  }
+}
+
+/* ---- The landing, on a phone ------------------------------------------------------- */
+
+@media (max-width: 899px) {
+  /* Sliders are native: a taller box is a bigger target, same track. */
+  html[data-look] .wd-slider input {
+    height: 32px;
+  }
+  html[data-look] .land-foot nav a {
+    display: inline-block;
+    padding: 8px 0;
+  }
+}
+/* The bar always fits: the look switch shows only its swatch, the two
+   buttons tighten, and nothing is pushed off the edge (Verse and Signal
+   set wide, letter-spaced buttons). */
+@media (max-width: 560px) {
+  html[data-look] .land-bar {
+    gap: 10px;
+    padding-left: 16px;
+    padding-right: 16px;
+  }
+  html[data-look] .land-bar .wordmark {
+    flex: 0 1 auto;
+    min-width: 0;
+  }
+  html[data-look] .land-cta {
+    flex: none;
+    align-items: center;
+    gap: 6px;
+  }
+  html[data-look] .land-cta .look-name {
+    display: none;
+  }
+  html[data-look] .land-cta .look-btn {
+    width: 40px;
+    height: 40px;
+    padding: 0;
+    justify-content: center;
+  }
+  html[data-look] .land-cta .btn {
+    min-height: 40px;
+    padding: 0 14px;
+    font-size: 13px;
+    letter-spacing: 0.04em;
+  }
+}
+/* The smallest phones: the wordmark steps down so it never touches the switch. */
+@media (max-width: 380px) {
+  html[data-look] .land-bar .wordmark svg {
+    display: none;
+  }
+  html[data-look] .land-bar .wm-name {
+    font-size: 17px;
+  }
+}

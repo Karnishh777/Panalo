@@ -13,7 +13,7 @@
 //     and with reduced motion the world is drawn once and left still.
 import { reducedMotion, animationLoop } from "./motion.js";
 import { glSupported, createGlobeGL } from "./world-gl.js";
-import { TW, TH, UW, UH, TAU, mix, surfaces, surfaceFor, paint } from "./world-surface.js";
+import { TW, UW, UH, TAU, mix, surfaces, surfaceFor, paint } from "./world-surface.js";
 import { getLight, onLight, lightVector } from "./world-light.js";
 
 /**

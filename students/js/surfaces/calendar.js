@@ -5,7 +5,7 @@
 // planning a week is a job people already know how to do on a grid, and
 // "creative" would only get in the way. Classes repeat weekly; tasks with a
 // due date appear as deadlines automatically.
-import { el, openSheet, confirmSheet, showToast, chipGroup, reportError, emptyState, toLocalInput, longDate } from "../ui.js";
+import { el, openSheet, confirmSheet, showToast, chipGroup, reportError, toLocalInput, longDate } from "../ui.js";
 import { store, on, api } from "../store.js";
 import { dayOrbit } from "../dayorbit.js";
 import { occurrencesOnDay, occurrencesBetween, tasksAsDeadlines, EVENT_KINDS, countdowns } from "../model/timeline.js";
@@ -291,10 +291,12 @@ export function mount(section, ctx) {
           el("button", { type: "button", role: "tab", class: "chip tone-time", "data-view-btn": "day", "aria-selected": "true", text: "Day", onClick: () => setView("day") }),
           el("button", { type: "button", role: "tab", class: "chip tone-time", "data-view-btn": "week", "aria-selected": "false", text: "Week", onClick: () => setView("week") }),
         ]),
-        el("button", { type: "button", class: "icon-btn", "aria-label": "Previous", text: "←", onClick: () => step(-1) }),
-        el("button", { type: "button", class: "btn btn-quiet btn-sm", text: "Today", onClick: () => { day = startOfDay(new Date()); render(); } }),
-        el("button", { type: "button", class: "icon-btn", "aria-label": "Next", text: "→", onClick: () => step(1) }),
-        el("button", { type: "button", class: "btn btn-primary btn-sm", text: "Add", onClick: () => openEvent(null) }),
+        el("div", { class: "cal-step" }, [
+          el("button", { type: "button", class: "icon-btn", "aria-label": "Previous", text: "←", onClick: () => step(-1) }),
+          el("button", { type: "button", class: "btn btn-quiet btn-sm", text: "Today", onClick: () => { day = startOfDay(new Date()); render(); } }),
+          el("button", { type: "button", class: "icon-btn", "aria-label": "Next", text: "→", onClick: () => step(1) }),
+        ]),
+        el("button", { type: "button", class: "btn btn-primary btn-sm cal-add", "aria-label": "Add an event", onClick: () => openEvent(null) }, [el("span", { class: "cal-add-plus", "aria-hidden": "true", text: "+" }), el("span", { class: "cal-add-label", text: "Add" })]),
       ]),
     ]),
     qForm,

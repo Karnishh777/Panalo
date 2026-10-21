@@ -103,6 +103,14 @@ landing ──► the crossing (sign in / sign up) ──► first time? the bir
   you switch or sign out); the other looks pay nothing for them.
   Everything that moves stands still with reduced motion; the Study Room
   stays quiet in every look.
+- **Details and phones** (`css/phone.css`, loaded last, for every look):
+  one 16 px rhythm between panels on phones; a page's actions grouped the
+  way a thumb reaches them (Calendar's Day/Week, day stepper and + in one
+  row; World's main action across the width with the rest in an even
+  row; Study's controls each under a label); 44 px hit areas on panel
+  links and list rows; the Now dial's key two by two; the landing bar
+  that always fits (down to 360 px); headings balanced so no word is
+  left alone on a line.
 - **Effects with a purpose**: ink, petals and button hits only on Now,
   World and Drift. Signals, Calendar, Archive, Settings, Safety and
   Moderation stay still; the Study Room is the quietest of all.
