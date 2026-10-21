@@ -248,7 +248,7 @@ try {
   await page.click("dialog .chip >> text=Making something");
   await page.fill("dialog input[type=number]", "45");
   await page.click("dialog .btn-primary");
-  await page.waitForTimeout(500);
+  await page.waitForTimeout(1100); // the number rolls up to its new value
   check("logging an activity lights the aurora", /Aurora\s*Making things, last 30 days\.\s*45 min/.test(await page.textContent(".legend")));
   check("the first session is a discovery", /First session/.test(await page.textContent(".world-lower")));
   await shot(page, "world");
@@ -469,6 +469,19 @@ try {
   await page.keyboard.press("Enter");
   await page.waitForTimeout(900);
   check("leaving Odyssey takes its scene away", !(await page.evaluate(() => !!document.querySelector(".ody-stage, .ody-caption, .ody-grade"))));
+  // Details: the nav's marker sits under the page you're on, and moves with you.
+  await page.evaluate(() => (location.hash = "#/calendar"));
+  await page.waitForTimeout(900);
+  const ink = await page.evaluate(() => {
+    const i = document.querySelector(".bar-nav .nav-ink.on");
+    const a = document.querySelector('.bar-nav [aria-current="page"]');
+    if (!i || !a) return null;
+    const ib = i.getBoundingClientRect(), ab = a.getBoundingClientRect();
+    return { dx: Math.abs(ib.left - ab.left), dw: Math.abs(ib.width - ab.width) };
+  });
+  check("the nav's marker glides to the page you're on", !!ink && ink.dx < 3 && ink.dw < 3);
+  check("the bar's clock has a colon a look can blink", await page.evaluate(() => !!document.querySelector("#bar-clock .clock-colon")));
+  check("a line under the bar shows how far down the page you are", await page.evaluate(() => !!document.querySelector(".read-line")));
   check("no console errors (desktop)", page.errors.length === 0);
   if (page.errors.length) console.log(page.errors.join("\n"));
   await page.close();

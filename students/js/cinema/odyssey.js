@@ -129,7 +129,11 @@ export function start() {
   const stage = el("div", { class: "ody-stage", "aria-hidden": "true" }, [nebula, sun, sky, el("div", { class: "ody-vignette" }), el("div", { class: "ody-grain" })]);
   const line = el("p", { class: "ody-line" });
   const dots = el("ol", { class: "ody-path", "aria-hidden": "true" }, PATH.map((p) => el("li", { "data-station": p })));
-  const caption = el("div", { class: "ody-caption" }, [line, dots]);
+  // Telemetry at the letterbox's ends: your world and its day on the left,
+  // the station and the ship's clock on the right.
+  const hudL = el("p", { class: "ody-hud ody-hud-l", "aria-hidden": "true" });
+  const hudR = el("p", { class: "ody-hud ody-hud-r", "aria-hidden": "true" });
+  const caption = el("div", { class: "ody-caption" }, [hudL, line, dots, hudR]);
   const leak = el("div", { class: "ody-leak", "aria-hidden": "true" });
   document.body.prepend(stage);
   document.body.append(leak, caption);
@@ -199,14 +203,29 @@ export function start() {
     const text = captionFor(name);
     if (line.textContent === text) return;
     if (!animate || still) {
+      line.removeAttribute("aria-label");
       line.textContent = text;
       return;
     }
+    // The subtitle types on, a letter at a time, as subtitles in films do
+    // when the line matters.
     line.classList.remove("ody-line-in");
     void line.offsetWidth;
-    line.textContent = text;
+    line.setAttribute("aria-label", text);
+    line.replaceChildren(...[...text].map((ch, i) => el("span", { "aria-hidden": "true", style: `--i:${Math.min(i, 80)}`, text: ch })));
     line.classList.add("ody-line-in");
   }
+  const pad = (n) => String(n).padStart(2, "0");
+  function hud() {
+    const born = Date.parse(store.student?.born_at || "");
+    const day = Number.isFinite(born) ? Math.floor((Date.now() - born) / 86400000) + 1 : null;
+    hudL.textContent = `${(store.student?.world_name || "Your world").toUpperCase()}${day ? ` · DAY ${day}` : ""}`;
+    const d = new Date();
+    const s = STATIONS[station] || STATIONS.now;
+    hudR.textContent = `STN ${pad(s.n)} · ${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}`;
+  }
+  hud();
+  const hudTimer = setInterval(() => !document.hidden && hud(), 1000);
   function chapter(name) {
     if (still) return;
     let seen = [];
@@ -393,6 +412,7 @@ export function start() {
       clearTimeout(flyTimer);
       clearTimeout(worldTimer);
       clearTimeout(captionTimer);
+      clearInterval(hudTimer);
       offStore?.();
       window.removeEventListener("panalo:arrive", onArrive);
       window.removeEventListener("pointermove", onPointer);

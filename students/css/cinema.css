@@ -269,8 +269,51 @@ html.ody-on body.in-app .ody-caption {
   font: italic 400 21px/1.1 "Cormorant Garamond", Georgia, serif;
   color: #f2f5ff;
 }
-.ody-line-in {
-  animation: ody-sub 0.7s var(--ease-film, ease) both;
+.ody-line-in span {
+  animation: ody-char 0.5s ease-out both;
+  animation-delay: calc(var(--i) * 16ms);
+}
+@keyframes ody-char {
+  from { opacity: 0; }
+  40% { opacity: 1; text-shadow: 0 0 12px rgba(220, 232, 255, 0.9); }
+}
+/* Telemetry at the letterbox's ends. */
+.ody-hud {
+  position: absolute;
+  top: 50%;
+  margin: 0;
+  transform: translateY(-50%);
+  font: 400 9.5px/1 "Syncopate", "Manrope", sans-serif;
+  letter-spacing: 0.32em;
+  color: #6f7c9c;
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+}
+.ody-hud-l {
+  left: 28px;
+}
+.ody-hud-r {
+  right: 28px;
+}
+.ody-hud-l::before {
+  content: "";
+  display: inline-block;
+  width: 5px;
+  height: 5px;
+  margin-right: 10px;
+  border-radius: 50%;
+  vertical-align: 1px;
+  background: #9be8c6;
+  box-shadow: 0 0 8px #9be8c6;
+  animation: ody-live 2.4s ease-in-out infinite;
+}
+@keyframes ody-live {
+  50% { opacity: 0.35; }
+}
+@media (max-width: 1180px) {
+  .ody-hud {
+    display: none;
+  }
 }
 @keyframes ody-sub {
   from { opacity: 0; translate: 0 6px; filter: blur(4px); }
@@ -567,8 +610,16 @@ html[data-look="odyssey"] .surface.look-enter .panel {
   }
 }
 html[data-motion="reduce"] .ody-grain,
-html[data-motion="reduce"] .ody-chapter {
+html[data-motion="reduce"] .ody-chapter,
+html[data-motion="reduce"] .ody-hud-l::before,
+html[data-motion="reduce"] .ody-line-in span {
   animation: none !important;
+}
+@media (prefers-reduced-motion: reduce) {
+  .ody-hud-l::before,
+  .ody-line-in span {
+    animation: none !important;
+  }
 }
 
 /* ===== The grade: large-format film ======================================= */
@@ -608,12 +659,12 @@ body.ody-flying .ody-leak {
    repaint), finished well before a panel is fully in view. */
 
 @supports (animation-timeline: view()) {
-  html[data-look="odyssey"] .surface:not(.look-enter) .panel {
+  html[data-look="odyssey"] .surface .panel.below {
     animation: ody-scroll-in linear both;
     animation-timeline: view();
     animation-range: entry 0% entry 70%;
   }
-  html[data-look="odyssey"] .surface:not(.look-enter) .panel::before {
+  html[data-look="odyssey"] .surface .panel.below::before {
     animation: ody-scan linear both;
     animation-timeline: view();
     animation-range: entry 20% entry 90%;
