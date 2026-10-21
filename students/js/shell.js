@@ -14,6 +14,7 @@ import { reducedMotion } from "./motion.js";
 import { drift, punch, burstOn, calm, comic } from "./fx.js";
 import { enter, LOOKS, setLook } from "./looks.js";
 import { startCinema, stopCinema } from "./cinema/index.js";
+import { startDetails, stopDetails } from "./details.js";
 import { startModeration, stopModeration } from "./moderation-badge.js";
 import { startSync, stopSync } from "./sync.js";
 import { rulesReminder } from "./rules-reminder.js";
@@ -136,8 +137,15 @@ export function navigate(path) {
   else location.hash = `#/${path}`;
 }
 
+// The clock in the bar: hours and minutes, with a colon a look can blink.
 function tickClock() {
-  $("bar-clock").textContent = clockTime(Date.now());
+  const text = clockTime(Date.now());
+  const i = text.indexOf(":");
+  const box = $("bar-clock");
+  if (box.dataset.text === text) return;
+  box.dataset.text = text;
+  if (i < 0) box.textContent = text;
+  else box.replaceChildren(text.slice(0, i), el("span", { class: "clock-colon", text: ":" }), text.slice(i + 1));
 }
 
 function renderMe() {
@@ -325,6 +333,7 @@ export async function enterShell({ firstTime = false, pendingJoin = null } = {})
     tickClock();
     clockTimer = setInterval(tickClock, 15000);
     startCinema();
+    startDetails();
     startPresence(state.currentUser);
     // Signals keeps the unread count live everywhere, so start it now.
     startInbox().catch((e) => console.error(e));
@@ -360,6 +369,7 @@ document.addEventListener("visibilitychange", () => {
 export function leaveShell() {
   active = false;
   stopCinema();
+  stopDetails();
   clearInterval(clockTimer);
   clearInterval(settleTimerId);
   stopPresence();

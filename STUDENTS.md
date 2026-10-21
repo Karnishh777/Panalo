@@ -103,6 +103,27 @@ landing ──► the crossing (sign in / sign up) ──► first time? the bir
   you switch or sign out); the other looks pay nothing for them.
   Everything that moves stands still with reduced motion; the Study Room
   stays quiet in every look.
+- **Living details** (`js/details.js`, `css/details.css`), each in the
+  look's own language, none with reduced motion:
+  - the nav's marker glides to where you're going (a glass pane with a
+    sheen in Glass, a red dot that stretches into a dash in Signal, a
+    line of light in Odyssey; Verse's torn tab slams into place), on
+    the phone dock too;
+  - a press answers where your finger landed (a bloom of light, a ring
+    of LEDs, a comic burst, a lens ring with an anamorphic streak);
+  - ticking a task off plays a moment at the box (motes of light,
+    scattering pixels, a lettered DONE!, a streak towards the stars) --
+    only a quiet ring in the Study Room;
+  - numbers count up when a page arrives and roll when they change;
+  - cards lean towards the pointer (Glass, Odyssey);
+  - panels below the fold rise in as you scroll to them (never one
+    already on screen); a line under the bar shows how far down the page
+    you are;
+  - notices and loading lines in each look's style (a speech balloon in
+    Verse, an LED strip in Signal, a subtitle in Odyssey); Signal's
+    clock colon blinks; Odyssey's letterbox carries telemetry (your
+    world and its day, the station and the ship's clock) and its
+    subtitles type on.
 - **Details and phones** (`css/phone.css`, loaded last, for every look):
   one 16 px rhythm between panels on phones; a page's actions grouped the
   way a thumb reaches them (Calendar's Day/Week, day stepper and + in one
