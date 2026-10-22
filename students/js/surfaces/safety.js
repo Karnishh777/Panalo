@@ -1,7 +1,7 @@
 // Safety & privacy: what is protected, exactly; who you've blocked; what
 // you've reported; and how to leave. Written to be accurate rather than
 // reassuring -- see LIMITATIONS.md for the long version.
-import { el, openSheet, showToast } from "../ui.js";
+import { el, openSheet, showToast, getPrefs, setPrefs } from "../ui.js";
 import { supabaseClient } from "../../../src/client.js";
 import { deleteAllMyFiles } from "../../../src/filestore.js";
 import { idbDelKey } from "../../../src/encryption.js";
@@ -21,6 +21,54 @@ const PROTECTED = [
   ["Your email", "Never shown to anyone. People find you only by your exact username, and nobody can browse the list of users."],
   ["What we don't do", "No ads, no selling data, no tracking scripts, and nothing you write is sent to an AI service."],
 ];
+
+// People to call, in India, at any hour. Tap to dial on a phone.
+const HELP = [
+  ["112", "Emergency", "Police, fire or ambulance — if you or someone else is in danger right now."],
+  ["1098", "CHILDLINE", "For anyone under 18 who needs help or protection. Free, day and night."],
+  ["14416", "Tele-MANAS", "Someone to talk to about stress, low mood or anything heavy. Free, 24×7, in many languages."],
+  ["1930", "Cyber crime", "Online fraud, threats or someone misusing your photos. Or report at cybercrime.gov.in."],
+];
+
+// A short check-up you tick for yourself (kept in your preferences).
+const CHECKS = [
+  ["name", "My username isn't my full real name."],
+  ["password", "My password isn't used on any other site."],
+  ["block", "I know how to block and report someone (⋯ on any message)."],
+  ["circles", "I know everyone in my circles, or the room is for an event I'm at."],
+  ["trusted", "There's a trusted adult I'd tell if something felt wrong."],
+];
+
+function helpPanel() {
+  return el("section", { class: "panel tone-alert help-now", "aria-labelledby": "help-now-h" }, [
+    el("div", { class: "panel-head" }, [el("h2", { id: "help-now-h", text: "Need help now?" })]),
+    el("ul", { class: "help-list" }, HELP.map(([num, name, what]) => el("li", {}, [el("a", { class: "help-call", href: `tel:${num}`, "aria-label": `Call ${name}, ${num}` }, [el("b", { class: "num", text: num }), el("span", { text: name })]), el("p", { class: "muted", text: what })]))),
+    el("p", { class: "faint", text: "Outside India? Call your local emergency number. Panalo is not an emergency service and reports aren't watched around the clock." }),
+  ]);
+}
+
+function checkPanel() {
+  const box = el("div");
+  const draw = () => {
+    const done = getPrefs().safetyCheck || {};
+    const n = CHECKS.filter(([id]) => done[id]).length;
+    box.replaceChildren(
+      el("p", { class: "check-score" }, [el("b", { class: "num", text: `${n} of ${CHECKS.length}` }), el("span", { class: "muted", text: n === CHECKS.length ? " — all set. Well done looking after yourself." : " — tick what's true for you." })]),
+      el("span", { class: "meter", role: "progressbar", "aria-valuemin": "0", "aria-valuemax": String(CHECKS.length), "aria-valuenow": String(n), "aria-label": "Safety check-up" }, [el("i", { style: `width:${(n / CHECKS.length) * 100}%` })]),
+      el("ul", { class: "check-list" }, CHECKS.map(([id, text]) => {
+        const c = el("input", { type: "checkbox" });
+        c.checked = !!done[id];
+        c.addEventListener("change", () => {
+          setPrefs({ safetyCheck: { ...(getPrefs().safetyCheck || {}), [id]: c.checked } });
+          draw();
+        });
+        return el("li", {}, [el("label", { class: "check-item" }, [c, el("span", { text })])]);
+      }))
+    );
+  };
+  draw();
+  return el("section", { class: "panel tone-world", "aria-labelledby": "check-h" }, [el("div", { class: "panel-head" }, [el("h2", { id: "check-h", text: "Safety check-up" })]), box]);
+}
 
 const TIPS = [
   "Never share your password or a login code — no real person from Panalo will ever ask for one.",
@@ -200,9 +248,11 @@ export function mount(section, c) {
     el("div", { class: "safety-cols" }, [
       el("section", { class: "panel tone-signal" }, [el("div", { class: "panel-head" }, [el("h2", { text: "Where your things live" }), el("a", { href: "privacy.html", target: "_blank", rel: "noopener", text: "Full privacy notes" })]), el("dl", { class: "protect" }, PROTECTED.flatMap(([t, d]) => [el("dt", { text: t }), el("dd", { text: d })]))]),
       el("div", {}, [
+        helpPanel(),
         el("section", { class: "panel tone-alert" }, [el("div", { class: "panel-head" }, [el("h2", { text: "Blocked" })]), blockedEl]),
         el("section", { class: "panel tone-time" }, [el("div", { class: "panel-head" }, [el("h2", { text: "Reports you've sent" })]), reportsEl]),
         el("section", { class: "panel tone-world" }, [el("div", { class: "panel-head" }, [el("h2", { text: "Staying safe here" }), el("a", { href: "rules.html", target: "_blank", rel: "noopener", text: "Community rules" })]), el("ul", { class: "tips" }, TIPS.map((t) => el("li", { text: t })))]),
+        checkPanel(),
         el("section", { class: "panel tone-world" }, [el("div", { class: "panel-head" }, [el("h2", { text: "Your data" })]), el("p", { class: "muted", text: "Download everything your account holds, as a file you can keep." }), el("button", { type: "button", class: "btn btn-ghost btn-sm", text: "Download my data", onClick: (e) => downloadMyData(e.currentTarget) })]),
         el("section", { class: "panel tone-focus" }, [el("div", { class: "panel-head" }, [el("h2", { text: "Questions or complaints about your data" })]), el("p", { class: "muted", text: "Ask what's kept about you, ask for something to be corrected or removed, or complain about how your data or a report was handled. It goes to the people who run this Panalo; expect an answer within 15 days." }), el("button", { type: "button", class: "btn btn-ghost btn-sm", text: "Write to us", onClick: askAboutData }), el("p", { class: "faint", text: "Or email the Grievance Officer, K.V.Karnishh: karnishh.education@gmail.com" })]),
         el("section", { class: "panel tone-alert" }, [el("div", { class: "panel-head" }, [el("h2", { text: "Leaving" })]), el("p", { class: "muted", text: "You can delete your account at any time." }), el("button", { type: "button", class: "btn btn-danger btn-sm", text: "Delete my account", onClick: deleteAccount })]),

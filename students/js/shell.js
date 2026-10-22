@@ -3,9 +3,9 @@
 //
 // Surfaces load on first visit (dynamic import), so opening the app costs
 // the Now screen and nothing else.
-import { el, openSheet, showToast } from "./ui.js";
+import { el, openSheet, showToast, getPrefs } from "./ui.js";
 import { store, on } from "./store.js";
-import { clockTime } from "./model/time.js";
+import { clockTime, setClock12 } from "./model/time.js";
 import { startPresence, stopPresence } from "../../src/presence.js";
 import { state } from "../../src/state.js";
 import { startInbox, stopInbox } from "./signals-data.js";
@@ -137,6 +137,52 @@ export function navigate(path) {
   else location.hash = `#/${path}`;
 }
 
+// Display preferences that apply everywhere: the clock's format and the
+// size of text. Applied on entry, and again whenever preferences change
+// (Settings here, or another device).
+export function applyDisplayPrefs() {
+  const p = getPrefs();
+  setClock12(p.clock12);
+  const size = ["small", "large", "larger"].includes(p.textSize) ? p.textSize : null;
+  if (size) document.documentElement.setAttribute("data-text", size);
+  else document.documentElement.removeAttribute("data-text");
+  const box = $("bar-clock");
+  if (box) delete box.dataset.text;
+  if (active) tickClock();
+}
+document.addEventListener("panalo:prefs", () => applyDisplayPrefs());
+
+// Keyboard: g then a letter goes to a page; ? lists every shortcut.
+const GO_KEYS = { n: "now", s: "study", i: "signals", w: "world", c: "calendar", a: "archive", d: "drift", y: "safety", ",": "settings" };
+let goArmed = 0;
+export function openShortcuts() {
+  const row = (keys, what) => el("li", {}, [el("span", { class: "keys" }, keys.map((k) => el("kbd", { text: k }))), el("span", { text: what })]);
+  const mac = /Mac|iPhone|iPad/.test(navigator.platform || "");
+  openSheet({
+    title: "Keyboard shortcuts",
+    form: false,
+    body: [
+      el("ul", { class: "shortcuts" }, [
+        row([mac ? "⌘" : "Ctrl", "K"], "Warp: jump anywhere, do anything"),
+        row(["g", "n"], "Now"),
+        row(["g", "s"], "Study Room"),
+        row(["g", "i"], "Signals"),
+        row(["g", "w"], "World"),
+        row(["g", "c"], "Calendar"),
+        row(["g", "a"], "Archive"),
+        row(["g", "d"], "Drift"),
+        row(["g", "y"], "Safety"),
+        row(["g", ","], "Settings"),
+        row(["/"], "Search (Archive, Signals)"),
+        row(["Space"], "Start or pause a focus block (Study Room)"),
+        row(["?"], "This list"),
+      ]),
+    ],
+    actions: [{ label: "Done", kind: "btn-primary" }],
+  });
+}
+const typing = (t) => t && (t.isContentEditable || /^(INPUT|TEXTAREA|SELECT)$/.test(t.tagName));
+
 // The clock in the bar: hours and minutes, with a colon a look can blink.
 function tickClock() {
   const text = clockTime(Date.now());
@@ -193,6 +239,7 @@ function warpItems() {
     { label: "Drift", hint: "three things for today", run: go("drift") },
     { label: "Safety & privacy", hint: "blocking, reports, what's encrypted", run: go("safety") },
     { label: "Settings", hint: "motion, study defaults, account", run: go("settings") },
+    { label: "Keyboard shortcuts", hint: "press ? anywhere", run: () => openShortcuts() },
   ];
 }
 
@@ -289,6 +336,15 @@ export function initShell(h) {
     if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "k") {
       e.preventDefault();
       openWarp();
+    } else if (!e.ctrlKey && !e.metaKey && !e.altKey && !typing(e.target) && !document.querySelector("dialog[open]")) {
+      if (e.key === "?") {
+        e.preventDefault();
+        openShortcuts();
+      } else if (goArmed && Date.now() - goArmed < 1500 && GO_KEYS[e.key.toLowerCase()]) {
+        e.preventDefault();
+        goArmed = 0;
+        navigate(GO_KEYS[e.key.toLowerCase()]);
+      } else goArmed = e.key.toLowerCase() === "g" ? Date.now() : 0;
     } else if (e.key === "Escape" && !$("me-menu").hidden) {
       toggleMeMenu(false);
       $("me-open").focus();
@@ -330,6 +386,7 @@ export async function enterShell({ firstTime = false, pendingJoin = null } = {})
       $("app").prepend(c);
       ambient = drift(c, { count: 12, wind: 0.5 });
     }
+    applyDisplayPrefs();
     tickClock();
     clockTimer = setInterval(tickClock, 15000);
     startCinema();

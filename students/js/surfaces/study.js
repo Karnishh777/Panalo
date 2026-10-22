@@ -8,7 +8,7 @@
 // The timer is timestamps, not ticks (model/focus-timer.js): it survives a
 // reload, a closed lid and navigating away. Finished blocks are recorded as
 // focus sessions -- the thing that grows the land on your world.
-import { el, showToast, getPrefs, setPrefs, reportError, shortDate } from "../ui.js";
+import { el, showToast, getPrefs, setPrefs, reportError, shortDate, openSheet, field } from "../ui.js";
 import { store, on, api } from "../store.js";
 import * as T from "../model/focus-timer.js";
 import { loadTimer, saveTimer, onTimer, settleTimer, recordSession } from "../timer-state.js";
@@ -30,6 +30,7 @@ let noticeEl;
 let unsubs = [];
 let navigate;
 let lastTitle = "";
+let subjectFilter = ""; // the task list, narrowed to one subject ("" = all)
 
 const R = 118;
 const CIRC = 2 * Math.PI * R;
@@ -255,15 +256,49 @@ function playAmbientFromPrefs() {
 
 // ---- tasks ---------------------------------------------------------------------
 
+// The list's own settings (synced with your preferences): your order or
+// by due date, and numbers, bullets or nothing in front of each task.
+const taskPrefs = () => {
+  const p = getPrefs();
+  return { sort: p.taskSort === "due" ? "due" : "mine", marks: ["numbers", "bullets", "none"].includes(p.taskMarks) ? p.taskMarks : "numbers", order: Array.isArray(p.taskOrder) ? p.taskOrder : [] };
+};
+
+function inYourOrder(tasks, order) {
+  const at = new Map(order.map((id, i) => [id, i]));
+  // Tasks you haven't placed yet go to the end, oldest first.
+  return [...tasks].sort((a, b) => {
+    const ia = at.has(a.id) ? at.get(a.id) : Infinity;
+    const ib = at.has(b.id) ? at.get(b.id) : Infinity;
+    if (ia !== ib) return ia - ib;
+    return Date.parse(a.created_at || 0) - Date.parse(b.created_at || 0);
+  });
+}
+
+function saveOrder(ids) {
+  const open = new Set(store.tasks.filter((t) => !t.done_at).map((t) => t.id));
+  setPrefs({ taskOrder: ids.filter((id) => open.has(id)) });
+}
+
 function renderTasks() {
   const open = store.tasks.filter((t) => !t.done_at);
   const doneToday = store.tasks.filter((t) => t.done_at && Date.parse(t.done_at) >= startOfDay(Date.now()).getTime());
   const prev = taskSelect.value;
-  taskSelect.replaceChildren(el("option", { value: "", text: "No particular task" }), ...open.map((t) => el("option", { value: t.id, text: t.title })));
+  const tp = taskPrefs();
+  const ordered = tp.sort === "due"
+    ? [...open].sort((a, b) => (a.due_at && b.due_at ? Date.parse(a.due_at) - Date.parse(b.due_at) : a.due_at ? -1 : b.due_at ? 1 : 0))
+    : inYourOrder(open, tp.order);
+  taskSelect.replaceChildren(el("option", { value: "", text: "No particular task" }), ...ordered.map((t) => el("option", { value: t.id, text: t.title })));
   if (open.some((t) => t.id === prev)) taskSelect.value = prev;
   else if (timer.taskId && open.some((t) => t.id === timer.taskId)) taskSelect.value = timer.taskId;
 
-  const item = (t) => {
+  // With tasks in more than one subject, a row of subjects narrows the list.
+  const subjects = [...new Set(open.map((t) => (t.subject || "").trim()).filter(Boolean))].sort();
+  if (subjectFilter && !subjects.includes(subjectFilter)) subjectFilter = "";
+  const shown = ordered.filter((t) => !subjectFilter || (t.subject || "").trim() === subjectFilter);
+  // Reordering by hand: only in your own order, with the whole list showing.
+  const canMove = tp.sort === "mine" && !subjectFilter && shown.length > 1;
+
+  const item = (t, i) => {
     const box = el("input", { type: "checkbox", "aria-label": `Done: ${t.title}` });
     box.checked = !!t.done_at;
     box.addEventListener("change", async () => {
@@ -273,9 +308,14 @@ function renderTasks() {
         reportError(error);
       }
     });
-    const due = t.due_at && !t.done_at ? el("span", { class: `task-due${Date.parse(t.due_at) < Date.now() ? " late" : ""}`, text: Date.parse(t.due_at) < Date.now() ? `was due ${relTime(Date.parse(t.due_at))}` : `due ${shortDate(t.due_at)}` }) : null;
-    return el("li", { class: t.done_at ? "done" : "" }, [
+    const late = t.due_at && Date.parse(t.due_at) < Date.now();
+    const due = t.due_at && !t.done_at ? el("span", { class: `task-due${late ? " late" : ""}`, text: late ? `was due ${relTime(Date.parse(t.due_at))}` : `due ${shortDate(t.due_at)}` }) : null;
+    const done = !!t.done_at;
+    return el("li", { class: done ? "done" : "", "data-id": t.id }, [
+      !done && canMove ? el("button", { type: "button", class: "task-grip", "aria-label": `Move ${t.title}: use the up and down arrow keys`, title: "Drag to reorder", text: "⠿" }) : null,
+      !done && tp.marks !== "none" ? el("span", { class: "task-mark num", "aria-hidden": "true", text: tp.marks === "numbers" ? `${i + 1}.` : "•" }) : null,
       el("label", { class: "task" }, [box, el("span", { class: "task-title", text: t.title }), t.subject ? el("span", { class: "tag tone-focus", text: t.subject }) : null, due]),
+      done ? null : el("button", { type: "button", class: "icon-btn sm task-edit", "aria-label": `Edit task: ${t.title}`, title: "Edit", text: "✎", onClick: () => editTask(t) }),
       el("button", {
         type: "button",
         class: "icon-btn sm task-x",
@@ -288,11 +328,114 @@ function renderTasks() {
       }),
     ]);
   };
+
+  // The list's tools: order and markers.
+  const seg = (label, key, options, cur) =>
+    el("div", { class: "seg", role: "radiogroup", "aria-label": label },
+      options.map(([v, text, name]) => el("button", { type: "button", role: "radio", class: "seg-btn", "aria-checked": String(cur === v), "aria-label": name, title: name, text, onClick: () => { setPrefs({ [key]: v }); renderTasks(); } })));
+  const tools = open.length
+    ? el("div", { class: "task-tools" }, [
+        seg("Order", "taskSort", [["mine", "My order", "Your order"], ["due", "By due", "By due date"]], tp.sort),
+        seg("List style", "taskMarks", [["numbers", "1.", "Numbered"], ["bullets", "•", "Bulleted"], ["none", "—", "No markers"]], tp.marks),
+      ])
+    : null;
+  const filter = subjects.length > 1
+    ? el("div", { class: "chips task-filter", role: "radiogroup", "aria-label": "Show tasks for" },
+        ["", ...subjects].map((s) => el("button", { type: "button", role: "radio", class: "chip tone-focus", "aria-checked": String(subjectFilter === s), text: s || "All", onClick: () => { subjectFilter = s; renderTasks(); } })))
+    : null;
+  const list = el(tp.marks === "numbers" ? "ol" : "ul", { class: `task-list marks-${tp.marks}${canMove ? " movable" : ""}` }, shown.map(item));
+  if (canMove) sortable(list);
+
+  // (Filtered: replaceChildren would print a null as the word "null".)
   tasksEl.replaceChildren(
     ...(open.length || doneToday.length
-      ? [el("ul", { class: "task-list" }, open.map(item)), doneToday.length ? el("ul", { class: "task-list done-list", "aria-label": "Done today" }, doneToday.map(item)) : null]
-      : [el("p", { class: "faint task-empty", text: "Nothing on the list. Add the one thing you're here to do." })])
+      ? [tools, filter, open.length ? list : null, doneToday.length ? el("ul", { class: "task-list done-list", "aria-label": "Done today" }, doneToday.map(item)) : null]
+      : [el("p", { class: "faint task-empty", text: "Nothing on the list. Add the one thing you're here to do." })]
+    ).filter(Boolean)
   );
+}
+
+// Drag a task by its grip (mouse, pen or finger), or move it with the arrow
+// keys on the grip. The list renumbers as it moves; the order is saved.
+function sortable(list) {
+  const renumber = () => list.querySelectorAll(":scope > li .task-mark").forEach((m, i) => { if (m.textContent !== "•") m.textContent = `${i + 1}.`; });
+  const ids = () => [...list.querySelectorAll(":scope > li")].map((li) => li.dataset.id);
+  const mid = (n) => { const r = n.getBoundingClientRect(); return r.top + r.height / 2; };
+  list.addEventListener("pointerdown", (e) => {
+    const grip = e.target.closest(".task-grip");
+    if (!grip || e.button > 0) return;
+    e.preventDefault();
+    const li = grip.closest("li");
+    const before = ids().join();
+    const pid = e.pointerId;
+    // Listened for on the window: moving the row in the page would drop a
+    // pointer capture on the grip.
+    li.classList.add("dragging");
+    list.classList.add("sorting");
+    const move = (ev) => {
+      if (ev.pointerId !== pid) return;
+      let sib;
+      let moved = false;
+      while ((sib = li.previousElementSibling) && ev.clientY < mid(sib)) (list.insertBefore(li, sib), (moved = true));
+      while ((sib = li.nextElementSibling) && ev.clientY > mid(sib)) (list.insertBefore(sib, li), (moved = true));
+      if (moved) renumber();
+    };
+    const up = (ev) => {
+      if (ev.pointerId !== pid) return;
+      window.removeEventListener("pointermove", move);
+      window.removeEventListener("pointerup", up);
+      window.removeEventListener("pointercancel", up);
+      li.classList.remove("dragging");
+      list.classList.remove("sorting");
+      if (ids().join() !== before) {
+        saveOrder(ids());
+        renderTasks();
+      }
+    };
+    window.addEventListener("pointermove", move);
+    window.addEventListener("pointerup", up);
+    window.addEventListener("pointercancel", up);
+  });
+  list.addEventListener("keydown", (e) => {
+    const grip = e.target.closest(".task-grip");
+    if (!grip || (e.key !== "ArrowUp" && e.key !== "ArrowDown")) return;
+    e.preventDefault();
+    const li = grip.closest("li");
+    const sib = e.key === "ArrowUp" ? li.previousElementSibling : li.nextElementSibling;
+    if (!sib) return;
+    if (e.key === "ArrowUp") list.insertBefore(li, sib);
+    else list.insertBefore(sib, li);
+    const id = li.dataset.id;
+    saveOrder(ids());
+    renderTasks();
+    tasksEl.querySelector(`li[data-id="${CSS.escape(id)}"] .task-grip`)?.focus();
+  });
+}
+
+// Change a task's name, subject or due date.
+function editTask(t) {
+  const title = el("input", { type: "text", maxlength: "200", value: t.title });
+  const subject = el("input", { type: "text", maxlength: "40", value: t.subject || "", list: "study-subjects" });
+  const due = el("input", { type: "date", value: t.due_at ? dayKey(new Date(t.due_at)) : "" });
+  openSheet({
+    title: "Edit task",
+    body: [field("Task", title), field("Subject", subject, "Optional"), field("Due", due, "Optional — leave empty for no date")],
+    actions: [
+      { label: "Cancel", kind: "btn-quiet" },
+      {
+        label: "Save",
+        kind: "btn-primary",
+        submit: true,
+        onClick: async () => {
+          const v = title.value.trim();
+          if (!v) return showToast("A task needs a name."), false;
+          const patch = { title: v.slice(0, 200), subject: subject.value.trim().slice(0, 40) || null, due_at: due.value ? new Date(`${due.value}T23:59`).toISOString() : null };
+          const { error } = await api.updateTask(t.id, patch);
+          if (error) return reportError(error, "Couldn't save that task."), false;
+        },
+      },
+    ],
+  });
 }
 
 function taskForm() {
@@ -352,10 +495,41 @@ function renderHistory() {
     subjects.length > 1 || (subjects.length === 1 && subjects[0][0] !== "Unlabelled")
       ? el("ul", { class: "subj-bars", "aria-label": "This week by subject" }, subjects.map(([name, m]) => el("li", {}, [el("span", { class: "subj-name", text: name }), el("span", { class: "subj-bar" }, [el("i", { style: `width:${Math.round((m / topMin) * 100)}%` })]), el("span", { class: "num faint", text: formatMinutes(m) })])))
       : null,
+    focusMap(),
     todays.length
       ? el("ul", { class: "log hist-log" }, todays.map((s) => el("li", {}, [el("span", { class: "t", text: clockTime(s.started_at) }), el("span", { text: `${formatMinutes(s.focused_minutes)}${s.subject ? ` · ${s.subject}` : ""}${s.completed ? "" : " · ended early"}` })])))
       : el("p", { class: "faint", text: "No sessions yet today." }),
   ].filter(Boolean));
+}
+
+// Twelve weeks of focus, a square a day, deeper for more minutes. A picture
+// of a season's work -- not a streak: an empty square is just a day.
+function focusMap() {
+  const weeks = 12;
+  const start = startOfWeek(addDays(new Date(), -7 * (weeks - 1)));
+  const today = startOfDay(Date.now()).getTime();
+  const byDay = new Map();
+  for (const s of store.sessions) {
+    const k = dayKey(new Date(s.started_at));
+    byDay.set(k, (byDay.get(k) || 0) + (s.focused_minutes || 0));
+  }
+  let total = 0;
+  let days = 0;
+  const cells = [];
+  for (let w = 0; w < weeks; w++) {
+    for (let d = 0; d < 7; d++) {
+      const day = addDays(start, w * 7 + d);
+      const t = day.getTime();
+      const m = t > today ? null : byDay.get(dayKey(day)) || 0;
+      if (m) (total += m), days++;
+      const level = m === null ? "future" : m === 0 ? 0 : m < 30 ? 1 : m < 60 ? 2 : m < 120 ? 3 : 4;
+      cells.push(el("i", { class: `fm-cell l${level}${t === today ? " today" : ""}`, title: m === null ? "" : `${day.toLocaleDateString(undefined, { weekday: "short", day: "numeric", month: "short" })}: ${m ? formatMinutes(m) : "no focus"}` }));
+    }
+  }
+  return el("figure", { class: "focus-map" }, [
+    el("div", { class: "fm-grid", role: "img", "aria-label": `Focus over the last twelve weeks: ${formatMinutes(total)} on ${days} day${days === 1 ? "" : "s"}.` }, cells),
+    el("figcaption", { class: "faint small" }, [`Twelve weeks · ${formatMinutes(total)} on ${days} day${days === 1 ? "" : "s"}`, el("span", { class: "fm-key", "aria-hidden": "true" }, [0, 1, 2, 3, 4].map((l) => el("i", { class: `fm-cell l${l}` })))]),
+  ]);
 }
 
 // ---- mount ---------------------------------------------------------------------
@@ -490,6 +664,15 @@ export function show(param) {
   if (param === "start-25") {
     setPrefs({ studyPreset: "25" });
     if (timer.phase === "idle") begin("focus");
+  } else if (param?.startsWith("focus=")) {
+    // "Focus on this" (Now's Due soon): that task, chosen, and begun.
+    const id = decodeURIComponent(param.slice(6));
+    const task = store.tasks.find((t) => t.id === id && !t.done_at);
+    if (task && timer.phase === "idle") {
+      if ([...taskSelect.options].some((o) => o.value === id)) taskSelect.value = id;
+      if (task.subject) subjectInput.value = task.subject;
+      begin("focus");
+    }
   } else if (param === "add-task") {
     root.querySelector(".task-form input")?.focus();
   }

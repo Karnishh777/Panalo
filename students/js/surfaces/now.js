@@ -5,13 +5,13 @@
 // urgency: what's on now or next, how today's focus is going, who's
 // waiting for you, what's due, how your world is doing, what's new in your
 // files -- and, last, an offer of rest.
-import { el, emptyState, reportError, shortDate, longDate } from "../ui.js";
+import { el, emptyState, reportError, shortDate, longDate, showToast } from "../ui.js";
 import { store, on, api } from "../store.js";
 import { dayOrbit } from "../dayorbit.js";
 import { createGlobe } from "../world-render.js";
 import { buildWorld, weatherLine } from "../model/world-model.js";
 import { nextUp, tasksAsDeadlines, EVENT_KINDS, countdowns } from "../model/timeline.js";
-import { relTime, clockTime, formatMinutes, DAY } from "../model/time.js";
+import { relTime, clockTime, formatMinutes, DAY, sameDay } from "../model/time.js";
 import { pickDrift } from "../model/drift-pick.js";
 import { LIBRARY } from "../model/drift-library.js";
 import * as T from "../model/focus-timer.js";
@@ -21,6 +21,7 @@ import { state } from "../../../src/state.js";
 import { activeDays } from "../model/world-model.js";
 import { todayEntry, rhythm, rhythmLine, dayPart, MOODS } from "../model/daily.js";
 import { openCheckin, openIntention } from "../checkin.js";
+import { parseQuickAdd } from "../model/quick-add.js";
 
 let root;
 let orbitSlot;
@@ -101,6 +102,46 @@ function todayPanel(now) {
     el("div", { class: "rhythm-row" }, [dots, el("p", { class: "rhythm-line faint", text: rhythmLine(r.count, r.week[6].active) })]),
     close,
   ]);
+}
+
+// Capture: a task in one line, from wherever you are. A date in the line
+// ("fri", "tomorrow", "12/10") becomes its due date; none, and it waits on
+// the list without one. The field lives outside the log, so typing in it
+// survives the log re-rendering.
+function captureForm() {
+  const input = el("input", { type: "text", class: "input capture-input", placeholder: "Capture a task — “Chemistry worksheet fri”", maxlength: "200", "aria-label": "Capture a task", enterkeyhint: "done", autocomplete: "off" });
+  const hint = el("span", { class: "capture-hint faint", "aria-live": "polite" });
+  const preview = () => {
+    const v = input.value.trim();
+    if (!v) return (hint.textContent = "");
+    const t = taskFrom(v);
+    hint.textContent = t.due_at ? `due ${new Date(t.due_at).toLocaleDateString(undefined, { weekday: "short", day: "numeric", month: "short" })}` : "no due date";
+  };
+  input.addEventListener("input", preview);
+  const form = el("form", { class: "capture", novalidate: "" }, [el("span", { class: "capture-plus", "aria-hidden": "true", text: "+" }), input, hint]);
+  form.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const v = input.value.trim();
+    if (!v) return;
+    const t = taskFrom(v);
+    const { error } = await api.addTask(t);
+    if (error) return reportError(error);
+    input.value = "";
+    hint.textContent = "";
+    showToast(t.due_at ? `Added — due ${shortDate(t.due_at)}.` : "Added to your list.", "success");
+  });
+  return form;
+}
+function taskFrom(text, now = Date.now()) {
+  const q = parseQuickAdd(text, now);
+  if (!q) return { title: text.slice(0, 200), due_at: null };
+  const dated = q.timed || !sameDay(q.start, now) || /\b(today|tonight)\b/i.test(text);
+  let due = null;
+  if (dated) {
+    due = new Date(q.start);
+    if (!q.timed) due.setHours(23, 59, 0, 0);
+  }
+  return { title: (q.title || text).slice(0, 200), due_at: due ? due.toISOString() : null };
 }
 
 function renderLog() {
@@ -188,7 +229,9 @@ function renderLog() {
                 if (error) reportError(error);
               });
               const late = Date.parse(tk.due_at) < now;
-              return el("li", {}, [el("label", { class: "task" }, [box, el("span", { text: tk.title }), el("span", { class: `task-due${late ? " late" : ""}`, text: late ? `was due ${relTime(Date.parse(tk.due_at), now)}` : shortDate(tk.due_at) })])]);
+              // Straight into a focus block on it.
+              const go = el("a", { class: "icon-btn sm focus-on", href: `#/study/focus=${encodeURIComponent(tk.id)}`, "aria-label": `Focus on ${tk.title}`, title: "Focus on this", text: "▶" });
+              return el("li", { class: "task-row" }, [el("label", { class: "task" }, [box, el("span", { text: tk.title }), el("span", { class: `task-due${late ? " late" : ""}`, text: late ? `was due ${relTime(Date.parse(tk.due_at), now)}` : shortDate(tk.due_at) })]), go]);
             })
           )
         : el("p", { class: "muted", text: "Nothing due in the next week." }),
@@ -249,7 +292,7 @@ export function mount(section, ctx) {
   orbitSlot = el("a", { class: "orbit-wrap", href: "#/world", "aria-label": "Your day and your world" }, [globeCanvas]);
   logEl = el("div", { class: "now-log" });
   root.append(
-    el("div", { class: "s-head" }, [el("div", {}, [el("p", { class: "kicker toned tone-time", text: longDate(new Date()) }), greetEl, subEl])]),
+    el("div", { class: "s-head" }, [el("div", { class: "now-head" }, [el("p", { class: "kicker toned tone-time", text: longDate(new Date()) }), greetEl, subEl, captureForm()])]),
     el("div", { class: "now-grid" }, [el("div", { class: "now-instrument" }, [orbitSlot, el("p", { class: "orbit-legend faint" }, [legend("time", "classes & events"), legend("focus", "focus done"), legend("alert", "deadlines"), legend("hand", "now")])]), logEl])
   );
   section.append(root);

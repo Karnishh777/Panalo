@@ -123,16 +123,31 @@
   html[data-look] .s-head .s-actions {
     width: 100%;
   }
-  /* Calendar: [Day|Week]  [← Today →]  [+], one row. */
+  /* Calendar: [Day|Week|Month] [+] on one row, the day stepper under it. */
   html[data-look] .calendar .s-actions,
   html[data-look] [data-surface="calendar"] .s-actions {
     display: grid;
-    grid-template-columns: auto 1fr auto;
+    grid-template-columns: 1fr auto;
+    grid-template-areas: "views add" "step step";
     align-items: center;
     gap: 8px;
   }
+  html[data-look] [data-surface="calendar"] .s-actions > .chips {
+    grid-area: views;
+  }
+  html[data-look] [data-surface="calendar"] .cal-add {
+    grid-area: add;
+  }
   html[data-look] [data-surface="calendar"] .cal-step {
+    grid-area: step;
     justify-self: center;
+  }
+  /* Now: the capture field across the width. */
+  html[data-look] .capture {
+    max-width: none;
+  }
+  html[data-look] .task-tools {
+    justify-content: flex-start;
   }
   html[data-look] [data-surface="calendar"] .cal-add {
     width: 44px;
@@ -160,7 +175,7 @@
   }
   html[data-look] [data-surface="world"] .s-more {
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: repeat(2, 1fr);
     gap: 8px;
   }
   html[data-look] [data-surface="world"] .s-more .btn {

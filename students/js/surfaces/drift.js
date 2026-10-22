@@ -6,7 +6,7 @@
 // Nothing here is personalised beyond the interests you picked, nothing is
 // tracked, and there is no "more".
 import { localChange } from "../local-change.js";
-import { el, showToast, reportError, getPrefs, setPrefs } from "../ui.js";
+import { el, showToast, reportError, getPrefs, setPrefs, openSheet } from "../ui.js";
 import { store, api } from "../store.js";
 import { pickDrift } from "../model/drift-pick.js";
 import { LIBRARY, INTERESTS } from "../model/drift-library.js";
@@ -193,6 +193,22 @@ function card({ id, label, tone, title, hint, reveal }) {
   return node;
 }
 
+// What Drift draws from, changed right here (the same choice as Settings).
+async function tune() {
+  const { interestsBlock } = await import("./settings.js");
+  openSheet({
+    title: "What pulls you in",
+    lead: "Up to five. Drift picks its facts and prompts from these. Saved to your account.",
+    form: false,
+    body: [interestsBlock()],
+    actions: [{ label: "Done", kind: "btn-primary" }],
+  });
+}
+function topicsLine() {
+  const picked = (store.student?.interests || []).map((t) => LIBRARY_TAG[t] || t);
+  return el("p", { class: "drift-topics faint" }, [picked.length ? `Drawing from ${picked.slice(0, 3).join(", ")}${picked.length > 3 ? ` and ${picked.length - 3} more` : ""}. ` : "Drawing from everything. ", el("button", { type: "button", class: "link-btn", id: "drift-tune", text: picked.length ? "Change" : "Choose topics", onClick: tune })]);
+}
+
 // "2 of 3 today · the door closes in 9 h 12 min"
 function renderProgress() {
   const box = root.querySelector(".drift-progress");
@@ -302,6 +318,7 @@ export function show() {
         el("h1", { text: "Recover, discover, return." }),
         el("p", { class: "s-sub", text: "Three small things for today. No feed, nothing to scroll — when they're done, the door closes until midnight." }),
         el("p", { class: "drift-progress", role: "status" }),
+        topicsLine(),
       ]),
     ]),
     el("div", { class: "drift-row" }, [

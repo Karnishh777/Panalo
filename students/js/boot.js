@@ -37,6 +37,7 @@
   try {
     var prefs = JSON.parse(localStorage.getItem("panalo.students.prefs") || "{}") || {};
     if (prefs.reduceMotion) root.setAttribute("data-motion", "reduce");
+    if (prefs.textSize && prefs.textSize !== "normal") root.setAttribute("data-text", prefs.textSize);
     if (FONTS[prefs.look]) look = prefs.look;
   } catch (e) {}
   root.setAttribute("data-look", look);

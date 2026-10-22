@@ -1,7 +1,7 @@
 // Settings: motion, the Study Room, your interests, your password.
 import { el, showToast, getPrefs, setPrefs, reportError } from "../ui.js";
 import { withBusy } from "../../../src/util.js";
-import { store, api } from "../store.js";
+import { store, api, emit } from "../store.js";
 import { INTERESTS } from "../model/drift-library.js";
 import { supabaseClient } from "../../../src/client.js";
 import { rewrapPrivateKey } from "../../../src/encryption.js";
@@ -19,7 +19,30 @@ function toggle(label, hint, checked, onChange) {
   return el("label", { class: "setting" }, [el("span", {}, [el("b", { text: label }), el("small", { text: hint })]), box]);
 }
 
-function interestsBlock() {
+// Display: the size of text, and the clock's format. They apply at once
+// everywhere (shell.js applyDisplayPrefs) and follow you to other devices.
+function displayBlock() {
+  const p = getPrefs();
+  const applied = () => document.dispatchEvent(new CustomEvent("panalo:prefs"));
+  const sizes = [["small", "Smaller"], ["normal", "Normal"], ["large", "Larger"], ["larger", "Largest"]];
+  const cur = sizes.some(([v]) => v === p.textSize) ? p.textSize : "normal";
+  const seg = el("div", { class: "seg text-size", role: "radiogroup", "aria-label": "Text size" },
+    sizes.map(([v, label]) => el("button", { type: "button", role: "radio", class: "seg-btn", "aria-checked": String(cur === v), text: label, onClick: (e) => {
+      setPrefs({ textSize: v });
+      seg.querySelectorAll(".seg-btn").forEach((b) => b.setAttribute("aria-checked", String(b === e.currentTarget)));
+      applied();
+    } })));
+  return [
+    el("div", { class: "setting" }, [el("span", {}, [el("b", { text: "Text size" }), el("small", { text: "Everything in Panalo, larger or smaller." })]), seg]),
+    toggle("12-hour clock", "Show times as 2:05 pm instead of 14:05.", !!p.clock12, (on) => {
+      setPrefs({ clock12: on });
+      applied();
+      emit("any");
+    }),
+  ];
+}
+
+export function interestsBlock() {
   const chosen = new Set(store.student?.interests || []);
   const wrap = el("div", { class: "chips" });
   const draw = () =>
@@ -112,6 +135,10 @@ export function show() {
             })
           : null,
         el("button", { type: "button", class: "btn btn-quiet btn-sm", text: "Watch your universe begin again", onClick: () => ctx.replayBirth() }),
+      ]),
+      el("section", { class: "panel tone-time" }, [
+        el("div", { class: "panel-head" }, [el("h2", { text: "Display" }), el("button", { type: "button", class: "link-btn", id: "show-shortcuts", text: "Keyboard shortcuts", onClick: () => import("../shell.js").then((m) => m.openShortcuts()) })]),
+        ...displayBlock(),
       ]),
       el("section", { class: "panel tone-drift" }, [el("div", { class: "panel-head" }, [el("h2", { text: "What pulls you in" })]), el("p", { class: "muted", text: "Drift picks its facts and prompts from these. Saved to your account." }), interestsBlock()]),
       el("section", { class: "panel tone-signal" }, [el("div", { class: "panel-head" }, [el("h2", { text: "Password" })]), passwordBlock()]),

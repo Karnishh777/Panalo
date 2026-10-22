@@ -10,6 +10,7 @@ import * as D from "../students/js/model/daily.js";
 import * as C from "../students/js/model/chronicle.js";
 import { parseQuickAdd } from "../students/js/model/quick-add.js";
 import { countdowns } from "../students/js/model/timeline.js";
+import { toIcs, icsStamp, icsText } from "../students/js/model/ics.js";
 import { relTime, formatMinutes, startOfWeek, dayKey, parseDayKey, MINUTE, HOUR, DAY } from "../students/js/model/time.js";
 
 let passed = 0;
@@ -298,6 +299,24 @@ ok("anything else is just bytes", T_("application/zip", "a.zip") === "applicatio
   const cd = countdowns(exams, NOW);
   ok("countdowns list upcoming exams only, soonest first", cd.length === 2 && cd[0].title === "Chemistry" && cd[1].title === "Physics");
   ok("…in whole days", cd[0].days === 2 && cd[1].days === 12);
+}
+
+// ---- Calendar file (.ics) ---------------------------------------------------------------
+{
+  ok("ics: a UTC stamp", icsStamp(Date.UTC(2026, 9, 21, 9, 5, 7)) === "20261021T090507Z");
+  ok("ics: reserved characters escaped", icsText("Lab, room 4; bring\\notes\nnow") === "Lab\\, room 4\\; bring\\\\notes\\nnow");
+  const cls = { id: "c1", title: "Physics, lab", kind: "class", starts_at: new Date(Date.UTC(2026, 9, 5, 4, 0)).toISOString(), ends_at: new Date(Date.UTC(2026, 9, 5, 5, 0)).toISOString(), repeat_weekly: true, location: "Room 4" };
+  const exam = { id: "e1", title: "Chemistry exam", kind: "exam", starts_at: new Date(Date.UTC(2026, 9, 20, 3, 30)).toISOString(), ends_at: null, repeat_weekly: false };
+  const ics = toIcs([cls, exam], [{ id: "t1", title: "Essay", due_at: new Date(Date.UTC(2026, 9, 12, 18, 29)).toISOString() }, { id: "t2", title: "Done one", due_at: new Date().toISOString(), done_at: new Date().toISOString() }], Date.UTC(2026, 9, 1));
+  const lines = ics.split("\r\n");
+  ok("ics: wraps everything in a calendar", lines[0] === "BEGIN:VCALENDAR" && lines.at(-2) === "END:VCALENDAR" && ics.endsWith("\r\n"));
+  ok("ics: an entry per event and open dated task", lines.filter((l) => l === "BEGIN:VEVENT").length === 3);
+  ok("ics: a weekly class repeats weekly", ics.includes("RRULE:FREQ=WEEKLY") && ics.includes("SUMMARY:Physics\\, lab") && ics.includes("LOCATION:Room 4"));
+  ok("ics: an entry without an end lasts an hour", ics.includes("DTSTART:20261020T033000Z") && ics.includes("DTEND:20261020T043000Z"));
+  ok("ics: a task's deadline, not a done task", ics.includes("SUMMARY:Due: Essay") && !ics.includes("Done one"));
+  ok("ics: no line longer than 75 octets", lines.every((l) => new TextEncoder().encode(l).length <= 75));
+  const long = toIcs([{ id: "x", title: "A".repeat(200), kind: "event", starts_at: new Date().toISOString() }], [], 0);
+  ok("ics: long lines fold and unfold back", long.split("\r\n").every((l) => new TextEncoder().encode(l).length <= 75) && long.replace(/\r\n /g, "").includes(`SUMMARY:${"A".repeat(200)}`));
 }
 
 console.log(`\n${passed} passed, ${failures.length} failed`);
