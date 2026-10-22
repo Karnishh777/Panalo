@@ -273,14 +273,15 @@ PIN. A user on two devices effectively has two different apps.
 
 ## 9. Panalo Students (`students/`) 🟡
 
-- **Moderation is reports in a table.** Blocking and reporting work (phase
-  16), but reports are only readable in the dashboard; there is no reviewer
-  UI, no suspension, and nobody is notified when one arrives.
+- **Moderation needs someone looking.** Blocking, reporting and a moderator
+  page with notes, message removal and suspensions all work (phases 16 and
+  20), but nobody is notified when a report arrives.
 - **No verified roles.** A "class" is a group whose hosts are whoever made
   it. There is no teacher verification, no school accounts, no parent view.
-- **Age is self-declared.** Sign-up asks people to confirm they are 13 or
-  over; nothing checks it, and there is no parental-consent flow. The
-  privacy page says so and tells operators to check what applies to them.
+- **Age is self-declared.** Sign-up asks for a month and year of birth;
+  under-13s are refused and 13–17s wait for a parent's approval, enforced
+  by the database (phase 22). Nothing verifies the date itself, or that
+  the person approving is really a parent.
 - **Archive files are not end-to-end encrypted.** They live in a private
   bucket guarded by Storage policies; the server can read them. Shared files
   are readable by everyone in the conversation, including people added later.

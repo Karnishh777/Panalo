@@ -32,7 +32,6 @@ import { reducedMotion, animationLoop } from "./motion.js";
 import { surfaceFor, paint, thresholdFor, TW, TH } from "./world-surface.js";
 import { getLight, onLight, lightVector } from "./world-light.js";
 import { deviceTier } from "./device-tier.js";
-import { gradeFor } from "./cinema/grades.js";
 import { loadEarth, earthLevels } from "./earth.js";
 import { globePoint, spinToFace } from "./globe-math.js";
 
@@ -66,6 +65,7 @@ uniform vec2 uOffset;        // where the planet's centre is (0 = the middle)
 // The real Earth (js/earth.js): on, how far its land has risen (as the
 // threshold 1 - rise), and how many of its city lights are on.
 uniform float uEarth, uEarthT, uLightsF;
+uniform float uGrid;          // the gilded universe's golden net and terminator
 float gPx;                   // one pixel, in planet radii (set in main)
 // A sky behind the world (the cinema looks): stars in three depths, which
 // part for the camera (parallax, CSS px) and streak in a warp.
@@ -469,6 +469,28 @@ vec3 sky() {
   return s * (1.0 + 1.5 * uWarp);
 }
 
+// The gilded universe (a place Verse slips into) sees the world wrapped in
+// a fine golden net every 15 degrees, the terminator -- where day turns to
+// night -- drawn as a line of gold.
+vec3 instrument(vec3 n, vec3 L) {
+  vec3 f = toPlanet(n);
+  float latD = degrees(asin(clamp(f.y, -1.0, 1.0)));
+  float lonD = degrees(atan(f.x, f.z) + uRot);
+  float grid = 0.0;
+#ifdef GL_OES_standard_derivatives
+  float wl = fwidth(latD), wo = fwidth(lonD);
+  float gl = 1.0 - smoothstep(0.0, wl * 1.4, abs(fract(latD / 15.0 + 0.5) - 0.5) * 15.0);
+  // Meridians fade where they crowd together at the poles (and vanish at
+  // the one place atan wraps, where the derivative jumps).
+  float go = (1.0 - smoothstep(0.0, wo * 1.4, abs(fract(lonD / 15.0 + 0.5) - 0.5) * 15.0)) * (1.0 - smoothstep(1.2, 3.0, wo));
+  grid = max(gl, go);
+#endif
+  float term = exp(-abs(dot(n, L)) * 70.0);
+  // Seen up close (a horizon filling the screen), the lines step back.
+  grid *= clamp(gPx * 400.0, 0.3, 1.0);
+  return vec3(1.0, 0.8, 0.42) * (grid * 0.065 + term * 0.16);
+}
+
 void main() {
   vec2 p = (vec2(vP.x * uAspect, vP.y) - uOffset) * uExtent;
   float px = 2.0 * uExtent / uRes.y;             // one pixel, in planet radii
@@ -522,6 +544,7 @@ void main() {
     vec3 ext = exp(-BETA * od * 0.14);
     planet.rgb = planet.rgb * ext + scatter(od, dot(n, L), L) * 0.16 * planet.a;
     planet.rgb += aurora(n) * planet.a;
+    if (uGrid > 0.0) planet.rgb += instrument(n, L) * uGrid * planet.a;
   }
 
   // Ring: where this pixel's ray crosses the ring plane. Many fine bands,
@@ -654,6 +677,10 @@ void main() {
 //   style 3  noir (another universe, glimpsed in Verse): black and white,
 //            hard contrast, heavy screen.
 //   style 4  8-bit (another universe): big pixels, a tiny palette.
+//   style 6  filmed, as a universe Verse slips into: Glass's world as
+//            rendered, kept on the composite path like every other slip.
+//   style 5  gilded (another universe): night deep bronze, day ivory-gold,
+//            a trace of the true colour, gold where it glows.
 const COMPOSITE = `
 precision mediump float;
 varying vec2 vP;
@@ -661,10 +688,6 @@ uniform sampler2D uTex;
 uniform sampler2D uBloom;
 uniform float uBloomK;
 uniform float uStyle;
-uniform float uGradeOn;          // a colourist's grade (cinema/grades.js)
-uniform vec3 uLift, uGamma, uGain;
-uniform float uSat;
-uniform float uHalation;         // film's red glow round the brightest light
 uniform vec2 uPx;      // one pixel, in uv
 uniform float uDot;    // halftone / LED cell, in pixels
 float lum(vec3 c) { return dot(c, vec3(0.299, 0.587, 0.114)); }
@@ -731,7 +754,15 @@ void main() {
     float ink = edges(uv, 1.5);
     c = vec3(v * (1.0 - ink));
     a = max(a, ink * step(0.05, s.a));
-  } else if (uStyle > 3.5) {
+  } else if (uStyle > 4.5 && uStyle < 5.5) {
+    // Gilded.
+    vec3 g = a > 0.001 ? c / a : vec3(0.0);
+    float l = lum(g);
+    vec3 duo = mix(mix(vec3(0.0), vec3(0.3, 0.21, 0.07), smoothstep(0.0, 0.32, l)), vec3(1.0, 0.94, 0.76), smoothstep(0.28, 0.95, l));
+    float glow = clamp((g.r - g.b) * 2.2 - 0.55, 0.0, 1.0) * smoothstep(0.1, 0.4, l);
+    g = mix(duo, g, 0.24) + vec3(1.0, 0.78, 0.32) * glow * 0.35;
+    c = clamp(g, 0.0, 1.0) * a;
+  } else if (uStyle > 3.5 && uStyle < 4.5) {
     // 8-bit.
     float big = uDot * 1.6;
     vec2 centre = (floor(gl_FragCoord.xy / big) + 0.5) * big;
@@ -739,23 +770,6 @@ void main() {
     c = floor(m.rgb * 4.0 + 0.5) / 4.0;
     a = step(0.3, m.a);
     c *= a;
-  }
-  if (uHalation > 0.0) {
-    // Halation: light that went through the film, bounced off its base and
-    // came back red -- a warm glow hugging every highlight.
-    vec3 hb = texture2D(uBloom, uv).rgb;
-    float hl = max(hb.r, max(hb.g, hb.b));
-    vec3 halo = vec3(1.0, 0.32, 0.12) * hl * uHalation;
-    c += halo * (1.0 - c);
-    a = max(a, min(1.0, max(halo.r, max(halo.g, halo.b))));
-  }
-  if (uGradeOn > 0.5) {
-    // Lift, gamma, gain per channel, then saturation -- on straight colour.
-    vec3 g = a > 0.001 ? c / a : vec3(0.0);
-    g = g * uGain + uLift * (1.0 - g);
-    g = pow(max(g, 0.0), 1.0 / uGamma);
-    g = mix(vec3(lum(g)), g, uSat);
-    c = clamp(g, 0.0, 1.0) * a;
   }
   c = min(c, vec3(a));
   gl_FragColor = vec4(c, a);
@@ -904,11 +918,23 @@ export function createGlobeGL(canvas, { seed, tilt = 0.38, interactive = false, 
   const low = deviceTier().tier === "low";
   const wantBloom = bloom ?? !low;
   // Each look sees the world its own way (in the composite pass), so the
-  // passes exist wherever that might be wanted -- not in the film, whose
-  // own grade does the work. Verse is drawn as a comic, and now and then
-  // the world slips into another universe's style for a moment.
+  // passes exist wherever that might be wanted -- not in the film, which
+  // asks for none. Verse is drawn as a comic, and now and then the world
+  // slips into another universe's style for a moment.
   const styleOk = bloom !== false;
   const STYLE = { glass: 0, verse: 1, signal: 2 };
+  // Verse slips through every universe in turn -- each one once before any
+  // comes round again: Glass's filmed world, Signal's LEDs, and three that
+  // only Verse visits (gilded, noir, 8-bit).
+  const UNIVERSES = [6, 2, 5, 3, 4];
+  let deck = [];
+  const nextUniverse = (last) => {
+    if (!deck.length) {
+      deck = UNIVERSES.slice().sort(() => Math.random() - 0.5);
+      if (deck[0] === last) deck.push(deck.shift());
+    }
+    return deck.shift();
+  };
   let slip = null; // { style, until }
   const styleNow = (t) => {
     if (!styleOk) return 0;
@@ -930,7 +956,7 @@ export function createGlobeGL(canvas, { seed, tilt = 0.38, interactive = false, 
     gl.vertexAttribPointer(0, 2, gl.FLOAT, false, 0, 0);
     const U = (n) => gl.getUniformLocation(prog, n);
     u = {};
-    for (const name of ["uExtent", "uAspect", "uRot", "uCloudShift", "uTime", "uTilt", "uSea", "uAtmo", "uAurora", "uCloudCover", "uRing", "uForest", "uGlow", "uNight", "uLight", "uRingN", "uMoon", "uMoonVal", "uRes", "uOffset", "uStars", "uWarp", "uDpr", "uStarPar", "uWarpC", "uEarth", "uEarthT", "uLightsF"]) u[name] = U(name);
+    for (const name of ["uExtent", "uAspect", "uRot", "uCloudShift", "uTime", "uTilt", "uSea", "uAtmo", "uAurora", "uCloudCover", "uRing", "uForest", "uGlow", "uNight", "uLight", "uRingN", "uMoon", "uMoonVal", "uRes", "uOffset", "uStars", "uWarp", "uDpr", "uStarPar", "uWarpC", "uEarth", "uEarthT", "uLightsF", "uGrid"]) u[name] = U(name);
     ["uHeight", "uLights", "uClouds", "uMoist", "uNoise"].forEach((name, i) => gl.uniform1i(U(name), i + 1));
     post = null;
     if (wantBloom || styleOk) {
@@ -944,7 +970,7 @@ export function createGlobeGL(canvas, { seed, tilt = 0.38, interactive = false, 
         post = {
           bright: mk(BRIGHT, ["uTex", "uTexel"]),
           blur: mk(BLUR, ["uTex", "uDir"]),
-          comp: mk(COMPOSITE, ["uTex", "uBloom", "uBloomK", "uStyle", "uPx", "uDot", "uGradeOn", "uLift", "uGamma", "uGain", "uSat", "uHalation"]),
+          comp: mk(COMPOSITE, ["uTex", "uBloom", "uBloomK", "uStyle", "uPx", "uDot"]),
           scene: null, a: null, b: null,
         };
       } catch (e) {
@@ -1150,9 +1176,7 @@ export function createGlobeGL(canvas, { seed, tilt = 0.38, interactive = false, 
     if (destroyed || lost) return;
     size();
     const style = styleNow(t);
-    // The cinema looks grade the world like a film (cinema/grades.js).
-    const grade = styleOk ? gradeFor(document.documentElement.dataset.look) : null;
-    const bloomNow = post && ready && (wantBloom || style || grade) && targetsFor(canvas.width, canvas.height);
+    const bloomNow = post && ready && (wantBloom || style) && targetsFor(canvas.width, canvas.height);
     gl.bindFramebuffer(gl.FRAMEBUFFER, bloomNow ? post.scene.fb : null);
     gl.viewport(0, 0, canvas.width, canvas.height);
     gl.clearColor(0, 0, 0, 0);
@@ -1173,6 +1197,7 @@ export function createGlobeGL(canvas, { seed, tilt = 0.38, interactive = false, 
     gl.uniform1f(u.uEarth, earthOn ? 1 : 0);
     gl.uniform1f(u.uEarthT, lv.rise > 0 ? 1 - lv.rise : 2); // none risen: none at all
     gl.uniform1f(u.uLightsF, lv.lit);
+    gl.uniform1f(u.uGrid, style === 5 ? 1 : 0);
     gl.uniform1f(u.uStars, skyOn.stars || 0);
     gl.uniform1f(u.uWarp, skyOn.warp || 0);
     gl.uniform1f(u.uDpr, cssW ? canvas.width / cssW : 1);
@@ -1213,14 +1238,6 @@ export function createGlobeGL(canvas, { seed, tilt = 0.38, interactive = false, 
       gl.uniform1i(comp.loc.uBloom, 7);
       gl.uniform1f(comp.loc.uBloomK, wantBloom ? 0.7 : 0);
       gl.uniform1f(comp.loc.uStyle, style);
-      gl.uniform1f(comp.loc.uGradeOn, grade ? 1 : 0);
-      if (grade) {
-        gl.uniform3fv(comp.loc.uLift, grade.lift);
-        gl.uniform3fv(comp.loc.uGamma, grade.gamma);
-        gl.uniform3fv(comp.loc.uGain, grade.gain);
-        gl.uniform1f(comp.loc.uSat, grade.sat);
-      }
-      gl.uniform1f(comp.loc.uHalation, grade?.halation || 0);
       gl.uniform2f(comp.loc.uPx, 1 / canvas.width, 1 / canvas.height);
       gl.uniform1f(comp.loc.uDot, Math.max(4, Math.round(canvas.width / (style === 2 ? 64 : 90))));
     });
@@ -1255,7 +1272,7 @@ export function createGlobeGL(canvas, { seed, tilt = 0.38, interactive = false, 
     if (comicNow() && !reducedMotion()) {
       if (!slip) slip = { style: 1, until: 0, next: t + 6000 + Math.random() * 5000 };
       if (t > slip.next) {
-        slip = { style: [2, 3, 4][Math.floor(Math.random() * 3)], until: t + 450, next: t + 7000 + Math.random() * 6000 };
+        slip = { style: nextUniverse(slip.style), until: t + 650, next: t + 6500 + Math.random() * 5500 };
         canvas.dispatchEvent(new CustomEvent("universe-slip", { bubbles: true, detail: { style: slip.style } }));
       }
     }
