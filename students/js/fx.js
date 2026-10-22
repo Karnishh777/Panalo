@@ -10,9 +10,11 @@
 //     only exist while something is drawing on them;
 //   - no full-screen flash is brighter than a soft white, or repeats faster
 //     than once a second (photosensitivity).
-import { reducedMotion, animationLoop } from "./motion.js";
+import { reducedMotion, animationLoop, lively } from "./motion.js";
 
-export const calm = () => reducedMotion() || document.body.dataset.view === "study";
+// Calm: reduced motion, the Study Room, or simply Panalo's default (effects
+// are a choice -- Settings, Display).
+export const calm = () => reducedMotion() || !lively() || document.body.dataset.view === "study";
 
 // The hand-drawn action language (speed lines, punches, impact frames, ink
 // ribbons) belongs to the Verse look, which is a comic. Glass and Signal are

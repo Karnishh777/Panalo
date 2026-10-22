@@ -13,7 +13,7 @@ import { buildWorld } from "./model/world-model.js";
 import { newMoments } from "./model/chronicle.js";
 import { reducedMotion } from "./motion.js";
 import { impactFrame } from "./fx.js";
-import { loadTimer } from "./timer-state.js";
+import { focusing } from "./focus-shield.js";
 import { state } from "../../src/state.js";
 import { DAY } from "./model/time.js";
 
@@ -24,8 +24,8 @@ function busy() {
   if (showing || document.hidden) return true;
   if (document.querySelector("dialog[open], .dawn, .story, .timelapse")) return true;
   if (document.body.classList.contains("in-birth")) return true;
-  // A focus block is sacred: celebrate after it.
-  if (document.body.dataset.view === "study" && loadTimer().phase === "focus") return true;
+  // A focus block is sacred, wherever you are: celebrate after it.
+  if (focusing()) return true;
   return false;
 }
 

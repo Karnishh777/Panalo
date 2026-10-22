@@ -1,0 +1,73 @@
+# Every pull request, and every push to main, runs every test the project
+# has -- the same commands a contributor runs by hand:
+#   lint                 real mistakes only (tools/lint)
+#   unit + model tests   tests/*.test.mjs, pure functions
+#   migrations           every supabase-*.sql replayed on real Postgres
+#                        (PGlite), probed as signed-in users through RLS
+#   supabase-all.sql     still the exact concatenation of the phases
+#   browser QA           Panalo Chat and Panalo Students in Chromium against
+#                        a mock Supabase (requests to real Supabase are
+#                        aborted, so nothing here can touch production)
+# Nothing here needs a secret.
+name: Tests
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: tests-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  checks:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Install test tools
+        run: |
+          npm ci --prefix tools/lint --no-audit --no-fund
+          npm ci --prefix tools/sqltest --no-audit --no-fund
+
+      - name: Lint
+        run: tools/lint/node_modules/.bin/eslint -c tools/lint/eslint.config.mjs --no-config-lookup students/js src crypto.js sw.js tools/qa
+
+      - name: Unit, model and migration tests
+        run: |
+          for t in tests/*.test.mjs; do
+            echo "::group::$t"
+            node "$t" || { echo "::error::$t failed"; exit 1; }
+            echo "::endgroup::"
+          done
+
+      - name: supabase-all.sql is up to date
+        run: node tools/build-supabase-all.mjs --check
+
+  browser:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Install Playwright and Chromium
+        run: |
+          npm ci --prefix tools/qa --no-audit --no-fund
+          tools/qa/node_modules/.bin/playwright install --with-deps chromium
+
+      - name: Panalo Chat
+        run: node tools/qa/smoke.mjs
+
+      - name: Panalo Students
+        run: node tools/qa/students.mjs

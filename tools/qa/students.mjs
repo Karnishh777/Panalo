@@ -209,7 +209,11 @@ try {
   await finishBirth(page);
   check("you can log in with your username", await page.isVisible("#app"));
   check("Now shows the day orbit", await page.isVisible(".orbit-svg"));
-  check("Now shows live unread signals", /unread signal/.test(await page.textContent(".s-sub")));
+  check("Now shows who's waiting, in Signals (not in the headline)", (await page.locator(".now-log .pulse-count").count()) > 0 && !/unread/.test(await page.textContent(".s-sub")));
+  check("Now leads with the next step, one tap from a focus block", (await page.isVisible(".now-step")) && /Next step/.test(await page.textContent(".now-step")));
+  check("Panalo is calm by default: no drifting decoration", (await page.evaluate(() => document.documentElement.dataset.effects)) === "calm" && !(await page.isVisible(".fx-ambient")));
+  const order = await page.evaluate(() => [...document.querySelectorAll(".now-log .panel-head h2")].map((h) => h.textContent));
+  check("the work comes before the messages on Now", order.indexOf("Due soon") > -1 && order.indexOf("Due soon") < order.indexOf("Signals"));
   await shot(page, "now");
 
   await go(page, "#/study");
@@ -221,6 +225,18 @@ try {
   await page.click("#study-start");
   await page.waitForTimeout(400);
   check("the focus timer starts", await page.isVisible("#study-pause"));
+  // The focus shield: elsewhere in the app, the block still comes first.
+  await go(page, "#/now");
+  const shield = await page.evaluate(() => ({
+    focusing: document.documentElement.classList.contains("focusing"),
+    line: ((l) => (l && getComputedStyle(l).display !== "none" ? l.textContent : ""))(document.querySelector(".focus-line")),
+    badge: [...document.querySelectorAll(".bar-nav .pulse-count[data-unread]")].some((b) => !b.hidden && getComputedStyle(b).display !== "none"),
+    step: document.querySelector(".now-step")?.textContent || "",
+  }));
+  check("while focusing, other pages show one quiet line back to the block", shield.focusing && /Focusing on Physics/.test(shield.line) && /min left/.test(shield.line));
+  check("…and no unread counts call for attention", !shield.badge);
+  check("…and Now's next step is the block itself", /Focusing/.test(shield.step) && /Back to it/.test(shield.step));
+  await go(page, "#/study");
   // Pretend 26 minutes passed: the timer is timestamps, so moving them back
   // is exactly what a closed laptop looks like.
   await page.evaluate(() => {
@@ -466,6 +482,14 @@ try {
   await page.evaluate(() => (location.hash = "#/settings"));
   await page.waitForTimeout(900);
   check("Settings offers the three looks, with yours chosen", (await page.locator(".settings-look .look-opt").count()) === 3 && (await page.isChecked(".settings-look .look-opt-verse input")));
+  const livelyBox = page.locator("label.setting", { hasText: "Lively effects" }).locator("input");
+  check("Lively effects are off until you turn them on", !(await livelyBox.isChecked()));
+  await livelyBox.check();
+  await page.waitForTimeout(300);
+  check("turning on lively effects applies at once", (await page.evaluate(() => document.documentElement.dataset.effects)) === "lively");
+  await livelyBox.uncheck();
+  await page.waitForTimeout(300);
+  check("and turning them off makes Panalo still again", (await page.evaluate(() => document.documentElement.dataset.effects)) === "calm");
   await page.evaluate(() => (location.hash = "#/now"));
   await page.waitForTimeout(900);
   check("Verse lays Now out in orbit (the log's panels around the world)", await page.evaluate(() => getComputedStyle(document.querySelector(".now-log")).display === "contents"));

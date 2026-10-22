@@ -52,9 +52,25 @@ landing ──► the crossing (sign in / sign up) ──► first time? the bir
   that decode as they arrive. All of it steps aside for reduced motion. `#login`
   and `#signup` open the crossing; `#join=CODE` remembers an invite through
   sign-in.
+- **Calm by default; your work first.** Panalo is a place to get work done,
+  so nothing moves on its own unless you ask: drifting petals, press
+  bursts, counting numbers, Verse's spray, glitches and slips are
+  Settings → Display → **Lively effects** (off by default; `data-effects`
+  on `<html>`, `js/motion.js` `lively()`). The top of Now is always the
+  **next step** — the running block, else the task due soonest, else a
+  25-minute start — one button away from focusing; "Due soon" comes before
+  Signals.
+- **The focus shield** (`js/focus-shield.js`): while a focus block runs,
+  wherever you are in the app, unread counts are hidden, nothing
+  celebrates and no dawn or weekly story plays, and one quiet line under
+  the bar says what you're on and how long is left, linking back to the
+  Study Room. A paused block isn't shielded.
+- **Starts offline**: the service worker (`../sw.js`, registered from
+  `js/main.js`) keeps the app, its fonts and the libraries it loads from
+  CDNs, so a second visit opens without a connection.
 - **Moderation** (`#/moderate`): reports and data requests for moderators;
   a passphrase door for anyone else (HOSTING.md → Moderation).
-- **Looks** (`js/looks.js`, `css/looks.css`): four complete ways the whole
+- **Looks** (`js/looks.js`, `css/looks.css`): three complete ways the whole
   app (and the landing) looks and moves, chosen from the Look button in the
   top bar or on the landing, from Warp ("Look: …"), or in Settings, where
   it's your default. It's a preference, so it follows you to every device;
@@ -262,13 +278,19 @@ Every rule above is replayed against real Postgres in
 ## Testing
 
 ```sh
+npm ci --prefix tools/lint && npm ci --prefix tools/sqltest && npm ci --prefix tools/qa
+tools/lint/node_modules/.bin/eslint -c tools/lint/eslint.config.mjs --no-config-lookup students/js src crypto.js sw.js tools/qa
 node tests/students-model.test.mjs   # world, timeline, timer, drift, safe types
-node tests/migrations.test.mjs       # phase 16 RLS, against real Postgres
+node tests/migrations.test.mjs       # every phase's RLS, against real Postgres
 node tools/qa/students.mjs           # the whole app in Chromium, against the mock
+node tools/build-supabase-all.mjs --check
 ```
+
+All of these run on every pull request and every push to `main`
+(`.github/workflows/tests.yml`).
 
 ## Not done yet (see LIMITATIONS.md §9)
 
-Moderator UI for reports · verified teacher/school roles · parental consent ·
-push notifications and an offline shell for Students · end-to-end encrypted
-archive · per-project storage quota · Yearbook-style letters that unlock later.
+Verified teacher/school roles · push notifications (Web Push) · moderator
+alerts outside the app · end-to-end encrypted archive · per-project storage
+quota · Yearbook-style letters that unlock later.

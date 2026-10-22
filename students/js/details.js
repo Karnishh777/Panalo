@@ -14,11 +14,11 @@
 //
 // None of it runs with reduced motion; nothing is a reward loop -- it is
 // only the app answering what you did.
-import { reducedMotion } from "./motion.js";
+import { lively } from "./motion.js";
 import { el } from "./ui.js";
 
 const look = () => document.documentElement.dataset.look || "glass";
-const still = () => reducedMotion();
+const still = () => !lively();
 const quiet = () => document.body.dataset.view === "study";
 
 let stops = [];

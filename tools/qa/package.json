@@ -1,0 +1,9 @@
+{
+  "name": "panalo-qa",
+  "private": true,
+  "type": "module",
+  "description": "Browser QA (dev-only): Playwright drives the real UI against a mock Supabase. See README.md.",
+  "dependencies": {
+    "playwright": "1.56.1"
+  }
+}

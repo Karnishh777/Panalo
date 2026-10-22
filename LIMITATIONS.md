@@ -233,21 +233,26 @@ PIN. A user on two devices effectively has two different apps.
   and it covers one user at a time.
 - **Verification against the live project is manual.** Nothing repeatable
   signs in to the real deployment.
-- **No CI.** Nothing runs the tests on push.
+- **CI runs on every pull request** (`.github/workflows/tests.yml`): lint,
+  every `tests/*.test.mjs` (the migration replay included), the
+  `supabase-all.sql` freshness check, and both browser suites. It still
+  tests against the mock, not the live project.
 - **Migrations are hand-run.** Thirteen SQL files pasted into a dashboard, with
   no migration table and no record of what has been applied. This caused the
   worst bug of the first audit (phase 7 committed, never run) and, later,
   phase 13 moving a helper that two trigger bodies still called by name,
   which stopped anyone adding a second person to a chat until phase 14. The
-  replay test now catches that class of mistake; nothing records what
-  production has actually run.
-- **No backups.** The free plan has none. A bad migration is unrecoverable.
+  replay test now catches that class of mistake. Since October 2026 every
+  phase is recorded in Supabase's migration history (phases 22–26 were
+  recorded after being run by hand), but the files are still pasted or
+  applied one at a time, not by a migration tool.
+- **Backups are weekly and encrypted** (`keep-alive-and-backup.yml`), once
+  its two secrets are set. Anything between backups can be lost.
 - **No staging environment.** Every SQL change goes straight to production.
-- **No privacy policy or terms pages.** The landing page states plainly what
-  encryption does and doesn't cover, but there is no legal text, no age
-  statement and no parental-consent flow. For an audience of students and
-  teenagers (DPDP in India, COPPA in the US) that is a launch blocker, not a
-  UI task.
+- **Legal text has not been reviewed by a lawyer.** Students has a privacy
+  notice and rules (`students/privacy.html`, `students/rules.html`), an
+  age gate and a parent's-consent flow (phase 22), but they were written
+  against the law by an engineer, not checked by counsel.
 
 ---
 
@@ -275,7 +280,9 @@ PIN. A user on two devices effectively has two different apps.
 
 - **Moderation needs someone looking.** Blocking, reporting and a moderator
   page with notes, message removal and suspensions all work (phases 16 and
-  20), but nobody is notified when a report arrives.
+  20). A moderator sees the number of open reports in the account menu
+  while the app is open (checked every two minutes); nothing reaches them
+  when it's closed — no email or push.
 - **No verified roles.** A "class" is a group whose hosts are whoever made
   it. There is no teacher verification, no school accounts, no parent view.
 - **Age is self-declared.** Sign-up asks for a month and year of birth;
@@ -300,9 +307,12 @@ PIN. A user on two devices effectively has two different apps.
   users can fill Supabase's free 1 GB; with R2 bound the ceiling is 10 GB.
 - **Letting someone into a room shares the key to whoever the server says
   they are.** The same trust as adding a member by name in Panalo Chat.
-- **Students has no service worker.** It needs a connection to start, and
-  sends no notification when the app is closed. The focus-end notification
-  only works while the tab is open in the background.
+- **Students starts offline, but sends nothing when closed.** The service
+  worker keeps the app, its fonts and its CDN libraries after the first
+  visit, so it opens without a connection (showing what was last synced);
+  the very first visit still needs one. There is no Web Push: the
+  focus-end notification only works while the tab is open in the
+  background.
 - **Settings sync by "newest wins", not live.** Preferences, world lighting,
   today's Drift and a running timer are copied to the account (phase 21) and
   picked up on sign-in, when a tab comes back into view, and every two
@@ -327,16 +337,19 @@ PIN. A user on two devices effectively has two different apps.
   plays ungraded, with the world drawn by the 2D renderer. Phones with weak
   GPUs may drop frames; the film's clock follows the frames, so it slows
   rather than skips.
-- **Fonts and the QR library come from CDNs.** If they fail, the app falls
+- **Fonts and the QR library come from CDNs.** The service worker keeps
+  copies after the first visit; if a CDN fails before that, the app falls
   back to system fonts and shows the join code without a QR.
 
 ## Top five by real risk
 
 1. **Storage ceiling** — 1 GB on Supabase alone (10 GB with R2 bound), and
    attachments are the most-used feature.
-2. **Moderation depends on someone looking** — the tools exist, alerts don't.
+2. **Moderation depends on someone looking** — the tools and an in-app count
+   exist; alerts outside the app don't.
 3. **Calls unreliable** without TURN, on exactly the networks phones use.
-4. **No CI** — the tests exist but run by hand. Backups are weekly
-   (GitHub Action) once its two secrets are set.
+4. **Tests run against a mock** — CI runs every suite on each pull request,
+   but nothing signs in to the live project. Backups are weekly (GitHub
+   Action) once its two secrets are set.
 5. **Per-device state** — clearing browser data wipes every preference and PIN
    with no warning.

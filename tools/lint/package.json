@@ -1,0 +1,10 @@
+{
+  "name": "panalo-lint",
+  "private": true,
+  "type": "module",
+  "description": "Lint for the repo (no build step; dev-only). See eslint.config.mjs.",
+  "dependencies": {
+    "eslint": "9.39.5",
+    "globals": "15.15.0"
+  }
+}
