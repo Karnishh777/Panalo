@@ -106,32 +106,6 @@ html[data-look="signal"] .dock .nav-ink::before {
   bottom: 6px;
 }
 
-/* Odyssey: a line of light glides under the station. */
-html.has-ink[data-look="odyssey"] .bar-nav a[aria-current="page"]::after {
-  display: none;
-}
-html[data-look="odyssey"] .bar-nav .nav-ink::before {
-  left: 0;
-  right: 0;
-  bottom: 16px;
-  height: 1px;
-  background: #fff;
-  box-shadow: 0 0 10px rgba(255, 255, 255, 0.8);
-}
-html[data-look="odyssey"] .nav-ink.go::before {
-  animation: ink-flare 0.6s ease-out both;
-}
-@keyframes ink-flare {
-  40% { box-shadow: 0 0 18px 2px rgba(190, 215, 255, 0.95); transform: scaleX(1.3); }
-}
-html[data-look="odyssey"] .dock .nav-ink::before {
-  left: 20%;
-  right: 20%;
-  top: 0;
-  height: 2px;
-  background: #fff;
-  box-shadow: 0 0 12px rgba(255, 255, 255, 0.8);
-}
 
 /* Verse keeps its torn paper tab -- it slams onto the page it names. */
 html[data-look="verse"] .nav-ink {
@@ -211,35 +185,11 @@ html[data-look="verse"] .bar-nav a[aria-current="page"] {
   70% { opacity: 1; }
   to { transform: scale(1.15) rotate(8deg); opacity: 0; }
 }
-/* Odyssey: a lens ring, and an anamorphic streak across it. */
-.press-odyssey::before {
-  left: -26px;
-  top: -26px;
-  width: 52px;
-  height: 52px;
-  border-radius: 50%;
-  border: 1px solid rgba(220, 232, 255, 0.85);
-  animation: press-bloom 0.55s cubic-bezier(0.16, 1, 0.3, 1) both;
-}
-.press-odyssey::after {
-  left: -70px;
-  top: -0.5px;
-  width: 140px;
-  height: 1px;
-  background: linear-gradient(90deg, transparent, rgba(150, 190, 255, 0.9), transparent);
-  animation: press-streak 0.5s ease-out both;
-}
-@keyframes press-streak {
-  from { transform: scaleX(0.1); opacity: 1; }
-  to { transform: scaleX(1.3); opacity: 0; }
-}
 /* Something to hold, too: a press dips the button a little. */
-html[data-look="glass"] :is(.btn, .chip, .icon-btn):active,
-html[data-look="odyssey"] :is(.btn, .chip, .icon-btn):active {
+html[data-look="glass"] :is(.btn, .chip, .icon-btn):active {
   transform: scale(0.965);
 }
-html[data-look="glass"] :is(.btn, .chip, .icon-btn),
-html[data-look="odyssey"] :is(.btn, .chip, .icon-btn) {
+html[data-look="glass"] :is(.btn, .chip, .icon-btn) {
   transition: transform 0.25s var(--spring), background 0.2s, box-shadow 0.2s, color 0.2s;
 }
 
@@ -343,32 +293,6 @@ html[data-look="odyssey"] :is(.btn, .chip, .icon-btn) {
   80% { opacity: 1; }
   100% { transform: rotate(-8deg) scale(1) translateY(-6px); opacity: 0; }
 }
-/* Odyssey: a streak of light, away to the stars. */
-.done-odyssey .done-ring {
-  border-width: 1px;
-  border-color: rgba(230, 238, 255, 0.9);
-}
-.done-odyssey .done-bit {
-  width: 3px;
-  height: 3px;
-  box-shadow: 0 0 6px 1px rgba(200, 220, 255, 0.9);
-}
-.done-streak {
-  position: absolute;
-  left: 0;
-  top: 0;
-  width: 160px;
-  height: 1.5px;
-  transform-origin: 0 50%;
-  rotate: -32deg;
-  background: linear-gradient(90deg, rgba(255, 255, 255, 0.95), rgba(150, 190, 255, 0.5) 40%, transparent);
-  animation: done-streak 0.9s cubic-bezier(0.2, 0.7, 0.2, 1) both;
-}
-@keyframes done-streak {
-  from { transform: scaleX(0); opacity: 1; }
-  60% { opacity: 1; }
-  to { transform: scaleX(1) translateX(40px); opacity: 0; }
-}
 /* The Study Room: a quiet ring, nothing more. */
 .done-quiet .done-ring {
   border-width: 1px;
@@ -386,12 +310,6 @@ html[data-look="glass"] .num-rolling {
 html[data-look="signal"] .num-rolling {
   color: var(--red);
 }
-html[data-look="odyssey"] .num-landed {
-  animation: num-glow 0.6s ease-out;
-}
-@keyframes num-glow {
-  30% { text-shadow: 0 0 16px rgba(220, 232, 255, 0.9); }
-}
 html[data-look="verse"] .num-landed {
   display: inline-block;
   animation: num-pop 0.36s steps(3);
@@ -403,12 +321,10 @@ html[data-look="verse"] .num-landed {
 /* ===== Cards lean towards the pointer ======================================= */
 
 @media (hover: hover) and (pointer: fine) {
-  html[data-look="glass"] :is(.drift-card, .look-opt, .systems li),
-  html[data-look="odyssey"] :is(.drift-card, .look-opt, .systems li) {
+  html[data-look="glass"] :is(.drift-card, .look-opt, .systems li) {
     transition: transform 0.45s var(--glide);
   }
-  html[data-look="glass"] .leaning,
-  html[data-look="odyssey"] .leaning {
+  html[data-look="glass"] .leaning {
     transform: perspective(900px) rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg)) translateY(-2px);
     transition-duration: 0.12s;
   }
@@ -416,7 +332,7 @@ html[data-look="verse"] .num-landed {
 
 /* ===== Panels arrive as you scroll ========================================== */
 /* Only panels that start below the fold (js/details.js marks them), so
-   nothing on screen ever fades back. Odyssey has its own (cinema.css).
+   nothing on screen ever fades back.
    Not in the Study Room. */
 
 @supports (animation-timeline: view()) {
@@ -504,19 +420,6 @@ html[data-look="verse"] .toast::after {
   50% { opacity: 1; transform: scale(1.08) rotate(1deg); }
   100% { transform: scale(1) rotate(-1deg); }
 }
-/* Odyssey: a subtitle -- black, italic, fading up. */
-html[data-look="odyssey"] .toast {
-  background: rgba(0, 0, 0, 0.92);
-  border: 0;
-  border-radius: 4px;
-  text-align: center;
-  font: italic 400 19px/1.3 "Cormorant Garamond", Georgia, serif;
-  color: #f2f5ff;
-  animation: toast-odyssey 0.7s ease-out both;
-}
-@keyframes toast-odyssey {
-  from { opacity: 0; transform: translateY(8px); letter-spacing: 0.04em; }
-}
 
 /* ===== Waiting for a page =================================================== */
 
@@ -546,13 +449,6 @@ html[data-look="verse"] .loading-line {
 html[data-look="verse"] .loading-line::after {
   background: repeating-linear-gradient(-45deg, var(--hot) 0 6px, var(--cyan) 6px 12px);
   animation-timing-function: steps(8);
-}
-html[data-look="odyssey"] .loading-line {
-  height: 1px;
-}
-html[data-look="odyssey"] .loading-line::after {
-  background: linear-gradient(90deg, transparent, #fff, transparent);
-  box-shadow: 0 0 10px rgba(255, 255, 255, 0.7);
 }
 
 /* ===== How far down the page you are ====================================== */
@@ -638,9 +534,3 @@ html[data-motion="reduce"] :is(.surface .panel, .toast, .clock-colon, .bar-nav a
   animation: none !important;
 }
 
-/* Odyssey: notices sit above the letterbox's subtitle, never on it. */
-@media (min-width: 900px) {
-  html[data-look="odyssey"] #toast-container {
-    bottom: calc(var(--cap-h, 62px) + 18px);
-  }
-}

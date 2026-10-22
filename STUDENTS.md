@@ -77,33 +77,9 @@ landing ──► the crossing (sign in / sign up) ──► first time? the bir
     the dark; lettered sound effects and speed lines on actions; the world
     printed as a comic (cel bands, halftone, ink, misregistration),
     animated on twos, and now and then slipping for a moment into another
-    universe's style (Signal, noir, 8-bit) with a label saying which.
-  - **Odyssey** (cinema; for powerful screens): one continuous camera
-    through space. The app sits on a stage (`js/cinema/odyssey.js`,
-    `css/cinema.css`): one GPU canvas draws your world and a three-depth
-    starfield together, framed by the camera (`setFrame`/`setSky` on the
-    world renderer), with a sun and its anamorphic flare. Every page is a
-    station: where the page has a dial of the day (Now, Calendar) your world
-    sits exactly inside it; elsewhere it's a horizon, a wall of world, or
-    far and small (the Study Room), each lit from its own side. Going
-    somewhere flies the camera there (eased, the light swinging round, the
-    stars streaking, a slight bank, the letterbox squeezing). Subtitles
-    narrate the page from your data in words ("Next: Chemistry, in forty
-    minutes."); a first visit (once a session) plays its chapter card.
-    Cormorant Garamond, Syncopate and Manrope. One fixed grade,
-    large-format film (`js/cinema/grades.js`), applied on the GPU.
-    Built to stay smooth: one animation loop drives the camera, the world
-    and the stars in the same frame (no CSS transitions to lag behind);
-    panels are solid deep glass (no backdrop blur over a moving scene);
-    effects are transforms and opacity only; the resolution adapts to the
-    frame rate within a second; mid-range devices draw every other frame
-    while nothing moves; a world hidden by a look stops drawing.
-  Cinema looks have an engine each (`js/cinema/index.js` downloads and
-  starts the one for your look while the app is open, and stops it when
-  you switch or sign out); the other looks pay nothing for them.
-  Everything that moves stands still with reduced motion; the Study Room
-  stays quiet in every look.
-- **Section features** (`css/features.css`):
+    universe's style -- Glass's filmed world, Signal's LEDs, gilded, noir or
+    8-bit, each once before any comes round again -- with a label saying
+    which.
   - Now: **Capture** a task in one line under the greeting ("Chemistry
     worksheet fri" -- the date is read from the words, `model/quick-add.js`);
     a ▶ on each task in Due soon starts a focus block on it
@@ -133,24 +109,21 @@ landing ──► the crossing (sign in / sign up) ──► first time? the bir
 - **Living details** (`js/details.js`, `css/details.css`), each in the
   look's own language, none with reduced motion:
   - the nav's marker glides to where you're going (a glass pane with a
-    sheen in Glass, a red dot that stretches into a dash in Signal, a
-    line of light in Odyssey; Verse's torn tab slams into place), on
+    sheen in Glass, a red dot that stretches into a dash in Signal;
+    Verse's torn tab slams into place), on
     the phone dock too;
   - a press answers where your finger landed (a bloom of light, a ring
-    of LEDs, a comic burst, a lens ring with an anamorphic streak);
+    of LEDs, a comic burst);
   - ticking a task off plays a moment at the box (motes of light,
-    scattering pixels, a lettered DONE!, a streak towards the stars) --
+    scattering pixels, a lettered DONE!) --
     only a quiet ring in the Study Room;
   - numbers count up when a page arrives and roll when they change;
-  - cards lean towards the pointer (Glass, Odyssey);
+  - cards lean towards the pointer (Glass);
   - panels below the fold rise in as you scroll to them (never one
     already on screen); a line under the bar shows how far down the page
     you are;
   - notices and loading lines in each look's style (a speech balloon in
-    Verse, an LED strip in Signal, a subtitle in Odyssey); Signal's
-    clock colon blinks; Odyssey's letterbox carries telemetry (your
-    world and its day, the station and the ship's clock) and its
-    subtitles type on.
+    Verse, an LED strip in Signal); Signal's clock colon blinks.
 - **Details and phones** (`css/phone.css`, loaded last, for every look):
   one 16 px rhythm between panels on phones; a page's actions grouped the
   way a thumb reaches them (Calendar's Day/Week, day stepper and + in one

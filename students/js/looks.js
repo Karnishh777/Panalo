@@ -4,9 +4,6 @@
 //           world; serif headlines; light that catches edges. Calm, premium.
 //   signal  Signal -- pure black, dot-matrix numerals, one red, a strict grid
 //           of rounded tiles. Bold, precise, playful.
-//   odyssey Odyssey -- the cinema: one continuous camera through space. The
-//           app is a single shot; every page is a station the camera flies
-//           to (js/cinema/odyssey.js). Letterboxed, subtitled, filmed.
 //   verse   Verse -- the special one: your day laid out in orbit around your
 //           world, drawn like a comic book torn between universes. Halftone,
 //           offset-print misregistration, ink, caption boxes, glitches,
@@ -30,12 +27,6 @@ export const LOOKS = [
     name: "Signal",
     line: "Black, dot-matrix, one red.",
     fonts: "family=Doto:wght@600..900&family=Space+Grotesk:wght@400..700&family=Space+Mono:wght@400;700",
-  },
-  {
-    id: "odyssey",
-    name: "Odyssey",
-    line: "One continuous camera through space. For powerful screens.",
-    fonts: "family=Cormorant+Garamond:ital,wght@0,300;0,500;1,300;1,400&family=Syncopate:wght@400;700&family=Manrope:wght@400;500;600;700",
   },
   {
     id: "verse",
@@ -202,7 +193,7 @@ export function initLooks() {
   const rifts = el("div", { class: "verse-rifts", "aria-hidden": "true" }, [el("i"), el("i"), el("i"), el("i")]);
   document.body.prepend(rifts);
   initSpray();
-  const UNIVERSES = { 2: "U-00 · SIGNAL", 3: "U-1940 · NOIR", 4: "U-8 · 8-BIT" };
+  const UNIVERSES = { 6: "U-1 · GLASS", 2: "U-00 · SIGNAL", 5: "U-77 · GILDED", 3: "U-1940 · NOIR", 4: "U-8 · 8-BIT" };
   document.addEventListener("universe-slip", (e) => {
     const c = e.target;
     if (!(c instanceof HTMLCanvasElement) || !c.isConnected) return;

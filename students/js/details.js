@@ -142,7 +142,6 @@ function taskDone() {
         fx.append(p);
       }
       if (kind === "verse") fx.append(el("b", { class: "done-word", text: "DONE!" }));
-      if (kind === "odyssey") fx.append(el("i", { class: "done-streak" }));
     }
     document.body.append(fx);
     setTimeout(() => fx.remove(), 1300);
@@ -292,7 +291,7 @@ function lean() {
     if (raf) return;
     raf = requestAnimationFrame(() => {
       raf = 0;
-      const t = still() || !["glass", "odyssey"].includes(look()) ? null : last.target.closest?.(LEANS);
+      const t = still() || look() !== "glass" ? null : last.target.closest?.(LEANS);
       if (t !== card) reset();
       if (!t) return;
       card = t;

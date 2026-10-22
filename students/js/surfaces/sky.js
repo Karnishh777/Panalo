@@ -27,6 +27,17 @@ function hash(s) {
   return (h >>> 0) / 4294967296;
 }
 
+// The look's own colour for a kind of conversation (its CSS token), so the
+// sky takes each look's palette; these are the fallbacks.
+function toneColor(tone) {
+  try {
+    const v = getComputedStyle(document.documentElement).getPropertyValue(`--${String(tone).replace("tone-", "")}`).trim();
+    if (v) return v;
+  } catch {
+    /* no styles yet */
+  }
+  return TONE_COLOR[tone] || "#b59cff";
+}
 const TONE_COLOR = {
   "tone-signal": "#b59cff",
   "tone-drift": "#ff9ec4",
@@ -50,7 +61,7 @@ export function skyMap({ conversations, contexts, contextOf, titleOf, isOnline, 
   // A field of faint background stars and a band of light across it.
   const defs = svg("defs", {}, [
     svg("radialGradient", { id: "sky-band", cx: "50%", cy: "50%", r: "60%" }, [
-      svg("stop", { offset: "0", "stop-color": "#2a2350", "stop-opacity": "0.55" }),
+      svg("stop", { offset: "0", style: "stop-color: var(--sky-band, #2a2350)", "stop-opacity": "0.55" }),
       svg("stop", { offset: "1", "stop-color": "#05070d", "stop-opacity": "0" }),
     ]),
     svg("filter", { id: "sky-glow", x: "-50%", y: "-50%", width: "200%", height: "200%" }, [svg("feGaussianBlur", { stdDeviation: "3" })]),
@@ -77,7 +88,7 @@ export function skyMap({ conversations, contexts, contextOf, titleOf, isOnline, 
   const now = Date.now();
   groups.forEach((g, gi) => {
     const [gx, gy] = centres[gi];
-    const color = TONE_COLOR[g.ctx.tone] || "#b59cff";
+    const color = toneColor(g.ctx.tone);
     // Brightest (most recent) first: the figure is drawn from it.
     const items = [...g.items].sort((a, b) => Date.parse(b.lastAt || b.created_at || 0) - Date.parse(a.lastAt || a.created_at || 0));
     const pts = items.map((c) => {

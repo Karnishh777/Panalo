@@ -41,7 +41,7 @@
 
 /* No single word left alone on a line: headings balance, text wraps
    with care. */
-:is(h1, h2, h3, .ody-chapter b) {
+:is(h1, h2, h3) {
   text-wrap: balance;
 }
 :is(p, li, dd, .s-sub) {
