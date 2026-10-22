@@ -1059,8 +1059,60 @@ async function examQualityTests() {
   ok("nobody else can mark your blocks", theirs === 0);
 }
 
+// Phase 27: friends on the globe.
+async function placesTests() {
+  const db = await freshDb();
+  const me = await createUser(db, "p_me");
+  const friend = await createUser(db, "p_friend");
+  const other = await createUser(db, "p_other");
+  const grouped = await createUser(db, "p_group");
+  await startDirect(db, me, friend);
+  await startDirect(db, me, other);
+  await startGroup(db, me, [grouped]);
+  const up = (u, sql, args = []) => attempt(db, u, (tx) => tx.query(sql, args));
+  const seen = async (u) => as(db, u, async (tx) => (await tx.query("select user_id, city from student_places")).rows);
+
+  await as(db, me, (tx) => tx.query("insert into student_places (city, region, country, lat, lon) values ('Chennai', 'Tamil Nadu', 'India', 13.09, 80.28)"));
+  ok("your place is yours to see", (await seen(me)).length === 1);
+  ok("nobody sees it until you choose them", (await seen(friend)).length === 0 && (await seen(other)).length === 0);
+  await as(db, me, (tx) => tx.query("insert into student_place_viewers (viewer_id) values ($1)", [friend]));
+  ok("a chosen friend sees your city", (await seen(friend)).some((r) => r.city === "Chennai"));
+  ok("…and nobody else does", (await seen(other)).length === 0);
+  ok("only people from a one-to-one chat can be chosen", !(await up(me, "insert into student_place_viewers (viewer_id) values ($1)", [grouped])).ok);
+  ok("nobody can add themselves as a viewer", !(await up(other, "insert into student_place_viewers (owner_id, viewer_id) values ($1, $2)", [me, other])).ok);
+  const theirList = await as(db, friend, async (tx) => (await tx.query("select count(*)::int as n from student_place_viewers")).rows[0].n);
+  ok("the viewer list is private to its owner", theirList === 0);
+  ok("nobody can write a place for you", !(await up(other, "insert into student_places (user_id, city, lat, lon) values ($1, 'Fake', 0, 0)", [me])).ok);
+  const moved = await as(db, other, async (tx) => (await tx.query("update student_places set city = 'Elsewhere' where user_id = $1 returning 1", [me])).rows.length);
+  ok("nobody can move your place", moved === 0);
+  ok("coordinates are a city's, to two decimals", (await db.query("select lat::text from student_places")).rows[0].lat === "13.09");
+
+  await db.query("insert into blocks (blocker_id, blocked_id) values ($1, $2)", [friend, me]);
+  ok("blocking hides it, either way round", (await seen(friend)).length === 0);
+  await db.query("delete from blocks");
+  ok("…and unblocking brings it back", (await seen(friend)).length === 1);
+
+  await as(db, me, (tx) => tx.query("update student_places set expires_at = now() + interval '24 hours'"));
+  ok("a 24-hour share is visible meanwhile", (await seen(friend)).length === 1);
+  ok("shares last a week at most", !(await up(me, "update student_places set expires_at = now() + interval '30 days'")).ok);
+  await db.query("update student_places set expires_at = now() - interval '1 minute'");
+  ok("an expired place disappears for friends", (await seen(friend)).length === 0);
+  ok("expired places are erased", (await db.query("select private.purge_expired_places() as n")).rows[0].n === 1 && (await seen(me)).length === 0);
+
+  await as(db, me, (tx) => tx.query("insert into student_places (city, lat, lon) values ('Chennai', 13.09, 80.28)"));
+  await db.query("delete from conversation_participants where user_id = $1", [friend]);
+  ok("leaving the chat hides it", (await seen(friend)).length === 0);
+  await as(db, me, (tx) => tx.query("delete from student_places"));
+  ok("turning it off removes it", (await seen(me)).length === 0);
+
+  const year = new Date().getFullYear();
+  const teen = await createUser(db, "p_teen");
+  await as(db, teen, (tx) => tx.query("select set_my_birth($1, 1)", [year - 15]));
+  ok("a student waiting for a parent can't share a place yet", !(await up(teen, "insert into student_places (city, lat, lon) values ('Pune', 18.53, 73.85)")).ok);
+}
+
 async function main() {
-  const sections = [migrationTests, chatTests, takeoverTests, callTests, accountTests, backfillTests, historyTests, disappearTests, studentsTests, moderationTests, deviceStateTests, consentTests, logTests, dailyTests, usernameLoginTests, examQualityTests];
+  const sections = [migrationTests, chatTests, takeoverTests, callTests, accountTests, backfillTests, historyTests, disappearTests, studentsTests, moderationTests, deviceStateTests, consentTests, logTests, dailyTests, usernameLoginTests, examQualityTests, placesTests];
   for (const run of sections) {
     try {
       await run();

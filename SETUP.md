@@ -86,6 +86,7 @@ For each: **SQL Editor → New query** → paste the whole file → **Run**.
 | 22 | [`supabase-phase24.sql`](supabase-phase24.sql) | The day as a ritual: one private entry per day (first open, intention, mood and energy, one thing learned, one good thing). Powers the dawn, closing the day and the journal | No |
 | 23 | [`supabase-phase25.sql`](supabase-phase25.sql) | Log in with your username: the email comes back only with the right password (so nobody can look yours up); 10 wrong tries per username per hour, kept a day | No |
 | 24 | [`supabase-phase26.sql`](supabase-phase26.sql) | An Exam kind for the calendar (countdowns on Now), and how deep a focus block went (scattered, okay, deep) | No |
+| 25 | [`supabase-phase27.sql`](supabase-phase27.sql) | Friends on the globe: a city you pick by hand, shown only to people you choose from your one-to-one chats, until you turn it off, for 7 days or for 24 hours; expired places erased hourly | No |
 
 Phase 8 is self-contained and re-applies everything phase 7 does, so running 8
 is enough if you are starting fresh. Run 7 anyway if you prefer the history to
