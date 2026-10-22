@@ -906,7 +906,12 @@
       async signUp({ email, password, options }) {
         await ready;
         await sleep(250);
-        if (authUsers.some((x) => x.email.toLowerCase() === String(email).toLowerCase())) {
+        const known = authUsers.find((x) => x.email.toLowerCase() === String(email).toLowerCase());
+        if (known) {
+          // As Supabase does: with email confirmation on, an address that
+          // already has a confirmed account "succeeds" with no identities and
+          // no email; with it off, it's an error.
+          if (QA.confirmEmail && !pendingOtp.has(known.email.toLowerCase())) return { data: { user: { id: uuid(), email, identities: [] }, session: null }, error: null };
           return { data: { user: null, session: null }, error: { message: "User already registered" } };
         }
         const username = options?.data?.username || email.split("@")[0];
@@ -920,7 +925,7 @@
         db.profiles.push(prof);
         if (QA.confirmEmail) {
           pendingOtp.set(email.toLowerCase(), u);
-          return { data: { user: { id: u.id, email }, session: null }, error: null };
+          return { data: { user: { id: u.id, email, identities: [{ provider: "email" }] }, session: null }, error: null };
         }
         const s = makeSession(u);
         setSession(s, "SIGNED_IN");

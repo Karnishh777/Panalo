@@ -15,6 +15,7 @@ import { reducedMotion, animationLoop } from "./motion.js";
 import { glSupported, createGlobeGL } from "./world-gl.js";
 import { TW, UW, UH, TAU, mix, surfaces, surfaceFor, paint } from "./world-surface.js";
 import { getLight, onLight, lightVector } from "./world-light.js";
+import { earthPixels, paintEarth } from "./earth.js";
 
 /**
  * @param {HTMLCanvasElement} canvas
@@ -52,7 +53,11 @@ function createGlobe2D(canvas, { seed, tilt = 0.38, interactive = false, maxDisk
   let surface = surfaces.get(String(seed || "panalo")) || null;
   let layers = { land: 0.2, lights: 0, aurora: 0, forest: 0.4, glow: 0, atmosphere: 0.4, clouds: 0.1, ring: 0 };
   let moons = [];
-  let painted = surface ? paint(surface, layers) : null;
+  // The real Earth (js/earth.js) once its maps have loaded; the generated
+  // planet until then, or if they can't.
+  let earth = null;
+  const repaint = () => (earth ? paintEarth(earth, layers) : surface ? paint(surface, layers) : null);
+  let painted = repaint();
   let destroyed = false;
   let rot = 0;
   let cloudShift = 0;
@@ -153,8 +158,9 @@ function createGlobe2D(canvas, { seed, tilt = 0.38, interactive = false, maxDisk
         const L = lights[k] * night * 255;
         r += L; g += L * 0.78; b += L * 0.42;
       }
-      // Clouds: a second texture drifting at its own speed.
-      if (cl > 0.09) {
+      // Clouds: a second texture drifting at its own speed (once it has
+      // been generated -- the Earth's maps can arrive first).
+      if (cl > 0.09 && surface) {
         let cu = Math.floor((((lon + cloudShift) / TAU) % 1 + 1) % 1 * TW);
         const c = surface.cloud[v * TW + cu];
         const cover = Math.max(0, Math.min(1, (c - (0.72 - cl * 0.55)) * 5));
@@ -329,17 +335,25 @@ function createGlobe2D(canvas, { seed, tilt = 0.38, interactive = false, maxDisk
     idle(() => {
       if (destroyed) return;
       surface = surfaceFor(seed);
-      painted = paint(surface, layers);
+      painted = repaint();
       redrawStill();
     }, { timeout: 800 });
   }
+  earthPixels()
+    .then((px) => {
+      if (destroyed) return;
+      earth = px;
+      painted = repaint();
+      redrawStill();
+    })
+    .catch(() => {});
 
   return {
     setLayers(next, nextMoons = moons) {
-      const repaint = ["land", "lights", "forest", "glow"].some((k) => next[k] !== layers[k]);
+      const changed = ["land", "lights", "forest", "glow", "earth", "cities"].some((k) => next[k] !== layers[k]);
       layers = { ...layers, ...next };
       moons = nextMoons || [];
-      if (repaint && surface) painted = paint(surface, layers);
+      if (changed && (surface || earth)) painted = repaint();
       redrawStill();
     },
     destroy() {

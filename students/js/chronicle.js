@@ -149,14 +149,14 @@ function slides(c, wk, d) {
   const after = worldAt(d, wk.end);
   const cBefore = el("canvas", { class: "story-globe", "aria-hidden": "true" });
   const cAfter = el("canvas", { class: "story-globe", "aria-hidden": "true" });
-  const landGain = Math.round((after.layers.land - before.layers.land) * 1000) / 10;
+  const landGain = Math.round(((after.layers.earth ?? after.layers.land) - (before.layers.earth ?? before.layers.land)) * 1000) / 10;
   const lights = after.stats.tasksDone - before.stats.tasksDone;
   let globes = [];
   out.push({
     node: el("div", { class: "slide tone-world" }, [
       el("p", { class: "kicker toned tone-world", text: "Your world" }),
       el("div", { class: "story-worlds" }, [el("figure", {}, [cBefore, el("figcaption", { class: "faint", text: "Monday" })]), el("span", { class: "story-arrow", "aria-hidden": "true", text: "→" }), el("figure", {}, [cAfter, el("figcaption", { class: "faint", text: "Sunday" })])]),
-      el("p", { class: "story-sub", text: [landGain > 0 ? `${landGain}% more land` : null, lights > 0 ? `${lights} new light${lights === 1 ? "" : "s"}` : null].filter(Boolean).join(" · ") || "Held steady. Nothing you built went anywhere." }),
+      el("p", { class: "story-sub", text: [landGain > 0 ? `${landGain}% more of Earth risen` : null, lights > 0 ? `${lights} new light${lights === 1 ? "" : "s"}` : null].filter(Boolean).join(" · ") || "Held steady. Nothing you built went anywhere." }),
     ]),
     enter: () => {
       if (globes.length) return;

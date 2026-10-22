@@ -1,7 +1,7 @@
 // Authentication, app bootstrap (initApp), the unlock screen, and session restore.
 import { supabaseClient, setRemember } from "./client.js";
 import { state, conversationKeys } from "./state.js";
-import { withBusy, showToast, redirectUrl, authErrorText } from "./util.js";
+import { withBusy, showToast, redirectUrl, authErrorText, alreadyRegistered, cleanCode } from "./util.js";
 import { loginEmail, looksLikeEmail } from "./login-id.js";
 import { ensureUserKeys, idbDelKey, idbGetKey, rewrapPrivateKey, clearKeyProblems } from "./encryption.js";
 import { clearAttachmentCache } from "./attachments.js";
@@ -208,6 +208,17 @@ export function initAuth() {
         return;
       }
 
+      if (alreadyRegistered(data)) {
+        // No code is coming: this address already has an account.
+        history.replaceState(null, "", "#login");
+        signupForm.classList.add("hidden");
+        loginForm.classList.remove("hidden");
+        document.getElementById("login-email").value = email;
+        document.getElementById("signup-password").value = "";
+        setAuthMessage("That email already has a Panalo account, so no code was sent. Log in with your password, or use “Forgot password”.");
+        return;
+      }
+
       state.pendingSignupEmail = email;
       state.pendingSignupPassword = password;
       signupStep1.classList.add("hidden");
@@ -220,7 +231,7 @@ export function initAuth() {
   // Sign up (step 2: verify email OTP)
   verifyOtpBtn.addEventListener("click", () =>
     withBusy(verifyOtpBtn, "Verifying…", async () => {
-      const token = document.getElementById("otp-code-input").value.trim();
+      const token = cleanCode(document.getElementById("otp-code-input").value);
       // 6 to 10 digits, depending on the project's setting.
       if (!/^\d{6,10}$/.test(token)) {
         setAuthMessage("Enter the code from the email.");
@@ -236,7 +247,7 @@ export function initAuth() {
       });
 
       if (error) {
-        setAuthMessage(error.message);
+        setAuthMessage(authErrorText(error));
         return;
       }
       if (data.session) {

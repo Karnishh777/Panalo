@@ -793,6 +793,16 @@ try {
     await a.waitForTimeout(600);
     check("a password from a known data breach is refused", /data breach/.test(await a.textContent("#auth-message")) && !(await a.isVisible("#otp-form")));
     await a.fill("#signup-password", "a-long-enough-pass");
+    // An address that already has an account gets no code: say so, and
+    // send them to log in instead of waiting for an email that never comes.
+    await a.fill("#signup-email", "qa@panalo.test");
+    await a.click("#signup-submit");
+    await a.waitForSelector("#login-form:not([hidden])", { timeout: 5000 }).catch(() => {});
+    check("signing up with a registered email points to log in, not a code", (await a.isVisible("#login-form")) && !(await a.isVisible("#otp-form")) && /already has a Panalo account/.test(await a.textContent("#auth-message")) && (await a.inputValue("#login-email")) === "qa@panalo.test");
+    await a.evaluate(() => (location.hash = "#signup"));
+    await a.waitForSelector("#signup-form:not([hidden])", { timeout: 5000 }).catch(() => {});
+    await a.fill("#signup-email", "two@panalo.test");
+    await a.fill("#signup-password", "a-long-enough-pass");
     await a.click("#signup-submit");
     await a.waitForSelector("#otp-form:not([hidden])", { timeout: 5000 }).catch(() => {});
     check("with email confirmation on, sign-up asks for the code", await a.isVisible("#otp-form"));
@@ -807,10 +817,14 @@ try {
     await a.click("#otp-resend");
     await a.waitForTimeout(500);
     check("a new code can be sent", (await a.evaluate(() => window.__qa.resent || [])).includes("two@panalo.test"));
-    await a.fill("#otp-code", "123456");
+    await a.fill("#otp-code", "654321");
+    await a.click("#otp-submit");
+    await a.waitForTimeout(500);
+    check("a wrong code is explained plainly", /wrong or has expired/.test(await a.textContent("#auth-message")));
+    await a.fill("#otp-code", "123 456");
     await a.click("#otp-submit");
     await a.waitForSelector("#birth:not([hidden])", { timeout: 15000 }).catch(() => {});
-    check("the code leads into the birth of a universe", await a.isVisible("#birth"));
+    check("the code leads into the birth of a universe (pasted with a space)", await a.isVisible("#birth"));
     await a.close();
 
     const b = await qa.open({ viewport: "laptop", path: "students/#login" });
