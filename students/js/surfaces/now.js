@@ -28,6 +28,7 @@ let orbitSlot;
 let logEl;
 let greetEl;
 let subEl;
+let stepEl;
 let globe = null;
 let unsubs = [];
 let minuteTimer = null;
@@ -195,23 +196,7 @@ function renderLog() {
     ])
   );
 
-  // 3. Signals waiting.
-  const waiting = store.conversations.filter((c) => c.unread).slice(0, 4);
-  const doors = store.requests.length;
-  parts.push(
-    panel("tone-signal", "Signals", { href: "#/signals", label: "All signals" }, [
-      waiting.length
-        ? el(
-            "ul",
-            { class: "now-list" },
-            waiting.map((c) => el("li", {}, [el("a", { href: `#/signals/${c.id}` }, [el("span", { class: "sig-star pulsing", "aria-hidden": "true" }), el("b", { text: titleOf(c) }), el("span", { class: "muted ellipsis", text: c.preview || "" }), el("span", { class: "pulse-count", text: String(c.unread) })])]))
-          )
-        : el("p", { class: "muted", text: store.conversations.length ? "All quiet. Nobody's waiting on you." : "No conversations yet." }),
-      doors ? el("p", {}, [el("a", { href: "#/signals", text: `${doors} ${doors === 1 ? "person is" : "people are"} waiting at the door of a room you host.` })]) : null,
-    ])
-  );
-
-  // 4. Due soon.
+  // 3. Due soon: the work, before the messages.
   const due = store.tasks
     .filter((tk) => !tk.done_at && tk.due_at && Date.parse(tk.due_at) < now + 7 * DAY)
     .sort((a, b) => Date.parse(a.due_at) - Date.parse(b.due_at))
@@ -235,6 +220,22 @@ function renderLog() {
             })
           )
         : el("p", { class: "muted", text: "Nothing due in the next week." }),
+    ])
+  );
+
+  // 4. Signals waiting.
+  const waiting = store.conversations.filter((c) => c.unread).slice(0, 4);
+  const doors = store.requests.length;
+  parts.push(
+    panel("tone-signal", "Signals", { href: "#/signals", label: "All signals" }, [
+      waiting.length
+        ? el(
+            "ul",
+            { class: "now-list" },
+            waiting.map((c) => el("li", {}, [el("a", { href: `#/signals/${c.id}` }, [el("span", { class: "sig-star pulsing", "aria-hidden": "true" }), el("b", { text: titleOf(c) }), el("span", { class: "muted ellipsis", text: c.preview || "" }), el("span", { class: "pulse-count", text: String(c.unread) })])]))
+          )
+        : el("p", { class: "muted", text: store.conversations.length ? "All quiet. Nobody's waiting on you." : "No conversations yet." }),
+      doors ? el("p", {}, [el("a", { href: "#/signals", text: `${doors} ${doors === 1 ? "person is" : "people are"} waiting at the door of a room you host.` })]) : null,
     ])
   );
 
@@ -270,11 +271,33 @@ function renderLog() {
   const bits = [];
   if (current) bits.push(`${current.event.title} until ${clockTime(current.end)}.`);
   else if (next) bits.push(`${next.event.title} ${relTime(next.start.getTime(), now)}.`);
-  const unread = store.unreadTotal || 0;
-  if (unread) bits.push(`${unread} unread signal${unread === 1 ? "" : "s"}.`);
   bits.push(w.stats.focusMinutesToday ? `${formatMinutes(w.stats.focusMinutesToday)} of focus so far today.` : "No focus yet today.");
   subEl.textContent = bits.join(" ");
+  stepEl.replaceChildren(...nextStep(now));
   globe?.setLayers(w.layers, w.moons);
+}
+
+// The one thing Now is for: the next piece of work, one tap from starting.
+// A block already running comes first; then the task due soonest; then
+// the newest open task; with nothing to do, a plain focus block.
+function nextStep(now) {
+  const t = loadTimer();
+  if (t.phase === "focus") {
+    const task = t.taskId ? store.tasks.find((x) => x.id === t.taskId) : null;
+    return [el("span", { class: "step-label", text: t.status === "paused" ? "Paused" : "Focusing" }), el("b", { text: task?.title || t.subject || "your block" }), el("a", { class: "btn btn-primary btn-sm", href: "#/study", text: "Back to it" })];
+  }
+  const open = store.tasks.filter((tk) => !tk.done_at);
+  const pick =
+    open.filter((tk) => tk.due_at).sort((a, b) => Date.parse(a.due_at) - Date.parse(b.due_at))[0] ||
+    open.sort((a, b) => Date.parse(b.created_at || 0) - Date.parse(a.created_at || 0))[0];
+  if (!pick) return [el("span", { class: "step-label", text: "Next step" }), el("span", { class: "muted", text: "Nothing on your list." }), el("a", { class: "btn btn-primary btn-sm", href: "#/study/start-25", text: "Begin a 25-minute focus" })];
+  const due = pick.due_at ? (Date.parse(pick.due_at) < now ? ` · was due ${relTime(Date.parse(pick.due_at), now)}` : ` · due ${shortDate(pick.due_at)}`) : "";
+  return [
+    el("span", { class: "step-label", text: "Next step" }),
+    el("b", { text: pick.title }),
+    due ? el("span", { class: "muted", text: due }) : null,
+    el("a", { class: "btn btn-primary btn-sm", id: "now-step-go", href: `#/study/focus=${encodeURIComponent(pick.id)}`, text: "Focus on it" }),
+  ].filter(Boolean);
 }
 
 function render() {
@@ -288,11 +311,12 @@ export function mount(section, ctx) {
   root = el("div", { class: "now" });
   greetEl = el("h1");
   subEl = el("p", { class: "s-sub" });
+  stepEl = el("p", { class: "now-step", "aria-live": "polite" });
   const globeCanvas = el("canvas", { class: "orbit-world", role: "img", "aria-label": "Your world. Open World for what shapes it." });
   orbitSlot = el("a", { class: "orbit-wrap", href: "#/world", "aria-label": "Your day and your world" }, [globeCanvas]);
   logEl = el("div", { class: "now-log" });
   root.append(
-    el("div", { class: "s-head" }, [el("div", { class: "now-head" }, [el("p", { class: "kicker toned tone-time", text: longDate(new Date()) }), greetEl, subEl, captureForm()])]),
+    el("div", { class: "s-head" }, [el("div", { class: "now-head" }, [el("p", { class: "kicker toned tone-time", text: longDate(new Date()) }), greetEl, subEl, stepEl, captureForm()])]),
     el("div", { class: "now-grid" }, [el("div", { class: "now-instrument" }, [orbitSlot, el("p", { class: "orbit-legend faint" }, [legend("time", "classes & events"), legend("focus", "focus done"), legend("alert", "deadlines"), legend("hand", "now")])]), logEl])
   );
   section.append(root);

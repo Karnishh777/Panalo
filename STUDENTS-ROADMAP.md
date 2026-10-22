@@ -1,7 +1,7 @@
 # Panalo Students — review, reflection and roadmap
 
 *Written 22 October 2026, after PR #31 and the removal of the Odyssey
-look. Live at https://panalo-5dk.pages.dev/students/. This document looks
+look; updated the same day after the distraction-free round. Live at https://panalo-5dk.pages.dev/students/. This document looks
 back at what has been built, reflects honestly on how it was built, and
 sets out what comes next. ROADMAP.md is the original engineering roadmap
 for Panalo as a whole; LIMITATIONS.md lists what is known not to work.*
@@ -23,8 +23,9 @@ Cloudflare R2 for large files through one Pages Function, a GitHub Action
 for keep-alive and an encrypted weekly backup.
 
 **Size.** About 70 JavaScript modules (≈16,600 lines) and ≈9,800 lines of
-CSS in `students/`; 27 database phases; 31 merged pull requests since
-1 October 2026.
+CSS in `students/`; 27 database phases, all recorded in Supabase's
+migration history; 32 merged pull requests since 1 October 2026. Every
+suite below runs on every pull request (`.github/workflows/tests.yml`).
 
 **Tests.**
 
@@ -32,7 +33,7 @@ CSS in `students/`; 27 database phases; 31 merged pull requests since
 | --- | --- | --- |
 | `tests/migrations.test.mjs` | Every SQL phase replayed on real Postgres (PGlite), acting as signed-in users through RLS | 220 |
 | `tests/students-model.test.mjs` | Pure logic: world model, timeline, focus timer, daily, chronicle, quick-add, .ics, places, globe maths | 156 |
-| `tools/qa/students.mjs` | The whole app in a browser against a mock Supabase, every look, phone and laptop | 216 |
+| `tools/qa/students.mjs` | The whole app in a browser against a mock Supabase, every look, phone and laptop | 225 |
 | `tools/qa/smoke.mjs` | Panalo Chat end to end | all passing |
 | other `tests/*.test.mjs` | crypto, attachments, passwords, breach check, util, … | all passing |
 
@@ -97,13 +98,40 @@ CSS in `students/`; 27 database phases; 31 merged pull requests since
   until you turn it off, for 7 days or for 24 hours; names on the globe,
   Find turns the world to face them; enforced by the database.
 
-### This round (not yet merged at the time of writing)
+### Verse universes, Odyssey removed (PR #32)
 - Verse now slips through every universe in turn: Glass's filmed world,
   Signal's LEDs, gilded, noir and 8-bit, each once before any repeats.
 - The constellation map in Signals takes each look's own colours.
 - **Odyssey removed** at the owner's request, with the whole cinema engine
   behind it (`js/cinema/`, `css/cinema.css`, the film grade in the world
   renderer). A device that had Odyssey saved opens in Glass.
+
+### Distraction-free, and the clean-up (this round)
+- **Back to the main idea.** Panalo exists to help a student get their work
+  done, with the world as a quiet reflection of it. Over a month of
+  features that idea had been crowded out — see §3, item 8. This round:
+  - **Calm by default.** Nothing moves on its own unless you turn on
+    Settings → Display → *Lively effects*: no drifting petals, press
+    bursts, counting numbers, Verse spray, glitches, slips, twitching
+    titles, pulsing stars or blinking clock colon. Reduced motion still
+    wins over everything.
+  - **Now leads with the next step**: the running block, else the task due
+    soonest, else "Begin a 25-minute focus" — one button from focusing.
+    The unread count left the headline; "Due soon" now comes before
+    Signals.
+  - **The focus shield**: during a running block, anywhere in the app,
+    unread counts hide, nothing celebrates, the dawn and the weekly story
+    wait, and one quiet line under the bar says what you're on and how
+    long is left, linking back to the Study Room.
+- **CI**: lint, every unit and model test, the migration replay on real
+  Postgres, the `supabase-all.sql` check and both browser suites run on
+  every pull request.
+- **Migration history fixed**: phases 22–26 recorded in Supabase.
+- **Students starts offline**: the service worker now covers `/students/`,
+  its fonts and its CDN libraries.
+- **Leaked-password protection**: Supabase's switch needs the Pro plan, so
+  it stays off; the app's own check (Have I Been Pwned, k-anonymity) covers
+  sign-up and every password change. Only direct API calls skip it.
 
 ---
 
@@ -144,13 +172,22 @@ An honest look at the process, by the agent that did most of the work.
    instead. A real-device check by a person is still needed after each
    deploy.
 5. **Migrations were applied outside Supabase's migration history.**
-   Phases 22–26 are live but don't appear in `list_migrations`. It works,
-   but the history no longer tells the truth. *Fix:* record them (see §5).
+   Phases 22–26 were live but missing from `list_migrations`. *Fixed:*
+   recorded this round; apply future phases with `apply_migration`.
 6. **Documentation drifts.** LIMITATIONS.md §9 still said there was no
    moderation UI and no age check after both shipped (corrected in this
    round). *Fix:* update the limitations file in the same PR as the
    feature.
-7. **No CI.** Every suite above runs by hand. A broken test can merge.
+7. **No CI.** Every suite ran by hand, so a broken test could merge.
+   *Fixed:* `.github/workflows/tests.yml` runs them all on every PR.
+8. **The main idea got buried.** Each feature was reasonable on its own,
+   but together they pulled attention away from the work: Now opened on a
+   greeting, a dial and an unread count, with "Begin focus" in its third
+   panel; decorative motion ran everywhere by default; unread badges,
+   celebrations and the weekly story could interrupt a focus block; and a
+   block was protected only inside the Study Room. *Fixed* this round (see
+   §2). *Next time:* ask of every feature "does this help a student start
+   or finish their work?" — and make anything that doesn't opt-in.
 
 ---
 
@@ -158,32 +195,29 @@ An honest look at the process, by the agent that did most of the work.
 
 | # | Risk | Why it matters | Fix |
 | --- | --- | --- | --- |
-| 1 | No CI | A regression can merge unnoticed | GitHub Action running lint, unit, model, migration and QA suites on every PR |
 | 2 | Storage ceiling | 1 GB on Supabase (10 GB with R2) and files are the most used feature | Bind R2 everywhere, per-file size and type limits already exist; add a usage view for the operator |
-| 3 | Moderation needs someone looking | Reports arrive in a queue nobody is told about | Email or push the moderator when a report arrives |
+| 3 | Moderation needs someone looking | A moderator sees an open-report count only while the app is open | Email or push the moderator when a report arrives (needs custom SMTP or Web Push) |
 | 4 | Calls without TURN | Calls fail on many mobile networks | Turn on a TURN relay (Cloudflare Calls TURN or Twilio) |
-| 5 | Students has no service worker or push | No offline start, no reminders when the app is closed | Register the service worker for `/students/`, add Web Push for focus end, deadlines and messages |
-| 6 | Supabase leaked-password protection is off | The app checks, but the server would too | Turn it on in Authentication settings (one switch) |
-| 7 | Migration history incomplete | Phases 22–26 not recorded | Record them with `apply_migration` (idempotent) |
-| 8 | Fonts and the QR library from CDNs | A CDN failure degrades the look | Self-host the fonts the default look uses |
-| 9 | Accessibility not audited by a person | Screen-reader and keyboard paths were tested by script only | One session with NVDA/VoiceOver; fix what it finds |
+| 5 | Students has no push | No reminders when the app is closed | Web Push for focus end, deadlines and messages (needs VAPID keys and a sender) |
+| 6 | Supabase leaked-password protection is off | Its switch needs the Pro plan; direct API calls skip the app's own check | Keep the app's check; turn the switch on if the project moves to Pro |
+| 7 | Fonts and the QR library from CDNs | A CDN failure before the first visit degrades the look | Now cached by the service worker; self-host the default look's fonts later |
+| 8 | Accessibility not audited by a person | Screen-reader and keyboard paths were tested by script only | One session with NVDA/VoiceOver; fix what it finds |
+| 9 | Tests run against a mock | CI can't prove the live project's RLS or realtime | A nightly sign-in check against a staging project |
 | 10 | English only | Many students in India learn in Hindi, Tamil and others | Extract strings; Hindi first |
 
 ---
 
 ## 5. Planned next (the committed backlog)
 
-1. **Merge this round** — Verse universes, themed constellations, Odyssey
-   removed (one PR).
-2. **CI** — one workflow: lint, unit, model, migrations (PGlite), Students
-   QA and smoke (Playwright with its bundled Chromium).
-3. **Record migrations 22–26** in Supabase's history; turn on leaked-password
-   protection.
-4. **The logo** (asked for earlier: "we can do next").
-5. **Service worker and Web Push for Students** — start offline; a
-   notification when a focus block ends, a deadline nears, or a friend
-   writes (each opt-in, quiet hours respected, never streak pressure).
-6. **Update LIMITATIONS.md §9** in full against what now exists.
+Done this round: CI, migrations 22–26 recorded, offline start,
+LIMITATIONS refreshed, calm by default and the focus shield.
+
+1. **The logo** (asked for earlier: "we can do next").
+2. **Web Push for Students** — a notification when a focus block ends, a
+   deadline nears, or a friend writes (each opt-in, quiet hours respected,
+   silent during a focus block, never streak pressure). Needs VAPID keys
+   and a small sender (a Supabase Edge Function or Pages Function).
+3. **A real-device check** of calm mode and the focus shield on a phone.
 
 The old task "Cinema 2–8" (seven more cinematic looks) is **dropped**: it
 depended on the Odyssey engine, which is gone. If a fourth look is wanted
@@ -239,8 +273,8 @@ protected; the Study Room quiet.
 
 | When | Theme | Items | Done when |
 | --- | --- | --- | --- |
-| **Now** (this week) | Clean up | Merge this round; CI; record migrations 22–26; leaked-password protection on; LIMITATIONS §9 refreshed | Every PR runs all suites automatically; Supabase history lists every phase |
-| **Next** (2–4 weeks) | Identity and reach | Logo and app icon; service worker for Students; Web Push (opt-in); installable PWA | Students starts offline; a focus-end notification arrives with the tab closed |
+| **Done** (this week) | Clean up and focus | CI; migrations 22–26 recorded; LIMITATIONS refreshed; calm by default; next step on Now; focus shield; offline start | Every PR runs all suites automatically; nothing moves or interrupts unless asked |
+| **Next** (2–4 weeks) | Identity and reach | Logo and app icon; Web Push (opt-in); installable PWA | A focus-end notification arrives with the tab closed |
 | **Next** | Learning | Flashcards with spaced repetition; exam planner | A student can plan an exam and review cards from Now |
 | **Then** (1–2 months) | Together | Study rooms with presence; accountability pairs; places with notes and time zones | Two friends can focus together in a room and see each other's intention |
 | **Then** | Wellbeing | Break suggestions; sleep window; season mood view | Long sessions offer a break; the app goes quiet at night if asked |

@@ -165,6 +165,12 @@ initAuth({
     $("auth").hidden = false;
   },
 });
+// The service worker Panalo Chat uses (../sw.js): it keeps what the app is
+// made of, so Students starts without a connection too.
+if ("serviceWorker" in navigator && location.protocol.startsWith("http")) {
+  window.addEventListener("load", () => navigator.serviceWorker.register("../sw.js").catch(() => {}));
+}
+
 initLooks();
 initShell({ signOut, replayBirth: () => runBirth({ replay: true, onDone: () => {} }) });
 

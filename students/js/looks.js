@@ -13,7 +13,7 @@
 // boot.js applies it before the first paint (no flash of the wrong look);
 // this module switches it live, with a transition in the new look's style.
 import { getPrefs, setPrefs, el } from "./ui.js";
-import { reducedMotion } from "./motion.js";
+import { reducedMotion, lively } from "./motion.js";
 
 export const LOOKS = [
   {
@@ -211,7 +211,7 @@ export function initLooks() {
 
   // Verse: actions land with a lettered sound effect.
   document.addEventListener("click", (e) => {
-    if (document.documentElement.dataset.look !== "verse" || reducedMotion()) return;
+    if (document.documentElement.dataset.look !== "verse" || !lively()) return;
     if (document.body.dataset.view === "study") return; // the Study Room stays quiet
     const b = e.target.closest?.(".btn-primary, .btn-toned, .fx-cta");
     if (!b) return;
@@ -246,7 +246,7 @@ function initSpray() {
   let raf = 0;
   let last = null;
   const COLS = ["255,46,99", "41,240,255", "247,244,255"];
-  const on = () => document.documentElement.dataset.look === "verse" && !reducedMotion() && document.body.dataset.view !== "study" && document.body.classList.contains("in-app");
+  const on = () => document.documentElement.dataset.look === "verse" && lively() && document.body.dataset.view !== "study" && document.body.classList.contains("in-app");
   const fit = () => {
     const dpr = Math.min(1.5, window.devicePixelRatio || 1);
     canvas.width = Math.round(window.innerWidth * dpr);

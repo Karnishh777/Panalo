@@ -5,6 +5,14 @@ export function reducedMotion() {
   return document.documentElement.getAttribute("data-motion") === "reduce" || !!(query && query.matches);
 }
 
+// Whether decoration that moves on its own -- drifting petals, press bursts,
+// numbers that count up, spray paint, glitches -- is wanted. Panalo is calm
+// by default (Settings, Display: Effects); "lively" is a choice. Set on
+// <html> before the first paint (boot.js) and when preferences change.
+export function lively() {
+  return document.documentElement.getAttribute("data-effects") === "lively" && !reducedMotion();
+}
+
 // A requestAnimationFrame loop that stops itself while the tab is hidden
 // or the canvas is off screen, so nothing burns battery out of sight.
 export function animationLoop(canvas, draw) {

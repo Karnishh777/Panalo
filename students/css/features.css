@@ -830,3 +830,42 @@ html[data-motion="reduce"] .beacon-dot::after {
   .fg-me { flex-direction: column; align-items: stretch; }
   .fg-me-actions .btn { flex: 1; }
 }
+
+/* ===== Now: the next step ==================================================== */
+/* The one thing Now is for: the next piece of work, one tap from a focus
+   block on it. */
+.now-step {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px 12px;
+  max-width: 640px;
+  margin: 14px 0 0;
+  padding: 10px 12px 10px 16px;
+  border: 1px solid color-mix(in srgb, var(--focus) 35%, transparent);
+  border-radius: var(--r-2);
+  background: color-mix(in srgb, var(--focus) 6%, transparent);
+}
+.now-step:empty {
+  display: none;
+}
+.now-step .step-label {
+  font-size: 11.5px;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--focus);
+}
+.now-step b {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+.now-step .btn {
+  margin-left: auto;
+}
+@media (max-width: 560px) {
+  .now-step .btn {
+    width: 100%;
+    margin-left: 0;
+  }
+}

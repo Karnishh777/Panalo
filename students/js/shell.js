@@ -10,7 +10,8 @@ import { startPresence, stopPresence } from "../../src/presence.js";
 import { state } from "../../src/state.js";
 import { startInbox, stopInbox } from "./signals-data.js";
 import { settleTimer } from "./timer-state.js";
-import { reducedMotion } from "./motion.js";
+import { startFocusShield, stopFocusShield, focusing } from "./focus-shield.js";
+import { reducedMotion, lively } from "./motion.js";
 import { drift, punch, burstOn, calm, comic } from "./fx.js";
 import { enter, LOOKS, setLook } from "./looks.js";
 import { startDetails, stopDetails } from "./details.js";
@@ -59,7 +60,7 @@ const EXPRESSIVE = new Set(["now", "world", "drift"]);
 function arrive(name, section) {
   // Anything that follows the page you're on (js/details.js) hears it here.
   window.dispatchEvent(new CustomEvent("panalo:arrive", { detail: { name } }));
-  ambient?.setPaused(!EXPRESSIVE.has(name));
+  ambient?.setPaused(!EXPRESSIVE.has(name) || !lively());
   if (reducedMotion() || name === "study") return;
   enter(section);
   if (!EXPRESSIVE.has(name) || !comic()) return;
@@ -142,6 +143,8 @@ export function navigate(path) {
 export function applyDisplayPrefs() {
   const p = getPrefs();
   setClock12(p.clock12);
+  document.documentElement.setAttribute("data-effects", p.effects === "lively" ? "lively" : "calm");
+  ambient?.setPaused(!lively() || !EXPRESSIVE.has(document.body.dataset.view));
   const size = ["small", "large", "larger"].includes(p.textSize) ? p.textSize : null;
   if (size) document.documentElement.setAttribute("data-text", size);
   else document.documentElement.removeAttribute("data-text");
@@ -381,6 +384,7 @@ export async function enterShell({ firstTime = false, pendingJoin = null } = {})
   if (!wasActive) {
     // Petals and embers drifting behind everything (paused in the Study Room).
     if (!reducedMotion() && !ambient) {
+      // Made even when calm (paused), so choosing Lively starts it at once.
       const c = el("canvas", { class: "fx-ambient", "aria-hidden": "true" });
       $("app").prepend(c);
       ambient = drift(c, { count: 12, wind: 0.5 });
@@ -389,6 +393,7 @@ export async function enterShell({ firstTime = false, pendingJoin = null } = {})
     tickClock();
     clockTimer = setInterval(tickClock, 15000);
     startDetails();
+    startFocusShield();
     startPresence(state.currentUser);
     // Signals keeps the unread count live everywhere, so start it now.
     startInbox().catch((e) => console.error(e));
@@ -406,10 +411,14 @@ export async function enterShell({ firstTime = false, pendingJoin = null } = {})
   else await route();
   if (firstTime) showToast("Welcome to your universe. Press Warp (Ctrl K) to go anywhere.", "success");
   // The first open of each day: the dawn (the day a world is born, the
-  // film was enough; the open is still recorded).
-  await maybeDawn({ quiet: firstTime }).catch((e) => console.error(e));
-  // A new week: last week's chronicle, once.
-  if (!firstTime) await maybeChronicle().catch((e) => console.error(e));
+  // film was enough; the open is still recorded). A focus block running
+  // (started on another device, say) comes first: they wait for the next
+  // time the app comes into view after it.
+  if (!focusing()) {
+    await maybeDawn({ quiet: firstTime }).catch((e) => console.error(e));
+    // A new week: last week's chronicle, once.
+    if (!firstTime) await maybeChronicle().catch((e) => console.error(e));
+  }
   rulesReminder({ firstTime });
   // Discoveries reached since last time, then whenever something changes.
   checkMomentsSoon(firstTime ? 6000 : 900);
@@ -418,12 +427,13 @@ export async function enterShell({ firstTime = false, pendingJoin = null } = {})
 
 // Left open overnight: the next morning still gets its dawn.
 document.addEventListener("visibilitychange", () => {
-  if (active && !document.hidden && dawnDue()) maybeDawn().then(() => maybeChronicle()).catch((e) => console.error(e));
+  if (active && !document.hidden && !focusing() && dawnDue()) maybeDawn().then(() => maybeChronicle()).catch((e) => console.error(e));
 });
 
 export function leaveShell() {
   active = false;
   stopDetails();
+  stopFocusShield();
   clearInterval(clockTimer);
   clearInterval(settleTimerId);
   stopPresence();

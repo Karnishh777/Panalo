@@ -9,7 +9,7 @@
 // (even a background one). Notifications with the browser fully closed need Web
 // Push (VAPID keys + a server to push from) — see ROADMAP Phase 9.
 
-const CACHE = "panalo-shell-v26";
+const CACHE = "panalo-shell-v27";
 
 // The app shell only. Messages and images are never cached: they're private,
 // and stale chat content would be worse than none.
@@ -45,13 +45,17 @@ self.addEventListener("activate", (event) => {
 });
 
 // Network-first for our own files so a deploy is picked up immediately, with
-// the cache as the fallback when the network isn't there. Anything
-// cross-origin (Supabase, fonts, tiles) is left entirely alone.
+// the cache as the fallback when the network isn't there. Of everything
+// cross-origin, only the libraries and fonts the apps start with are kept
+// (so Panalo Students and Chat can start offline); Supabase itself, maps
+// and everything else are left entirely alone.
+const START_HOSTS = new Set(["cdn.jsdelivr.net", "fonts.googleapis.com", "fonts.gstatic.com"]);
 self.addEventListener("fetch", (event) => {
   const { request } = event;
   if (request.method !== "GET") return;
   const url = new URL(request.url);
-  if (url.origin !== self.location.origin) return;
+  const startHost = START_HOSTS.has(url.hostname);
+  if (url.origin !== self.location.origin && !startHost) return;
   // The API (files, relay credentials) is never cached: private files must
   // not outlive signing out or deleting the account.
   if (url.pathname.startsWith("/api/")) return;
@@ -59,14 +63,15 @@ self.addEventListener("fetch", (event) => {
   event.respondWith(
     fetch(request)
       .then((response) => {
-        if (response && response.ok) {
+        // A library loaded without CORS answers opaquely; it can still be kept.
+        if (response && (response.ok || (startHost && response.type === "opaque"))) {
           const copy = response.clone();
           caches.open(CACHE).then((cache) => cache.put(request, copy));
         }
         return response;
       })
       .catch(() =>
-        caches.match(request).then((hit) => hit || caches.match("./index.html"))
+        caches.match(request).then((hit) => hit || (startHost ? Response.error() : caches.match(request.mode === "navigate" && url.pathname.startsWith("/students/") ? "./students/" : "./index.html")))
       )
   );
 });

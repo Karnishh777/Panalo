@@ -39,6 +39,11 @@ function displayBlock() {
       applied();
       emit("any");
     }),
+    // Calm is the default: Panalo is for getting work done.
+    toggle("Lively effects", "Drifting petals, bursts when you press, numbers that count up, Verse's spray and glitches. Off, Panalo stays still unless you do something.", p.effects === "lively", (on) => {
+      setPrefs({ effects: on ? "lively" : "calm" });
+      applied();
+    }),
   ];
 }
 

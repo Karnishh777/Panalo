@@ -534,3 +534,65 @@ html[data-motion="reduce"] :is(.surface .panel, .toast, .clock-colon, .bar-nav a
   animation: none !important;
 }
 
+
+/* ===== Calm: the default ===================================================== */
+/* Panalo doesn't move on its own unless asked (Settings, Display: Effects).
+   Calm keeps what tells you something -- a running focus block breathing,
+   a page arriving -- and stills what only decorates or calls for
+   attention: drifting petals, rifts, spray, glitches, twitching titles,
+   pulsing unread stars, a blinking clock. js/motion.js lively(). */
+html:not([data-effects="lively"]) :is(.fx-ambient, .verse-rifts, .verse-spray, .universe-tag, .verse-sfx) {
+  display: none !important;
+}
+html:not([data-effects="lively"]) :is(.clock-colon, .sig-star.pulsing, .slipping, .sky-star.lit circle:first-child) {
+  animation: none !important;
+}
+html:not([data-effects="lively"])[data-look="verse"] :is(.bar-clock, .s-head h1, .panel:hover) {
+  animation: none !important;
+}
+
+/* ===== The focus shield ====================================================== */
+/* While a focus block runs (js/focus-shield.js): no unread counts anywhere,
+   and a quiet line under the bar on any other page, back to the block. */
+html.focusing :is(.bar-nav, .dock) .pulse-count,
+html.focusing #me-mod-dot {
+  display: none !important;
+}
+.focus-line {
+  position: fixed;
+  inset: var(--bar-h) 0 auto;
+  z-index: 38;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  min-height: 34px;
+  padding: 6px var(--gutter);
+  border-bottom: 1px solid color-mix(in srgb, var(--focus) 30%, transparent);
+  background: color-mix(in srgb, var(--bg) 92%, var(--focus));
+  font-size: 13.5px;
+  color: var(--text-2);
+  text-decoration: none;
+}
+html.focusing body.in-app:not([data-view="study"]) .focus-line {
+  display: flex;
+}
+.focus-line b {
+  color: var(--focus);
+  font-variant-numeric: tabular-nums;
+}
+.focus-line .focus-line-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--focus);
+}
+.focus-line u {
+  color: var(--text);
+  text-underline-offset: 3px;
+}
+@media (max-width: 899px) {
+  .focus-line {
+    font-size: 12.5px;
+  }
+}

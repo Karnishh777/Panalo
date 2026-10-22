@@ -28,7 +28,7 @@
 //
 // WebGL 1, so it runs on old phones and school laptops. If anything about it
 // fails, createGlobe() falls back to the 2D renderer.
-import { reducedMotion, animationLoop } from "./motion.js";
+import { reducedMotion, animationLoop, lively as livelyEffects } from "./motion.js";
 import { surfaceFor, paint, thresholdFor, TW, TH } from "./world-surface.js";
 import { getLight, onLight, lightVector } from "./world-light.js";
 import { deviceTier } from "./device-tier.js";
@@ -1269,7 +1269,8 @@ export function createGlobeGL(canvas, { seed, tilt = 0.38, interactive = false, 
     const lively = dragging || aimRot !== null || Math.abs(fling) > 0.01 || Math.abs(pitchNow - motion.pitch) > 0.001 || Math.abs(zoomNow - motion.zoom) > 0.001;
     acc += dt;
     // Verse: every so often the world slips into another universe.
-    if (comicNow() && !reducedMotion()) {
+    // (Only with lively effects: a calm app doesn't glitch on its own.)
+    if (comicNow() && livelyEffects()) {
       if (!slip) slip = { style: 1, until: 0, next: t + 6000 + Math.random() * 5000 };
       if (t > slip.next) {
         slip = { style: nextUniverse(slip.style), until: t + 650, next: t + 6500 + Math.random() * 5500 };

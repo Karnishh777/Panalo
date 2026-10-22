@@ -33,11 +33,13 @@
     verse: "family=Anton&family=Archivo:wdth,wght@62..125,400..900&family=Permanent+Marker&family=Space+Mono:wght@400;700"
   };
   var look = "glass";
+  root.setAttribute("data-effects", "calm");
   try {
     var prefs = JSON.parse(localStorage.getItem("panalo.students.prefs") || "{}") || {};
     if (prefs.reduceMotion) root.setAttribute("data-motion", "reduce");
     if (prefs.textSize && prefs.textSize !== "normal") root.setAttribute("data-text", prefs.textSize);
     if (FONTS[prefs.look]) look = prefs.look;
+    if (prefs.effects === "lively") root.setAttribute("data-effects", "lively");
   } catch (e) {}
   root.setAttribute("data-look", look);
   var fonts = document.createElement("link");
