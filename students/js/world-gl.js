@@ -33,6 +33,7 @@ import { surfaceFor, paint, thresholdFor, TW, TH } from "./world-surface.js";
 import { getLight, onLight, lightVector } from "./world-light.js";
 import { deviceTier } from "./device-tier.js";
 import { gradeFor } from "./cinema/grades.js";
+import { loadEarth, earthLevels } from "./earth.js";
 
 const MAX_MOONS = 6;
 const EXTENT = 1.7; // half the canvas, in planet radii, at zoom 1
@@ -58,6 +59,9 @@ uniform float uExtent, uAspect, uRot, uCloudShift, uTime, uTilt, uSea;
 uniform float uAtmo, uAurora, uCloudCover, uRing, uForest, uGlow, uNight;
 uniform vec2 uRes;           // the canvas, in pixels
 uniform vec2 uOffset;        // where the planet's centre is (0 = the middle)
+// The real Earth (js/earth.js): on, how far its land has risen (as the
+// threshold 1 - rise), and how many of its city lights are on.
+uniform float uEarth, uEarthT, uLightsF;
 float gPx;                   // one pixel, in planet radii (set in main)
 // A sky behind the world (the cinema looks): stars in three depths, which
 // part for the camera (parallax, CSS px) and streak in a warp.
@@ -139,6 +143,77 @@ float ringShadow(vec3 n) {
   return 1.0 - uRing * re * rb * 0.6;
 }
 
+// The real Earth. Its maps sit in the slots the generated world uses:
+// uHeight holds the order land rises (0 ocean, 1 first), uLights the night
+// lights, uMoist the surface colour -- all equirectangular, longitude 0 in
+// the middle.
+vec3 shadeEarth(vec3 n, vec3 f, vec3 L, vec3 V, vec2 uv, vec3 P) {
+  vec2 eu = vec2(fract(uv.x + 0.5), uv.y);
+  float e = texture2D(uHeight, eu).r;
+  float isLand = smoothstep(0.0015, 0.004, e);
+  // The frontier of rising land, with a ragged, natural edge.
+  float wobble = (fbm(P * 38.0, 3) - 0.5) * 0.02;
+  float land = smoothstep(uEarthT - 0.005, uEarthT + 0.005, e + wobble) * isLand;
+  vec3 map = texture2D(uMoist, eu).rgb;
+  map = map * map * (0.8 + 0.2 * map);             // to linear light
+  // Forests (moving and resting) keep the greens lush; without them the
+  // land dries towards ochre.
+  float green = clamp((map.g - map.r) * 7.0 + 0.25, 0.0, 1.0);
+  vec3 dry = vec3(dot(map, vec3(0.5, 0.38, 0.12))) * vec3(1.2, 0.98, 0.7);
+  vec3 landCol = mix(map, mix(dry, map, 0.45 + 0.55 * uForest), green);
+  // The sea: the map's own ocean, depths shaded in; and above land that
+  // hasn't risen yet, shallow water over a sunken continent.
+  // Before any land has risen the sea is one deep ocean; the real seafloor
+  // (the map's depths, its shelves) shows through as the land comes up --
+  // never the outline of a continent that hasn't risen yet.
+  float risen = clamp(1.0 - uEarthT, 0.0, 1.0);
+  vec3 deep = vec3(0.005, 0.024, 0.055);
+  vec3 seaCol = mix(deep, map * vec3(0.78, 0.86, 1.0), (1.0 - isLand) * (0.1 + 0.9 * risen));
+  vec3 albedo = mix(seaCol, landCol, land);
+
+  float d = dot(f, L);
+  vec3 sun = sunThrough(d) * SUN;
+  // The night is as dark as it really is from orbit (moonlight is yours to
+  // choose), and only cities glow in it.
+  vec3 moonlit = vec3(0.25, 0.38, 1.0) * (0.002 + 0.14 * uNight * uNight) * (0.6 + 0.4 * max(dot(f, -L) * 0.5 + 0.5, 0.0));
+  vec3 col = albedo * (sun * max(d, 0.0) + moonlit);
+
+  // Sun on water, rippled by waves (calmer seen large).
+  float waveK = clamp(gPx * 70.0, 0.12, 1.0);
+  vec3 wv = tn3(P * 140.0 + vec3(uTime * 0.25, 0.0, uTime * 0.18)) - 0.5;
+  vec3 nw = normalize(f + (1.0 - land) * 0.08 * waveK * (wv - dot(wv, f) * f));
+  vec3 H = normalize(L + V);
+  float nh = max(dot(nw, H), 0.0);
+  float water = (1.0 - land) * smoothstep(-0.05, 0.2, d);
+  float fw = 0.25 + 0.75 * pow(1.0 - n.z, 4.0);
+  col += sun * (pow(nh, 220.0) * 0.12 * waveK + pow(nh, 48.0) * 0.026 + pow(nh, 12.0) * 0.007 * fw) * water;
+  float fresnel = 0.02 + 0.98 * pow(1.0 - max(dot(nw, V), 0.0), 5.0);
+  col += vec3(0.06, 0.16, 0.45) * fresnel * 0.5 * water;
+
+  float night = smoothstep(0.12, -0.18, d);
+  // Reading makes the seas glow along the coasts, faintly, at night.
+  if (uGlow > 0.0) {
+    vec2 o = vec2(0.004, 0.006);
+    float near = 0.0;
+    near += smoothstep(uEarthT - 0.005, uEarthT + 0.005, texture2D(uHeight, eu + vec2(o.x, 0.0)).r);
+    near += smoothstep(uEarthT - 0.005, uEarthT + 0.005, texture2D(uHeight, eu - vec2(o.x, 0.0)).r);
+    near += smoothstep(uEarthT - 0.005, uEarthT + 0.005, texture2D(uHeight, eu + vec2(0.0, o.y)).r);
+    near += smoothstep(uEarthT - 0.005, uEarthT + 0.005, texture2D(uHeight, eu - vec2(0.0, o.y)).r);
+    col += vec3(0.02, 0.17, 0.15) * clamp(near * 0.5, 0.0, 1.0) * (1.0 - land) * uGlow * (0.15 + 0.85 * night) * 0.5;
+  }
+
+  // City lights: the real ones (NASA's Black Marble), on risen land, lit
+  // brightest first as tasks are finished. Sodium-warm, whiter at the
+  // cores, the way cities look from orbit.
+  float lv = texture2D(uLights, eu).r;
+  float cut = 0.92 * (1.0 - uLightsF);
+  float shown = smoothstep(cut, cut + 0.06, lv) * step(0.001, uLightsF);
+  float city = pow(lv, 1.3) * shown * land;
+  vec3 tint = mix(vec3(1.0, 0.55, 0.19), vec3(1.0, 0.83, 0.62), smoothstep(0.55, 0.95, lv));
+  col += tint * city * night * 3.0;
+  return col;
+}
+
 vec3 shadePlanet(vec2 p, float zp) {
   vec3 n = vec3(p, zp);
   vec3 f = toPlanet(n);
@@ -147,6 +222,7 @@ vec3 shadePlanet(vec2 p, float zp) {
   vec2 uv = uvOf(f, uRot);
   vec3 P = spinY(f, uRot);          // fixed to the ground
   weights(P);
+  if (uEarth > 0.5) return shadeEarth(n, f, L, V, uv, P);
 
   // Height: the continent from the texture, coastlines and ridges per pixel.
   float h = texture2D(uHeight, uv).r;
@@ -769,6 +845,24 @@ function texture(gl, unit, w, h, format, data, { wrapT = gl.CLAMP_TO_EDGE, mip =
   return t;
 }
 
+// An image (the Earth's maps) as a texture: flipped so the first row is
+// the south, as the shader expects; mipmapped, so a small world doesn't
+// shimmer.
+function imageTexture(gl, unit, img, format) {
+  const t = gl.createTexture();
+  gl.activeTexture(gl.TEXTURE0 + unit);
+  gl.bindTexture(gl.TEXTURE_2D, t);
+  gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true);
+  gl.texImage2D(gl.TEXTURE_2D, 0, format, format, gl.UNSIGNED_BYTE, img);
+  gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, false);
+  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR_MIPMAP_LINEAR);
+  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.REPEAT);
+  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+  gl.generateMipmap(gl.TEXTURE_2D);
+  return t;
+}
+
 const toBytes = (arr, scale = 255) => {
   const out = new Uint8Array(arr.length);
   for (let i = 0; i < arr.length; i++) out[i] = Math.max(0, Math.min(255, Math.round(arr[i] * scale)));
@@ -823,7 +917,7 @@ export function createGlobeGL(canvas, { seed, tilt = 0.38, interactive = false, 
     gl.vertexAttribPointer(0, 2, gl.FLOAT, false, 0, 0);
     const U = (n) => gl.getUniformLocation(prog, n);
     u = {};
-    for (const name of ["uExtent", "uAspect", "uRot", "uCloudShift", "uTime", "uTilt", "uSea", "uAtmo", "uAurora", "uCloudCover", "uRing", "uForest", "uGlow", "uNight", "uLight", "uRingN", "uMoon", "uMoonVal", "uRes", "uOffset", "uStars", "uWarp", "uDpr", "uStarPar", "uWarpC"]) u[name] = U(name);
+    for (const name of ["uExtent", "uAspect", "uRot", "uCloudShift", "uTime", "uTilt", "uSea", "uAtmo", "uAurora", "uCloudCover", "uRing", "uForest", "uGlow", "uNight", "uLight", "uRingN", "uMoon", "uMoonVal", "uRes", "uOffset", "uStars", "uWarp", "uDpr", "uStarPar", "uWarpC", "uEarth", "uEarthT", "uLightsF"]) u[name] = U(name);
     ["uHeight", "uLights", "uClouds", "uMoist", "uNoise"].forEach((name, i) => gl.uniform1i(U(name), i + 1));
     post = null;
     if (wantBloom || styleOk) {
@@ -951,21 +1045,44 @@ export function createGlobeGL(canvas, { seed, tilt = 0.38, interactive = false, 
   const ringBase = rot(rot([0, 1, 0], "x", 0.2), "z", -0.32);
 
   function upload() {
-    const painted = paint(surface, layers);
     sea = thresholdFor(surface, Math.max(0.01, Math.min(0.9, layers.land)));
+    // The real Earth's lights are its own map, lit by a uniform.
+    if (earthOn) return;
+    const painted = paint(surface, layers);
     texture(gl, 2, TW, TH, gl.LUMINANCE, toBytes(painted.lights));
+  }
+
+  // The real Earth's maps (js/earth.js), in the generated world's slots.
+  let earthOn = false;
+  function uploadEarth(maps) {
+    imageTexture(gl, 1, maps.emerge, gl.LUMINANCE);
+    imageTexture(gl, 2, maps.lights, gl.LUMINANCE);
+    imageTexture(gl, 4, maps.albedo, gl.RGB);
+    earthOn = true;
   }
 
   function prepare() {
     if (destroyed || lost) return;
-    surface = surfaceFor(seed);
+    surface = surfaceFor(seed); // its weather: the clouds stay generated
     texture(gl, 1, TW, TH, gl.LUMINANCE, toBytes(surface.height));
     texture(gl, 3, TW, TH, gl.LUMINANCE, toBytes(surface.cloud));
     texture(gl, 4, TW, TH, gl.LUMINANCE, toBytes(surface.moistRank));
     texture(gl, 5, 256, 256, gl.RGB, makeNoiseTile(), { wrapT: gl.REPEAT, mip: true });
-    upload();
-    ready = true;
-    draw(performance.now());
+    // The world is the real Earth: shown once its maps have arrived (a
+    // moment, the first time; cached after). If they can't load, the
+    // generated planet stands in.
+    loadEarth()
+      .then((maps) => {
+        if (destroyed || lost) return;
+        uploadEarth(maps);
+      })
+      .catch((e) => console.warn("World: the Earth maps didn't load; a generated world stands in.", e))
+      .finally(() => {
+        if (destroyed || lost) return;
+        upload();
+        ready = true;
+        draw(performance.now());
+      });
   }
 
   // The canvas's size: its layout size (transforms don't count) times the
@@ -1032,6 +1149,10 @@ export function createGlobeGL(canvas, { seed, tilt = 0.38, interactive = false, 
       gl.uniform1f(u.uExtent, EXTENT / zoomNow);
       gl.uniform2f(u.uOffset, 0, 0);
     }
+    const lv = earthLevels(layers);
+    gl.uniform1f(u.uEarth, earthOn ? 1 : 0);
+    gl.uniform1f(u.uEarthT, lv.rise > 0 ? 1 - lv.rise : 2); // none risen: none at all
+    gl.uniform1f(u.uLightsF, lv.lit);
     gl.uniform1f(u.uStars, skyOn.stars || 0);
     gl.uniform1f(u.uWarp, skyOn.warp || 0);
     gl.uniform1f(u.uDpr, cssW ? canvas.width / cssW : 1);

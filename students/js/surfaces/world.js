@@ -65,8 +65,8 @@ function render() {
   renderNumbers(w);
 
   legendEl.replaceChildren(
-    row("tone-world", "Land", formatMinutes(s.focusMinutesTotal), `Focus, all time. ${Math.round(w.layers.land * 100)}% of the surface. It never shrinks.`),
-    row("tone-time", "Lights", String(s.tasksDone), "Tasks finished, all time — one light each, on the night side."),
+    row("tone-world", "Land", formatMinutes(s.focusMinutesTotal), `Focus, all time. ${landLine(w.layers.earth)} It never sinks again.`),
+    row("tone-time", "Lights", String(s.tasksDone), "Tasks finished, all time — Earth's real cities light up on the night side, the brightest first."),
     row("tone-drift", "Aurora", formatMinutes(s.createMinutes30), "Making things, last 30 days."),
     row("tone-world", "Forests", formatMinutes(s.bodyMinutes30), "Moving and resting, last 30 days."),
     row("tone-focus", "Glowing seas", formatMinutes(s.readMinutes30), "Reading, last 30 days."),
@@ -297,6 +297,14 @@ function openGoal() {
       },
     ],
   });
+}
+
+// How much of the real Earth has risen, in words.
+function landLine(rise = 0) {
+  const pct = Math.round(rise * 100);
+  if (pct <= 0) return "All ocean so far — your first hour of focus raises the first land, in India.";
+  if (pct >= 100) return "The whole Earth has risen.";
+  return `${pct}% of Earth's land has risen from the sea.`;
 }
 
 // ---- Your world in numbers ------------------------------------------------------------

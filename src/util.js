@@ -49,9 +49,23 @@ export function redirectUrl() {
 // nothing to the person reading it. Say what happened and what to do.
 export function authErrorText(error) {
   const text = error?.message || "";
+  if (/expired or is invalid|invalid otp|otp.*expired/i.test(text)) return "That code is wrong or has expired. Use the newest email, or send a new code.";
   if (/error sending .*email/i.test(text)) return "We couldn't send the email just now. Try again in a few minutes.";
   if (/rate|seconds/i.test(text)) return "A code was sent a moment ago. Check your email (and spam), or wait a minute.";
   return text || "Something went wrong. Try again.";
+}
+
+// A sign-up for an email that already has a confirmed account "succeeds"
+// with no identities and sends no email (so nobody can probe which
+// addresses are registered by watching for errors). Waiting for a code
+// that never comes is worse than being told to log in.
+export function alreadyRegistered(data) {
+  return !data?.session && Array.isArray(data?.user?.identities) && data.user.identities.length === 0;
+}
+
+// What someone typed or pasted as a code: digits only ("123 456" works).
+export function cleanCode(typed) {
+  return String(typed || "").replace(/[\s-]/g, "");
 }
 
 // Run an async action while showing a busy state on `button`, preventing

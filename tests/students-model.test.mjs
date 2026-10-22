@@ -58,6 +58,12 @@ const withTasks = buildWorld({ tasks, now: NOW });
 ok("one light per finished task", withTasks.layers.lights === 12, withTasks.layers.lights);
 ok("lights and land are independent", withTasks.layers.land === LAND_BASE);
 
+// The real Earth: all ocean at first, rising with focus; cities light with tasks.
+ok("a new Earth is all ocean, all dark", empty.layers.earth === 0 && empty.layers.cities === 0);
+ok("focus raises Earth's land", tenHours.layers.earth > 0.1 && tenHours.layers.earth < 0.3, tenHours.layers.earth);
+ok("Earth rises fully, and no further", lots.layers.earth === 1);
+ok("finished tasks light Earth's cities", withTasks.layers.cities > 0.05 && withTasks.layers.cities < 0.2 && withTasks.layers.earth === 0, withTasks.layers.cities);
+
 const creative = buildWorld({ logs: [{ kind: "create", minutes: 120, occurred_on: dayKey(at(2)) }], now: NOW });
 const oldCreative = buildWorld({ logs: [{ kind: "create", minutes: 120, occurred_on: dayKey(at(45)) }], now: NOW });
 ok("making things lights the aurora", creative.layers.aurora > 0.2);

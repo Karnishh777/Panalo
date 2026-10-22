@@ -10,7 +10,7 @@
 //     says plainly that older messages are gone.
 import { supabaseClient, setRemember } from "../../src/client.js";
 import { state, conversationKeys } from "../../src/state.js";
-import { withBusy, showToast, redirectUrl, authErrorText } from "../../src/util.js";
+import { withBusy, showToast, redirectUrl, authErrorText, alreadyRegistered, cleanCode } from "../../src/util.js";
 import { ensureUserKeys, idbDelKey, idbGetKey, rewrapPrivateKey, clearKeyProblems } from "../../src/encryption.js";
 import { clearAttachmentCache } from "../../src/attachments.js";
 import { clearPersistedIndex } from "../../src/search.js";
@@ -184,6 +184,14 @@ export function initAuth(h) {
         reportKeyStatus(await ensureUserKeys(password));
         return ready(data.session, { fresh: true });
       }
+      if (alreadyRegistered(data)) {
+        // No code is coming: this address already has an account.
+        history.replaceState(null, "", "#login");
+        showForm("login-form");
+        $("login-email").value = email;
+        $("signup-password").value = "";
+        return message("That email already has a Panalo account, so no code was sent. Log in with your password, or use “Forgot password”.");
+      }
       pending.email = email;
       pending.password = password;
       showForm("otp-form");
@@ -202,10 +210,11 @@ export function initAuth(h) {
   $("otp-form").addEventListener("submit", (e) => {
     e.preventDefault();
     withBusy($("otp-submit"), "Verifying…", async () => {
-      const token = $("otp-code").value.trim();
-      if (!validCode(token)) return message("Enter the code from the email.");
+      const token = cleanCode($("otp-code").value);
+      if (!pending.email) return message("Start again from sign-up — this page was reloaded.");
+      if (!validCode(token)) return message("Enter the code from the email — just the digits.");
       const { data, error } = await supabaseClient.auth.verifyOtp({ email: pending.email, token, type: "signup" });
-      if (error) return message(error.message);
+      if (error) return message(authErrorText(error));
       if (!data.session) return message("That code didn't sign you in. Try logging in.");
       state.currentUser = data.session.user;
       reportKeyStatus(await ensureUserKeys(pending.password));

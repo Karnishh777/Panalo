@@ -107,6 +107,11 @@ export function buildWorld({ sessions = [], tasks = [], logs = [], goals = [], s
   const focusHours = focusMinutesTotal / 60;
   const layers = {
     land: LAND_BASE + LAND_MAX_GAIN * sat(focusHours, 60),
+    // The real Earth (js/earth.js): how much of its land has risen from the
+    // sea -- none at first, a third after about thirty hours of focus, all
+    // of it after a few hundred -- and how many of its city lights are on.
+    earth: Math.min(1, 1.06 * sat(focusHours, 70)),
+    cities: sat(tasksDone, 120),
     lights: Math.min(MAX_LIGHTS, tasksDone),
     aurora: sat(createMinutes30, 300),
     forest: 0.12 + 0.78 * sat(bodyMinutes30, 600),
@@ -145,18 +150,18 @@ export function buildWorld({ sessions = [], tasks = [], logs = [], goals = [], s
 // worked out from history, so they need no table of their own and can never
 // disagree with it.
 const FOCUS_MARKS = [
-  [1, "First hour", "One hour of real focus. The first land rose from the sea."],
-  [10, "Ten hours", "Ten focused hours. Your first continent."],
-  [25, "Twenty-five hours", "A coastline long enough to name."],
-  [50, "Fifty hours", "Mountains. This is what a habit looks like from orbit."],
-  [100, "A hundred hours", "A hundred hours. Most people never get here."],
-  [250, "Two hundred and fifty hours", "A world that would take a lifetime to map."],
+  [1, "First hour", "One hour of real focus. The first land rose from the sea, in the heart of India."],
+  [10, "Ten hours", "Ten focused hours. The subcontinent stands above the sea."],
+  [25, "Twenty-five hours", "A third of Earth's land, back from the sea. Coastlines you could name."],
+  [50, "Fifty hours", "Half the world's land. This is what a habit looks like from orbit."],
+  [100, "A hundred hours", "A hundred hours, and most of the Earth has risen. Most people never get here."],
+  [250, "Two hundred and fifty hours", "The whole Earth, risen. A world that would take a lifetime to map."],
 ];
 const TASK_MARKS = [
-  [1, "First light", "You finished something. A light came on on the night side."],
-  [10, "A town", "Ten tasks done. The lights have started to cluster."],
-  [50, "A city", "Fifty finished things, glowing in the dark."],
-  [200, "A network", "Two hundred. The night side is mapped in light."],
+  [1, "First light", "You finished something. A city lit up on the night side."],
+  [10, "A town", "Ten tasks done. The great cities are glowing."],
+  [50, "A city", "Fifty finished things. Whole coastlines glow in the dark."],
+  [200, "A network", "Two hundred. The night side is mapped in light, town by town."],
 ];
 
 const PAGE_MARKS = [
