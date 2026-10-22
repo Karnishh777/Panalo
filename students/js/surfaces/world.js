@@ -29,6 +29,7 @@ let skyEl;
 let seasonEl;
 let journalEl;
 let journalShown = 14;
+let numbersEl;
 let dock = null;
 let globe = null;
 let unsubs = [];
@@ -61,6 +62,7 @@ function render() {
     el("span", { class: "faint", text: se.left ? `day ${se.day} of ${se.length} · ${se.left} to go` : `last day of ${se.name}` })
   );
   globe?.setLayers(w.layers, w.moons);
+  renderNumbers(w);
 
   legendEl.replaceChildren(
     row("tone-world", "Land", formatMinutes(s.focusMinutesTotal), `Focus, all time. ${Math.round(w.layers.land * 100)}% of the surface. It never shrinks.`),
@@ -297,6 +299,120 @@ function openGoal() {
   });
 }
 
+// ---- Your world in numbers ------------------------------------------------------------
+
+function numbers(w) {
+  const s = w.stats;
+  const byDay = new Map();
+  let longest = 0;
+  for (const x of store.sessions) {
+    const k = dayKey(new Date(x.started_at));
+    byDay.set(k, (byDay.get(k) || 0) + (x.focused_minutes || 0));
+    longest = Math.max(longest, x.focused_minutes || 0);
+  }
+  let best = null;
+  for (const [k, m] of byDay) if (!best || m > best.m) best = { k, m };
+  const logged = store.logs.reduce((n, l) => n + (l.minutes || 0), 0);
+  return [
+    { v: String(s.ageDays + 1), u: s.ageDays === 0 ? "day old" : "days old", hint: "Since your universe began" },
+    { v: formatMinutes(s.focusMinutesTotal), u: "of focus", hint: "All time" },
+    { v: best ? formatMinutes(best.m) : "—", u: "best day", hint: best ? parseDayKey(best.k).toLocaleDateString(undefined, { day: "numeric", month: "short" }) : "Not yet" },
+    { v: longest ? formatMinutes(longest) : "—", u: "longest session", hint: "One sitting" },
+    { v: String(s.tasksDone), u: s.tasksDone === 1 ? "task finished" : "tasks finished", hint: "Lights on the night side" },
+    { v: formatMinutes(logged), u: "logged", hint: "Reading, making, moving" },
+    { v: String(store.goals.filter((g) => g.done_at).length), u: "moons completed", hint: "Goals reached" },
+  ];
+}
+
+function renderNumbers(w) {
+  if (!numbersEl) return;
+  numbersEl.replaceChildren(
+    ...numbers(w).map((n) => el("li", { class: "wn-stat" }, [el("b", { class: "wn-v" }, [el("span", { class: n.v.includes(" ") ? "" : "num", text: n.v })]), el("span", { class: "wn-u", text: n.u }), el("small", { class: "wn-h faint", text: n.hint })]))
+  );
+}
+
+// ---- A postcard of your world ----------------------------------------------------------
+// The world as it looks right now, its name, its day and its numbers, as an
+// image to keep. Nothing is posted anywhere: it's a file on your device
+// (or, where the device offers it, handed to its own share sheet).
+
+async function postcard() {
+  const w = world();
+  const s = w.stats;
+  const W = 1080;
+  const H = 1350;
+  const c = el("canvas", { width: String(W), height: String(H) });
+  const ctx = c.getContext("2d");
+  const css = getComputedStyle(document.documentElement);
+  const display = css.getPropertyValue("--f-display").trim() || "Georgia, serif";
+  const body = css.getPropertyValue("--f-body").trim() || "system-ui, sans-serif";
+  const accent = css.getPropertyValue("--world").trim() || "#9be8c6";
+  // Deep space.
+  const g = ctx.createRadialGradient(W * 0.5, H * 0.42, 50, W * 0.5, H * 0.42, H * 0.8);
+  g.addColorStop(0, "#0c1430");
+  g.addColorStop(1, "#010205");
+  ctx.fillStyle = g;
+  ctx.fillRect(0, 0, W, H);
+  let seed = [...(state.currentUser?.id || "panalo")].reduce((a, ch) => (a * 31 + ch.charCodeAt(0)) >>> 0, 7);
+  const rnd = () => ((seed = (seed * 1664525 + 1013904223) >>> 0) / 4294967296);
+  for (let i = 0; i < 420; i++) {
+    const b = rnd() ** 3;
+    ctx.fillStyle = `rgba(235,240,255,${0.2 + b * 0.8})`;
+    const r = 0.6 + b * 1.8;
+    ctx.beginPath();
+    ctx.arc(rnd() * W, rnd() * H, r, 0, Math.PI * 2);
+    ctx.fill();
+  }
+  // The world, drawn this instant (a WebGL canvas can only be read right
+  // after it draws).
+  const canvas = root.querySelector(".world-globe");
+  try {
+    globe?.setLayers(w.layers, w.moons);
+    if (canvas) {
+      const size = 860;
+      const ar = canvas.width / canvas.height || 1;
+      const dw = ar >= 1 ? size : size * ar;
+      const dh = ar >= 1 ? size / ar : size;
+      ctx.drawImage(canvas, (W - dw) / 2, 120 + (size - dh) / 2, dw, dh);
+    }
+  } catch (e) {
+    console.error(e);
+  }
+  // Words.
+  ctx.textAlign = "center";
+  ctx.fillStyle = "#f2f5ff";
+  ctx.font = `400 92px ${display}`;
+  ctx.fillText(store.student?.world_name || "Your world", W / 2, 1060);
+  const se = season(store.student?.born_at);
+  ctx.font = `600 26px ${body}`;
+  ctx.fillStyle = accent;
+  ctx.fillText(`DAY ${s.ageDays + 1} · SEASON ${se.number} · ${se.name.toUpperCase()}`, W / 2, 1112);
+  ctx.font = `400 30px ${body}`;
+  ctx.fillStyle = "#c3cbe2";
+  ctx.fillText(`${formatMinutes(s.focusMinutesTotal)} of focus · ${s.tasksDone} ${s.tasksDone === 1 ? "light" : "lights"} · ${store.goals.length} ${store.goals.length === 1 ? "moon" : "moons"}`, W / 2, 1166);
+  ctx.font = `600 20px ${body}`;
+  ctx.fillStyle = "#6f7c9c";
+  ctx.fillText("A WORLD MADE OF WHAT I ACTUALLY DID  ·  PANALO STUDENTS", W / 2, H - 70);
+
+  const blob = await new Promise((r) => c.toBlob(r, "image/png"));
+  if (!blob) return showToast("That postcard couldn't be made in this browser.");
+  const url = URL.createObjectURL(blob);
+  const name = `${(store.student?.world_name || "world").replace(/[^\w-]+/g, "-").toLowerCase()}-day-${s.ageDays + 1}.png`;
+  const file = new File([blob], name, { type: "image/png" });
+  const canShare = !!navigator.canShare?.({ files: [file] });
+  openSheet({
+    title: "A postcard of your world",
+    lead: "Saved to your device only — nothing is posted.",
+    form: false,
+    body: [el("img", { class: "postcard-img", src: url, alt: `A postcard of ${store.student?.world_name || "your world"}, day ${s.ageDays + 1}` })],
+    actions: [
+      canShare ? { label: "Share…", kind: "btn-ghost", close: false, onClick: async () => { try { await navigator.share({ files: [file], title: store.student?.world_name || "My world" }); } catch {} } } : null,
+      { label: "Save image", kind: "btn-primary", onClick: () => { const a = el("a", { href: url, download: name }); document.body.append(a); a.click(); a.remove(); showToast("Postcard saved.", "success"); } },
+    ].filter(Boolean),
+    onClose: () => setTimeout(() => URL.revokeObjectURL(url), 2000),
+  });
+}
+
 function rename() {
   const input = el("input", { type: "text", maxlength: "40", value: store.student?.world_name || "" });
   openSheet({
@@ -340,6 +456,7 @@ export function mount(section) {
           el("button", { type: "button", class: "btn btn-quiet btn-sm", text: "Rename", onClick: rename }),
           el("button", { type: "button", class: "btn btn-ghost btn-sm", id: "world-timelapse", text: "Watch it grow", onClick: () => openTimelapse() }),
           el("button", { type: "button", class: "btn btn-ghost btn-sm", id: "world-chronicle", text: "Last week", onClick: () => playChronicle() }),
+          el("button", { type: "button", class: "btn btn-ghost btn-sm", id: "world-postcard", text: "Postcard", onClick: () => postcard().catch((e) => reportError(e)) }),
         ]),
         el("button", { type: "button", class: "btn btn-primary", text: "Log an activity", onClick: openLog }),
       ]),
@@ -348,6 +465,7 @@ export function mount(section) {
       stage,
       el("section", { class: "panel tone-world", "aria-labelledby": "w-legend" }, [el("div", { class: "panel-head" }, [el("h2", { id: "w-legend", text: "What shapes it" })]), legendEl]),
     ]),
+    el("section", { class: "world-numbers", "aria-label": "Your world in numbers" }, [(numbersEl = el("ul", { class: "wn-stats" }))]),
     el("div", { class: "world-lower" }, [
       el("section", { class: "panel tone-world" }, [el("div", { class: "panel-head" }, [el("h2", { text: "Moons — your goals" }), el("button", { type: "button", class: "link-btn", text: "Add a moon", onClick: openGoal })]), moonsEl]),
       el("section", { class: "panel tone-time" }, [el("div", { class: "panel-head" }, [el("h2", { text: "Discoveries" })]), discEl]),

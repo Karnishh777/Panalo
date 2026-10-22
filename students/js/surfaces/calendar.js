@@ -10,6 +10,7 @@ import { store, on, api } from "../store.js";
 import { dayOrbit } from "../dayorbit.js";
 import { occurrencesOnDay, occurrencesBetween, tasksAsDeadlines, EVENT_KINDS, countdowns } from "../model/timeline.js";
 import { parseQuickAdd } from "../model/quick-add.js";
+import { toIcs } from "../model/ics.js";
 import { startOfDay, startOfWeek, addDays, clockTime, sameDay, formatMinutes, DAY, HOUR } from "../model/time.js";
 
 let root;
@@ -125,6 +126,48 @@ function renderWeek() {
   bodyEl.replaceChildren(grid, list);
 }
 
+// The month: a grid of days, each with a dot per entry in its colour, and a
+// thin line under days you focused. A day opens its day view.
+function renderMonth() {
+  const first = new Date(day.getFullYear(), day.getMonth(), 1);
+  const start = startOfWeek(first);
+  const end = addDays(start, 42);
+  const occ = occurrencesBetween(events(), start, end);
+  const focusBy = new Map();
+  for (const s of store.sessions) {
+    const k = startOfDay(new Date(s.started_at)).getTime();
+    focusBy.set(k, (focusBy.get(k) || 0) + (s.focused_minutes || 0));
+  }
+  const names = Array.from({ length: 7 }, (_, i) => addDays(start, i).toLocaleDateString(undefined, { weekday: "short" }));
+  const cells = Array.from({ length: 42 }, (_, i) => {
+    const d = addDays(start, i);
+    const items = occ.filter((o) => sameDay(o.start, d));
+    const inMonth = d.getMonth() === day.getMonth();
+    const focus = focusBy.get(startOfDay(d).getTime()) || 0;
+    const label = `${longDate(d)}: ${items.length ? items.map((o) => o.event.title).join(", ") : "nothing planned"}${focus ? `, ${formatMinutes(focus)} of focus` : ""}`;
+    return el("button", { type: "button", class: `month-day${inMonth ? "" : " out"}${sameDay(d, Date.now()) ? " today" : ""}${sameDay(d, day) ? " picked" : ""}`, "aria-label": label, onClick: () => { day = startOfDay(d); setView("day"); } }, [
+      el("b", { class: "num", text: String(d.getDate()) }),
+      el("span", { class: "month-dots", "aria-hidden": "true" }, [
+        ...items.slice(0, 4).map((o) => el("i", { class: tone(o.event.kind), title: o.event.title })),
+        items.length > 4 ? el("small", { text: `+${items.length - 4}` }) : null,
+      ]),
+      items[0] ? el("span", { class: "month-first", "aria-hidden": "true", text: items[0].event.title }) : null,
+      focus ? el("i", { class: "month-focus", "aria-hidden": "true", style: `--f:${Math.min(1, focus / 120)}` }) : null,
+    ]);
+  });
+  bodyEl.replaceChildren(el("div", { class: "month" }, [el("div", { class: "month-head", "aria-hidden": "true" }, names.map((n) => el("span", { text: n }))), el("div", { class: "month-grid" }, cells)]));
+}
+
+// Your calendar, to take elsewhere.
+function downloadIcs() {
+  const blob = new Blob([toIcs(store.events, store.tasks)], { type: "text/calendar;charset=utf-8" });
+  const a = el("a", { href: URL.createObjectURL(blob), download: "panalo-calendar.ics" });
+  document.body.append(a);
+  a.click();
+  setTimeout(() => (URL.revokeObjectURL(a.href), a.remove()), 1000);
+  showToast("Calendar saved. Open the file with Google Calendar, Apple Calendar or Outlook.", "success");
+}
+
 // Exams ahead, as a row of countdowns above everything.
 function renderCountdowns() {
   const cd = countdowns(store.events, Date.now(), 90).slice(0, 4);
@@ -143,8 +186,9 @@ function renderCountdowns() {
 function render() {
   if (!bodyEl) return;
   renderCountdowns();
-  titleEl.textContent = view === "day" ? longDate(day) : `Week of ${startOfWeek(day).toLocaleDateString(undefined, { day: "numeric", month: "long" })}`;
+  titleEl.textContent = view === "day" ? longDate(day) : view === "month" ? day.toLocaleDateString(undefined, { month: "long", year: "numeric" }) : `Week of ${startOfWeek(day).toLocaleDateString(undefined, { day: "numeric", month: "long" })}`;
   if (view === "day") renderDay();
+  else if (view === "month") renderMonth();
   else renderWeek();
 }
 
@@ -155,7 +199,8 @@ function setView(v) {
 }
 
 function step(n) {
-  day = startOfDay(addDays(day, view === "week" ? 7 * n : n));
+  if (view === "month") day = new Date(day.getFullYear(), day.getMonth() + n, 1);
+  else day = startOfDay(addDays(day, view === "week" ? 7 * n : n));
   render();
 }
 
@@ -290,6 +335,7 @@ export function mount(section, ctx) {
         el("div", { class: "chips", role: "tablist", "aria-label": "View" }, [
           el("button", { type: "button", role: "tab", class: "chip tone-time", "data-view-btn": "day", "aria-selected": "true", text: "Day", onClick: () => setView("day") }),
           el("button", { type: "button", role: "tab", class: "chip tone-time", "data-view-btn": "week", "aria-selected": "false", text: "Week", onClick: () => setView("week") }),
+          el("button", { type: "button", role: "tab", class: "chip tone-time", "data-view-btn": "month", "aria-selected": "false", text: "Month", onClick: () => setView("month") }),
         ]),
         el("div", { class: "cal-step" }, [
           el("button", { type: "button", class: "icon-btn", "aria-label": "Previous", text: "←", onClick: () => step(-1) }),
@@ -301,7 +347,8 @@ export function mount(section, ctx) {
     ]),
     qForm,
     countEl,
-    bodyEl
+    bodyEl,
+    el("p", { class: "cal-foot faint" }, ["Take your timetable elsewhere: ", el("button", { type: "button", class: "link-btn", id: "cal-export", text: "download it as a calendar file (.ics)", onClick: downloadIcs }), "."])
   );
   section.append(root);
   unsubs.push(on("any", render));

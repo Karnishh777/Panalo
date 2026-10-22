@@ -5,7 +5,7 @@
 // circle" and "my friends" and "the hackathon room that ends on Sunday" are
 // different kinds of thing and you look for them differently. Unread is a
 // pulse on the star; a room shows how long it has left.
-import { el, openSheet, confirmSheet, popMenu, showToast, emptyState, chipGroup } from "../ui.js";
+import { el, openSheet, confirmSheet, popMenu, showToast, emptyState, chipGroup, getPrefs, setPrefs } from "../ui.js";
 import { store, on } from "../store.js";
 import { state } from "../../../src/state.js";
 import { messagePlaintext, getConversationKey, keyProblemFor } from "../../../src/encryption.js";
@@ -94,6 +94,19 @@ function row(conv) {
   );
 }
 
+// Pinned: conversations you keep at the top, whatever their kind (synced
+// with your preferences).
+const pinned = () => new Set(Array.isArray(getPrefs().signalPins) ? getPrefs().signalPins : []);
+function togglePin(conv) {
+  const p = pinned();
+  if (p.has(conv.id)) p.delete(conv.id);
+  else p.add(conv.id);
+  const live = new Set(store.conversations.map((c) => c.id));
+  setPrefs({ signalPins: [...p].filter((id) => live.has(id)) });
+  renderList();
+  return p.has(conv.id);
+}
+
 function renderList() {
   if (!listEl) return;
   const q = filter.text.trim().toLowerCase();
@@ -136,6 +149,11 @@ function renderList() {
     : null;
 
   const shown = filter.context === "all" ? groups : groups.filter((g) => g.ctx.id === filter.context);
+  const pins = pinned();
+  const pinnedConvs = filter.context === "all" ? convs.filter((c) => pins.has(c.id)) : [];
+  const pinSection = pinnedConvs.length
+    ? el("section", { class: "sig-group sig-pinned", "aria-label": "Pinned" }, [el("h2", { class: "sig-group-h" }, [el("span", { text: "Pinned" }), el("small", { text: "kept at the top" })]), ...pinnedConvs.map(row)])
+    : null;
   const body = shown.length
     ? shown.map((g) =>
         el("section", { class: `sig-group ${g.ctx.tone}`, "aria-label": g.ctx.label }, [
@@ -152,7 +170,7 @@ function renderList() {
       ];
 
   listEl.querySelector(".sig-chips-slot").replaceChildren(groups.length > 1 ? chips : el("span"));
-  listEl.querySelector(".sig-body").replaceChildren(...[doorSection, ...body].filter(Boolean));
+  listEl.querySelector(".sig-body").replaceChildren(...[doorSection, pinSection, ...body].filter(Boolean));
 }
 
 // ---- the sky ------------------------------------------------------------------------------
@@ -373,6 +391,19 @@ async function openThread(id) {
       el("a", { href: "#/signals", class: "icon-btn thread-back", "aria-label": "Back to all signals", text: "←" }),
       memberGlyph(conv),
       el("div", { class: "thread-title" }, [el("h2", { text: S.titleOf(conv) }), el("p", {}, [el("span", { class: "tag", text: ctx?.label || "" }), ` ${sub.join(" · ")}`])]),
+      (() => {
+        const on = pinned().has(conv.id);
+        const b = el("button", { type: "button", class: `icon-btn pin-btn${on ? " on" : ""}`, "aria-pressed": String(on), "aria-label": on ? "Unpin this conversation" : "Pin this conversation to the top", title: on ? "Pinned" : "Pin", text: on ? "★" : "☆" });
+        b.addEventListener("click", () => {
+          const now = togglePin(conv);
+          b.classList.toggle("on", now);
+          b.setAttribute("aria-pressed", String(now));
+          b.textContent = now ? "★" : "☆";
+          b.setAttribute("aria-label", now ? "Unpin this conversation" : "Pin this conversation to the top");
+          showToast(now ? "Pinned to the top." : "Unpinned.", "success");
+        });
+        return b;
+      })(),
       el("button", { type: "button", class: "btn btn-ghost btn-sm", text: conv.type === "group" ? "Members & door" : "Details", onClick: () => openInfo(conv) }),
     ]),
     banner,

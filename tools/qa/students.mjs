@@ -482,6 +482,35 @@ try {
   check("the nav's marker glides to the page you're on", !!ink && ink.dx < 3 && ink.dw < 3);
   check("the bar's clock has a colon a look can blink", await page.evaluate(() => !!document.querySelector("#bar-clock .clock-colon")));
   check("a line under the bar shows how far down the page you are", await page.evaluate(() => !!document.querySelector(".read-line")));
+
+  // Section features.
+  await page.evaluate(() => (location.hash = "#/now"));
+  await page.waitForTimeout(900);
+  await page.fill(".capture-input", "Chemistry worksheet tomorrow");
+  await page.keyboard.press("Enter");
+  await page.waitForTimeout(600);
+  const captured = await page.evaluate(() => window.__qa.db.student_tasks.find((t) => t.title === "Chemistry worksheet"));
+  check("Now captures a task in one line, its date read from the words", !!captured && !!captured.due_at && new Date(captured.due_at).getDate() === new Date(Date.now() + 86400000).getDate());
+  await page.evaluate(() => (location.hash = "#/study"));
+  await page.waitForTimeout(900);
+  check("the Study Room's tasks are a numbered checklist you can reorder", await page.evaluate(() => !!document.querySelector("ol.task-list.marks-numbers .task-mark") && !!document.querySelector(".task-tools .seg")));
+  await page.click('.seg-btn[aria-label="Bulleted"]');
+  check("the checklist can switch to bullets", await page.evaluate(() => document.querySelector(".task-list:not(.done-list) .task-mark")?.textContent === "•"));
+  await page.click('.seg-btn[aria-label="Numbered"]');
+  await page.evaluate(() => (location.hash = "#/calendar"));
+  await page.waitForTimeout(900);
+  await page.click('[data-view-btn="month"]');
+  check("Calendar has a month view", (await page.locator(".month-day").count()) === 42);
+  await page.click('[data-view-btn="day"]');
+  // Nothing anywhere prints a stray null, undefined or NaN.
+  const stray = [];
+  for (const r of ["now", "study", "signals", "world", "calendar", "archive", "drift", "safety", "settings"]) {
+    await page.evaluate((r) => (location.hash = `#/${r}`), r);
+    await page.waitForTimeout(700);
+    const t = await page.evaluate((r) => document.querySelector(`.surface[data-surface="${r}"]`)?.innerText || "", r);
+    if (/\b(null|undefined|NaN)\b/.test(t)) stray.push(r);
+  }
+  check(`no page prints a stray null, undefined or NaN${stray.length ? ` (${stray.join(", ")})` : ""}`, !stray.length);
   check("no console errors (desktop)", page.errors.length === 0);
   if (page.errors.length) console.log(page.errors.join("\n"));
   await page.close();

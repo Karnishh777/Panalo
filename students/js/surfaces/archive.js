@@ -5,7 +5,7 @@
 // it here, when, who can see it, and can I preview it. Files are laid down
 // in strata -- one layer per month -- so "that PDF from last term" is
 // somewhere you can point at.
-import { el, openSheet, confirmSheet, popMenu, showToast, emptyState, chipGroup } from "../ui.js";
+import { el, openSheet, confirmSheet, popMenu, showToast, emptyState, chipGroup, getPrefs, setPrefs } from "../ui.js";
 import { store, on } from "../store.js";
 import { state } from "../../../src/state.js";
 import { fileKind, prettyBytes, extensionOf } from "../../../src/filekind.js";
@@ -16,6 +16,7 @@ import { titleOf } from "../signals-data.js";
 let root;
 let bodyEl;
 let headSub;
+let meterEl;
 let filter = { text: "", scope: "all", shelf: null, kind: null };
 
 // Kinds you can filter by; "other" is everything else.
@@ -45,8 +46,28 @@ function scopeLabel(r) {
   return conv ? `Shared · ${titleOf(conv)}` : "Shared with a conversation";
 }
 
+// Stars: the files you reach for most, kept on a shelf at the top (synced
+// with your preferences).
+const starred = () => new Set(Array.isArray(getPrefs().archiveStars) ? getPrefs().archiveStars : []);
+function toggleStar(r) {
+  const s = starred();
+  if (s.has(r.id)) s.delete(r.id);
+  else s.add(r.id);
+  const live = new Set((store.resources || []).map((x) => x.id));
+  setPrefs({ archiveStars: [...s].filter((id) => live.has(id)) });
+  render();
+}
+const SORTS = [
+  ["new", "Newest"],
+  ["old", "Oldest"],
+  ["az", "A–Z"],
+  ["big", "Largest"],
+];
+const sortNow = () => (SORTS.some(([v]) => v === getPrefs().archiveSort) ? getPrefs().archiveSort : "new");
+
 function artifact(r) {
   const k = kindOf(r);
+  const isStar = starred().has(r.id);
   const mine = r.owner_id === state.currentUser.id;
   const pv = previewKind(r);
   const ext = extensionOf(r.file_name).toUpperCase();
@@ -72,6 +93,7 @@ function artifact(r) {
       r.note ? el("span", { class: "artifact-note", text: r.note }) : null,
     ]),
     el("div", { class: "artifact-actions" }, [
+      el("button", { type: "button", class: `icon-btn sm star-btn${isStar ? " on" : ""}`, "aria-pressed": String(isStar), "aria-label": isStar ? `Unstar ${r.title}` : `Star ${r.title}`, title: isStar ? "Starred" : "Star", text: isStar ? "★" : "☆", onClick: () => toggleStar(r) }),
       pv ? el("button", { type: "button", class: "btn btn-ghost btn-sm", text: "Preview", onClick: () => preview(r) }) : el("span", { class: "faint no-preview", text: "No preview" }),
       el("button", {
         type: "button",
@@ -113,6 +135,10 @@ function render() {
   }
   const used = A.usedBytes();
   headSub.textContent = `Private unless you share a file with a conversation. You're using ${bytes(used)} of ${bytes(A.ARCHIVE_QUOTA)}.`;
+  const share = Math.min(1, used / A.ARCHIVE_QUOTA);
+  meterEl.style.setProperty("--used", `${(share * 100).toFixed(1)}%`);
+  meterEl.classList.toggle("high", share > 0.85);
+  meterEl.setAttribute("aria-valuenow", String(Math.round(share * 100)));
   const q = filter.text.trim().toLowerCase();
   const me = state.currentUser.id;
   const shelves = [...new Set(all.map((r) => r.shelf).filter(Boolean))].sort();
@@ -186,9 +212,32 @@ function render() {
     return;
   }
 
-  // Strata: one layer per month, newest on top.
+  // Starred first, on their own shelf (when anything starred is showing).
+  const stars = starred();
+  const top = items.filter((r) => stars.has(r.id));
+  const starShelf = top.length
+    ? el("section", { class: "stratum starred" }, [el("h2", { class: "stratum-h" }, [el("span", { text: "★ Starred" }), el("small", { class: "num", text: `${top.length}` })]), el("ul", { class: "artifacts" }, top.map(artifact))])
+    : null;
+  const sort = sortNow();
+  const sortSel = el("label", { class: "arch-sort" }, [
+    el("span", { class: "faint", text: "Sort" }),
+    (() => {
+      const s = el("select", { class: "input", "aria-label": "Sort the archive" }, SORTS.map(([v, l]) => el("option", { value: v, text: l })));
+      s.value = sort;
+      s.addEventListener("change", () => (setPrefs({ archiveSort: s.value }), render()));
+      return s;
+    })(),
+  ]);
+  toolbar.append(sortSel);
+  // By name or size: one flat list. By date: strata, a layer per month.
+  if (sort === "az" || sort === "big") {
+    const flat = [...items].sort((a, b) => (sort === "az" ? a.title.localeCompare(b.title, undefined, { sensitivity: "base" }) : (b.size_bytes || 0) - (a.size_bytes || 0)));
+    bodyEl.replaceChildren(...[toolbar, starShelf, el("section", { class: "stratum" }, [el("h2", { class: "stratum-h" }, [el("span", { text: sort === "az" ? "A to Z" : "Largest first" }), el("small", { class: "num", text: `${flat.length} artifact${flat.length === 1 ? "" : "s"}` })]), el("ul", { class: "artifacts" }, flat.map(artifact))])].filter(Boolean));
+    return;
+  }
+  // Strata: one layer per month, newest (or oldest) on top.
   const layers = new Map();
-  for (const r of items) {
+  for (const r of sort === "old" ? [...items].sort((a, b) => Date.parse(a.created_at) - Date.parse(b.created_at)) : items) {
     const d = new Date(r.created_at);
     const key = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}`;
     if (!layers.has(key)) layers.set(key, { label: d.toLocaleDateString(undefined, { month: "long", year: "numeric" }), items: [] });
@@ -200,7 +249,7 @@ function render() {
       el("ul", { class: "artifacts" }, layer.items.map(artifact)),
     ])
   );
-  bodyEl.replaceChildren(toolbar, ...strata);
+  bodyEl.replaceChildren(...[toolbar, starShelf, ...strata].filter(Boolean));
 }
 
 async function preview(r) {
@@ -358,6 +407,7 @@ async function remove(r) {
 export function mount(section) {
   root = el("div", { class: "archive" });
   headSub = el("p", { class: "s-sub" });
+  meterEl = el("span", { class: "arch-meter", role: "meter", "aria-label": "Storage used", "aria-valuemin": "0", "aria-valuemax": "100", "aria-valuenow": "0" }, [el("i")]);
   const search = el("input", { type: "search", class: "input arch-search", placeholder: "Search titles, files, shelves, notes  ( / )", "aria-label": "Search the archive", "aria-keyshortcuts": "/" });
   // "/" jumps to the search box, as on most sites.
   const slash = (e) => {
@@ -375,7 +425,7 @@ export function mount(section) {
   bodyEl = el("div", { class: "arch-body" });
   root.append(
     el("div", { class: "s-head" }, [
-      el("div", {}, [el("p", { class: "kicker toned tone-archive", text: "Archive" }), el("h1", { text: "Catalogued artifacts" }), headSub]),
+      el("div", {}, [el("p", { class: "kicker toned tone-archive", text: "Archive" }), el("h1", { text: "Catalogued artifacts" }), headSub, meterEl]),
       el("div", { class: "s-actions" }, [el("button", { type: "button", class: "btn btn-primary", text: "Upload", onClick: () => openUpload() })]),
     ]),
     search,

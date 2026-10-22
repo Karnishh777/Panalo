@@ -103,6 +103,33 @@ landing ──► the crossing (sign in / sign up) ──► first time? the bir
   you switch or sign out); the other looks pay nothing for them.
   Everything that moves stands still with reduced motion; the Study Room
   stays quiet in every look.
+- **Section features** (`css/features.css`):
+  - Now: **Capture** a task in one line under the greeting ("Chemistry
+    worksheet fri" -- the date is read from the words, `model/quick-add.js`);
+    a ▶ on each task in Due soon starts a focus block on it
+    (`#/study/focus=<id>`).
+  - Study Room: the task list is a **checklist** -- numbered, bulleted or
+    plain; in your own order (drag by the grip, or the arrow keys on it) or
+    by due date (`prefs.taskSort`, `taskMarks`, `taskOrder`); edit a task's
+    name, subject and date; filter by subject; **twelve weeks of focus** as
+    a map of days (a picture, not a streak).
+  - Calendar: a **month** view; **download your calendar** as an .ics file
+    (weekly classes repeat; open tasks with a date come as deadlines;
+    `model/ics.js`, tested).
+  - World: **your world in numbers** (age, focus, best day, longest
+    session, lights, logged time, moons); a **postcard** -- your world, its
+    name, day and numbers as an image saved to your device (nothing is
+    posted; the device's own share sheet if it has one).
+  - Archive: **stars** (a Starred shelf on top), **sort** (newest, oldest,
+    A–Z, largest), a storage meter.
+  - Signals: **pin** a conversation to the top (☆ in its header).
+  - Drift: change its topics right there.
+  - Safety: **Need help now?** -- 112, CHILDLINE 1098, Tele-MANAS 14416,
+    cyber crime 1930, each a tap to call; a **safety check-up** you tick
+    for yourself.
+  - Settings: **Display** -- text size (four steps, applied before the
+    first paint) and a 12-hour clock; **keyboard shortcuts** (? lists them;
+    g then a letter goes to a page; also in Warp).
 - **Living details** (`js/details.js`, `css/details.css`), each in the
   look's own language, none with reduced motion:
   - the nav's marker glides to where you're going (a glass pane with a

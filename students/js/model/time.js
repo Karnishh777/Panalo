@@ -75,7 +75,15 @@ export function dayFraction(d) {
   return (x.getHours() * 3600 + x.getMinutes() * 60 + x.getSeconds()) / 86400;
 }
 
+// 24-hour by default ("14:05"); 12-hour ("2:05 pm") if you choose it in
+// Settings (shell.js sets it from your preferences).
+let hour12 = false;
+export function setClock12(on) {
+  hour12 = !!on;
+}
 export function clockTime(d) {
   const x = new Date(d);
-  return `${String(x.getHours()).padStart(2, "0")}:${String(x.getMinutes()).padStart(2, "0")}`;
+  const mm = String(x.getMinutes()).padStart(2, "0");
+  if (hour12) return `${x.getHours() % 12 || 12}:${mm} ${x.getHours() < 12 ? "am" : "pm"}`;
+  return `${String(x.getHours()).padStart(2, "0")}:${mm}`;
 }
