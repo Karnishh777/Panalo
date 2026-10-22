@@ -34,6 +34,7 @@ import { getLight, onLight, lightVector } from "./world-light.js";
 import { deviceTier } from "./device-tier.js";
 import { gradeFor } from "./cinema/grades.js";
 import { loadEarth, earthLevels } from "./earth.js";
+import { globePoint, spinToFace } from "./globe-math.js";
 
 const MAX_MOONS = 6;
 const EXTENT = 1.7; // half the canvas, in planet radii, at zoom 1
@@ -48,6 +49,9 @@ void main() {
 }`;
 
 const FRAG = `
+#ifdef GL_OES_standard_derivatives
+#extension GL_OES_standard_derivatives : enable
+#endif
 precision highp float;
 varying vec2 vP;
 uniform sampler2D uHeight;  // continents
@@ -149,6 +153,13 @@ float ringShadow(vec3 n) {
 // the middle.
 vec3 shadeEarth(vec3 n, vec3 f, vec3 L, vec3 V, vec2 uv, vec3 P) {
   vec2 eu = vec2(fract(uv.x + 0.5), uv.y);
+#ifdef GL_OES_standard_derivatives
+  // The maps wrap at the date line, where a lookup's derivatives jump and
+  // the GPU picks its blurriest level: a seam. Across that line, read with
+  // a second coordinate (the same place, wrapping at Greenwich instead).
+  float u2 = fract(uv.x) - 0.5;
+  if (fwidth(eu.x) > fwidth(u2) + 1e-6) eu.x = u2;
+#endif
   float e = texture2D(uHeight, eu).r;
   float isLand = smoothstep(0.0015, 0.004, e);
   // The frontier of rising land, with a ragged, natural edge.
@@ -885,6 +896,8 @@ function rot(v, axis, a) {
  */
 export function createGlobeGL(canvas, { seed, tilt = 0.38, interactive = false, spin = 1, maxPixels = 1400, onMotion, manual = false, bloom } = {}) {
   const gl = canvas.getContext("webgl", { premultipliedAlpha: true, alpha: true, antialias: false });
+  // fwidth, for reading the Earth's maps across the date line without a seam.
+  gl?.getExtension("OES_standard_derivatives");
   if (!gl) return null;
   // Weak devices: every other frame, and no bloom. Everyone else: every
   // frame (a turning world judders at 30), and the glow.
@@ -1126,7 +1139,14 @@ export function createGlobeGL(canvas, { seed, tilt = 0.38, interactive = false, 
     gl.uniform2fv(u.uMoonVal, val);
   }
 
+  // Things laid over the globe (friends' cities) follow it frame by frame.
+  const frameFns = new Set();
+  let view = null; // the last frame's { ext, offX, offY, aspect, rot, tilt }
   function draw(t) {
+    render(t);
+    if (view && frameFns.size) frameFns.forEach((f) => f());
+  }
+  function render(t) {
     if (destroyed || lost) return;
     size();
     const style = styleNow(t);
@@ -1163,6 +1183,10 @@ export function createGlobeGL(canvas, { seed, tilt = 0.38, interactive = false, 
     gl.uniform1f(u.uCloudShift, cloudShift);
     gl.uniform1f(u.uTime, (t / 1000) % 1000);
     gl.uniform1f(u.uTilt, tilt + pitchNow);
+    view = framing && cssH
+      ? { ext: cssH / 2 / Math.max(1, framing.r), offX: (framing.x / cssW * 2 - 1) * (canvas.width / canvas.height), offY: 1 - framing.y / cssH * 2 }
+      : { ext: EXTENT / zoomNow, offX: 0, offY: 0 };
+    Object.assign(view, { aspect: canvas.width / canvas.height, rot: rotA, tilt: tilt + pitchNow });
     gl.uniform1f(u.uSea, sea);
     gl.uniform1f(u.uAtmo, layers.atmosphere);
     gl.uniform1f(u.uAurora, layers.aurora);
@@ -1206,9 +1230,18 @@ export function createGlobeGL(canvas, { seed, tilt = 0.38, interactive = false, 
   // someone is handling it. Elsewhere, every frame.
   let skip = false;
   let acc = 0;
+  let aimRot = null; // turning to face a place (faceTo)
   function advance(t, step) {
     const rate = motion.paused ? 0 : BASE_RATE * motion.speed * motion.direction;
-    if (!dragging) rotA += (rate + fling) * step;
+    if (dragging) aimRot = null;
+    if (aimRot !== null) {
+      const d = aimRot - rotA;
+      rotA += d * (1 - Math.exp(-step / 0.3));
+      if (Math.abs(d) < 0.002) {
+        rotA = aimRot;
+        aimRot = null;
+      }
+    } else if (!dragging) rotA += (rate + fling) * step;
     fling *= Math.exp(-step / 0.7);
     pitchNow += (motion.pitch - pitchNow) * (1 - Math.exp(-step / 0.12));
     zoomNow += (motion.zoom - zoomNow) * (1 - Math.exp(-step / 0.15));
@@ -1216,7 +1249,7 @@ export function createGlobeGL(canvas, { seed, tilt = 0.38, interactive = false, 
     draw(t);
   }
   const loop = animationLoop(canvas, (t, dt) => {
-    const lively = dragging || Math.abs(fling) > 0.01 || Math.abs(pitchNow - motion.pitch) > 0.001 || Math.abs(zoomNow - motion.zoom) > 0.001;
+    const lively = dragging || aimRot !== null || Math.abs(fling) > 0.01 || Math.abs(pitchNow - motion.pitch) > 0.001 || Math.abs(zoomNow - motion.zoom) > 0.001;
     acc += dt;
     // Verse: every so often the world slips into another universe.
     if (comicNow() && !reducedMotion()) {
@@ -1372,6 +1405,33 @@ export function createGlobeGL(canvas, { seed, tilt = 0.38, interactive = false, 
       if (Math.round(n) === maxPixels) return;
       maxPixels = Math.round(n);
       sizeDirty = true;
+    },
+    /** Where a latitude/longitude is now, in CSS px of the canvas, and
+     *  how far it faces you (front > 0; behind the planet otherwise). */
+    project(lat, lon) {
+      if (!view) return null;
+      const p = globePoint(lat, lon, view.rot, view.tilt);
+      const vx = (p.x / view.ext + view.offX) / view.aspect;
+      const vy = p.y / view.ext + view.offY;
+      return { x: (vx + 1) / 2 * cssW, y: (1 - vy) / 2 * cssH, front: p.z, r: cssH / 2 / view.ext };
+    },
+    /** Call `fn` after every frame (for overlays); returns a stop function. */
+    onFrame(fn) {
+      frameFns.add(fn);
+      return () => frameFns.delete(fn);
+    },
+    /** Turn the world (and stop its spin) so a place faces you. */
+    faceTo(lat, lon) {
+      motion.paused = true;
+      fling = 0;
+      motion.pitch = Math.max(-0.5, Math.min(0.5, (lat * Math.PI) / 180 - tilt));
+      const target = spinToFace(lon, rotA);
+      onMotion?.({ ...motion });
+      if (still()) {
+        rotA = target;
+        pitchNow = motion.pitch;
+        draw(performance.now());
+      } else aimRot = target;
     },
     /** For a film: tip and zoom without easing. */
     setView({ pitch, zoom } = {}) {

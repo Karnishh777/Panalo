@@ -51,6 +51,8 @@
     activity_log: [],
     student_goals: [],
     daily_entries: [], // phase 24
+    student_places: [], // phase 27
+    student_place_viewers: [],
     resources: [],
     blocks: [],
     reports: [],
@@ -60,7 +62,7 @@
     room_requests: [],
   };
   const OWNED_BY_USER = ["student_profiles", "student_tasks", "focus_sessions", "student_events", "activity_log", "student_goals", "daily_entries"];
-  const NO_ID = ["user_keys", "conversation_keys", "conversation_reads", "conversation_participants", "student_profiles", "blocks", "room_codes", "room_requests"];
+  const NO_ID = ["user_keys", "conversation_keys", "conversation_reads", "conversation_participants", "student_profiles", "blocks", "room_codes", "room_requests", "student_places", "student_place_viewers"];
   const authUsers = []; // { id, email, password, user_metadata }
   const loginMisses = {}; // phase 25: username -> wrong tries
   const storage = new Map(); // "bucket/path" -> Blob
@@ -77,6 +79,8 @@
     message_reactions: [["message_id", "user_id", "emoji"]],
     messages: [["id"], ["client_id"]],
     student_profiles: [["user_id"]],
+    student_places: [["user_id"]],
+    student_place_viewers: [["owner_id", "viewer_id"]],
     blocks: [["blocker_id", "blocked_id"]],
     room_codes: [["conversation_id"], ["code"]],
     room_requests: [["conversation_id", "user_id"]],
@@ -88,6 +92,7 @@
     conversation_reads: ["conversation_id", "user_id"],
     student_profiles: ["user_id"],
     daily_entries: ["user_id", "day"],
+    student_places: ["user_id"],
   };
 
   // ------------------------------------------------------------------ auth
@@ -145,9 +150,23 @@
     const c = db.conversations.find((x) => x.id === convId);
     return !!(c && c.ends_at && Date.parse(c.ends_at) <= Date.now());
   };
+  // Phase 27: do two people share a one-to-one chat?
+  function sharesDirect(a, b) {
+    return db.conversations.some((c) => c.type === "direct"
+      && db.conversation_participants.some((p) => p.conversation_id === c.id && p.user_id === a)
+      && db.conversation_participants.some((p) => p.conversation_id === c.id && p.user_id === b));
+  }
   function visible(table, row) {
     const uid = me();
     if (!uid) return false;
+    if (table === "student_places") {
+      if (row.user_id === uid) return true;
+      return (!row.expires_at || Date.parse(row.expires_at) > Date.now())
+        && db.student_place_viewers.some((v) => v.owner_id === row.user_id && v.viewer_id === uid)
+        && sharesDirect(row.user_id, uid)
+        && !db.blocks.some((b) => (b.blocker_id === uid && b.blocked_id === row.user_id) || (b.blocker_id === row.user_id && b.blocked_id === uid));
+    }
+    if (table === "student_place_viewers") return row.owner_id === uid;
     const mine = myConvIds();
     if (OWNED_BY_USER.includes(table)) return row.user_id === uid;
     switch (table) {
@@ -368,6 +387,14 @@
       row.updated_at = nowIso();
     }
     if (table === "resources") row.owner_id = row.owner_id || me();
+    if (table === "student_places") {
+      row.user_id = row.user_id || me();
+      row.region = row.region ?? "";
+      row.country = row.country ?? "";
+      row.expires_at = row.expires_at ?? null;
+      row.updated_at = nowIso();
+    }
+    if (table === "student_place_viewers") { row.owner_id = row.owner_id || me(); row.created_at = row.created_at || nowIso(); }
     if (table === "blocks") row.blocker_id = row.blocker_id || me();
     if (table === "reports") { row.reporter_id = row.reporter_id || me(); row.status = row.status || "open"; }
     if (table === "room_codes") row.created_by = row.created_by || me();
@@ -424,7 +451,12 @@
       if (used + row.size_bytes > 200 * 1024 * 1024) return deny("Your archive is full (200 MB). Remove something to make room.", "54000");
     }
     if (t === "reports" && row.conversation_id && !myConvIds().has(row.conversation_id)) return deny("new row violates row-level security policy");
-    const CONSENTED = ["messages", "conversations", "student_profiles", "student_tasks", "focus_sessions", "student_events", "activity_log", "student_goals", "daily_entries", "resources"];
+    if (t === "student_places") {
+      if (row.user_id !== uid) return deny("new row violates row-level security policy");
+      if (row.expires_at && Date.parse(row.expires_at) > Date.now() + (7 * 24 + 1) * 3600000) return deny("A place can be shared for a week at most, or until you turn it off.", "22023");
+    }
+    if (t === "student_place_viewers" && (row.owner_id !== uid || !sharesDirect(uid, row.viewer_id))) return deny("new row violates row-level security policy");
+    const CONSENTED = ["messages", "conversations", "student_profiles", "student_tasks", "focus_sessions", "student_events", "activity_log", "student_goals", "daily_entries", "resources", "student_places"];
     if (CONSENTED.includes(t) && !mayProcess(uid)) return deny("A parent or guardian needs to agree before Panalo can be used.");
     if (t === "conversation_participants" && !mayProcess(row.user_id)) return deny("A parent or guardian needs to agree before Panalo can be used.");
     return null;
@@ -757,8 +789,8 @@
         return ps.some((p) => p.user_id === uid) && ps.every((p) => p.user_id === uid);
       }).map((c) => c.id);
       db.conversations = db.conversations.filter((c) => !solo.includes(c.id));
-      for (const t of ["resources", "student_profiles", "student_tasks", "focus_sessions", "student_events", "activity_log", "student_goals", "daily_entries"]) {
-        if (db[t]) db[t] = db[t].filter((r) => (r.owner_id || r.user_id) !== uid);
+      for (const t of ["resources", "student_profiles", "student_tasks", "focus_sessions", "student_events", "activity_log", "student_goals", "daily_entries", "student_places", "student_place_viewers"]) {
+        if (db[t]) db[t] = db[t].filter((r) => (r.owner_id || r.user_id) !== uid && r.viewer_id !== uid);
       }
       db.messages = db.messages.filter((m) => m.user_id !== uid);
       db.conversation_participants = db.conversation_participants.filter((p) => p.user_id !== uid);
@@ -1158,6 +1190,16 @@
 
     const samDm = await makeConv({ type: "direct", name: "sam", members: ["alex", "sam"], created: 60 * 24 * 50 });
     await say(samDm, "sam", "thanks for the notes!", 60 * 24 * 9);
+
+    // Phase 27: maya shows alex her city until she turns it off; jordan for
+    // a day; sam has a place but hasn't chosen alex, so alex can't see it.
+    if (!QA.noPlaces) {
+      const place = (who, city, region, country, lat, lon, hours) => db.student_places.push({ user_id: byName[who].id, city, region, country, lat, lon, expires_at: hours ? new Date(Date.now() + hours * 3600000).toISOString() : null, updated_at: ago(60) });
+      place("maya", "Bengaluru", "Karnataka", "India", 12.97, 77.56, 0);
+      place("jordan", "London", "England", "United Kingdom", 51.5, -0.12, 20);
+      place("sam", "Toronto", "Ontario", "Canada", 43.7, -79.42, 0);
+      db.student_place_viewers.push({ owner_id: byName.maya.id, viewer_id: alex.id, created_at: ago(60) }, { owner_id: byName.jordan.id, viewer_id: alex.id, created_at: ago(60) });
+    }
 
     // Read markers: alex has read everything except the newest few.
     const lastRead = (conv, minsAgo) => db.conversation_reads.push({ conversation_id: conv.id, user_id: alex.id, last_read_at: ago(minsAgo) });

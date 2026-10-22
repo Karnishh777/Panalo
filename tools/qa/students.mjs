@@ -253,6 +253,48 @@ try {
   check("the first session is a discovery", /First session/.test(await page.textContent(".world-lower")));
   await shot(page, "world");
 
+  // Phase 27: friends on the globe.
+  await page.waitForSelector("#friends-globe:not([hidden])", { timeout: 5000 }).catch(() => {});
+  const fg = await page.evaluate(() => ({
+    friends: [...document.querySelectorAll(".fg-item b")].map((b) => b.textContent),
+    beacons: [...document.querySelectorAll(".beacon")].map((b) => b.getAttribute("aria-label")),
+    lead: document.querySelector(".fg-me")?.innerText || "",
+  }));
+  check("friends who chose you show their city, on the list and the globe", fg.friends.join() === "jordan,maya" && fg.beacons.some((b) => /maya, Bengaluru/.test(b)) && fg.beacons.some((b) => /jordan, London/.test(b)));
+  check("someone who hasn't chosen you stays hidden", !fg.friends.includes("sam") && !fg.beacons.some((b) => /Toronto/.test(b)));
+  check("your own city is off until you turn it on", /Off until you turn it on/.test(fg.lead) && (await page.evaluate(() => window.__qa.db.student_places.filter((p) => p.city === "Chennai").length)) === 0);
+  await page.click(".fg-item[data-id] .fg-find >> nth=1");
+  await page.waitForTimeout(300);
+  check("Find picks a friend out on the globe", await page.evaluate(() => document.querySelector(".beacon.focus")?.getAttribute("aria-label")?.startsWith("maya") && document.querySelector(".fg-item.on b")?.textContent === "maya"));
+  await page.click("#fg-share");
+  await page.waitForSelector("#fg-city", { timeout: 3000 });
+  const people = await page.$$eval(".fg-people label span", (s) => s.map((x) => x.textContent));
+  check("only people from one-to-one chats can be chosen", people.join() === "jordan,maya,sam");
+  await page.fill("#fg-city", "chenn");
+  await page.waitForSelector(".fg-city", { timeout: 5000 }).catch(() => {});
+  check("the city is picked from a list as you type", (await page.textContent(".fg-results")).includes("Tamil Nadu"));
+  await page.click(".fg-city >> nth=0");
+  await page.click("#fg-save");
+  await page.waitForTimeout(300);
+  check("you have to choose who can see it", /at least one person/.test(await page.textContent("dialog[open] .sheet-alert")));
+  await page.check(".fg-people input[type=checkbox] >> nth=1");
+  await page.click("dialog[open] .chip >> text=24 hours");
+  await page.click("#fg-save");
+  await page.waitForTimeout(900);
+  const mine = await page.evaluate(() => {
+    const me = window.__qa.db.profiles.find((p) => p.username === "alex").id;
+    return { place: window.__qa.db.student_places.find((p) => p.user_id === me), viewers: window.__qa.db.student_place_viewers.filter((v) => v.owner_id === me).length };
+  });
+  check("your city is saved as the city, for 24 hours, to the one friend chosen", mine.place?.city === "Chennai" && Number(mine.place.lat) === 13.09 && mine.viewers === 1 && Math.abs(Date.parse(mine.place.expires_at) - Date.now() - 86400000) < 120000);
+  check("…and says who sees it, for how long", /Shown to maya, for 24 more hours/.test(await page.textContent(".fg-me")) && (await page.locator(".beacon.self").count()) === 1);
+  await page.click("#fg-off");
+  await page.click("dialog[open] .btn-primary");
+  await page.waitForTimeout(800);
+  check("turning it off erases the place and who could see it", await page.evaluate(() => {
+    const me = window.__qa.db.profiles.find((p) => p.username === "alex").id;
+    return !window.__qa.db.student_places.some((p) => p.user_id === me) && !window.__qa.db.student_place_viewers.some((v) => v.owner_id === me);
+  }));
+
   await go(page, "#/calendar/add", 1200);
   await page.fill("dialog input[placeholder^='e.g. Physics']", "Chemistry lab");
   await page.click("dialog .btn-primary");
@@ -669,6 +711,10 @@ try {
     await w.fill(".sheet input[placeholder^='e.g.']", "Finish the robotics demo");
     await w.click(".sheet .btn-primary");
     await w.waitForTimeout(500);
+    // Centre it first: scrolled only "into view", it can land under the
+    // fixed bar or the rules card, and the panel is still sliding in.
+    await w.evaluate(() => [...document.querySelectorAll(".moons button, .moons a")].find((b) => /Mark done/.test(b.textContent))?.scrollIntoView({ block: "center" }));
+    await w.waitForTimeout(800);
     await w.click(".moons >> text=Mark done");
     await w.waitForSelector(".moment", { timeout: 8000 }).catch(() => {});
     check("reaching something stops the screen for a moment", await w.isVisible(".moment"));

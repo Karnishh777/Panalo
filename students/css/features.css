@@ -578,3 +578,255 @@ html[data-text="large"] body {
 html[data-text="larger"] body {
   zoom: 1.22;
 }
+
+/* ===== World: friends on the globe ========================================== */
+
+.world-stage {
+  position: relative;
+}
+.beacons {
+  position: absolute;
+  pointer-events: none;
+  overflow: visible;
+}
+.beacon {
+  position: absolute;
+  left: 0;
+  top: 0;
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  margin: -7px 0 0 -7px;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--text);
+  pointer-events: auto;
+  cursor: pointer;
+  will-change: transform, opacity;
+  transition: opacity var(--dur-1) linear;
+}
+.beacon-dot {
+  position: relative;
+  width: 14px;
+  height: 14px;
+  flex: none;
+  border-radius: 50%;
+  background: radial-gradient(circle, #fff 0 22%, var(--signal) 45%, color-mix(in srgb, var(--signal) 30%, transparent) 72%, transparent 74%);
+  box-shadow: 0 0 12px 2px color-mix(in srgb, var(--signal) 70%, transparent);
+}
+.beacon-dot::after {
+  content: "";
+  position: absolute;
+  inset: -6px;
+  border: 1.5px solid var(--signal);
+  border-radius: 50%;
+  opacity: 0;
+  animation: beacon-ping 2.6s var(--ease-out) infinite;
+}
+.beacon.self .beacon-dot {
+  background: radial-gradient(circle, #fff 0 22%, var(--world) 45%, color-mix(in srgb, var(--world) 30%, transparent) 72%, transparent 74%);
+  box-shadow: 0 0 12px 2px color-mix(in srgb, var(--world) 70%, transparent);
+}
+.beacon.self .beacon-dot::after {
+  border-color: var(--world);
+}
+@keyframes beacon-ping {
+  0% { transform: scale(0.4); opacity: 0.9; }
+  80%, 100% { transform: scale(1.6); opacity: 0; }
+}
+.beacon-tag {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+  padding: 3px 9px;
+  border: 1px solid var(--line-2);
+  border-radius: var(--r-pill);
+  background: color-mix(in srgb, var(--void) 78%, transparent);
+  font-size: 11.5px;
+  line-height: 1.3;
+  white-space: nowrap;
+  backdrop-filter: blur(6px);
+}
+.beacon-tag small {
+  color: var(--text-3);
+}
+.beacon.near-limb .beacon-tag,
+.beacon.tag-hidden .beacon-tag {
+  opacity: 0;
+}
+.beacon:hover .beacon-tag,
+.beacon:focus-visible .beacon-tag,
+.beacon.focus .beacon-tag {
+  opacity: 1;
+  border-color: var(--line-3);
+}
+.beacon.focus .beacon-dot::after {
+  animation-duration: 1.4s;
+}
+.beacon:focus-visible {
+  outline: none;
+}
+.beacon:focus-visible .beacon-dot {
+  outline: 2px solid var(--text);
+  outline-offset: 3px;
+}
+@media (prefers-reduced-motion: reduce) {
+  .beacon-dot::after { animation: none; }
+}
+html[data-motion="reduce"] .beacon-dot::after {
+  animation: none;
+}
+
+.world-friends {
+  margin: 18px 0 0;
+}
+.fg .panel-head {
+  margin-bottom: 10px;
+}
+.fg-me {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 12px 14px;
+  border: 1px dashed var(--line-2);
+  border-radius: var(--r-2);
+}
+.fg-me-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  min-width: 0;
+}
+.fg-me-row small {
+  display: block;
+  margin-top: 2px;
+}
+.fg-me-actions {
+  display: flex;
+  gap: 6px;
+}
+.fg-lead {
+  margin: 0;
+  max-width: 52ch;
+  color: var(--text-2);
+  font-size: 14px;
+}
+.fg-pin {
+  width: 10px;
+  height: 10px;
+  margin-top: 5px;
+  flex: none;
+  border-radius: 50%;
+  background: var(--signal);
+  box-shadow: 0 0 10px var(--signal);
+}
+.fg-pin.self {
+  background: var(--world);
+  box-shadow: 0 0 10px var(--world);
+}
+.fg-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 8px;
+  margin: 12px 0 0;
+  padding: 0;
+  list-style: none;
+}
+.fg-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 10px 12px;
+  border: 1px solid var(--line);
+  border-radius: var(--r-2);
+  background: var(--surface);
+  transition: border-color var(--dur-1), background var(--dur-1);
+}
+.fg-item.on {
+  border-color: color-mix(in srgb, var(--signal) 55%, transparent);
+  background: color-mix(in srgb, var(--signal) 8%, var(--surface));
+}
+.fg-who {
+  flex: 1;
+  min-width: 0;
+}
+.fg-who b,
+.fg-who small {
+  display: block;
+}
+.fg-who small {
+  margin-top: 2px;
+}
+.fg-find {
+  align-self: center;
+}
+.fg-empty {
+  grid-column: 1 / -1;
+  padding: 4px 2px;
+  font-size: 14px;
+}
+.fg-results {
+  display: grid;
+  gap: 2px;
+  margin: 6px 0 0;
+  padding: 0;
+  list-style: none;
+}
+.fg-city {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  width: 100%;
+  min-height: 40px;
+  padding: 8px 10px;
+  border: 0;
+  border-radius: var(--r-1);
+  background: none;
+  color: var(--text);
+  text-align: left;
+  cursor: pointer;
+}
+.fg-city:hover,
+.fg-city:focus-visible {
+  background: var(--surface-2);
+}
+.fg-picked {
+  margin: 8px 0 0;
+}
+.fg-picked > span {
+  display: inline-flex;
+  align-items: flex-start;
+  gap: 8px;
+}
+.fg-picked .fg-pin {
+  margin-top: 6px;
+}
+.fg-people .check {
+  align-items: center;
+  min-height: 40px;
+  color: var(--text);
+  font-size: 14px;
+}
+.fg-people .check input {
+  width: 18px;
+  height: 18px;
+  min-height: 0;
+  margin: 0;
+  padding: 0;
+}
+.fg-people {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: 4px 12px;
+  margin: 6px 0 0;
+  padding: 0;
+  list-style: none;
+}
+@media (max-width: 560px) {
+  .beacon-tag small { display: none; }
+  .fg-me { flex-direction: column; align-items: stretch; }
+  .fg-me-actions .btn { flex: 1; }
+}

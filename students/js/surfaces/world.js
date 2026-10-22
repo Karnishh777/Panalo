@@ -17,6 +17,8 @@ import { openCheckin } from "../checkin.js";
 import { season } from "../model/chronicle.js";
 import { playChronicle } from "../chronicle.js";
 import { openTimelapse } from "../timelapse.js";
+import { friendsOnGlobe } from "../friends-globe.js";
+import { directFriends } from "../places.js";
 
 let root;
 let legendEl;
@@ -32,6 +34,7 @@ let journalShown = 14;
 let numbersEl;
 let dock = null;
 let globe = null;
+let friends = null;
 let unsubs = [];
 
 const LOG_KINDS = [
@@ -445,6 +448,7 @@ function rename() {
 
 export function mount(section) {
   root = el("div", { class: "world" });
+  let friendsSlot;
   titleEl = el("h1");
   subEl = el("p", { class: "s-sub" });
   seasonEl = el("p", { class: "season-line" });
@@ -474,6 +478,7 @@ export function mount(section) {
       el("section", { class: "panel tone-world", "aria-labelledby": "w-legend" }, [el("div", { class: "panel-head" }, [el("h2", { id: "w-legend", text: "What shapes it" })]), legendEl]),
     ]),
     el("section", { class: "world-numbers", "aria-label": "Your world in numbers" }, [(numbersEl = el("ul", { class: "wn-stats" }))]),
+    (friendsSlot = el("div", { class: "world-friends" })),
     el("div", { class: "world-lower" }, [
       el("section", { class: "panel tone-world" }, [el("div", { class: "panel-head" }, [el("h2", { text: "Moons — your goals" }), el("button", { type: "button", class: "link-btn", text: "Add a moon", onClick: openGoal })]), moonsEl]),
       el("section", { class: "panel tone-time" }, [el("div", { class: "panel-head" }, [el("h2", { text: "Discoveries" })]), discEl]),
@@ -496,6 +501,18 @@ export function mount(section) {
     console.error(e);
     canvas.replaceWith(emptyState("Your world can't be drawn in this browser.", "Everything it would show is listed beside it."));
   }
+  friends = friendsOnGlobe({ globe, canvas: globe ? canvas : null });
+  friendsSlot.append(friends.node);
+  friends.refresh();
+  // Signals fires on every message; only a change in who you talk to one to
+  // one changes this list (names, who can be chosen).
+  let friendKey = directFriends().map((f) => `${f.id}:${f.name}`).join();
+  unsubs.push(on("signals", () => {
+    const k = directFriends().map((f) => `${f.id}:${f.name}`).join();
+    if (k === friendKey) return;
+    friendKey = k;
+    friends?.refresh();
+  }));
   unsubs.push(on("any", render));
   render();
 }
@@ -503,12 +520,16 @@ export function mount(section) {
 export function show(param) {
   render();
   if (param === "log") openLog();
+  friends?.refresh();
+  if (param === "friends") requestAnimationFrame(() => root.querySelector("#friends-globe")?.scrollIntoView({ block: "start", behavior: "smooth" }));
   if (param === "journal") requestAnimationFrame(() => root.querySelector("#journal")?.scrollIntoView({ block: "start", behavior: "smooth" }));
 }
 
 export function destroy() {
   unsubs.forEach((u) => u());
   unsubs = [];
+  friends?.destroy();
+  friends = null;
   globe?.destroy();
   dock?.destroy();
   dock = null;
