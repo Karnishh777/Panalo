@@ -447,13 +447,6 @@ html[data-look="verse"] .fm-cell.l4 {
   background: var(--alert);
 }
 
-/* ===== Drift: topics ========================================================= */
-
-.drift-topics {
-  margin-top: 6px;
-  font-size: 13px;
-}
-
 /* ===== Safety: help now, and a check-up ====================================== */
 
 .help-list {

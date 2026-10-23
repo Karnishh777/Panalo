@@ -208,17 +208,15 @@ body:not([data-view="study"]) .panel:hover .panel-head h2::after {
    expressive places inside (not on every button on every page). */
 body[data-view="now"] .stage .btn-primary,
 body[data-view="world"] .stage .btn-primary,
-body[data-view="drift"] .stage .btn-primary,
 #landing .btn-primary,
-.birth .btn-primary {
+.setup .btn-primary {
   position: relative;
   overflow: hidden;
 }
 body[data-view="now"] .stage .btn-primary::after,
 body[data-view="world"] .stage .btn-primary::after,
-body[data-view="drift"] .stage .btn-primary::after,
 #landing .btn-primary::after,
-.birth .btn-primary::after {
+.setup .btn-primary::after {
   content: "";
   position: absolute;
   top: -50%;
@@ -251,7 +249,7 @@ body[data-view="drift"] .stage .btn-primary::after,
   opacity: 0.55;
   transition: opacity 0.6s;
 }
-body.in-app:not([data-view="now"]):not([data-view="world"]):not([data-view="drift"]) .fx-ambient {
+body.in-app:not([data-view="now"]):not([data-view="world"]) .fx-ambient {
   opacity: 0;
 }
 

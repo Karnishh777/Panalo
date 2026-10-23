@@ -1063,7 +1063,7 @@ async function examQualityTests() {
 // goes with its data, and no room can be joined with a code any more.
 async function privateStudentsTests() {
   const db = await createDb();
-  const upTo27 = await replay(db, MIGRATIONS.filter((f) => f !== "supabase-phase28.sql"));
+  const upTo27 = await replay(db, MIGRATIONS.slice(0, MIGRATIONS.indexOf("supabase-phase28.sql")));
   ok("phases 1-27 replay", upTo27.ok, upTo27.error);
   const me = await createUser(db, "q_me");
   const friend = await createUser(db, "q_friend");
@@ -1085,8 +1085,50 @@ async function privateStudentsTests() {
   ok("phase 28 is safe to re-run", again.ok, again.error);
 }
 
+// Phase 29: the study profile behind the v0.2 plan; Drift's saved state goes.
+async function studyProfileTests() {
+  const db = await createDb();
+  const upTo28 = await replay(db, MIGRATIONS.slice(0, MIGRATIONS.indexOf("supabase-phase29.sql")));
+  ok("phases 1-28 replay", upTo28.ok, upTo28.error);
+  const me = await createUser(db, "s_me");
+  const other = await createUser(db, "s_other");
+  await as(db, me, (tx) => tx.query("insert into student_profiles (world_name) values ('W')"));
+  await as(db, me, (tx) => tx.query("select merge_device_state('drift', '{\"seen\": [1]}'::jsonb, 1000)"));
+  await as(db, me, (tx) => tx.query("select merge_device_state('prefs', '{\"x\": 1}'::jsonb, 1000)"));
+
+  const r = await runFile(db, "supabase-phase29.sql");
+  ok("phase 29 applies on a database with profiles in it", r.ok, r.error);
+  const st = (await db.query("select device_state from student_profiles where user_id = $1", [me])).rows[0].device_state;
+  ok("Drift's saved state is erased, other settings kept", !("drift" in st) && st.prefs?.v?.x === 1, JSON.stringify(st));
+  const drift = await as(db, me, async (tx) => (await tx.query("select merge_device_state('drift', '{}'::jsonb, 5000) as s")).rows[0].s);
+  ok("Drift can't be saved any more", drift === null);
+
+  const subjects = JSON.stringify([{ id: "phy", level: 2, grade: "B" }, { id: "chem", level: 3 }]);
+  const set = await as(db, me, async (tx) => (
+    await tx.query(
+      `update student_profiles set board = 'cambridge', stage = 'as', subjects = $1::jsonb, aim = 'top', school_days = '{1,2,3,4,5,6}',
+         school_start = '08:10', school_end = '15:10', boarding = false, travel_minutes = 30, wake_at = '06:00', sleep_at = '22:30',
+         tuition_hours = 4, setup_at = now() where user_id = auth.uid() returning user_id`,
+      [subjects]
+    )).rows.length
+  );
+  ok("a student can save their study profile", set === 1);
+  const back = (await db.query("select stage, subjects, school_start::text as s from student_profiles where user_id = $1", [me])).rows[0];
+  ok("…and it reads back as saved", back.stage === "as" && back.subjects.length === 2 && back.s === "08:10:00", JSON.stringify(back));
+  const bad = async (sql) => !(await attempt(db, me, (tx) => tx.query(sql))).ok;
+  ok("an unknown board is refused", await bad("update student_profiles set board = 'mars' where user_id = auth.uid()"));
+  ok("an unknown stage is refused", await bad("update student_profiles set stage = 'grade99' where user_id = auth.uid()"));
+  ok("subjects must be a short list", await bad(`update student_profiles set subjects = '${JSON.stringify(Array.from({ length: 17 }, (_, i) => ({ id: "s" + i })))}'::jsonb where user_id = auth.uid()`));
+  ok("school days are days of the week", await bad("update student_profiles set school_days = '{1,9}' where user_id = auth.uid()"));
+  ok("travel time stays sensible", await bad("update student_profiles set travel_minutes = 900 where user_id = auth.uid()"));
+  const peek = await as(db, other, async (tx) => (await tx.query("select count(*)::int as n from student_profiles where user_id = $1", [me])).rows[0].n);
+  ok("nobody else can read the study profile", peek === 0);
+  const again = await runFile(db, "supabase-phase29.sql");
+  ok("phase 29 is safe to re-run", again.ok, again.error);
+}
+
 async function main() {
-  const sections = [migrationTests, chatTests, takeoverTests, callTests, accountTests, backfillTests, historyTests, disappearTests, studentsTests, moderationTests, deviceStateTests, consentTests, logTests, dailyTests, usernameLoginTests, examQualityTests, privateStudentsTests];
+  const sections = [migrationTests, chatTests, takeoverTests, callTests, accountTests, backfillTests, historyTests, disappearTests, studentsTests, moderationTests, deviceStateTests, consentTests, logTests, dailyTests, usernameLoginTests, examQualityTests, privateStudentsTests, studyProfileTests];
   for (const run of sections) {
     try {
       await run();

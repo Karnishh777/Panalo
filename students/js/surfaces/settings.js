@@ -1,8 +1,9 @@
-// Settings: motion, the Study Room, your interests, your password.
-import { el, showToast, getPrefs, setPrefs, reportError } from "../ui.js";
+// Settings: motion, the Study Room, your study profile, your password.
+import { el, showToast, getPrefs, setPrefs } from "../ui.js";
 import { withBusy } from "../../../src/util.js";
-import { store, api, emit } from "../store.js";
-import { INTERESTS } from "../model/drift-library.js";
+import { store, emit } from "../store.js";
+import { fromRow } from "../model/profile.js";
+import { stageOf, subjectName } from "../model/subjects.js";
 import { supabaseClient } from "../../../src/client.js";
 import { rewrapPrivateKey } from "../../../src/encryption.js";
 import { validatePassword, describePasswordPolicy, breachedPassword } from "../../../src/password.js";
@@ -47,30 +48,17 @@ function displayBlock() {
   ];
 }
 
-export function interestsBlock() {
-  const chosen = new Set(store.student?.interests || []);
-  const wrap = el("div", { class: "chips" });
-  const draw = () =>
-    wrap.replaceChildren(
-      ...INTERESTS.map((it) =>
-        el("button", {
-          type: "button",
-          class: "chip tone-drift",
-          "aria-pressed": String(chosen.has(it.id)),
-          text: it.label,
-          onClick: async () => {
-            if (chosen.has(it.id)) chosen.delete(it.id);
-            else if (chosen.size < 5) chosen.add(it.id);
-            else return showToast("Up to five.", "");
-            draw();
-            const { error } = await api.saveStudent({ interests: [...chosen] });
-            if (error) reportError(error);
-          },
-        })
-      )
-    );
-  draw();
-  return wrap;
+// The study profile from the setup, in one line, with a way to change it.
+function studyProfileBlock(ctx) {
+  const a = fromRow(store.student);
+  const stage = stageOf(a.stage);
+  const names = a.subjects.map((x) => subjectName(a.stage, x.id));
+  const school = `${a.schoolStart}–${a.schoolEnd}, ${a.boarding ? "boarder" : `day scholar, ${a.travelMinutes} min travel`}`;
+  return [
+    el("p", { class: "muted", text: stage ? `${stage.label}${stage.sub ? ` (${stage.sub})` : ""} · ${names.length} subjects · school ${school}.` : "Not set up yet." }),
+    names.length ? el("p", { class: "faint", text: names.join(", ") }) : null,
+    el("button", { type: "button", class: "btn btn-ghost btn-sm", id: "edit-setup", text: "Change my answers", onClick: () => ctx.editSetup?.() }),
+  ];
 }
 
 function passwordBlock() {
@@ -139,13 +127,12 @@ export function show() {
               setPrefs({ studyNotify: on });
             })
           : null,
-        el("button", { type: "button", class: "btn btn-quiet btn-sm", text: "Watch your universe begin again", onClick: () => ctx.replayBirth() }),
       ]),
       el("section", { class: "panel tone-time" }, [
         el("div", { class: "panel-head" }, [el("h2", { text: "Display" }), el("button", { type: "button", class: "link-btn", id: "show-shortcuts", text: "Keyboard shortcuts", onClick: () => import("../shell.js").then((m) => m.openShortcuts()) })]),
         ...displayBlock(),
       ]),
-      el("section", { class: "panel tone-drift" }, [el("div", { class: "panel-head" }, [el("h2", { text: "What pulls you in" })]), el("p", { class: "muted", text: "Drift picks its facts and prompts from these. Saved to your account." }), interestsBlock()]),
+      el("section", { class: "panel tone-world" }, [el("div", { class: "panel-head" }, [el("h2", { text: "Your study profile" })]), ...studyProfileBlock(ctx)]),
       el("section", { class: "panel tone-signal" }, [el("div", { class: "panel-head" }, [el("h2", { text: "Password" })]), passwordBlock()]),
       el("section", { class: "panel tone-time" }, [
         el("div", { class: "panel-head" }, [el("h2", { text: "Session" })]),

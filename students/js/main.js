@@ -1,4 +1,4 @@
-// Panalo Students: outside → crossing → (first time: birth) → inside.
+// Panalo Students: outside → crossing → (first time: the setup) → inside.
 //
 // crypto.js and the Supabase SDK are classic scripts loaded before this
 // module, so window.PanaloCrypto and window.supabase already exist.
@@ -6,7 +6,8 @@ import { startSky } from "./sky.js";
 import { initLanding } from "./landing.js";
 import { initAuth, restoreSession, showForm, signOut } from "./auth.js";
 import { showParent } from "./parent.js";
-import { runBirth, needsBirth } from "./birth.js";
+import { runSetup } from "./setup.js";
+import { needsSetup } from "./model/profile.js";
 import { store, loadStudentProfile, loadAll, resetStore } from "./store.js";
 import { initShell, enterShell, leaveShell } from "./shell.js";
 import { initLooks } from "./looks.js";
@@ -20,7 +21,7 @@ const $ = (id) => document.getElementById(id);
 const AFTER_KEY = "panalo.students.after";
 let inside = false;
 // Restoring a stored session and a fast manual sign-in can both finish;
-// only the first may enter, or two births would run on top of each other.
+// only the first may enter, or two setups would run on top of each other.
 let entering = false;
 
 let deepLink = false;
@@ -86,11 +87,9 @@ async function onReady(session, { fresh }) {
   }
   const loading = loadAll().catch((e) => console.error(e));
 
-  if (needsBirth()) {
-    document.body.classList.add("in-birth");
-    runBirth({
+  if (setupDue()) {
+    runSetup({
       onDone: async () => {
-        document.body.classList.remove("in-birth");
         await loading;
         enter({ firstTime: true });
       },
@@ -99,6 +98,15 @@ async function onReady(session, { fresh }) {
   }
   await loading;
   enter({ firstTime: fresh });
+}
+
+// The setup runs until it has been finished once. A database without
+// phase 29 has no setup_at column at all: skip it there rather than ask
+// questions that can't be saved.
+function setupDue() {
+  if (store.schemaMissing) return false;
+  if (store.student && !("setup_at" in store.student)) return false;
+  return needsSetup(store.student);
 }
 
 function enter({ firstTime = false } = {}) {
@@ -140,7 +148,7 @@ initAuth({
   },
 });
 initLooks();
-initShell({ signOut, replayBirth: () => runBirth({ replay: true, onDone: () => {} }) });
+initShell({ signOut, editSetup: () => runSetup({ editing: true, onDone: () => {} }) });
 
 window.addEventListener("hashchange", () => {
   if (!inside) showOutside();

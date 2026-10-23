@@ -272,7 +272,7 @@ function below() {
 
 // ---- Cards lean towards the pointer ----------------------------------------------------
 
-const LEANS = ".drift-card, .look-opt, .systems li";
+const LEANS = ".look-opt, .systems li";
 
 function lean() {
   if (!window.matchMedia?.("(hover: hover) and (pointer: fine)").matches) return null;

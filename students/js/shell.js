@@ -18,9 +18,7 @@ import { startSync, stopSync } from "./sync.js";
 import { rulesReminder } from "./rules-reminder.js";
 import { maybeDawn, dawnDue } from "./dawn.js";
 import { openCheckin, openIntention } from "./checkin.js";
-import { maybeChronicle, playChronicle } from "./chronicle.js";
 import { checkMomentsSoon } from "./moment.js";
-import { openTimelapse } from "./timelapse.js";
 import { VERSION } from "./version.js";
 
 const $ = (id) => document.getElementById(id);
@@ -31,22 +29,21 @@ const SURFACES = {
   world: () => import("./surfaces/world.js"),
   calendar: () => import("./surfaces/calendar.js"),
   archive: () => import("./surfaces/archive.js"),
-  drift: () => import("./surfaces/drift.js"),
   safety: () => import("./surfaces/safety.js"),
   settings: () => import("./surfaces/settings.js"),
   moderate: () => import("./surfaces/moderate.js"),
 };
-const TITLES = { now: "Now", study: "Study Room", world: "World", calendar: "Calendar", archive: "Archive", drift: "Drift", safety: "Privacy & data", settings: "Settings", moderate: "Moderation" };
+const TITLES = { now: "Now", study: "Study Room", world: "World", calendar: "Calendar", archive: "Archive", safety: "Privacy & data", settings: "Settings", moderate: "Moderation" };
 
 // Each surface's colour, for the ink that wipes across when you arrive.
-const TONES = { now: "#ffc47a", world: "#7ee2a8", calendar: "#ffc47a", archive: "#e7d19b", drift: "#ff9ec4", safety: "#b59cff", settings: "#9ad8ff" };
+const TONES = { now: "#ffc47a", world: "#7ee2a8", calendar: "#ffc47a", archive: "#e7d19b", safety: "#b59cff", settings: "#9ad8ff" };
 let ambient = null;
 
-// Where effects belong. The expressive places -- your day, your world, and
-// Drift, which is play -- get the ink and the drifting petals. Everywhere
+// Where effects belong. The expressive places -- your day and your world --
+// get the ink and the drifting petals. Everywhere
 // you read, file, plan or configure stays still: effects there were noise.
 // The Study Room is the quietest of all (css/surfaces.css).
-const EXPRESSIVE = new Set(["now", "world", "drift"]);
+const EXPRESSIVE = new Set(["now", "world"]);
 
 // Arriving somewhere expressive: an ink slash in that surface's colour, and
 // its parts cut in one after another. Never with reduced motion.
@@ -119,7 +116,7 @@ async function route() {
     }
     loading.delete(name);
     section.replaceChildren();
-    mod.mount(section, { navigate, signOut: hooks.signOut, replayBirth: hooks.replayBirth });
+    mod.mount(section, { navigate, signOut: hooks.signOut, editSetup: hooks.editSetup });
     mounted.set(name, mod);
     if (current !== name) return; // navigated away while loading
     // Show what the address says NOW: another route may have arrived while
@@ -153,7 +150,7 @@ export function applyDisplayPrefs() {
 document.addEventListener("panalo:prefs", () => applyDisplayPrefs());
 
 // Keyboard: g then a letter goes to a page; ? lists every shortcut.
-const GO_KEYS = { n: "now", s: "study", w: "world", c: "calendar", a: "archive", d: "drift", y: "safety", ",": "settings" };
+const GO_KEYS = { n: "now", s: "study", w: "world", c: "calendar", a: "archive", y: "safety", ",": "settings" };
 let goArmed = 0;
 export function openShortcuts() {
   const row = (keys, what) => el("li", {}, [el("span", { class: "keys" }, keys.map((k) => el("kbd", { text: k }))), el("span", { text: what })]);
@@ -169,7 +166,6 @@ export function openShortcuts() {
         row(["g", "w"], "World"),
         row(["g", "c"], "Calendar"),
         row(["g", "a"], "Archive"),
-        row(["g", "d"], "Drift"),
         row(["g", "y"], "Privacy & data"),
         row(["g", ","], "Settings"),
         row(["/"], "Search (Archive)"),
@@ -222,9 +218,7 @@ function warpItems() {
       { label: "Set today's intention", hint: "the one thing for today", run: () => openIntention() },
       { label: "Journal", hint: "World · the days you've kept", run: () => navigate("world/journal") },
     ]),
-    { label: "Last week's chronicle", hint: "your week, as a story", run: () => playChronicle() },
     ...LOOKS.map((l) => ({ label: `Look: ${l.name}`, hint: l.line, run: () => setLook(l.id) })),
-    { label: "Watch your world grow", hint: "World · a time-lapse from day one", run: () => openTimelapse() },
     { label: "Add a task", hint: "Study Room", run: () => navigate("study/add-task") },
     { label: "World", hint: "your world, goals, discoveries", run: go("world") },
     { label: "Log an activity", hint: "World", run: () => navigate("world/log") },
@@ -232,7 +226,6 @@ function warpItems() {
     { label: "Add to calendar", hint: "Calendar", run: () => navigate("calendar/add") },
     { label: "Archive", hint: "your files", run: go("archive") },
     { label: "Upload a file", hint: "Archive", run: () => navigate("archive/upload") },
-    { label: "Drift", hint: "three things for today", run: go("drift") },
     { label: "Privacy & data", hint: "what's stored, export, delete", run: go("safety") },
     { label: "Settings", hint: "motion, study defaults, account", run: go("settings") },
     { label: "Keyboard shortcuts", hint: "press ? anywhere", run: () => openShortcuts() },
@@ -290,7 +283,6 @@ function openMore() {
     body: [
       el("nav", { class: "more-grid", "aria-label": "More destinations" }, [
         link("archive", "Archive", "tone-archive", "Your files"),
-        link("drift", "Drift", "tone-drift", "Three things for today"),
         link("safety", "Privacy & data", "tone-signal", "What's stored, export, delete"),
         link("settings", "Settings", "tone-focus", "Motion, study, account"),
       ]),
@@ -393,14 +385,12 @@ export async function enterShell({ firstTime = false } = {}) {
   if (location.hash !== target) location.hash = target;
   else await route();
   if (firstTime) showToast("Welcome to your universe. Press Warp (Ctrl K) to go anywhere.", "success");
-  // The first open of each day: the dawn (the day a world is born, the
-  // film was enough; the open is still recorded). A focus block running
+  // The first open of each day: the dawn (not on the day of the setup;
+  // the open is still recorded). A focus block running
   // (started on another device, say) comes first: they wait for the next
   // time the app comes into view after it.
   if (!focusing()) {
     await maybeDawn({ quiet: firstTime }).catch((e) => console.error(e));
-    // A new week: last week's chronicle, once.
-    if (!firstTime) await maybeChronicle().catch((e) => console.error(e));
   }
   rulesReminder({ firstTime });
   // Discoveries reached since last time, then whenever something changes.
@@ -410,7 +400,7 @@ export async function enterShell({ firstTime = false } = {}) {
 
 // Left open overnight: the next morning still gets its dawn.
 document.addEventListener("visibilitychange", () => {
-  if (active && !document.hidden && !focusing() && dawnDue()) maybeDawn().then(() => maybeChronicle()).catch((e) => console.error(e));
+  if (active && !document.hidden && !focusing() && dawnDue()) maybeDawn().catch((e) => console.error(e));
 });
 
 export function leaveShell() {

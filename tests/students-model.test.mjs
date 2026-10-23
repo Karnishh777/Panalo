@@ -1,16 +1,16 @@
 // Panalo Students: the pure models behind the world, the calendar, the
-// Study Room timer and Drift. Run with `node tests/students-model.test.mjs`.
+// Study Room timer and the study profile. Run with `node tests/students-model.test.mjs`.
 import { buildWorld, discoveries, goalProgress, weatherLine, LAND_BASE } from "../students/js/model/world-model.js";
 import { occurrencesBetween, occurrencesOnDay, arcOnDay, nextUp, tasksAsDeadlines } from "../students/js/model/timeline.js";
 import * as T from "../students/js/model/focus-timer.js";
-import { pickDrift, dayNumber } from "../students/js/model/drift-pick.js";
-import { LIBRARY } from "../students/js/model/drift-library.js";
 import { safeBlobType } from "../students/js/model/safe-type.js";
 import * as D from "../students/js/model/daily.js";
 import * as C from "../students/js/model/chronicle.js";
 import { parseQuickAdd } from "../students/js/model/quick-add.js";
 import { countdowns } from "../students/js/model/timeline.js";
 import { toIcs, icsStamp, icsText } from "../students/js/model/ics.js";
+import * as S from "../students/js/model/subjects.js";
+import * as P from "../students/js/model/profile.js";
 import { relTime, formatMinutes, startOfWeek, dayKey, parseDayKey, MINUTE, HOUR, DAY } from "../students/js/model/time.js";
 
 let passed = 0;
@@ -139,17 +139,6 @@ ok("readout", T.readout(25 * MINUTE) === "25:00" && T.readout(61000) === "01:01"
 ok("revive refuses junk", T.revive({ phase: "focus", status: "running" }).phase === "idle" && T.revive(null).phase === "idle");
 ok("revive keeps a real state", T.revive(JSON.parse(JSON.stringify(s))).plannedMs === 25 * MINUTE);
 
-// ---- drift -----------------------------------------------------------------
-const d1 = pickDrift(NOW, ["space"], LIBRARY);
-const d1b = pickDrift(NOW + 3 * HOUR, ["space"], LIBRARY);
-const d2 = pickDrift(NOW + DAY, ["space"], LIBRARY);
-ok("the same three all day", d1.fact.id === d1b.fact.id && d1.prompt.id === d1b.prompt.id && d1.play.id === d1b.play.id);
-ok("new ones tomorrow", d1.fact.id !== d2.fact.id);
-ok("interests steer the facts", d1.fact.tags.includes("space"));
-ok("no interests still gets something", !!pickDrift(NOW, [], LIBRARY).fact);
-ok("day numbers advance by one", dayNumber(NOW + DAY) - dayNumber(NOW) === 1);
-ok("library ids are unique", new Set([...LIBRARY.facts, ...LIBRARY.prompts].map((x) => x.id)).size === LIBRARY.facts.length + LIBRARY.prompts.length);
-
 // ---- archive blob types (a security boundary) -----------------------------------
 const T_ = (mime_type, file_name) => safeBlobType({ mime_type, file_name });
 ok("an HTML page labelled as a PDF becomes a PDF, not a page", T_("text/html", "notes.pdf") === "application/pdf");
@@ -214,7 +203,7 @@ ok("anything else is just bytes", T_("application/zip", "a.zip") === "applicatio
   ok("the journal lists closed days, newest first", D.journal(entries).length === 1 && D.journal(entries)[0].mood === 4);
 }
 
-// ---- weeks, seasons, the world over time (batch 2) ------------------------------
+// ---- weeks (batch 2) -------------------------------------------------------------
 {
   // NOW is Thursday 1 Oct 2026; last week is Mon 21 – Sun 27 Sep... check by weekday.
   const lw = C.lastWeek(NOW);
@@ -248,19 +237,6 @@ ok("anything else is just bytes", T_("application/zip", "a.zip") === "applicatio
   ok("what you wrote is kept for the chronicle", c.words.length === 2 && c.words.some((w) => w.text === "Snell's law"));
   ok("discoveries that week", c.discoveries.length === 1);
   ok("an empty week says so", C.chronicle({}, lw).empty);
-
-  const before = C.worldAt({ ...data, bornAt: inLast(-10) }, lw.start);
-  const after = C.worldAt({ ...data, bornAt: inLast(-10) }, lw.end);
-  ok("the world before the week is smaller than after", after.layers.land > before.layers.land && after.stats.tasksDone === 1 && before.stats.tasksDone === 0);
-  const frames = C.timeline({ ...data, bornAt: inLast(-10) }, NOW, 12);
-  ok("the time-lapse has the frames asked for", frames.length === 12);
-  ok("land only ever grows through the time-lapse", frames.every((f, i) => i === 0 || f.layers.land >= frames[i - 1].layers.land));
-  ok("the last frame is the world today", frames[11].focusMinutes === 230);
-
-  const s1 = C.season(at(3), NOW);
-  ok("a new world is in season one, First Light", s1.number === 1 && s1.name === "First Light" && s1.day === 4);
-  const s2 = C.season(at(30), NOW);
-  ok("seasons are 28 days", s2.number === 2 && s2.day === 3 && s2.left === 25);
 
   const disc = [{ id: "a", at: at(1) }, { id: "b", at: at(40) }, { id: "c", at: at(2) }];
   const m = C.newMoments(disc, ["c"], NOW);
@@ -327,6 +303,45 @@ ok("anything else is just bytes", T_("application/zip", "a.zip") === "applicatio
   ok("ics: no line longer than 75 octets", lines.every((l) => new TextEncoder().encode(l).length <= 75));
   const long = toIcs([{ id: "x", title: "A".repeat(200), kind: "event", starts_at: new Date().toISOString() }], [], 0);
   ok("ics: long lines fold and unfold back", long.split("\r\n").every((l) => new TextEncoder().encode(l).length <= 75) && long.replace(/\r\n /g, "").includes(`SUMMARY:${"A".repeat(200)}`));
+}
+
+// ---- subjects and the study profile (v0.2) ----------------------------------------
+{
+  const igcse = S.subjectsFor("igcse1");
+  ok("IGCSE offers the sciences with their syllabus codes", igcse.find((x) => x.id === "phy")?.code === "0625" && igcse.find((x) => x.id === "chem")?.code === "0620" && igcse.find((x) => x.id === "bio")?.code === "0610");
+  const as = S.subjectsFor("as");
+  ok("AS and A2 share the A Level syllabuses", as.length === S.subjectsFor("a2").length && as.find((x) => x.id === "phy")?.code === "9702");
+  const school = ["bio", "acc", "gp", "soc", "phy", "chem", "cs", "eco", "dt", "art", "ict", "bus", "eng1", "math"];
+  ok("every IGCSE subject on a real school timetable is offered", school.every((id) => igcse.some((x) => x.id === id)), school.filter((id) => !igcse.some((x) => x.id === id)).join());
+  const alevel = ["bus", "psy", "acc", "art", "eco", "eng", "bio", "cs", "dt", "math", "soc", "chem", "phy"];
+  ok("every A Level subject on it too", alevel.every((id) => as.some((x) => x.id === id)));
+  ok("CBSE has its own lists", S.subjectsFor("cbse10").some((x) => x.id === "sci") && S.subjectsFor("cbse12").some((x) => x.id === "bst"));
+  ok("an unknown stage offers nothing", S.subjectsFor("nope").length === 0);
+  ok("ids are unique within each list", ["igcse1", "as", "cbse9", "cbse11", "other"].every((st) => new Set(S.subjectsFor(st).map((x) => x.id)).size === S.subjectsFor(st).length));
+  ok("grades follow the level", S.gradesFor("igcse2")[0] === "A*" && S.gradesFor("as")[0] === "a" && S.gradesFor("cbse12")[0] === "90+");
+  ok("a subject's name is looked up", S.subjectName("a2", "psy") === "Psychology" && S.subjectName("a2", "zzz") === "zzz");
+
+  const row = P.toRow(
+    {
+      board: "cambridge", stage: "as", aim: "top",
+      subjects: [{ id: "phy", level: 9, grade: "b" }, { id: "phy", level: 2 }, { id: "nope" }, { id: "chem" }],
+      schoolDays: [1, 2, 9, 3, 3], schoolStart: "08:10", schoolEnd: "25:00",
+      boarding: false, travelMinutes: 999, wakeAt: "06:00", sleepAt: "22:30", tuitionHours: 4,
+    },
+    new Date(NOW)
+  );
+  ok("subjects are de-duplicated, unknown ones dropped", row.subjects.length === 2 && row.subjects[0].id === "phy" && row.subjects[1].id === "chem");
+  ok("levels are clamped to 1-4, a missing one is 'okay'", row.subjects[0].level === 4 && row.subjects[1].level === 2);
+  ok("school days are real weekdays, once each", row.school_days.join() === "1,2,3");
+  ok("a bad time falls back to the default", row.school_end === P.DEFAULTS.schoolEnd && row.school_start === "08:10");
+  ok("travel is clamped", row.travel_minutes === 240);
+  ok("the setup is marked done", row.setup_at === new Date(NOW).toISOString());
+  ok("a boarder has no travel", P.toRow({ stage: "as", boarding: true, travelMinutes: 45 }).travel_minutes === 0);
+  const back = P.fromRow({ ...row, school_start: "08:10:00" });
+  ok("a saved row reads back as answers", back.stage === "as" && back.schoolStart === "08:10" && back.subjects.length === 2 && back.tuitionHours === 4);
+  ok("no profile means the defaults", P.fromRow(null).schoolStart === P.DEFAULTS.schoolStart);
+  ok("the setup is due until finished once", P.needsSetup(null) && P.needsSetup({ setup_at: null }) && !P.needsSetup({ setup_at: "2026-10-01" }));
+  ok("minutes since midnight", P.minutesOf("08:10") === 490);
 }
 
 console.log(`\n${passed} passed, ${failures.length} failed`);

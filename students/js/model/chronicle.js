@@ -1,20 +1,17 @@
-// Weeks, seasons and the world over time (batch 2).
+// Weeks (batch 2): the numbers behind the weekly report.
 //
 //   lastWeek        Monday to Sunday before this week
 //   chronicle       what that week held: focus (and against the week
 //                   before), best day, top subjects, tasks, logged time,
 //                   days shown up, how the days felt, what you learned
-//   worldAt         your world as it was at any moment, from your history
-//   timeline        frames of the world from its birth to now (time-lapse)
-//   season          28-day chapters from the day your world was born
 //   newMoments      discoveries you haven't been shown yet
 //
 // Everything is worked out from what's already stored; nothing new is kept
 // except, in your preferences, which week and which moments you've seen.
 //
 // Pure (tests/students-model.test.mjs).
-import { DAY, startOfDay, startOfWeek, addDays, dayKey, parseDayKey } from "./time.js";
-import { buildWorld, activeDays } from "./world-model.js";
+import { DAY, startOfWeek, addDays, dayKey, parseDayKey } from "./time.js";
+import { activeDays } from "./world-model.js";
 
 const sum = (rows, f) => rows.reduce((n, r) => n + (f(r) || 0), 0);
 const inRange = (iso, a, b) => {
@@ -82,60 +79,6 @@ export function chronicle({ sessions = [], tasks = [], logs = [], entries = [], 
   const empty = !focusMinutes && !tasksDone && !weekLogs.length && !shown.length;
   const deep = week.filter((s) => s.quality === 3).length;
   return { start, end, focusMinutes, prevFocusMinutes, deep, sessions: week.length, days, best: best?.minutes ? best : null, subjects, tasksDone, logged, shown, mood, intentions: intentions.length, kept, words, discoveries: found, empty };
-}
-
-/** Your history as it stood at `at`: the world you had then. */
-export function worldAt({ sessions = [], tasks = [], logs = [], goals = [], entries = [], bornAt = null }, at) {
-  const before = (iso) => {
-    const t = Date.parse(iso);
-    return Number.isFinite(t) && t < at;
-  };
-  const dayBefore = dayKey(at);
-  return buildWorld({
-    sessions: sessions.filter((s) => before(s.started_at)),
-    tasks: tasks.map((t) => (t.done_at && !before(t.done_at) ? { ...t, done_at: null } : t)),
-    logs: logs.filter((l) => l.occurred_on < dayBefore),
-    goals: goals.filter((g) => !g.created_at || before(g.created_at)).map((g) => (g.done_at && !before(g.done_at) ? { ...g, done_at: null } : g)),
-    entries: entries.filter((e) => e.day < dayBefore),
-    bornAt,
-    now: at,
-  });
-}
-
-/** `frames` snapshots of the world, evenly from its birth to now. */
-export function timeline(data, now = Date.now(), frames = 24) {
-  const born = Date.parse(data.bornAt || "");
-  const first = [...(data.sessions || []).map((s) => Date.parse(s.started_at)), ...(data.tasks || []).map((t) => Date.parse(t.created_at))].filter(Number.isFinite);
-  const start = Number.isFinite(born) ? born : first.length ? Math.min(...first) : now - 7 * DAY;
-  const span = Math.max(DAY, now - start);
-  const out = [];
-  for (let i = 0; i < frames; i++) {
-    const at = i === frames - 1 ? now + 1 : start + (span * (i + 1)) / frames;
-    const w = worldAt(data, at);
-    out.push({ at: Math.min(at, now), layers: w.layers, moons: w.moons, focusMinutes: w.stats.focusMinutesTotal, tasksDone: w.stats.tasksDone });
-  }
-  return out;
-}
-
-export const SEASON_DAYS = 28;
-const SEASON_NAMES = ["First Light", "Tides", "Ember", "Bloom", "Drift", "Aurora", "Monsoon", "Frost", "Comet", "Harvest", "Eclipse", "Zenith"];
-
-/** Which 28-day chapter of your world `now` is in. */
-export function season(bornAt, now = Date.now()) {
-  const born = Date.parse(bornAt || "");
-  const b = Number.isFinite(born) ? startOfDay(born).getTime() : startOfDay(now).getTime();
-  const day = Math.max(0, Math.round((startOfDay(now).getTime() - b) / DAY));
-  const index = Math.floor(day / SEASON_DAYS);
-  const start = b + index * SEASON_DAYS * DAY;
-  return {
-    number: index + 1,
-    name: SEASON_NAMES[index % SEASON_NAMES.length],
-    day: (day % SEASON_DAYS) + 1,
-    length: SEASON_DAYS,
-    left: SEASON_DAYS - (day % SEASON_DAYS) - 1,
-    start,
-    end: start + SEASON_DAYS * DAY,
-  };
 }
 
 /**

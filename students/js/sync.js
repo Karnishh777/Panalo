@@ -16,7 +16,6 @@ import { SYNC_META as META, SYNC_CHANGE as CHANGE, quietly } from "./local-chang
 export const SECTIONS = {
   prefs: { key: "panalo.students.prefs", event: "panalo:prefs" },
   light: { key: "panalo.students.light", event: "panalo:light" },
-  drift: { key: "panalo.students.drift", event: null },
   timer: { key: "panalo.students.timer", event: "panalo:timer" },
 };
 let active = false;

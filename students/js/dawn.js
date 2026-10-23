@@ -17,7 +17,6 @@ import { todayEntry, lastVisit, sinceLast, sinceLines, dayPart, dayNumber } from
 import { reducedMotion } from "./motion.js";
 import { state } from "../../src/state.js";
 import { openIntention, openCheckin } from "./checkin.js";
-import { season } from "./model/chronicle.js";
 
 let playing = false;
 const SUN_FROM = 172; // degrees: behind the world, a rim of fire
@@ -70,9 +69,6 @@ function play({ since, now }) {
     const lines = since
       ? sinceLines(sinceLast({ sessions: store.sessions, tasks: store.tasks, logs: store.logs, discoveries: w.discoveries }, since, now))
       : ["A new day on your world."];
-    // The first day of a season says so, first.
-    const se = season(store.student?.born_at, now);
-    if (se.day === 1 && se.number > 1) lines.unshift(`A new season begins: ${se.name}.`);
     lines.splice(4);
 
     const canvas = el("canvas", { class: "dawn-world", "aria-hidden": "true" });
@@ -92,7 +88,7 @@ function play({ since, now }) {
     }
     const list = el("ul", { class: "dawn-lines" }, lines.map((t, i) => el("li", { style: `--i:${i}`, text: t })));
     const card = el("div", { class: "dawn-card" }, [
-      el("p", { class: "kicker toned tone-time dawn-date", text: `${longDate(new Date(now))} · Season ${se.number}, ${se.name}` }),
+      el("p", { class: "kicker toned tone-time dawn-date", text: longDate(new Date(now)) }),
       el("h1", { class: "dawn-title" }, [el("span", { class: "dawn-day", text: `Day ${n}` }), el("span", { class: "dawn-of", text: ` of ${name}` })]),
       el("p", { class: "dawn-since faint", text: since ? "Since you were last here" : "" }),
       list,

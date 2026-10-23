@@ -11,8 +11,6 @@ import { createGlobe } from "../world-render.js";
 import { buildWorld, weatherLine } from "../model/world-model.js";
 import { nextUp, tasksAsDeadlines, EVENT_KINDS, countdowns } from "../model/timeline.js";
 import { relTime, clockTime, formatMinutes, DAY, sameDay } from "../model/time.js";
-import { pickDrift } from "../model/drift-pick.js";
-import { LIBRARY } from "../model/drift-library.js";
 import * as T from "../model/focus-timer.js";
 import { loadTimer, onTimer } from "../timer-state.js";
 import { state } from "../../../src/state.js";
@@ -236,10 +234,6 @@ function renderLog() {
       w.discoveries[0] && Date.parse(w.discoveries[0].at) > now - 3 * DAY ? el("p", { class: "now-disc" }, [el("b", { text: `Discovery: ${w.discoveries[0].title}. ` }), w.discoveries[0].detail]) : null,
     ])
   );
-
-  // 5. Rest, offered last and once.
-  const drift = pickDrift(now, store.student?.interests || [], LIBRARY);
-  parts.push(el("p", { class: "now-drift tone-drift" }, ["Need a breather? Today's Drift: ", el("a", { href: "#/drift", text: drift.play.title.toLowerCase() }), " and two other small things."]));
 
   logEl.replaceChildren(...parts);
 
