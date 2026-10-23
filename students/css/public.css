@@ -48,6 +48,11 @@ html[data-boot="app"] body:not(.ready) .landing {
   text-decoration: none;
   color: var(--text);
 }
+/* The mark keeps its size: in a crowded bar the words give way, not it. */
+.wordmark svg,
+.wordmark img {
+  flex-shrink: 0;
+}
 .wm-name {
   font: 600 18px/1 var(--f-display);
   letter-spacing: -0.03em;

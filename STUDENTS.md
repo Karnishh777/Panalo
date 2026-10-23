@@ -212,6 +212,7 @@ landing ──► the crossing (sign in / sign up) ──► first time? the bir
 | `js/surfaces/*.js` | Now, Study, World, Calendar, Archive, Drift, Privacy & data (`safety.js`), Settings, Moderation. |
 | `css/tokens.css` … `surfaces.css` | The design system (below). |
 | `privacy.html`, `rules.html` | Plain-language privacy notes and rules. |
+| `mark.svg`, the `#mark` symbol in `index.html` | The logo: a world rising from the sea at the horizon, with a spark above — the app's idea, a world that rises as you work. `mark.svg` is the favicon and app icon (on its dark tile); the symbol is the same drawing without the tile, for the bar and footer. `og.jpg` is the sharing image (the landing at 1200×630). |
 
 ## Data (phases 16 and 17 — `supabase-phase16.sql`, `supabase-phase17.sql`)
 
