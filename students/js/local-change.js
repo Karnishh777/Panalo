@@ -4,7 +4,7 @@ export const SYNC_META = "panalo.students.synced"; // section -> when it last ch
 export const SYNC_CHANGE = "panalo:local-change";
 let muted = 0;
 
-/** Something in `section` (prefs, light, drift, timer) changed here. */
+/** Something in `section` (prefs, light, timer) changed here. */
 export function localChange(section) {
   if (muted) return;
   try {

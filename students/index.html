@@ -120,16 +120,6 @@
        OUTSIDE: the landing
        ===================================================================== -->
   <div id="landing" class="landing">
-    <!-- The gate: a count to 100 while the hero world wakes up. First visit
-         of a session only; purely visual (clicks pass through). -->
-    <div class="gate" aria-hidden="true">
-      <div class="gate-core">
-        <svg class="mark" width="44" height="44" viewBox="0 0 90 90"><use class="mk-glass" href="#mark-glass"/><use class="mk-signal" href="#mark-signal"/><use class="mk-verse" href="#mark-verse"/></svg>
-        <p class="gate-n"><span>000</span><small>%</small></p>
-        <p class="gate-cap">Calibrating your universe</p>
-        <i class="gate-bar"><b></b></i>
-      </div>
-    </div>
     <!-- The HUD: corner brackets, the chapter you're in, how far you've come,
          and the thread: one star per chapter, lit as you pass it. -->
     <div class="hud" aria-hidden="true">
@@ -226,7 +216,7 @@
           <li class="tone-signal" data-fx="slash"><span class="sys-k" aria-hidden="true">参</span><span class="sys-n">Calendar</span><p>Timetable, deadlines and exams, counting down.</p></li>
           <li class="tone-archive" data-fx="slash"><span class="sys-k" aria-hidden="true">肆</span><span class="sys-n">Archive</span><p>Your files, catalogued. Only yours.</p></li>
           <li class="tone-world" data-fx="slash"><span class="sys-k" aria-hidden="true">伍</span><span class="sys-n">World</span><p>A record you can see — and spin.</p></li>
-          <li class="tone-drift" data-fx="slash"><span class="sys-k" aria-hidden="true">陸</span><span class="sys-n">Drift</span><p>Three small things a day. Then the door closes.</p></li>
+          <li class="tone-drift" data-fx="slash"><span class="sys-k" aria-hidden="true">陸</span><span class="sys-n">Your plan</span><p>Built from your school day, subjects and exams. It fixes itself when life happens.</p></li>
         </ol>
       </section>
       <svg class="brush" data-fx="ink" viewBox="0 0 1200 40" preserveAspectRatio="none" aria-hidden="true"><path d="M6 24C160 8 300 30 470 18S820 6 980 20 1150 26 1194 14"/></svg>
@@ -235,7 +225,7 @@
         <h2 id="numbers-title" class="section-title display" data-fx="slash" data-scramble>Small numbers,<br>on purpose.</h2>
         <dl class="stats">
           <div class="stat tone-time" data-fx="slash"><dt>spaces, one place</dt><dd><span data-count="6" data-pad="2">06</span></dd></div>
-          <div class="stat tone-drift" data-fx="slash"><dt>small things a day, then Drift closes</dt><dd><span data-count="3" data-pad="2">03</span></dd></div>
+          <div class="stat tone-drift" data-fx="slash"><dt>seconds of questions, then your plan is built</dt><dd><span data-count="90" data-pad="2">90</span></dd></div>
           <div class="stat tone-signal" data-fx="slash"><dt>people who can see your work</dt><dd><span data-count="0" data-from="99" data-pad="2">00</span></dd></div>
           <div class="stat tone-focus" data-fx="slash"><dt>ads, feeds or algorithms</dt><dd><span data-count="0" data-from="99" data-pad="2">00</span></dd></div>
         </dl>
@@ -311,7 +301,6 @@
         <a href="rules.html">Rules</a>
         <a href="#safety">Safety</a>
         <a href="privacy.html#limits">What it can't do yet</a>
-        <a href="../">Panalo Chat</a>
         <span class="land-version">v0.1</span>
       </nav>
     </footer>
@@ -483,12 +472,10 @@
   </div>
 
   <!-- =====================================================================
-       FIRST ENTRY: a universe begins
+       FIRST ENTRY: the setup (about 90 seconds)
        ===================================================================== -->
-  <div id="birth" class="birth" hidden>
-    <p id="birth-line" class="birth-line" aria-live="polite"></p>
-    <button type="button" id="birth-skip" class="btn btn-quiet btn-sm birth-skip">Skip</button>
-    <form id="birth-form" class="birth-form" novalidate hidden aria-labelledby="birth-title"></form>
+  <div id="setup" class="setup" hidden>
+    <form id="setup-form" class="setup-form" novalidate aria-labelledby="setup-title"></form>
   </div>
 
   <!-- =====================================================================
@@ -506,7 +493,6 @@
         <a href="#/world" data-route="world" class="tone-world">World</a>
         <a href="#/calendar" data-route="calendar" class="tone-time">Calendar</a>
         <a href="#/archive" data-route="archive" class="tone-archive">Archive</a>
-        <a href="#/drift" data-route="drift" class="tone-drift">Drift</a>
       </nav>
       <div class="bar-right">
         <span class="bar-clock num" id="bar-clock" aria-hidden="true"></span>
@@ -533,7 +519,6 @@
       <section class="surface" data-surface="world" aria-label="World" hidden></section>
       <section class="surface" data-surface="calendar" aria-label="Calendar" hidden></section>
       <section class="surface" data-surface="archive" aria-label="Archive" hidden></section>
-      <section class="surface" data-surface="drift" aria-label="Drift" hidden></section>
       <section class="surface" data-surface="safety" aria-label="Privacy and data" hidden></section>
       <section class="surface" data-surface="settings" aria-label="Settings" hidden></section>
       <section class="surface" data-surface="moderate" aria-label="Moderation" hidden></section>

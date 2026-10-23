@@ -106,7 +106,6 @@ html[data-look="signal"] .dock .nav-ink::before {
   bottom: 6px;
 }
 
-
 /* Verse keeps its torn paper tab -- it slams onto the page it names. */
 html[data-look="verse"] .nav-ink {
   display: none;
@@ -321,7 +320,7 @@ html[data-look="verse"] .num-landed {
 /* ===== Cards lean towards the pointer ======================================= */
 
 @media (hover: hover) and (pointer: fine) {
-  html[data-look="glass"] :is(.drift-card, .look-opt, .systems li) {
+  html[data-look="glass"] :is(.look-opt, .systems li) {
     transition: transform 0.45s var(--glide);
   }
   html[data-look="glass"] .leaning {
@@ -533,7 +532,6 @@ html[data-motion="reduce"] :is(.press-fx, .done-fx) {
 html[data-motion="reduce"] :is(.surface .panel, .toast, .clock-colon, .bar-nav a[aria-current="page"]) {
   animation: none !important;
 }
-
 
 /* ===== Calm: the default ===================================================== */
 /* Panalo doesn't move on its own unless asked (Settings, Display: Effects).

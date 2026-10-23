@@ -164,6 +164,16 @@ look. With it, Panalo Students is released as **v0.1** (CHANGELOG.md, tag
 `students-v0.1.0`). **v0.2** is next and large; its scope is set here when
 work begins.
 
+
+### v0.2.0, first part: clean-up and the setup (23 October)
+The cut list, done: the intro film and its score, the landing's 0-to-100
+gate, Drift, the weekly chronicle film, seasons, the time-lapse and the
+link to Panalo Chat are gone. In their place, **the setup**: about 90
+seconds that ask board, year, subjects (Cambridge IGCSE, AS and A Level
+with syllabus codes, the subjects of a real school timetable; CBSE 9 to
+12), how each subject is going, the aim, the school day, boarding or
+travel, sleep, tuition and exams coming up. Phase 29 stores it. Next: the
+planner, Today's next step and guided sessions, built on it.
 ---
 
 ## 3. Reflection: how it was built

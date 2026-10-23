@@ -5,10 +5,23 @@ in the app (the More sheet and the landing's footer) comes from
 `students/js/version.js`; bump it together with an entry here, and tag the
 merge commit `students-vX.Y.0`.
 
-## v0.2 — next
+## v0.2 — in progress
 
-The next release, and a big one. Its scope is set in STUDENTS-ROADMAP.md
-when work begins.
+Panalo Students becomes a second brain: it asks once, plans for the
+student, and shows results. The plan is in STUDENTS-ROADMAP.md; Pan, the
+AI, runs as "Pan Lite" (our own planner code does the planning; the AI
+only where nothing else can).
+
+**0.2.0 (in progress)**
+- **Removed**: the intro film (with its score, voice-over and finale),
+  the 0-to-100 gate on the landing, Drift, the weekly chronicle film,
+  seasons, the time-lapse, and the link to Panalo Chat.
+- **The setup**: about 90 seconds, one question a screen: board
+  (Cambridge, CBSE, other), year (Grade 9, Grade 10, AS, A2; CBSE 9-12),
+  subjects with their syllabus codes, how each is going, the aim, the
+  school day, boarder or day scholar, sleep, tuition and exams coming up.
+- **Phase 29**: the study profile in the database; Drift's saved state
+  erased.
 
 ## v0.1 — 23 October 2026 · first release
 

@@ -14,9 +14,6 @@ import { state } from "../../../src/state.js";
 import { activeDays } from "../model/world-model.js";
 import { monthSky, journal, MOODS, ENERGY, DONE } from "../model/daily.js";
 import { openCheckin } from "../checkin.js";
-import { season } from "../model/chronicle.js";
-import { playChronicle } from "../chronicle.js";
-import { openTimelapse } from "../timelapse.js";
 
 let root;
 let legendEl;
@@ -26,7 +23,6 @@ let logsEl;
 let titleEl;
 let subEl;
 let skyEl;
-let seasonEl;
 let journalEl;
 let journalShown = 14;
 let numbersEl;
@@ -55,12 +51,6 @@ function render() {
   const s = w.stats;
   titleEl.textContent = store.student?.world_name || "Your world";
   subEl.textContent = `${s.ageDays === 0 ? "Born today" : `${s.ageDays} day${s.ageDays === 1 ? "" : "s"} old`}. Every feature here is something you actually did — drag to turn it.`;
-  const se = season(store.student?.born_at);
-  seasonEl.replaceChildren(
-    el("span", { class: "tag tone-world", text: `Season ${se.number} · ${se.name}` }),
-    el("span", { class: "season-meter", role: "progressbar", "aria-valuemin": "1", "aria-valuemax": String(se.length), "aria-valuenow": String(se.day), "aria-label": `Day ${se.day} of ${se.length} of this season` }, [el("i", { style: `width:${Math.round((se.day / se.length) * 100)}%` })]),
-    el("span", { class: "faint", text: se.left ? `day ${se.day} of ${se.length} · ${se.left} to go` : `last day of ${se.name}` })
-  );
   globe?.setLayers(w.layers, w.moons);
   renderNumbers(w);
 
@@ -391,10 +381,9 @@ async function postcard() {
   ctx.fillStyle = "#f2f5ff";
   ctx.font = `400 92px ${display}`;
   ctx.fillText(store.student?.world_name || "Your world", W / 2, 1060);
-  const se = season(store.student?.born_at);
   ctx.font = `600 26px ${body}`;
   ctx.fillStyle = accent;
-  ctx.fillText(`DAY ${s.ageDays + 1} · SEASON ${se.number} · ${se.name.toUpperCase()}`, W / 2, 1112);
+  ctx.fillText(`DAY ${s.ageDays + 1}`, W / 2, 1112);
   ctx.font = `400 30px ${body}`;
   ctx.fillStyle = "#c3cbe2";
   ctx.fillText(`${formatMinutes(s.focusMinutesTotal)} of focus · ${s.tasksDone} ${s.tasksDone === 1 ? "light" : "lights"} · ${store.goals.length} ${store.goals.length === 1 ? "moon" : "moons"}`, W / 2, 1166);
@@ -444,7 +433,6 @@ export function mount(section) {
   root = el("div", { class: "world" });
   titleEl = el("h1");
   subEl = el("p", { class: "s-sub" });
-  seasonEl = el("p", { class: "season-line" });
   legendEl = el("ul", { class: "legend" });
   moonsEl = el("ul", { class: "moons" });
   discEl = el("div");
@@ -455,12 +443,10 @@ export function mount(section) {
   const stage = el("div", { class: "world-stage" }, [canvas]);
   root.append(
     el("div", { class: "s-head" }, [
-      el("div", {}, [el("p", { class: "kicker toned tone-world", text: "World" }), titleEl, subEl, seasonEl]),
+      el("div", {}, [el("p", { class: "kicker toned tone-world", text: "World" }), titleEl, subEl]),
       el("div", { class: "s-actions" }, [
         el("div", { class: "s-more" }, [
           el("button", { type: "button", class: "btn btn-quiet btn-sm", text: "Rename", onClick: rename }),
-          el("button", { type: "button", class: "btn btn-ghost btn-sm", id: "world-timelapse", text: "Watch it grow", onClick: () => openTimelapse() }),
-          el("button", { type: "button", class: "btn btn-ghost btn-sm", id: "world-chronicle", text: "Last week", onClick: () => playChronicle() }),
           el("button", { type: "button", class: "btn btn-ghost btn-sm", id: "world-postcard", text: "Postcard", onClick: () => postcard().catch((e) => reportError(e)) }),
         ]),
         el("button", { type: "button", class: "btn btn-primary", text: "Log an activity", onClick: openLog }),

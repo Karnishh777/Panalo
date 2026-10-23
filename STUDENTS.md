@@ -1,7 +1,8 @@
 # Panalo Students
 
 A calm, **private** study space for intensely curious students, at
-`students/`. It runs on the **same Supabase project and accounts as Panalo
+`students/`. Since v0.2 it plans for the student: a 90-second setup asks
+their board, year, subjects and day once, and the plan follows from it. It runs on the **same Supabase project and accounts as Panalo
 Chat**, but it is a different product: no chat, no rooms, no profiles, no
 feed. Nothing anyone does in Panalo Students is shown to anyone else (since
 phase 28; Signals, rooms, join codes and friends on the globe were removed).
@@ -19,14 +20,10 @@ and everything it encodes is also available in plain words.
 | **Deep space at midnight** | The quietest room: one ring, one number, one task. | Study Room |
 | **The day, as a ritual** | The first open of each day plays a short dawn over your own world: which day of it this is, and what changed since you were last here. Then one intention ("the one thing for today"). In the evening, closing the day takes twenty seconds: how it felt, energy, one tap for what else you did (logged to your world), one thing learned, one good thing. A closed day lights a star. | Now, World → Journal |
 | **This month, in stars** | Each day of the month has a fixed place in a constellation; a day you showed up on (focus, a finished task, a log, a closed day) lights its star, joined in order. A missed day stays dark — nothing resets, there is no streak. | World |
-| **The weekly chronicle** | The first visit of a new week plays last week as a few full-screen slides: focus against the week before, the best day, where it went by subject, what you finished and logged, the days you showed up and how they felt, what you wrote down, and your world on Monday beside Sunday. A quiet week isn't played (no report card for rest). Replay from World or Warp. | after the dawn, World |
 | **Moments** | Reaching a discovery (first hour, a ring, a moon completed, a hundred pages) stops the screen for a second: a flash, its name, what it means, your world behind it. Once each, never during a focus block. | anywhere |
-| **Seasons** | Every 28 days from your world's birth is a season with a name (First Light, Tides, Ember…). The dawn and World say which, and how far in. | World, the dawn |
-| **Watch it grow** | Your world from the day it was born to today in eight seconds, with a slider to stop at any day. | World |
 | **Quick add** | Type a line on Calendar — “Physics test fri 10am”, “Maths class every mon 9-10”, “Essay due 12/10” — see what it understood, press Enter. Dates are read day-first; a bare hour under 8 is the afternoon. Details… opens the full form, filled in. | Calendar |
 | **Exam countdowns** | Entries of kind Exam count down on Calendar and on Now (“12 days — Physics paper 1”). | Calendar, Now |
-| **A plan for today** | In the Study Room, choose 1–4 blocks; rests between them start by themselves, and the phase reads “block 2 of 3”. After each block: how deep was it? (scattered, okay, deep — the chronicle counts deep blocks). This week by subject sits under your sessions. Space starts and pauses. | Study Room |
-| **Drift** | Three things a day — something true, something to make, something to play — then the door closes. | Drift |
+| **A plan for today** | In the Study Room, choose 1–4 blocks; rests between them start by themselves, and the phase reads “block 2 of 3”. After each block: how deep was it? (scattered, okay, deep). This week by subject sits under your sessions. Space starts and pauses. | Study Room |
 
 What stays conventional on purpose: the week timetable is a grid, forms are
 forms, navigation is labelled words, every chart has a list beside it.
@@ -34,19 +31,19 @@ forms, navigation is labelled words, every chart has a list beside it.
 ## Journeys
 
 ```
-landing ──► the crossing (sign in / sign up) ──► first time? the birth of your universe
-                                                     │  (point → flash → expansion → your world forms;
-                                                     │   name it, pick interests, set a weekly goal)
+landing ──► the crossing (sign in / sign up) ──► first time? the setup (about 90 s)
+                                                     │  (board, year, subjects and how each is going,
+                                                     │   aim, school day, boarder or travel, sleep,
+                                                     │   tuition, exams coming up)
                                                      ▼
-                                Now ◄──► Study · World · Calendar · Archive · Drift
-                                         Safety & privacy · Settings     (Warp: Ctrl/⌘ K)
+                                Now ◄──► Study · World · Calendar · Archive
+                                         Privacy & data · Settings     (Warp: Ctrl/⌘ K)
 ```
 
 - **Landing** (`#top`): what it is, who it's for, why, what's inside (with a
   live world demo driven by the real model), the product in four honest
   numbers, a letter, safety facts, questions answered, footer. Around it
-  (`js/landing-hud.js`): a count-to-100 gate on the first visit of a session,
-  a HUD with the current chapter and scroll progress, the thread (a star per
+  (`js/landing-hud.js`): a HUD with the current chapter and scroll progress, the thread (a star per
   chapter down the right edge, lit as you pass, each a link), and headings
   that decode as they arrive. All of it steps aside for reduced motion. `#login`
   and `#signup` open the crossing; `#join=CODE` remembers an invite through
@@ -109,7 +106,6 @@ landing ──► the crossing (sign in / sign up) ──► first time? the bir
     posted, nothing shared).
   - Archive: **stars** (a Starred shelf on top), **sort** (newest, oldest,
     A–Z, largest), a storage meter.
-  - Drift: change its topics right there.
   - Safety: **Need help now?** -- 112, CHILDLINE 1098, Tele-MANAS 14416,
     cyber crime 1930, each a tap to call; a **safety check-up** you tick
     for yourself.
@@ -142,24 +138,25 @@ landing ──► the crossing (sign in / sign up) ──► first time? the bir
   links and list rows; the Now dial's key two by two; the landing bar
   that always fits (down to 360 px); headings balanced so no word is
   left alone on a line.
-- **Effects with a purpose**: ink, petals and button hits only on Now,
-  World and Drift. Calendar, Archive, Settings, Privacy & data and
+- **Effects with a purpose**: ink, petals and button hits only on Now
+  and World. Calendar, Archive, Settings, Privacy & data and
   Moderation stay still; the Study Room is the quietest of all.
-- **Settings follow you** (`js/sync.js`, phase 21): preferences, lighting,
-  Drift and a running timer, newest change wins.
+- **Settings follow you** (`js/sync.js`, phase 21): preferences, lighting
+  and a running timer, newest change wins.
 - **Crossing**: an event horizon beside an airlock form. Crossing over
   collapses the horizon into the app. Handles login, sign-up (+ email code),
   forgot password, the unlock prompt, and password recovery — with exactly
   the key handling of Panalo Chat (`src/auth.js`).
-- **Birth**: ~8 s, one canvas, a few hundred particles, skippable, replaced
-  by two lines of text under reduced motion. The world that forms is the
-  real one (seeded from the account id). It's personal at both ends: your
-  username is written in stars under the title (`js/starwriter.js`), and
-  after the three questions the finale (`js/finale.js`) draws one
-  constellation per interest you picked around your world, writes your
-  world's name in stars, and falls through the clouds into the app (about
-  six seconds; a click or Escape skips it; not played under reduced motion
-  or if you skip the questions).
+- **The setup** (`js/setup.js`, v0.2): replaces the old intro film. One
+  question a screen, mostly one tap each: board (Cambridge, CBSE, other),
+  year (Grade 9, Grade 10, AS, A2; or CBSE Class 9 to 12), subjects from
+  the board's own list with syllabus codes (`model/subjects.js`), how each
+  is going (struggling to strong) and an optional last grade, the aim, the
+  school days and hours, boarder or day scholar (with travel time), wake
+  and sleep, tuition hours, and any exams coming up (added to Calendar).
+  Saved to the study profile (phase 29, `model/profile.js`); Next says
+  what's missing instead of moving on. Settings → Your study profile
+  reopens it to change the answers.
 - **Navigation**: top bar on wide screens, a five-item dock on phones (Now,
   Study, Calendar, World, More). **Warp** (Ctrl/⌘ K) jumps anywhere or does
   common things ("Start a 25-minute focus", "Add a task").
@@ -178,28 +175,25 @@ landing ──► the crossing (sign in / sign up) ──► first time? the bir
 - **Pure models** (`students/js/model/`), unit-tested in
   `tests/students-model.test.mjs`: `world-model.js`, `timeline.js`,
   `focus-timer.js` (timestamps, not ticks — survives reloads and sleep),
-  `drift-pick.js`, `safe-type.js`.
+  `subjects.js` (boards, years and subjects), `profile.js` (the study
+  profile), `safe-type.js`.
 
 | File | Role |
 | --- | --- |
-| `js/main.js` | Outside → crossing → birth → inside. |
+| `js/main.js` | Outside → crossing → the setup (first time) → inside. |
+| `js/setup.js` | The 90-second setup that fills the study profile. |
+| `js/model/subjects.js` | Pure: boards, years, subjects (with Cambridge syllabus codes) and grade scales. |
+| `js/model/profile.js` | Pure: the setup's answers as a study-profile row and back. |
 | `js/auth.js` | Sign-in, sign-up, unlock, recovery, sign-out. |
-| `js/birth.js` | First entry: plays the film, its score, voice-over and captions, then the three questions over it. |
-| `js/film.js` | "Origin", the ~26 s film: the void, genesis, worldfall (your real world, a sunrise over its limb), title. |
-| `js/film-grade.js` | The film's lab: procedural 3D LUTs (void, ignition, nebula, gold) crossfaded per shot, bloom, halation, anamorphic streaks, aberration, grain, vignette, 2.39:1 bars. |
-| `js/birth-score.js` | The score, mixed live with Web Audio (reverb hall, drone, heartbeat, riser, braam/boom/crack/sub hit, whoosh, pads, resolve; music ducks under the voice) and recorded voice-over playback. One sound switch, remembered per device. |
-| `media/film.json` | Optional recorded voice lines and video plates for the film; see FILM.md. |
 | `js/fx.js` | Hand-drawn action effects: speed lines, impact frames, punches, ink-slash reveals, water and flame ribbons, petals and embers. Off in the Study Room and with reduced motion. |
 | `js/globe-dock.js` | A world's controls: play/pause, direction, speed, zoom, reset, and the light panel. |
 | `js/world-light.js` | Where the sun is (Day, Dusk, Night, Live with your clock, or by hand) and how bright the night side is; saved per device, shared by every globe. |
 | `js/shell.js` | Router, top bar, dock, account menu, Warp. |
 | `js/dawn.js` | The first seconds of each day: a sunrise over your world, the day number, what changed since your last visit, then one question. Once a day across devices (daily_entries.opened_at). |
 | `js/checkin.js` | The morning intention and closing the day. |
-| `js/chronicle.js` | Last week as a story (once per week, after the dawn; on demand from World and Warp). |
 | `js/moment.js` | A full-screen moment for each new discovery, once each (seen ones follow your preferences across devices). |
-| `js/timelapse.js` | Watch it grow: the world from birth to now, with a scrubber. |
 | `js/model/quick-add.js` | Pure: a line of plain words → a calendar entry (kind, day, time, range, weekly). |
-| `js/model/chronicle.js` | Pure: a week's chronicle, the world at any moment, the time-lapse frames, seasons, which moments are new. |
+| `js/model/chronicle.js` | Pure: a week's numbers (for the weekly report), which moments are new. |
 | `js/model/daily.js` | Pure: today's entry, last visit, what changed, the week's rhythm, the month as a constellation, the journal. |
 | `js/store.js` | In-memory study data + pub/sub; all writes. |
 | `js/archive-data.js` | Your own files: private-bucket (or R2) uploads, downloads, previews. |
@@ -209,7 +203,7 @@ landing ──► the crossing (sign in / sign up) ──► first time? the bir
 | `js/world-render.js` | Picks WebGL when the GPU is real, otherwise the 2D canvas globe; same `setLayers()` contract either way. |
 | `js/dayorbit.js` | The SVG day orbit. |
 | `js/ambient.js` | Generated study sound (Web Audio, no files). |
-| `js/surfaces/*.js` | Now, Study, World, Calendar, Archive, Drift, Privacy & data (`safety.js`), Settings, Moderation. |
+| `js/surfaces/*.js` | Now, Study, World, Calendar, Archive, Privacy & data (`safety.js`), Settings, Moderation. |
 | `css/tokens.css` … `surfaces.css` | The design system (below). |
 | `privacy.html`, `rules.html` | Plain-language privacy notes and rules. |
 | `mark.svg`, `favicon.svg`, `icon-*.png`, the `#mark-glass` / `#mark-signal` / `#mark-verse` symbols in `index.html` | The logo, **Ascent**: a p whose bowl is a small world and whose stem is a beam of focus rising into it, with a bead of light in orbit. Every `<svg class="mark">` holds all three materials and `public.css` shows the one for the current look (Glass: light and glass; Signal: red LEDs with the p's counter cut out; Verse: ink, halftone and a cyan/magenta misprint). With Lively effects the mark in the bar glows slowly (never with motion reduced). `mark.svg` is the full mark on its tile (app icon, privacy and rules pages); `favicon.svg` a simpler cut for tabs; `icon-180/192/512.png` and `icon-maskable-512.png` the home-screen icons. `og.jpg` is the sharing image (the landing at 1200×630). The version shown in the app is `js/version.js` (see CHANGELOG.md). |
@@ -267,7 +261,7 @@ Every rule above is replayed against real Postgres in
 ```sh
 npm ci --prefix tools/lint && npm ci --prefix tools/sqltest && npm ci --prefix tools/qa
 tools/lint/node_modules/.bin/eslint -c tools/lint/eslint.config.mjs --no-config-lookup students/js src crypto.js sw.js tools/qa
-node tests/students-model.test.mjs   # world, timeline, timer, drift, safe types
+node tests/students-model.test.mjs   # world, timeline, timer, subjects, study profile, safe types
 node tests/migrations.test.mjs       # every phase's RLS, against real Postgres
 node tools/qa/students.mjs           # the whole app in Chromium, against the mock
 node tools/build-supabase-all.mjs --check

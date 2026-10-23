@@ -22,8 +22,8 @@ let timer = 0;
 
 function busy() {
   if (showing || document.hidden) return true;
-  if (document.querySelector("dialog[open], .dawn, .story, .timelapse")) return true;
-  if (document.body.classList.contains("in-birth")) return true;
+  if (document.querySelector("dialog[open], .dawn")) return true;
+  if (document.body.classList.contains("in-setup")) return true;
   // A focus block is sacred, wherever you are: celebrate after it.
   if (focusing()) return true;
   return false;

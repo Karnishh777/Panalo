@@ -1,54 +1,10 @@
-// The landing's instruments: the gate (a count to 100 on first arrival),
-// the HUD (chapter, progress), the thread (a star per chapter, lit as you
-// pass it), headings that decode as they arrive, and numbers that count to
-// their value. With reduced motion everything is simply shown as it is.
+// The landing's instruments: the HUD (chapter, progress), the thread (a
+// star per chapter, lit as you pass it), headings that decode as they
+// arrive, and numbers that count to their value. With reduced motion everything is simply shown as it is.
 import { reducedMotion } from "./motion.js";
 
 const pad = (n, w) => String(Math.max(0, Math.round(n))).padStart(w, "0");
 const easeOut = (t) => 1 - Math.pow(1 - t, 3);
-
-// ---- The gate -----------------------------------------------------------------------
-// Counts to 100 over about a second and a half, but doesn't finish before the
-// fonts have arrived (so the page it opens onto is the real one), and never
-// waits longer than three seconds.
-function gate() {
-  const root = document.documentElement;
-  if (root.getAttribute("data-gate") !== "on") return;
-  const node = document.querySelector(".gate");
-  const num = node?.querySelector(".gate-n span");
-  if (!node || !num || reducedMotion()) {
-    root.removeAttribute("data-gate");
-    return;
-  }
-  root.classList.add("gate-js");
-  let fontsIn = false;
-  (document.fonts?.ready || Promise.resolve()).then(() => (fontsIn = true));
-  const start = performance.now();
-  const MIN = 1500, MAX = 3000;
-  const step = (now) => {
-    const t = now - start;
-    // On time alone it eases up to 92%; the last stretch waits for the fonts.
-    let p = easeOut(Math.min(1, t / MIN));
-    if (!fontsIn && t < MAX) p = Math.min(p, 0.92);
-    num.textContent = pad(p * 100, 3);
-    node.style.setProperty("--p", p.toFixed(3));
-    if (p >= 1) return open();
-    requestAnimationFrame(step);
-  };
-  const open = () => {
-    num.textContent = "100";
-    node.style.setProperty("--p", "1");
-    root.setAttribute("data-gate", "out");
-    try {
-      sessionStorage.setItem("panalo.students.gate", "1");
-    } catch {}
-    setTimeout(() => {
-      root.removeAttribute("data-gate");
-      root.classList.remove("gate-js");
-    }, 780);
-  };
-  requestAnimationFrame(step);
-}
 
 // ---- Decoding headings ----------------------------------------------------------------
 const GLYPHS = "ABCDEFGHJKLMNPQRSTUVWXYZ0123456789#%&*+=/<>";
@@ -182,7 +138,6 @@ function hud(landing) {
 export function initLandingHud() {
   const landing = document.getElementById("landing");
   if (!landing) return;
-  gate();
   hud(landing);
   onArrive([...landing.querySelectorAll("[data-scramble]")], (el) => scramble(el));
   onArrive([...landing.querySelectorAll("[data-count]")], countUp);

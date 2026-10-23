@@ -311,8 +311,8 @@ PIN. A user on two devices effectively has two different apps.
   without it the app can't start anyway. There is no Web Push: the
   focus-end notification only works while the tab is open in the
   background.
-- **Settings sync by "newest wins", not live.** Preferences, world lighting,
-  today's Drift and a running timer are copied to the account (phase 21) and
+- **Settings sync by "newest wins", not live.** Preferences, world lighting
+  and a running timer are copied to the account (phase 21) and
   picked up on sign-in, when a tab comes back into view, and every two
   minutes. Two devices changing the same setting within that window: the
   later change wins. Device clocks that disagree by minutes can pick the
@@ -323,18 +323,10 @@ PIN. A user on two devices effectively has two different apps.
   offers only software WebGL (some VMs, remote desktops, old drivers) gets
   the simpler 2D globe, with no ring shadows or relief. `localStorage`
   `panalo.students.gl` = `force` or `off` overrides the choice for testing.
-- **The intro plays sound unless turned off.** It starts right after
-  sign-up, which browsers count as permission to play audio; a browser that
-  still refuses plays it silently. The switch is on screen and remembered
-  per device; reduced motion skips the film, and its sound, entirely.
-- **The intro's score is synthesized; its narration must be recorded.**
-  There are no sampled instruments. The voice-over plays only from
-  recordings listed in `students/media/film.json` (see FILM.md); until they
-  exist the film is captioned only.
-- **The graded film needs WebGL on a real GPU.** Elsewhere the same film
-  plays ungraded, with the world drawn by the 2D renderer. Phones with weak
-  GPUs may drop frames; the film's clock follows the frames, so it slows
-  rather than skips.
+- **The setup's subject lists are fixed in the app.** Cambridge (IGCSE,
+  AS and A Level) and CBSE subjects are listed in `model/subjects.js`;
+  a subject a school offers that isn't there can't be chosen yet, except
+  under "Something else".
 - **Fonts and the QR library come from CDNs.** If they fail, the app falls
   back to system fonts and shows the join code without a QR.
 

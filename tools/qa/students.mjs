@@ -3,14 +3,13 @@
 //   node tools/qa/students.mjs                 # exits 1 on any failure
 //   QA_SHOTS=/tmp/shots node tools/qa/students.mjs
 //
-// Covers the real flows end to end: sign-up and the birth of a universe,
-// tasks and a focus session reaching the world, the calendar, the private
-// archive, Drift, privacy and data, and the phone layout. Panalo Students is
+// Covers the real flows end to end: sign-up and the setup, tasks and a
+// focus session reaching the world, the calendar, the private archive,
+// privacy and data, and the phone layout. Panalo Students is
 // private: nothing in it is shown to anyone else, and the checks say so. Nothing here can reach a real Supabase project
 // (see tools/qa/README.md).
 import { launch, LEAKED_PASSWORD } from "./harness.mjs";
 import fs from "node:fs";
-import { lastWeek } from "../../students/js/model/chronicle.js";
 
 const SHOTS = process.env.QA_SHOTS;
 if (SHOTS) fs.mkdirSync(SHOTS, { recursive: true });
@@ -32,56 +31,49 @@ const go = async (page, route, wait = 900) => {
   await page.waitForTimeout(wait);
 };
 
-let finaleSeen = null; // what the finale showed, the first time it's watched
-async function finishBirth(page, { watchFinale = false } = {}) {
-  // The sequence may already have reached its questions on a slow machine,
-  // where Skip is (correctly) gone. Accept either.
+// The setup (v0.2): board, year, subjects, then Next through the rest.
+async function finishSetup(page, { board = "Cambridge", stage = "AS", subjects = ["Physics", "Chemistry"] } = {}) {
   try {
-    await page.waitForSelector("#birth-skip:not([hidden]), #birth-form:not([hidden])", { timeout: 20000 });
+    await page.waitForSelector("#setup:not([hidden]) #setup-form[data-step]", { timeout: 20000 });
   } catch (e) {
     // Say where we actually are, so a failure here is diagnosable.
-    console.log("finishBirth: stuck at", await page.evaluate(() => ({
+    console.log("finishSetup: stuck at", await page.evaluate(() => ({
       hash: location.hash,
-      shown: ["landing", "auth", "birth", "app"].filter((id) => !document.getElementById(id).hidden),
+      shown: ["landing", "auth", "setup", "app"].filter((id) => !document.getElementById(id).hidden),
       forms: [...document.querySelectorAll(".airlock-form")].filter((f) => !f.hidden).map((f) => f.id),
       message: document.getElementById("auth-message").textContent,
       body: document.body.className,
     })), page.errors);
     throw e;
   }
-  if (await page.isVisible("#birth-skip")) await page.click("#birth-skip").catch(() => {});
-  await page.waitForSelector("#birth-form:not([hidden])");
-  await page.fill("#birth-world-name", "Kepler QA");
-  await page.click("#birth-form button[type=submit]");
-  await page.click("#birth-form .chip >> text=Space");
-  await page.click("#birth-form button[type=submit]");
-  await page.click("#birth-form button[type=submit]");
-  if (watchFinale) {
-    // Batch 4: your first constellations, your world's name in stars, the fall.
-    await page.waitForSelector(".finale", { timeout: 8000 }).catch(() => {});
-    await page.waitForTimeout(1600);
-    finaleSeen = await page.evaluate(() => ({
-      on: !!document.querySelector(".finale"),
-      labels: [...document.querySelectorAll(".finale-const text")].map((t) => t.textContent),
-      name: !!document.querySelector(".finale-name"),
-      caption: document.querySelector(".finale-caption")?.textContent || "",
-    }));
-    await page.waitForFunction(() => document.querySelector(".birth.falling"), null, { timeout: 8000 }).then(() => (finaleSeen.fell = true)).catch(() => {});
+  const next = () => page.click("#setup-form button[type=submit]");
+  const step = () => page.getAttribute("#setup-form", "data-step");
+  await page.click(`#setup-form .setup-choice:has-text("${board}")`);
+  await next();
+  if ((await step()) === "stage") {
+    await page.click(`#setup-form .setup-choice:has-text("${stage}")`);
+    await next();
+  }
+  for (const name of subjects) await page.click(`#setup-form .setup-subjects .chip:has-text("${name}") >> nth=0`);
+  await next();
+  for (let i = 0; i < 12 && (await page.isVisible("#setup")); i++) {
+    await next();
+    await page.waitForTimeout(60);
   }
   await page.waitForSelector("#app:not([hidden])", { timeout: 15000 });
   await page.waitForTimeout(800);
 }
 
 const qa = await launch();
-// Batch 2's discovery moments and weekly chronicle are full-screen and would
-// land in the middle of the older flows: every page starts with them seen,
+// Discovery moments are full-screen and would land in the middle of the
+// older flows: every page starts with them seen,
 // unless a test asks for them (storage: { "panalo.students.prefs": "{}" }).
 const ALL_MOMENTS = ["first-focus", "focus-1", "focus-10", "focus-25", "focus-50", "focus-100", "focus-250", "tasks-1", "tasks-10", "tasks-50", "tasks-200", "first-aurora", "streak-7", "first-moon", "pages-1", "pages-7", "pages-30", "pages-100"];
-const QUIET = { "panalo.students.prefs": JSON.stringify({ momentsSeen: ALL_MOMENTS, chronicleSeen: lastWeek().key }) };
+const QUIET = { "panalo.students.prefs": JSON.stringify({ momentsSeen: ALL_MOMENTS }) };
 const openPage = qa.open;
 qa.open = (o = {}) => openPage({ ...o, storage: { ...QUIET, ...(o.storage || {}) } });
 try {
-  // ---- Outside, sign-up, birth ------------------------------------------------
+  // ---- Outside, sign-up, the setup ----------------------------------------------
   {
     const page = await qa.open({ viewport: "desktop", path: "students/" });
     await page.waitForTimeout(600);
@@ -104,12 +96,8 @@ try {
     check("the world demo responds to its sliders", demoAnswers);
     await shot(page, "landing");
 
-    // The gate counts to 100 once and gets out of the way.
-    check("the gate shows on first arrival", await page.evaluate(() => document.documentElement.hasAttribute("data-gate")));
-    await page.waitForFunction(() => !document.documentElement.hasAttribute("data-gate"), null, { timeout: 5000 }).catch(() => {});
-    check("the gate opens by itself", !(await page.evaluate(() => document.documentElement.hasAttribute("data-gate"))));
-    // The opening page has the same Look switch (after the gate, which it
-    // would otherwise race).
+    check("no 0-to-100 gate holds the landing", !(await page.$(".gate")) && !(await page.evaluate(() => document.documentElement.hasAttribute("data-gate"))));
+    // The opening page has the same Look switch.
     await page.click("#land-look-open");
     await page.click("#land-look-menu .look-opt-signal");
     await page.waitForTimeout(700);
@@ -135,7 +123,7 @@ try {
       counts: [...document.querySelectorAll("[data-count]")].map((n) => n.textContent),
     }));
     check("the HUD names the chapter you're in and its star is lit", hudState.name === "In numbers" && hudState.here === 3);
-    check("the numbers count to their real values", hudState.counts.join() === "06,03,00,00");
+    check("the numbers count to their real values", hudState.counts.join() === "06,90,00,00");
     await page.evaluate(() => document.getElementById("faq").scrollIntoView());
     await page.waitForTimeout(900);
     await page.click("#faq details:first-of-type summary");
@@ -159,34 +147,48 @@ try {
     await fillBirth(page, 11);
     await page.click("#signup-submit");
     await page.waitForTimeout(400);
-    check("under 13 can't sign up", /13 and over/.test(await page.textContent("#auth-message")) && !(await page.isVisible("#birth")));
+    check("under 13 can't sign up", /13 and over/.test(await page.textContent("#auth-message")) && !(await page.isVisible("#setup")));
     await fillBirth(page, 24);
     await page.click("#signup-submit");
     await page.waitForTimeout(400);
     check("agreeing to the rules is required", /agree to the rules/.test(await page.textContent("#auth-message")));
     await page.check("#signup-age");
     await page.click("#signup-submit");
-    await page.waitForSelector("#birth-skip:not([hidden])", { timeout: 20000 });
-    check("the intro is a film, with captions and a title card", (await page.locator("#birth .film-out").count()) === 1 && (await page.locator("#birth .film-caption").count()) === 1 && (await page.locator("#birth .film-title").count()) === 1);
-    if (await page.isVisible(".birth-sound")) {
-      await page.click(".birth-sound");
-      const muted = await page.evaluate(() => ({
-        pressed: document.querySelector(".birth-sound").getAttribute("aria-pressed"),
-        saved: JSON.parse(localStorage.getItem("panalo.students.prefs") || "{}").introSound,
-      }));
-      check("the intro's sound can be turned off, and that is remembered", muted.pressed === "false" && muted.saved === false);
-    } else check("the intro's sound can be turned off, and that is remembered", false);
-    await finishBirth(page, { watchFinale: true });
-    check("after the questions, your interests become your first constellations", finaleSeen?.on && finaleSeen.labels.includes("SPACE") && /first constellations/.test(finaleSeen.caption));
-    check("…your world's name is written in stars", finaleSeen?.name === true);
-    check("…and the camera falls into your world", finaleSeen?.fell === true);
-    const letters = await page.evaluate(async () => (await import("/students/js/starwriter.js")).letterPoints("alex", 400, 80).pts.length);
-    check("a name can be turned into stars (the title's)", letters > 40 && letters < 400);
-    check("the film's pieces are cleared away once it ends", (await page.locator(".film-out, .film-caption, .film-title, .birth-sound").count()) === 0);
+    await page.waitForSelector("#setup:not([hidden]) #setup-form[data-step]", { timeout: 20000 });
+    check("a new account goes straight to the setup: no film, no gate", (await page.getAttribute("#setup-form", "data-step")) === "board" && !(await page.$(".film-out")));
+    await page.click("#setup-form button[type=submit]");
+    await page.waitForTimeout(200);
+    check("the setup says what's missing instead of moving on", (await page.getAttribute("#setup-form", "data-step")) === "board" && /Choose your board/.test(await page.textContent(".toast").catch(() => "")));
+    await page.click('#setup-form .setup-choice:has-text("Cambridge")');
+    await page.click("#setup-form button[type=submit]");
+    const stages = await page.locator("#setup-form .setup-choice b").allTextContents();
+    check("Cambridge asks for the year: Grade 9, Grade 10, AS, A2", stages.join() === "Grade 9,Grade 10,AS,A2", stages.join());
+    await page.click('#setup-form .setup-choice:has-text("AS")');
+    await page.click("#setup-form button[type=submit]");
+    const offered = await page.locator("#setup-form .setup-subjects .chip").allTextContents();
+    check("AS offers its subjects with their syllabus codes", offered.some((t) => /Physics\s*9702/.test(t)) && offered.some((t) => /Psychology/.test(t)));
+    await page.click('#setup-form .setup-subjects .chip:has-text("Physics")');
+    await page.click('#setup-form .setup-subjects .chip:has-text("Chemistry")');
+    await page.click("#setup-form button[type=submit]");
+    await page.click('#setup-form .setup-level:has-text("Physics") .chip:has-text("Struggling")');
+    await page.selectOption('#setup-form .setup-level:has-text("Chemistry") select', "b");
+    await shot(page, "setup-levels");
+    while ((await page.getAttribute("#setup-form", "data-step")) !== "exams") {
+      await page.click("#setup-form button[type=submit]");
+      await page.waitForTimeout(60);
+    }
+    const soon = new Date(Date.now() + 9 * 86400000).toISOString().slice(0, 10);
+    await page.fill("#setup-exam-date", soon);
+    await page.click("#setup-form .setup-exam-add button");
+    check("an exam can be added in the setup", (await page.locator(".setup-exams li").count()) === 1);
+    await page.click("#setup-form button[type=submit]");
+    await page.waitForSelector("#app:not([hidden])", { timeout: 15000 });
+    await page.waitForTimeout(800);
     const prof = await page.evaluate(() => window.__qa.db.student_profiles[0]);
-    check("the birth saves a named world with interests", prof?.world_name === "Kepler QA" && prof.interests.includes("space"));
-    const goal = await page.evaluate(() => window.__qa.db.student_goals[0]);
-    check("the first moon is the weekly focus goal", goal?.weekly_minutes === 300);
+    check("the setup saves the study profile", prof?.board === "cambridge" && prof.stage === "as" && prof.subjects.length === 2 && !!prof.setup_at, JSON.stringify(prof));
+    check("…with how each subject is going", prof?.subjects.find((x) => x.id === "phy")?.level === 1 && prof?.subjects.find((x) => x.id === "chem")?.grade === "b");
+    check("…and the school day", prof?.school_start === "08:10" && prof?.school_days.length === 5);
+    check("an exam from the setup is on the calendar", await page.evaluate(() => window.__qa.db.student_events.some((e) => e.kind === "exam" && /Physics test/.test(e.title))));
     check("a new account lands on Now", /Now/.test(await page.title()));
     check("the new account has encryption keys", await page.evaluate(() => window.__qa.db.user_keys.length === 2));
     await page.close();
@@ -210,7 +212,7 @@ try {
   await page.fill("#login-email", "Alex");
   await page.fill("#login-password", "correct-horse-42");
   await page.click("#login-submit");
-  await finishBirth(page);
+  await finishSetup(page);
   check("you can log in with your username", await page.isVisible("#app"));
   check("Now shows the day orbit", await page.isVisible(".orbit-svg"));
   check("Panalo Students is private: no chat, no Signals, nothing from other people", !(await page.isVisible("a[data-route=signals]")) && !(await page.textContent(".now-log")).includes("Signals"));
@@ -326,13 +328,6 @@ try {
   check("a PDF opens from a signed link, not a blob", /\/object\/sign\/student-resources\//.test(pdfHref || ""));
   await page.keyboard.press("Escape");
 
-  // ---- Drift ---------------------------------------------------------------------------
-  await go(page, "#/drift", 800);
-  await page.click(".drift-card >> nth=0 >> button");
-  await page.waitForTimeout(300);
-  check("Drift reveals today's fact", (await page.textContent(".drift-fact")).length > 20);
-  check("Drift has no feed: exactly three things", (await page.locator(".drift-card").count()) === 3);
-
   // ---- Warp and privacy -----------------------------------------------------------------
   await page.keyboard.press("Control+k");
   await page.waitForTimeout(300);
@@ -440,7 +435,7 @@ try {
   await page.click('[data-view-btn="day"]');
   // Nothing anywhere prints a stray null, undefined or NaN.
   const stray = [];
-  for (const r of ["now", "study", "world", "calendar", "archive", "drift", "safety", "settings"]) {
+  for (const r of ["now", "study", "world", "calendar", "archive", "safety", "settings"]) {
     await page.evaluate((r) => (location.hash = `#/${r}`), r);
     await page.waitForTimeout(700);
     const t = await page.evaluate((r) => document.querySelector(`.surface[data-surface="${r}"]`)?.innerText || "", r);
@@ -459,7 +454,7 @@ try {
     await m.fill("#login-email", "qa@panalo.test");
     await m.fill("#login-password", "correct-horse-42");
     await m.click("#login-submit");
-    await finishBirth(m);
+    await finishSetup(m);
     check("the phone dock is shown", await m.isVisible(".dock"));
     check("the top navigation gives way to it", !(await m.isVisible(".bar-nav")));
     await m.click(".dock a[data-route=calendar]");
@@ -554,7 +549,7 @@ try {
     await r.close();
   }
 
-  // ---- Weeks, moments, seasons, time (batch 2) ---------------------------------------------
+  // ---- The dawn and moments (batch 2) -------------------------------------------------------
   {
     const w = await qa.open({ viewport: "laptop", path: "students/#login", qa: { dawn: true }, storage: { "panalo.students.prefs": "{}" } });
     await w.evaluate(() => window.__qa.ready);
@@ -563,38 +558,16 @@ try {
     await w.fill("#login-password", "correct-horse-42");
     await w.click("#login-submit");
     await w.waitForSelector(".dawn", { timeout: 15000 }).catch(() => {});
-    check("the dawn names the season", /Season 1, First Light/.test(await w.textContent(".dawn-date").catch(() => "")));
+    check("the dawn shows today's date, and no seasons", /\d/.test(await w.textContent(".dawn-date").catch(() => "")) && !/Season/.test(await w.textContent(".dawn-date").catch(() => "")));
     await w.click(".dawn-skip");
-    await w.waitForSelector(".story", { timeout: 8000 }).catch(() => {});
-    check("a new week opens with last week's chronicle", await w.isVisible(".story"));
-    check("it starts with the week's number", /Week \d+/.test(await w.textContent(".story-title").catch(() => "")));
-    await w.keyboard.press("ArrowRight");
-    await w.waitForTimeout(1400);
-    check("then last week's focus, counted up", /2 h 45 min|2h 45|165/.test(await w.textContent(".story-stage")));
-    check("…with the best day marked", (await w.locator(".story-bars-chart .sb.best").count()) === 1);
-    await shot(w, "chronicle-focus");
-    await w.keyboard.press("ArrowRight");
-    await w.waitForTimeout(500);
-    check("then where it went, by subject", /Physics/.test(await w.textContent(".story-stage")) && /Chemistry/.test(await w.textContent(".story-stage")));
-    let words = false, world = false;
-    for (let k = 0; k < 6; k++) {
-      await w.keyboard.press("ArrowRight");
-      await w.waitForTimeout(500);
-      const t = await w.textContent(".story-stage").catch(() => "");
-      if (/Snell's law, finally/.test(t)) words = true;
-      if (/Monday/.test(t) && (await w.locator(".story-globe").count()) === 2) { world = true; await shot(w, "chronicle-world"); }
-    }
-    check("what you wrote down comes back", words);
-    check("and your world on Monday beside Sunday", world);
-    await w.waitForSelector(".story", { state: "detached", timeout: 8000 }).catch(() => {});
-    check("the chronicle ends on its own", !(await w.isVisible(".story")));
-    check("it's marked seen (it won't replay)", await w.evaluate(() => !!JSON.parse(localStorage.getItem("panalo.students.prefs") || "{}").chronicleSeen));
+    await w.waitForTimeout(800);
+    check("no weekly film follows the dawn", !(await w.$(".story")));
 
     // Closing today is a first page this session... last week's was the first; a
     // moment for a fresh discovery: finishing a first task today isn't one either,
     // so make one: a moon, completed.
     await go(w, "#/world", 1000);
-    check("World shows the season", /Season 1 · First Light/.test(await w.textContent(".season-line")));
+    check("World has no seasons, time-lapse or chronicle", !(await w.$(".season-line")) && !(await w.$("#world-timelapse")) && !(await w.$("#world-chronicle")));
     await w.click("text=Add a moon");
     await w.click(".sheet .chip >> text=A milestone");
     await w.fill(".sheet input[placeholder^='e.g.']", "Finish the robotics demo");
@@ -616,30 +589,14 @@ try {
     await w.reload();
     await w.waitForSelector("#app:not([hidden])", { timeout: 15000 });
     await w.waitForTimeout(2500);
-    check("each moment plays once", !(await w.isVisible(".moment")) && !(await w.isVisible(".story")));
+    check("each moment plays once", !(await w.isVisible(".moment")));
 
-    await go(w, "#/world", 1000);
-    await w.click("#world-timelapse");
-    await w.waitForTimeout(600);
-    check("your world can be watched growing", await w.isVisible(".timelapse"));
-    await w.waitForTimeout(8600);
-    check("the time-lapse ends today, with today's totals", /lights?/.test(await w.textContent(".timelapse-stats")) && (await w.inputValue(".timelapse input[type=range]")) === "31");
-    await shot(w, "timelapse");
-    await w.fill(".timelapse input[type=range]", "0");
-    await w.dispatchEvent(".timelapse input[type=range]", "input");
-    check("…and scrubbed back to the start", /^0 min/.test(await w.textContent(".timelapse-stats")));
-    await w.click(".timelapse-close");
-    await w.click("#world-chronicle");
-    await w.waitForTimeout(500);
-    check("last week can be replayed from World", await w.isVisible(".story"));
-    await w.keyboard.press("Escape");
-    await w.waitForTimeout(600);
     check("no console errors (batch 2)", w.errors.length === 0);
     if (w.errors.length) console.log(w.errors.join("\n"));
     await w.close();
   }
 
-  // ---- Surface upgrades: calendar, study, drift, archive (batch 3) ----------------------------
+  // ---- Surface upgrades: calendar, study, archive (batch 3) ----------------------------------
   {
     const u = await qa.open({ viewport: "laptop", path: "students/#login", qa: { dawn: true } });
     await u.evaluate(() => window.__qa.ready);
@@ -694,17 +651,6 @@ try {
     // End the rest early to leave the timer idle for what follows.
     await u.click(".study-controls .btn-quiet").catch(() => {});
 
-    // Drift: make the thing, keep the fact.
-    await go(u, "#/drift", 800);
-    await u.click(".drift-card >> nth=1 >> button");
-    await u.click("#drift-made");
-    await u.waitForTimeout(500);
-    check("Drift's prompt can be logged in one tap", await u.evaluate(() => window.__qa.db.activity_log.some((l) => l.kind === "create" && l.note === "Drift prompt")));
-    await u.click(".drift-card >> nth=0 >> button");
-    await u.click(".drift-save");
-    await u.waitForTimeout(300);
-    check("a fact can be kept", (await u.textContent(".drift-saved summary").catch(() => "")) === "Facts you kept (1)");
-
     // Archive: "/" jumps to search.
     await go(u, "#/archive", 1200);
     await u.keyboard.press("/");
@@ -758,8 +704,8 @@ try {
     check("a wrong code is explained plainly", /wrong or has expired/.test(await a.textContent("#auth-message")));
     await a.fill("#otp-code", "123 456");
     await a.click("#otp-submit");
-    await a.waitForSelector("#birth:not([hidden])", { timeout: 15000 }).catch(() => {});
-    check("the code leads into the birth of a universe (pasted with a space)", await a.isVisible("#birth"));
+    await a.waitForSelector("#setup:not([hidden])", { timeout: 15000 }).catch(() => {});
+    check("the code leads into the setup (pasted with a space)", await a.isVisible("#setup"));
     await a.close();
 
     const b = await qa.open({ viewport: "laptop", path: "students/#login" });
@@ -768,7 +714,7 @@ try {
     await b.fill("#login-email", "qa@panalo.test");
     await b.fill("#login-password", "correct-horse-42");
     await b.click("#login-submit");
-    await finishBirth(b);
+    await finishSetup(b);
     // A new device: the session is there, the cached private key is not.
     await b.evaluate(() => new Promise((r) => { const q = indexedDB.deleteDatabase("panalo-keys"); q.onsuccess = q.onerror = q.onblocked = () => r(); }));
     await b.reload();
@@ -883,7 +829,7 @@ try {
     await fillBirth(d, 40);
     await d.check("#signup-age");
     await d.click("#signup-submit");
-    await finishBirth(d);
+    await finishSetup(d);
     const uid = await d.evaluate(() => window.__qa.db.profiles.find((p) => p.username === "leaving_q").id);
     await go(d, "#/archive", 900);
     await d.click(".s-actions button >> text=Upload");
@@ -918,7 +864,7 @@ try {
     await p.fill("#login-email", "qa@panalo.test");
     await p.fill("#login-password", "correct-horse-42");
     await p.click("#login-submit");
-    await finishBirth(p);
+    await finishSetup(p);
     await p.waitForTimeout(800);
     check("after logging in (even a first time) it goes where the link pointed", await p.evaluate(() => location.hash === "#/moderate"));
     check("someone who isn't a moderator sees no reports and no menu entry", (await p.isVisible(".mod-door")) && !(await p.isVisible(".mod-card")) && (await p.isHidden("#mod-link")));
@@ -1004,7 +950,7 @@ try {
     await t.check("#signup-age");
     await t.click("#signup-submit");
     await t.waitForSelector("#guardian-form:not([hidden])", { timeout: 15000 }).catch(() => {});
-    check("a 15-year-old is asked for a parent before anything else", (await t.isVisible("#guardian-form")) && !(await t.isVisible("#birth")) && !(await t.isVisible("#app")));
+    check("a 15-year-old is asked for a parent before anything else", (await t.isVisible("#guardian-form")) && !(await t.isVisible("#setup")) && !(await t.isVisible("#app")));
     const blocked = await t.evaluate(async () => (await window.supabase.createClient("x", "y").from("student_tasks").insert([{ title: "x" }])).error?.message || "");
     check("nothing can be stored for them yet", /parent or guardian/.test(blocked));
     await t.fill("#guardian-email", "teen@panalo.test");
@@ -1054,7 +1000,7 @@ try {
     await t.fill("#login-email", "teen@panalo.test");
     await t.fill("#login-password", "a-long-enough-pass");
     await t.click("#login-submit");
-    await finishBirth(t);
+    await finishSetup(t);
     check("with a parent's consent, the student gets in", await t.isVisible("#app"));
     check("no console errors (parent consent)", t.errors.length === 0);
     if (t.errors.length) console.log(t.errors.join("\n"));
@@ -1067,8 +1013,7 @@ try {
     await r.waitForTimeout(500);
     const anim = await r.evaluate(() => getComputedStyle(document.querySelector(".ht-line")).animationName);
     check("reduced motion turns the landing animation off", anim === "none");
-    check("reduced motion skips the gate", !(await r.evaluate(() => document.documentElement.hasAttribute("data-gate"))) && !(await r.isVisible(".gate")));
-    check("reduced motion shows the numbers at once", (await r.$$eval("[data-count]", (n) => n.map((x) => x.textContent))).join() === "06,03,00,00");
+    check("reduced motion shows the numbers at once", (await r.$$eval("[data-count]", (n) => n.map((x) => x.textContent))).join() === "06,90,00,00");
     check("no console errors (reduced motion)", r.errors.length === 0);
   }
 } finally {

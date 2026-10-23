@@ -80,7 +80,7 @@ For each: **SQL Editor → New query** → paste the whole file → **Run**.
 | 16 | [`supabase-phase18.sql`](supabase-phase18.sql) | Deleting an account deletes everything: conversations only you were in, sign-in records, and (through the app) every file you uploaded; archive files may live on Cloudflare R2 (see [HOSTING.md](HOSTING.md)) | No |
 | 17 | [`supabase-phase19.sql`](supabase-phase19.sql) | Launch tuning: policies work out who you are once per query instead of once per row, and every foreign key gets an index (faster deletes). No behaviour change | No |
 | 18 | [`supabase-phase20.sql`](supabase-phase20.sql) | Moderation: a moderator role, the moderation page's functions (reports, notes, removing messages, suspending accounts), a passphrase to reclaim the role, and a record of every action | No |
-| 19 | [`supabase-phase21.sql`](supabase-phase21.sql) | Your Study Room settings, world lighting, Drift progress and a running focus timer follow you across devices; a focus block is recorded once even with two devices open | No |
+| 19 | [`supabase-phase21.sql`](supabase-phase21.sql) | Your Study Room settings, world lighting, Drift progress (removed in phase 29) and a running focus timer follow you across devices; a focus block is recorded once even with two devices open | No |
 | 20 | [`supabase-phase22.sql`](supabase-phase22.sql) | Age and a parent's consent: date of birth once, under-13s refused, 13–17 wait for a parent's approval (enforced by the database); registration details kept 180 days after deletion, then erased | No |
 | 21 | [`supabase-phase23.sql`](supabase-phase23.sql) | Security logs kept 180 days (CERT-In): a locked table the hourly GitHub Action fills from Supabase's log API, erased nightly after 180 days | No |
 | 22 | [`supabase-phase24.sql`](supabase-phase24.sql) | The day as a ritual: one private entry per day (first open, intention, mood and energy, one thing learned, one good thing). Powers the dawn, closing the day and the journal | No |
@@ -88,6 +88,7 @@ For each: **SQL Editor → New query** → paste the whole file → **Run**.
 | 24 | [`supabase-phase26.sql`](supabase-phase26.sql) | An Exam kind for the calendar (countdowns on Now), and how deep a focus block went (scattered, okay, deep) | No |
 | 25 | [`supabase-phase27.sql`](supabase-phase27.sql) | Friends on the globe: a city you pick by hand, shown only to people you choose from your one-to-one chats, until you turn it off, for 7 days or for 24 hours; expired places erased hourly | No (phase 28 removes it again) |
 | 26 | [`supabase-phase28.sql`](supabase-phase28.sql) | Panalo Students is private: friends on the globe removed with its data, and every room join code erased. Panalo Chat's conversations are untouched | No |
+| 27 | [`supabase-phase29.sql`](supabase-phase29.sql) | The study profile behind the v0.2 plan: board, year, subjects and how each is going, aim, school day, boarding or travel, sleep, tuition. Drift's saved state is erased | Required by Students v0.2 |
 
 Phase 8 is self-contained and re-applies everything phase 7 does, so running 8
 is enough if you are starting fresh. Run 7 anyway if you prefer the history to
