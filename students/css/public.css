@@ -53,6 +53,44 @@ html[data-boot="app"] body:not(.ready) .landing {
 .wordmark img {
   flex-shrink: 0;
 }
+/* The mark (Ascent) holds all three of its materials; the look picks one. */
+.mark use {
+  display: none;
+}
+html:not([data-look="signal"]):not([data-look="verse"]) .mark .mk-glass,
+html[data-look="signal"] .mark .mk-signal,
+html[data-look="verse"] .mark .mk-verse {
+  display: inline;
+}
+/* With Lively effects on, the mark in the bar glows softly, like a world
+   catching the light. Never with motion reduced. */
+html[data-effects="lively"] .brand .mark {
+  animation: mark-glow 7s ease-in-out infinite;
+}
+@keyframes mark-glow {
+  50% {
+    filter: drop-shadow(0 0 6px rgba(181, 156, 255, 0.55));
+  }
+}
+html[data-effects="lively"][data-look="signal"] .brand .mark {
+  animation-name: mark-glow-led;
+}
+@keyframes mark-glow-led {
+  50% {
+    filter: drop-shadow(0 0 5px rgba(255, 69, 58, 0.6));
+  }
+}
+html[data-effects="lively"][data-look="verse"] .brand .mark {
+  animation: none;
+}
+:root[data-motion="reduce"] .brand .mark {
+  animation: none;
+}
+@media (prefers-reduced-motion: reduce) {
+  .brand .mark {
+    animation: none !important;
+  }
+}
 .wm-name {
   font: 600 18px/1 var(--f-display);
   letter-spacing: -0.03em;
@@ -826,6 +864,11 @@ input[type="range"].range {
 }
 .land-foot a:hover {
   color: var(--text);
+}
+.land-version {
+  font-size: 12.5px;
+  color: var(--text-3);
+  font-variant-numeric: tabular-nums;
 }
 
 /* ---- The crossing ------------------------------------------------------------ */

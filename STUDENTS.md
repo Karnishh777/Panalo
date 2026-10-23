@@ -212,7 +212,7 @@ landing ──► the crossing (sign in / sign up) ──► first time? the bir
 | `js/surfaces/*.js` | Now, Study, World, Calendar, Archive, Drift, Privacy & data (`safety.js`), Settings, Moderation. |
 | `css/tokens.css` … `surfaces.css` | The design system (below). |
 | `privacy.html`, `rules.html` | Plain-language privacy notes and rules. |
-| `mark.svg`, the `#mark` symbol in `index.html` | The logo: a world rising from the sea at the horizon, with a spark above — the app's idea, a world that rises as you work. `mark.svg` is the favicon and app icon (on its dark tile); the symbol is the same drawing without the tile, for the bar and footer. `og.jpg` is the sharing image (the landing at 1200×630). |
+| `mark.svg`, `favicon.svg`, `icon-*.png`, the `#mark-glass` / `#mark-signal` / `#mark-verse` symbols in `index.html` | The logo, **Ascent**: a p whose bowl is a small world and whose stem is a beam of focus rising into it, with a bead of light in orbit. Every `<svg class="mark">` holds all three materials and `public.css` shows the one for the current look (Glass: light and glass; Signal: red LEDs with the p's counter cut out; Verse: ink, halftone and a cyan/magenta misprint). With Lively effects the mark in the bar glows slowly (never with motion reduced). `mark.svg` is the full mark on its tile (app icon, privacy and rules pages); `favicon.svg` a simpler cut for tabs; `icon-180/192/512.png` and `icon-maskable-512.png` the home-screen icons. `og.jpg` is the sharing image (the landing at 1200×630). The version shown in the app is `js/version.js` (see CHANGELOG.md). |
 
 ## Data (phases 16 and 17 — `supabase-phase16.sql`, `supabase-phase17.sql`)
 

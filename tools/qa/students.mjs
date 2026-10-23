@@ -114,9 +114,13 @@ try {
     await page.click("#land-look-menu .look-opt-signal");
     await page.waitForTimeout(700);
     check("the landing can switch looks too", (await page.evaluate(() => document.documentElement.dataset.look)) === "signal");
+    // The logo (Ascent) is one shape in three materials: each look shows its own.
+    const markShown = () => page.evaluate(() => [...document.querySelectorAll(".land-bar .mark use")].filter((u) => getComputedStyle(u).display !== "none").map((u) => u.getAttribute("class")).join());
+    check("the logo turns to red LEDs in Signal", (await markShown()) === "mk-signal");
     await page.click("#land-look-open");
     await page.click("#land-look-menu .look-opt-glass");
     await page.waitForTimeout(700);
+    check("…and back to glass in Glass", (await markShown()) === "mk-glass");
     // The thread: a star per chapter, each a link; reaching a chapter lights it.
     const thread = await page.evaluate(() => {
       const hrefs = [...document.querySelectorAll(".thread-stars a")].map((a) => a.getAttribute("href"));
