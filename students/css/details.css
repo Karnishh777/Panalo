@@ -544,7 +544,7 @@ html[data-motion="reduce"] :is(.surface .panel, .toast, .clock-colon, .bar-nav a
 html:not([data-effects="lively"]) :is(.fx-ambient, .verse-rifts, .verse-spray, .universe-tag, .verse-sfx) {
   display: none !important;
 }
-html:not([data-effects="lively"]) :is(.clock-colon, .sig-star.pulsing, .slipping, .sky-star.lit circle:first-child) {
+html:not([data-effects="lively"]) :is(.clock-colon, .slipping, .sky-star.lit circle:first-child) {
   animation: none !important;
 }
 html:not([data-effects="lively"])[data-look="verse"] :is(.bar-clock, .s-head h1, .panel:hover) {
@@ -552,9 +552,8 @@ html:not([data-effects="lively"])[data-look="verse"] :is(.bar-clock, .s-head h1,
 }
 
 /* ===== The focus shield ====================================================== */
-/* While a focus block runs (js/focus-shield.js): no unread counts anywhere,
-   and a quiet line under the bar on any other page, back to the block. */
-html.focusing :is(.bar-nav, .dock) .pulse-count,
+/* While a focus block runs (js/focus-shield.js): no badges anywhere, and
+   a quiet line under the bar on any other page, back to the block. */
 html.focusing #me-mod-dot {
   display: none !important;
 }

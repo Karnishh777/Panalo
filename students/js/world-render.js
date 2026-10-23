@@ -16,7 +16,6 @@ import { glSupported, createGlobeGL } from "./world-gl.js";
 import { TW, UW, UH, TAU, mix, surfaces, surfaceFor, paint } from "./world-surface.js";
 import { getLight, onLight, lightVector } from "./world-light.js";
 import { earthPixels, paintEarth } from "./earth.js";
-import { globePoint, spinToFace } from "./globe-math.js";
 
 /**
  * @param {HTMLCanvasElement} canvas
@@ -97,7 +96,6 @@ function createGlobe2D(canvas, { seed, tilt = 0.38, interactive = false, maxDisk
     const dpr = Math.min(2, window.devicePixelRatio || 1);
     const css = Math.max(40, Math.round(rect.width || canvas.width));
     canvas.width = Math.round(css * dpr);
-    cssScale = canvas.width / css;
     canvas.height = Math.round((rect.height || css) * dpr);
     D = Math.min(maxDisk, Math.round(canvas.width * 0.6));
     disk = document.createElement("canvas");
@@ -230,15 +228,7 @@ function createGlobe2D(canvas, { seed, tilt = 0.38, interactive = false, maxDisk
     });
   }
 
-  // Things laid over the globe (friends' cities) follow it frame by frame.
-  const frameFns = new Set();
-  let cssScale = 1;
-  let aimRot = null;
   function draw(t) {
-    paintFrame(t);
-    if (table && frameFns.size) frameFns.forEach((f) => f());
-  }
-  function paintFrame(t) {
     if (!table) return;
     const W = canvas.width, H = canvas.height;
     const cx = W / 2, cy = H / 2;
@@ -298,15 +288,7 @@ function createGlobe2D(canvas, { seed, tilt = 0.38, interactive = false, maxDisk
     const step = acc / 1000;
     acc = 0;
     const rate = motion.paused ? 0 : 0.16 * motion.speed * motion.direction;
-    if (dragging) aimRot = null;
-    if (aimRot !== null) {
-      const d = aimRot - rot;
-      rot += d * (1 - Math.exp(-step / 0.3));
-      if (Math.abs(d) < 0.002) {
-        rot = aimRot;
-        aimRot = null;
-      }
-    } else if (!dragging) rot += rate * step;
+    if (!dragging) rot += rate * step;
     cloudShift += (0.012 + Math.abs(rate) * 0.15) * step;
     draw(t);
   });
@@ -386,26 +368,6 @@ function createGlobe2D(canvas, { seed, tilt = 0.38, interactive = false, maxDisk
       redrawStill();
     },
     getMotion: () => ({ ...motion }),
-    project(lat, lon) {
-      if (!table) return null;
-      const W = canvas.width, H = canvas.height;
-      const R = Math.min(W, H) * 0.3;
-      const p = globePoint(lat, lon, rot, tilt);
-      return { x: (W / 2 + p.x * R) / cssScale, y: (H / 2 - p.y * R) / cssScale, front: p.z, r: R / cssScale };
-    },
-    onFrame(fn) {
-      frameFns.add(fn);
-      return () => frameFns.delete(fn);
-    },
-    faceTo(lat, lon) {
-      motion.paused = true;
-      onMotion?.({ ...motion });
-      const target = spinToFace(lon, rot);
-      if (still()) {
-        rot = target;
-        redrawStill();
-      } else aimRot = target;
-    },
     zoomBy() {},
     reset() {
       Object.assign(motion, home);

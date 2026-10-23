@@ -1,7 +1,7 @@
 // The focus shield: while a focus block runs, the rest of Panalo keeps out
 // of the way -- wherever you are in the app, not only in the Study Room.
 //
-//   - no unread counts in the bar or the dock (css/details.css, html.focusing);
+//   - no badge on the account menu (css/details.css, html.focusing);
 //   - nothing celebrates, and no dawn or weekly story plays, until the
 //     block ends (moment.js and shell.js ask focusing());
 //   - on any other page, one quiet line under the bar says how long is

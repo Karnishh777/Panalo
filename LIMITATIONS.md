@@ -278,35 +278,33 @@ PIN. A user on two devices effectively has two different apps.
 
 ## 9. Panalo Students (`students/`) 🟡
 
-- **Moderation needs someone looking.** Blocking, reporting and a moderator
-  page with notes, message removal and suspensions all work (phases 16 and
-  20). A moderator sees the number of open reports in the account menu
-  while the app is open (checked every two minutes); nothing reaches them
-  when it's closed — no email or push.
-- **No verified roles.** A "class" is a group whose hosts are whoever made
-  it. There is no teacher verification, no school accounts, no parent view.
+- **Students is private and solo.** Since phase 28 it has no chat, rooms,
+  join codes, profiles or friends on the globe: nobody sees anything of
+  anyone else's. Studying together, if it comes back, needs designing
+  again from scratch.
+- **Requests need someone looking.** Questions and requests about your
+  data reach the moderator page (`#/moderate`); a moderator sees how many
+  are open in the account menu while the app is open, but nothing reaches
+  them when it's closed — no email or push.
+- **No verified roles.** There is no teacher verification, no school
+  accounts and no parent view.
 - **Age is self-declared.** Sign-up asks for a month and year of birth;
   under-13s are refused and 13–17s wait for a parent's approval, enforced
   by the database (phase 22). Nothing verifies the date itself, or that
   the person approving is really a parent.
 - **Archive files are not end-to-end encrypted.** They live in a private
-  bucket guarded by Storage policies; the server can read them. Shared files
-  are readable by everyone in the conversation, including people added later.
-- **Files outlive their rooms.** When a room is purged a day after it ends,
-  its messages go, but archive files shared into it stay in Storage (a
-  database job cannot delete Storage objects) until their uploader deletes
-  them or their account.
+  bucket guarded by Storage policies; the server can read them. Files shared
+  into a chat before phase 28 are still readable by that chat's members in
+  Panalo Chat; Students lists only your own files.
 - **Deleting an account removes files from the device it is done on.** The
   app deletes every file the person uploaded (Supabase and R2) and then the
   account. If the browser closes between the two, the account remains and
   deleting again finishes the job. Files that belonged to accounts deleted
   before phase 18 have to be removed in the Supabase dashboard.
-- **Reports outlive their authors.** Reports someone filed or received are
-  kept for moderation with the deleted person's id set to empty.
+- **Requests outlive their authors.** Requests and reports are kept for the
+  record with the deleted person's id set to empty.
 - **The 200 MB archive quota is per person, not per project.** Five busy
   users can fill Supabase's free 1 GB; with R2 bound the ceiling is 10 GB.
-- **Letting someone into a room shares the key to whoever the server says
-  they are.** The same trust as adding a member by name in Panalo Chat.
 - **Students needs a connection, and sends nothing when closed.** It
   registers no service worker of its own: the site's CSP applies to a
   worker too, so one can't keep the Supabase library from the CDN, and

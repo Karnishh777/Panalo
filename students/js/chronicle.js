@@ -22,7 +22,7 @@ const SLIDE_MS = 5200;
 let playing = false;
 
 function data() {
-  const base = { sessions: store.sessions, tasks: store.tasks, logs: store.logs, goals: store.goals, entries: store.entries, sentMessages: store.sent, bornAt: store.student?.born_at };
+  const base = { sessions: store.sessions, tasks: store.tasks, logs: store.logs, goals: store.goals, entries: store.entries, bornAt: store.student?.born_at };
   const w = buildWorld(base);
   return { ...base, discoveries: w.discoveries };
 }

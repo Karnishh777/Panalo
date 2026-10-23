@@ -78,7 +78,7 @@ function passwordBlock() {
   const again = el("input", { type: "password", autocomplete: "new-password" });
   const btn = el("button", { type: "submit", class: "btn btn-ghost btn-sm", text: "Change password" });
   const form = el("form", { class: "pw-form", novalidate: "" }, [
-    el("label", { class: "field" }, [el("span", { text: "New password" }), next, el("small", { class: "field-hint", text: `${describePasswordPolicy()} Your encryption key moves to the new password automatically — stay online until it's done.` })]),
+    el("label", { class: "field" }, [el("span", { text: "New password" }), next, el("small", { class: "field-hint", text: `${describePasswordPolicy()} Your Panalo Chat key moves to the new password automatically — stay online until it's done.` })]),
     el("label", { class: "field" }, [el("span", { text: "Again" }), again]),
     btn,
   ]);
@@ -149,7 +149,7 @@ export function show() {
       el("section", { class: "panel tone-signal" }, [el("div", { class: "panel-head" }, [el("h2", { text: "Password" })]), passwordBlock()]),
       el("section", { class: "panel tone-time" }, [
         el("div", { class: "panel-head" }, [el("h2", { text: "Session" })]),
-        el("p", { class: "muted", text: "Signing out locks your messages on this device and clears decrypted files from memory." }),
+        el("p", { class: "muted", text: "Signing out clears your data and files from this device's memory." }),
         el("button", { type: "button", class: "btn btn-ghost btn-sm", text: "Sign out", onClick: () => ctx.signOut() }),
       ]),
     ])

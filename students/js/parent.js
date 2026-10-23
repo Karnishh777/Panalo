@@ -90,7 +90,7 @@ function requestCard(r) {
         el("li", { text: "No ads, no tracking, no selling data, no feed. Nothing is sent to an AI service." }),
         el("li", { text: "They, or you, can delete everything at any time." }),
       ]),
-      el("p", {}, [el("a", { href: "privacy.html", target: "_blank", rel: "noopener", text: "The full privacy notes" }), " · ", el("a", { href: "rules.html", target: "_blank", rel: "noopener", text: "Community rules" })]),
+      el("p", {}, [el("a", { href: "privacy.html", target: "_blank", rel: "noopener", text: "The full privacy notes" }), " · ", el("a", { href: "rules.html", target: "_blank", rel: "noopener", text: "Rules" })]),
     ]),
     el("label", { class: "field" }, [el("span", { text: "Your full name" }), name]),
     el("div", { class: "field-row" }, [el("label", { class: "field" }, [el("span", { text: "You are their" }), relation]), el("label", { class: "field" }, [el("span", { text: "Year you were born" }), born])]),

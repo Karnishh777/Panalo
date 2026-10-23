@@ -2,9 +2,8 @@
 //
 // One instrument and one log, not a wall of cards. The instrument is the
 // day orbit with your world at its centre. The log answers, in order of
-// urgency: what's on now or next, how today's focus is going, who's
-// waiting for you, what's due, how your world is doing, what's new in your
-// files -- and, last, an offer of rest.
+// urgency: what's on now or next, how today's focus is going, what's due,
+// how your world is doing -- and, last, an offer of rest.
 import { el, emptyState, reportError, shortDate, longDate, showToast } from "../ui.js";
 import { store, on, api } from "../store.js";
 import { dayOrbit } from "../dayorbit.js";
@@ -16,7 +15,6 @@ import { pickDrift } from "../model/drift-pick.js";
 import { LIBRARY } from "../model/drift-library.js";
 import * as T from "../model/focus-timer.js";
 import { loadTimer, onTimer } from "../timer-state.js";
-import { titleOf } from "../signals-data.js";
 import { state } from "../../../src/state.js";
 import { activeDays } from "../model/world-model.js";
 import { todayEntry, rhythm, rhythmLine, dayPart, MOODS } from "../model/daily.js";
@@ -45,7 +43,7 @@ function allEvents() {
 }
 
 function world() {
-  return buildWorld({ sessions: store.sessions, tasks: store.tasks, logs: store.logs, goals: store.goals, sentMessages: store.sent, entries: store.entries, bornAt: store.student?.born_at });
+  return buildWorld({ sessions: store.sessions, tasks: store.tasks, logs: store.logs, goals: store.goals, entries: store.entries, bornAt: store.student?.born_at });
 }
 
 function panel(tone, title, link, children) {
@@ -196,7 +194,7 @@ function renderLog() {
     ])
   );
 
-  // 3. Due soon: the work, before the messages.
+  // 3. Due soon.
   const due = store.tasks
     .filter((tk) => !tk.done_at && tk.due_at && Date.parse(tk.due_at) < now + 7 * DAY)
     .sort((a, b) => Date.parse(a.due_at) - Date.parse(b.due_at))
@@ -223,23 +221,7 @@ function renderLog() {
     ])
   );
 
-  // 4. Signals waiting.
-  const waiting = store.conversations.filter((c) => c.unread).slice(0, 4);
-  const doors = store.requests.length;
-  parts.push(
-    panel("tone-signal", "Signals", { href: "#/signals", label: "All signals" }, [
-      waiting.length
-        ? el(
-            "ul",
-            { class: "now-list" },
-            waiting.map((c) => el("li", {}, [el("a", { href: `#/signals/${c.id}` }, [el("span", { class: "sig-star pulsing", "aria-hidden": "true" }), el("b", { text: titleOf(c) }), el("span", { class: "muted ellipsis", text: c.preview || "" }), el("span", { class: "pulse-count", text: String(c.unread) })])]))
-          )
-        : el("p", { class: "muted", text: store.conversations.length ? "All quiet. Nobody's waiting on you." : "No conversations yet." }),
-      doors ? el("p", {}, [el("a", { href: "#/signals", text: `${doors} ${doors === 1 ? "person is" : "people are"} waiting at the door of a room you host.` })]) : null,
-    ])
-  );
-
-  // 5. World.
+  // 4. World.
   const weekly = w.moons.filter((m) => store.goals.find((g) => g.id === m.id)?.weekly_minutes);
   parts.push(
     panel("tone-world", store.student?.world_name || "Your world", { href: "#/world", label: "World" }, [
@@ -255,13 +237,7 @@ function renderLog() {
     ])
   );
 
-  // 6. New in the archive, from other people.
-  const fresh = (store.resources || []).filter((r) => r.owner_id !== state.currentUser.id && Date.parse(r.created_at) > now - 7 * DAY).slice(0, 3);
-  if (fresh.length) {
-    parts.push(panel("tone-archive", "New in your circles", { href: "#/archive", label: "Archive" }, [el("ul", { class: "now-list" }, fresh.map((r) => el("li", {}, [el("a", { href: "#/archive" }, [el("b", { text: r.title }), el("span", { class: "muted", text: ` · @${store.owners[r.owner_id] || "someone"}` })])])))]));
-  }
-
-  // 7. Rest, offered last and once.
+  // 5. Rest, offered last and once.
   const drift = pickDrift(now, store.student?.interests || [], LIBRARY);
   parts.push(el("p", { class: "now-drift tone-drift" }, ["Need a breather? Today's Drift: ", el("a", { href: "#/drift", text: drift.play.title.toLowerCase() }), " and two other small things."]));
 

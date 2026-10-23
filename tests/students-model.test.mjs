@@ -11,8 +11,6 @@ import * as C from "../students/js/model/chronicle.js";
 import { parseQuickAdd } from "../students/js/model/quick-add.js";
 import { countdowns } from "../students/js/model/timeline.js";
 import { toIcs, icsStamp, icsText } from "../students/js/model/ics.js";
-import * as P from "../students/js/model/places.js";
-import { globePoint, spinToFace, distanceKm } from "../students/js/globe-math.js";
 import { relTime, formatMinutes, startOfWeek, dayKey, parseDayKey, MINUTE, HOUR, DAY } from "../students/js/model/time.js";
 
 let passed = 0;
@@ -74,8 +72,8 @@ const body = buildWorld({ logs: [{ kind: "move", minutes: 300, occurred_on: dayK
 ok("moving and resting greens the land", body.layers.forest > empty.layers.forest);
 const reading = buildWorld({ logs: [{ kind: "read", minutes: 200, occurred_on: dayKey(at(1)) }], now: NOW });
 ok("reading lights the oceans", reading.layers.glow > 0.4 && empty.layers.glow === 0);
-const social = buildWorld({ sentMessages: Array.from({ length: 30 }, () => ({ created_at: at(1) })), now: NOW });
-ok("talking to people thickens the atmosphere", social.layers.atmosphere > empty.layers.atmosphere + 0.3);
+const social = buildWorld({ logs: [{ kind: "connect", minutes: 300, occurred_on: dayKey(at(1)) }], now: NOW });
+ok("time with people thickens the atmosphere", social.layers.atmosphere > empty.layers.atmosphere + 0.3);
 
 const streak = buildWorld({ sessions: [0, 1, 2, 3, 4].map((d) => session(d, 30)), now: NOW });
 ok("five active days of seven make a ring", streak.layers.ring > 0.7 && streak.stats.active7 === 5);
@@ -325,41 +323,6 @@ ok("anything else is just bytes", T_("application/zip", "a.zip") === "applicatio
   ok("ics: no line longer than 75 octets", lines.every((l) => new TextEncoder().encode(l).length <= 75));
   const long = toIcs([{ id: "x", title: "A".repeat(200), kind: "event", starts_at: new Date().toISOString() }], [], 0);
   ok("ics: long lines fold and unfold back", long.split("\r\n").every((l) => new TextEncoder().encode(l).length <= 75) && long.replace(/\r\n /g, "").includes(`SUMMARY:${"A".repeat(200)}`));
-}
-
-// ---- friends on the globe -------------------------------------------------
-{
-  const rows = [
-    ["Hyderabad", "Telangana", "India", 17.4, 78.48, 6376000],
-    ["Chennai", "Tamil Nadu", "India", 13.09, 80.28, 7163000],
-    ["São Paulo", "São Paulo", "Brazil", -23.56, -46.63, 18845000],
-    ["Hyderabad", "Sind", "Pakistan", 25.38, 68.37, 1459000],
-    ["New Chennai", "", "Nowhere", 0, 0, 10],
-    ["Singapore", "", "Singapore", 1.29, 103.85, 5183700],
-  ];
-  ok("a city is found as you type", P.searchCities(rows, "chen")[0].city === "Chennai");
-  ok("…the bigger one first, then other matches", P.searchCities(rows, "chen").map((c) => c.city).join() === "Chennai,New Chennai");
-  ok("accents don't matter", P.searchCities(rows, "sao paulo")[0]?.country === "Brazil");
-  ok("a country narrows it down", P.searchCities(rows, "hyderabad pakistan").length === 1 && P.searchCities(rows, "hyderabad, pakistan")[0].region === "Sind");
-  ok("nothing typed, nothing found", P.searchCities(rows, "  ").length === 0);
-  ok("no match is an empty list", P.searchCities(rows, "atlantis").length === 0);
-  ok("labels don't repeat themselves", P.placeLabel({ city: "Singapore", region: "", country: "Singapore" }) === "Singapore" && P.placeLabel({ city: "Chennai", region: "Tamil Nadu", country: "India" }) === "Chennai, Tamil Nadu, India");
-  const t0 = Date.parse("2026-10-22T10:00:00Z");
-  ok("until off has no end", P.expiryFor("off", t0) === null);
-  ok("24 hours ends a day later", Date.parse(P.expiryFor("24h", t0)) - t0 === 86400000);
-  ok("7 days ends a week later", Date.parse(P.expiryFor("7d", t0)) - t0 === 7 * 86400000);
-  ok("how long is left, in words", P.untilText(null) === "until you turn it off" && P.untilText(new Date(t0 + 5 * 3600000).toISOString(), t0) === "for 5 more hours" && P.untilText(new Date(t0 - 1).toISOString(), t0) === "no longer");
-  ok("an existing share reopens on its choice", P.shareChoiceOf(null) === "off" && P.shareChoiceOf(new Date(t0 + 20 * 3600000).toISOString(), t0) === "24h" && P.shareChoiceOf(new Date(t0 + 6 * 86400000).toISOString(), t0) === "7d");
-  const front = globePoint(13, 80, (80 * Math.PI) / 180, (13 * Math.PI) / 180);
-  ok("a place turned to face you is in the middle, in front", Math.abs(front.x) < 1e-9 && Math.abs(front.y) < 1e-9 && Math.abs(front.z - 1) < 1e-9);
-  const east = globePoint(0, 90, 0, 0);
-  const back = globePoint(0, 180, 0, 0);
-  ok("east is to the right; the far side is behind", east.x > 0.99 && back.z < -0.99);
-  ok("the north pole tips towards you with tilt", globePoint(90, 0, 0, 0.4).y < 1 && globePoint(90, 0, 0, 0.4).z > 0);
-  const s = spinToFace(-170, (170 * Math.PI) / 180);
-  ok("turning to a place takes the short way round", Math.abs(s - (190 * Math.PI) / 180) < 1e-9);
-  const d = distanceKm({ lat: 13.09, lon: 80.28 }, { lat: 12.97, lon: 77.56 });
-  ok("distances are great-circle km (Chennai–Bengaluru ≈ 290)", d > 280 && d < 300, d);
 }
 
 console.log(`\n${passed} passed, ${failures.length} failed`);

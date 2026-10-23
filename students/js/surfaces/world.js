@@ -17,8 +17,6 @@ import { openCheckin } from "../checkin.js";
 import { season } from "../model/chronicle.js";
 import { playChronicle } from "../chronicle.js";
 import { openTimelapse } from "../timelapse.js";
-import { friendsOnGlobe } from "../friends-globe.js";
-import { directFriends } from "../places.js";
 
 let root;
 let legendEl;
@@ -34,7 +32,6 @@ let journalShown = 14;
 let numbersEl;
 let dock = null;
 let globe = null;
-let friends = null;
 let unsubs = [];
 
 const LOG_KINDS = [
@@ -46,7 +43,7 @@ const LOG_KINDS = [
 ];
 
 function world() {
-  return buildWorld({ sessions: store.sessions, tasks: store.tasks, logs: store.logs, goals: store.goals, sentMessages: store.sent, entries: store.entries, bornAt: store.student?.born_at });
+  return buildWorld({ sessions: store.sessions, tasks: store.tasks, logs: store.logs, goals: store.goals, entries: store.entries, bornAt: store.student?.born_at });
 }
 
 function row(tone, name, value, explain) {
@@ -73,7 +70,7 @@ function render() {
     row("tone-drift", "Aurora", formatMinutes(s.createMinutes30), "Making things, last 30 days."),
     row("tone-world", "Forests", formatMinutes(s.bodyMinutes30), "Moving and resting, last 30 days."),
     row("tone-focus", "Glowing seas", formatMinutes(s.readMinutes30), "Reading, last 30 days."),
-    row("tone-signal", "Atmosphere", `${s.messages7} msg${s.connectMinutes7 ? ` + ${formatMinutes(s.connectMinutes7)}` : ""}`, "Messages you sent and time logged with people, last 7 days."),
+    row("tone-signal", "Atmosphere", formatMinutes(s.connectMinutes7), "Time logged with people, last 7 days."),
     row("tone-time", "Ring", `${s.active7} of 7 days`, w.layers.ring ? "You showed up five or more of the last seven days." : "Appears when you show up five days out of seven."),
     row("tone-signal", "Weather", s.daysSinceActive == null ? "—" : s.daysSinceActive === 0 ? "clear" : `${s.daysSinceActive} d away`, weatherLine(s))
   );
@@ -409,17 +406,14 @@ async function postcard() {
   if (!blob) return showToast("That postcard couldn't be made in this browser.");
   const url = URL.createObjectURL(blob);
   const name = `${(store.student?.world_name || "world").replace(/[^\w-]+/g, "-").toLowerCase()}-day-${s.ageDays + 1}.png`;
-  const file = new File([blob], name, { type: "image/png" });
-  const canShare = !!navigator.canShare?.({ files: [file] });
   openSheet({
     title: "A postcard of your world",
     lead: "Saved to your device only — nothing is posted.",
     form: false,
     body: [el("img", { class: "postcard-img", src: url, alt: `A postcard of ${store.student?.world_name || "your world"}, day ${s.ageDays + 1}` })],
     actions: [
-      canShare ? { label: "Share…", kind: "btn-ghost", close: false, onClick: async () => { try { await navigator.share({ files: [file], title: store.student?.world_name || "My world" }); } catch {} } } : null,
       { label: "Save image", kind: "btn-primary", onClick: () => { const a = el("a", { href: url, download: name }); document.body.append(a); a.click(); a.remove(); showToast("Postcard saved.", "success"); } },
-    ].filter(Boolean),
+    ],
     onClose: () => setTimeout(() => URL.revokeObjectURL(url), 2000),
   });
 }
@@ -448,7 +442,6 @@ function rename() {
 
 export function mount(section) {
   root = el("div", { class: "world" });
-  let friendsSlot;
   titleEl = el("h1");
   subEl = el("p", { class: "s-sub" });
   seasonEl = el("p", { class: "season-line" });
@@ -478,7 +471,6 @@ export function mount(section) {
       el("section", { class: "panel tone-world", "aria-labelledby": "w-legend" }, [el("div", { class: "panel-head" }, [el("h2", { id: "w-legend", text: "What shapes it" })]), legendEl]),
     ]),
     el("section", { class: "world-numbers", "aria-label": "Your world in numbers" }, [(numbersEl = el("ul", { class: "wn-stats" }))]),
-    (friendsSlot = el("div", { class: "world-friends" })),
     el("div", { class: "world-lower" }, [
       el("section", { class: "panel tone-world" }, [el("div", { class: "panel-head" }, [el("h2", { text: "Moons — your goals" }), el("button", { type: "button", class: "link-btn", text: "Add a moon", onClick: openGoal })]), moonsEl]),
       el("section", { class: "panel tone-time" }, [el("div", { class: "panel-head" }, [el("h2", { text: "Discoveries" })]), discEl]),
@@ -501,18 +493,6 @@ export function mount(section) {
     console.error(e);
     canvas.replaceWith(emptyState("Your world can't be drawn in this browser.", "Everything it would show is listed beside it."));
   }
-  friends = friendsOnGlobe({ globe, canvas: globe ? canvas : null });
-  friendsSlot.append(friends.node);
-  friends.refresh();
-  // Signals fires on every message; only a change in who you talk to one to
-  // one changes this list (names, who can be chosen).
-  let friendKey = directFriends().map((f) => `${f.id}:${f.name}`).join();
-  unsubs.push(on("signals", () => {
-    const k = directFriends().map((f) => `${f.id}:${f.name}`).join();
-    if (k === friendKey) return;
-    friendKey = k;
-    friends?.refresh();
-  }));
   unsubs.push(on("any", render));
   render();
 }
@@ -520,16 +500,12 @@ export function mount(section) {
 export function show(param) {
   render();
   if (param === "log") openLog();
-  friends?.refresh();
-  if (param === "friends") requestAnimationFrame(() => root.querySelector("#friends-globe")?.scrollIntoView({ block: "start", behavior: "smooth" }));
   if (param === "journal") requestAnimationFrame(() => root.querySelector("#journal")?.scrollIntoView({ block: "start", behavior: "smooth" }));
 }
 
 export function destroy() {
   unsubs.forEach((u) => u());
   unsubs = [];
-  friends?.destroy();
-  friends = null;
   globe?.destroy();
   dock?.destroy();
   dock = null;

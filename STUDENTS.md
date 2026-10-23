@@ -1,9 +1,10 @@
 # Panalo Students
 
-A study, communication and creative space for intensely curious students,
-at `students/`. It runs on the **same Supabase project, accounts and
-encryption as Panalo Chat** — a message sent in one is an ordinary encrypted
-message in the other — but it is a different product with its own interface.
+A calm, **private** study space for intensely curious students, at
+`students/`. It runs on the **same Supabase project and accounts as Panalo
+Chat**, but it is a different product: no chat, no rooms, no profiles, no
+feed. Nothing anyone does in Panalo Students is shown to anyone else (since
+phase 28; Signals, rooms, join codes and friends on the globe were removed).
 
 > A student's life is not a spreadsheet. It's a universe.
 
@@ -13,10 +14,8 @@ and everything it encodes is also available in plain words.
 | Idea | What it actually is | Where |
 | --- | --- | --- |
 | **The day orbit** | Your 24 hours as a ring, midnight at the top. Classes and events are arcs, deadlines are diamonds, focus you did is an inner ice-blue track, finished tasks are dots, the hand is now. | Now, Calendar |
-| **Your world** | A planet computed from what you did. Land = focus hours (never shrinks); lights = tasks finished; aurora = making things (30 d); forests = moving and resting (30 d); glowing seas = reading (30 d); atmosphere = messages + time with people (7 d); ring = 5 of 7 days; moons = goals; clouds = time away, cleared the day you return. | World, centre of Now |
-| **Constellations** | Conversations grouped by what they are for: people, crew, study circles, classes, projects, rooms, other groups. With nothing open, Signals shows them as a sky (`js/surfaces/sky.js`): each conversation a star (size = members, brightness = how recent, a pulse = unread, a green rim = online), each kind a constellation whose lines join its stars by recency. Every star is a link; the list beside it says the same. Each thread's header shows its members as a small constellation. | Signals |
-| **Rooms with a door** | Temporary event rooms: a join code lets you *ask* to join, a host lets you in (which is what shares the room's key), the room can be hosts-only, and it ends on schedule. | Signals |
-| **Artifacts and strata** | Files catalogued with a type glyph and a label (what, type, size, who, when, who can see it, previewable or not), laid down in monthly layers. | Archive |
+| **Your world** | A planet computed from what you did. Land = focus hours (never shrinks); lights = tasks finished; aurora = making things (30 d); forests = moving and resting (30 d); glowing seas = reading (30 d); atmosphere = time logged with people (7 d); ring = 5 of 7 days; moons = goals; clouds = time away, cleared the day you return. | World, centre of Now |
+| **Artifacts and strata** | Files catalogued with a type glyph and a label (what, type, size, when, previewable or not), laid down in monthly layers. | Archive |
 | **Deep space at midnight** | The quietest room: one ring, one number, one task. | Study Room |
 | **The day, as a ritual** | The first open of each day plays a short dawn over your own world: which day of it this is, and what changed since you were last here. Then one intention ("the one thing for today"). In the evening, closing the day takes twenty seconds: how it felt, energy, one tap for what else you did (logged to your world), one thing learned, one good thing. A closed day lights a star. | Now, World → Journal |
 | **This month, in stars** | Each day of the month has a fixed place in a constellation; a day you showed up on (focus, a finished task, a log, a closed day) lights its star, joined in order. A missed day stays dark — nothing resets, there is no streak. | World |
@@ -39,7 +38,7 @@ landing ──► the crossing (sign in / sign up) ──► first time? the bir
                                                      │  (point → flash → expansion → your world forms;
                                                      │   name it, pick interests, set a weekly goal)
                                                      ▼
-                                Now ◄──► Study · Signals · World · Calendar · Archive · Drift
+                                Now ◄──► Study · World · Calendar · Archive · Drift
                                          Safety & privacy · Settings     (Warp: Ctrl/⌘ K)
 ```
 
@@ -58,8 +57,7 @@ landing ──► the crossing (sign in / sign up) ──► first time? the bir
   Settings → Display → **Lively effects** (off by default; `data-effects`
   on `<html>`, `js/motion.js` `lively()`). The top of Now is always the
   **next step** — the running block, else the task due soonest, else a
-  25-minute start — one button away from focusing; "Due soon" comes before
-  Signals.
+  25-minute start — one button away from focusing.
 - **The focus shield** (`js/focus-shield.js`): while a focus block runs,
   wherever you are in the app, unread counts are hidden, nothing
   celebrates and no dawn or weekly story plays, and one quiet line under
@@ -108,10 +106,9 @@ landing ──► the crossing (sign in / sign up) ──► first time? the bir
   - World: **your world in numbers** (age, focus, best day, longest
     session, lights, logged time, moons); a **postcard** -- your world, its
     name, day and numbers as an image saved to your device (nothing is
-    posted; the device's own share sheet if it has one).
+    posted, nothing shared).
   - Archive: **stars** (a Starred shelf on top), **sort** (newest, oldest,
     A–Z, largest), a storage meter.
-  - Signals: **pin** a conversation to the top (☆ in its header).
   - Drift: change its topics right there.
   - Safety: **Need help now?** -- 112, CHILDLINE 1098, Tele-MANAS 14416,
     cyber crime 1930, each a tap to call; a **safety check-up** you tick
@@ -146,7 +143,7 @@ landing ──► the crossing (sign in / sign up) ──► first time? the bir
   that always fits (down to 360 px); headings balanced so no word is
   left alone on a line.
 - **Effects with a purpose**: ink, petals and button hits only on Now,
-  World and Drift. Signals, Calendar, Archive, Settings, Safety and
+  World and Drift. Calendar, Archive, Settings, Privacy & data and
   Moderation stay still; the Study Room is the quietest of all.
 - **Settings follow you** (`js/sync.js`, phase 21): preferences, lighting,
   Drift and a running timer, newest change wins.
@@ -164,8 +161,8 @@ landing ──► the crossing (sign in / sign up) ──► first time? the bir
   six seconds; a click or Escape skips it; not played under reduced motion
   or if you skip the questions).
 - **Navigation**: top bar on wide screens, a five-item dock on phones (Now,
-  Study, Signals, World, More). **Warp** (Ctrl/⌘ K) jumps anywhere or does
-  common things ("Start a 25-minute focus", "Join a room with a code").
+  Study, Calendar, World, More). **Warp** (Ctrl/⌘ K) jumps anywhere or does
+  common things ("Start a 25-minute focus", "Add a task").
 
 ## Architecture
 
@@ -174,12 +171,10 @@ landing ──► the crossing (sign in / sign up) ──► first time? the bir
   scripts, then `students/js/main.js`. Surfaces load on first visit
   (`import()`), so opening the app costs Now and nothing else.
 - **Reused from Panalo Chat** (`src/`): the Supabase client, auth storage,
-  `encryption.js` (keys, wrap/unwrap, `keyForSending`), `sendpolicy.js`
-  (never plaintext into an encrypted chat), `attachments.js` (encrypted
-  files), `keyshare.js` (asking for / sharing a chat key), `mediabubble.js`,
-  `unread.js` + `receipts.js` (read positions sync across both apps),
-  `presence.js`, `password.js`, `filekind.js`, `util.js` (`el()` — every
-  string is rendered with `textContent`).
+  the account's key handling (`encryption.js`: kept in step when you sign
+  in or change your password, so Panalo Chat keeps working with the same
+  account), `password.js`, `filekind.js`, `filestore.js`, `util.js`
+  (`el()` — every string is rendered with `textContent`).
 - **Pure models** (`students/js/model/`), unit-tested in
   `tests/students-model.test.mjs`: `world-model.js`, `timeline.js`,
   `focus-timer.js` (timestamps, not ticks — survives reloads and sleep),
@@ -207,18 +202,16 @@ landing ──► the crossing (sign in / sign up) ──► first time? the bir
 | `js/model/chronicle.js` | Pure: a week's chronicle, the world at any moment, the time-lapse frames, seasons, which moments are new. |
 | `js/model/daily.js` | Pure: today's entry, last visit, what changed, the week's rhythm, the month as a constellation, the journal. |
 | `js/store.js` | In-memory study data + pub/sub; all writes. |
-| `js/signals-data.js` | Conversations, unread, sending, circles, rooms, door, block, report. |
-| `js/archive-data.js` | Private-bucket uploads, downloads, previews. |
+| `js/archive-data.js` | Your own files: private-bucket (or R2) uploads, downloads, previews. |
 | `js/world-surface.js` | The world's terrain, colour and night lights, generated once per seed in idle time and cached. |
 | `js/earth.js` | The world is the real Earth. A new world is all ocean; focus raises the real continents in their true shapes, starting in India and spreading outward (each landmass from its interior to its coast), until about 200 hours raises all of it (`layers.earth`, `model/world-model.js`). Finished tasks light Earth's real cities on the night side, brightest first (`layers.cities`). Three maps per size in `assets/earth/` (2048 px, or 1024 on weak devices): surface colour from NASA's Blue Marble (topography and bathymetry, July 2004), night lights from NASA's Black Marble 2016 with the moonlit ice and desert taken out, and the order land rises, from Natural Earth's 1:10m land polygons. All three sources are public domain. Rebuild with `python3 -I tools/earth/build_earth.py <sources> students/assets/earth` (the script's header lists the source URLs). |
-| `js/friends-globe.js`, `js/places.js`, `js/beacons.js`, `js/globe-math.js`, `model/places.js` | Friends on the globe (World page). Your city is off until you turn it on: you pick it by hand from Natural Earth's list of populated places (`assets/earth/cities.json`, 7,341 cities, fetched only when the picker opens; rebuilt by `tools/earth/build_cities.py`) — never the device's location — choose who sees it from the people you have one-to-one chats with, and for how long: until you turn it off, 7 days or 24 hours. Friends who chose you appear as lights with their names on your globe, following it as it turns (`project` / `onFrame` on both renderers), and in a list with how far away they are; Find turns the world to face them. Close cities share one label. |
 | `js/world-gl.js` | The world in WebGL: one fragment shader ray-traces the planet, ring and moons. Continents come from the seeded textures; finer detail is made per pixel from a tiling noise sampled three ways round the sphere (fractal coasts, ridges, floes, wind-stretched cloud and cirrus, clustered city lights and roads, cratered moons). Lit like a photograph: linear light with Earth-like colours, a scattering atmosphere (blue limb, gold terminator, backlit glow), a cloud deck above the ground, filmic tone curve, dither, anti-aliased edges, and a bloom pass with 60 fps away from weak devices (`device-tier.js`). Drag to spin and tip, with momentum; speed, direction, zoom; a manual mode the film drives. |
 | `js/world-render.js` | Picks WebGL when the GPU is real, otherwise the 2D canvas globe; same `setLayers()` contract either way. |
 | `js/dayorbit.js` | The SVG day orbit. |
 | `js/ambient.js` | Generated study sound (Web Audio, no files). |
-| `js/surfaces/*.js` | Now, Study, Signals, World, Calendar, Archive, Drift, Safety, Settings. |
+| `js/surfaces/*.js` | Now, Study, World, Calendar, Archive, Drift, Privacy & data (`safety.js`), Settings, Moderation. |
 | `css/tokens.css` … `surfaces.css` | The design system (below). |
-| `privacy.html`, `rules.html` | Plain-language privacy notes and community rules. |
+| `privacy.html`, `rules.html` | Plain-language privacy notes and rules. |
 
 ## Data (phases 16 and 17 — `supabase-phase16.sql`, `supabase-phase17.sql`)
 
@@ -226,35 +219,31 @@ landing ──► the crossing (sign in / sign up) ──► first time? the bir
 | --- | --- | --- |
 | `student_profiles` | you | world name, interests, born_at |
 | `student_tasks`, `focus_sessions`, `student_events`, `activity_log`, `student_goals` | you | capped per person; a focus session can't claim more minutes than elapsed, or point at someone else's task |
-| `resources` + bucket `student-resources` (**private**) | you, or members of the conversation it's shared with — and a shared file only while it is listed | path `u/<you>/…` or `c/<conversation>/…` decides scope (on R2: `o/<you>/u/…` or `o/<you>/c/<conversation>/…`, see HOSTING.md); size taken from Storage; 200 MB and 1,000 files per person, counted from Storage itself; room hosts can take shared files down |
-| `blocks` | the blocker | blocked senders' messages are hidden from you (restrictive policy); a person who blocked you can't add you |
-| `reports` | the reporter (and the operator) | status can't be set by the reporter; 20 a day |
-| `conversations.kind / ends_at / posting` | as before | ended rooms hidden at once, purged a day later (pg_cron) |
-| `room_codes` | hosts | 8 characters, no lookalikes |
-| `room_requests` | the requester and hosts | created only by `request_to_join(code)`, 30 attempts an hour (wrong codes count); not broadcast over realtime — the door polls |
-| `student_places` (phase 27) | you; and the friends you chose, while it lasts, while you share a one-to-one chat, and while neither has blocked the other | a city's published centre to two decimals; ends never, or within a week; expired places erased hourly (pg_cron); nothing for a student awaiting a parent's consent |
-| `student_place_viewers` (phase 27) | you | only people you share a one-to-one chat with can be added |
+| `resources` + bucket `student-resources` (**private**) | you (Students lists only your own files) | path `u/<you>/…` (on R2: `o/<you>/u/…`, see HOSTING.md); size taken from Storage; 200 MB and 1,000 files per person, counted from Storage itself |
+| `reports` | the sender (and the operator) | in Students, only questions and requests about your data (Privacy & data); status can't be set by the sender; 20 a day |
+
+The tables phase 16 added for Students' chat (`room_codes`,
+`room_requests`, `blocks`, conversation kinds) are still in the database,
+because Panalo Chat and the replayed tests name them; Students no longer
+uses them, and phase 28 emptied every join code. Phase 28 dropped
+`student_places` and `student_place_viewers` (friends on the globe) with
+their data.
 
 Every rule above is replayed against real Postgres in
 `tests/migrations.test.mjs` (49 Students tests, phase 17 included).
 
 ## Security and privacy decisions
 
-- **Encryption is unchanged and shared.** Students sends through
-  `keyForSending()`/`SEND` exactly like Panalo Chat.
-- **Letting someone into a room is a person's decision.** Admitting wraps the
-  room key to the newcomer's public key — the same trust as adding a member
-  by name. Codes only let people *ask*.
+- **Private by construction.** Students has no surface that shows one
+  person's data to another: no chat, no profiles, no presence, no shared
+  files. The Archive asks for your own files only.
 - **Archive files never get a type from the uploader.** A `blob:` URL runs
   with the app's origin, so `safe-type.js` maps every file to a type that
   cannot execute (an HTML file labelled `.pdf` is opened as a PDF, SVG is
   bytes). Tested.
-- **Reports can carry evidence only by choice**: messages are ciphertext, so
-  the reporter decides whether to include the text.
 - **`_headers`** gained `blob:` in `connect-src` (reading back a blob the app
   created itself). Nothing else in the CSP changed.
-- **No AI, no analytics, no third-party scripts** beyond the Supabase SDK and,
-  only when a join code is shown, a QR library from the same CDN.
+- **No AI, no analytics, no third-party scripts** beyond the Supabase SDK.
 
 ## Design system
 
@@ -269,7 +258,7 @@ Every rule above is replayed against real Postgres in
 - **Motion**: durations come from tokens; the OS setting or Settings →
   Reduce motion stills the stars, the worlds and every transition. Canvas
   loops stop when hidden or off-screen and run at ~30 fps.
-- **Responsive**: top bar ≥ 900 px, dock below; Signals becomes list → thread;
+- **Responsive**: top bar ≥ 900 px, dock below;
   the week grid becomes a list; dialogs become bottom sheets.
 
 ## Testing

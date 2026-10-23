@@ -1,7 +1,8 @@
 # Panalo Students — review, reflection and roadmap
 
 *Written 22 October 2026, after PR #31 and the removal of the Odyssey
-look; updated the same day after the distraction-free round. Live at https://panalo-5dk.pages.dev/students/. This document looks
+look; updated after the distraction-free round and, on 23 October, after
+Students became private and solo. Live at https://panalo-5dk.pages.dev/students/. This document looks
 back at what has been built, reflects honestly on how it was built, and
 sets out what comes next. ROADMAP.md is the original engineering roadmap
 for Panalo as a whole; LIMITATIONS.md lists what is known not to work.*
@@ -138,6 +139,23 @@ suite below runs on every pull request (`.github/workflows/tests.yml`).
   it stays off; the app's own check (Have I Been Pwned, k-anonymity) covers
   sign-up and every password change. Only direct API calls skip it.
 
+### Private and academic (23 October)
+At the owner's direction, Panalo Students is now wholly a tool for a
+student's own studies. Nothing anyone does in it is shown to anyone else.
+- **Removed**: Signals (all chat, circles, classes, rooms, the sky map),
+  join codes and invite links, friends on the globe, presence ("online"),
+  files shared into chats, blocking and reporting people, the postcard's
+  share button. About 2,800 lines of JavaScript and the CSS behind them.
+- **Phase 28** erases the cities people chose for friends on the globe
+  (tables, functions and the hourly purge go too) and every room join
+  code. Panalo Chat's conversations are untouched.
+- **Privacy & data** replaces Safety & privacy: who can see you (nobody),
+  help lines, a check-up, your data to download, questions and requests
+  about it, and deleting your account. The privacy notes and the rules
+  say the same.
+- The dock is Now · Study · Calendar · World · More; the landing says
+  *Focus. Plan. Keep.*
+
 ---
 
 ## 3. Reflection: how it was built
@@ -201,14 +219,13 @@ An honest look at the process, by the agent that did most of the work.
 | # | Risk | Why it matters | Fix |
 | --- | --- | --- | --- |
 | 2 | Storage ceiling | 1 GB on Supabase (10 GB with R2) and files are the most used feature | Bind R2 everywhere, per-file size and type limits already exist; add a usage view for the operator |
-| 3 | Moderation needs someone looking | A moderator sees an open-report count only while the app is open | Email or push the moderator when a report arrives (needs custom SMTP or Web Push) |
-| 4 | Calls without TURN | Calls fail on many mobile networks | Turn on a TURN relay (Cloudflare Calls TURN or Twilio) |
-| 5 | Students has no push | No reminders when the app is closed | Web Push for focus end, deadlines and messages (needs VAPID keys and a sender) |
-| 6 | Supabase leaked-password protection is off | Its switch needs the Pro plan; direct API calls skip the app's own check | Keep the app's check; turn the switch on if the project moves to Pro |
-| 7 | Fonts and the QR library from CDNs | A CDN failure degrades the look | Self-host the fonts the default look uses |
-| 8 | Accessibility not audited by a person | Screen-reader and keyboard paths were tested by script only | One session with NVDA/VoiceOver; fix what it finds |
-| 9 | Tests run against a mock | CI can't prove the live project's RLS or realtime | A nightly sign-in check against a staging project |
-| 10 | English only | Many students in India learn in Hindi, Tamil and others | Extract strings; Hindi first |
+| 3 | Data requests need someone looking | A moderator sees an open-request count only while the app is open | Email or push the moderator when a request arrives (needs custom SMTP or Web Push) |
+| 4 | Students has no push | No reminders when the app is closed | Web Push for focus end and deadlines (needs VAPID keys and a sender) |
+| 5 | Supabase leaked-password protection is off | Its switch needs the Pro plan; direct API calls skip the app's own check | Keep the app's check; turn the switch on if the project moves to Pro |
+| 6 | Fonts from a CDN | A CDN failure degrades the look | Self-host the fonts the default look uses |
+| 7 | Accessibility not audited by a person | Screen-reader and keyboard paths were tested by script only | One session with NVDA/VoiceOver; fix what it finds |
+| 8 | Tests run against a mock | CI can't prove the live project's RLS or realtime | A nightly sign-in check against a staging project |
+| 9 | English only | Many students in India learn in Hindi, Tamil and others | Extract strings; Hindi first |
 
 ---
 
@@ -218,8 +235,8 @@ Done this round: CI, migrations 22–26 recorded,
 LIMITATIONS refreshed, calm by default and the focus shield.
 
 1. **The logo** (asked for earlier: "we can do next").
-2. **Web Push for Students** — a notification when a focus block ends, a
-   deadline nears, or a friend writes (each opt-in, quiet hours respected,
+2. **Web Push for Students** — a notification when a focus block ends or a
+   deadline nears (each opt-in, quiet hours respected,
    silent during a focus block, never streak pressure). Needs VAPID keys
    and a small sender (a Supabase Edge Function or Pages Function).
 3. **A real-device check** of calm mode and the focus shield on a phone.
@@ -245,14 +262,6 @@ protected; the Study Room quiet.
   (phase 26 already records it), what helps — shown monthly, not daily.
 - **Notes in the Archive** (rich text, linked to a subject and a task).
 
-### Together, safely
-- **Study rooms with presence**: a shared focus timer for a circle, a quiet
-  "who's focusing" list, no chat during a block.
-- **Accountability pairs**: two friends see each other's intention for the
-  day and a tick when it's done — opt-in, both ways, easy to end.
-- **Friends on the globe, next**: a small note with your city ("exam
-  week"), and time zones (their local time beside their name).
-
 ### Wellbeing
 - **Break suggestions** after long sessions (a walk, water, eyes off the
   screen), tied to the existing Move and Rest logs.
@@ -270,7 +279,7 @@ protected; the Study Room quiet.
 - **Verified class spaces** with a teacher role, assignments that land on
   students' calendars, no access to students' private data.
 - **A parent view** for under-18s that shows only what the student chooses
-  to share — never messages, never location.
+  to share — never their journal, never their files.
 
 ---
 
@@ -281,9 +290,9 @@ protected; the Study Room quiet.
 | **Done** (this week) | Clean up and focus | CI; migrations 22–26 recorded; LIMITATIONS refreshed; calm by default; next step on Now; focus shield | Every PR runs all suites automatically; nothing moves or interrupts unless asked |
 | **Next** (2–4 weeks) | Identity and reach | Logo and app icon; Web Push (opt-in); installable PWA | A focus-end notification arrives with the tab closed |
 | **Next** | Learning | Flashcards with spaced repetition; exam planner | A student can plan an exam and review cards from Now |
-| **Then** (1–2 months) | Together | Study rooms with presence; accountability pairs; places with notes and time zones | Two friends can focus together in a room and see each other's intention |
+| **Then** (1–2 months) | Deeper study | Focus insights (monthly); notes in the Archive, linked to subjects and tasks | A student can see their best hours and keep notes next to their tasks |
 | **Then** | Wellbeing | Break suggestions; sleep window; season mood view | Long sessions offer a break; the app goes quiet at night if asked |
-| **Then** | Reliability | TURN for calls; R2 everywhere; moderator alerts; self-hosted fonts | Calls connect on mobile data; a report pings a moderator within a minute |
+| **Then** | Reliability | R2 everywhere; moderator alerts; self-hosted fonts | A data request pings a moderator within a minute |
 | **Later** (quarter) | Languages and stores | Hindi, then Tamil; Play Store via TWA | The app runs in Hindi end to end and installs from the Play Store |
 | **Later** | Schools | Verified classes, teacher role, assignments; parent view for under-18s | A teacher can set work that lands on students' calendars, with no access to their private data |
 

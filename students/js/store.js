@@ -4,7 +4,7 @@
 // queries ask for "mine" only for clarity, the database enforces it.
 import { supabaseClient } from "../../src/client.js";
 import { state } from "../../src/state.js";
-import { DAY, dayKey } from "./model/time.js";
+import { dayKey } from "./model/time.js";
 
 export const store = {
   me: null, // { id, username }
@@ -14,7 +14,6 @@ export const store = {
   events: [],
   logs: [],
   goals: [],
-  sent: [], // my messages in the last 7 days (for the atmosphere)
   entries: [], // daily_entries (phase 24): one per day, newest first
   entriesMissing: false, // phase 24 not run yet: no dawn or check-in
   // True when the database hasn't run supabase-phase16.sql yet.
@@ -55,18 +54,15 @@ export async function loadStudentProfile() {
 }
 
 export async function loadAll() {
-  const uid = state.currentUser.id;
-  const since7 = new Date(Date.now() - 7 * DAY).toISOString();
   const queries = await Promise.all([
     supabaseClient.from("student_tasks").select("*").order("created_at", { ascending: false }).limit(2000),
     supabaseClient.from("focus_sessions").select("id, started_at, ended_at, focused_minutes, planned_minutes, completed, subject, task_id, quality").order("started_at", { ascending: false }).limit(5000),
     supabaseClient.from("student_events").select("*").order("starts_at").limit(3000),
     supabaseClient.from("activity_log").select("*").order("occurred_on", { ascending: false }).limit(3000),
     supabaseClient.from("student_goals").select("*").order("created_at"),
-    supabaseClient.from("messages").select("id, created_at").eq("user_id", uid).gt("created_at", since7).limit(1000),
     supabaseClient.from("daily_entries").select("*").order("day", { ascending: false }).limit(800),
   ]);
-  const [tasks, sessions, events, logs, goals, sent, entries] = queries;
+  const [tasks, sessions, events, logs, goals, entries] = queries;
   if (queries.slice(0, 5).some((q) => missingTable(q.error))) {
     store.schemaMissing = true;
   }
@@ -75,7 +71,6 @@ export async function loadAll() {
   store.events = events.data || [];
   store.logs = logs.data || [];
   store.goals = goals.data || [];
-  store.sent = sent.data || [];
   store.entries = entries.data || [];
   store.entriesMissing = missingTable(entries.error);
   store.loaded = true;
@@ -152,17 +147,12 @@ export const api = {
     emit("entries");
     return { data };
   },
-
-  noteSent(msg) {
-    store.sent.push({ id: msg.id, created_at: msg.created_at });
-    emit("sent");
-  },
 };
 
 export function resetStore() {
   Object.assign(store, {
-    me: null, student: null, tasks: [], sessions: [], events: [], logs: [], goals: [], sent: [], entries: [], entriesMissing: false,
-    conversations: [], unreadTotal: 0, requests: [], myRequests: [], resources: null,
+    me: null, student: null, tasks: [], sessions: [], events: [], logs: [], goals: [], entries: [], entriesMissing: false,
+    resources: null,
     schemaMissing: false, loaded: false,
   });
 }
