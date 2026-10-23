@@ -231,15 +231,16 @@ An honest look at the process, by the agent that did most of the work.
 
 ## 5. Planned next (the committed backlog)
 
-Done this round: CI, migrations 22–26 recorded,
-LIMITATIONS refreshed, calm by default and the focus shield.
+Done: CI, migrations 22–26 recorded, LIMITATIONS refreshed, calm by
+default and the focus shield, Students made private (phase 28), and **the
+logo** — a world rising from the sea at the horizon (chosen from three
+mock-ups), as favicon, app icon, in the bar and in a new sharing image.
 
-1. **The logo** (asked for earlier: "we can do next").
-2. **Web Push for Students** — a notification when a focus block ends or a
+1. **Web Push for Students** — a notification when a focus block ends or a
    deadline nears (each opt-in, quiet hours respected,
    silent during a focus block, never streak pressure). Needs VAPID keys
    and a small sender (a Supabase Edge Function or Pages Function).
-3. **A real-device check** of calm mode and the focus shield on a phone.
+2. **A real-device check** of calm mode and the focus shield on a phone.
 
 The old task "Cinema 2–8" (seven more cinematic looks) is **dropped**: it
 depended on the Odyssey engine, which is gone. If a fourth look is wanted
@@ -288,7 +289,7 @@ protected; the Study Room quiet.
 | When | Theme | Items | Done when |
 | --- | --- | --- | --- |
 | **Done** (this week) | Clean up and focus | CI; migrations 22–26 recorded; LIMITATIONS refreshed; calm by default; next step on Now; focus shield | Every PR runs all suites automatically; nothing moves or interrupts unless asked |
-| **Next** (2–4 weeks) | Identity and reach | Logo and app icon; Web Push (opt-in); installable PWA | A focus-end notification arrives with the tab closed |
+| **Next** (2–4 weeks) | Identity and reach | Web Push (opt-in); installable PWA (the logo is done) | A focus-end notification arrives with the tab closed |
 | **Next** | Learning | Flashcards with spaced repetition; exam planner | A student can plan an exam and review cards from Now |
 | **Then** (1–2 months) | Deeper study | Focus insights (monthly); notes in the Archive, linked to subjects and tasks | A student can see their best hours and keep notes next to their tasks |
 | **Then** | Wellbeing | Break suggestions; sleep window; season mood view | Long sessions offer a break; the app goes quiet at night if asked |

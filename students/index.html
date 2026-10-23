@@ -14,7 +14,7 @@
   <meta property="og:image" content="https://panalo-5dk.pages.dev/students/og.jpg">
   <meta property="og:image:width" content="1200">
   <meta property="og:image:height" content="630">
-  <meta property="og:image:alt" content="Panalo Students: “Your student life is a universe”, beside a ringed world.">
+  <meta property="og:image:alt" content="Panalo Students: “Your student life is a universe. Focus. Plan. Keep. Grow a world.”, beside the Earth.">
   <meta name="twitter:card" content="summary_large_image">
   <link rel="canonical" href="https://panalo-5dk.pages.dev/students/">
   <link rel="icon" type="image/svg+xml" href="mark.svg">
@@ -49,15 +49,23 @@
 
   <svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
     <defs>
-      <radialGradient id="mark-body" cx=".35" cy=".3" r=".75">
-        <stop offset="0" stop-color="#f4f6ff"/><stop offset=".55" stop-color="#9ad8ff"/><stop offset="1" stop-color="#3b4f9a"/>
-      </radialGradient>
-      <!-- The mark: a world with one orbit and one moon. -->
+      <linearGradient id="mark-sea" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0" stop-color="#b9e4ff"/><stop offset="1" stop-color="#2f6fb8"/>
+      </linearGradient>
+      <linearGradient id="mark-land" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0" stop-color="#e9d9a6"/><stop offset="1" stop-color="#5fae7a"/>
+      </linearGradient>
+      <clipPath id="mark-disc"><circle cx="32" cy="40" r="17"/></clipPath>
+      <clipPath id="mark-above"><rect width="64" height="40"/></clipPath>
+      <!-- The mark: a world rising from the sea, as yours does when you work. -->
       <symbol id="mark" viewBox="0 0 64 64">
-        <path d="M5 38A28 9 -16 0 1 59 23" fill="none" stroke="#ffc47a" stroke-width="2.2" opacity=".42"/>
-        <circle cx="32" cy="31" r="15" fill="url(#mark-body)"/>
-        <path d="M5 38A28 9 -16 0 0 59 23" fill="none" stroke="#ffc47a" stroke-width="2.4" stroke-linecap="round"/>
-        <circle cx="55" cy="17" r="3.4" fill="#eef0fa"/>
+        <g clip-path="url(#mark-above)">
+          <circle cx="32" cy="40" r="17" fill="url(#mark-sea)"/>
+          <path clip-path="url(#mark-disc)" d="M20 40c1-7 5-12 10-13 3-1 4 2 7 1 4-1 7 3 8 6l1 6z" fill="url(#mark-land)"/>
+        </g>
+        <path d="M8 40h48" stroke="#ffc47a" stroke-width="2.4" stroke-linecap="round"/>
+        <path d="M19 46h26M24 51h16M29 56h6" stroke="#9ad8ff" stroke-width="2" stroke-linecap="round" opacity=".55"/>
+        <path d="M47 12l1.6 4 4 1.6-4 1.6-1.6 4-1.6-4-4-1.6 4-1.6z" fill="#ffe7b8"/>
       </symbol>
     </defs>
   </svg>
