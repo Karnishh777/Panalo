@@ -14,7 +14,6 @@ import { withBusy, showToast, redirectUrl, authErrorText, alreadyRegistered, cle
 import { ensureUserKeys, idbDelKey, idbGetKey, rewrapPrivateKey, clearKeyProblems } from "../../src/encryption.js";
 import { clearAttachmentCache } from "../../src/attachments.js";
 import { clearPersistedIndex } from "../../src/search.js";
-import { stopPresence } from "../../src/presence.js";
 import { validatePassword, describePasswordPolicy, breachedPassword } from "../../src/password.js";
 import { captcha } from "../../src/captcha.js";
 import { loginEmail, looksLikeEmail } from "../../src/login-id.js";
@@ -84,7 +83,6 @@ export async function signOut() {
     localStorage.removeItem("panalo.students.synced");
   } catch {}
   if (state.currentUser) await idbDelKey(state.currentUser.id);
-  stopPresence();
   state.myPrivateKey = null;
   state.myPublicKeyB64 = null;
   clearAttachmentCache();
@@ -167,7 +165,7 @@ export function initAuth(h) {
       const age = now.getFullYear() - by - (now.getMonth() + 1 <= bm ? 1 : 0);
       if (by > now.getFullYear() || age > 120) return message("That date of birth doesn't look right.");
       if (age < 13) return message("Panalo is for people 13 and over. We'd love to see you when you're 13.");
-      if (!$("signup-age").checked) return message("Please agree to the community rules to continue.");
+      if (!$("signup-age").checked) return message("Please agree to the rules to continue.");
       setRemember(true);
       const { data, error } = await supabaseClient.auth.signUp({
         email,

@@ -15,7 +15,6 @@ import { showToast } from "./ui.js";
 import { state } from "../../src/state.js";
 
 const $ = (id) => document.getElementById(id);
-const JOIN_KEY = "panalo.students.join";
 // A link to somewhere inside (e.g. #/moderate) opened while signed out:
 // remember it through sign-in and go there afterwards.
 const AFTER_KEY = "panalo.students.after";
@@ -23,16 +22,6 @@ let inside = false;
 // Restoring a stored session and a fast manual sign-in can both finish;
 // only the first may enter, or two births would run on top of each other.
 let entering = false;
-
-// An invite link: /students/#join=ABCD2345. Remember it through sign-in.
-function captureJoin() {
-  const m = location.hash.match(/^#join=([A-Za-z0-9-]{4,16})$/);
-  if (!m) return false;
-  try {
-    sessionStorage.setItem(JOIN_KEY, m[1]);
-  } catch {}
-  return true;
-}
 
 let deepLink = false;
 function showOutside() {
@@ -54,7 +43,7 @@ function showOutside() {
     window.scrollTo(0, 0);
     return;
   }
-  const auth = h === "#login" || h === "#signup" || h.startsWith("#join=");
+  const auth = h === "#login" || h === "#signup";
   $("landing").hidden = auth;
   $("auth").hidden = !auth;
   $("app").hidden = true;
@@ -65,11 +54,6 @@ function showOutside() {
       const msg = $("auth-message");
       msg.dataset.tone = "ok";
       msg.textContent = "Log in, or create an account, to continue to that page.";
-    }
-    if (h.startsWith("#join=")) {
-      const msg = $("auth-message");
-      msg.dataset.tone = "ok";
-      msg.textContent = "Log in or create an account to ask to join that room.";
     }
     window.scrollTo(0, 0);
   } else {
@@ -126,17 +110,7 @@ function enter({ firstTime = false } = {}) {
   } catch {}
   if (after) history.replaceState(null, "", after);
   document.body.classList.add("in-app");
-  enterShell({ firstTime, pendingJoin: popJoin() });
-}
-
-function popJoin() {
-  try {
-    const code = sessionStorage.getItem(JOIN_KEY);
-    sessionStorage.removeItem(JOIN_KEY);
-    return code;
-  } catch {
-    return null;
-  }
+  enterShell({ firstTime });
 }
 
 function onSignedOut() {
@@ -168,12 +142,7 @@ initAuth({
 initLooks();
 initShell({ signOut, replayBirth: () => runBirth({ replay: true, onDone: () => {} }) });
 
-captureJoin();
 window.addEventListener("hashchange", () => {
-  if (captureJoin() && inside) {
-    enterShell({ pendingJoin: popJoin() });
-    return;
-  }
   if (!inside) showOutside();
 });
 

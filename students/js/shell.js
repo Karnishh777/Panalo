@@ -6,9 +6,7 @@
 import { el, openSheet, showToast, getPrefs } from "./ui.js";
 import { store, on } from "./store.js";
 import { clockTime, setClock12 } from "./model/time.js";
-import { startPresence, stopPresence } from "../../src/presence.js";
 import { state } from "../../src/state.js";
-import { startInbox, stopInbox } from "./signals-data.js";
 import { settleTimer } from "./timer-state.js";
 import { startFocusShield, stopFocusShield, focusing } from "./focus-shield.js";
 import { reducedMotion, lively } from "./motion.js";
@@ -29,7 +27,6 @@ const $ = (id) => document.getElementById(id);
 const SURFACES = {
   now: () => import("./surfaces/now.js"),
   study: () => import("./surfaces/study.js"),
-  signals: () => import("./surfaces/signals.js"),
   world: () => import("./surfaces/world.js"),
   calendar: () => import("./surfaces/calendar.js"),
   archive: () => import("./surfaces/archive.js"),
@@ -38,10 +35,10 @@ const SURFACES = {
   settings: () => import("./surfaces/settings.js"),
   moderate: () => import("./surfaces/moderate.js"),
 };
-const TITLES = { now: "Now", study: "Study Room", signals: "Signals", world: "World", calendar: "Calendar", archive: "Archive", drift: "Drift", safety: "Safety", settings: "Settings", moderate: "Moderation" };
+const TITLES = { now: "Now", study: "Study Room", world: "World", calendar: "Calendar", archive: "Archive", drift: "Drift", safety: "Privacy & data", settings: "Settings", moderate: "Moderation" };
 
 // Each surface's colour, for the ink that wipes across when you arrive.
-const TONES = { now: "#ffc47a", signals: "#b59cff", world: "#7ee2a8", calendar: "#ffc47a", archive: "#e7d19b", drift: "#ff9ec4", safety: "#b59cff", settings: "#9ad8ff" };
+const TONES = { now: "#ffc47a", world: "#7ee2a8", calendar: "#ffc47a", archive: "#e7d19b", drift: "#ff9ec4", safety: "#b59cff", settings: "#9ad8ff" };
 let ambient = null;
 
 // Where effects belong. The expressive places -- your day, your world, and
@@ -155,7 +152,7 @@ export function applyDisplayPrefs() {
 document.addEventListener("panalo:prefs", () => applyDisplayPrefs());
 
 // Keyboard: g then a letter goes to a page; ? lists every shortcut.
-const GO_KEYS = { n: "now", s: "study", i: "signals", w: "world", c: "calendar", a: "archive", d: "drift", y: "safety", ",": "settings" };
+const GO_KEYS = { n: "now", s: "study", w: "world", c: "calendar", a: "archive", d: "drift", y: "safety", ",": "settings" };
 let goArmed = 0;
 export function openShortcuts() {
   const row = (keys, what) => el("li", {}, [el("span", { class: "keys" }, keys.map((k) => el("kbd", { text: k }))), el("span", { text: what })]);
@@ -168,14 +165,13 @@ export function openShortcuts() {
         row([mac ? "⌘" : "Ctrl", "K"], "Warp: jump anywhere, do anything"),
         row(["g", "n"], "Now"),
         row(["g", "s"], "Study Room"),
-        row(["g", "i"], "Signals"),
         row(["g", "w"], "World"),
         row(["g", "c"], "Calendar"),
         row(["g", "a"], "Archive"),
         row(["g", "d"], "Drift"),
-        row(["g", "y"], "Safety"),
+        row(["g", "y"], "Privacy & data"),
         row(["g", ","], "Settings"),
-        row(["/"], "Search (Archive, Signals)"),
+        row(["/"], "Search (Archive)"),
         row(["Space"], "Start or pause a focus block (Study Room)"),
         row(["?"], "This list"),
       ]),
@@ -229,9 +225,6 @@ function warpItems() {
     ...LOOKS.map((l) => ({ label: `Look: ${l.name}`, hint: l.line, run: () => setLook(l.id) })),
     { label: "Watch your world grow", hint: "World · a time-lapse from day one", run: () => openTimelapse() },
     { label: "Add a task", hint: "Study Room", run: () => navigate("study/add-task") },
-    { label: "Signals", hint: "messages, circles, rooms", run: go("signals") },
-    { label: "Join a room with a code", hint: "Signals", run: () => navigate("signals/join") },
-    { label: "New conversation", hint: "Signals", run: () => navigate("signals/new") },
     { label: "World", hint: "your world, goals, discoveries", run: go("world") },
     { label: "Log an activity", hint: "World", run: () => navigate("world/log") },
     { label: "Calendar", hint: "timetable and deadlines", run: go("calendar") },
@@ -239,7 +232,7 @@ function warpItems() {
     { label: "Archive", hint: "your files", run: go("archive") },
     { label: "Upload a file", hint: "Archive", run: () => navigate("archive/upload") },
     { label: "Drift", hint: "three things for today", run: go("drift") },
-    { label: "Safety & privacy", hint: "blocking, reports, what's encrypted", run: go("safety") },
+    { label: "Privacy & data", hint: "what's stored, export, delete", run: go("safety") },
     { label: "Settings", hint: "motion, study defaults, account", run: go("settings") },
     { label: "Keyboard shortcuts", hint: "press ? anywhere", run: () => openShortcuts() },
   ];
@@ -295,10 +288,9 @@ function openMore() {
     form: false,
     body: [
       el("nav", { class: "more-grid", "aria-label": "More destinations" }, [
-        link("calendar", "Calendar", "tone-time", "Timetable and deadlines"),
         link("archive", "Archive", "tone-archive", "Your files"),
         link("drift", "Drift", "tone-drift", "Three things for today"),
-        link("safety", "Safety & privacy", "tone-signal", "Blocking, reports, encryption"),
+        link("safety", "Privacy & data", "tone-signal", "What's stored, export, delete"),
         link("settings", "Settings", "tone-focus", "Motion, study, account"),
       ]),
     ],
@@ -310,7 +302,7 @@ function schemaBanner() {
   $("main").prepend(
     el("div", { class: "schema-banner", role: "status" }, [
       el("b", { text: "This Panalo hasn't been upgraded for Students yet." }),
-      el("span", { text: " Study data, files and rooms can't be saved until whoever runs it applies supabase-phase16.sql. Messaging still works." }),
+      el("span", { text: " Study data and files can't be saved until whoever runs it applies supabase-phase16.sql." }),
     ])
   );
 }
@@ -363,17 +355,9 @@ export function initShell(h) {
     burstOn(b, { count: 14, dur: 300 });
   });
   on("student", renderMe);
-  on("unread", () => {
-    const n = store.unreadTotal || 0;
-    document.querySelectorAll("[data-unread]").forEach((b) => {
-      b.hidden = !n;
-      b.textContent = n > 99 ? "99+" : String(n);
-    });
-    document.title = `${n ? `(${n > 99 ? "99+" : n}) ` : ""}${TITLES[current] || "Panalo"} · Panalo Students`;
-  });
 }
 
-export async function enterShell({ firstTime = false, pendingJoin = null } = {}) {
+export async function enterShell({ firstTime = false } = {}) {
   const wasActive = active;
   active = true;
   $("app").hidden = false;
@@ -394,9 +378,6 @@ export async function enterShell({ firstTime = false, pendingJoin = null } = {})
     clockTimer = setInterval(tickClock, 15000);
     startDetails();
     startFocusShield();
-    startPresence(state.currentUser);
-    // Signals keeps the unread count live everywhere, so start it now.
-    startInbox().catch((e) => console.error(e));
     startModeration();
     startSync();
     // A focus block that ended while the app was elsewhere still counts.
@@ -406,7 +387,7 @@ export async function enterShell({ firstTime = false, pendingJoin = null } = {})
   }
   // Changing the hash routes (hashchange); only route by hand when it
   // doesn't change, or the surface would be shown twice.
-  const target = pendingJoin ? `#/signals/join=${encodeURIComponent(pendingJoin)}` : location.hash.startsWith("#/") ? location.hash : "#/now";
+  const target = location.hash.startsWith("#/") ? location.hash : "#/now";
   if (location.hash !== target) location.hash = target;
   else await route();
   if (firstTime) showToast("Welcome to your universe. Press Warp (Ctrl K) to go anywhere.", "success");
@@ -436,8 +417,6 @@ export function leaveShell() {
   stopFocusShield();
   clearInterval(clockTimer);
   clearInterval(settleTimerId);
-  stopPresence();
-  stopInbox();
   stopModeration();
   stopSync();
   for (const [, mod] of mounted) mod.destroy?.();

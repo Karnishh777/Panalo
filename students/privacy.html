@@ -28,26 +28,23 @@
       <tr><td>Email and password</td><td>The authentication service. Passwords are stored as hashes.</td><td>Nobody else using Panalo. Your email is never shown to other people.</td></tr>
       <tr><td>Month and year of birth</td><td>The database.</td><td>Only you. Used to know whether you're under 18 (a parent then has to agree) or under 13 (Panalo isn't for you yet). Never shown to anyone.</td></tr>
       <tr><td>A parent's or guardian's consent (under 18)</td><td>The database: their email, name, relationship, year of birth, their decision and when.</td><td>Only the people who run this Panalo, as the record the law requires.</td></tr>
-      <tr><td>Username</td><td>Your profile.</td><td>People you share a conversation with. Others can only find you by typing your exact username.</td></tr>
-      <tr><td>Messages and files sent in conversations</td><td>The database and file storage, <b>as ciphertext</b>.</td><td>The people in that conversation, on their devices. See <a href="#encryption">encryption</a>.</td></tr>
-      <tr><td>Who is in which conversation, when messages were sent, read markers, reactions</td><td>The database, in the clear.</td><td>The server. This “metadata” is not encrypted.</td></tr>
+      <tr><td>Username</td><td>Your profile.</td><td>Only you, in Panalo Students: there are no profiles, no chat and no feed, so nobody else sees it here. You can log in with it.</td></tr>
       <tr><td>Your days: when you first opened the app each day, your intention, how the day felt (mood, energy), one thing learned, one good thing</td><td>The database, in the clear.</td><td>Only your account. Used for the morning dawn, closing the day and your journal. Never shown to anyone, never analysed.</td></tr>
-      <tr><td>Your city on friends' globes, if you turn it on: the city you picked from a list (its published centre, about a kilometre), who you chose to show it to, and when it ends</td><td>The database, in the clear.</td><td>Only the friends you chose from your one-to-one chats, while it lasts, while you still have a chat with them and while neither of you has blocked the other. Off until you turn it on; never your device's location. Turning it off, or the time running out, erases it.</td></tr>
       <tr><td>Tasks, focus sessions, calendar, goals, activity log, world name, interests</td><td>The database, in the clear.</td><td>Only your account. Access rules on the server stop anyone else reading them.</td></tr>
-      <tr><td>Archive files</td><td>A private file store (Supabase Storage, or Cloudflare R2 where the site has it turned on), in the clear.</td><td>You, or everyone in the conversation you shared a file with. Not end-to-end encrypted.</td></tr>
-      <tr><td>Security logs: when the app was used, the IP address and browser it was used from, sign-ins and errors</td><td>The database, in a locked table. Kept for 180 days, then erased automatically.</td><td>Only the people who run this Panalo, to investigate attacks or abuse, and the authorities when Indian law requires it (CERT-In Directions 2022). Never message content: that is encrypted.</td></tr>
+      <tr><td>Archive files</td><td>A private file store (Supabase Storage, or Cloudflare R2 where the site has it turned on), in the clear.</td><td>Only you. Not end-to-end encrypted.</td></tr>
+      <tr><td>Security logs: when the app was used, the IP address and browser it was used from, sign-ins and errors</td><td>The database, in a locked table. Kept for 180 days, then erased automatically.</td><td>Only the people who run this Panalo, to investigate attacks or abuse, and the authorities when Indian law requires it (CERT-In Directions 2022). Never what you wrote or stored.</td></tr>
       <tr><td>Wrong passwords typed with a username</td><td>The database, in a locked table: the username and the time.</td><td>Nobody. Used only to stop password guessing (ten tries an hour), and erased after a day.</td></tr>
-      <tr><td>Blocks and reports</td><td>The database.</td><td>Your own blocks and reports are visible to you; reports are visible to whoever runs this Panalo.</td></tr>
+      <tr><td>Questions and requests you send about your data</td><td>The database.</td><td>You, and whoever runs this Panalo, who answer them.</td></tr>
+      <tr><td>Panalo Chat, if you use it with the same account</td><td>Its messages are stored encrypted, as Panalo Chat describes.</td><td>Panalo Students doesn't show, read or use them.</td></tr>
       <tr><td>Timer state, sound and motion preferences, world lighting, which Drift items you opened</td><td>Your browser, and a copy on your account so they follow you to your other devices.</td><td>Only your account.</td></tr>
     </table>
 
     <h2 id="encryption">Encryption, exactly</h2>
     <ul>
-      <li>Messages and chat attachments are encrypted in your browser before they are sent. Each conversation has its own key, and only members hold a copy.</li>
-      <li>Your private key is kept on the server, <b>encrypted with a key derived from your password</b>. That is what lets your history follow you to a new device. It also means that anyone who obtained both that stored key and your password could read your messages. For that reason we don't describe Panalo as “end-to-end encrypted”.</li>
+      <li>Your study data, journal and archive files are protected by server-side access rules that let only your account read them. They are <b>not</b> end-to-end encrypted, so we don't say they are.</li>
+      <li>Everything travels to and from the server over HTTPS.</li>
       <li>The app itself is delivered by a web host. A compromised host could serve modified code — no browser-based app can rule that out.</li>
-      <li>If you reset your password on a device that doesn't have your key cached, older encrypted messages can no longer be opened by you. Someone else in the conversation can share the key with you again.</li>
-      <li>Archive files, study data and metadata are protected by server-side access rules, not by end-to-end encryption.</li>
+      <li>Your account also holds the encryption keys Panalo Chat uses, kept on the server encrypted with your password. If you reset your password on a device that doesn't have them cached, older Panalo Chat messages can no longer be opened.</li>
     </ul>
 
     <h2 id="not">What Panalo does not do</h2>
@@ -55,58 +52,48 @@
       <li>No advertising, and no selling or sharing of data with advertisers.</li>
       <li>No analytics or tracking scripts.</li>
       <li>No AI: nothing you write is sent to an AI service, and nothing is generated about you by one.</li>
-      <li>No public profiles, follower counts or public feed.</li>
+      <li>No profiles, no chat, no follower counts and no feed: nothing you do in Panalo Students is shown to anyone else.</li>
     </ul>
     <p>The intro film's music, effects and any narration play from this site and your browser; nothing about you is sent anywhere to make them.</p>
-
-    <h2 id="rooms">Rooms, codes and blocking</h2>
-    <ul>
-      <li>A room's join code lets someone <i>ask</i> to join. A host decides who gets in; letting someone in is what gives them the room's key.</li>
-      <li>Rooms end at the time their host set. After that they are hidden from everyone, and deleted a day later together with their messages. Files shared into a room stay in storage until their uploader deletes them or their account.</li>
-      <li>Blocking someone hides their messages from you everywhere in Panalo and stops them adding you to conversations or rooms. They aren't told.</li>
-    </ul>
 
     <h2 id="children">Under 18: a parent or guardian agrees first</h2>
     <ul>
       <li>Everyone gives a month and year of birth when they join. Panalo is for people 13 and over; under 13, we can't keep an account.</li>
       <li>From 13 to 17, a parent or legal guardian must agree before anything is stored or shared. The student enters their parent's email; the parent gets a one-time code, signs in at <a href="./#parent">the parent page</a> with it (proving the email is theirs), reads what Panalo keeps, gives their name, relationship and year of birth, and says yes or no.</li>
-      <li>Until they say yes, the student can't use Panalo: the server refuses to store their messages, files or study data. Reporting still works.</li>
+      <li>Until they say yes, the student can't use Panalo: the server refuses to store their files or study data. Writing to us still works.</li>
       <li>A parent can withdraw at any time on the same page. The student's account is then deleted.</li>
       <li>Nobody is tracked, profiled or shown advertising — child or adult.</li>
     </ul>
 
     <h2 id="delete">Deleting things</h2>
     <ul>
-      <li>You can delete your account from Safety &amp; privacy. It removes everything of yours: your profile and keys, every message you sent (in every conversation), every file you uploaded, your study data and world, conversations only you were in, and the sign-in records kept about you. It can't be undone.</li>
+      <li>You can delete your account from Privacy &amp; data. It removes everything of yours: your study data and world, every file you uploaded, your profile and keys, the sign-in records kept about you — and, if you used Panalo Chat with the same account, every message you sent there. It can't be undone.</li>
       <li>One thing is kept, because Indian law requires it (IT Rules 2021, rule 3(1)(h)): the email address and username you registered with, and the dates you joined and left, for 180 days after you delete your account. They're locked away where nothing in the app can read them, and erased automatically after 180 days.</li>
-      <li>Anything someone else already saved, copied or screenshotted is outside our reach. Reports you filed or that named you are kept for moderation, without your account attached.</li>
-      <li>“Delete for everyone” removes a message from the server, but anyone could already have read or copied it.</li>
+      <li>Questions and requests you sent us are kept for the record, without your account attached.</li>
     </ul>
 
     <h2 id="rights">Your rights, and how to use them</h2>
     <ul>
       <li><b>See what's held about you.</b> This page lists every kind of thing Panalo keeps, and inside the app you can see all of it: your profile, tasks, sessions, calendar, goals, world and files.</li>
-      <li><b>Get a copy.</b> Safety &amp; privacy → <i>Download my data</i> gives you everything your account holds as a file.</li>
+      <li><b>Get a copy.</b> Privacy &amp; data → <i>Download my data</i> gives you everything your account holds as a file.</li>
       <li><b>Correct it.</b> Everything you entered can be edited where you entered it.</li>
-      <li><b>Erase it.</b> Delete your account from Safety &amp; privacy, or delete any single thing you made.</li>
+      <li><b>Erase it.</b> Delete your account from Privacy &amp; data, or delete any single thing you made.</li>
       <li><b>Withdraw consent.</b> Deleting your account withdraws it; nothing is processed after that.</li>
-      <li><b>Ask a question or make a complaint.</b> In the app: Safety &amp; privacy → <i>Questions or complaints about your data</i>. It goes straight to the people who run this Panalo, who will answer within 15 days.</li>
+      <li><b>Ask a question or make a complaint.</b> In the app: Privacy &amp; data → <i>Questions or complaints about your data</i>. It goes straight to the people who run this Panalo, who will answer within 15 days.</li>
     </ul>
 
     <h2 id="grievance">Grievance Officer</h2>
     <p><b>K.V.Karnishh</b>, Grievance Officer, Panalo · <a href="mailto:karnishh.education@gmail.com">karnishh.education@gmail.com</a></p>
-    <p>For complaints about content, your data or a decision we made: email <a href="mailto:karnishh.education@gmail.com">karnishh.education@gmail.com</a>, or use <i>Questions or complaints about your data</i> in Safety &amp; privacy. We acknowledge within 24 hours and resolve within 15 days (IT Rules 2021, rule 3(2)). Reports of intimate images shared without consent are acted on within 24 hours.</p>
+    <p>For complaints about content, your data or a decision we made: email <a href="mailto:karnishh.education@gmail.com">karnishh.education@gmail.com</a>, or use <i>Questions or complaints about your data</i> in Privacy &amp; data. We acknowledge within 24 hours and resolve within 15 days (IT Rules 2021, rule 3(2)). Reports of intimate images shared without consent are acted on within 24 hours.</p>
 
     <h2 id="limits">What it can't do yet</h2>
     <ul>
-      <li>Reports are stored for the people who run this Panalo to review; there is no automated moderation and no round-the-clock monitoring.</li>
-      <li>There is no verified teacher role: a “class” is a group whose hosts are whoever created it or was made a host.</li>
       <li>No notifications reach you when the app is closed.</li>
       <li>Some preferences live only on the device you set them on.</li>
       <li>The full technical list is in the project's <code>LIMITATIONS.md</code>.</li>
     </ul>
 
-    <p style="margin-top:48px"><a href="./">← Back to Panalo Students</a> · <a href="rules.html">Community rules</a></p>
+    <p style="margin-top:48px"><a href="./">← Back to Panalo Students</a> · <a href="rules.html">Rules</a></p>
   </main>
 </body>
 </html>

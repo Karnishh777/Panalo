@@ -4,9 +4,9 @@
 //   QA_SHOTS=/tmp/shots node tools/qa/students.mjs
 //
 // Covers the real flows end to end: sign-up and the birth of a universe,
-// tasks and a focus session reaching the world, the calendar, encrypted
-// messaging, a room with a door, the archive, blocking and reporting, Drift,
-// and the phone layout. Nothing here can reach a real Supabase project
+// tasks and a focus session reaching the world, the calendar, the private
+// archive, Drift, privacy and data, and the phone layout. Panalo Students is
+// private: nothing in it is shown to anyone else, and the checks say so. Nothing here can reach a real Supabase project
 // (see tools/qa/README.md).
 import { launch, LEAKED_PASSWORD } from "./harness.mjs";
 import fs from "node:fs";
@@ -159,7 +159,7 @@ try {
     await fillBirth(page, 24);
     await page.click("#signup-submit");
     await page.waitForTimeout(400);
-    check("agreeing to the rules is required", /community rules/.test(await page.textContent("#auth-message")));
+    check("agreeing to the rules is required", /agree to the rules/.test(await page.textContent("#auth-message")));
     await page.check("#signup-age");
     await page.click("#signup-submit");
     await page.waitForSelector("#birth-skip:not([hidden])", { timeout: 20000 });
@@ -209,11 +209,11 @@ try {
   await finishBirth(page);
   check("you can log in with your username", await page.isVisible("#app"));
   check("Now shows the day orbit", await page.isVisible(".orbit-svg"));
-  check("Now shows who's waiting, in Signals (not in the headline)", (await page.locator(".now-log .pulse-count").count()) > 0 && !/unread/.test(await page.textContent(".s-sub")));
+  check("Panalo Students is private: no chat, no Signals, nothing from other people", !(await page.isVisible("a[data-route=signals]")) && !(await page.textContent(".now-log")).includes("Signals"));
   check("Now leads with the next step, one tap from a focus block", (await page.isVisible(".now-step")) && /Next step/.test(await page.textContent(".now-step")));
   check("Panalo is calm by default: no drifting decoration", (await page.evaluate(() => document.documentElement.dataset.effects)) === "calm" && !(await page.isVisible(".fx-ambient")));
   const order = await page.evaluate(() => [...document.querySelectorAll(".now-log .panel-head h2")].map((h) => h.textContent));
-  check("the work comes before the messages on Now", order.indexOf("Due soon") > -1 && order.indexOf("Due soon") < order.indexOf("Signals"));
+  check("the work comes first on Now", order.indexOf("Due soon") > -1 && order.indexOf("Due soon") < order.findIndex((h) => !/Today|Now|Next|Focus|Due/.test(h)));
   await shot(page, "now");
 
   await go(page, "#/study");
@@ -230,11 +230,9 @@ try {
   const shield = await page.evaluate(() => ({
     focusing: document.documentElement.classList.contains("focusing"),
     line: ((l) => (l && getComputedStyle(l).display !== "none" ? l.textContent : ""))(document.querySelector(".focus-line")),
-    badge: [...document.querySelectorAll(".bar-nav .pulse-count[data-unread]")].some((b) => !b.hidden && getComputedStyle(b).display !== "none"),
     step: document.querySelector(".now-step")?.textContent || "",
   }));
   check("while focusing, other pages show one quiet line back to the block", shield.focusing && /Focusing on Physics/.test(shield.line) && /min left/.test(shield.line));
-  check("…and no unread counts call for attention", !shield.badge);
   check("…and Now's next step is the block itself", /Focusing/.test(shield.step) && /Back to it/.test(shield.step));
   await go(page, "#/study");
   // Pretend 26 minutes passed: the timer is timestamps, so moving them back
@@ -269,47 +267,7 @@ try {
   check("the first session is a discovery", /First session/.test(await page.textContent(".world-lower")));
   await shot(page, "world");
 
-  // Phase 27: friends on the globe.
-  await page.waitForSelector("#friends-globe:not([hidden])", { timeout: 5000 }).catch(() => {});
-  const fg = await page.evaluate(() => ({
-    friends: [...document.querySelectorAll(".fg-item b")].map((b) => b.textContent),
-    beacons: [...document.querySelectorAll(".beacon")].map((b) => b.getAttribute("aria-label")),
-    lead: document.querySelector(".fg-me")?.innerText || "",
-  }));
-  check("friends who chose you show their city, on the list and the globe", fg.friends.join() === "jordan,maya" && fg.beacons.some((b) => /maya, Bengaluru/.test(b)) && fg.beacons.some((b) => /jordan, London/.test(b)));
-  check("someone who hasn't chosen you stays hidden", !fg.friends.includes("sam") && !fg.beacons.some((b) => /Toronto/.test(b)));
-  check("your own city is off until you turn it on", /Off until you turn it on/.test(fg.lead) && (await page.evaluate(() => window.__qa.db.student_places.filter((p) => p.city === "Chennai").length)) === 0);
-  await page.click(".fg-item[data-id] .fg-find >> nth=1");
-  await page.waitForTimeout(300);
-  check("Find picks a friend out on the globe", await page.evaluate(() => document.querySelector(".beacon.focus")?.getAttribute("aria-label")?.startsWith("maya") && document.querySelector(".fg-item.on b")?.textContent === "maya"));
-  await page.click("#fg-share");
-  await page.waitForSelector("#fg-city", { timeout: 3000 });
-  const people = await page.$$eval(".fg-people label span", (s) => s.map((x) => x.textContent));
-  check("only people from one-to-one chats can be chosen", people.join() === "jordan,maya,sam");
-  await page.fill("#fg-city", "chenn");
-  await page.waitForSelector(".fg-city", { timeout: 5000 }).catch(() => {});
-  check("the city is picked from a list as you type", (await page.textContent(".fg-results")).includes("Tamil Nadu"));
-  await page.click(".fg-city >> nth=0");
-  await page.click("#fg-save");
-  await page.waitForTimeout(300);
-  check("you have to choose who can see it", /at least one person/.test(await page.textContent("dialog[open] .sheet-alert")));
-  await page.check(".fg-people input[type=checkbox] >> nth=1");
-  await page.click("dialog[open] .chip >> text=24 hours");
-  await page.click("#fg-save");
-  await page.waitForTimeout(900);
-  const mine = await page.evaluate(() => {
-    const me = window.__qa.db.profiles.find((p) => p.username === "alex").id;
-    return { place: window.__qa.db.student_places.find((p) => p.user_id === me), viewers: window.__qa.db.student_place_viewers.filter((v) => v.owner_id === me).length };
-  });
-  check("your city is saved as the city, for 24 hours, to the one friend chosen", mine.place?.city === "Chennai" && Number(mine.place.lat) === 13.09 && mine.viewers === 1 && Math.abs(Date.parse(mine.place.expires_at) - Date.now() - 86400000) < 120000);
-  check("…and says who sees it, for how long", /Shown to maya, for 24 more hours/.test(await page.textContent(".fg-me")) && (await page.locator(".beacon.self").count()) === 1);
-  await page.click("#fg-off");
-  await page.click("dialog[open] .btn-primary");
-  await page.waitForTimeout(800);
-  check("turning it off erases the place and who could see it", await page.evaluate(() => {
-    const me = window.__qa.db.profiles.find((p) => p.username === "alex").id;
-    return !window.__qa.db.student_places.some((p) => p.user_id === me) && !window.__qa.db.student_place_viewers.some((v) => v.owner_id === me);
-  }));
+  check("the world shows no one else: no friends, no cities", !(await page.isVisible("#friends-globe")) && (await page.locator(".beacon").count()) === 0);
 
   await go(page, "#/calendar/add", 1200);
   await page.fill("dialog input[placeholder^='e.g. Physics']", "Chemistry lab");
@@ -323,93 +281,9 @@ try {
   check("the week view shows the timetable", await page.isVisible(".week-ev >> text=Chemistry lab"));
   await shot(page, "calendar");
 
-  // ---- Signals: encrypted messaging, a room with a door, blocking --------------------
-  await go(page, "#/signals");
-  check("conversations are grouped by what they are for", (await page.textContent(".sig-body")).includes("People"));
-  await page.waitForTimeout(600);
-  const sky = await page.evaluate(() => ({
-    stars: document.querySelectorAll(".sky-map .sky-star").length,
-    rows: document.querySelectorAll(".sig-body .sig-row").length,
-    unread: [...document.querySelectorAll(".sky-map .sky-star.unread")].every((a) => /unread/.test(a.getAttribute("aria-label"))),
-    figures: document.querySelectorAll(".sky-map .sky-cons").length,
-  }));
-  check("the sky shows every conversation as a star, one constellation per kind", sky.stars > 0 && sky.stars === sky.rows && sky.figures >= 1 && sky.unread);
-  await page.click(".sky-star[aria-label^='jordan']", { force: true });
-  await page.waitForTimeout(900);
-  check("a star opens its conversation", /#\/signals\/.+/.test(await page.evaluate(() => location.hash)) && (await page.isVisible(".thread-head >> text=jordan")));
-  await go(page, "#/signals");
-  await page.click(".sig-row >> text=maya");
-  await page.waitForTimeout(1200);
-  check("a thread decrypts and shows its history", await page.isVisible(".msg >> text=error propagation"));
-  await page.fill(".composer textarea", "see you at the library 📚");
-  await page.press(".composer textarea", "Enter");
-  await page.waitForTimeout(900);
-  const sent = await page.evaluate(() => window.__qa.db.messages.at(-1));
-  check("a message sent from Students is stored encrypted", !!sent.iv && !sent.content.includes("library"));
-  check("and shows in the thread", await page.isVisible(".msg.mine >> text=see you at the library"));
-  await page.evaluate(() => window.__qa.receive("maya", "maya", "incoming from maya"));
-  await page.waitForTimeout(900);
-  check("incoming messages arrive live", await page.isVisible(".msg >> text=incoming from maya"));
-  await shot(page, "thread");
-
-  await go(page, "#/signals/new", 1000);
-  await page.click("dialog .chip >> text=Open a room");
-  await page.fill("dialog input[placeholder^='e.g. Model UN']", "Hackathon QA");
-  await page.click("dialog .btn-primary");
-  await page.waitForTimeout(1600);
-  const room = await page.evaluate(() => window.__qa.db.conversations.find((c) => c.name === "Hackathon QA"));
-  check("a room is created with an end time", room?.kind === "event" && !!room.ends_at);
-  const code = await page.evaluate((id) => window.__qa.db.room_codes.find((r) => r.conversation_id === id)?.code, room?.id);
-  check("the room gets a join code", /^[A-HJ-NP-Z2-9]{8}$/.test(code || ""));
-  check("the room is encrypted from the start", await page.evaluate((id) => window.__qa.db.conversation_keys.some((k) => k.conversation_id === id), room?.id));
-  await page.waitForSelector("dialog .door-code", { timeout: 5000 }).catch(() => {});
-  check("the host sees the code", (await page.textContent("dialog .door-code").catch(() => "")).replace("-", "") === code);
-  await page.evaluate((c) => window.__qa.knock("jordan", c), code);
-  // Polled, not broadcast (phase 17): it shows within one poll.
-  await page.waitForSelector("dialog >> text=@jordan", { timeout: 9000 }).catch(() => {});
-  check("someone knocking appears in the waiting room", await page.isVisible("dialog >> text=@jordan"));
-  await shot(page, "door");
-  await page.click("dialog button >> text=Let in");
-  await page.waitForTimeout(1200);
-  const admitted = await page.evaluate(({ id }) => {
-    const j = window.__qa.db.profiles.find((p) => p.username === "jordan");
-    return {
-      member: window.__qa.db.conversation_participants.some((p) => p.conversation_id === id && p.user_id === j.id),
-      key: window.__qa.db.conversation_keys.some((k) => k.conversation_id === id && k.user_id === j.id),
-      waiting: window.__qa.db.room_requests.length,
-    };
-  }, { id: room?.id });
-  check("letting someone in adds them and shares the room's key", admitted.member && admitted.key && admitted.waiting === 0);
-  await page.keyboard.press("Escape");
-  await page.waitForTimeout(300);
-
-  // An error inside a sheet is shown inside the sheet, not under its backdrop.
+  // ---- Nothing social: an old link to Signals or a room lands on Now --------------------
   await go(page, "#/signals/join", 900);
-  await page.fill("dialog .code-input", "BADC0DE9");
-  await page.click("dialog .btn-primary");
-  await page.waitForTimeout(600);
-  check("errors appear inside the open dialog, as an alert", /doesn't open anything/.test(await page.textContent("dialog .sheet-alert").catch(() => "")));
-  await page.keyboard.press("Escape");
-
-  await go(page, "#/signals", 600);
-  await page.click(".sig-row >> text=Physics study group");
-  await page.waitForTimeout(1200);
-  const before = await page.locator(".msg >> text=notes from today").count();
-  await page.hover(".msg >> text=notes from today");
-  await page.click(".msg:has-text('notes from today') .msg-more");
-  await page.click(".menu.pop button >> text=Report this message");
-  await page.check("dialog input[type=checkbox]");
-  await page.click("dialog .btn-primary");
-  await page.waitForTimeout(500);
-  const rep = await page.evaluate(() => window.__qa.db.reports[0]);
-  check("a message can be reported, with its text if the reporter chooses", rep?.reason === "harassment" && rep.evidence === "notes from today are in the drive" && !!rep.message_id);
-  await page.hover(".msg >> text=notes from today");
-  await page.click(".msg:has-text('notes from today') .msg-more");
-  await page.click(".menu.pop button >> text=Block @priya");
-  await page.click("dialog .btn-danger");
-  await page.waitForTimeout(1500);
-  check("blocking hides their messages", before === 1 && (await page.locator(".msg >> text=notes from today").count()) === 0);
-  check("the block is recorded", await page.evaluate(() => window.__qa.db.blocks.length === 1));
+  check("an old link to Signals or a room opens Now instead", (await page.evaluate(() => document.body.dataset.view)) === "now" && !(await page.isVisible("dialog[open]")));
 
   // ---- Archive ------------------------------------------------------------------------
   await go(page, "#/archive", 1000);
@@ -421,7 +295,7 @@ try {
   await page.waitForTimeout(900);
   const res = await page.evaluate(() => window.__qa.db.resources[0]);
   check("a file is uploaded privately", res?.object_path.startsWith("u/") && !res.conversation_id && res.shelf === "Physics");
-  check("it is catalogued with its type, size and owner", /optics-notes\.md/.test(await page.textContent(".artifacts")) && /Added by you/.test(await page.textContent(".artifacts")));
+  check("it is catalogued with its type, size and date", /optics-notes\.md/.test(await page.textContent(".artifacts")) && /Added /.test(await page.textContent(".artifacts")));
   await page.click(".artifact button >> text=Preview");
   await page.waitForTimeout(700);
   check("a text file previews", /Snell's law/.test(await page.textContent("dialog .preview-text").catch(() => "")));
@@ -455,14 +329,14 @@ try {
   check("Drift reveals today's fact", (await page.textContent(".drift-fact")).length > 20);
   check("Drift has no feed: exactly three things", (await page.locator(".drift-card").count()) === 3);
 
-  // ---- Warp and safety ------------------------------------------------------------------
+  // ---- Warp and privacy -----------------------------------------------------------------
   await page.keyboard.press("Control+k");
   await page.waitForTimeout(300);
-  await page.fill(".warp-input", "safety");
+  await page.fill(".warp-input", "privacy");
   await page.keyboard.press("Enter");
   await page.waitForTimeout(900);
-  check("Warp jumps anywhere by typing", /Safety/.test(await page.title()));
-  check("Safety lists the person you blocked", await page.isVisible("text=@priya"));
+  check("Warp jumps anywhere by typing", /Privacy/.test(await page.title()) && /Yours, and only yours/.test(await page.textContent("[data-surface=safety] h1")));
+  check("Privacy & data has no blocking or reports: there's nobody to block", !(await page.isVisible("[data-surface=safety] >> text=Blocked")) && !(await page.isVisible("[data-surface=safety] >> text=Reports you've sent")));
 
   // ---- Looks: Glass (default), Signal, Verse------------------------------------------
   check("the default look is Glass", (await page.evaluate(() => document.documentElement.dataset.look)) === "glass");
@@ -484,13 +358,30 @@ try {
   check("Settings offers the three looks, with yours chosen", (await page.locator(".settings-look .look-opt").count()) === 3 && (await page.isChecked(".settings-look .look-opt-verse input")));
   const livelyBox = page.locator("label.setting", { hasText: "Lively effects" }).locator("input");
   check("Lively effects are off until you turn them on", !(await livelyBox.isChecked()));
-  // The switch re-renders Settings when it applies, so wait for the effect
-  // rather than for the (replaced) checkbox.
+  // Wait for the effect, not the checkbox. The switch sits low on the page,
+  // where the yearly rules card and toasts appear: bring it to the middle
+  // first, and if a click still goes astray, say what was under it.
   const effectsBecome = (v) => page.waitForFunction((x) => document.documentElement.dataset.effects === x, v, { timeout: 3000 }).then(() => true, () => false);
-  await livelyBox.click();
-  check("turning on lively effects applies at once", await effectsBecome("lively"));
-  await page.locator("label.setting", { hasText: "Lively effects" }).locator("input").click();
-  check("and turning them off makes Panalo still again", await effectsBecome("calm"));
+  const flipLively = async () => {
+    const box = page.locator("label.setting", { hasText: "Lively effects" }).locator("input");
+    await box.evaluate((b) => b.scrollIntoView({ block: "center" }));
+    await page.waitForTimeout(300);
+    await box.click();
+  };
+  const whatsThere = () => page.evaluate(() => {
+    const b = [...document.querySelectorAll("label.setting")].find((l) => /Lively/.test(l.textContent))?.querySelector("input");
+    const r = b?.getBoundingClientRect();
+    const hit = r && document.elementFromPoint(r.x + r.width / 2, r.y + r.height / 2);
+    return `checked=${b?.checked} effects=${document.documentElement.dataset.effects} under=${hit ? `${hit.tagName}.${hit.className}` : "none"}`;
+  });
+  await flipLively();
+  const on = await effectsBecome("lively");
+  check("turning on lively effects applies at once", on);
+  if (!on) console.log("  lively switch:", await whatsThere());
+  await flipLively();
+  const off = await effectsBecome("calm");
+  check("and turning them off makes Panalo still again", off);
+  if (!off) console.log("  lively switch:", await whatsThere());
   await page.evaluate(() => (location.hash = "#/now"));
   await page.waitForTimeout(900);
   check("Verse lays Now out in orbit (the log's panels around the world)", await page.evaluate(() => getComputedStyle(document.querySelector(".now-log")).display === "contents"));
@@ -545,7 +436,7 @@ try {
   await page.click('[data-view-btn="day"]');
   // Nothing anywhere prints a stray null, undefined or NaN.
   const stray = [];
-  for (const r of ["now", "study", "signals", "world", "calendar", "archive", "drift", "safety", "settings"]) {
+  for (const r of ["now", "study", "world", "calendar", "archive", "drift", "safety", "settings"]) {
     await page.evaluate((r) => (location.hash = `#/${r}`), r);
     await page.waitForTimeout(700);
     const t = await page.evaluate((r) => document.querySelector(`.surface[data-surface="${r}"]`)?.innerText || "", r);
@@ -567,17 +458,12 @@ try {
     await finishBirth(m);
     check("the phone dock is shown", await m.isVisible(".dock"));
     check("the top navigation gives way to it", !(await m.isVisible(".bar-nav")));
-    await m.click(".dock a[data-route=signals]");
+    await m.click(".dock a[data-route=calendar]");
     await m.waitForTimeout(900);
-    await m.click(".sig-row >> nth=0");
-    await m.waitForTimeout(1100);
-    check("a thread opens full-screen on a phone", (await m.isVisible(".thread-pane")) && !(await m.isVisible(".sig-list")));
-    await m.click(".thread-back");
-    await m.waitForTimeout(500);
-    check("back returns to the list", await m.isVisible(".sig-list"));
+    check("the dock goes to Calendar", (await m.evaluate(() => document.body.dataset.view)) === "calendar");
     const overflow = await m.evaluate(() => document.documentElement.scrollWidth > window.innerWidth + 1);
     check("nothing scrolls sideways", !overflow);
-    await shot(m, "phone-signals");
+    await shot(m, "phone-calendar");
     check("no console errors (phone)", m.errors.length === 0);
     if (m.errors.length) console.log(m.errors.join("\n"));
   }
@@ -899,16 +785,10 @@ try {
     check("a running focus timer doesn't outlive the account that started it", await b.evaluate(() => localStorage.getItem("panalo.students.timer") === null));
     check("signing out locks the key on this device", await b.evaluate(() => new Promise((r) => { const q = indexedDB.open("panalo-keys", 1); q.onsuccess = () => { const g = q.result.transaction("keys").objectStore("keys").count(); g.onsuccess = () => r(g.result === 0); }; q.onerror = () => r(true); })));
 
-    // An invite link opened while signed out survives the sign-in.
-    const code = "ABCD2345"; // the sheet only has to arrive pre-filled; the code needn't exist
-    await b.goto(`${qa.base}students/#join=${code}`);
+    // An old invite link is just the landing now: there are no rooms.
+    await b.goto(`${qa.base}students/#join=ABCD2345`);
     await b.waitForTimeout(600);
-    check("an invite link asks you to sign in first", /join that room/.test(await b.textContent("#auth-message")));
-    await b.fill("#login-email", "qa@panalo.test");
-    await b.fill("#login-password", "correct-horse-42");
-    await b.click("#login-submit");
-    await b.waitForSelector("dialog .code-input", { timeout: 15000 }).catch(() => {});
-    check("after signing in, the join sheet opens with the code filled in", (await b.inputValue("dialog .code-input").catch(() => "")) === code);
+    check("an old invite link opens the landing, not a room", (await b.isVisible("#landing")) && !/room/.test(await b.textContent("#auth-message")));
     check("no console errors (auth paths)", b.errors.length === 0);
     if (b.errors.length) console.log(b.errors.join("\n"));
     await b.close();

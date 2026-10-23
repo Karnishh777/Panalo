@@ -10,7 +10,7 @@
 //   aurora      making things, last 30 days   art, music, writing, code you logged
 //   forests     moving and resting, 30 days   how much of the land is green
 //   glow        reading, last 30 days         the oceans light up
-//   atmosphere  people, last 7 days           messages you sent + time logged with people
+//   atmosphere  people, last 7 days           time logged with people
 //   ring        showing up, last 7 days       appears at 5 active days of 7
 //   moons       your goals                    each fills as the goal is met
 //   clouds      time away                     gather while you're gone, clear the day you return
@@ -68,9 +68,9 @@ export function goalProgress(goal, sessions, now) {
 
 /**
  * @param {{sessions?: object[], tasks?: object[], logs?: object[], goals?: object[],
- *          sentMessages?: object[], bornAt?: string|null, now?: number}} input
+ *          bornAt?: string|null, now?: number}} input
  */
-export function buildWorld({ sessions = [], tasks = [], logs = [], goals = [], sentMessages = [], entries = [], bornAt = null, now = Date.now() } = {}) {
+export function buildWorld({ sessions = [], tasks = [], logs = [], goals = [], entries = [], bornAt = null, now = Date.now() } = {}) {
   const today = startOfDay(now).getTime();
   const d7 = today - 6 * DAY;
   const d30 = today - 29 * DAY;
@@ -90,7 +90,6 @@ export function buildWorld({ sessions = [], tasks = [], logs = [], goals = [], s
   const bodyMinutes30 = minutesOf(logs30, ["move", "rest"]);
   const readMinutes30 = minutesOf(logs30, ["read"]);
   const connectMinutes7 = minutesOf(logs7, ["connect"]);
-  const messages7 = within(sentMessages, "created_at", d7).length;
 
   const days = activeDays({ sessions, tasks, logs, entries });
   let active7 = 0;
@@ -116,7 +115,7 @@ export function buildWorld({ sessions = [], tasks = [], logs = [], goals = [], s
     aurora: sat(createMinutes30, 300),
     forest: 0.12 + 0.78 * sat(bodyMinutes30, 600),
     glow: sat(readMinutes30, 300),
-    atmosphere: 0.15 + 0.85 * sat(messages7 + connectMinutes7 / 10, 40),
+    atmosphere: 0.15 + 0.85 * sat(connectMinutes7 / 10, 40),
     // A brand-new world has never been away: clear skies.
     clouds: daysSinceActive === null ? 0.08 : 0.08 + 0.5 * clamp01(daysSinceActive / 14),
     ring: active7 >= 5 ? active7 / 7 : 0,
@@ -137,7 +136,6 @@ export function buildWorld({ sessions = [], tasks = [], logs = [], goals = [], s
       bodyMinutes30,
       readMinutes30,
       connectMinutes7,
-      messages7,
       active7,
       daysSinceActive,
       ageDays,

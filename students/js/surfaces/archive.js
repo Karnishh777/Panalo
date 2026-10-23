@@ -1,23 +1,21 @@
 // Archive: your files as catalogued artifacts.
 //
 // Not a thumbnail grid. Each file is a specimen with a label that answers
-// the questions you actually have: what is it, what type, how big, who put
-// it here, when, who can see it, and can I preview it. Files are laid down
+// the questions you actually have: what is it, what type, how big, when,
+// and can I preview it. Everything here is yours and only yours. Files are laid down
 // in strata -- one layer per month -- so "that PDF from last term" is
 // somewhere you can point at.
-import { el, openSheet, confirmSheet, popMenu, showToast, emptyState, chipGroup, getPrefs, setPrefs } from "../ui.js";
+import { el, openSheet, confirmSheet, popMenu, showToast, emptyState, getPrefs, setPrefs } from "../ui.js";
 import { store, on } from "../store.js";
-import { state } from "../../../src/state.js";
 import { fileKind, prettyBytes, extensionOf } from "../../../src/filekind.js";
 import { glyph, KIND_LABEL } from "../glyphs.js";
 import * as A from "../archive-data.js";
-import { titleOf } from "../signals-data.js";
 
 let root;
 let bodyEl;
 let headSub;
 let meterEl;
-let filter = { text: "", scope: "all", shelf: null, kind: null };
+let filter = { text: "", shelf: null, kind: null };
 
 // Kinds you can filter by; "other" is everything else.
 const KIND_FILTERS = [["pdf", "PDFs"], ["image", "Images"], ["audio", "Audio"], ["video", "Video"], ["other", "Other"]];
@@ -38,12 +36,6 @@ function previewKind(r) {
   const mime = (r.mime_type || "").toLowerCase();
   if (mime.startsWith("text/") || TEXTISH.includes(extensionOf(r.file_name))) return Number(r.size_bytes) <= 1024 * 1024 ? "text" : null;
   return null;
-}
-
-function scopeLabel(r) {
-  if (!r.conversation_id) return r.owner_id === state.currentUser.id ? "Private · only you" : "Private";
-  const conv = store.conversations.find((c) => c.id === r.conversation_id);
-  return conv ? `Shared · ${titleOf(conv)}` : "Shared with a conversation";
 }
 
 // Stars: the files you reach for most, kept on a shelf at the top (synced
@@ -68,7 +60,6 @@ const sortNow = () => (SORTS.some(([v]) => v === getPrefs().archiveSort) ? getPr
 function artifact(r) {
   const k = kindOf(r);
   const isStar = starred().has(r.id);
-  const mine = r.owner_id === state.currentUser.id;
   const pv = previewKind(r);
   const ext = extensionOf(r.file_name).toUpperCase();
   const when = new Date(r.created_at);
@@ -84,10 +75,8 @@ function artifact(r) {
         el("span", { class: "num", text: bytes(r.size_bytes) }),
       ]),
       el("span", { class: "artifact-prov" }, [
-        `Added by ${mine ? "you" : `@${store.owners[r.owner_id] || "someone"}`} · `,
+        "Added ",
         el("time", { datetime: r.created_at, text: when.toLocaleDateString(undefined, { day: "numeric", month: "short", year: "numeric" }) }),
-        " · ",
-        el("span", { class: r.conversation_id ? "scope shared" : "scope", text: scopeLabel(r) }),
         r.shelf ? el("span", { class: "shelf", text: ` · on “${r.shelf}”` }) : null,
       ]),
       r.note ? el("span", { class: "artifact-note", text: r.note }) : null,
@@ -112,18 +101,12 @@ function artifact(r) {
         text: "⋯",
         onClick: (e) =>
           popMenu(e.currentTarget, [
-            mine ? { label: "Rename or re-shelve", onClick: () => edit(r) } : null,
-            mine || isHostOf(r) ? { label: mine ? "Delete" : "Remove from circle", danger: true, onClick: () => remove(r) } : null,
-            !mine ? { label: "Report", onClick: () => import("./signals.js").then((m) => m.openReport({ userId: r.owner_id, username: store.owners[r.owner_id], conversationId: r.conversation_id, evidence: `Archive file: ${r.title} (${r.file_name})` })) } : null,
+            { label: "Rename or re-shelve", onClick: () => edit(r) },
+            { label: "Delete", danger: true, onClick: () => remove(r) },
           ]),
       }),
     ]),
   ]);
-}
-
-function isHostOf(r) {
-  const conv = r.conversation_id && store.conversations.find((c) => c.id === r.conversation_id);
-  return !!conv?.isHost;
 }
 
 function render() {
@@ -134,37 +117,21 @@ function render() {
     return;
   }
   const used = A.usedBytes();
-  headSub.textContent = `Private unless you share a file with a conversation. You're using ${bytes(used)} of ${bytes(A.ARCHIVE_QUOTA)}.`;
+  headSub.textContent = `Only you can see these. You're using ${bytes(used)} of ${bytes(A.ARCHIVE_QUOTA)}.`;
   const share = Math.min(1, used / A.ARCHIVE_QUOTA);
   meterEl.style.setProperty("--used", `${(share * 100).toFixed(1)}%`);
   meterEl.classList.toggle("high", share > 0.85);
   meterEl.setAttribute("aria-valuenow", String(Math.round(share * 100)));
   const q = filter.text.trim().toLowerCase();
-  const me = state.currentUser.id;
   const shelves = [...new Set(all.map((r) => r.shelf).filter(Boolean))].sort();
   const items = all.filter(
     (r) =>
-      (filter.scope === "all" || (filter.scope === "mine" ? !r.conversation_id && r.owner_id === me : !!r.conversation_id)) &&
       (!filter.shelf || r.shelf === filter.shelf) &&
       (!filter.kind || kindGroup(r) === filter.kind) &&
       (!q || `${r.title} ${r.file_name} ${r.shelf || ""} ${r.note || ""}`.toLowerCase().includes(q))
   );
 
   const toolbar = el("div", { class: "arch-tools" }, [
-    chipGroup({
-      label: "Show",
-      value: filter.scope,
-      options: [
-        { id: "all", label: "Everything" },
-        { id: "mine", label: "Private" },
-        { id: "shared", label: "From conversations" },
-      ],
-      toneOf: () => "tone-archive",
-      onChange: (v) => {
-        filter.scope = v;
-        render();
-      },
-    }).node,
     (() => {
       const present = new Set(all.map(kindGroup));
       const kinds = KIND_FILTERS.filter(([k]) => present.has(k));
@@ -176,7 +143,7 @@ function render() {
           )
         : null;
     })(),
-    q || filter.kind || filter.shelf || filter.scope !== "all" ? el("span", { class: "faint arch-count", role: "status", text: `${items.length} of ${all.length}` }) : null,
+    q || filter.kind || filter.shelf ? el("span", { class: "faint arch-count", role: "status", text: `${items.length} of ${all.length}` }) : null,
     shelves.length
       ? el("div", { class: "chips shelf-chips", role: "group", "aria-label": "Shelves" }, [
           ...shelves.map((s) =>
@@ -204,7 +171,7 @@ function render() {
             el("div", { class: "shelf-art", "aria-hidden": "true" }, ["PDF", "Slides", "Audio", "Image", "Notes", "Code"].map((t, i) => el("span", { class: `shelf-file f${i}`, text: t }))),
             el("div", { class: "archive-empty-copy" }, [
               el("h3", { text: "Your shelves are waiting." }),
-              el("p", { text: "Notes, past papers, slides, recordings, sketches. Drop a file anywhere on this page, or upload one. Everything is private until you share it with a circle." }),
+              el("p", { text: "Notes, past papers, slides, recordings, sketches. Drop a file anywhere on this page, or upload one. Only you can see them." }),
               el("button", { type: "button", class: "btn btn-primary", text: "Upload your first file", onClick: () => openUpload() }),
             ]),
           ])
@@ -257,7 +224,7 @@ async function preview(r) {
   const slot = el("div", { class: "preview-slot" }, [el("div", { class: "loading-line" })]);
   const sheet = openSheet({
     title: r.title,
-    lead: `${r.file_name} · ${prettyBytes(Number(r.size_bytes))} · ${scopeLabel(r)}`,
+    lead: `${r.file_name} · ${prettyBytes(Number(r.size_bytes))}`,
     body: [slot],
     wide: true,
     form: false,
@@ -299,10 +266,6 @@ export function openUpload(prefilled = null) {
   const title = el("input", { type: "text", maxlength: "120", placeholder: "What is it?" });
   const [shelf, shelfList] = shelfInput();
   const note = el("textarea", { maxlength: "280", placeholder: "A note for future you (optional)" });
-  const scope = el("select", {}, [
-    el("option", { value: "", text: "Private — only me" }),
-    ...store.conversations.map((c) => el("option", { value: c.id, text: `Share with: ${titleOf(c)}` })),
-  ]);
   let chosen = prefilled;
   const chosenLabel = el("p", { class: "field-hint" });
   const showChosen = () => (chosenLabel.textContent = chosen ? `${chosen.name} · ${prettyBytes(chosen.size)}` : "");
@@ -318,15 +281,14 @@ export function openUpload(prefilled = null) {
   const pct = el("span", { class: "upload-pct num", "aria-live": "polite" });
   const progress = el("div", { class: "upload-meter", hidden: true }, [bar, pct]);
   let controller = null;
-  const fields = [file, title, shelf, scope, note];
+  const fields = [file, title, shelf, note];
   const sheet = openSheet({
     title: "Add to the archive",
-    lead: "Up to 50 MB per file. Shared files can be opened by everyone in that conversation; nobody else. Archive files are protected by access rules on the server, not end-to-end encrypted like messages.",
+    lead: "Up to 50 MB per file. Only you can open it. Archive files are protected by access rules on the server, not end-to-end encrypted.",
     body: [
       el("label", { class: "field" }, [el("span", { text: "File" }), file, chosenLabel]),
       el("label", { class: "field" }, [el("span", { text: "Title" }), title]),
       el("label", { class: "field" }, [el("span", { text: "Shelf" }), shelf, shelfList]),
-      el("label", { class: "field" }, [el("span", { text: "Who can see it" }), scope]),
       el("label", { class: "field" }, [el("span", { text: "Note" }), note]),
       progress,
     ],
@@ -350,7 +312,7 @@ export function openUpload(prefilled = null) {
             bar.value = n;
             pct.textContent = n >= 100 ? "Saving…" : `${n}%`;
           };
-          const r = await A.uploadResource(chosen, { title: title.value, shelf: shelf.value, conversationId: scope.value || null, note: note.value, onProgress, signal: controller.signal });
+          const r = await A.uploadResource(chosen, { title: title.value, shelf: shelf.value, note: note.value, onProgress, signal: controller.signal });
           controller = null;
           b.disabled = false;
           b.textContent = "Upload";
@@ -360,7 +322,7 @@ export function openUpload(prefilled = null) {
             if (!r.error.cancelled) showToast(r.error.message);
             return false;
           }
-          showToast(scope.value ? "Shared." : "Saved to your archive.", "success");
+          showToast("Saved to your archive.", "success");
         },
       },
     ],
@@ -392,11 +354,10 @@ function edit(r) {
 }
 
 async function remove(r) {
-  const mine = r.owner_id === state.currentUser.id;
   const ok = await confirmSheet({
-    title: mine ? `Delete “${r.title}”?` : `Remove “${r.title}” from the circle?`,
-    lead: mine ? "The file is deleted for you and for anyone you shared it with." : "As a host you can take a file down from this circle.",
-    confirm: mine ? "Delete" : "Remove",
+    title: `Delete “${r.title}”?`,
+    lead: "The file is deleted for good.",
+    confirm: "Delete",
     danger: true,
   });
   if (!ok) return;
@@ -451,7 +412,7 @@ export function mount(section) {
     openUpload(f);
   });
 
-  unsubs.push(on("resources", render), on("signals", render));
+  unsubs.push(on("resources", render));
   render();
 }
 

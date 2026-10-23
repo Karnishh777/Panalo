@@ -23,7 +23,7 @@ function demoLayers({ focusHours, tasks, createHours, away }) {
   const sessions = focusHours > 0 ? [{ started_at: new Date(last - 3600000).toISOString(), ended_at: new Date(last).toISOString(), focused_minutes: Math.round(focusHours * 60) }] : [];
   const doneTasks = Array.from({ length: tasks }, () => ({ done_at: new Date(last).toISOString() }));
   const logs = createHours > 0 ? [{ kind: "create", minutes: Math.round(createHours * 60), occurred_on: dayKey(last) }] : [];
-  const w = buildWorld({ sessions, tasks: doneTasks, logs, sentMessages: away ? [] : Array.from({ length: 20 }, () => ({ created_at: new Date(now).toISOString() })), now });
+  const w = buildWorld({ sessions, tasks: doneTasks, logs, now });
   return w.layers;
 }
 

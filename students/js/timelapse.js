@@ -15,7 +15,7 @@ const LENGTH = 8000;
 
 export function openTimelapse() {
   if (document.querySelector(".timelapse")) return;
-  const frames = timeline({ sessions: store.sessions, tasks: store.tasks, logs: store.logs, goals: store.goals, entries: store.entries, sentMessages: store.sent, bornAt: store.student?.born_at }, Date.now(), FRAMES);
+  const frames = timeline({ sessions: store.sessions, tasks: store.tasks, logs: store.logs, goals: store.goals, entries: store.entries, bornAt: store.student?.born_at }, Date.now(), FRAMES);
   const still = reducedMotion();
   const canvas = el("canvas", { class: "timelapse-world", "aria-hidden": "true" });
   const date = el("p", { class: "timelapse-date num" });

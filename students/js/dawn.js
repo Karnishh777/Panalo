@@ -63,7 +63,7 @@ export async function maybeDawn({ quiet = false } = {}) {
 function play({ since, now }) {
   return new Promise((resolve) => {
     const still = reducedMotion();
-    const w = buildWorld({ sessions: store.sessions, tasks: store.tasks, logs: store.logs, goals: store.goals, sentMessages: store.sent, entries: store.entries, bornAt: store.student?.born_at, now });
+    const w = buildWorld({ sessions: store.sessions, tasks: store.tasks, logs: store.logs, goals: store.goals, entries: store.entries, bornAt: store.student?.born_at, now });
     const part = dayPart(now);
     const n = dayNumber(store.student?.born_at, now);
     const name = store.student?.world_name || "your world";

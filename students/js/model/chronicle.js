@@ -85,7 +85,7 @@ export function chronicle({ sessions = [], tasks = [], logs = [], entries = [], 
 }
 
 /** Your history as it stood at `at`: the world you had then. */
-export function worldAt({ sessions = [], tasks = [], logs = [], goals = [], entries = [], sentMessages = [], bornAt = null }, at) {
+export function worldAt({ sessions = [], tasks = [], logs = [], goals = [], entries = [], bornAt = null }, at) {
   const before = (iso) => {
     const t = Date.parse(iso);
     return Number.isFinite(t) && t < at;
@@ -97,7 +97,6 @@ export function worldAt({ sessions = [], tasks = [], logs = [], goals = [], entr
     logs: logs.filter((l) => l.occurred_on < dayBefore),
     goals: goals.filter((g) => !g.created_at || before(g.created_at)).map((g) => (g.done_at && !before(g.done_at) ? { ...g, done_at: null } : g)),
     entries: entries.filter((e) => e.day < dayBefore),
-    sentMessages: sentMessages.filter((m) => before(m.created_at)),
     bornAt,
     now: at,
   });
