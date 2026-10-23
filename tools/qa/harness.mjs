@@ -77,7 +77,7 @@ export async function launch({ headless = true } = {}) {
   const base = `http://127.0.0.1:${server.address().port}/`;
   const browser = await chromium.launch({ headless });
 
-  async function open({ viewport = "desktop", colorScheme = "light", reducedMotion = "no-preference", qa = {}, path: p = "", storage = null } = {}) {
+  async function open({ viewport = "desktop", colorScheme = "light", reducedMotion = "no-preference", qa = {}, path: p = "", storage = null, serviceWorkers = "block" } = {}) {
     const vp = VIEWPORTS[viewport] || viewport;
     const context = await browser.newContext({
       viewport: vp,
@@ -86,7 +86,7 @@ export async function launch({ headless = true } = {}) {
       hasTouch: vp.width < 900,
       isMobile: vp.width < 600,
       deviceScaleFactor: 1,
-      serviceWorkers: "block",
+      serviceWorkers,
     });
     await context.addInitScript((cfg) => {
       window.__PANALO_QA__ = cfg;

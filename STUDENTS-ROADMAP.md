@@ -127,13 +127,13 @@ suite below runs on every pull request (`.github/workflows/tests.yml`).
   Postgres, the `supabase-all.sql` check and both browser suites run on
   every pull request.
 - **Migration history fixed**: phases 22–26 recorded in Supabase.
-- **Students starts offline**: the service worker now covers `/students/`,
-  its fonts and its CDN libraries.
-- **The landing froze on some Macs**: the GPU globe outran the GPU and
-  stalled the whole page (the scroll counter stuck at 000 %, sections
-  blank). The globe now watches its own frame rate and steps down (fewer
-  pixels, no glow, then the 2D globe), swaps to 2D if the GPU gives out,
-  and the landing's ribbons and petals follow *Lively effects*.
+- **Offline start, tried and withdrawn.** Registering the service worker
+  for Students broke every reload: the site's CSP applies to the worker,
+  so its fetch of the Supabase library from the CDN was refused and the
+  page started with nothing (no globe, no stars, scroll counter stuck at
+  000 %). The worker is back to Panalo's own files only and Students no
+  longer registers it; a browser reload test now runs in CI with the
+  worker on. The landing's ribbons and petals now follow *Lively effects*.
 - **Leaked-password protection**: Supabase's switch needs the Pro plan, so
   it stays off; the app's own check (Have I Been Pwned, k-anonymity) covers
   sign-up and every password change. Only direct API calls skip it.
@@ -205,7 +205,7 @@ An honest look at the process, by the agent that did most of the work.
 | 4 | Calls without TURN | Calls fail on many mobile networks | Turn on a TURN relay (Cloudflare Calls TURN or Twilio) |
 | 5 | Students has no push | No reminders when the app is closed | Web Push for focus end, deadlines and messages (needs VAPID keys and a sender) |
 | 6 | Supabase leaked-password protection is off | Its switch needs the Pro plan; direct API calls skip the app's own check | Keep the app's check; turn the switch on if the project moves to Pro |
-| 7 | Fonts and the QR library from CDNs | A CDN failure before the first visit degrades the look | Now cached by the service worker; self-host the default look's fonts later |
+| 7 | Fonts and the QR library from CDNs | A CDN failure degrades the look | Self-host the fonts the default look uses |
 | 8 | Accessibility not audited by a person | Screen-reader and keyboard paths were tested by script only | One session with NVDA/VoiceOver; fix what it finds |
 | 9 | Tests run against a mock | CI can't prove the live project's RLS or realtime | A nightly sign-in check against a staging project |
 | 10 | English only | Many students in India learn in Hindi, Tamil and others | Extract strings; Hindi first |
@@ -214,7 +214,7 @@ An honest look at the process, by the agent that did most of the work.
 
 ## 5. Planned next (the committed backlog)
 
-Done this round: CI, migrations 22–26 recorded, offline start,
+Done this round: CI, migrations 22–26 recorded,
 LIMITATIONS refreshed, calm by default and the focus shield.
 
 1. **The logo** (asked for earlier: "we can do next").
@@ -278,7 +278,7 @@ protected; the Study Room quiet.
 
 | When | Theme | Items | Done when |
 | --- | --- | --- | --- |
-| **Done** (this week) | Clean up and focus | CI; migrations 22–26 recorded; LIMITATIONS refreshed; calm by default; next step on Now; focus shield; offline start | Every PR runs all suites automatically; nothing moves or interrupts unless asked |
+| **Done** (this week) | Clean up and focus | CI; migrations 22–26 recorded; LIMITATIONS refreshed; calm by default; next step on Now; focus shield | Every PR runs all suites automatically; nothing moves or interrupts unless asked |
 | **Next** (2–4 weeks) | Identity and reach | Logo and app icon; Web Push (opt-in); installable PWA | A focus-end notification arrives with the tab closed |
 | **Next** | Learning | Flashcards with spaced repetition; exam planner | A student can plan an exam and review cards from Now |
 | **Then** (1–2 months) | Together | Study rooms with presence; accountability pairs; places with notes and time zones | Two friends can focus together in a room and see each other's intention |
