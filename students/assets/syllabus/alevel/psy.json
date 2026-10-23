@@ -1,0 +1,67 @@
+{
+  "subject": "psy",
+  "name": "Psychology",
+  "board": "Cambridge International AS & A Level",
+  "code": "9990",
+  "topics": [
+    {
+      "id": "1", "stage": "as", "name": "Research methods",
+      "questions": [
+        { "q": "In an experiment, the variable the researcher changes is the…", "o": ["dependent variable", "independent variable", "extraneous variable", "controlled variable"], "a": 1, "why": "The DV is what is measured." },
+        { "q": "An independent measures design…", "o": ["uses the same participants in every condition", "uses different participants in each condition", "matches pairs", "has no conditions"], "a": 1, "why": "It avoids order effects but participant variables may differ." },
+        { "q": "Ecological validity is about…", "o": ["whether findings apply to real-life settings", "the sample size", "ethics", "inter-rater reliability"], "a": 0, "why": "Lab settings can be artificial, reducing ecological validity." },
+        { "q": "Which ethical guideline lets participants leave a study at any time?", "o": ["Debriefing", "Right to withdraw", "Confidentiality", "Deception"], "a": 1, "why": "Participants must be told they can withdraw themselves and their data." }
+      ]
+    },
+    {
+      "id": "2", "stage": "as", "name": "Biological approach",
+      "questions": [
+        { "q": "The biological approach explains behaviour mainly through…", "o": ["childhood experiences", "genes, hormones and the brain", "rewards and punishments", "social roles"], "a": 1, "why": "Its core studies examine brain activity, hormones and physiology." },
+        { "q": "A strength of brain scanning studies is that they…", "o": ["are cheap", "give objective, quantitative data", "always have high ecological validity", "have no ethical issues"], "a": 1, "why": "Scans measure activity directly, though tasks may be artificial." }
+      ]
+    },
+    {
+      "id": "3", "stage": "as", "name": "Cognitive approach",
+      "questions": [
+        { "q": "The cognitive approach studies…", "o": ["unconscious drives", "internal mental processes such as memory and perception", "only observable behaviour", "hormones"], "a": 1, "why": "It often uses lab experiments to infer mental processes." }
+      ]
+    },
+    {
+      "id": "4", "stage": "as", "name": "Learning approach",
+      "questions": [
+        { "q": "In operant conditioning, behaviour followed by a reward is…", "o": ["less likely to recur", "more likely to recur", "forgotten", "punished"], "a": 1, "why": "Positive reinforcement strengthens behaviour." },
+        { "q": "Learning by watching others is called…", "o": ["classical conditioning", "social learning (observational learning)", "habituation", "insight"], "a": 1, "why": "Bandura's work showed children imitate modelled behaviour." }
+      ]
+    },
+    {
+      "id": "5", "stage": "as", "name": "Social approach",
+      "questions": [
+        { "q": "Obedience research studies how people respond to…", "o": ["peers", "orders from an authority figure", "their own thoughts", "rewards"], "a": 1, "why": "Milgram-type studies tested obedience to authority." }
+      ]
+    },
+    {
+      "id": "6", "stage": "a2", "name": "Clinical psychology",
+      "questions": [
+        { "q": "Cognitive behavioural therapy (CBT) works by…", "o": ["changing unhelpful thoughts and behaviours", "medication only", "free association", "brain surgery"], "a": 0, "why": "It targets the link between thinking, feeling and behaviour." }
+      ]
+    },
+    {
+      "id": "7", "stage": "a2", "name": "Consumer psychology",
+      "questions": [
+        { "q": "Choice overload suggests that too many options…", "o": ["always increase sales", "can make people less likely to choose at all", "have no effect", "improve satisfaction always"], "a": 1, "why": "Studies of jam displays found fewer purchases with more options." }
+      ]
+    },
+    {
+      "id": "8", "stage": "a2", "name": "Health psychology",
+      "questions": [
+        { "q": "Adherence to medical advice means…", "o": ["the doctor's diagnosis", "the patient following the treatment as advised", "side effects", "a placebo"], "a": 1, "why": "Non-adherence is a major health problem." }
+      ]
+    },
+    {
+      "id": "9", "stage": "a2", "name": "Organisational psychology",
+      "questions": [
+        { "q": "Which theory says workers are motivated by the expected value of rewards?", "o": ["Expectancy theory", "Maslow's hierarchy", "Classical conditioning", "Social identity theory"], "a": 0, "why": "Motivation = expectancy × instrumentality × valence (Vroom)." }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,59 @@
+{
+  "subject": "acc",
+  "name": "Accounting",
+  "board": "Cambridge International AS & A Level",
+  "code": "9706",
+  "topics": [
+    {
+      "id": "1", "stage": "as", "name": "Financial accounting: the double-entry system and verification",
+      "questions": [
+        { "q": "Which error causes the trial balance not to agree?", "o": ["Error of omission", "Error of original entry", "Transposition in one ledger account only", "Compensating error"], "a": 2, "why": "A one-sided error makes total debits differ from total credits." },
+        { "q": "A suspense account is opened when…", "o": ["profit is too high", "the trial balance does not agree", "a supplier is paid", "inventory is valued"], "a": 1, "why": "The difference is held temporarily until errors are found and corrected." },
+        { "q": "A sales ledger control account helps to…", "o": ["calculate depreciation", "check the accuracy of individual customer accounts", "record cash sales", "value inventory"], "a": 1, "why": "Its balance should equal the total of the customer (trade receivables) accounts." }
+      ]
+    },
+    {
+      "id": "2", "stage": "as", "name": "Financial accounting: adjustments and financial statements",
+      "questions": [
+        { "q": "Inventory should be valued at…", "o": ["selling price", "the lower of cost and net realisable value", "replacement cost", "the higher of cost and NRV"], "a": 1, "why": "IAS 2 and the prudence principle." },
+        { "q": "Reducing-balance depreciation charges…", "o": ["the same amount each year", "more in early years, less later", "nothing in the first year", "more in later years"], "a": 1, "why": "A fixed percentage is applied to the falling carrying value." },
+        { "q": "Accrued expenses at year end are shown as…", "o": ["a current asset", "a current liability", "income", "a non-current asset"], "a": 1, "why": "Money is owed for expenses already incurred." }
+      ]
+    },
+    {
+      "id": "3", "stage": "as", "name": "Financial accounting: partnerships and limited companies",
+      "questions": [
+        { "q": "If a partnership agreement is silent, profits are shared…", "o": ["by capital invested", "equally", "by hours worked", "by seniority"], "a": 1, "why": "Default rules apply when there is no agreement." },
+        { "q": "Share premium arises when shares are issued…", "o": ["below nominal value", "above nominal value", "at nominal value", "as a bonus issue"], "a": 1, "why": "The excess over nominal value goes to the share premium account." }
+      ]
+    },
+    {
+      "id": "4", "stage": "as", "name": "Financial accounting: analysis and interpretation",
+      "questions": [
+        { "q": "Trade receivables turnover in days is…", "o": ["trade receivables ÷ credit sales × 365", "credit sales ÷ receivables", "receivables ÷ payables", "cash ÷ sales × 365"], "a": 0, "why": "It shows how long customers take to pay." },
+        { "q": "Gearing measures…", "o": ["profitability", "the proportion of capital financed by long-term debt", "liquidity", "efficiency"], "a": 1, "why": "Highly geared businesses carry more financial risk." }
+      ]
+    },
+    {
+      "id": "5", "stage": "as", "name": "Cost and management accounting",
+      "questions": [
+        { "q": "Contribution per unit is…", "o": ["selling price − fixed cost per unit", "selling price − variable cost per unit", "profit ÷ units", "fixed costs ÷ units"], "a": 1, "why": "Contribution covers fixed costs, then gives profit." },
+        { "q": "In absorption costing, overheads are absorbed using…", "o": ["a predetermined overhead absorption rate", "the selling price", "contribution", "cash flow"], "a": 0, "why": "For example, per direct labour hour or machine hour." }
+      ]
+    },
+    {
+      "id": "6", "stage": "a2", "name": "Financial accounting (A Level)",
+      "questions": [
+        { "q": "A statement of cash flows classifies cash flows under…", "o": ["operating, investing and financing activities", "revenue and capital", "assets and liabilities", "fixed and variable"], "a": 0, "why": "IAS 7 uses these three headings." },
+        { "q": "Goodwill arises when…", "o": ["a business is bought for more than the fair value of its net assets", "profits rise", "shares are issued", "assets are revalued"], "a": 0, "why": "It reflects reputation, customers and other unrecorded value." }
+      ]
+    },
+    {
+      "id": "7", "stage": "a2", "name": "Cost and management accounting (A Level)",
+      "questions": [
+        { "q": "A favourable materials price variance means…", "o": ["materials cost more than standard", "materials cost less than standard", "more materials were used", "sales rose"], "a": 1, "why": "Actual price below standard price saves money." },
+        { "q": "A project's NPV is positive. This means…", "o": ["it should be rejected", "it earns more than the cost of capital", "it pays back in one year", "its IRR is zero"], "a": 1, "why": "Discounted inflows exceed outflows at the chosen rate." }
+      ]
+    }
+  ]
+}

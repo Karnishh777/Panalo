@@ -1,0 +1,133 @@
+{
+  "subject": "chem",
+  "name": "Chemistry",
+  "board": "Cambridge IGCSE",
+  "code": "0620",
+  "topics": [
+    {
+      "id": "1",
+      "name": "States of matter",
+      "questions": [
+        { "q": "What is the change from gas to liquid called?", "o": ["Melting", "Condensation", "Sublimation", "Evaporation"], "a": 1, "why": "Condensation is a gas turning into a liquid as it cools." },
+        { "q": "Which gas diffuses fastest at the same temperature?", "o": ["Chlorine (Mr 71)", "Carbon dioxide (Mr 44)", "Ammonia (Mr 17)", "Oxygen (Mr 32)"], "a": 2, "why": "Lighter molecules move faster on average, so the gas with the lowest Mr diffuses fastest." },
+        { "q": "A substance melts at −7 °C and boils at 59 °C. What state is it at 25 °C?", "o": ["Solid", "Liquid", "Gas", "It cannot be told"], "a": 1, "why": "25 °C is above its melting point and below its boiling point." }
+      ]
+    },
+    {
+      "id": "2",
+      "name": "Atoms, elements and compounds",
+      "questions": [
+        { "q": "An atom of sodium has 11 protons and 12 neutrons. What is its nucleon (mass) number?", "o": ["1", "11", "12", "23"], "a": 3, "why": "Nucleon number = protons + neutrons = 11 + 12 = 23." },
+        { "q": "What is the electronic configuration of chlorine (proton number 17)?", "o": ["2,8,7", "2,8,8", "2,7,8", "8,8,1"], "a": 0, "why": "Shells fill 2, then 8, then the remaining 7." },
+        { "q": "What type of bonding is in sodium chloride?", "o": ["Covalent", "Ionic", "Metallic", "Hydrogen"], "a": 1, "why": "Electrons transfer from sodium to chlorine, forming Na⁺ and Cl⁻ ions held by electrostatic attraction." },
+        { "q": "Why does graphite conduct electricity?", "o": ["It is a metal", "Each carbon has one delocalised electron that can move", "It contains ions", "It is soft"], "a": 1, "why": "Each carbon bonds to three others, leaving one electron free to move between the layers." },
+        { "q": "Why do simple molecular substances have low melting points?", "o": ["Their covalent bonds are weak", "The forces between molecules are weak", "They contain ions", "They have no electrons"], "a": 1, "why": "Melting overcomes the weak intermolecular forces, not the strong covalent bonds inside molecules." }
+      ]
+    },
+    {
+      "id": "3",
+      "name": "Stoichiometry",
+      "questions": [
+        { "q": "What is the relative formula mass of CO₂? (C = 12, O = 16)", "o": ["28", "32", "44", "60"], "a": 2, "why": "12 + 2 × 16 = 44." },
+        { "q": "How many moles are in 36 g of water? (Mr = 18)", "o": ["0.5", "2", "18", "648"], "a": 1, "why": "moles = mass ÷ Mr = 36 ÷ 18 = 2." },
+        { "q": "What volume does 0.5 mol of any gas occupy at room temperature and pressure? (molar volume 24 dm³)", "o": ["6 dm³", "12 dm³", "24 dm³", "48 dm³"], "a": 1, "why": "0.5 × 24 = 12 dm³." },
+        { "q": "25.0 cm³ of 0.100 mol/dm³ NaOH is neutralised. How many moles of NaOH are there?", "o": ["0.00250", "0.0250", "0.250", "2.50"], "a": 0, "why": "moles = concentration × volume in dm³ = 0.100 × 0.0250 = 0.00250." },
+        { "q": "Which is the balanced equation for magnesium burning?", "o": ["Mg + O₂ → MgO", "2Mg + O₂ → 2MgO", "Mg + O → MgO₂", "2Mg + 2O₂ → 2MgO"], "a": 1, "why": "Two Mg and two O on each side." }
+      ]
+    },
+    {
+      "id": "4",
+      "name": "Electrochemistry",
+      "questions": [
+        { "q": "In electrolysis, what forms at the cathode when molten lead(II) bromide is electrolysed?", "o": ["Bromine", "Lead", "Oxygen", "Hydrogen"], "a": 1, "why": "Positive Pb²⁺ ions go to the negative cathode and gain electrons to form lead." },
+        { "q": "Why must ionic compounds be molten or dissolved to be electrolysed?", "o": ["So they get hot", "So the ions are free to move", "So electrons can move through them", "So they react with water"], "a": 1, "why": "In a solid the ions are fixed; they must be free to move to carry the current." },
+        { "q": "In the electrolysis of concentrated aqueous sodium chloride, what forms at the anode?", "o": ["Sodium", "Oxygen", "Chlorine", "Hydrogen"], "a": 2, "why": "With concentrated chloride, chloride ions are discharged at the anode as chlorine." },
+        { "q": "In a hydrogen–oxygen fuel cell, what is the only product?", "o": ["Carbon dioxide", "Water", "Hydrogen peroxide", "Methane"], "a": 1, "why": "Hydrogen and oxygen combine to form water, releasing electrical energy." }
+      ]
+    },
+    {
+      "id": "5",
+      "name": "Chemical energetics",
+      "questions": [
+        { "q": "In an exothermic reaction, the temperature of the surroundings…", "o": ["falls", "rises", "stays the same", "drops to zero"], "a": 1, "why": "Exothermic reactions transfer thermal energy to the surroundings." },
+        { "q": "Bond breaking is…", "o": ["exothermic", "endothermic", "neither", "always fast"], "a": 1, "why": "Energy must be taken in to break bonds; making bonds releases energy." },
+        { "q": "A reaction has ΔH = −90 kJ/mol. It is…", "o": ["endothermic", "exothermic", "reversible only", "not a chemical reaction"], "a": 1, "why": "A negative ΔH means energy is released to the surroundings." }
+      ]
+    },
+    {
+      "id": "6",
+      "name": "Chemical reactions",
+      "questions": [
+        { "q": "Which change increases the rate of a reaction between marble chips and acid?", "o": ["Using larger chips", "Cooling the acid", "Using powdered marble", "Diluting the acid"], "a": 2, "why": "Powder has a larger surface area, giving more frequent collisions." },
+        { "q": "What does a catalyst do?", "o": ["It is used up in the reaction", "It increases the rate without being used up", "It increases the yield", "It raises the activation energy"], "a": 1, "why": "A catalyst provides a route with lower activation energy and is unchanged at the end." },
+        { "q": "In the Haber process, what is made?", "o": ["Sulfuric acid", "Ammonia", "Nitric acid", "Methanol"], "a": 1, "why": "N₂ + 3H₂ ⇌ 2NH₃, using an iron catalyst." },
+        { "q": "Oxidation is…", "o": ["gain of electrons", "loss of electrons", "gain of hydrogen", "loss of oxygen"], "a": 1, "why": "OIL RIG: oxidation is loss of electrons, reduction is gain." },
+        { "q": "For an equilibrium, increasing the pressure shifts the position towards…", "o": ["the side with more moles of gas", "the side with fewer moles of gas", "neither side", "the reactants always"], "a": 1, "why": "The equilibrium shifts to reduce the pressure, towards fewer gas molecules." }
+      ]
+    },
+    {
+      "id": "7",
+      "name": "Acids, bases and salts",
+      "questions": [
+        { "q": "What is the pH of a neutral solution at 25 °C?", "o": ["0", "1", "7", "14"], "a": 2, "why": "pH 7 is neutral; below is acidic, above is alkaline." },
+        { "q": "Which ion is present in all acidic solutions?", "o": ["OH⁻", "H⁺", "Na⁺", "Cl⁻"], "a": 1, "why": "Acids release hydrogen ions in water." },
+        { "q": "Acid + metal carbonate gives a salt, water and…", "o": ["hydrogen", "oxygen", "carbon dioxide", "chlorine"], "a": 2, "why": "Carbonates fizz with acids, releasing carbon dioxide." },
+        { "q": "Which salt is insoluble in water?", "o": ["Sodium chloride", "Potassium nitrate", "Barium sulfate", "Ammonium chloride"], "a": 2, "why": "Most sulfates dissolve, but barium, calcium and lead sulfates don't." },
+        { "q": "How is an insoluble salt made?", "o": ["Titration", "Precipitation from two solutions", "Adding excess metal", "Evaporating seawater"], "a": 1, "why": "Mixing two soluble salts that swap ions forms the insoluble salt as a precipitate." }
+      ]
+    },
+    {
+      "id": "8",
+      "name": "The Periodic Table",
+      "questions": [
+        { "q": "Group 1 metals become more reactive down the group because…", "o": ["they have fewer electrons", "the outer electron is further from the nucleus and lost more easily", "they are lighter", "they have more protons attracting the electron"], "a": 1, "why": "Shielding and distance make the single outer electron easier to lose." },
+        { "q": "Which halogen is a dark grey solid at room temperature?", "o": ["Fluorine", "Chlorine", "Bromine", "Iodine"], "a": 3, "why": "Iodine is a grey-black solid; chlorine is a gas and bromine a red-brown liquid." },
+        { "q": "Chlorine is bubbled into potassium bromide solution. What happens?", "o": ["Nothing", "Bromine is displaced and the solution turns orange", "Chlorine is displaced", "A white precipitate forms"], "a": 1, "why": "A more reactive halogen displaces a less reactive one from its salts." },
+        { "q": "Why are the noble gases unreactive?", "o": ["They are gases", "They have full outer shells of electrons", "They are very dense", "They have no electrons"], "a": 1, "why": "A full outer shell is stable, so they don't need to gain, lose or share electrons." },
+        { "q": "Elements in the same group have the same number of…", "o": ["shells", "outer-shell electrons", "neutrons", "protons"], "a": 1, "why": "The group number (for groups 1 to 7) is the number of outer electrons." }
+      ]
+    },
+    {
+      "id": "9",
+      "name": "Metals",
+      "questions": [
+        { "q": "Which metal is extracted from its ore by electrolysis, not by carbon?", "o": ["Iron", "Zinc", "Aluminium", "Copper"], "a": 2, "why": "Aluminium is more reactive than carbon, so it is extracted by electrolysis of molten aluminium oxide." },
+        { "q": "Why are alloys often harder than pure metals?", "o": ["They contain more electrons", "Different-sized atoms disrupt the layers so they can't slide easily", "They are denser", "They are ionic"], "a": 1, "why": "Atoms of a different size stop the layers sliding over one another." },
+        { "q": "What two things are needed for iron to rust?", "o": ["Oxygen and water", "Carbon dioxide and water", "Oxygen and salt", "Heat and water"], "a": 0, "why": "Rusting needs both oxygen (air) and water." },
+        { "q": "Galvanising protects iron by coating it with…", "o": ["copper", "zinc", "paint", "tin"], "a": 1, "why": "Zinc is more reactive and corrodes in place of the iron (sacrificial protection)." }
+      ]
+    },
+    {
+      "id": "10",
+      "name": "Chemistry of the environment",
+      "questions": [
+        { "q": "Which gas from car engines causes acid rain?", "o": ["Carbon dioxide", "Nitrogen oxides", "Methane", "Argon"], "a": 1, "why": "Nitrogen oxides (and sulfur dioxide) dissolve in rain to form acids." },
+        { "q": "What is the main gas in clean dry air?", "o": ["Oxygen", "Carbon dioxide", "Nitrogen", "Argon"], "a": 2, "why": "Air is about 78% nitrogen and 21% oxygen." },
+        { "q": "Which two gases are greenhouse gases?", "o": ["Oxygen and nitrogen", "Carbon dioxide and methane", "Argon and helium", "Hydrogen and oxygen"], "a": 1, "why": "Carbon dioxide and methane absorb and re-emit infrared radiation." },
+        { "q": "Why is chlorine added to drinking water?", "o": ["To improve taste", "To kill microbes", "To remove salt", "To make it softer"], "a": 1, "why": "Chlorine kills bacteria in water treatment." }
+      ]
+    },
+    {
+      "id": "11",
+      "name": "Organic chemistry",
+      "questions": [
+        { "q": "What is the general formula of the alkanes?", "o": ["CₙH₂ₙ", "CₙH₂ₙ₊₂", "CₙH₂ₙ₊₁OH", "CₙH₂ₙ₋₂"], "a": 1, "why": "Alkanes are saturated: CₙH₂ₙ₊₂, e.g. methane CH₄." },
+        { "q": "Which test shows a compound is unsaturated?", "o": ["Limewater turns milky", "Bromine water turns from orange to colourless", "A lit splint pops", "Litmus turns red"], "a": 1, "why": "Alkenes add across the C=C double bond, decolourising bromine water." },
+        { "q": "What is the main use of fractional distillation of petroleum?", "o": ["To make it purer", "To separate it into fractions with different boiling ranges", "To crack long molecules", "To make plastics directly"], "a": 1, "why": "Fractions condense at different heights of the column according to boiling range." },
+        { "q": "Ethanol can be made by fermentation of…", "o": ["ethene", "glucose using yeast", "methane", "crude oil"], "a": 1, "why": "Yeast converts glucose to ethanol and carbon dioxide, around 25–35 °C, without oxygen." },
+        { "q": "What type of polymerisation makes poly(ethene)?", "o": ["Condensation", "Addition", "Fermentation", "Cracking"], "a": 1, "why": "Ethene molecules add together by opening their double bonds; nothing else is formed." }
+      ]
+    },
+    {
+      "id": "12",
+      "name": "Experimental techniques and chemical analysis",
+      "questions": [
+        { "q": "In chromatography, how is the Rf value worked out?", "o": ["distance moved by solvent ÷ distance moved by spot", "distance moved by spot ÷ distance moved by solvent", "spot distance × solvent distance", "solvent distance − spot distance"], "a": 1, "why": "Rf = distance travelled by the substance ÷ distance travelled by the solvent front." },
+        { "q": "How would you separate salt from salt solution?", "o": ["Filtration", "Crystallisation (evaporation)", "Chromatography", "Fractional distillation"], "a": 1, "why": "Evaporating the water leaves the salt crystals behind." },
+        { "q": "Which gas turns limewater milky?", "o": ["Oxygen", "Hydrogen", "Carbon dioxide", "Ammonia"], "a": 2, "why": "CO₂ forms insoluble calcium carbonate with limewater." },
+        { "q": "A flame test gives a lilac flame. Which ion is present?", "o": ["Na⁺", "K⁺", "Li⁺", "Ca²⁺"], "a": 1, "why": "Potassium gives lilac; sodium yellow, lithium red, calcium orange-red." },
+        { "q": "Adding aqueous sodium hydroxide gives a light blue precipitate. Which ion?", "o": ["Fe²⁺", "Fe³⁺", "Cu²⁺", "Zn²⁺"], "a": 2, "why": "Copper(II) hydroxide is light blue; iron(II) is green and iron(III) red-brown." }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,52 @@
+{
+  "subject": "bus",
+  "name": "Business",
+  "board": "Cambridge International AS & A Level",
+  "code": "9609",
+  "topics": [
+    {
+      "id": "1", "stage": "as", "name": "Business and its environment",
+      "questions": [
+        { "q": "Added value is…", "o": ["the price minus the cost of bought-in materials", "total profit", "revenue minus all costs", "the cost of labour"], "a": 0, "why": "It measures what the business adds to its inputs." },
+        { "q": "A social enterprise…", "o": ["aims only to maximise profit", "has social or environmental aims and reinvests profit to meet them", "is owned by the government", "can't make a profit"], "a": 1, "why": "It can make profits but uses them for its social purpose." },
+        { "q": "Which is an internal stakeholder?", "o": ["Customers", "Employees", "Suppliers", "The government"], "a": 1, "why": "Internal stakeholders are within the organisation: employees, managers, owners." }
+      ]
+    },
+    {
+      "id": "2", "stage": "as", "name": "Human resource management",
+      "questions": [
+        { "q": "Herzberg's hygiene factors…", "o": ["motivate when present", "cause dissatisfaction if absent but don't motivate", "are about achievement", "are financial only"], "a": 1, "why": "Motivators include recognition, responsibility and achievement." },
+        { "q": "Labour turnover is…", "o": ["the number of workers", "the percentage of staff leaving in a period", "output per worker", "wages ÷ hours"], "a": 1, "why": "(Number leaving ÷ average number employed) × 100." }
+      ]
+    },
+    {
+      "id": "3", "stage": "as", "name": "Marketing",
+      "questions": [
+        { "q": "In the product life cycle, sales grow fastest during…", "o": ["introduction", "growth", "maturity", "decline"], "a": 1, "why": "Sales rise rapidly as the product gains acceptance." },
+        { "q": "Market segmentation means…", "o": ["selling everywhere", "dividing a market into groups of customers with similar needs", "cutting prices", "merging with a rival"], "a": 1, "why": "Segments can be based on age, income, location or lifestyle." }
+      ]
+    },
+    {
+      "id": "4", "stage": "as", "name": "Operations management",
+      "questions": [
+        { "q": "Capacity utilisation is…", "o": ["actual output ÷ maximum possible output × 100", "costs ÷ revenue", "output per worker", "inventory ÷ sales"], "a": 0, "why": "High utilisation spreads fixed costs; very high leaves no slack." },
+        { "q": "Just-in-time inventory management aims to…", "o": ["hold large buffer stocks", "receive inputs only as they are needed", "produce in bulk", "avoid suppliers"], "a": 1, "why": "It cuts storage costs but depends on reliable suppliers." }
+      ]
+    },
+    {
+      "id": "5", "stage": "as", "name": "Finance and accounting",
+      "questions": [
+        { "q": "Working capital is…", "o": ["current assets − current liabilities", "total assets", "profit after tax", "share capital"], "a": 0, "why": "It funds day-to-day operations." },
+        { "q": "Profit and cash differ because…", "o": ["they are always equal", "sales on credit count as revenue before cash is received", "cash includes loans only", "profit is measured in cash"], "a": 1, "why": "Timing differences mean a profitable business can run out of cash." }
+      ]
+    },
+    {
+      "id": "6", "stage": "a2", "name": "Business strategy",
+      "questions": [
+        { "q": "A SWOT analysis looks at…", "o": ["strengths, weaknesses, opportunities, threats", "sales, wages, output, tax", "only external factors", "only finance"], "a": 0, "why": "Strengths and weaknesses are internal; opportunities and threats external." },
+        { "q": "Ansoff's matrix: selling new products in new markets is…", "o": ["market penetration", "product development", "market development", "diversification"], "a": 3, "why": "It is the riskiest strategy." },
+        { "q": "Investment appraisal: net present value accounts for…", "o": ["the time value of money", "only the payback period", "only accounting profit", "inflation alone"], "a": 0, "why": "Future cash flows are discounted to present values." }
+      ]
+    }
+  ]
+}

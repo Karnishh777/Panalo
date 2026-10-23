@@ -1,0 +1,205 @@
+{
+  "subject": "phy",
+  "name": "Physics",
+  "board": "Cambridge International AS & A Level",
+  "code": "9702",
+  "topics": [
+    {
+      "id": "1", "stage": "as", "name": "Physical quantities and units",
+      "questions": [
+        { "q": "What are the SI base units of force?", "o": ["kg m s⁻¹", "kg m s⁻²", "kg m² s⁻²", "kg m⁻¹ s⁻²"], "a": 1, "why": "F = ma, so N = kg × m s⁻²." },
+        { "q": "A length is measured as 2.50 ± 0.05 m. What is the percentage uncertainty?", "o": ["0.05%", "1%", "2%", "5%"], "a": 2, "why": "0.05 ÷ 2.50 × 100 = 2%." },
+        { "q": "Which pair contains one scalar and one vector?", "o": ["Speed and mass", "Velocity and acceleration", "Work and momentum", "Force and displacement"], "a": 2, "why": "Work is a scalar; momentum is a vector." },
+        { "q": "When two quantities are multiplied, their percentage uncertainties are…", "o": ["multiplied", "added", "subtracted", "averaged"], "a": 1, "why": "For products and quotients, add the percentage uncertainties." }
+      ]
+    },
+    {
+      "id": "2", "stage": "as", "name": "Kinematics",
+      "questions": [
+        { "q": "A car accelerates uniformly from rest at 2.0 m s⁻² for 5.0 s. How far does it go?", "o": ["10 m", "20 m", "25 m", "50 m"], "a": 2, "why": "s = ut + ½at² = 0 + ½ × 2.0 × 25 = 25 m." },
+        { "q": "A ball is thrown horizontally off a cliff. Ignoring air resistance, its horizontal velocity…", "o": ["increases", "decreases", "stays constant", "becomes zero"], "a": 2, "why": "No horizontal force acts, so horizontal velocity is constant; only the vertical velocity changes." },
+        { "q": "The gradient of a displacement–time graph gives…", "o": ["acceleration", "velocity", "displacement", "force"], "a": 1, "why": "Velocity = rate of change of displacement." },
+        { "q": "An object is dropped from rest. How fast is it moving after falling 20 m? (g = 9.81 m s⁻²)", "o": ["14 m s⁻¹", "20 m s⁻¹", "196 m s⁻¹", "9.8 m s⁻¹"], "a": 1, "why": "v² = u² + 2as = 2 × 9.81 × 20 ≈ 392, so v ≈ 19.8 ≈ 20 m s⁻¹." }
+      ]
+    },
+    {
+      "id": "3", "stage": "as", "name": "Dynamics",
+      "questions": [
+        { "q": "A 0.50 kg ball hits a wall at 6.0 m s⁻¹ and rebounds at 4.0 m s⁻¹. What is the change in momentum?", "o": ["1.0 N s", "2.0 N s", "3.0 N s", "5.0 N s"], "a": 3, "why": "Δp = 0.50 × (4.0 − (−6.0)) = 5.0 N s, as the direction reverses." },
+        { "q": "In a perfectly elastic collision, what is conserved besides momentum?", "o": ["Velocity", "Kinetic energy", "Force", "Nothing else"], "a": 1, "why": "Elastic means total kinetic energy is conserved; the relative speed of approach equals that of separation." },
+        { "q": "Newton's second law states that resultant force equals…", "o": ["mass × velocity", "the rate of change of momentum", "weight × height", "impulse × time"], "a": 1, "why": "F = Δp/Δt, which becomes F = ma for constant mass." },
+        { "q": "The pairs in Newton's third law act on…", "o": ["the same object", "different objects", "only stationary objects", "only in collisions"], "a": 1, "why": "Third-law pairs are equal and opposite and act on different bodies." }
+      ]
+    },
+    {
+      "id": "4", "stage": "as", "name": "Forces, density and pressure",
+      "questions": [
+        { "q": "For an object in equilibrium, which is true?", "o": ["The resultant force is zero only", "The resultant moment is zero only", "Both the resultant force and the resultant moment are zero", "It must be at rest"], "a": 2, "why": "Equilibrium needs no resultant force and no resultant torque." },
+        { "q": "What is upthrust on a submerged object equal to?", "o": ["Its weight", "The weight of fluid displaced", "Its mass × g", "Pressure × its height"], "a": 1, "why": "Archimedes' principle; it comes from the pressure difference across the object (ρgV)." },
+        { "q": "The torque of a couple equals…", "o": ["one force × the perpendicular distance between the forces", "the sum of the forces", "force × time", "zero"], "a": 0, "why": "Two equal, opposite, parallel forces produce a torque F × d." }
+      ]
+    },
+    {
+      "id": "5", "stage": "as", "name": "Work, energy and power",
+      "questions": [
+        { "q": "A motor lifts a 20 kg load 3.0 m in 4.0 s. What is its useful power output? (g = 9.81)", "o": ["15 W", "60 W", "147 W", "589 W"], "a": 2, "why": "P = mgh/t = 20 × 9.81 × 3.0 ÷ 4.0 ≈ 147 W." },
+        { "q": "Power can also be written as…", "o": ["Fv", "Fs", "mv", "½mv"], "a": 0, "why": "P = W/t = F × (s/t) = Fv." },
+        { "q": "A machine has 600 J input and 450 J useful output. Its efficiency is…", "o": ["25%", "75%", "133%", "150%"], "a": 1, "why": "450 ÷ 600 = 0.75." }
+      ]
+    },
+    {
+      "id": "6", "stage": "as", "name": "Deformation of solids",
+      "questions": [
+        { "q": "Young modulus is defined as…", "o": ["force ÷ extension", "stress ÷ strain", "strain ÷ stress", "force × area"], "a": 1, "why": "E = stress/strain, in Pa." },
+        { "q": "What does the area under a force–extension graph (within the limit of proportionality) represent?", "o": ["Stiffness", "Elastic potential energy stored", "Young modulus", "Stress"], "a": 1, "why": "Work done stretching it = ½Fx." },
+        { "q": "Plastic deformation means the material…", "o": ["returns to its original shape", "does not return to its original shape when the load is removed", "snaps immediately", "becomes stiffer"], "a": 1, "why": "Beyond the elastic limit, the deformation is permanent." }
+      ]
+    },
+    {
+      "id": "7", "stage": "as", "name": "Waves",
+      "questions": [
+        { "q": "Intensity of a wave is proportional to…", "o": ["amplitude", "amplitude²", "frequency only", "wavelength"], "a": 1, "why": "Intensity is proportional to amplitude squared: I ∝ A²." },
+        { "q": "A source moves towards a stationary observer. The observed frequency is…", "o": ["lower", "higher", "unchanged", "zero"], "a": 1, "why": "Doppler effect: wavefronts bunch up, so the frequency observed is higher." },
+        { "q": "Which waves can be polarised?", "o": ["Only longitudinal waves", "Only transverse waves", "All waves", "Only sound"], "a": 1, "why": "Polarisation restricts oscillation to one plane, which needs transverse oscillations." },
+        { "q": "Unpolarised light passes through a polariser, then an analyser at 60°. What fraction of the light after the polariser gets through? (Malus's law)", "o": ["0.25", "0.5", "0.75", "0.87"], "a": 0, "why": "I = I₀ cos²60° = 0.25 I₀." }
+      ]
+    },
+    {
+      "id": "8", "stage": "as", "name": "Superposition",
+      "questions": [
+        { "q": "In a stationary wave, the distance between adjacent nodes is…", "o": ["λ/4", "λ/2", "λ", "2λ"], "a": 1, "why": "Nodes are half a wavelength apart." },
+        { "q": "In Young's double-slit experiment, fringe spacing x = λD/a. What happens if the slit separation a is halved?", "o": ["x halves", "x doubles", "x is unchanged", "x quadruples"], "a": 1, "why": "x is inversely proportional to a." },
+        { "q": "A diffraction grating has 500 lines per mm. What is the line spacing d?", "o": ["2.0 × 10⁻⁶ m", "5.0 × 10⁻⁷ m", "2.0 × 10⁻³ m", "5.0 × 10⁵ m"], "a": 0, "why": "d = 1/(500 × 10³) m = 2.0 × 10⁻⁶ m." },
+        { "q": "For a stable interference pattern, the sources must be…", "o": ["of different frequencies", "coherent", "at different amplitudes", "very bright"], "a": 1, "why": "Coherent sources have a constant phase difference." }
+      ]
+    },
+    {
+      "id": "9", "stage": "as", "name": "Electricity",
+      "questions": [
+        { "q": "A wire of length 2.0 m and cross-sectional area 1.0 × 10⁻⁶ m² has resistivity 1.7 × 10⁻⁸ Ω m. What is its resistance?", "o": ["0.0085 Ω", "0.034 Ω", "0.34 Ω", "3.4 Ω"], "a": 1, "why": "R = ρL/A = 1.7 × 10⁻⁸ × 2.0 ÷ 1.0 × 10⁻⁶ = 0.034 Ω." },
+        { "q": "In I = Anvq, what is v?", "o": ["Voltage", "The mean drift velocity of the charge carriers", "Volume", "The speed of light"], "a": 1, "why": "n is the number density, A the area, q the charge, v the drift velocity." },
+        { "q": "Power dissipated in a resistor can be written as…", "o": ["V/R", "I²R", "IR²", "V²R"], "a": 1, "why": "P = VI = I²R = V²/R." }
+      ]
+    },
+    {
+      "id": "10", "stage": "as", "name": "D.C. circuits",
+      "questions": [
+        { "q": "Kirchhoff's first law is a consequence of conservation of…", "o": ["energy", "charge", "momentum", "mass"], "a": 1, "why": "Current into a junction equals current out: charge is conserved." },
+        { "q": "A cell of e.m.f. 6.0 V and internal resistance 1.0 Ω is connected to a 5.0 Ω resistor. What is the current?", "o": ["0.83 A", "1.0 A", "1.2 A", "6.0 A"], "a": 1, "why": "I = E/(R + r) = 6.0 ÷ 6.0 = 1.0 A." },
+        { "q": "In a potential divider of 2 kΩ (top) and 8 kΩ (bottom) across 10 V, what is the output across the 8 kΩ?", "o": ["2 V", "5 V", "8 V", "10 V"], "a": 2, "why": "Vout = 10 × 8/(2 + 8) = 8 V." }
+      ]
+    },
+    {
+      "id": "11", "stage": "as", "name": "Particle physics",
+      "questions": [
+        { "q": "What is the quark composition of a proton?", "o": ["uud", "udd", "uuu", "ud̄"], "a": 0, "why": "Two up (+2/3 each) and one down (−1/3): total charge +1." },
+        { "q": "In β⁻ decay, a down quark changes into…", "o": ["a strange quark", "an up quark", "a top quark", "an electron"], "a": 1, "why": "d → u + e⁻ + ν̄ₑ." },
+        { "q": "Which are leptons?", "o": ["Protons and neutrons", "Electrons and neutrinos", "Pions", "Quarks"], "a": 1, "why": "Leptons are fundamental particles that don't feel the strong force." }
+      ]
+    },
+    {
+      "id": "12", "stage": "a2", "name": "Motion in a circle",
+      "questions": [
+        { "q": "An object moves in a circle of radius 2.0 m at 4.0 m s⁻¹. What is its centripetal acceleration?", "o": ["2.0 m s⁻²", "4.0 m s⁻²", "8.0 m s⁻²", "32 m s⁻²"], "a": 2, "why": "a = v²/r = 16 ÷ 2.0 = 8.0 m s⁻²." },
+        { "q": "Angular speed ω is related to period T by…", "o": ["ω = 2πT", "ω = 2π/T", "ω = T/2π", "ω = πT²"], "a": 1, "why": "One revolution is 2π radians in time T." }
+      ]
+    },
+    {
+      "id": "13", "stage": "a2", "name": "Gravitational fields",
+      "questions": [
+        { "q": "If the distance between two masses doubles, the gravitational force becomes…", "o": ["double", "half", "a quarter", "four times"], "a": 2, "why": "F = GMm/r², an inverse-square law." },
+        { "q": "A geostationary satellite has an orbital period of…", "o": ["1 hour", "12 hours", "24 hours", "27 days"], "a": 2, "why": "It orbits above the equator, in the same direction as Earth's rotation, once every 24 hours." },
+        { "q": "Gravitational potential at a point is…", "o": ["always positive", "always negative (zero at infinity)", "zero at the surface", "equal to g"], "a": 1, "why": "φ = −GM/r: work must be done to move a mass to infinity." }
+      ]
+    },
+    {
+      "id": "14", "stage": "a2", "name": "Temperature",
+      "questions": [
+        { "q": "What is 27 °C in kelvin?", "o": ["246 K", "273 K", "300 K", "327 K"], "a": 2, "why": "T(K) = θ(°C) + 273.15 ≈ 300 K." },
+        { "q": "How much energy melts 0.20 kg of ice at 0 °C? (specific latent heat of fusion 3.3 × 10⁵ J kg⁻¹)", "o": ["6.6 × 10³ J", "6.6 × 10⁴ J", "1.65 × 10⁶ J", "3.3 × 10⁵ J"], "a": 1, "why": "E = mL = 0.20 × 3.3 × 10⁵ = 6.6 × 10⁴ J." }
+      ]
+    },
+    {
+      "id": "15", "stage": "a2", "name": "Ideal gases",
+      "questions": [
+        { "q": "The mean kinetic energy of a molecule in an ideal gas is proportional to…", "o": ["pressure", "volume", "thermodynamic temperature", "the number of molecules"], "a": 2, "why": "½m⟨c²⟩ = (3/2)kT." },
+        { "q": "For an ideal gas, pV = …", "o": ["nRT", "nR/T", "RT/n", "nT/R"], "a": 0, "why": "The ideal gas equation, with n in moles." }
+      ]
+    },
+    {
+      "id": "16", "stage": "a2", "name": "Thermodynamics",
+      "questions": [
+        { "q": "The first law of thermodynamics is ΔU = q + W. W is…", "o": ["work done by the gas", "work done on the system", "heat out", "internal energy"], "a": 1, "why": "In the Cambridge convention, W is work done on the system." },
+        { "q": "For an ideal gas, internal energy depends only on…", "o": ["pressure", "volume", "temperature", "density"], "a": 2, "why": "There are no intermolecular forces, so internal energy is all kinetic, set by temperature." }
+      ]
+    },
+    {
+      "id": "17", "stage": "a2", "name": "Oscillations",
+      "questions": [
+        { "q": "In simple harmonic motion, acceleration is…", "o": ["constant", "proportional to displacement and opposite in direction", "proportional to velocity", "zero at the extremes"], "a": 1, "why": "Defining equation of SHM: a = −ω²x." },
+        { "q": "At what point of an SHM is the speed greatest?", "o": ["At maximum displacement", "At the equilibrium position", "Halfway out", "It is constant"], "a": 1, "why": "All the energy is kinetic at x = 0." },
+        { "q": "What is resonance?", "o": ["Damping that stops oscillation", "A large amplitude when the driving frequency equals the natural frequency", "Oscillation at any frequency", "A sound effect only"], "a": 1, "why": "Maximum energy transfer happens when the frequencies match." }
+      ]
+    },
+    {
+      "id": "18", "stage": "a2", "name": "Electric fields",
+      "questions": [
+        { "q": "The electric field between parallel plates 0.020 m apart with 400 V across them is…", "o": ["8 V m⁻¹", "800 V m⁻¹", "2.0 × 10⁴ V m⁻¹", "8000 V m⁻¹"], "a": 2, "why": "E = V/d = 400 ÷ 0.020 = 2.0 × 10⁴ V m⁻¹." },
+        { "q": "Coulomb's law: halving the distance between two charges makes the force…", "o": ["half", "double", "four times bigger", "a quarter"], "a": 2, "why": "Coulomb's law is an inverse-square law: F ∝ 1/r²." }
+      ]
+    },
+    {
+      "id": "19", "stage": "a2", "name": "Capacitance",
+      "questions": [
+        { "q": "A 100 µF capacitor is charged to 12 V. How much energy is stored?", "o": ["1.2 mJ", "7.2 mJ", "14.4 mJ", "0.6 mJ"], "a": 1, "why": "W = ½CV² = ½ × 100 × 10⁻⁶ × 144 = 7.2 × 10⁻³ J." },
+        { "q": "What is the time constant of a 2.0 kΩ resistor and 50 µF capacitor?", "o": ["0.010 s", "0.10 s", "1.0 s", "100 s"], "a": 1, "why": "τ = RC = 2000 × 50 × 10⁻⁶ = 0.10 s." },
+        { "q": "Capacitors in parallel…", "o": ["add like resistors in parallel", "add directly: C = C₁ + C₂", "always halve", "cancel out"], "a": 1, "why": "In parallel, capacitances add." }
+      ]
+    },
+    {
+      "id": "20", "stage": "a2", "name": "Magnetic fields",
+      "questions": [
+        { "q": "What is the force on a 0.50 m wire carrying 3.0 A at right angles to a 0.20 T field?", "o": ["0.03 N", "0.30 N", "0.60 N", "3.0 N"], "a": 1, "why": "F = BIL = 0.20 × 3.0 × 0.50 = 0.30 N." },
+        { "q": "A charged particle enters a uniform magnetic field at right angles. Its path is…", "o": ["a straight line", "a parabola", "a circle", "a spiral outward"], "a": 2, "why": "The force Bqv is always perpendicular to the velocity, giving circular motion." },
+        { "q": "Lenz's law is a consequence of conservation of…", "o": ["charge", "energy", "momentum", "mass"], "a": 1, "why": "The induced current opposes the change that caused it; otherwise energy would be created." }
+      ]
+    },
+    {
+      "id": "21", "stage": "a2", "name": "Alternating currents",
+      "questions": [
+        { "q": "A sinusoidal a.c. has a peak voltage of 325 V. What is its r.m.s. value?", "o": ["162 V", "230 V", "325 V", "460 V"], "a": 1, "why": "Vrms = V₀/√2 = 325 ÷ 1.414 ≈ 230 V." },
+        { "q": "What does a single diode do to a.c.?", "o": ["Full-wave rectification", "Half-wave rectification", "Smooths it", "Doubles it"], "a": 1, "why": "It lets current through in one direction only, removing half of each cycle." }
+      ]
+    },
+    {
+      "id": "22", "stage": "a2", "name": "Quantum physics",
+      "questions": [
+        { "q": "The energy of a photon is E = hf. Doubling the frequency…", "o": ["halves E", "doubles E", "leaves E unchanged", "quadruples E"], "a": 1, "why": "E is proportional to f." },
+        { "q": "In the photoelectric effect, increasing the intensity of light above the threshold frequency…", "o": ["increases the maximum kinetic energy of electrons", "increases the number of electrons emitted per second", "decreases the work function", "has no effect"], "a": 1, "why": "More photons per second release more electrons; each photon still has the same energy." },
+        { "q": "Electron diffraction is evidence that electrons…", "o": ["have charge", "behave as waves", "have mass", "orbit the nucleus"], "a": 1, "why": "Diffraction is a wave property; λ = h/p." }
+      ]
+    },
+    {
+      "id": "23", "stage": "a2", "name": "Nuclear physics",
+      "questions": [
+        { "q": "Binding energy per nucleon is greatest for nuclei around…", "o": ["hydrogen", "iron", "uranium", "helium"], "a": 1, "why": "Iron-56 is near the peak; fusion of lighter and fission of heavier nuclei both release energy." },
+        { "q": "A source has decay constant λ. Its half-life is…", "o": ["λ/ln 2", "ln 2/λ", "1/λ", "2λ"], "a": 1, "why": "t½ = ln 2 / λ ≈ 0.693/λ." }
+      ]
+    },
+    {
+      "id": "24", "stage": "a2", "name": "Medical physics",
+      "questions": [
+        { "q": "In ultrasound imaging, a gel is used between the probe and skin to…", "o": ["cool the skin", "reduce reflection at the air boundary (match acoustic impedance)", "kill bacteria", "absorb X-rays"], "a": 1, "why": "Air causes almost total reflection; gel matches impedances so ultrasound enters the body." },
+        { "q": "PET scanning detects…", "o": ["X-rays from a tube", "pairs of gamma photons from positron–electron annihilation", "ultrasound echoes", "alpha particles"], "a": 1, "why": "A positron annihilates with an electron, emitting two gamma photons in opposite directions." }
+      ]
+    },
+    {
+      "id": "25", "stage": "a2", "name": "Astronomy and cosmology",
+      "questions": [
+        { "q": "A standard candle is…", "o": ["any bright star", "an object of known luminosity, used to find distances", "the Sun", "a galaxy"], "a": 1, "why": "Knowing L and measuring the flux F gives the distance from F = L/4πd²." },
+        { "q": "Hubble's law states that the recession speed of a galaxy is proportional to…", "o": ["its mass", "its distance", "its temperature", "its age"], "a": 1, "why": "v = H₀d, evidence for an expanding Universe." },
+        { "q": "Wien's displacement law: a hotter star's peak wavelength is…", "o": ["longer", "shorter", "the same", "not related"], "a": 1, "why": "λmax ∝ 1/T, so hotter stars peak at shorter wavelengths (bluer)." }
+      ]
+    }
+  ]
+}

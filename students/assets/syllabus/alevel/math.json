@@ -1,0 +1,154 @@
+{
+  "subject": "math",
+  "name": "Mathematics",
+  "board": "Cambridge International AS & A Level",
+  "code": "9709",
+  "topics": [
+    {
+      "id": "P1.1", "stage": "as", "name": "Pure 1: Quadratics",
+      "questions": [
+        { "q": "For which values of k does x² + kx + 9 = 0 have equal roots?", "o": ["k = ±3", "k = ±6", "k = 9", "k = 0"], "a": 1, "why": "Equal roots need b² − 4ac = 0: k² − 36 = 0, so k = ±6." },
+        { "q": "Write x² − 6x + 11 in completed-square form.", "o": ["(x − 3)² + 2", "(x − 6)² − 25", "(x + 3)² + 2", "(x − 3)² + 11"], "a": 0, "why": "x² − 6x = (x − 3)² − 9, so the expression is (x − 3)² + 2; the minimum point is (3, 2)." },
+        { "q": "Solve x² − 5x + 4 < 0.", "o": ["x < 1 or x > 4", "1 < x < 4", "x < 4", "x > 1"], "a": 1, "why": "(x − 1)(x − 4) < 0 between the roots." }
+      ]
+    },
+    {
+      "id": "P1.2", "stage": "as", "name": "Pure 1: Functions",
+      "questions": [
+        { "q": "f(x) = 2x + 3. What is f⁻¹(x)?", "o": ["(x − 3)/2", "(x + 3)/2", "2x − 3", "1/(2x + 3)"], "a": 0, "why": "Swap and rearrange: x = 2y + 3, so y = (x − 3)/2." },
+        { "q": "f(x) = x² and g(x) = x + 1. What is fg(x)?", "o": ["x² + 1", "(x + 1)²", "x² + x", "2x + 1"], "a": 1, "why": "fg(x) = f(g(x)) = (x + 1)²." },
+        { "q": "A function has an inverse only if it is…", "o": ["even", "one-one", "continuous", "quadratic"], "a": 1, "why": "Each output must come from exactly one input." }
+      ]
+    },
+    {
+      "id": "P1.3", "stage": "as", "name": "Pure 1: Coordinate geometry",
+      "questions": [
+        { "q": "What is the centre and radius of (x − 2)² + (y + 1)² = 25?", "o": ["(2, −1), 5", "(−2, 1), 5", "(2, −1), 25", "(2, 1), 5"], "a": 0, "why": "(x − a)² + (y − b)² = r² has centre (a, b) and radius r." },
+        { "q": "What is the length of the line from (1, 2) to (4, 6)?", "o": ["5", "7", "25", "√7"], "a": 0, "why": "√(3² + 4²) = 5." }
+      ]
+    },
+    {
+      "id": "P1.4", "stage": "as", "name": "Pure 1: Circular measure",
+      "questions": [
+        { "q": "An arc of a circle of radius 6 cm subtends 0.5 radians. How long is the arc?", "o": ["3 cm", "6 cm", "9 cm", "12 cm"], "a": 0, "why": "s = rθ = 6 × 0.5 = 3 cm." },
+        { "q": "The area of a sector of radius 4 and angle 1.2 rad is…", "o": ["4.8", "9.6", "19.2", "2.4"], "a": 1, "why": "A = ½r²θ = ½ × 16 × 1.2 = 9.6." }
+      ]
+    },
+    {
+      "id": "P1.5", "stage": "as", "name": "Pure 1: Trigonometry",
+      "questions": [
+        { "q": "Which identity is always true?", "o": ["sin θ + cos θ = 1", "sin²θ + cos²θ = 1", "tan θ = cos θ / sin θ", "sin 2θ = 2 sin θ"], "a": 1, "why": "This is the fundamental Pythagorean identity." },
+        { "q": "Solve sin x = 0.5 for 0° ≤ x ≤ 360°.", "o": ["30° only", "30° and 150°", "30° and 330°", "60° and 120°"], "a": 1, "why": "Sine is positive in the first and second quadrants: 30° and 180° − 30°." },
+        { "q": "What is the period of y = cos 2x?", "o": ["90°", "180°", "360°", "720°"], "a": 1, "why": "The period of cos kx is 360°/k." }
+      ]
+    },
+    {
+      "id": "P1.6", "stage": "as", "name": "Pure 1: Series",
+      "questions": [
+        { "q": "What is the coefficient of x² in (1 + 2x)⁵?", "o": ["10", "20", "40", "80"], "a": 2, "why": "⁵C₂ × 2² = 10 × 4 = 40." },
+        { "q": "A geometric series has a = 8 and r = ½. What is its sum to infinity?", "o": ["4", "8", "16", "∞"], "a": 2, "why": "S∞ = a/(1 − r) = 8 ÷ ½ = 16, valid because |r| < 1." },
+        { "q": "The 10th term of the arithmetic progression 3, 7, 11, … is…", "o": ["39", "40", "43", "36"], "a": 0, "why": "uₙ = a + (n − 1)d = 3 + 9 × 4 = 39." }
+      ]
+    },
+    {
+      "id": "P1.7", "stage": "as", "name": "Pure 1: Differentiation",
+      "questions": [
+        { "q": "Differentiate y = 3x⁴ − 2x.", "o": ["12x³ − 2", "12x³", "3x³ − 2", "x⁴ − 2"], "a": 0, "why": "d/dx(axⁿ) = naxⁿ⁻¹." },
+        { "q": "At a stationary point, dy/dx equals…", "o": ["1", "0", "−1", "the y-value"], "a": 1, "why": "The gradient is zero; the second derivative tells maximum or minimum." },
+        { "q": "Differentiate y = (2x + 1)³.", "o": ["3(2x + 1)²", "6(2x + 1)²", "6(2x + 1)³", "(2x + 1)²"], "a": 1, "why": "Chain rule: 3(2x + 1)² × 2." }
+      ]
+    },
+    {
+      "id": "P1.8", "stage": "as", "name": "Pure 1: Integration",
+      "questions": [
+        { "q": "Find ∫ 6x² dx.", "o": ["12x + c", "2x³ + c", "6x³ + c", "3x² + c"], "a": 1, "why": "Raise the power by one and divide: 6x³/3 = 2x³." },
+        { "q": "Evaluate ∫₀² 3x² dx.", "o": ["4", "6", "8", "12"], "a": 2, "why": "[x³]₀² = 8." }
+      ]
+    },
+    {
+      "id": "P3.1", "stage": "a2", "name": "Pure 3: Algebra",
+      "questions": [
+        { "q": "Solve |x − 3| < 2.", "o": ["x < 5", "1 < x < 5", "x > 1", "−5 < x < 5"], "a": 1, "why": "−2 < x − 3 < 2, so 1 < x < 5." },
+        { "q": "What is the remainder when x³ − 2x + 1 is divided by (x − 2)?", "o": ["1", "3", "5", "−3"], "a": 2, "why": "Remainder theorem: f(2) = 8 − 4 + 1 = 5." }
+      ]
+    },
+    {
+      "id": "P3.2", "stage": "a2", "name": "Pure 3: Logarithmic and exponential functions",
+      "questions": [
+        { "q": "Solve eˣ = 5.", "o": ["x = 5/e", "x = ln 5", "x = log₁₀ 5", "x = 5e"], "a": 1, "why": "Take natural logs of both sides." },
+        { "q": "log 8 + log 2 equals…", "o": ["log 10", "log 16", "log 4", "log 6"], "a": 1, "why": "log a + log b = log(ab) = log 16." }
+      ]
+    },
+    {
+      "id": "P3.3", "stage": "a2", "name": "Pure 3: Trigonometry",
+      "questions": [
+        { "q": "cos 2A can be written as…", "o": ["2 sin A cos A", "1 − 2sin²A", "2cos A", "sin²A − cos²A"], "a": 1, "why": "cos 2A = cos²A − sin²A = 1 − 2sin²A = 2cos²A − 1." },
+        { "q": "sec θ is…", "o": ["1/sin θ", "1/cos θ", "1/tan θ", "sin θ/cos θ"], "a": 1, "why": "sec = 1/cos, cosec = 1/sin, cot = 1/tan." }
+      ]
+    },
+    {
+      "id": "P3.4", "stage": "a2", "name": "Pure 3: Differentiation",
+      "questions": [
+        { "q": "Differentiate y = x eˣ.", "o": ["eˣ", "x eˣ", "eˣ(1 + x)", "eˣ − x"], "a": 2, "why": "Product rule: eˣ + x eˣ." },
+        { "q": "Differentiate y = ln(3x).", "o": ["3/x", "1/x", "1/(3x)", "ln 3"], "a": 1, "why": "ln(3x) = ln 3 + ln x, so the derivative is 1/x." }
+      ]
+    },
+    {
+      "id": "P3.5", "stage": "a2", "name": "Pure 3: Integration",
+      "questions": [
+        { "q": "Find ∫ 1/x dx (x > 0).", "o": ["x⁰ + c", "ln x + c", "−1/x² + c", "eˣ + c"], "a": 1, "why": "The derivative of ln x is 1/x." },
+        { "q": "Which method suits ∫ x cos x dx?", "o": ["Substitution u = cos x", "Integration by parts", "Partial fractions", "It can't be integrated"], "a": 1, "why": "u = x, dv = cos x dx gives x sin x + cos x + c." }
+      ]
+    },
+    {
+      "id": "P3.6", "stage": "a2", "name": "Pure 3: Numerical solution of equations",
+      "questions": [
+        { "q": "f(1) = −2 and f(2) = 3, with f continuous. What can you conclude?", "o": ["No root between 1 and 2", "A root lies between 1 and 2", "f has a maximum at 1.5", "f(1.5) = 0"], "a": 1, "why": "A change of sign shows a root in the interval." }
+      ]
+    },
+    {
+      "id": "P3.7", "stage": "a2", "name": "Pure 3: Vectors",
+      "questions": [
+        { "q": "What is the scalar product of (1, 2, 3) and (4, −1, 0)?", "o": ["2", "4", "6", "0"], "a": 0, "why": "1×4 + 2×(−1) + 3×0 = 2." },
+        { "q": "Two non-zero vectors are perpendicular when their scalar product is…", "o": ["1", "0", "−1", "their lengths multiplied"], "a": 1, "why": "a·b = |a||b|cos 90° = 0." }
+      ]
+    },
+    {
+      "id": "P3.8", "stage": "a2", "name": "Pure 3: Differential equations",
+      "questions": [
+        { "q": "The general solution of dy/dx = ky is…", "o": ["y = kx + c", "y = A eᵏˣ", "y = kx²", "y = ln(kx)"], "a": 1, "why": "Separate variables: ∫dy/y = ∫k dx, ln y = kx + c." }
+      ]
+    },
+    {
+      "id": "P3.9", "stage": "a2", "name": "Pure 3: Complex numbers",
+      "questions": [
+        { "q": "What is (2 + 3i)(1 − i)?", "o": ["5 + i", "−1 + i", "2 − 3i", "5 − i"], "a": 0, "why": "2 − 2i + 3i − 3i² = 2 + i + 3 = 5 + i." },
+        { "q": "What is the modulus of 3 − 4i?", "o": ["1", "5", "7", "25"], "a": 1, "why": "√(3² + 4²) = 5." }
+      ]
+    },
+    {
+      "id": "M1", "stage": "as", "name": "Mechanics",
+      "questions": [
+        { "q": "A 5 kg box on a smooth floor is pulled by a 20 N horizontal force. What is its acceleration?", "o": ["0.25 m s⁻²", "4 m s⁻²", "25 m s⁻²", "100 m s⁻²"], "a": 1, "why": "F = ma: a = 20 ÷ 5." },
+        { "q": "Limiting friction is given by F = μR. What is R?", "o": ["The weight always", "The normal contact force", "The resultant force", "The tension"], "a": 1, "why": "R is the normal reaction; it equals the weight only on a horizontal surface with no other vertical forces." },
+        { "q": "A particle moves with constant acceleration from rest to 12 m s⁻¹ in 4 s. How far does it go?", "o": ["12 m", "24 m", "48 m", "3 m"], "a": 1, "why": "s = ½(u + v)t = ½ × 12 × 4 = 24 m." }
+      ]
+    },
+    {
+      "id": "S1", "stage": "as", "name": "Probability and Statistics 1",
+      "questions": [
+        { "q": "In how many ways can 5 different books be arranged on a shelf?", "o": ["5", "25", "120", "3125"], "a": 2, "why": "Five choices for the first place, then four, three, two, one: 5! = 120." },
+        { "q": "X ~ B(10, 0.3). What is E(X)?", "o": ["0.3", "3", "2.1", "7"], "a": 1, "why": "E(X) = np = 10 × 0.3 = 3." },
+        { "q": "X ~ N(50, 4²). What is P(X > 50)?", "o": ["0", "0.25", "0.5", "1"], "a": 2, "why": "The normal distribution is symmetric about its mean." },
+        { "q": "Events A and B are independent when…", "o": ["P(A ∩ B) = 0", "P(A ∩ B) = P(A) × P(B)", "P(A) + P(B) = 1", "A and B can't both happen"], "a": 1, "why": "Mutually exclusive events are a different idea (P(A ∩ B) = 0)." }
+      ]
+    },
+    {
+      "id": "S2", "stage": "a2", "name": "Probability and Statistics 2",
+      "questions": [
+        { "q": "X ~ Po(4). What is Var(X)?", "o": ["2", "4", "16", "0.25"], "a": 1, "why": "For a Poisson distribution, mean = variance = λ." },
+        { "q": "A Type I error is…", "o": ["accepting a false H₀", "rejecting a true H₀", "a calculation mistake", "using the wrong distribution"], "a": 1, "why": "Its probability equals the significance level (for continuous tests)." }
+      ]
+    }
+  ]
+}

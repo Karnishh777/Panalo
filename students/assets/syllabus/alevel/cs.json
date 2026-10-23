@@ -1,0 +1,135 @@
+{
+  "subject": "cs",
+  "name": "Computer Science",
+  "board": "Cambridge International AS & A Level",
+  "code": "9618",
+  "topics": [
+    {
+      "id": "1", "stage": "as", "name": "Information representation",
+      "questions": [
+        { "q": "What is −5 in 8-bit two's complement?", "o": ["10000101", "11111011", "11111010", "00000101"], "a": 1, "why": "5 = 00000101; invert to 11111010; add 1 to get 11111011." },
+        { "q": "How many characters can 8-bit extended ASCII represent?", "o": ["128", "256", "1024", "65 536"], "a": 1, "why": "2⁸ = 256; standard ASCII uses 7 bits (128)." },
+        { "q": "Increasing the sampling rate of a sound file…", "o": ["reduces file size", "increases accuracy and file size", "has no effect", "changes the bit depth"], "a": 1, "why": "More samples per second capture the sound more accurately." }
+      ]
+    },
+    {
+      "id": "2", "stage": "as", "name": "Communication",
+      "questions": [
+        { "q": "Which topology connects every device to a central node?", "o": ["Bus", "Star", "Mesh", "Ring"], "a": 1, "why": "A failure of the central switch stops the network." },
+        { "q": "What does CSMA/CD help with on a shared medium?", "o": ["Encryption", "Detecting and handling collisions", "Routing", "Compression"], "a": 1, "why": "Devices listen before sending and back off after a collision." }
+      ]
+    },
+    {
+      "id": "3", "stage": "as", "name": "Hardware",
+      "questions": [
+        { "q": "Which memory must be refreshed constantly?", "o": ["SRAM", "DRAM", "ROM", "Flash"], "a": 1, "why": "DRAM stores bits as charge in capacitors, which leaks." },
+        { "q": "A logic circuit outputs 1 when exactly one input is 1. It is…", "o": ["AND", "OR", "XOR", "NOR"], "a": 2, "why": "XOR is exclusive OR." }
+      ]
+    },
+    {
+      "id": "4", "stage": "as", "name": "Processor fundamentals",
+      "questions": [
+        { "q": "In the fetch–execute cycle, what happens first?", "o": ["The instruction is decoded", "The address in the PC is copied to the MAR", "The ALU runs", "The result is stored"], "a": 1, "why": "MAR ← [PC]; then MDR ← memory; CIR ← [MDR]; PC incremented." },
+        { "q": "Which addressing mode uses the operand as the actual value?", "o": ["Direct", "Indirect", "Immediate", "Indexed"], "a": 2, "why": "Direct uses it as an address; immediate uses it as the value." }
+      ]
+    },
+    {
+      "id": "5", "stage": "as", "name": "System software",
+      "questions": [
+        { "q": "Which is a benefit of an interpreter while developing code?", "o": ["Faster final program", "Errors are reported as each line runs, making debugging easier", "Produces an executable", "Hides source code"], "a": 1, "why": "Compilers produce faster executables but report errors after compiling." }
+      ]
+    },
+    {
+      "id": "6", "stage": "as", "name": "Security, privacy and data integrity",
+      "questions": [
+        { "q": "A firewall…", "o": ["removes viruses from files", "filters network traffic based on rules", "encrypts disks", "backs up data"], "a": 1, "why": "It allows or blocks traffic between networks." },
+        { "q": "A check digit is used for…", "o": ["encryption", "detecting data entry errors", "compression", "authentication"], "a": 1, "why": "It is calculated from the other digits, e.g. ISBN." }
+      ]
+    },
+    {
+      "id": "7", "stage": "as", "name": "Ethics and ownership",
+      "questions": [
+        { "q": "Open-source software…", "o": ["has no licence", "makes its source code available to view and modify under a licence", "is always free of all conditions", "cannot be sold"], "a": 1, "why": "Licences like GPL set conditions on sharing changes." }
+      ]
+    },
+    {
+      "id": "8", "stage": "as", "name": "Databases",
+      "questions": [
+        { "q": "A table is in 1NF when…", "o": ["it has no repeating groups and every field is atomic", "it has no partial dependencies", "it has no transitive dependencies", "it has a foreign key"], "a": 0, "why": "2NF removes partial dependencies; 3NF removes transitive ones." },
+        { "q": "A foreign key…", "o": ["uniquely identifies records in its own table", "links to the primary key of another table", "is encrypted", "is always a number"], "a": 1, "why": "It creates the relationship between tables." }
+      ]
+    },
+    {
+      "id": "9", "stage": "as", "name": "Algorithm design and problem-solving",
+      "questions": [
+        { "q": "Abstraction means…", "o": ["adding detail", "removing unnecessary detail to focus on what matters", "writing comments", "testing code"], "a": 1, "why": "Decomposition, by contrast, breaks a problem into parts." }
+      ]
+    },
+    {
+      "id": "10", "stage": "as", "name": "Data types and structures",
+      "questions": [
+        { "q": "A stack works on which principle?", "o": ["FIFO", "LIFO", "Random access", "Sorted order"], "a": 1, "why": "Last in, first out; a queue is first in, first out." }
+      ]
+    },
+    {
+      "id": "11", "stage": "as", "name": "Programming",
+      "questions": [
+        { "q": "A function differs from a procedure because it…", "o": ["has parameters", "returns a value", "can loop", "is shorter"], "a": 1, "why": "Both can take parameters; only a function returns a value." }
+      ]
+    },
+    {
+      "id": "12", "stage": "as", "name": "Software development",
+      "questions": [
+        { "q": "Which testing uses values at the edges of the valid range?", "o": ["Normal", "Boundary", "Erroneous", "Integration"], "a": 1, "why": "Boundary data tests the limits, e.g. 0 and 100 for a percentage." }
+      ]
+    },
+    {
+      "id": "13", "stage": "a2", "name": "Data representation (floating point)",
+      "questions": [
+        { "q": "Normalising a floating-point number…", "o": ["reduces precision", "gives the maximum precision for the mantissa size", "makes it negative", "removes the exponent"], "a": 1, "why": "The first two mantissa bits differ (01 or 10), so no bits are wasted." }
+      ]
+    },
+    {
+      "id": "14", "stage": "a2", "name": "Communication and internet technologies",
+      "questions": [
+        { "q": "Which layer of TCP/IP routes packets between networks?", "o": ["Application", "Transport", "Internet", "Link"], "a": 2, "why": "IP at the Internet layer addresses and routes packets." }
+      ]
+    },
+    {
+      "id": "15", "stage": "a2", "name": "Hardware and virtual machines",
+      "questions": [
+        { "q": "RISC processors typically have…", "o": ["many complex instructions", "a small set of simple instructions, often executed in one clock cycle", "no registers", "no pipelining"], "a": 1, "why": "This suits pipelining; CISC has many complex instructions." }
+      ]
+    },
+    {
+      "id": "16", "stage": "a2", "name": "System software (A Level)",
+      "questions": [
+        { "q": "Paging is a memory management technique that…", "o": ["divides memory into equal-sized blocks", "deletes files", "compiles code", "schedules printers"], "a": 0, "why": "Processes are split into pages that map to physical frames." }
+      ]
+    },
+    {
+      "id": "17", "stage": "a2", "name": "Security",
+      "questions": [
+        { "q": "A digital signature is created using…", "o": ["the receiver's public key", "the sender's private key", "a shared password", "a check digit"], "a": 1, "why": "Anyone can verify it with the sender's public key." }
+      ]
+    },
+    {
+      "id": "18", "stage": "a2", "name": "Artificial intelligence",
+      "questions": [
+        { "q": "Dijkstra's algorithm finds…", "o": ["the minimum spanning tree", "the shortest path from one node to the others", "a sorted list", "a cycle"], "a": 1, "why": "A* extends it with a heuristic." }
+      ]
+    },
+    {
+      "id": "19", "stage": "a2", "name": "Computational thinking and problem-solving",
+      "questions": [
+        { "q": "What is the time complexity of binary search?", "o": ["O(1)", "O(log n)", "O(n)", "O(n²)"], "a": 1, "why": "Each comparison halves the remaining items." }
+      ]
+    },
+    {
+      "id": "20", "stage": "a2", "name": "Further programming",
+      "questions": [
+        { "q": "In OOP, inheritance allows…", "o": ["a class to gain the attributes and methods of a parent class", "data to be hidden", "one method to have many forms only", "files to be shared"], "a": 0, "why": "Encapsulation hides data; polymorphism allows different behaviour for the same method." }
+      ]
+    }
+  ]
+}

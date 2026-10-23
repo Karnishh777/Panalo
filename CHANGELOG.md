@@ -22,6 +22,14 @@ only where nothing else can).
   school day, boarder or day scholar, sleep, tuition and exams coming up.
 - **Phase 29**: the study profile in the database; Drift's saved state
   erased.
+- **Question bank**: 689 checked multiple-choice questions over 18
+  Cambridge syllabuses (IGCSE 0625, 0620, 0610, 0580, 0478, 0455, 0450,
+  0452; AS & A Level 9702, 9701, 9700, 9709, 9708, 9609, 9618, 9706,
+  9990, 9699), each with a one-line explanation (`students/assets/syllabus/`).
+- **The planner's core** (not on screen yet): per-topic mastery (Elo),
+  memory (FSRS-6) and per-subject pace, and how much study each day really
+  has room for (sleep as a hard limit, caps, one lighter day, a 20%
+  buffer). Defaults come from the research behind the planner.
 
 ## v0.1 — 23 October 2026 · first release
 

@@ -1,0 +1,101 @@
+{
+  "subject": "math",
+  "name": "Mathematics",
+  "board": "Cambridge IGCSE",
+  "code": "0580",
+  "topics": [
+    {
+      "id": "1",
+      "name": "Number",
+      "questions": [
+        { "q": "What is 0.000 456 in standard form?", "o": ["4.56 × 10⁴", "4.56 × 10⁻⁴", "45.6 × 10⁻⁵", "4.56 × 10⁻³"], "a": 1, "why": "Move the decimal point 4 places right: 4.56 × 10⁻⁴." },
+        { "q": "Round 3.0496 to 3 significant figures.", "o": ["3.04", "3.05", "3.049", "3.050"], "a": 1, "why": "The third significant figure is 4, followed by 9, so it rounds up to 3.05." },
+        { "q": "A price rises from $80 to $92. What is the percentage increase?", "o": ["12%", "13%", "15%", "87%"], "a": 2, "why": "Increase ÷ original × 100 = 12 ÷ 80 × 100 = 15%." },
+        { "q": "What is the highest common factor of 36 and 60?", "o": ["6", "12", "180", "360"], "a": 1, "why": "36 = 2² × 3², 60 = 2² × 3 × 5; HCF = 2² × 3 = 12." },
+        { "q": "$2000 is invested at 5% compound interest per year. What is it worth after 2 years?", "o": ["$2200", "$2205", "$2100", "$2250"], "a": 1, "why": "2000 × 1.05² = 2205." },
+        { "q": "Which is irrational?", "o": ["0.25", "√16", "√2", "3/7"], "a": 2, "why": "√2 can't be written as a fraction of integers; √16 = 4." }
+      ]
+    },
+    {
+      "id": "2",
+      "name": "Algebra and graphs",
+      "questions": [
+        { "q": "Solve 3x − 7 = 11.", "o": ["x = 4/3", "x = 6", "x = 18", "x = 54"], "a": 1, "why": "3x = 18, so x = 6." },
+        { "q": "Factorise x² + 5x + 6.", "o": ["(x + 1)(x + 6)", "(x + 2)(x + 3)", "(x − 2)(x − 3)", "(x + 5)(x + 1)"], "a": 1, "why": "Find two numbers that multiply to 6 and add to 5: 2 and 3." },
+        { "q": "Expand and simplify (x + 4)(x − 2).", "o": ["x² + 2x − 8", "x² − 2x − 8", "x² + 6x − 8", "x² + 2x + 8"], "a": 0, "why": "x² − 2x + 4x − 8 = x² + 2x − 8." },
+        { "q": "Simplify (2x³)².", "o": ["2x⁵", "4x⁵", "4x⁶", "2x⁶"], "a": 2, "why": "Square both parts: 2² = 4 and (x³)² = x⁶." },
+        { "q": "Make t the subject of v = u + at.", "o": ["t = (v − u)/a", "t = v − u − a", "t = a(v − u)", "t = (v + u)/a"], "a": 0, "why": "Subtract u, then divide by a." },
+        { "q": "Solve the simultaneous equations x + y = 10 and x − y = 4.", "o": ["x = 6, y = 4", "x = 7, y = 3", "x = 3, y = 7", "x = 5, y = 5"], "a": 1, "why": "Adding gives 2x = 14, so x = 7 and y = 3." }
+      ]
+    },
+    {
+      "id": "3",
+      "name": "Coordinate geometry",
+      "questions": [
+        { "q": "What is the gradient of the line through (1, 2) and (3, 8)?", "o": ["1/3", "2", "3", "6"], "a": 2, "why": "Gradient = (8 − 2) ÷ (3 − 1) = 3." },
+        { "q": "What is the y-intercept of y = 4x − 5?", "o": ["4", "−5", "5", "−4"], "a": 1, "why": "In y = mx + c, c is the y-intercept." },
+        { "q": "A line is perpendicular to y = 2x + 1. What is its gradient?", "o": ["2", "−2", "1/2", "−1/2"], "a": 3, "why": "Perpendicular gradients multiply to −1." },
+        { "q": "What is the midpoint of (2, 3) and (8, 7)?", "o": ["(5, 5)", "(6, 4)", "(10, 10)", "(3, 2)"], "a": 0, "why": "Average the coordinates: ((2 + 8)/2, (3 + 7)/2) = (5, 5)." }
+      ]
+    },
+    {
+      "id": "4",
+      "name": "Geometry",
+      "questions": [
+        { "q": "What is the sum of the interior angles of a hexagon?", "o": ["360°", "540°", "720°", "1080°"], "a": 2, "why": "(n − 2) × 180 = 4 × 180 = 720°." },
+        { "q": "The angle in a semicircle is…", "o": ["45°", "90°", "180°", "60°"], "a": 1, "why": "An angle subtended by a diameter at the circumference is a right angle." },
+        { "q": "Alternate angles on parallel lines are…", "o": ["equal", "add to 180°", "add to 90°", "always 60°"], "a": 0, "why": "Alternate (Z) angles are equal; co-interior angles add to 180°." },
+        { "q": "A tangent meets a radius at the point of contact at…", "o": ["45°", "60°", "90°", "180°"], "a": 2, "why": "A tangent is perpendicular to the radius at that point." }
+      ]
+    },
+    {
+      "id": "5",
+      "name": "Mensuration",
+      "questions": [
+        { "q": "What is the area of a circle of radius 5 cm? (π ≈ 3.14)", "o": ["15.7 cm²", "31.4 cm²", "78.5 cm²", "157 cm²"], "a": 2, "why": "A = πr² = 3.14 × 25 = 78.5 cm²." },
+        { "q": "What is the volume of a cuboid 3 cm by 4 cm by 5 cm?", "o": ["12 cm³", "47 cm³", "60 cm³", "94 cm³"], "a": 2, "why": "3 × 4 × 5 = 60 cm³." },
+        { "q": "A triangle has base 10 cm and height 6 cm. What is its area?", "o": ["16 cm²", "30 cm²", "60 cm²", "36 cm²"], "a": 1, "why": "½ × base × height = ½ × 10 × 6 = 30 cm²." },
+        { "q": "How many cm² are in 1 m²?", "o": ["100", "1000", "10 000", "1 000 000"], "a": 2, "why": "1 m² = 100 cm × 100 cm = 10 000 cm²." }
+      ]
+    },
+    {
+      "id": "6",
+      "name": "Trigonometry",
+      "questions": [
+        { "q": "A right-angled triangle has legs 6 cm and 8 cm. How long is the hypotenuse?", "o": ["7 cm", "10 cm", "14 cm", "48 cm"], "a": 1, "why": "√(6² + 8²) = √100 = 10 cm." },
+        { "q": "Which ratio is tan θ in a right-angled triangle?", "o": ["opposite/hypotenuse", "adjacent/hypotenuse", "opposite/adjacent", "hypotenuse/opposite"], "a": 2, "why": "SOH CAH TOA: tan = opposite ÷ adjacent." },
+        { "q": "In a triangle, a = 7, b = 5 and the angle C between them is 60°. Which rule finds side c?", "o": ["Pythagoras", "The sine rule", "The cosine rule", "SOH CAH TOA"], "a": 2, "why": "Two sides and the included angle: c² = a² + b² − 2ab cos C." },
+        { "q": "What is the area of a triangle with sides 4 and 9 and an included angle of 30°?", "o": ["9", "18", "36", "4.5"], "a": 0, "why": "Area = ½ab sin C = ½ × 4 × 9 × 0.5 = 9." }
+      ]
+    },
+    {
+      "id": "7",
+      "name": "Transformations and vectors",
+      "questions": [
+        { "q": "Shape A is enlarged by scale factor 3. How do the areas compare?", "o": ["Image area is 3 times", "Image area is 6 times", "Image area is 9 times", "They are equal"], "a": 2, "why": "Area scale factor = (length scale factor)² = 9." },
+        { "q": "Which transformation keeps a shape the same size but turns it?", "o": ["Translation", "Rotation", "Enlargement", "Stretch"], "a": 1, "why": "A rotation turns a shape about a centre; size and shape are unchanged." },
+        { "q": "What is the magnitude of the vector (3, 4)?", "o": ["5", "7", "12", "25"], "a": 0, "why": "√(3² + 4²) = 5." }
+      ]
+    },
+    {
+      "id": "8",
+      "name": "Probability",
+      "questions": [
+        { "q": "A fair die is rolled. What is the probability of a number greater than 4?", "o": ["1/6", "1/3", "1/2", "2/3"], "a": 1, "why": "5 and 6 are 2 of 6 outcomes: 2/6 = 1/3." },
+        { "q": "P(rain) = 0.3. What is P(no rain)?", "o": ["0.3", "0.6", "0.7", "1.3"], "a": 2, "why": "Probabilities of all outcomes add to 1: 1 − 0.3 = 0.7." },
+        { "q": "Two fair coins are tossed. What is the probability of two heads?", "o": ["1/2", "1/3", "1/4", "1/8"], "a": 2, "why": "Independent events multiply: ½ × ½ = ¼." },
+        { "q": "A bag has 3 red and 2 blue balls. Two are taken without replacement. P(both red)?", "o": ["9/25", "3/10", "6/25", "3/5"], "a": 1, "why": "3/5 × 2/4 = 6/20 = 3/10." }
+      ]
+    },
+    {
+      "id": "9",
+      "name": "Statistics",
+      "questions": [
+        { "q": "What is the median of 3, 7, 2, 9, 5?", "o": ["2", "5", "5.2", "7"], "a": 1, "why": "In order: 2, 3, 5, 7, 9; the middle value is 5." },
+        { "q": "What is the mean of 4, 6, 8, 10?", "o": ["6", "7", "8", "28"], "a": 1, "why": "Total 28 ÷ 4 values = 7." },
+        { "q": "A scatter graph shows points rising from left to right. This is…", "o": ["negative correlation", "positive correlation", "no correlation", "a histogram"], "a": 1, "why": "As one variable increases, so does the other." },
+        { "q": "In a histogram, the height of each bar shows…", "o": ["frequency", "frequency density", "class width", "the cumulative total"], "a": 1, "why": "Frequency density = frequency ÷ class width, so the area shows frequency." }
+      ]
+    }
+  ]
+}

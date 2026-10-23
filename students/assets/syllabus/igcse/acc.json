@@ -1,0 +1,58 @@
+{
+  "subject": "acc",
+  "name": "Accounting",
+  "board": "Cambridge IGCSE",
+  "code": "0452",
+  "topics": [
+    {
+      "id": "1", "name": "The fundamentals of accounting",
+      "questions": [
+        { "q": "What is the accounting equation?", "o": ["Assets = Capital + Liabilities", "Assets = Capital − Liabilities", "Capital = Assets + Liabilities", "Profit = Assets − Liabilities"], "a": 0, "why": "Everything the business owns is financed by the owner or by others." },
+        { "q": "Which is a liability?", "o": ["Inventory", "Bank loan", "Machinery", "Trade receivables"], "a": 1, "why": "A liability is an amount the business owes." }
+      ]
+    },
+    {
+      "id": "2", "name": "Sources and recording of data",
+      "questions": [
+        { "q": "Which document is sent by a seller to request payment?", "o": ["Credit note", "Invoice", "Receipt", "Statement of account"], "a": 1, "why": "A credit note reduces the amount owed, e.g. for returns." },
+        { "q": "In double entry, buying goods on credit is recorded as…", "o": ["Debit purchases, credit supplier", "Debit supplier, credit purchases", "Debit cash, credit purchases", "Debit purchases, credit cash"], "a": 0, "why": "Purchases increase (debit); the amount owed to the supplier increases (credit)." }
+      ]
+    },
+    {
+      "id": "3", "name": "Verification of accounting records",
+      "questions": [
+        { "q": "Which error does NOT affect the trial balance?", "o": ["Single-sided entry", "Error of commission", "Wrong addition in one account", "Entry on the wrong side of one account only"], "a": 1, "why": "Commission errors post to the wrong account of the right type; debits still equal credits." },
+        { "q": "A bank reconciliation explains differences between…", "o": ["two suppliers", "the cash book and the bank statement", "assets and liabilities", "profit and cash"], "a": 1, "why": "Timing differences like unpresented cheques cause them." }
+      ]
+    },
+    {
+      "id": "4", "name": "Accounting procedures",
+      "questions": [
+        { "q": "A machine costs $10 000, lasts 5 years and has no residual value. What is straight-line depreciation per year?", "o": ["$1000", "$2000", "$5000", "$500"], "a": 1, "why": "(cost − residual value) ÷ useful life = 10 000 ÷ 5." },
+        { "q": "Prepaid expenses are shown as…", "o": ["a current liability", "a current asset", "income", "capital"], "a": 1, "why": "They are paid in advance for a future period." },
+        { "q": "Writing off an irrecoverable debt…", "o": ["increases profit", "reduces profit", "increases cash", "has no effect"], "a": 1, "why": "It is an expense in the income statement." }
+      ]
+    },
+    {
+      "id": "5", "name": "Preparation of financial statements",
+      "questions": [
+        { "q": "Revenue $50 000, cost of sales $30 000. What is gross profit?", "o": ["$80 000", "$20 000", "$30 000", "$50 000"], "a": 1, "why": "Gross profit = revenue − cost of sales." },
+        { "q": "Cost of sales is calculated as…", "o": ["opening inventory + purchases − closing inventory", "purchases − sales", "sales − expenses", "closing inventory − opening inventory"], "a": 0, "why": "It is the cost of the goods actually sold in the period." }
+      ]
+    },
+    {
+      "id": "6", "name": "Analysis and interpretation",
+      "questions": [
+        { "q": "Gross profit $20 000 on revenue $80 000. What is the gross margin?", "o": ["20%", "25%", "40%", "400%"], "a": 1, "why": "20 000 ÷ 80 000 × 100 = 25%." },
+        { "q": "A quick (acid test) ratio excludes…", "o": ["cash", "inventory", "trade receivables", "trade payables"], "a": 1, "why": "Inventory may be slow to turn into cash." }
+      ]
+    },
+    {
+      "id": "7", "name": "Accounting principles and policies",
+      "questions": [
+        { "q": "Which principle says revenue is recorded when earned, not when cash is received?", "o": ["Prudence", "Accruals (matching)", "Going concern", "Consistency"], "a": 1, "why": "Income and expenses are matched to the period they relate to." },
+        { "q": "Prudence means…", "o": ["recording profits early", "not overstating assets or profits", "changing methods often", "ignoring small items"], "a": 1, "why": "Accountants shouldn't anticipate gains, but should provide for likely losses." }
+      ]
+    }
+  ]
+}
