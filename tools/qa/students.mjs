@@ -358,13 +358,30 @@ try {
   check("Settings offers the three looks, with yours chosen", (await page.locator(".settings-look .look-opt").count()) === 3 && (await page.isChecked(".settings-look .look-opt-verse input")));
   const livelyBox = page.locator("label.setting", { hasText: "Lively effects" }).locator("input");
   check("Lively effects are off until you turn them on", !(await livelyBox.isChecked()));
-  // The switch re-renders Settings when it applies, so wait for the effect
-  // rather than for the (replaced) checkbox.
+  // Wait for the effect, not the checkbox. The switch sits low on the page,
+  // where the yearly rules card and toasts appear: bring it to the middle
+  // first, and if a click still goes astray, say what was under it.
   const effectsBecome = (v) => page.waitForFunction((x) => document.documentElement.dataset.effects === x, v, { timeout: 3000 }).then(() => true, () => false);
-  await livelyBox.click();
-  check("turning on lively effects applies at once", await effectsBecome("lively"));
-  await page.locator("label.setting", { hasText: "Lively effects" }).locator("input").click();
-  check("and turning them off makes Panalo still again", await effectsBecome("calm"));
+  const flipLively = async () => {
+    const box = page.locator("label.setting", { hasText: "Lively effects" }).locator("input");
+    await box.evaluate((b) => b.scrollIntoView({ block: "center" }));
+    await page.waitForTimeout(300);
+    await box.click();
+  };
+  const whatsThere = () => page.evaluate(() => {
+    const b = [...document.querySelectorAll("label.setting")].find((l) => /Lively/.test(l.textContent))?.querySelector("input");
+    const r = b?.getBoundingClientRect();
+    const hit = r && document.elementFromPoint(r.x + r.width / 2, r.y + r.height / 2);
+    return `checked=${b?.checked} effects=${document.documentElement.dataset.effects} under=${hit ? `${hit.tagName}.${hit.className}` : "none"}`;
+  });
+  await flipLively();
+  const on = await effectsBecome("lively");
+  check("turning on lively effects applies at once", on);
+  if (!on) console.log("  lively switch:", await whatsThere());
+  await flipLively();
+  const off = await effectsBecome("calm");
+  check("and turning them off makes Panalo still again", off);
+  if (!off) console.log("  lively switch:", await whatsThere());
   await page.evaluate(() => (location.hash = "#/now"));
   await page.waitForTimeout(900);
   check("Verse lays Now out in orbit (the log's panels around the world)", await page.evaluate(() => getComputedStyle(document.querySelector(".now-log")).display === "contents"));
