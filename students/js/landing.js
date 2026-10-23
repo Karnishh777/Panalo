@@ -55,7 +55,7 @@ export function initLanding() {
   later(() => {
     let dock = null;
     try {
-      const hero = createGlobe($("hero-globe"), { seed: "panalo-students", interactive: true, maxDisk: 300, maxPixels: 1100, onMotion: (m) => dock?.sync(m) });
+      const hero = createGlobe($("hero-globe"), { seed: "panalo-students", interactive: true, maxDisk: 300, maxPixels: 1500, onMotion: (m) => dock?.sync(m) });
       hero.setLayers({ earth: 1, cities: 0.85, land: 0.34, lights: 180, forest: 0.6, aurora: 0.7, glow: 0.35, atmosphere: 0.75, clouds: 0.22, ring: 0.9 }, [
         { value: 1, done: true },
         { value: 0.6, done: false },

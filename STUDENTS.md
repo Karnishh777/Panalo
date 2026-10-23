@@ -65,9 +65,6 @@ landing ──► the crossing (sign in / sign up) ──► first time? the bir
   celebrates and no dawn or weekly story plays, and one quiet line under
   the bar says what you're on and how long is left, linking back to the
   Study Room. A paused block isn't shielded.
-- **Starts offline**: the service worker (`../sw.js`, registered from
-  `js/main.js`) keeps the app, its fonts and the libraries it loads from
-  CDNs, so a second visit opens without a connection.
 - **Moderation** (`#/moderate`): reports and data requests for moderators;
   a passphrase door for anyone else (HOSTING.md → Moderation).
 - **Looks** (`js/looks.js`, `css/looks.css`): three complete ways the whole

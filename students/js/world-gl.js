@@ -804,17 +804,6 @@ let supported = null;
 // Software-only WebGL (no GPU) is refused: the 2D renderer is faster there.
 // For testing, localStorage "panalo.students.gl" = "force" accepts it and
 // "off" always uses 2D.
-const GAVE_UP = "panalo.students.gl.gaveup";
-
-/** Stop using WebGL for the rest of this session (too slow, or the GPU
- *  gave out): world-render.js swaps the globe for the 2D one. */
-export function giveUpGL() {
-  supported = false;
-  try {
-    sessionStorage.setItem(GAVE_UP, "1");
-  } catch {}
-}
-
 export function glSupported() {
   if (supported !== null) return supported;
   let pref = "";
@@ -822,11 +811,6 @@ export function glSupported() {
     pref = localStorage.getItem("panalo.students.gl") || "";
   } catch {}
   if (pref === "off") return (supported = false);
-  // A globe that ran too slowly, or whose GPU gave out, already fell back
-  // to 2D this session: every globe after it starts in 2D too.
-  try {
-    if (pref !== "force" && sessionStorage.getItem(GAVE_UP) === "1") return (supported = false);
-  } catch {}
   try {
     const c = document.createElement("canvas");
     const gl = c.getContext("webgl", pref === "force" ? {} : { failIfMajorPerformanceCaveat: true }) || null;
@@ -924,7 +908,7 @@ function rot(v, axis, a) {
  * `spin` is a speed multiplier (1 = one turn in about 40 seconds).
  * Returns null if WebGL can't be used on this canvas.
  */
-export function createGlobeGL(canvas, { seed, tilt = 0.38, interactive = false, spin = 1, maxPixels = 1400, onMotion, manual = false, bloom, onFail } = {}) {
+export function createGlobeGL(canvas, { seed, tilt = 0.38, interactive = false, spin = 1, maxPixels = 1400, onMotion, manual = false, bloom } = {}) {
   const gl = canvas.getContext("webgl", { premultipliedAlpha: true, alpha: true, antialias: false });
   // fwidth, for reading the Earth's maps across the date line without a seam.
   gl?.getExtension("OES_standard_derivatives");
@@ -932,7 +916,7 @@ export function createGlobeGL(canvas, { seed, tilt = 0.38, interactive = false, 
   // Weak devices: every other frame, and no bloom. Everyone else: every
   // frame (a turning world judders at 30), and the glow.
   const low = deviceTier().tier === "low";
-  let wantBloom = bloom ?? !low;
+  const wantBloom = bloom ?? !low;
   // Each look sees the world its own way (in the composite pass), so the
   // passes exist wherever that might be wanted -- not in the film, which
   // asks for none. Verse is drawn as a comic, and now and then the world
@@ -1242,15 +1226,11 @@ export function createGlobeGL(canvas, { seed, tilt = 0.38, interactive = false, 
     gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
     if (!bloomNow) return;
     const { bright, blur, comp, scene, a, b } = post;
-    // Without the glow (a weak device, or the governor), only the look's
-    // own pass runs: the blur is weighed at 0 below, so it isn't drawn.
-    if (wantBloom) {
-      pass(bright, a, scene, () => gl.uniform2f(bright.loc.uTexel, 1 / scene.w, 1 / scene.h));
-      // Two rounds of blur, the second wider: a tight core and a soft spill.
-      for (const spread of [1, 2.2]) {
-        pass(blur, b, a, () => gl.uniform2f(blur.loc.uDir, spread / a.w, 0));
-        pass(blur, a, b, () => gl.uniform2f(blur.loc.uDir, 0, spread / a.h));
-      }
+    pass(bright, a, scene, () => gl.uniform2f(bright.loc.uTexel, 1 / scene.w, 1 / scene.h));
+    // Two rounds of blur, the second wider: a tight core and a soft spill.
+    for (const spread of [1, 2.2]) {
+      pass(blur, b, a, () => gl.uniform2f(blur.loc.uDir, spread / a.w, 0));
+      pass(blur, a, b, () => gl.uniform2f(blur.loc.uDir, 0, spread / a.h));
     }
     pass(comp, null, scene, () => {
       gl.activeTexture(gl.TEXTURE7);
@@ -1285,43 +1265,7 @@ export function createGlobeGL(canvas, { seed, tilt = 0.38, interactive = false, 
     cloudShift += (0.012 + Math.abs(rate) * 0.15) * step;
     draw(t);
   }
-  // The governor: a GPU that can't keep up stalls the whole page (scrolling,
-  // typing, everything), so the frame rate is watched. Under ~25 frames a
-  // second for two seconds, the world gets cheaper: fewer pixels, then no
-  // glow, then (onFail) the 2D globe -- at once, if it's far too slow.
-  // The first moments after it starts (the planet being generated) don't
-  // count.
-  const gov = { level: 0, t0: 0, last: 0, n: 0, from: performance.now() + 2500 };
-  const govern = (t) => {
-    if (manual || !onFail || t < gov.from) return;
-    // Real time between frames, not the loop's capped step: a stall of
-    // half a second is exactly what's being looked for. A long gap means
-    // the loop was paused (hidden, off screen): start the count again.
-    if (!gov.t0 || t - gov.last > 1000) {
-      gov.t0 = gov.last = t;
-      gov.n = 0;
-      return;
-    }
-    gov.last = t;
-    gov.n++;
-    if (t - gov.t0 < 2000) return;
-    const ms = (t - gov.t0) / gov.n;
-    gov.t0 = 0;
-    if (ms <= 40) return;
-    // Under ~11 frames a second, there's no point easing down: go to 2D.
-    gov.level = ms > 90 ? 3 : gov.level + 1;
-    gov.from = t + 1500; // let the cheaper world settle before judging it
-    if (gov.level === 1) {
-      maxPixels = Math.min(maxPixels, 900);
-      sizeDirty = true;
-    } else if (gov.level === 2) {
-      maxPixels = Math.min(maxPixels, 600);
-      sizeDirty = true;
-      wantBloom = false;
-    } else onFail("slow");
-  };
   const loop = animationLoop(canvas, (t, dt) => {
-    govern(t);
     const lively = dragging || aimRot !== null || Math.abs(fling) > 0.01 || Math.abs(pitchNow - motion.pitch) > 0.001 || Math.abs(zoomNow - motion.zoom) > 0.001;
     acc += dt;
     // Verse: every so often the world slips into another universe.
@@ -1401,21 +1345,12 @@ export function createGlobeGL(canvas, { seed, tilt = 0.38, interactive = false, 
   }
 
   // A lost context (a GPU reset, too many tabs) is rebuilt when it returns.
-  // If it doesn't come back soon, or is lost a second time, the GPU isn't
-  // to be trusted: onFail swaps in the 2D globe.
-  let losses = 0;
-  let lostTimer = 0;
   canvas.addEventListener("webglcontextlost", (e) => {
     e.preventDefault();
     lost = true;
     loop.stop();
-    if (destroyed) return;
-    losses++;
-    if (losses > 1) return void onFail?.("lost");
-    lostTimer = setTimeout(() => lost && !destroyed && onFail?.("lost"), 2500);
   });
   canvas.addEventListener("webglcontextrestored", () => {
-    clearTimeout(lostTimer);
     lost = false;
     ready = false;
     try {
@@ -1533,7 +1468,6 @@ export function createGlobeGL(canvas, { seed, tilt = 0.38, interactive = false, 
     },
     destroy() {
       destroyed = true;
-      clearTimeout(lostTimer);
       window.removeEventListener("panalo:look", onLookChange);
 
       dropTargets();

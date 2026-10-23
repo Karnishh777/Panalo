@@ -961,24 +961,6 @@ try {
     check("the light (sun, night side) is chosen and remembered", a.light);
     check("no console errors (WebGL world)", gl.errors.length === 0);
     if (gl.errors.length) console.log(gl.errors.join("\n"));
-    // A GPU that gives out (context lost, never restored) leaves a 2D world
-    // in its place -- not a blank hole -- and later worlds start in 2D.
-    const swap = await gl.evaluate(async () => {
-      const { createGlobe } = await import("./js/world-render.js");
-      const c = document.createElement("canvas");
-      c.style.cssText = "width:200px;height:200px";
-      document.body.append(c);
-      const g = createGlobe(c, { seed: "lost" });
-      g.setLayers({ land: 0.4 });
-      const was = g.renderer;
-      c.getContext("webgl").getExtension("WEBGL_lose_context").loseContext();
-      await new Promise((r) => setTimeout(r, 3000));
-      const out = { was, now: g.renderer, canvas: g.canvas?.dataset.renderer, inPage: g.canvas?.isConnected, motion: typeof g.getMotion() === "object", session: sessionStorage.getItem("panalo.students.gl.gaveup") };
-      g.destroy();
-      g.canvas?.remove();
-      return out;
-    });
-    check("a lost GPU swaps the world to 2D in place, and the rest of the session stays 2D", swap.was === "webgl" && swap.now === "2d" && swap.canvas === "2d" && swap.inPage && swap.motion && swap.session === "1");
     await gl.close();
     const flat = await qa.open({ viewport: "laptop", path: "students/", storage: { "panalo.students.gl": "off" } });
     await flat.waitForTimeout(400);
@@ -987,6 +969,23 @@ try {
     check("the 2D world has the same speed and direction controls", b.motion);
     check("no console errors (2D world)", flat.errors.length === 0);
     await flat.close();
+  }
+
+  // ---- With Panalo Chat's service worker in control ---------------------------------------------
+  // Chat registers ../sw.js for the whole site, so it can control Students
+  // too. The site's CSP applies to the worker: anything it fetches from
+  // another origin (the Supabase library on the CDN) is refused, and the
+  // page gets nothing. So the worker leaves other origins alone, and a
+  // reload under it starts the app as normal.
+  {
+    const sw = await qa.open({ viewport: "laptop", path: "", serviceWorkers: "allow" });
+    await sw.evaluate(() => navigator.serviceWorker.ready);
+    await sw.goto(new URL("students/", sw.url()).href);
+    await sw.reload();
+    await sw.waitForTimeout(1500);
+    const s = await sw.evaluate(() => ({ controlled: !!navigator.serviceWorker.controller, started: document.querySelectorAll(".thread-stars li").length > 0 && !!document.querySelector("#hero-globe")?.dataset.renderer }));
+    check("under the service worker, a reload starts Students as normal", s.controlled && s.started);
+    await sw.close();
   }
 
   // ---- Deleting an account deletes everything ------------------------------------------------
