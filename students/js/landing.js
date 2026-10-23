@@ -8,7 +8,7 @@ import { DAY, dayKey } from "./model/time.js";
 import { ribbons, drift, reveal, speedLines, burstOn, impactFrame, comic } from "./fx.js";
 import { onLook } from "./looks.js";
 import { el } from "./ui.js";
-import { reducedMotion } from "./motion.js";
+import { reducedMotion, lively } from "./motion.js";
 import { globeDock, dockToggle } from "./globe-dock.js";
 import { initLandingHud } from "./landing-hud.js";
 
@@ -55,7 +55,7 @@ export function initLanding() {
   later(() => {
     let dock = null;
     try {
-      const hero = createGlobe($("hero-globe"), { seed: "panalo-students", interactive: true, maxDisk: 300, maxPixels: 1500, onMotion: (m) => dock?.sync(m) });
+      const hero = createGlobe($("hero-globe"), { seed: "panalo-students", interactive: true, maxDisk: 300, maxPixels: 1100, onMotion: (m) => dock?.sync(m) });
       hero.setLayers({ earth: 1, cities: 0.85, land: 0.34, lights: 180, forest: 0.6, aurora: 0.7, glow: 0.35, atmosphere: 0.75, clouds: 0.22, ring: 0.9 }, [
         { value: 1, done: true },
         { value: 0.6, done: false },
@@ -70,7 +70,9 @@ export function initLanding() {
         const world = document.querySelector(".hero-world");
         world.append(el("i", { class: "hero-flare", "aria-hidden": "true" }));
         let fx = null;
-        let wanted = true;
+        // Calm by default: the ribbons wind only with lively effects on,
+        // or when you turn them on here.
+        let wanted = lively();
         const sync = () => {
           const on = wanted && comic();
           world.classList.toggle("no-ribbons", !on);
@@ -83,12 +85,12 @@ export function initLanding() {
         sync();
         onLook(sync);
         extra.push(
-          dockToggle("≋", "Ink water and flame (Verse)", true, (on) => {
+          dockToggle("≋", "Ink water and flame (Verse)", wanted, (on) => {
             wanted = on;
             sync();
           })
         );
-        drift(document.querySelector(".hero-drift"), { count: 26 });
+        if (lively()) drift(document.querySelector(".hero-drift"), { count: 26 });
       }
       dock = globeDock(hero, { extra });
       dock.node.id = "hero-dock";
