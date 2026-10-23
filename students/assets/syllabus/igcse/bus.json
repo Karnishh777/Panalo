@@ -1,0 +1,55 @@
+{
+  "subject": "bus",
+  "name": "Business Studies",
+  "board": "Cambridge IGCSE",
+  "code": "0450",
+  "topics": [
+    {
+      "id": "1", "name": "Understanding business activity",
+      "questions": [
+        { "q": "Which business is in the secondary sector?", "o": ["A farm", "A car factory", "A bank", "A mine"], "a": 1, "why": "Primary extracts raw materials, secondary manufactures, tertiary provides services." },
+        { "q": "What does limited liability mean?", "o": ["Owners can only lose what they invested", "The business can't borrow", "Owners pay all debts personally", "There is only one owner"], "a": 0, "why": "Shareholders' personal assets are protected if the company fails." },
+        { "q": "Which is a stakeholder of a school?", "o": ["Only the owner", "Students, parents, teachers and the local community", "Only the government", "Only shareholders"], "a": 1, "why": "Stakeholders are anyone with an interest in the organisation's activities." }
+      ]
+    },
+    {
+      "id": "2", "name": "People in business",
+      "questions": [
+        { "q": "In Maslow's hierarchy, which need is at the top?", "o": ["Safety", "Social", "Self-actualisation", "Physiological"], "a": 2, "why": "Physiological, safety, social, esteem, then self-actualisation." },
+        { "q": "A wide span of control means a manager…", "o": ["has few subordinates", "has many subordinates", "has no authority", "works part-time"], "a": 1, "why": "Wide spans suit flat structures with fewer layers." },
+        { "q": "On-the-job training is…", "o": ["done at a college", "learning while doing the job, often from an experienced worker", "always expensive", "only for managers"], "a": 1, "why": "It is cheap and relevant but may pass on bad habits." }
+      ]
+    },
+    {
+      "id": "3", "name": "Marketing",
+      "questions": [
+        { "q": "What are the 4 Ps of the marketing mix?", "o": ["Price, product, promotion, place", "People, profit, planet, price", "Product, packaging, price, profit", "Price, place, people, process"], "a": 0, "why": "These four elements are combined to meet customer needs." },
+        { "q": "Primary market research is…", "o": ["using existing published data", "collecting new data first-hand, e.g. surveys", "only online", "free"], "a": 1, "why": "Secondary research uses data that already exists." },
+        { "q": "Penetration pricing means…", "o": ["a high price at launch", "a low price at launch to gain market share", "pricing at cost", "copying rivals' prices"], "a": 1, "why": "Price skimming is the opposite: high at launch." }
+      ]
+    },
+    {
+      "id": "4", "name": "Operations management",
+      "questions": [
+        { "q": "Batch production means…", "o": ["making one unique item", "making a set of identical items, then switching to another", "continuous mass production", "only services"], "a": 1, "why": "Job, batch and flow are the three methods." },
+        { "q": "Break-even output is where…", "o": ["profit is highest", "total revenue equals total costs", "costs are zero", "sales stop"], "a": 1, "why": "Break-even = fixed costs ÷ contribution per unit." },
+        { "q": "Fixed costs are $2000; price $10; variable cost $6. What is break-even output?", "o": ["200", "333", "500", "1000"], "a": 2, "why": "Contribution = 10 − 6 = $4; 2000 ÷ 4 = 500 units." }
+      ]
+    },
+    {
+      "id": "5", "name": "Financial information and decisions",
+      "questions": [
+        { "q": "Which is a short-term source of finance?", "o": ["Share issue", "Bank overdraft", "Mortgage", "Debenture"], "a": 1, "why": "Overdrafts cover temporary cash shortages." },
+        { "q": "A cash-flow forecast shows…", "o": ["profit", "expected cash inflows and outflows over time", "assets and liabilities", "share prices"], "a": 1, "why": "It helps spot when cash will run short." },
+        { "q": "The current ratio is…", "o": ["current assets ÷ current liabilities", "profit ÷ revenue", "current liabilities ÷ current assets", "revenue ÷ costs"], "a": 0, "why": "It measures liquidity: whether short-term debts can be paid." }
+      ]
+    },
+    {
+      "id": "6", "name": "External influences on business activity",
+      "questions": [
+        { "q": "During a recession, a luxury goods business is likely to see…", "o": ["higher sales", "lower sales", "no change", "lower costs only"], "a": 1, "why": "Falling incomes cut spending on luxuries most." },
+        { "q": "A multinational company is one that…", "o": ["sells abroad only", "has factories or operations in more than one country", "is government-owned", "has many shareholders"], "a": 1, "why": "Exporting alone doesn't make a business multinational." }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,89 @@
+{
+  "subject": "eco",
+  "name": "Economics",
+  "board": "Cambridge International AS & A Level",
+  "code": "9708",
+  "topics": [
+    {
+      "id": "1", "stage": "as", "name": "Basic economic ideas and resource allocation",
+      "questions": [
+        { "q": "A positive statement is one that…", "o": ["contains a value judgement", "can be tested against evidence", "is always true", "is about the future"], "a": 1, "why": "Normative statements contain opinions about what ought to be." },
+        { "q": "The ceteris paribus assumption means…", "o": ["all else stays equal", "prices are fixed", "markets are perfect", "governments don't intervene"], "a": 0, "why": "It isolates the effect of one variable." },
+        { "q": "In a mixed economy, resources are allocated by…", "o": ["the market only", "the state only", "both the market and the state", "tradition"], "a": 2, "why": "Most economies combine private markets with public provision." }
+      ]
+    },
+    {
+      "id": "2", "stage": "as", "name": "The price system and the microeconomy",
+      "questions": [
+        { "q": "Income elasticity of demand is negative. The good is…", "o": ["normal", "inferior", "a luxury", "a necessity with positive YED"], "a": 1, "why": "Demand for inferior goods falls as income rises." },
+        { "q": "Cross elasticity of demand between two goods is positive. They are…", "o": ["complements", "substitutes", "unrelated", "inferior"], "a": 1, "why": "A rise in one's price raises demand for the other." },
+        { "q": "Consumer surplus is…", "o": ["the difference between what consumers are willing to pay and what they pay", "producer profit", "tax revenue", "excess supply"], "a": 0, "why": "It is the area below the demand curve and above the price." },
+        { "q": "If demand is price inelastic, a price rise will…", "o": ["reduce total revenue", "increase total revenue", "leave revenue unchanged", "reduce quantity to zero"], "a": 1, "why": "Quantity falls proportionally less than price rises." }
+      ]
+    },
+    {
+      "id": "3", "stage": "as", "name": "Government microeconomic intervention",
+      "questions": [
+        { "q": "An indirect tax on a good with inelastic demand falls mainly on…", "o": ["producers", "consumers", "the government", "workers"], "a": 1, "why": "Producers can pass most of the tax on as higher prices." },
+        { "q": "A negative externality of production leads a free market to…", "o": ["underproduce", "overproduce", "produce efficiently", "stop producing"], "a": 1, "why": "Firms ignore external costs, so marginal social cost exceeds private cost." },
+        { "q": "A public good is…", "o": ["rival and excludable", "non-rival and non-excludable", "provided only by the state", "always free"], "a": 1, "why": "These features create the free-rider problem." }
+      ]
+    },
+    {
+      "id": "4", "stage": "as", "name": "The macroeconomy",
+      "questions": [
+        { "q": "Aggregate demand is…", "o": ["C + I + G + (X − M)", "C + S + T", "GDP − taxes", "C + I only"], "a": 0, "why": "Consumption, investment, government spending and net exports." },
+        { "q": "Cost-push inflation is caused by…", "o": ["rising demand", "rising costs of production, such as wages or oil", "falling interest rates", "a budget surplus"], "a": 1, "why": "Higher costs shift short-run aggregate supply left." },
+        { "q": "Which is counted as unemployed?", "o": ["A retired person", "A student not seeking work", "Someone able and willing to work and actively seeking work", "A homemaker not seeking work"], "a": 2, "why": "The ILO definition requires being without work, available and looking." }
+      ]
+    },
+    {
+      "id": "5", "stage": "as", "name": "Government macroeconomic intervention",
+      "questions": [
+        { "q": "Expansionary fiscal policy involves…", "o": ["raising taxes", "raising government spending or cutting taxes", "raising interest rates", "selling bonds"], "a": 1, "why": "It boosts aggregate demand." },
+        { "q": "Supply-side policies aim to…", "o": ["raise aggregate demand quickly", "increase the productive capacity of the economy", "cause inflation", "cut exports"], "a": 1, "why": "Examples: education, training, deregulation, infrastructure." }
+      ]
+    },
+    {
+      "id": "6", "stage": "as", "name": "International economic issues",
+      "questions": [
+        { "q": "Comparative advantage means a country should specialise where it has…", "o": ["the lowest absolute cost", "the lowest opportunity cost", "the most workers", "the highest prices"], "a": 1, "why": "Trade can benefit both countries even if one is better at everything." },
+        { "q": "The Marshall–Lerner condition states a depreciation improves the current account if…", "o": ["PEDx + PEDm > 1", "PEDx + PEDm < 1", "inflation is zero", "imports are elastic only"], "a": 0, "why": "Sum of export and import price elasticities (absolute values) must exceed 1." }
+      ]
+    },
+    {
+      "id": "7", "stage": "a2", "name": "The price system and the microeconomy (A Level)",
+      "questions": [
+        { "q": "A firm maximises profit where…", "o": ["MR = MC", "AR = AC", "TR is highest", "MC is lowest"], "a": 0, "why": "Producing one more unit would add more to cost than to revenue beyond that point." },
+        { "q": "In perfect competition in the long run, firms earn…", "o": ["supernormal profit", "normal profit", "losses", "monopoly profit"], "a": 1, "why": "Free entry and exit remove supernormal profit." },
+        { "q": "A natural monopoly arises because of…", "o": ["government licences only", "economies of scale so large that one firm has the lowest cost", "advertising", "price discrimination"], "a": 1, "why": "Examples include water and electricity grids." }
+      ]
+    },
+    {
+      "id": "8", "stage": "a2", "name": "Government microeconomic intervention (A Level)",
+      "questions": [
+        { "q": "The Gini coefficient measures…", "o": ["inflation", "income inequality", "unemployment", "growth"], "a": 1, "why": "0 means perfect equality; 1 means maximum inequality." },
+        { "q": "Government failure occurs when…", "o": ["markets fail", "intervention leads to a less efficient allocation of resources", "taxes are cut", "a public good is provided"], "a": 1, "why": "Causes include poor information and unintended consequences." }
+      ]
+    },
+    {
+      "id": "9", "stage": "a2", "name": "The macroeconomy (A Level)",
+      "questions": [
+        { "q": "The multiplier is larger when the marginal propensity to consume is…", "o": ["smaller", "larger", "zero", "negative"], "a": 1, "why": "In a closed economy without government, k = 1/(1 − MPC)." },
+        { "q": "The natural rate of unemployment is associated with…", "o": ["cyclical unemployment", "frictional and structural unemployment", "zero unemployment", "seasonal unemployment only"], "a": 1, "why": "It exists when the labour market is in equilibrium." }
+      ]
+    },
+    {
+      "id": "10", "stage": "a2", "name": "Government macroeconomic intervention (A Level)",
+      "questions": [
+        { "q": "Quantitative easing means the central bank…", "o": ["raises interest rates", "buys financial assets to increase the money supply", "cuts government spending", "prints coins only"], "a": 1, "why": "It aims to lower long-term interest rates and boost spending." }
+      ]
+    },
+    {
+      "id": "11", "stage": "a2", "name": "International economic issues (A Level)",
+      "questions": [
+        { "q": "Which measure of development adjusts income for differences in prices between countries?", "o": ["Nominal GDP", "GDP at purchasing power parity", "Exports", "CPI"], "a": 1, "why": "PPP compares how much a unit of income buys in each country." }
+      ]
+    }
+  ]
+}

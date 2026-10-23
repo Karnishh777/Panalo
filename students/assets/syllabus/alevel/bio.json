@@ -1,0 +1,158 @@
+{
+  "subject": "bio",
+  "name": "Biology",
+  "board": "Cambridge International AS & A Level",
+  "code": "9700",
+  "topics": [
+    {
+      "id": "1", "stage": "as", "name": "Cell structure",
+      "questions": [
+        { "q": "Which organelle is the site of protein synthesis?", "o": ["Golgi body", "Ribosome", "Lysosome", "Centriole"], "a": 1, "why": "Ribosomes translate mRNA into polypeptides." },
+        { "q": "Which feature is found in prokaryotic cells?", "o": ["A nucleus", "Mitochondria", "70S ribosomes and circular DNA", "Endoplasmic reticulum"], "a": 2, "why": "Prokaryotes have no membrane-bound organelles; their ribosomes are 70S." },
+        { "q": "The resolution of a light microscope is limited by…", "o": ["the magnification", "the wavelength of light", "the size of the slide", "the stain"], "a": 1, "why": "Resolution is about half the wavelength used; electrons have much shorter wavelengths." },
+        { "q": "An eyepiece graticule must be calibrated using…", "o": ["a ruler", "a stage micrometer", "a hand lens", "the field diameter only"], "a": 1, "why": "The stage micrometer's known divisions give the value of each graticule unit at that magnification." }
+      ]
+    },
+    {
+      "id": "2", "stage": "as", "name": "Biological molecules",
+      "questions": [
+        { "q": "Which bond joins two α-glucose molecules in maltose?", "o": ["Peptide", "Ester", "α-1,4 glycosidic", "Hydrogen"], "a": 2, "why": "A condensation reaction forms an α-1,4 glycosidic bond." },
+        { "q": "What gives cellulose its strength?", "o": ["Branching", "Hydrogen bonds between parallel chains of β-glucose forming microfibrils", "Ionic bonds", "Helical shape"], "a": 1, "why": "Alternate β-glucose units are inverted, giving straight chains that hydrogen-bond together." },
+        { "q": "Which level of protein structure is the sequence of amino acids?", "o": ["Primary", "Secondary", "Tertiary", "Quaternary"], "a": 0, "why": "The primary structure determines how the chain folds." },
+        { "q": "Why is water a good solvent?", "o": ["It is non-polar", "It is polar, so ions and polar molecules dissolve", "It has a high density", "It is ionic"], "a": 1, "why": "Its δ+ and δ− regions surround charged and polar particles." }
+      ]
+    },
+    {
+      "id": "3", "stage": "as", "name": "Enzymes",
+      "questions": [
+        { "q": "A competitive inhibitor…", "o": ["binds to the active site, competing with the substrate", "binds elsewhere and changes the active site", "raises Vmax", "denatures the enzyme"], "a": 0, "why": "Raising substrate concentration can overcome it; Vmax is unchanged." },
+        { "q": "A low Km means the enzyme has…", "o": ["low affinity for its substrate", "high affinity for its substrate", "a slow maximum rate", "been inhibited"], "a": 1, "why": "Km is the substrate concentration at half Vmax; low Km means it reaches it at low concentration." },
+        { "q": "Why are immobilised enzymes useful?", "o": ["They work faster than free enzymes always", "They can be reused and are more stable, and the product isn't contaminated", "They don't need substrate", "They never denature"], "a": 1, "why": "Fixing enzymes in beads makes separation and reuse easy." }
+      ]
+    },
+    {
+      "id": "4", "stage": "as", "name": "Cell membranes and transport",
+      "questions": [
+        { "q": "In the fluid mosaic model, what makes the membrane fluid?", "o": ["Proteins", "Phospholipids that move within the layer", "Cellulose", "Glycogen"], "a": 1, "why": "Phospholipids move laterally; cholesterol regulates fluidity." },
+        { "q": "Facilitated diffusion uses…", "o": ["ATP", "channel or carrier proteins, down a concentration gradient", "vesicles", "a pump against the gradient"], "a": 1, "why": "It is passive, but needs proteins for polar or charged molecules." },
+        { "q": "Water potential of pure water is…", "o": ["positive", "zero", "negative", "infinite"], "a": 1, "why": "Ψ of pure water is 0 kPa; solutes make it negative." }
+      ]
+    },
+    {
+      "id": "5", "stage": "as", "name": "The mitotic cell cycle",
+      "questions": [
+        { "q": "In which stage do chromosomes line up on the equator?", "o": ["Prophase", "Metaphase", "Anaphase", "Telophase"], "a": 1, "why": "Spindle fibres attach to centromeres and align chromosomes at metaphase." },
+        { "q": "When is DNA replicated?", "o": ["Prophase", "S phase of interphase", "Anaphase", "Cytokinesis"], "a": 1, "why": "DNA synthesis happens in the S phase before mitosis." },
+        { "q": "What is the role of telomeres?", "o": ["Join sister chromatids", "Protect chromosome ends from losing genes during replication", "Start transcription", "Form the spindle"], "a": 1, "why": "Repeated non-coding sequences are lost instead of genes." }
+      ]
+    },
+    {
+      "id": "6", "stage": "as", "name": "Nucleic acids and protein synthesis",
+      "questions": [
+        { "q": "DNA replication is described as semi-conservative because…", "o": ["half the DNA is copied", "each new molecule has one original strand and one new strand", "it happens in half the cells", "only one gene is copied"], "a": 1, "why": "Shown by the Meselson–Stahl experiment." },
+        { "q": "Which enzyme joins Okazaki fragments?", "o": ["DNA polymerase", "DNA ligase", "Helicase", "RNA polymerase"], "a": 1, "why": "Ligase seals the gaps in the lagging strand." },
+        { "q": "During translation, tRNA anticodons pair with…", "o": ["DNA bases", "mRNA codons", "amino acids", "ribosomal proteins"], "a": 1, "why": "Complementary base pairing places the right amino acid." },
+        { "q": "A substitution mutation may have no effect because…", "o": ["DNA always repairs it", "the genetic code is degenerate (several codons per amino acid)", "it affects RNA only", "proteins ignore it"], "a": 1, "why": "A different codon can still code for the same amino acid." }
+      ]
+    },
+    {
+      "id": "7", "stage": "as", "name": "Transport in plants",
+      "questions": [
+        { "q": "What drives water up the xylem?", "o": ["Root pressure only", "Transpiration pull, with cohesion and adhesion", "Active transport in xylem", "Gravity"], "a": 1, "why": "Evaporation from leaves creates tension that pulls a continuous column of water up." },
+        { "q": "Sucrose is loaded into phloem sieve tubes by…", "o": ["diffusion", "co-transport with H⁺ via companion cells", "osmosis", "transpiration"], "a": 1, "why": "Companion cells pump H⁺ out; sucrose re-enters with H⁺ through co-transporters." },
+        { "q": "Xerophytes reduce water loss by…", "o": ["having more stomata", "sunken stomata, rolled leaves and thick cuticles", "large thin leaves", "shallow roots only"], "a": 1, "why": "These trap humid air and reduce the surface exposed." }
+      ]
+    },
+    {
+      "id": "8", "stage": "as", "name": "Transport in mammals",
+      "questions": [
+        { "q": "The Bohr effect means that high CO₂ concentration…", "o": ["increases haemoglobin's affinity for oxygen", "decreases haemoglobin's affinity for oxygen", "has no effect", "stops respiration"], "a": 1, "why": "Oxygen is released more readily where respiration is high." },
+        { "q": "What starts each heartbeat?", "o": ["The AVN", "The SAN (pacemaker)", "The brain", "The Purkyne tissue"], "a": 1, "why": "The SAN starts a wave of excitation; the AVN delays it before the ventricles contract." },
+        { "q": "Tissue fluid forms because at the arterial end of a capillary…", "o": ["osmosis pulls water in", "hydrostatic pressure is greater than the osmotic pull", "proteins leave", "blood stops"], "a": 1, "why": "Fluid is forced out; most returns at the venous end." }
+      ]
+    },
+    {
+      "id": "9", "stage": "as", "name": "Gas exchange",
+      "questions": [
+        { "q": "What is the role of cartilage in the trachea?", "o": ["Gas exchange", "Keeps the airway open", "Makes mucus", "Moves mucus"], "a": 1, "why": "C-shaped rings stop the trachea collapsing." },
+        { "q": "Goblet cells…", "o": ["beat to move mucus", "secrete mucus that traps particles", "exchange gases", "contract to narrow airways"], "a": 1, "why": "Cilia then sweep the mucus upwards." }
+      ]
+    },
+    {
+      "id": "10", "stage": "as", "name": "Infectious diseases",
+      "questions": [
+        { "q": "Which organism causes malaria?", "o": ["A bacterium", "A virus", "Plasmodium (a protoctist)", "A fungus"], "a": 2, "why": "Plasmodium is transmitted by female Anopheles mosquitoes." },
+        { "q": "How does penicillin kill bacteria?", "o": ["It destroys DNA", "It stops cell wall synthesis, so cells burst", "It blocks ribosomes in human cells", "It dissolves membranes"], "a": 1, "why": "Without strong walls, bacteria burst by osmosis as they grow." }
+      ]
+    },
+    {
+      "id": "11", "stage": "as", "name": "Immunity",
+      "questions": [
+        { "q": "Which cells produce antibodies?", "o": ["T helper cells", "Plasma cells (from B lymphocytes)", "Macrophages", "Neutrophils"], "a": 1, "why": "Activated B cells divide and differentiate into plasma cells." },
+        { "q": "Passive immunity is…", "o": ["long-lasting", "antibodies received from outside, short-lived", "from vaccination", "from being infected"], "a": 1, "why": "No memory cells are made, e.g. antibodies across the placenta." },
+        { "q": "Monoclonal antibodies are produced by…", "o": ["many different B cells", "a single clone of cells (hybridomas)", "T cells", "bacteria naturally"], "a": 1, "why": "They are identical and target one specific antigen." }
+      ]
+    },
+    {
+      "id": "12", "stage": "a2", "name": "Energy and respiration",
+      "questions": [
+        { "q": "Where does the Krebs cycle take place?", "o": ["Cytoplasm", "Mitochondrial matrix", "Inner membrane", "Chloroplast"], "a": 1, "why": "Glycolysis is in the cytoplasm; link reaction and Krebs cycle in the matrix." },
+        { "q": "What is the final electron acceptor in oxidative phosphorylation?", "o": ["NAD", "Oxygen", "FAD", "Pyruvate"], "a": 1, "why": "Oxygen combines with electrons and H⁺ to form water." },
+        { "q": "A respiratory quotient (RQ) near 0.7 suggests the substrate is…", "o": ["carbohydrate", "lipid", "protein", "glucose anaerobically"], "a": 1, "why": "Carbohydrate 1.0, protein about 0.9, lipid about 0.7." }
+      ]
+    },
+    {
+      "id": "13", "stage": "a2", "name": "Photosynthesis",
+      "questions": [
+        { "q": "Where does the light-dependent stage happen?", "o": ["Stroma", "Thylakoid membranes", "Cytoplasm", "Cell wall"], "a": 1, "why": "Photosystems and the electron transport chain are in the thylakoids." },
+        { "q": "Which enzyme fixes CO₂ in the Calvin cycle?", "o": ["ATP synthase", "Rubisco", "Amylase", "Catalase"], "a": 1, "why": "Rubisco combines CO₂ with RuBP." },
+        { "q": "A limiting factor is…", "o": ["the factor in greatest supply", "the factor that controls the rate because it is in shortest supply", "always light", "always temperature"], "a": 1, "why": "Increasing it increases the rate until another factor limits." }
+      ]
+    },
+    {
+      "id": "14", "stage": "a2", "name": "Homeostasis",
+      "questions": [
+        { "q": "Which hormone increases water reabsorption in the collecting duct?", "o": ["Insulin", "ADH", "Glucagon", "Adrenaline"], "a": 1, "why": "ADH inserts aquaporins, making urine more concentrated." },
+        { "q": "Homeostasis mainly works by…", "o": ["positive feedback", "negative feedback", "no feedback", "random change"], "a": 1, "why": "A change triggers a response that reverses it." },
+        { "q": "Guard cells open stomata by…", "o": ["losing water", "taking in K⁺, lowering water potential, then water enters and they swell", "using cellulose", "photosynthesising only"], "a": 1, "why": "Turgid guard cells bend apart because of uneven wall thickness." }
+      ]
+    },
+    {
+      "id": "15", "stage": "a2", "name": "Control and coordination",
+      "questions": [
+        { "q": "What causes the depolarisation in an action potential?", "o": ["K⁺ moving out", "Na⁺ rushing in through voltage-gated channels", "Cl⁻ moving in", "ATP breaking down"], "a": 1, "why": "Repolarisation then follows as K⁺ leaves." },
+        { "q": "Myelination speeds up conduction by…", "o": ["making axons thicker", "saltatory conduction between nodes of Ranvier", "adding synapses", "using hormones"], "a": 1, "why": "Action potentials jump from node to node." },
+        { "q": "Which plant hormone stimulates stomatal closure in drought?", "o": ["Auxin", "Gibberellin", "Abscisic acid (ABA)", "Ethene"], "a": 2, "why": "ABA triggers K⁺ loss from guard cells." }
+      ]
+    },
+    {
+      "id": "16", "stage": "a2", "name": "Inherited change",
+      "questions": [
+        { "q": "Crossing over happens in…", "o": ["mitosis prophase", "meiosis prophase I", "meiosis anaphase II", "interphase"], "a": 1, "why": "Non-sister chromatids of homologous chromosomes exchange sections." },
+        { "q": "A chi-squared test compares…", "o": ["two means", "observed and expected frequencies", "correlation", "variance only"], "a": 1, "why": "It tests whether differences from the expected ratio are due to chance." },
+        { "q": "Epistasis is…", "o": ["linked genes", "one gene affecting the expression of another gene", "a mutation", "codominance"], "a": 1, "why": "It changes expected dihybrid ratios." }
+      ]
+    },
+    {
+      "id": "17", "stage": "a2", "name": "Selection and evolution",
+      "questions": [
+        { "q": "The Hardy–Weinberg equation is p² + 2pq + q² = 1. What is 2pq?", "o": ["Frequency of homozygous dominants", "Frequency of heterozygotes", "Frequency of the recessive allele", "Frequency of homozygous recessives"], "a": 1, "why": "p² = AA, 2pq = Aa, q² = aa." },
+        { "q": "Genetic drift has the largest effect in…", "o": ["large populations", "small populations", "all populations equally", "plants only"], "a": 1, "why": "Chance changes in allele frequency matter more when numbers are small." }
+      ]
+    },
+    {
+      "id": "18", "stage": "a2", "name": "Classification, biodiversity and conservation",
+      "questions": [
+        { "q": "Simpson's index of diversity is higher when…", "o": ["one species dominates", "there are many species with similar numbers", "there are few individuals", "species are large"], "a": 1, "why": "Diversity includes both richness and evenness." },
+        { "q": "Which are the three domains?", "o": ["Plants, animals, fungi", "Archaea, Bacteria, Eukarya", "Prokaryotes, eukaryotes, viruses", "Vertebrates, invertebrates, plants"], "a": 1, "why": "Domains are the highest rank in classification." }
+      ]
+    },
+    {
+      "id": "19", "stage": "a2", "name": "Genetic technology",
+      "questions": [
+        { "q": "What does PCR do?", "o": ["Cuts DNA", "Makes many copies of a DNA sequence", "Sequences proteins", "Separates DNA by size"], "a": 1, "why": "Cycles of denaturing, annealing primers and extending with Taq polymerase." },
+        { "q": "Gel electrophoresis separates DNA fragments by…", "o": ["charge sign", "size (smaller fragments move further)", "colour", "base sequence"], "a": 1, "why": "Negatively charged DNA moves towards the anode; small fragments travel faster." }
+      ]
+    }
+  ]
+}

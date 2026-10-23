@@ -1,0 +1,55 @@
+{
+  "subject": "soc",
+  "name": "Sociology",
+  "board": "Cambridge International AS & A Level",
+  "code": "9699",
+  "topics": [
+    {
+      "id": "1", "stage": "as", "name": "Socialisation and the creation of social identity",
+      "questions": [
+        { "q": "Primary socialisation happens mainly through…", "o": ["the media", "the family", "the workplace", "religion"], "a": 1, "why": "It is the first stage of learning norms and values, in early childhood." },
+        { "q": "Norms are…", "o": ["laws only", "shared expectations about how to behave in a situation", "beliefs about God", "statistics"], "a": 1, "why": "Values are broader beliefs about what is important." }
+      ]
+    },
+    {
+      "id": "2", "stage": "as", "name": "Methods of research",
+      "questions": [
+        { "q": "Interpretivists prefer methods that…", "o": ["produce statistics", "give rich qualitative data about meanings", "use experiments", "avoid people"], "a": 1, "why": "Positivists favour quantitative methods such as surveys." },
+        { "q": "A longitudinal study…", "o": ["studies one moment", "follows the same group over time", "uses secondary data only", "is always an experiment"], "a": 1, "why": "It can show change and development." },
+        { "q": "The Hawthorne effect is when…", "o": ["data is lost", "people change behaviour because they know they are being studied", "samples are too small", "questions are biased"], "a": 1, "why": "It reduces the validity of observation." }
+      ]
+    },
+    {
+      "id": "3", "stage": "as", "name": "The family",
+      "questions": [
+        { "q": "A nuclear family consists of…", "o": ["three generations", "two parents and their dependent children", "one parent and children", "unrelated adults"], "a": 1, "why": "Extended families include other relatives." },
+        { "q": "Functionalists see the family as…", "o": ["a source of conflict", "performing essential functions for society", "oppressing women", "irrelevant"], "a": 1, "why": "Marxists and feminists offer critical views." }
+      ]
+    },
+    {
+      "id": "4", "stage": "a2", "name": "Education",
+      "questions": [
+        { "q": "The hidden curriculum is…", "o": ["the timetable", "norms and values taught informally through school life", "secret exams", "the official syllabus"], "a": 1, "why": "For example, punctuality and obedience." },
+        { "q": "Labelling theory in education suggests…", "o": ["teachers' expectations can affect pupils' achievement", "intelligence is fixed", "exams are fair", "only class matters"], "a": 0, "why": "It can create a self-fulfilling prophecy." }
+      ]
+    },
+    {
+      "id": "5", "stage": "a2", "name": "Globalisation",
+      "questions": [
+        { "q": "Cultural globalisation refers to…", "o": ["trade only", "the spread of ideas, values and media across the world", "migration only", "military alliances"], "a": 1, "why": "Critics link it to cultural homogenisation." }
+      ]
+    },
+    {
+      "id": "6", "stage": "a2", "name": "Media",
+      "questions": [
+        { "q": "Agenda setting means the media…", "o": ["tells people what to think", "influences which issues people think about", "has no effect", "only reports facts"], "a": 1, "why": "Choosing what to cover shapes public priorities." }
+      ]
+    },
+    {
+      "id": "7", "stage": "a2", "name": "Religion",
+      "questions": [
+        { "q": "Secularisation is…", "o": ["the growth of religion", "the decline in the social significance of religion", "a religious festival", "a type of church"], "a": 1, "why": "Debates focus on how to measure it." }
+      ]
+    }
+  ]
+}

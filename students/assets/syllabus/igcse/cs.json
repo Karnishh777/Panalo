@@ -1,0 +1,87 @@
+{
+  "subject": "cs",
+  "name": "Computer Science",
+  "board": "Cambridge IGCSE",
+  "code": "0478",
+  "topics": [
+    {
+      "id": "1", "name": "Data representation",
+      "questions": [
+        { "q": "What is the denary value of binary 1011 0110?", "o": ["162", "182", "178", "214"], "a": 1, "why": "128 + 32 + 16 + 4 + 2 = 182." },
+        { "q": "What is hexadecimal 3F in denary?", "o": ["63", "48", "315", "36"], "a": 0, "why": "3 × 16 + 15 = 63." },
+        { "q": "How many bytes is 1 kibibyte (KiB)?", "o": ["1000", "1024", "8", "1 000 000"], "a": 1, "why": "Binary prefixes use powers of 2: 2¹⁰ = 1024." },
+        { "q": "Why does lossy compression make files smaller than lossless?", "o": ["It removes data permanently that is less noticeable", "It encrypts the file", "It stores data twice", "It uses hexadecimal"], "a": 0, "why": "Lossy discards some data (e.g. detail in an image); lossless can rebuild the original exactly." },
+        { "q": "An image is 100 × 100 pixels with a colour depth of 8 bits. What is its file size?", "o": ["10 000 bits", "10 000 bytes", "80 000 bytes", "800 bytes"], "a": 1, "why": "100 × 100 × 8 bits = 80 000 bits = 10 000 bytes." }
+      ]
+    },
+    {
+      "id": "2", "name": "Data transmission",
+      "questions": [
+        { "q": "Which method sends bits one at a time down a single wire?", "o": ["Parallel", "Serial", "Duplex", "Simplex only"], "a": 1, "why": "Serial transmission uses one channel; parallel uses several at once." },
+        { "q": "What does a parity bit help detect?", "o": ["Viruses", "Errors in transmission", "Lost packets only", "Encryption keys"], "a": 1, "why": "An odd or even count of 1s that doesn't match shows a bit has changed." },
+        { "q": "Symmetric encryption uses…", "o": ["one shared key to encrypt and decrypt", "a public and a private key", "no key", "a parity bit"], "a": 0, "why": "Asymmetric encryption uses a public/private key pair." }
+      ]
+    },
+    {
+      "id": "3", "name": "Hardware",
+      "questions": [
+        { "q": "Which register holds the address of the next instruction?", "o": ["MAR", "MDR", "Program counter", "Accumulator"], "a": 2, "why": "The PC is incremented during the fetch stage." },
+        { "q": "Which is volatile memory?", "o": ["ROM", "RAM", "SSD", "Hard disk"], "a": 1, "why": "RAM loses its contents when the power is off." },
+        { "q": "What is the main advantage of an SSD over an HDD?", "o": ["Cheaper per GB", "Faster access with no moving parts", "Holds more data always", "Never wears out"], "a": 1, "why": "Solid-state storage uses flash memory, so access is faster and it is more robust." }
+      ]
+    },
+    {
+      "id": "4", "name": "Software",
+      "questions": [
+        { "q": "Which translator converts a whole program to machine code before it runs?", "o": ["Interpreter", "Compiler", "Assembler only", "Linker"], "a": 1, "why": "A compiler produces an executable; an interpreter translates line by line as it runs." },
+        { "q": "Which is a function of an operating system?", "o": ["Writing essays", "Managing memory and peripherals", "Editing photos", "Browsing the web"], "a": 1, "why": "Applications do tasks for users; the OS manages hardware, files, memory and security." },
+        { "q": "What is an interrupt?", "o": ["A program crash", "A signal to the processor that something needs attention", "A type of memory", "A loop"], "a": 1, "why": "The CPU pauses, services the interrupt, then resumes." }
+      ]
+    },
+    {
+      "id": "5", "name": "The internet and its uses",
+      "questions": [
+        { "q": "What does a DNS server do?", "o": ["Stores web pages", "Turns domain names into IP addresses", "Encrypts data", "Blocks viruses"], "a": 1, "why": "Browsers need the IP address to reach a web server." },
+        { "q": "What does HTTPS add to HTTP?", "o": ["Speed", "Encryption using SSL/TLS", "Colour", "Compression only"], "a": 1, "why": "Data between browser and server is encrypted." },
+        { "q": "Phishing is…", "o": ["a virus that copies itself", "fake emails or sites that trick users into giving personal data", "a hardware fault", "a firewall setting"], "a": 1, "why": "It relies on deceiving the user, not on exploiting software." }
+      ]
+    },
+    {
+      "id": "6", "name": "Automated and emerging technologies",
+      "questions": [
+        { "q": "In an automated system, what does an actuator do?", "o": ["Measures temperature", "Carries out a physical action such as opening a valve", "Stores data", "Displays results"], "a": 1, "why": "Sensors measure; the microprocessor decides; actuators act." },
+        { "q": "Machine learning is a type of AI where the system…", "o": ["follows only fixed rules", "improves its performance from data", "has no data", "is always a robot"], "a": 1, "why": "It learns patterns from training data." }
+      ]
+    },
+    {
+      "id": "7", "name": "Algorithm design and problem-solving",
+      "questions": [
+        { "q": "Which search needs the list to be sorted first?", "o": ["Linear search", "Binary search", "Both", "Neither"], "a": 1, "why": "Binary search repeatedly halves a sorted list." },
+        { "q": "What is a trace table used for?", "o": ["Drawing flowcharts", "Following the values of variables through an algorithm to find errors", "Sorting data", "Storing records"], "a": 1, "why": "It records each variable's value step by step." },
+        { "q": "A range check on an age field rejects 150. This is…", "o": ["verification", "validation", "encryption", "decomposition"], "a": 1, "why": "Validation checks data is sensible; verification checks it was entered correctly." }
+      ]
+    },
+    {
+      "id": "8", "name": "Programming",
+      "questions": [
+        { "q": "Which loop is best when you know exactly how many times to repeat?", "o": ["WHILE", "REPEAT…UNTIL", "FOR (count-controlled)", "IF"], "a": 2, "why": "FOR loops run a fixed number of times; WHILE and REPEAT are condition-controlled." },
+        { "q": "What does MOD return for 17 MOD 5?", "o": ["3", "2", "3.4", "12"], "a": 1, "why": "MOD gives the remainder: 17 = 3 × 5 + 2." },
+        { "q": "A local variable is…", "o": ["available anywhere in the program", "only available inside the subroutine where it is declared", "a constant", "stored in ROM"], "a": 1, "why": "Global variables are available throughout the program." }
+      ]
+    },
+    {
+      "id": "9", "name": "Databases",
+      "questions": [
+        { "q": "What is a primary key?", "o": ["The first field", "A field that uniquely identifies each record", "A password", "The largest value"], "a": 1, "why": "No two records share the same primary key value." },
+        { "q": "Which SQL keyword chooses which fields to show?", "o": ["FROM", "WHERE", "SELECT", "ORDER BY"], "a": 2, "why": "SELECT fields FROM table WHERE condition ORDER BY field." }
+      ]
+    },
+    {
+      "id": "10", "name": "Boolean logic",
+      "questions": [
+        { "q": "What is the output of an XOR gate with inputs 1 and 1?", "o": ["0", "1", "2", "Undefined"], "a": 0, "why": "XOR outputs 1 only when the inputs differ." },
+        { "q": "A NAND gate outputs 0 only when…", "o": ["both inputs are 0", "both inputs are 1", "one input is 1", "never"], "a": 1, "why": "NAND is NOT AND: AND gives 1 only for 1,1, so NAND gives 0 only for 1,1." }
+      ]
+    }
+  ]
+}
