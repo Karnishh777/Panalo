@@ -45,6 +45,7 @@ export function parseQuickAdd(input, now = Date.now()) {
   const today = startOfDay(now);
   let date = null;
   let repeat = false;
+  let namedToday = false;
   let start = null;
   let end = null;
   const cut = (re) => {
@@ -96,6 +97,7 @@ export function parseQuickAdd(input, now = Date.now()) {
     let diff = (want - today.getDay() + 7) % 7;
     if (m[1] && diff === 0) diff = 7; // "next friday" on a Friday
     date = addDays(today, diff);
+    namedToday = diff === 0;
   } else if ((m = cut(new RegExp(`\\s(?:on\\s+)?(\\d{1,2})(?:st|nd|rd|th)?\\s+(?:of\\s+)?${MON_RE}(?=\\s)`, "i")) || cut(new RegExp(`\\s(?:on\\s+)?${MON_RE}\\s+(\\d{1,2})(?:st|nd|rd|th)?(?=\\s)`, "i")))) {
     const numFirst = /^\d/.test(m[1]);
     const d = Number(numFirst ? m[1] : m[2]);
@@ -142,8 +144,10 @@ export function parseQuickAdd(input, now = Date.now()) {
   if (start) s.setHours(start[0], start[1], 0, 0);
   else if (kind === "deadline") s.setHours(23, 59, 0, 0);
   else s.setHours(9, 0, 0, 0);
-  // A time that's already passed today, with no date given, means tomorrow.
+  // A time that's already passed today, with no date given, means tomorrow;
+  // with today's weekday named ("fri 10am" on a Friday afternoon), next week.
   if (!date && timed && s.getTime() < now) s.setDate(s.getDate() + 1);
+  if (namedToday && timed && s.getTime() < now) s.setDate(s.getDate() + 7);
   let e = null;
   if (end && kind !== "deadline") {
     e = new Date(s);
