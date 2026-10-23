@@ -484,12 +484,13 @@ try {
   check("Settings offers the three looks, with yours chosen", (await page.locator(".settings-look .look-opt").count()) === 3 && (await page.isChecked(".settings-look .look-opt-verse input")));
   const livelyBox = page.locator("label.setting", { hasText: "Lively effects" }).locator("input");
   check("Lively effects are off until you turn them on", !(await livelyBox.isChecked()));
-  await livelyBox.check();
-  await page.waitForTimeout(300);
-  check("turning on lively effects applies at once", (await page.evaluate(() => document.documentElement.dataset.effects)) === "lively");
-  await livelyBox.uncheck();
-  await page.waitForTimeout(300);
-  check("and turning them off makes Panalo still again", (await page.evaluate(() => document.documentElement.dataset.effects)) === "calm");
+  // The switch re-renders Settings when it applies, so wait for the effect
+  // rather than for the (replaced) checkbox.
+  const effectsBecome = (v) => page.waitForFunction((x) => document.documentElement.dataset.effects === x, v, { timeout: 3000 }).then(() => true, () => false);
+  await livelyBox.click();
+  check("turning on lively effects applies at once", await effectsBecome("lively"));
+  await page.locator("label.setting", { hasText: "Lively effects" }).locator("input").click();
+  check("and turning them off makes Panalo still again", await effectsBecome("calm"));
   await page.evaluate(() => (location.hash = "#/now"));
   await page.waitForTimeout(900);
   check("Verse lays Now out in orbit (the log's panels around the world)", await page.evaluate(() => getComputedStyle(document.querySelector(".now-log")).display === "contents"));
@@ -960,6 +961,24 @@ try {
     check("the light (sun, night side) is chosen and remembered", a.light);
     check("no console errors (WebGL world)", gl.errors.length === 0);
     if (gl.errors.length) console.log(gl.errors.join("\n"));
+    // A GPU that gives out (context lost, never restored) leaves a 2D world
+    // in its place -- not a blank hole -- and later worlds start in 2D.
+    const swap = await gl.evaluate(async () => {
+      const { createGlobe } = await import("./js/world-render.js");
+      const c = document.createElement("canvas");
+      c.style.cssText = "width:200px;height:200px";
+      document.body.append(c);
+      const g = createGlobe(c, { seed: "lost" });
+      g.setLayers({ land: 0.4 });
+      const was = g.renderer;
+      c.getContext("webgl").getExtension("WEBGL_lose_context").loseContext();
+      await new Promise((r) => setTimeout(r, 3000));
+      const out = { was, now: g.renderer, canvas: g.canvas?.dataset.renderer, inPage: g.canvas?.isConnected, motion: typeof g.getMotion() === "object", session: sessionStorage.getItem("panalo.students.gl.gaveup") };
+      g.destroy();
+      g.canvas?.remove();
+      return out;
+    });
+    check("a lost GPU swaps the world to 2D in place, and the rest of the session stays 2D", swap.was === "webgl" && swap.now === "2d" && swap.canvas === "2d" && swap.inPage && swap.motion && swap.session === "1");
     await gl.close();
     const flat = await qa.open({ viewport: "laptop", path: "students/", storage: { "panalo.students.gl": "off" } });
     await flat.waitForTimeout(400);

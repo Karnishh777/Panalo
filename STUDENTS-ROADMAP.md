@@ -129,6 +129,11 @@ suite below runs on every pull request (`.github/workflows/tests.yml`).
 - **Migration history fixed**: phases 22–26 recorded in Supabase.
 - **Students starts offline**: the service worker now covers `/students/`,
   its fonts and its CDN libraries.
+- **The landing froze on some Macs**: the GPU globe outran the GPU and
+  stalled the whole page (the scroll counter stuck at 000 %, sections
+  blank). The globe now watches its own frame rate and steps down (fewer
+  pixels, no glow, then the 2D globe), swaps to 2D if the GPU gives out,
+  and the landing's ribbons and petals follow *Lively effects*.
 - **Leaked-password protection**: Supabase's switch needs the Pro plan, so
   it stays off; the app's own check (Have I Been Pwned, k-anonymity) covers
   sign-up and every password change. Only direct API calls skip it.

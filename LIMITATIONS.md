@@ -323,8 +323,13 @@ PIN. A user on two devices effectively has two different apps.
   about 180 ms at a 4x CPU slowdown; it runs while the browser is idle, once
   per session. Drawing it uses WebGL only on a real GPU: a browser that
   offers only software WebGL (some VMs, remote desktops, old drivers) gets
-  the simpler 2D globe, with no ring shadows or relief. `localStorage`
-  `panalo.students.gl` = `force` or `off` overrides the choice for testing.
+  the simpler 2D globe, with no ring shadows or relief. A GPU that can't
+  keep up (under ~25 frames a second) gets fewer pixels, then no glow, then
+  the 2D globe; one that gives out (a lost context that doesn't come back)
+  is swapped for the 2D globe in place. Either way the rest of the session
+  stays 2D. The 2D globe still costs a little CPU on every frame.
+  `localStorage` `panalo.students.gl` = `force` or `off` overrides the
+  choice for testing.
 - **The intro plays sound unless turned off.** It starts right after
   sign-up, which browsers count as permission to play audio; a browser that
   still refuses plays it silently. The switch is on screen and remembered

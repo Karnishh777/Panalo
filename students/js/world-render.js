@@ -12,7 +12,7 @@
 //   - Frames are capped at ~30 per second, stop while hidden or off screen,
 //     and with reduced motion the world is drawn once and left still.
 import { reducedMotion, animationLoop } from "./motion.js";
-import { glSupported, createGlobeGL } from "./world-gl.js";
+import { glSupported, createGlobeGL, giveUpGL } from "./world-gl.js";
 import { TW, UW, UH, TAU, mix, surfaces, surfaceFor, paint } from "./world-surface.js";
 import { getLight, onLight, lightVector } from "./world-light.js";
 import { earthPixels, paintEarth } from "./earth.js";
@@ -30,10 +30,47 @@ export function createGlobe(canvas, opts = {}) {
   // Which renderer drew it is marked on the canvas: the Verse look inks the
   // 2D one with CSS, the GPU one in its own composite pass.
   if (!opts.force2d && glSupported()) {
-    const g = createGlobeGL(canvas, opts);
+    // If the GPU can't keep up, or gives out, the world carries on in 2D:
+    // the same layers and motion, on a fresh canvas in the same place.
+    // Callers keep the object returned here; it forwards to whichever
+    // renderer is drawing now.
+    let cur = null;
+    let lastLayers = null;
+    const fallback = (why) => {
+      if (!cur || cur.renderer !== "webgl") return;
+      console.warn(`World: ${why === "slow" ? "WebGL is too slow here" : "the GPU stopped"}; using the 2D renderer.`);
+      giveUpGL();
+      const motion = cur.getMotion?.();
+      try {
+        cur.destroy();
+      } catch {}
+      const fresh = canvas.cloneNode(false);
+      canvas.replaceWith(fresh);
+      canvas = fresh;
+      canvas.dataset.renderer = "2d";
+      cur = createGlobe2D(canvas, opts);
+      if (lastLayers) cur.setLayers(...lastLayers);
+      if (motion) cur.setMotion?.(motion);
+    };
+    const g = createGlobeGL(canvas, { ...opts, onFail: fallback });
     if (g) {
       canvas.dataset.renderer = "webgl";
-      return g;
+      cur = g;
+      const noop = () => undefined;
+      return new Proxy(g, {
+        get(_, key) {
+          if (key === "canvas") return canvas;
+          if (key === "setLayers")
+            return (...args) => {
+              lastLayers = args;
+              return cur.setLayers(...args);
+            };
+          const v = cur[key];
+          // A GPU-only control (setSky, project, ...) does nothing in 2D.
+          if (v === undefined && typeof g[key] === "function") return noop;
+          return v;
+        },
+      });
     }
   }
   // A canvas that has handed out a WebGL context can never draw in 2D: if
