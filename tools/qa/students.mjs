@@ -191,6 +191,69 @@ try {
     check("an exam from the setup is on the calendar", await page.evaluate(() => window.__qa.db.student_events.some((e) => e.kind === "exam" && /Physics test/.test(e.title))));
     check("a new account lands on Now", /Now/.test(await page.title()));
     check("the new account has encryption keys", await page.evaluate(() => window.__qa.db.user_keys.length === 2));
+
+    // ---- The plan (v0.2) ----
+    await page.waitForSelector(".now-log .plan-today, .now-log .panel-head h2:has-text(\"Today's plan\")", { timeout: 10000 }).catch(() => {});
+    check("Now shows today's plan", /Today's plan/.test(await page.textContent(".now-log")));
+    await go(page, "#/plan");
+    await page.waitForSelector(".pl-hero #plan-start", { timeout: 10000 });
+    check("the plan leads with the next block", await page.isVisible("#plan-start"));
+    check("the week has seven days", (await page.locator(".pl-day").count()) === 7);
+    check("each subject is a map of its topics, grey until met", (await page.locator(".pl-subject").count()) === 2 && (await page.locator(".pl-topic:not(.met)").count()) > 10);
+    check("a new student's first block is a quick check", /Quick check/.test(await page.textContent(".pl-hero")));
+    check("the exam from the setup shows on its subject", /Exam in \d+ days/.test(await page.textContent(".pl-subjects")));
+    await shot(page, "plan");
+    await page.click("#plan-start");
+    await page.waitForSelector(".block-check .bc-option", { timeout: 8000 });
+    let asked = 0;
+    for (let i = 0; i < 6 && (await page.isVisible(".block-check .bc-option:not(:disabled)")); i++) {
+      await page.click(".block-check .bc-option[data-correct]");
+      asked++;
+      check(i === 0 ? "each answer is explained straight away" : "…every time", (await page.textContent(".bc-feedback")).length > 12);
+      await page.click("#bc-next");
+      await page.waitForTimeout(80);
+    }
+    await page.waitForSelector("#bc-done", { timeout: 8000 });
+    check("a quick check asks a few questions and scores them", asked >= 2 && new RegExp(`${asked} of ${asked}`).test(await page.textContent(".block-check")));
+    check("…and says what happens next", /You know this one/.test(await page.textContent(".bc-summary")));
+    const topic = await page.evaluate(() => window.__qa.db.student_topics[0]);
+    check("the check is saved to the topic", topic?.subject && topic.covered === 1 && topic.stability > 0, JSON.stringify(topic));
+    check("the check counts as focus, on its topic", await page.evaluate(() => window.__qa.db.focus_sessions.some((s) => s.topic && s.completed)));
+    await page.click("#bc-done");
+    await page.waitForTimeout(300);
+    check("the topic it checked is coloured in", (await page.locator(".pl-topics .pl-topic.met").count()) === 1);
+    if (await page.isVisible("#plan-unsure")) {
+      await page.click("#plan-unsure");
+      await page.waitForSelector(".deck-card:not(.peek)");
+      const first = await page.textContent(".deck-card:not(.peek) .deck-title");
+      await page.click("#deck-skip");
+      check("'Not now' shows the next option", (await page.textContent(".deck-card:not(.peek) .deck-title")) !== first);
+      await page.click("#deck-pick");
+      check("picking one counts down, and can be stopped", /Starting in 3/.test(await page.textContent(".deck-count")));
+      await page.click("#deck-cancel");
+      await page.keyboard.press("Escape");
+      await page.waitForTimeout(200);
+    }
+    await page.click("#plan-add-result");
+    await page.fill("#res-title", "Mock, Paper 1");
+    await page.fill("#res-score", "18");
+    await page.fill("#res-out", "40");
+    await page.click(".res-topics .res-topic input >> nth=0");
+    const marked = await page.getAttribute(".res-topics .res-topic input >> nth=0", "value");
+    const thetaOf = () => page.evaluate((id) => window.__qa.db.student_topics.find((t) => t.subject === "phy" && t.topic === id)?.theta ?? null, marked);
+    const before = await thetaOf();
+    await page.click(".sheet-foot .btn-primary");
+    await page.waitForTimeout(400);
+    check("a result can be added", await page.evaluate(() => window.__qa.db.student_results.some((r) => r.title === "Mock, Paper 1" && Number(r.score) === 18)));
+    check("…and it shows on the plan", /Mock, Paper 1/.test(await page.textContent(".pl-results")));
+    const after = await thetaOf();
+    check("a poor mark lowers the topics it covered", after != null && (before == null ? after < 0 : after < before), `${before} → ${after}`);
+    await go(page, `#/study/block=${encodeURIComponent("chem~1~learn~25")}`);
+    await page.waitForSelector("#study-pause", { timeout: 8000 }).catch(() => {});
+    check("a planned block starts in the Study Room, saying what it is", (await page.isVisible("#study-pause")) && /Learn/.test(await page.textContent(".study-block")) && (await page.inputValue(".study-subject")) === "Chemistry");
+    await shot(page, "study-block");
+    await page.click(".study-controls .btn-quiet");
+    await page.waitForTimeout(300);
     await page.close();
   }
 

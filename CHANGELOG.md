@@ -26,7 +26,14 @@ only where nothing else can).
   Cambridge syllabuses (IGCSE 0625, 0620, 0610, 0580, 0478, 0455, 0450,
   0452; AS & A Level 9702, 9701, 9700, 9709, 9708, 9609, 9618, 9706,
   9990, 9699), each with a one-line explanation (`students/assets/syllabus/`).
-- **The planner's core** (not on screen yet): per-topic mastery (Elo),
+- **The plan**: a new Plan page and today's plan on Now. Panalo plans
+  the week in blocks (quick check, learn, practice, review) that fit each
+  day, mixes subjects, eases off before exams, and re-plans by itself.
+  Every block ends with a short check whose answers are explained straight
+  away; results can be added and pull the plan towards what they show.
+  "Not sure? Pick from three" for when choosing is the hard part.
+- **Phase 30**: progress per topic, pace per subject, results.
+- **The planner's core**: per-topic mastery (Elo),
   memory (FSRS-6) and per-subject pace, and how much study each day really
   has room for (sleep as a hard limit, caps, one lighter day, a 20%
   buffer). Defaults come from the research behind the planner.

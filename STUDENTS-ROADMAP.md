@@ -174,6 +174,16 @@ with syllabus codes, the subjects of a real school timetable; CBSE 9 to
 12), how each subject is going, the aim, the school day, boarding or
 travel, sleep, tuition and exams coming up. Phase 29 stores it. Next: the
 planner, Today's next step and guided sessions, built on it.
+
+### v0.2.0, second part: the planner (23 October)
+Built on a research report (learning science, student models, wellbeing,
+exams, Indian context, products): a question bank of 689 checked
+questions over 18 Cambridge syllabuses; per-topic mastery, memory and
+per-subject pace; each day's real room; and the weekly plan of quick
+checks, learn, practice and review blocks. The Plan page, today's plan
+on Now, a check with explained answers after every block, results that
+re-plan. Phase 30 stores the progress. Next: the setup and the rest of the
+UI revisited around the plan, then Pan (the AI) where only it can help.
 ---
 
 ## 3. Reflection: how it was built

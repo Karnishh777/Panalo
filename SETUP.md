@@ -89,6 +89,7 @@ For each: **SQL Editor → New query** → paste the whole file → **Run**.
 | 25 | [`supabase-phase27.sql`](supabase-phase27.sql) | Friends on the globe: a city you pick by hand, shown only to people you choose from your one-to-one chats, until you turn it off, for 7 days or for 24 hours; expired places erased hourly | No (phase 28 removes it again) |
 | 26 | [`supabase-phase28.sql`](supabase-phase28.sql) | Panalo Students is private: friends on the globe removed with its data, and every room join code erased. Panalo Chat's conversations are untouched | No |
 | 27 | [`supabase-phase29.sql`](supabase-phase29.sql) | The study profile behind the v0.2 plan: board, year, subjects and how each is going, aim, school day, boarding or travel, sleep, tuition. Drift's saved state is erased | Required by Students v0.2 |
+| 28 | [`supabase-phase30.sql`](supabase-phase30.sql) | Progress behind the plan: per topic how well it is known and when it fades (`student_topics`), each subject's pace, test results (`student_results`), and which topic a focus block was on. All private to the student | Required by Students v0.2 |
 
 Phase 8 is self-contained and re-applies everything phase 7 does, so running 8
 is enough if you are starting fresh. Run 7 anyway if you prefer the history to

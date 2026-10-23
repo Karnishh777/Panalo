@@ -19,7 +19,8 @@ export function idle() {
  * @param {"focus"|"rest"} phase
  * @param {number} minutes
  * @param {number} now
- * @param {{subject?: string|null, taskId?: string|null}} meta
+ * @param {{subject?: string|null, taskId?: string|null, block?: object|null}} meta
+ *   block: a planned block (v0.2) -- { kind, subject, topic, minutes }
  */
 export function start(phase, minutes, now, meta = {}) {
   return {
@@ -31,6 +32,7 @@ export function start(phase, minutes, now, meta = {}) {
     elapsedBefore: 0,
     subject: meta.subject || null,
     taskId: meta.taskId || null,
+    block: meta.block || null,
   };
 }
 
@@ -84,6 +86,8 @@ export function sessionRow(state, now) {
     completed: isDone(state, now),
     subject: state.subject,
     task_id: state.taskId,
+    // Only planned blocks name a topic (phase 30's column).
+    ...(state.block?.topic ? { topic: state.block.topic } : {}),
   };
 }
 
@@ -102,5 +106,6 @@ export function revive(raw) {
   if (!["running", "paused"].includes(raw.status)) return idle();
   if (!Number.isFinite(raw.plannedMs) || !Number.isFinite(raw.startedAt) || !Number.isFinite(raw.elapsedBefore)) return idle();
   if (raw.status === "running" && !Number.isFinite(raw.segmentStart)) return idle();
-  return { ...raw, recorded: !!raw.recorded };
+  const block = raw.block && typeof raw.block === "object" && /^[a-z0-9]{1,12}$/.test(raw.block.subject) && /^[A-Za-z0-9.*]{1,12}$/.test(raw.block.topic) ? raw.block : null;
+  return { ...raw, block, recorded: !!raw.recorded };
 }

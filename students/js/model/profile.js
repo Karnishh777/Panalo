@@ -14,7 +14,7 @@ export const DEFAULTS = {
   boarding: false,
   travelMinutes: 30, // each way
   wakeAt: "06:00",
-  sleepAt: "22:30",
+  sleepAt: "22:00", // 8 hours after a 06:00 wake: the planner never plans into less
   tuitionHours: 0, // a week
 };
 

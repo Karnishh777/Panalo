@@ -138,6 +138,13 @@ ok("rest is never recorded as focus", T.sessionRow(T.start("rest", 5, NOW), NOW 
 ok("readout", T.readout(25 * MINUTE) === "25:00" && T.readout(61000) === "01:01");
 ok("revive refuses junk", T.revive({ phase: "focus", status: "running" }).phase === "idle" && T.revive(null).phase === "idle");
 ok("revive keeps a real state", T.revive(JSON.parse(JSON.stringify(s))).plannedMs === 25 * MINUTE);
+{
+  const b = T.start("focus", 25, NOW, { subject: "Physics", block: { kind: "learn", subject: "phy", topic: "1.3", minutes: 25 } });
+  ok("a planned block's session names its topic", T.sessionRow(b, NOW + 25 * MINUTE).topic === "1.3");
+  ok("an unplanned session doesn't send the column", !("topic" in T.sessionRow(T.start("focus", 25, NOW), NOW + 25 * MINUTE)));
+  ok("revive keeps a block", T.revive(JSON.parse(JSON.stringify(b))).block?.topic === "1.3");
+  ok("revive drops a malformed block", T.revive({ ...JSON.parse(JSON.stringify(b)), block: { subject: "x y", topic: "1" } }).block === null);
+}
 
 // ---- archive blob types (a security boundary) -----------------------------------
 const T_ = (mime_type, file_name) => safeBlobType({ mime_type, file_name });

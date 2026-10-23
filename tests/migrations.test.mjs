@@ -1127,8 +1127,67 @@ async function studyProfileTests() {
   ok("phase 29 is safe to re-run", again.ok, again.error);
 }
 
+async function progressTests() {
+  const db = await createDb();
+  const upTo29 = await replay(db, MIGRATIONS.slice(0, MIGRATIONS.indexOf("supabase-phase30.sql")));
+  ok("phases 1-29 replay", upTo29.ok, upTo29.error);
+  const me = await createUser(db, "p_me");
+  const other = await createUser(db, "p_other");
+  await as(db, me, (tx) => tx.query("insert into student_profiles (world_name) values ('W')"));
+  await as(db, me, (tx) => tx.query("insert into focus_sessions (started_at, ended_at, planned_minutes, focused_minutes) values (now() - interval '30 minutes', now(), 25, 25)"));
+
+  const r = await runFile(db, "supabase-phase30.sql");
+  ok("phase 30 applies on a database with sessions in it", r.ok, r.error);
+
+  const put = await as(db, me, async (tx) => (
+    await tx.query(
+      `insert into student_topics (subject, topic, theta, n, seen, stability, difficulty, last_review, reps, minutes, covered)
+       values ('phy', '1.3', 0.4, 3, now(), 2.3, 5.1, now(), 1, 25, 0.5) returning topic`
+    )).rows.length
+  );
+  ok("a student can save a topic's progress", put === 1);
+  const up = await as(db, me, async (tx) => (
+    await tx.query(
+      `insert into student_topics (subject, topic, theta, covered) values ('phy', '1.3', 0.9, 1)
+       on conflict (user_id, subject, topic) do update set theta = excluded.theta, covered = excluded.covered returning theta, covered`
+    )).rows[0]
+  );
+  ok("…and update it in place", Math.abs(up.theta - 0.9) < 1e-6 && up.covered === 1, JSON.stringify(up));
+  const bad = async (sql) => !(await attempt(db, me, (tx) => tx.query(sql))).ok;
+  ok("mastery stays in range", await bad("insert into student_topics (subject, topic, theta) values ('chem', '2', 9)"));
+  ok("coverage stays in range", await bad("insert into student_topics (subject, topic, covered) values ('chem', '2', 1.5)"));
+  ok("subject ids are short and plain", await bad("insert into student_topics (subject, topic) values ('Physics!', '2')"));
+  ok("topic ids are short and plain", await bad("insert into student_topics (subject, topic) values ('chem', 'drop table')"));
+  const peek = await as(db, other, async (tx) => (await tx.query("select count(*)::int as n from student_topics")).rows[0].n);
+  ok("nobody else can read a student's topics", peek === 0);
+  const sneak = await attempt(db, other, (tx) => tx.query("insert into student_topics (user_id, subject, topic) values ($1, 'phy', '9')", [me]));
+  ok("nobody can write topics for someone else", !sneak.ok);
+
+  const pace = await as(db, me, async (tx) => (await tx.query(`update student_profiles set pace = '{"phy": {"pace": 1.4, "n": 3}}' where user_id = auth.uid() returning pace`)).rows[0].pace);
+  ok("pace is saved per subject", pace.phy.pace === 1.4);
+  ok("pace must be an object", await bad("update student_profiles set pace = '[1,2]' where user_id = auth.uid()"));
+
+  const res = await as(db, me, async (tx) => (
+    await tx.query(`insert into student_results (subject, title, taken_on, score, out_of, topics) values ('phy', 'Mock P4', current_date, 54, 80, '{1.3,2.1}') returning score::float as s`)
+  ).rows[0]);
+  ok("a result can be added", res.s === 54);
+  ok("a score can't beat the total", await bad("insert into student_results (subject, title, taken_on, score, out_of) values ('phy', 'X', current_date, 90, 80)"));
+  ok("a result needs a title", await bad("insert into student_results (subject, title, taken_on, score, out_of) values ('phy', '  ', current_date, 9, 80)"));
+  const peekRes = await as(db, other, async (tx) => (await tx.query("select count(*)::int as n from student_results")).rows[0].n);
+  ok("nobody else can read a student's results", peekRes === 0);
+
+  const block = await as(db, me, async (tx) => (
+    await tx.query("insert into focus_sessions (started_at, ended_at, planned_minutes, focused_minutes, subject, topic, covered) values (now() - interval '25 minutes', now(), 25, 25, 'Physics', '1.3', 50) returning topic")
+  ).rows[0]);
+  ok("a focus block can say which topic it was on", block.topic === "1.3");
+  ok("covered is a percentage", await bad("insert into focus_sessions (started_at, ended_at, planned_minutes, focused_minutes, covered) values (now() - interval '25 minutes', now(), 25, 25, 140)"));
+
+  const again = await runFile(db, "supabase-phase30.sql");
+  ok("phase 30 is safe to re-run", again.ok, again.error);
+}
+
 async function main() {
-  const sections = [migrationTests, chatTests, takeoverTests, callTests, accountTests, backfillTests, historyTests, disappearTests, studentsTests, moderationTests, deviceStateTests, consentTests, logTests, dailyTests, usernameLoginTests, examQualityTests, privateStudentsTests, studyProfileTests];
+  const sections = [migrationTests, chatTests, takeoverTests, callTests, accountTests, backfillTests, historyTests, disappearTests, studentsTests, moderationTests, deviceStateTests, consentTests, logTests, dailyTests, usernameLoginTests, examQualityTests, privateStudentsTests, studyProfileTests, progressTests];
   for (const run of sections) {
     try {
       await run();

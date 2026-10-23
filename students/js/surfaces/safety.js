@@ -148,6 +148,8 @@ async function downloadMyData(btn) {
       activity: await get("activity_log", (q) => q.eq("user_id", me)),
       goals: await get("student_goals", (q) => q.eq("user_id", me)),
       journal: await get("daily_entries", (q) => q.eq("user_id", me).order("day", { ascending: true })),
+      plan_progress: await get("student_topics", (q) => q.eq("user_id", me)),
+      results: await get("student_results", (q) => q.eq("user_id", me).order("taken_on", { ascending: true })),
       archive_files: await get("resources", (q) => q.eq("owner_id", me)),
       conversations: await get("conversation_participants", (q) => q.eq("user_id", me)),
       messages_sent: await get("messages", (q) => q.eq("user_id", me).order("created_at", { ascending: true }).limit(10000)),

@@ -36,7 +36,7 @@ landing ──► the crossing (sign in / sign up) ──► first time? the set
                                                      │   aim, school day, boarder or travel, sleep,
                                                      │   tuition, exams coming up)
                                                      ▼
-                                Now ◄──► Study · World · Calendar · Archive
+                                Now ◄──► Plan · Study · World · Calendar · Archive
                                          Privacy & data · Settings     (Warp: Ctrl/⌘ K)
 ```
 
@@ -157,8 +157,30 @@ landing ──► the crossing (sign in / sign up) ──► first time? the set
   Saved to the study profile (phase 29, `model/profile.js`); Next says
   what's missing instead of moving on. Settings → Your study profile
   reopens it to change the answers.
-- **Navigation**: top bar on wide screens, a five-item dock on phones (Now,
-  Study, Calendar, World, More). **Warp** (Ctrl/⌘ K) jumps anywhere or does
+- **The plan** (`js/surfaces/plan.js`, `js/planner.js`, `model/plan.js`,
+  v0.2): Panalo plans the week from the study profile and what the student
+  does. Each day's room comes from `model/capacity.js` (school, travel,
+  tuition, sleep as a hard limit, caps, one lighter day, a fifth kept free);
+  the blocks from `model/plan.js`: a **quick check** for a topic not met yet
+  (a few questions: known → review later, not → learn), **learn** (25 min,
+  then a check), **practice** (25 min, below the aim) and **review** (15 min,
+  when the memory model says it's fading). Subjects are mixed; nothing new
+  two days before a subject's exam; nothing on the exam day. Every check
+  explains each answer straight away (`js/block-check.js`) and updates the
+  topic: mastery (Elo), memory (FSRS-6), coverage, and the subject's pace
+  (`model/learner.js`). The plan is rebuilt whenever it's shown, so a missed
+  day, a mark or a check re-plans by itself. The Plan page leads with the
+  next block, then the week, then each subject as a map of its topics (grey
+  until met, then coloured by how well they're known), and results (a mark
+  pulls the topics it covered towards it). "Not sure? Pick from three" shows
+  today's three best blocks as cards, then counts down three seconds you can
+  stop: the planner picks, the student chooses, nothing is left to chance.
+  Now shows today's plan and leads with its next block (homework due by
+  tomorrow comes first). Questions come from the bank in
+  `assets/syllabus/` (Cambridge; CBSE and other subjects get blocks of
+  their own work until they have one).
+- **Navigation**: top bar on wide screens, a six-item dock on phones (Now,
+  Plan, Study, Calendar, World, More). **Warp** (Ctrl/⌘ K) jumps anywhere or does
   common things ("Start a 25-minute focus", "Add a task").
 
 ## Architecture
@@ -182,6 +204,12 @@ landing ──► the crossing (sign in / sign up) ──► first time? the set
 | --- | --- |
 | `js/main.js` | Outside → crossing → the setup (first time) → inside. |
 | `js/setup.js` | The 90-second setup that fills the study profile. |
+| `js/planner.js` | The plan in the app: loads the question banks, builds the plan from what is stored, saves what a block changed. |
+| `js/block-check.js` | The check that closes a block: questions with their explanations, coverage or how it went, then saved. |
+| `js/model/learner.js` | Pure: per-topic mastery (Elo) and memory (FSRS-6), per-subject pace, typical time per topic. |
+| `js/model/capacity.js` | Pure: how much study each day really has room for. |
+| `js/model/plan.js` | Pure: the week's blocks, the next block, a topic after a block, results. |
+| `assets/syllabus/` | The question bank: Cambridge IGCSE and AS & A Level topics, each with checked questions and explanations. |
 | `js/model/subjects.js` | Pure: boards, years, subjects (with Cambridge syllabus codes) and grade scales. |
 | `js/model/profile.js` | Pure: the setup's answers as a study-profile row and back. |
 | `js/auth.js` | Sign-in, sign-up, unlock, recovery, sign-out. |
@@ -212,7 +240,8 @@ landing ──► the crossing (sign in / sign up) ──► first time? the set
 
 | Table | Who can read | Notes |
 | --- | --- | --- |
-| `student_profiles` | you | world name, interests, born_at |
+| `student_profiles` | you | world name, born_at; the study profile (phase 29) and each subject's pace (phase 30) |
+| `student_topics`, `student_results` (phase 30) | you | the planner's state per topic (no answers kept, only the summary) and the marks you add |
 | `student_tasks`, `focus_sessions`, `student_events`, `activity_log`, `student_goals` | you | capped per person; a focus session can't claim more minutes than elapsed, or point at someone else's task |
 | `resources` + bucket `student-resources` (**private**) | you (Students lists only your own files) | path `u/<you>/…` (on R2: `o/<you>/u/…`, see HOSTING.md); size taken from Storage; 200 MB and 1,000 files per person, counted from Storage itself |
 | `reports` | the sender (and the operator) | in Students, only questions and requests about your data (Privacy & data); status can't be set by the sender; 20 a day |
