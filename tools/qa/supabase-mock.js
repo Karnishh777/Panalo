@@ -51,6 +51,8 @@
     activity_log: [],
     student_goals: [],
     daily_entries: [], // phase 24
+    student_topics: [], // phase 30
+    student_results: [], // phase 30
     resources: [],
     blocks: [],
     reports: [],
@@ -59,8 +61,8 @@
     room_codes: [],
     room_requests: [],
   };
-  const OWNED_BY_USER = ["student_profiles", "student_tasks", "focus_sessions", "student_events", "activity_log", "student_goals", "daily_entries"];
-  const NO_ID = ["user_keys", "conversation_keys", "conversation_reads", "conversation_participants", "student_profiles", "blocks", "room_codes", "room_requests"];
+  const OWNED_BY_USER = ["student_profiles", "student_tasks", "focus_sessions", "student_events", "activity_log", "student_goals", "daily_entries", "student_topics", "student_results"];
+  const NO_ID = ["user_keys", "conversation_keys", "conversation_reads", "conversation_participants", "student_profiles", "blocks", "room_codes", "room_requests", "student_topics"];
   const authUsers = []; // { id, email, password, user_metadata }
   const loginMisses = {}; // phase 25: username -> wrong tries
   const storage = new Map(); // "bucket/path" -> Blob
@@ -77,6 +79,7 @@
     message_reactions: [["message_id", "user_id", "emoji"]],
     messages: [["id"], ["client_id"]],
     student_profiles: [["user_id"]],
+    student_topics: [["user_id", "subject", "topic"]],
     blocks: [["blocker_id", "blocked_id"]],
     room_codes: [["conversation_id"], ["code"]],
     room_requests: [["conversation_id", "user_id"]],
@@ -88,6 +91,7 @@
     conversation_reads: ["conversation_id", "user_id"],
     student_profiles: ["user_id"],
     daily_entries: ["user_id", "day"],
+    student_topics: ["user_id", "subject", "topic"],
   };
 
   // ------------------------------------------------------------------ auth
@@ -424,7 +428,7 @@
       if (used + row.size_bytes > 200 * 1024 * 1024) return deny("Your archive is full (200 MB). Remove something to make room.", "54000");
     }
     if (t === "reports" && row.conversation_id && !myConvIds().has(row.conversation_id)) return deny("new row violates row-level security policy");
-    const CONSENTED = ["messages", "conversations", "student_profiles", "student_tasks", "focus_sessions", "student_events", "activity_log", "student_goals", "daily_entries", "resources"];
+    const CONSENTED = ["messages", "conversations", "student_profiles", "student_tasks", "focus_sessions", "student_events", "activity_log", "student_goals", "daily_entries", "student_topics", "student_results", "resources"];
     if (CONSENTED.includes(t) && !mayProcess(uid)) return deny("A parent or guardian needs to agree before Panalo can be used.");
     if (t === "conversation_participants" && !mayProcess(row.user_id)) return deny("A parent or guardian needs to agree before Panalo can be used.");
     return null;
@@ -757,7 +761,7 @@
         return ps.some((p) => p.user_id === uid) && ps.every((p) => p.user_id === uid);
       }).map((c) => c.id);
       db.conversations = db.conversations.filter((c) => !solo.includes(c.id));
-      for (const t of ["resources", "student_profiles", "student_tasks", "focus_sessions", "student_events", "activity_log", "student_goals", "daily_entries"]) {
+      for (const t of ["resources", "student_profiles", "student_tasks", "focus_sessions", "student_events", "activity_log", "student_goals", "daily_entries", "student_topics", "student_results"]) {
         if (db[t]) db[t] = db[t].filter((r) => (r.owner_id || r.user_id) !== uid);
       }
       db.messages = db.messages.filter((m) => m.user_id !== uid);

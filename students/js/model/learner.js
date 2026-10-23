@@ -171,3 +171,42 @@ const GLH = { igcse: 130, as: 180, a2: 180, "cbse-secondary": 120, "cbse-senior"
 export function typicalMinutes(level, topics) {
   return Math.round(((GLH[level] || 120) * 0.5 * 60) / Math.max(1, topics));
 }
+
+// ---- Storage ---------------------------------------------------------------------------
+
+const ms = (v) => (v == null ? null : Date.parse(v));
+const iso = (v) => (v == null ? null : new Date(v).toISOString());
+
+/** A topic state from a student_topics row (phase 30). */
+export function fromTopicRow(r) {
+  return {
+    theta: Number(r.theta) || 0,
+    n: Number(r.n) || 0,
+    seen: ms(r.seen),
+    S: r.stability == null ? null : Number(r.stability),
+    D: r.difficulty == null ? null : Number(r.difficulty),
+    last: ms(r.last_review),
+    reps: r.reps || 0,
+    lapses: r.lapses || 0,
+    minutes: r.minutes || 0,
+    covered: Number(r.covered) || 0,
+  };
+}
+
+/** A topic state as a student_topics row, within the table's checks. */
+export function toTopicRow(subject, topic, t) {
+  return {
+    subject,
+    topic,
+    theta: clamp(t.theta, -4, 4),
+    n: clamp(t.n, 0, 100000),
+    seen: iso(t.seen),
+    stability: t.S == null ? null : clamp(t.S, 0.001, 36500),
+    difficulty: t.D == null ? null : clamp(t.D, 1, 10),
+    last_review: iso(t.last),
+    reps: clamp(Math.round(t.reps || 0), 0, 100000),
+    lapses: clamp(Math.round(t.lapses || 0), 0, 100000),
+    minutes: clamp(Math.round(t.minutes || 0), 0, 100000),
+    covered: clamp(t.covered || 0, 0, 1),
+  };
+}

@@ -16,6 +16,9 @@ export const store = {
   goals: [],
   entries: [], // daily_entries (phase 24): one per day, newest first
   entriesMissing: false, // phase 24 not run yet: no dawn or check-in
+  topics: [], // student_topics (phase 30): the planner's per-topic state
+  results: [], // student_results (phase 30): marks, newest first
+  progressMissing: false, // phase 30 not run yet: the plan can't be saved
   // True when the database hasn't run supabase-phase16.sql yet.
   schemaMissing: false,
   loaded: false,
@@ -61,8 +64,10 @@ export async function loadAll() {
     supabaseClient.from("activity_log").select("*").order("occurred_on", { ascending: false }).limit(3000),
     supabaseClient.from("student_goals").select("*").order("created_at"),
     supabaseClient.from("daily_entries").select("*").order("day", { ascending: false }).limit(800),
+    supabaseClient.from("student_topics").select("*").limit(3000),
+    supabaseClient.from("student_results").select("*").order("taken_on", { ascending: false }).limit(2000),
   ]);
-  const [tasks, sessions, events, logs, goals, entries] = queries;
+  const [tasks, sessions, events, logs, goals, entries, topics, results] = queries;
   if (queries.slice(0, 5).some((q) => missingTable(q.error))) {
     store.schemaMissing = true;
   }
@@ -73,9 +78,12 @@ export async function loadAll() {
   store.goals = goals.data || [];
   store.entries = entries.data || [];
   store.entriesMissing = missingTable(entries.error);
+  store.topics = topics.data || [];
+  store.results = results.data || [];
+  store.progressMissing = missingTable(topics.error) || missingTable(results.error);
   store.loaded = true;
   emit("any");
-  return queries.slice(0, 6).find((q) => q.error && !missingTable(q.error))?.error || null;
+  return queries.find((q) => q.error && !missingTable(q.error))?.error || null;
 }
 
 // ---- writes -----------------------------------------------------------------
@@ -126,6 +134,25 @@ export const api = {
   toggleGoal: (g) => update("student_goals", g.id, { done_at: g.done_at ? null : new Date().toISOString() }, "goals", "goals"),
   deleteGoal: (id) => remove("student_goals", id, "goals", "goals"),
 
+  /** Save one topic's planner state (a student_topics row, without user_id). */
+  async saveTopic(row) {
+    const full = { user_id: state.currentUser.id, ...row };
+    const { data, error } = await supabaseClient.from("student_topics").upsert(full, { onConflict: "user_id,subject,topic" }).select().single();
+    if (error) return { error };
+    const i = store.topics.findIndex((t) => t.subject === data.subject && t.topic === data.topic);
+    if (i >= 0) store.topics[i] = data;
+    else store.topics.push(data);
+    emit("topics");
+    return { data };
+  },
+
+  addResult: async (r) => {
+    const out = await insert("student_results", r, "results", "results");
+    if (out.data) store.results.sort((a, b) => (a.taken_on < b.taken_on ? 1 : -1));
+    return out;
+  },
+  deleteResult: (id) => remove("student_results", id, "results", "results"),
+
   async saveStudent(patch) {
     const row = { user_id: state.currentUser.id, ...patch };
     const { data, error } = await supabaseClient.from("student_profiles").upsert(row, { onConflict: "user_id" }).select().single();
@@ -152,6 +179,7 @@ export const api = {
 export function resetStore() {
   Object.assign(store, {
     me: null, student: null, tasks: [], sessions: [], events: [], logs: [], goals: [], entries: [], entriesMissing: false,
+    topics: [], results: [], progressMissing: false,
     resources: null,
     schemaMissing: false, loaded: false,
   });

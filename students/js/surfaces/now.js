@@ -18,6 +18,9 @@ import { activeDays } from "../model/world-model.js";
 import { todayEntry, rhythm, rhythmLine, dayPart, MOODS } from "../model/daily.js";
 import { openCheckin, openIntention } from "../checkin.js";
 import { parseQuickAdd } from "../model/quick-add.js";
+import { hasPlan, currentPlan, loadBanks, banksReady, colourOf, focusedToday } from "../planner.js";
+import { KINDS, nextBlock } from "../model/plan.js";
+import { startBlock } from "../block-check.js";
 
 let root;
 let orbitSlot;
@@ -147,6 +150,9 @@ function renderLog() {
   const { current, next } = nextUp(allEvents(), now);
   const parts = [];
 
+  // 00. Today's plan (v0.2): what the planner has for the rest of today.
+  if (hasPlan() && banksReady()) parts.push(planPanel(now));
+
   // 0. Today: the intention, the week's rhythm, closing the day (phase 24).
   if (!store.entriesMissing) parts.push(todayPanel(now));
 
@@ -247,14 +253,55 @@ function renderLog() {
   globe?.setLayers(w.layers, w.moons);
 }
 
+const hhmm = (m) => `${String(Math.floor(m / 60) % 24).padStart(2, "0")}:${String(m % 60).padStart(2, "0")}`;
+
+function planPanel(now) {
+  const today = currentPlan({ now, days: 1 })[0];
+  const done = focusedToday(now);
+  const blocks = today?.blocks || [];
+  return panel("tone-focus", "Today's plan", { href: "#/plan", label: "The week" }, [
+    blocks.length
+      ? el(
+          "ol",
+          { class: "now-list plan-today" },
+          blocks.map((b) =>
+            el("li", { style: `--subj:${colourOf(b.subject)}` }, [
+              el("span", { class: "num faint", text: hhmm(b.start) }),
+              el("i", { class: "pl-dot", "aria-hidden": "true" }),
+              el("span", {}, [el("b", { text: b.own ? b.subjectName : b.topicName }), el("small", { class: "faint", text: ` ${b.own ? "" : `${b.subjectName} · `}${KINDS[b.kind].label}` })]),
+              el("span", { class: "num faint", text: `${b.minutes}m` }),
+            ])
+          )
+        )
+      : el("p", { class: "muted", text: done ? "That's today's plan done. The rest of the evening is yours." : "Nothing more planned for today." }),
+    done ? el("p", { class: "faint small", text: `${formatMinutes(done)} studied today.` }) : null,
+  ]);
+}
+
 // The one thing Now is for: the next piece of work, one tap from starting.
-// A block already running comes first; then the task due soonest; then
-// the newest open task; with nothing to do, a plain focus block.
+// A block already running comes first; then homework due by tomorrow
+// (it pre-empts the plan); then the plan's next block; then the newest
+// open task; with nothing to do, a plain focus block.
 function nextStep(now) {
   const t = loadTimer();
   if (t.phase === "focus") {
     const task = t.taskId ? store.tasks.find((x) => x.id === t.taskId) : null;
     return [el("span", { class: "step-label", text: t.status === "paused" ? "Paused" : "Focusing" }), el("b", { text: task?.title || t.subject || "your block" }), el("a", { class: "btn btn-primary btn-sm", href: "#/study", text: "Back to it" })];
+  }
+  const endOfTomorrow = new Date(now);
+  endOfTomorrow.setHours(23, 59, 59, 999);
+  endOfTomorrow.setDate(endOfTomorrow.getDate() + 1);
+  const urgent = store.tasks.some((tk) => !tk.done_at && tk.due_at && Date.parse(tk.due_at) <= endOfTomorrow.getTime());
+  if (!urgent && hasPlan() && banksReady()) {
+    const b = nextBlock(currentPlan({ now, days: 1 }));
+    if (b) {
+      return [
+        el("span", { class: "step-label", text: "Next step" }),
+        el("b", { class: "step-subj", style: `--subj:${colourOf(b.subject)}`, text: b.own ? b.subjectName : b.topicName }),
+        el("span", { class: "muted", text: ` · ${b.own ? "" : `${b.subjectName} · `}${KINDS[b.kind].label}, ${b.minutes} min` }),
+        el("button", { type: "button", class: "btn btn-primary btn-sm", id: "now-plan-go", text: "Start", onClick: () => startBlock(b) }),
+      ];
+    }
   }
   const open = store.tasks.filter((tk) => !tk.done_at);
   const pick =
@@ -305,6 +352,7 @@ function legend(tone, text) {
 }
 
 export function show() {
+  if (hasPlan()) loadBanks();
   render();
   clearInterval(minuteTimer);
   minuteTimer = setInterval(() => !document.hidden && render(), 30000);

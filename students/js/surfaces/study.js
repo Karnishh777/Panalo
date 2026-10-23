@@ -14,6 +14,9 @@ import * as T from "../model/focus-timer.js";
 import { loadTimer, saveTimer, onTimer, settleTimer, recordSession } from "../timer-state.js";
 import { SOUNDS, playAmbient, setVolume, chime, currentSound } from "../ambient.js";
 import { startOfDay, startOfWeek, addDays, formatMinutes, clockTime, DAY, relTime, dayKey } from "../model/time.js";
+import { openBlockCheck } from "../block-check.js";
+import { loadBanks, nameOf, topicName, colourOf } from "../planner.js";
+import { KINDS } from "../model/plan.js";
 
 let root;
 let timer = T.idle();
@@ -27,6 +30,7 @@ let taskSelect;
 let tasksEl;
 let historyEl;
 let noticeEl;
+let blockEl;
 let unsubs = [];
 let navigate;
 let lastTitle = "";
@@ -120,6 +124,7 @@ function renderControls() {
   }
   subjectInput.disabled = running;
   taskSelect.disabled = running;
+  if (blockEl) renderBlock();
 }
 
 function update(next) {
@@ -129,13 +134,29 @@ function update(next) {
   draw();
 }
 
-function begin(phase, { keepNotice = false } = {}) {
+function begin(phase, { keepNotice = false, block = null } = {}) {
   playAmbientFromPrefs();
-  const taskId = taskSelect.value || null;
+  const taskId = block ? null : taskSelect.value || null;
   const task = taskId && store.tasks.find((t) => t.id === taskId);
   const subject = subjectInput.value.trim() || task?.subject || null;
-  update(T.start(phase, planFor(phase), Date.now(), { subject, taskId }));
+  const minutes = block && phase === "focus" ? block.minutes : planFor(phase);
+  update(T.start(phase, minutes, Date.now(), { subject, taskId, block: phase === "focus" ? block : null }));
   if (!keepNotice) noticeEl.replaceChildren();
+}
+
+// A planned block (v0.2): what it is, above the controls.
+function renderBlock() {
+  const b = timer.phase === "focus" ? timer.block : null;
+  blockEl.hidden = !b;
+  if (!b) return blockEl.replaceChildren();
+  blockEl.style.setProperty("--subj", colourOf(b.subject));
+  blockEl.replaceChildren(el("span", { class: "sb-kind", text: KINDS[b.kind]?.label || "" }), el("b", { text: topicName(b.subject, b.topic) }), el("span", { class: "faint", text: KINDS[b.kind]?.verb || "" }));
+}
+
+// The latest session saved for this block, so its check can note coverage.
+function sessionFor(t) {
+  const start = new Date(t.startedAt).toISOString();
+  return store.sessions.find((s) => s.started_at === start) || null;
 }
 
 async function endEarly() {
@@ -150,6 +171,12 @@ async function endEarly() {
         return update(T.idle());
       }
       showToast(`${formatMinutes(row.focused_minutes)} of focus recorded.`, "success");
+      // Ended a planned block early but worked on it: still check it.
+      if (timer.block && row.focused_minutes >= 5) {
+        const was = timer;
+        update(T.idle());
+        return openBlockCheck(was.block, { minutes: row.focused_minutes, sessionId: sessionFor(was)?.id });
+      }
     } else showToast("Under a minute — nothing recorded.", "");
   }
   update(T.idle());
@@ -178,6 +205,12 @@ async function finishOnce() {
   saveTimer(timer);
   renderControls();
   draw();
+  if (was.phase === "focus" && was.block) {
+    // A planned block: its check, then the plan moves on by itself.
+    noticeEl.replaceChildren(el("p", { class: "study-notice-text" }, [el("b", { text: `${formatMinutes(Math.round(was.plannedMs / 60000))} on ${topicName(was.block.subject, was.block.topic)} — added to your world.` })]));
+    openBlockCheck(was.block, { minutes: Math.round(was.plannedMs / 60000), sessionId: sessionFor(was)?.id });
+    return;
+  }
   if (was.phase === "focus") {
     const p = planStep();
     const more = p && p.done < p.total;
@@ -542,6 +575,7 @@ export function mount(section, ctx) {
   phaseEl = el("p", { class: "study-phase", "aria-live": "polite" });
   controls = el("div", { class: "study-controls" });
   noticeEl = el("div", { class: "study-notice", role: "status" });
+  blockEl = el("p", { class: "study-block", hidden: true });
   const pastSubjects = [...new Set(store.sessions.map((s) => s.subject).filter(Boolean))].slice(0, 20);
   subjectInput = el("input", { type: "text", class: "input study-subject", placeholder: "What are you working on?", maxlength: "40", list: "study-subjects", "aria-label": "Subject" });
   taskSelect = el("select", { class: "input study-task", "aria-label": "Task" });
@@ -614,6 +648,7 @@ export function mount(section, ctx) {
     el("div", { class: "study-top" }, [el("p", { class: "kicker toned tone-focus", text: "Study Room" }), dark]),
     el("div", { class: "study-center" }, [
       el("div", { class: "study-dial" }, [ring.svg, el("div", { class: "study-dial-text" }, [readout, phaseEl])]),
+      blockEl,
       el("div", { class: "study-what" }, [subjectInput, el("datalist", { id: "study-subjects" }, pastSubjects.map((s) => el("option", { value: s }))), taskSelect]),
       controls,
       noticeEl,
@@ -634,6 +669,7 @@ export function mount(section, ctx) {
 
   timer = loadTimer();
   if (timer.subject) subjectInput.value = timer.subject;
+  renderBlock();
   renderTasks();
   renderHistory();
   renderControls();
@@ -672,6 +708,18 @@ export function show(param) {
       if ([...taskSelect.options].some((o) => o.value === id)) taskSelect.value = id;
       if (task.subject) subjectInput.value = task.subject;
       begin("focus");
+    }
+  } else if (param?.startsWith("block=")) {
+    // A block from the plan: its subject, its length, begun.
+    const [subject, topic, kind, minutes] = decodeURIComponent(param.slice(6)).split("~");
+    const block = { subject, topic, kind, minutes: Math.max(5, Math.min(90, Number(minutes) || 25)) };
+    if (timer.phase === "idle" && /^[a-z0-9]{1,12}$/.test(subject) && /^[A-Za-z0-9.*]{1,12}$/.test(topic) && KINDS[kind]) {
+      loadBanks().then(() => {
+        if (timer.phase !== "idle") return;
+        subjectInput.value = nameOf(subject).slice(0, 40);
+        taskSelect.value = "";
+        begin("focus", { block });
+      });
     }
   } else if (param === "add-task") {
     root.querySelector(".task-form input")?.focus();

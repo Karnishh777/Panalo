@@ -25,6 +25,7 @@ const $ = (id) => document.getElementById(id);
 
 const SURFACES = {
   now: () => import("./surfaces/now.js"),
+  plan: () => import("./surfaces/plan.js"),
   study: () => import("./surfaces/study.js"),
   world: () => import("./surfaces/world.js"),
   calendar: () => import("./surfaces/calendar.js"),
@@ -33,10 +34,10 @@ const SURFACES = {
   settings: () => import("./surfaces/settings.js"),
   moderate: () => import("./surfaces/moderate.js"),
 };
-const TITLES = { now: "Now", study: "Study Room", world: "World", calendar: "Calendar", archive: "Archive", safety: "Privacy & data", settings: "Settings", moderate: "Moderation" };
+const TITLES = { now: "Now", plan: "Plan", study: "Study Room", world: "World", calendar: "Calendar", archive: "Archive", safety: "Privacy & data", settings: "Settings", moderate: "Moderation" };
 
 // Each surface's colour, for the ink that wipes across when you arrive.
-const TONES = { now: "#ffc47a", world: "#7ee2a8", calendar: "#ffc47a", archive: "#e7d19b", safety: "#b59cff", settings: "#9ad8ff" };
+const TONES = { now: "#ffc47a", plan: "#9ad8ff", world: "#7ee2a8", calendar: "#ffc47a", archive: "#e7d19b", safety: "#b59cff", settings: "#9ad8ff" };
 let ambient = null;
 
 // Where effects belong. The expressive places -- your day and your world --
@@ -150,7 +151,7 @@ export function applyDisplayPrefs() {
 document.addEventListener("panalo:prefs", () => applyDisplayPrefs());
 
 // Keyboard: g then a letter goes to a page; ? lists every shortcut.
-const GO_KEYS = { n: "now", s: "study", w: "world", c: "calendar", a: "archive", y: "safety", ",": "settings" };
+const GO_KEYS = { n: "now", p: "plan", s: "study", w: "world", c: "calendar", a: "archive", y: "safety", ",": "settings" };
 let goArmed = 0;
 export function openShortcuts() {
   const row = (keys, what) => el("li", {}, [el("span", { class: "keys" }, keys.map((k) => el("kbd", { text: k }))), el("span", { text: what })]);
@@ -162,6 +163,7 @@ export function openShortcuts() {
       el("ul", { class: "shortcuts" }, [
         row([mac ? "⌘" : "Ctrl", "K"], "Warp: jump anywhere, do anything"),
         row(["g", "n"], "Now"),
+        row(["g", "p"], "Plan"),
         row(["g", "s"], "Study Room"),
         row(["g", "w"], "World"),
         row(["g", "c"], "Calendar"),
@@ -211,6 +213,7 @@ function warpItems() {
   const go = (p) => () => navigate(p);
   return [
     { label: "Now", hint: "your day at a glance", run: go("now") },
+    { label: "Plan", hint: "your week, subjects and results", run: go("plan") },
     { label: "Study Room", hint: "focus timer and tasks", run: go("study") },
     { label: "Start a 25-minute focus", hint: "Study Room", run: () => navigate("study/start-25") },
     ...(store.entriesMissing ? [] : [

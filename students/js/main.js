@@ -14,6 +14,7 @@ import { initLooks } from "./looks.js";
 import { reducedMotion } from "./motion.js";
 import { showToast } from "./ui.js";
 import { state } from "../../src/state.js";
+import { wirePlanner } from "./planner.js";
 
 const $ = (id) => document.getElementById(id);
 // A link to somewhere inside (e.g. #/moderate) opened while signed out:
@@ -148,6 +149,7 @@ initAuth({
   },
 });
 initLooks();
+wirePlanner();
 initShell({ signOut, editSetup: () => runSetup({ editing: true, onDone: () => {} }) });
 
 window.addEventListener("hashchange", () => {

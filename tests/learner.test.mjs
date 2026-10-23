@@ -84,6 +84,17 @@ const T0 = Date.UTC(2026, 9, 1, 4, 30);
   ok("typical time per topic comes from guided learning hours", L.typicalMinutes("igcse", 26) === 150 && L.typicalMinutes("as", 18) === 300);
 }
 
+// ---- storage ----
+{
+  const t = L.review(L.answer(L.newTopic(3), { correct: true, now: T0 }), 3, T0);
+  const row = L.toTopicRow("phy", "1.3", { ...t, minutes: 25.4, covered: 1.2 });
+  ok("a row has the table's columns, within its checks", row.subject === "phy" && row.topic === "1.3" && row.minutes === 25 && row.covered === 1 && row.last_review === new Date(T0).toISOString());
+  const back = L.fromTopicRow(row);
+  ok("and reads back the same", Math.abs(back.theta - t.theta) < 1e-9 && back.S === t.S && back.last === T0 && back.seen === T0 && back.n === 1);
+  const fresh = L.fromTopicRow({ theta: "0.2", n: 0, covered: 0 });
+  ok("a sparse row reads as never reviewed", fresh.S === null && fresh.last === null && fresh.theta === 0.2);
+}
+
 console.log(`\n${passed} passed, ${failures.length} failed`);
 if (failures.length) {
   failures.forEach((f) => console.log(`  ✗ ${f}`));
