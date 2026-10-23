@@ -17,7 +17,7 @@ let passed = 0;
 const failures = [];
 const ok = (label, cond, detail = "") => (cond ? passed++ : failures.push(detail ? `${label} (${detail})` : label));
 
-// A fixed local "now": Wednesday 1 October 2026, 10:00.
+// A fixed local "now": Thursday 1 October 2026, 10:00.
 const NOW = new Date(2026, 9, 1, 10, 0, 0).getTime();
 const at = (daysAgo, h = 9, m = 0) => {
   const d = new Date(NOW);
@@ -216,7 +216,7 @@ ok("anything else is just bytes", T_("application/zip", "a.zip") === "applicatio
 
 // ---- weeks, seasons, the world over time (batch 2) ------------------------------
 {
-  // NOW is Wednesday 1 Oct 2026; last week is Mon 21 – Sun 27 Sep... check by weekday.
+  // NOW is Thursday 1 Oct 2026; last week is Mon 21 – Sun 27 Sep... check by weekday.
   const lw = C.lastWeek(NOW);
   ok("last week is seven days ending at this Monday", lw.end - lw.start >= 6.9 * DAY && lw.end - lw.start <= 7.1 * DAY && new Date(lw.end).getDay() === 1);
   const inLast = (dayOffset, h = 9) => { const d = new Date(lw.start); d.setDate(d.getDate() + dayOffset); d.setHours(h); return d.toISOString(); };
@@ -271,7 +271,7 @@ ok("anything else is just bytes", T_("application/zip", "a.zip") === "applicatio
 
 // ---- quick add and countdowns (batch 3) -------------------------------------------
 {
-  const P = (t) => parseQuickAdd(t, NOW); // Wednesday 1 Oct 2026, 10:00
+  const P = (t) => parseQuickAdd(t, NOW); // Thursday 1 Oct 2026, 10:00
   const hm = (d) => `${d.getHours()}:${String(d.getMinutes()).padStart(2, "0")}`;
   let r = P("Physics test fri 10am");
   ok("an exam on a weekday at a time", r.kind === "exam" && r.title === "Physics test" && r.start.getDay() === 5 && hm(r.start) === "10:00" && r.start.getDate() === 2);
@@ -291,6 +291,10 @@ ok("anything else is just bytes", T_("application/zip", "a.zip") === "applicatio
   ok("12-10 alone is a date, not a time", r.start.getDate() === 12 && r.start.getMonth() === 9);
   r = P("Revision at 9am");
   ok("a time already gone today means tomorrow", r.start.getDate() === 2 && hm(r.start) === "9:00");
+  r = P("Lab thu 9am");
+  ok("today's weekday at a time already gone means next week", r.start.getDate() === 8 && hm(r.start) === "9:00");
+  r = P("Lab thu 11am");
+  ok("…but later today stays today", r.start.getDate() === 1 && hm(r.start) === "11:00");
   r = P("Holiday 5/1");
   ok("a date already gone this year is next year", r.start.getFullYear() === 2027);
   ok("an empty line is nothing", P("   ") === null);

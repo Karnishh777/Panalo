@@ -21,6 +21,7 @@ import { openCheckin, openIntention } from "./checkin.js";
 import { maybeChronicle, playChronicle } from "./chronicle.js";
 import { checkMomentsSoon } from "./moment.js";
 import { openTimelapse } from "./timelapse.js";
+import { VERSION } from "./version.js";
 
 const $ = (id) => document.getElementById(id);
 
@@ -293,6 +294,7 @@ function openMore() {
         link("safety", "Privacy & data", "tone-signal", "What's stored, export, delete"),
         link("settings", "Settings", "tone-focus", "Motion, study, account"),
       ]),
+      el("p", { class: "more-version", text: `Panalo Students v${VERSION}` }),
     ],
   });
 }

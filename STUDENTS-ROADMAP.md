@@ -156,6 +156,14 @@ student's own studies. Nothing anyone does in it is shown to anyone else.
 - The dock is Now · Study · Calendar · World · More; the landing says
   *Focus. Plan. Keep.*
 
+### The logo, and v0.1 (23 October)
+The logo is **Ascent** (chosen from four premium concepts on a design
+canvas): a p whose bowl is a small world and whose stem is a beam of focus,
+with a bead of light in orbit. One shape, three materials that follow the
+look. With it, Panalo Students is released as **v0.1** (CHANGELOG.md, tag
+`students-v0.1.0`). **v0.2** is next and large; its scope is set here when
+work begins.
+
 ---
 
 ## 3. Reflection: how it was built
@@ -233,8 +241,8 @@ An honest look at the process, by the agent that did most of the work.
 
 Done: CI, migrations 22–26 recorded, LIMITATIONS refreshed, calm by
 default and the focus shield, Students made private (phase 28), and **the
-logo** — a world rising from the sea at the horizon (chosen from three
-mock-ups), as favicon, app icon, in the bar and in a new sharing image.
+logo** — Ascent, adaptive to each look, as favicon, home-screen icons, in
+the bar and in a new sharing image — and the **v0.1 release**.
 
 1. **Web Push for Students** — a notification when a focus block ends or a
    deadline nears (each opt-in, quiet hours respected,
@@ -289,7 +297,7 @@ protected; the Study Room quiet.
 | When | Theme | Items | Done when |
 | --- | --- | --- | --- |
 | **Done** (this week) | Clean up and focus | CI; migrations 22–26 recorded; LIMITATIONS refreshed; calm by default; next step on Now; focus shield | Every PR runs all suites automatically; nothing moves or interrupts unless asked |
-| **Next** (2–4 weeks) | Identity and reach | Web Push (opt-in); installable PWA (the logo is done) | A focus-end notification arrives with the tab closed |
+| **Next** (2–4 weeks) | Identity and reach | Web Push (opt-in); installable PWA (logo and icons are done) | A focus-end notification arrives with the tab closed |
 | **Next** | Learning | Flashcards with spaced repetition; exam planner | A student can plan an exam and review cards from Now |
 | **Then** (1–2 months) | Deeper study | Focus insights (monthly); notes in the Archive, linked to subjects and tasks | A student can see their best hours and keep notes next to their tasks |
 | **Then** | Wellbeing | Break suggestions; sleep window; season mood view | Long sessions offer a break; the app goes quiet at night if asked |
