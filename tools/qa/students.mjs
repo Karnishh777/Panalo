@@ -284,6 +284,15 @@ try {
   const order = await page.evaluate(() => [...document.querySelectorAll(".now-log .panel-head h2")].map((h) => h.textContent));
   check("the work comes first on Now", order.indexOf("Due soon") > -1 && order.indexOf("Due soon") < order.findIndex((h) => !/Today|Now|Next|Focus|Due/.test(h)));
   await shot(page, "now");
+  // Left alone, Now fades to just the world; any movement brings it back.
+  await page.evaluate(() => (window.__qa.idleMs = 400));
+  await page.mouse.move(5, 5);
+  await page.waitForTimeout(900);
+  check("left alone, Now fades to just your world", await page.evaluate(() => document.querySelector(".now")?.classList.contains("is-idle")));
+  await page.mouse.move(40, 40);
+  await page.waitForTimeout(50);
+  check("…and any movement brings it back", await page.evaluate(() => !document.querySelector(".now").classList.contains("is-idle")));
+  await page.evaluate(() => (window.__qa.idleMs = 0));
 
   await go(page, "#/study");
   await page.fill(".task-form input[type=text]", "Finish optics problem set");

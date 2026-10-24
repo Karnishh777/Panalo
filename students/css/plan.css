@@ -554,3 +554,56 @@
     transform: none;
   }
 }
+
+/* ---- Now, around the plan ---- */
+/* The next block as the hero: its subject's glow behind it. */
+.now-step.plan-step {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  padding: 16px 16px 16px 20px;
+  border-color: color-mix(in srgb, var(--subj) 30%, var(--line));
+  background: var(--surface);
+}
+.now-step.plan-step::before {
+  content: "";
+  position: absolute;
+  inset: -60% -20% auto auto;
+  width: 60%;
+  height: 220%;
+  z-index: -1;
+  background: radial-gradient(closest-side, color-mix(in srgb, var(--subj) 24%, transparent), transparent);
+  pointer-events: none;
+}
+.now-step.plan-step .step-label {
+  flex-basis: 100%;
+  color: var(--subj);
+}
+.now-step.plan-step .step-subj {
+  font-size: 19px;
+  font-weight: 500;
+  color: var(--text);
+}
+.plan-studied {
+  margin: 10px 0 0;
+}
+
+/* Idle: everything but your world and its day fades away. */
+.now .now-head,
+.now .now-log,
+.now .orbit-legend {
+  transition: opacity 1.2s ease;
+}
+.now.is-idle .now-head,
+.now.is-idle .now-log,
+.now.is-idle .orbit-legend {
+  opacity: 0;
+  pointer-events: none;
+}
+@media (prefers-reduced-motion: reduce) {
+  .now .now-head,
+  .now .now-log,
+  .now .orbit-legend {
+    transition: none;
+  }
+}
