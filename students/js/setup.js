@@ -8,6 +8,22 @@ import { api, store } from "./store.js";
 import { BOARDS, STAGES, AIMS, LEVELS, subjectsFor, gradesFor } from "./model/subjects.js";
 import { toRow, fromRow } from "./model/profile.js";
 import { clockOfText } from "./model/time.js";
+import { art, artImg, onArt, GUARDIANS, guardianOf } from "./art.js";
+import { createPan } from "./motion-art.js";
+
+// Pan, beside each question: one short line, and how Pan looks saying it.
+const PAN = {
+  board: ["idle", "Hi, I'm Pan. A few quick questions and I'll plan your week."],
+  stage: ["idle", "Which year? The syllabus changes with it."],
+  subjects: ["cheer", "Every subject you pick gets a guardian."],
+  levels: ["think", "Be honest. Weaker subjects get more time, not less."],
+  aim: ["idle", "Aim high or steady: both are good plans."],
+  school: ["think", "School comes first. I plan around it, never over it."],
+  boarding: ["think", "Boarding or travelling: it changes your evenings."],
+  sleep: ["idle", "Sleep is protected. I never plan into it."],
+  tuition: ["think", "Tuition counts as study. I'll leave room for it."],
+  exams: ["cheer", "Last one. Then your plan is ready."],
+};
 
 const $ = (id) => document.getElementById(id);
 const DAYS = [
@@ -63,6 +79,36 @@ export function runSetup({ onDone, editing = false }) {
   root.hidden = false;
   document.body.classList.add("in-setup");
 
+  // The side: the painted wallpaper and Pan, with a line for each step.
+  root.querySelector(".setup-side")?.remove();
+  const panBox = el("div", { class: "setup-pan" });
+  const panLine = el("p", { class: "setup-pan-line", "aria-hidden": "true" });
+  const side = el("aside", { class: "setup-side", "aria-hidden": "true" }, [panBox, panLine]);
+  root.prepend(side);
+  let panPose = null;
+  let livePan = null;
+  const showPan = (id) => {
+    const [pose, line] = PAN[id] || PAN.board;
+    panLine.textContent = line;
+    if (pose === panPose && panBox.firstChild) return;
+    panPose = pose;
+    const img = artImg(`pan-${pose}`, { cls: "setup-pan-img" });
+    if (img) panBox.replaceChildren(img);
+    else {
+      livePan ??= createPan({ size: 160, pose });
+      livePan.setPose?.(pose);
+      livePan.canvas.className = "setup-pan-img pan-live";
+      panBox.replaceChildren(livePan.canvas);
+    }
+  };
+  onArt(() => {
+    const wall = art("wall-tall") || art("wall-wide");
+    if (wall) side.style.setProperty("--setup-wall", `url("${new URL(wall, location.href).href}")`);
+    side.classList.toggle("painted", !!wall);
+    panPose = null;
+    showPan(form.dataset.step);
+  });
+
   const a = { ...fromRow(store.student) };
   if (!a.subjects.length) a.subjects = [];
   const exams = [];
@@ -106,7 +152,7 @@ export function runSetup({ onDone, editing = false }) {
             "div",
             { class: "chips setup-subjects", role: "group", "aria-label": "Subjects" },
             subjectsFor(a.stage).map((s) => {
-              const b = el("button", { type: "button", class: "chip tone-focus", "aria-pressed": String(chosen.has(s.id)) }, [
+              const b = el("button", { type: "button", class: "chip tone-focus", style: `--g:${GUARDIANS[guardianOf(s.id)]}`, "aria-pressed": String(chosen.has(s.id)) }, [
                 el("span", { text: s.name }),
                 s.code ? el("small", { class: "num", text: ` ${s.code}` }) : null,
               ]);
@@ -307,14 +353,15 @@ export function runSetup({ onDone, editing = false }) {
     const last = at === list.length - 1;
     const next = el("button", { type: "submit", class: "btn btn-primary", text: last ? (editing ? "Save" : "Build my plan") : "Next" });
     form.replaceChildren(
-      el("div", { class: "setup-steps", "aria-hidden": "true" }, list.map((_, i) => el("i", { class: i <= at ? "on" : "" }))),
-      el("p", { class: "setup-count faint num", text: `${at + 1} of ${list.length}` }),
+      el("div", { class: "setup-steps", "aria-hidden": "true" }, list.map((_, i) => el("i", { class: i < at ? "on" : i === at ? "on now" : "" }))),
+      el("p", { class: "setup-count faint num" }, [el("span", { class: "setup-num", "aria-hidden": "true", text: String(at + 1).padStart(2, "0") }), el("span", { text: `${at + 1} of ${list.length}` })]),
       el("h2", { id: "setup-title", text: s.title }),
       el("p", { class: "lead", text: s.lead }),
       ...s.body(),
       el("div", { class: "setup-actions" }, [back, next])
     );
     form.dataset.step = s.id;
+    showPan(s.id);
     form.querySelector("button[role=radio], button.chip, input, select")?.focus();
   };
 
@@ -338,6 +385,7 @@ export function runSetup({ onDone, editing = false }) {
 
   function close() {
     root.hidden = true;
+    side.remove();
     document.body.classList.remove("in-setup");
     form.replaceChildren();
     onDone();

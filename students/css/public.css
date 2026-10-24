@@ -1155,7 +1155,52 @@ input[type="range"].range {
   padding: max(16px, env(safe-area-inset-top, 0px)) max(16px, env(safe-area-inset-right, 0px)) max(16px, env(safe-area-inset-bottom, 0px)) max(16px, env(safe-area-inset-left, 0px));
   background: radial-gradient(ellipse 80% 60% at 50% 0%, rgba(122, 140, 255, 0.12), transparent 70%), var(--bg);
 }
+/* Beside the questions: the painted wallpaper, and Pan with a line for
+   each step (setup.js). On a phone it shrinks to a strip above. */
+.setup:has(.setup-side) {
+  grid-template-columns: minmax(0, 0.85fr) minmax(0, 1.15fr);
+  place-items: initial;
+  align-items: center;
+  padding: 0;
+}
+.setup-side {
+  position: relative;
+  align-self: stretch;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  min-height: 100vh;
+  min-height: 100dvh;
+  padding: 48px clamp(24px, 4vw, 56px);
+  overflow: hidden;
+  background: radial-gradient(60% 50% at 30% 70%, rgba(255, 120, 50, 0.16), transparent 70%), #05070e;
+}
+.setup-side.painted {
+  background:
+    linear-gradient(90deg, rgba(5, 7, 14, 0) 45%, var(--bg) 100%),
+    linear-gradient(to top, rgba(5, 7, 14, 0.92), rgba(5, 7, 14, 0) 55%),
+    var(--setup-wall) center 35% / cover no-repeat;
+}
+.setup-pan-img {
+  display: block;
+  width: clamp(120px, 13vw, 190px);
+  height: auto;
+  filter: drop-shadow(0 12px 30px rgba(255, 140, 60, 0.45));
+  animation: pan-float 5s ease-in-out infinite;
+}
+.setup-pan-line {
+  max-width: 28ch;
+  margin: 14px 0 0;
+  font: italic 400 clamp(18px, 1.7vw, 24px) / 1.35 var(--f-serif);
+  color: var(--text);
+  text-wrap: balance;
+}
+.setup-num {
+  display: none;
+}
 .setup-form {
+  justify-self: center;
+  margin: 32px;
   width: min(620px, 100%);
   padding: 26px 26px 22px;
   border: 1px solid var(--line-2);
@@ -1288,6 +1333,40 @@ input[type="range"].range {
 }
 .setup-actions .btn-primary {
   margin-left: auto;
+}
+@media (max-width: 860px) {
+  .setup:has(.setup-side) {
+    grid-template-columns: 1fr;
+    align-content: start;
+    align-items: start;
+  }
+  .setup-side {
+    min-height: 0;
+    flex-direction: row;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 12px;
+    padding: 18px 16px 6px;
+  }
+  .setup-side.painted {
+    background: linear-gradient(to top, var(--bg), rgba(5, 7, 14, 0.4)), var(--setup-wall) center 30% / cover no-repeat;
+  }
+  .setup-pan-img {
+    width: 64px;
+  }
+  .setup-pan-line {
+    margin: 0;
+    font-size: 16px;
+  }
+  .setup-form {
+    margin: 8px 16px 24px;
+    width: auto;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .setup-pan-img {
+    animation: none;
+  }
 }
 @media (max-width: 520px) {
   .setup-form {
