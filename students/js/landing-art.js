@@ -45,7 +45,7 @@ function cast() {
       b.classList.toggle("on", b.dataset.f === f);
       if (b.dataset.f === f && aura.canvas.parentElement !== b) {
         b.append(aura.canvas);
-        requestAnimationFrame(() => aura.show(f, GUARDIANS[f], aura.canvas.offsetWidth, aura.canvas.offsetHeight));
+        aura.show(f, GUARDIANS[f]);
       }
     }
     const src = art(`scene-${f}`);

@@ -925,7 +925,7 @@ const AURAS = {
 
 /**
  * The effect layer for a chosen guardian. Returns { canvas, show(family,
- * colour, w, h), destroy }. It moves continuously when `lively()` says so
+ * colour), destroy }; it sizes itself from its CSS box. It moves continuously when `lively()` says so
  * (or on the landing, `always`), otherwise plays for a few seconds after
  * each choice and rests on a still frame.
  */
@@ -953,21 +953,36 @@ export function createAura({ always = () => false } = {}) {
     },
   };
   register(p);
+  // Sized from its own box, whenever that changes (the painting it sits on
+  // may still be loading when it's chosen).
+  const fit = () => {
+    const nw = Math.round(canvas.offsetWidth);
+    const nh = Math.round(canvas.offsetHeight);
+    if (nw < 8 || nh < 8 || (nw === w && nh === h)) return false;
+    w = nw;
+    h = nh;
+    ctx = setup(canvas, w, h);
+    state = {};
+    return true;
+  };
+  const ro = typeof ResizeObserver === "function" ? new ResizeObserver(() => fit() && p.draw(0)) : null;
+  ro?.observe(canvas);
   return {
     canvas,
-    show(family, colour, width, height) {
+    show(family, colour) {
       fam = family;
       col = colour;
       state = {};
-      w = Math.max(1, Math.round(width));
-      h = Math.max(1, Math.round(height));
-      ctx = setup(canvas, w, h);
+      fit();
       p.t = 1.2;
       until = performance.now() + 4500;
       p.animate = !reducedMotion();
       p.draw(0);
       kick();
     },
-    destroy: () => unregister(p),
+    destroy() {
+      ro?.disconnect();
+      unregister(p);
+    },
   };
 }

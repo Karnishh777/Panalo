@@ -106,11 +106,7 @@ function stage(plan, fams) {
       playing.setActive(true);
       feature.replaceChildren(playing.canvas, aura.canvas);
     }
-    // Sized once the chosen one has its new size (after the transition starts).
-    requestAnimationFrame(() => {
-      const host = aura.canvas.parentElement;
-      if (host) aura.show(f, GUARDIANS[f], aura.canvas.offsetWidth, aura.canvas.offsetHeight);
-    });
+    aura.show(f, GUARDIANS[f]);
     const src = art(`scene-${f}`);
     const back = front === sceneA ? sceneB : sceneA;
     back.style.backgroundImage = src ? `url("${src}")` : "";
