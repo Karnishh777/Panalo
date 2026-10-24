@@ -607,3 +607,212 @@
     transition: none;
   }
 }
+
+/* ===== The painted art (art.js) ========================================= */
+/* Bitmaps from assets/art/, each with a plain fallback when missing. */
+
+/* The wallpaper: behind Now and Plan only, darkened at the bottom so the
+   text sits on near-black. The Study Room never shows it. */
+.wall {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background:
+    linear-gradient(to bottom, rgba(5, 7, 14, 0.25) 0%, rgba(5, 7, 14, 0.55) 45%, rgba(5, 7, 14, 0.96) 78%, #05070e 100%),
+    var(--wall-wide) center top / cover no-repeat;
+  opacity: 0;
+  transition: opacity 0.8s ease;
+}
+body.in-app[data-view="now"] .wall,
+body.in-app[data-view="plan"] .wall {
+  opacity: 1;
+}
+@media (max-aspect-ratio: 3/4) {
+  .wall {
+    background:
+      linear-gradient(to bottom, rgba(5, 7, 14, 0.2) 0%, rgba(5, 7, 14, 0.6) 40%, rgba(5, 7, 14, 0.97) 70%, #05070e 100%),
+      var(--wall-tall) center top / cover no-repeat;
+  }
+}
+
+/* Pan, the mascot. */
+.pan {
+  display: block;
+  pointer-events: none;
+  user-select: none;
+  filter: drop-shadow(0 8px 24px rgba(255, 150, 60, 0.35));
+}
+.pl-hero .pl-pan,
+.pl-stage .st-pan {
+  position: absolute;
+  right: 18px;
+  bottom: -6px;
+  width: clamp(80px, 12vw, 140px);
+  z-index: 3;
+  animation: pan-float 5s ease-in-out infinite;
+}
+.greet-pan {
+  display: inline-block;
+  height: 1.25em;
+  width: auto;
+  margin-left: 0.25em;
+  vertical-align: -0.2em;
+  animation: pan-float 5s ease-in-out infinite;
+}
+.bc-pan {
+  width: 120px;
+  margin: 0 auto -6px;
+}
+.bc-pan.cheer {
+  animation: pan-pop 0.7s cubic-bezier(0.2, 1.6, 0.4, 1) both;
+}
+.now-sleeper {
+  position: absolute;
+  z-index: 2;
+  left: 50%;
+  top: 46%;
+  width: 120px;
+  transform: translate(-50%, -50%);
+  opacity: 0;
+  transition: opacity 1.2s ease;
+  pointer-events: none;
+}
+.now-instrument {
+  position: relative;
+}
+.now.is-idle .now-sleeper {
+  opacity: 1;
+}
+@keyframes pan-float {
+  50% {
+    transform: translateY(-8px);
+  }
+}
+@keyframes pan-pop {
+  from {
+    transform: scale(0.4);
+    opacity: 0;
+  }
+}
+
+/* The stage: guardians in a row, black and white until chosen. */
+.pl-stage {
+  position: relative;
+  isolation: isolate;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.15fr);
+  align-items: end;
+  min-height: 380px;
+  border-radius: 20px;
+  border: 1px solid color-mix(in srgb, var(--subj) 28%, var(--line));
+  background: #05070e;
+  overflow: hidden;
+}
+.st-scene {
+  position: absolute;
+  inset: 0;
+  z-index: -2;
+  background: center / cover no-repeat;
+  filter: grayscale(1) brightness(0.42) contrast(1.1);
+  opacity: 0;
+  transition: opacity 0.9s ease;
+}
+.st-scene.show {
+  opacity: 1;
+}
+.pl-stage::before {
+  /* vignette, and the chosen colour's glow behind the row */
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background:
+    radial-gradient(60% 70% at 72% 75%, color-mix(in srgb, var(--subj) 28%, transparent), transparent 70%),
+    linear-gradient(90deg, rgba(5, 7, 14, 0.92) 0%, rgba(5, 7, 14, 0.55) 45%, rgba(5, 7, 14, 0.1) 100%),
+    linear-gradient(to top, #05070e 0%, transparent 35%);
+  transition: background 0.6s ease;
+}
+.st-info {
+  position: relative;
+  z-index: 2;
+  padding: 28px 28px 30px;
+  align-self: center;
+}
+.st-info .pl-hero-kicker {
+  color: var(--subj);
+}
+.st-lineup {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: flex-end;
+  height: 100%;
+  min-height: 340px;
+  padding: 18px 12px 0;
+  /* legs fade into the dark */
+  -webkit-mask-image: linear-gradient(to bottom, #000 72%, transparent 100%);
+  mask-image: linear-gradient(to bottom, #000 72%, transparent 100%);
+}
+.st-guard {
+  position: relative;
+  flex: 0 1 auto;
+  width: clamp(90px, calc(46vw / var(--n)), 200px);
+  margin: 0 -14px;
+  padding: 0;
+  border: 0;
+  background: none;
+  cursor: pointer;
+  transform-origin: 50% 100%;
+  transition: transform 0.35s cubic-bezier(0.2, 0.8, 0.2, 1), filter 0.35s ease;
+  filter: grayscale(1) brightness(0.62);
+  z-index: 1;
+}
+.st-guard .st-img {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+.st-guard:hover,
+.st-guard:focus-visible {
+  filter: grayscale(0.4) brightness(0.85);
+  outline: none;
+}
+.st-guard.on {
+  z-index: 2;
+  filter: grayscale(0) brightness(1) drop-shadow(0 0 28px color-mix(in srgb, var(--g) 55%, transparent));
+  transform: scale(1.08) translateY(-4px);
+}
+@media (max-width: 760px) {
+  .pl-stage {
+    grid-template-columns: 1fr;
+    align-items: stretch;
+  }
+  .st-lineup {
+    order: -1;
+    min-height: 240px;
+  }
+  .st-guard {
+    width: clamp(70px, calc(80vw / var(--n)), 150px);
+  }
+  .st-info {
+    padding: 4px 20px 24px;
+  }
+  .pl-stage .st-pan {
+    display: none;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .pan,
+  .pl-hero .pl-pan,
+  .pl-stage .st-pan,
+  .bc-pan.cheer {
+    animation: none;
+  }
+  .st-guard,
+  .st-scene,
+  .wall,
+  .now-sleeper {
+    transition: none;
+  }
+}

@@ -8,15 +8,23 @@ import * as L from "./model/learner.js";
 import * as P from "./model/plan.js";
 import { startOfDay } from "./model/time.js";
 import { stageOf, subjectName } from "./model/subjects.js";
+import { GUARDIANS, guardianOf } from "./art.js";
 
 const banks = new Map(); // path -> syllabus json, or null when there is none
 const loading = new Map();
 
-// Each subject keeps one colour everywhere: the order it was chosen in.
-const COLOURS = ["#9ad8ff", "#ffc47a", "#7ee2a8", "#b59cff", "#ff9db0", "#e7d19b", "#8fe3e0", "#f5a46b"];
+// Each subject keeps one colour everywhere: its guardian's (art.js), or,
+// when an earlier subject already has that guardian, the next free one.
+const COLOURS = Object.values(GUARDIANS);
 export function colourOf(subjectId) {
-  const i = (profile().subjects || []).findIndex((s) => s.id === subjectId);
-  return COLOURS[(i < 0 ? 0 : i) % COLOURS.length];
+  const used = new Set();
+  for (const s of profile().subjects || []) {
+    let c = GUARDIANS[guardianOf(s.id)];
+    if (used.has(c)) c = COLOURS.find((x) => !used.has(x)) || c;
+    if (s.id === subjectId) return c;
+    used.add(c);
+  }
+  return GUARDIANS[guardianOf(subjectId)];
 }
 
 export function profile() {
