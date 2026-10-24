@@ -657,3 +657,317 @@ export function createEmbers({ animate = false } = {}) {
     },
   };
 }
+
+// ---- Auras -----------------------------------------------------------------------------
+
+// The special effect around a chosen guardian: drawn only in colour, so it
+// is there the moment a guardian turns from grey. Each family has its own:
+// circuits carrying data for computing, arcs for physics, bubbles for
+// chemistry, a helix for biology, orbiting symbols for maths, rising coins
+// for commerce, drifting letters for words, paint for art. Coordinates are
+// in a box around the figure (the figure fills the middle 60%).
+const hexA = (hex, a) => {
+  const n = parseInt(hex.slice(1), 16);
+  return `rgba(${(n >> 16) & 255},${(n >> 8) & 255},${n & 255},${a})`;
+};
+const seeded = (seed) => () => ((seed = (seed * 16807) % 2147483647) / 2147483647);
+
+const AURAS = {
+  computing(c, t, w, h, col, s) {
+    // Right-angled traces from the edges in towards the figure, pulses of
+    // data running along them, a spark where each one lands.
+    if (!s.traces) {
+      const r = seeded(7);
+      s.traces = Array.from({ length: 12 }, (_, i) => {
+        const left = i % 2 === 0;
+        let x = left ? 0 : 1;
+        let y = 0.12 + r() * 0.8;
+        const pts = [[x, y]];
+        for (let k = 0; k < 3; k++) {
+          x += (left ? 1 : -1) * (0.06 + r() * 0.1);
+          pts.push([x, y]);
+          y += (r() - 0.5) * 0.18;
+          pts.push([x, y]);
+        }
+        pts.push([left ? 0.3 + r() * 0.08 : 0.7 - r() * 0.08, y]);
+        return { pts, speed: 0.25 + r() * 0.35, ph: r() };
+      });
+      s.bits = Array.from({ length: 22 }, () => ({ x: r(), y: r(), v: 0.04 + r() * 0.08, b: r() > 0.5 ? "1" : "0" }));
+    }
+    c.lineWidth = 1.4;
+    c.lineCap = "round";
+    for (const tr of s.traces) {
+      const P = tr.pts.map(([x, y]) => [x * w, y * h]);
+      c.strokeStyle = hexA(col, 0.32);
+      c.beginPath();
+      P.forEach(([x, y], i) => (i ? c.lineTo(x, y) : c.moveTo(x, y)));
+      c.stroke();
+      const [ex, ey] = P[P.length - 1];
+      c.fillStyle = hexA(col, 0.8);
+      c.fillRect(ex - 2.5, ey - 2.5, 5, 5);
+      // the pulse: a point some way along the polyline, with a tail
+      const lens = P.slice(1).map((p, i) => Math.hypot(p[0] - P[i][0], p[1] - P[i][1]));
+      const total = lens.reduce((a, b) => a + b, 0);
+      const f = (t * tr.speed + tr.ph) % 1;
+      for (let k = 0; k < 6; k++) {
+        let d = (f - k * 0.025) * total;
+        if (d < 0) break;
+        let i = 0;
+        while (i < lens.length - 1 && d > lens[i]) d -= lens[i++];
+        const q = Math.min(1, d / (lens[i] || 1));
+        const x = P[i][0] + (P[i + 1][0] - P[i][0]) * q;
+        const y = P[i][1] + (P[i + 1][1] - P[i][1]) * q;
+        c.fillStyle = k ? hexA(col, 0.5 - k * 0.08) : "rgba(255,255,255,0.95)";
+        c.beginPath();
+        c.arc(x, y, k ? 2.2 : 3, 0, TAU);
+        c.fill();
+      }
+      if (f > 0.93) {
+        c.strokeStyle = `rgba(255,255,255,${(f - 0.93) * 12})`;
+        c.beginPath();
+        for (let k = 0; k < 4; k++) {
+          const a = k * 1.7 + t * 9;
+          c.moveTo(ex, ey);
+          c.lineTo(ex + Math.cos(a) * 9, ey + Math.sin(a) * 9);
+        }
+        c.stroke();
+      }
+    }
+    c.font = `600 ${Math.round(w * 0.035)}px ui-monospace, monospace`;
+    for (const b of s.bits) {
+      const y = (((b.y - t * b.v) % 1) + 1) % 1;
+      c.fillStyle = hexA(col, 0.55 * Math.sin(y * Math.PI));
+      c.fillText(b.b, b.x * w, y * h);
+    }
+  },
+  physics(c, t, w, h, col, s) {
+    // Arcs that crack between points round the figure, and electrons in orbit.
+    const r = seeded(Math.floor(t * 8) + 1);
+    for (let k = 0; k < 3; k++) {
+      const a = r() * TAU;
+      const b = a + 0.6 + r() * 1.2;
+      let x = w / 2 + Math.cos(a) * w * 0.42;
+      let y = h / 2 + Math.sin(a) * h * 0.4;
+      const tx = w / 2 + Math.cos(b) * w * 0.42;
+      const ty = h / 2 + Math.sin(b) * h * 0.4;
+      c.strokeStyle = k ? hexA(col, 0.6) : "rgba(255,255,255,0.85)";
+      c.lineWidth = k ? 1.2 : 2;
+      c.beginPath();
+      c.moveTo(x, y);
+      for (let i = 1; i <= 9; i++) {
+        x += (tx - x) / (10 - i) + (r() - 0.5) * w * 0.06;
+        y += (ty - y) / (10 - i) + (r() - 0.5) * h * 0.04;
+        c.lineTo(x, y);
+      }
+      c.stroke();
+    }
+    c.lineWidth = 1;
+    for (let k = 0; k < 3; k++) {
+      c.save();
+      c.translate(w / 2, h * 0.45);
+      c.rotate(k * (TAU / 3) + 0.3);
+      c.strokeStyle = hexA(col, 0.28);
+      c.beginPath();
+      c.ellipse(0, 0, w * 0.46, h * 0.12, 0, 0, TAU);
+      c.stroke();
+      const a = t * (1.6 + k * 0.4) + k * 2;
+      c.fillStyle = "rgba(255,255,255,0.95)";
+      c.shadowColor = col;
+      c.shadowBlur = 12;
+      c.beginPath();
+      c.arc(Math.cos(a) * w * 0.46, Math.sin(a) * h * 0.12, 3.5, 0, TAU);
+      c.fill();
+      c.restore();
+    }
+  },
+  chemistry(c, t, w, h, col, s) {
+    if (!s.b) {
+      const r = seeded(11);
+      s.b = Array.from({ length: 26 }, () => ({ x: r(), r: 2 + r() * 7, v: 0.08 + r() * 0.12, ph: r() }));
+    }
+    for (const b of s.b) {
+      const y = 1 - ((t * b.v + b.ph) % 1);
+      const x = (b.x + Math.sin(t * 2 + b.ph * 9) * 0.02) * w;
+      const a = Math.sin(y * Math.PI);
+      c.strokeStyle = hexA(col, 0.7 * a);
+      c.lineWidth = 1.3;
+      c.beginPath();
+      c.arc(x, y * h, b.r, 0, TAU);
+      c.stroke();
+      c.fillStyle = `rgba(255,255,255,${0.6 * a})`;
+      c.beginPath();
+      c.arc(x - b.r * 0.35, y * h - b.r * 0.35, b.r * 0.25, 0, TAU);
+      c.fill();
+    }
+  },
+  biology(c, t, w, h, col, s) {
+    // A helix twisting up each side, and spores drifting.
+    for (const side of [0.12, 0.88]) {
+      for (let i = 0; i < 22; i++) {
+        const y = (i / 21) * h;
+        const a = i * 0.55 + t * 1.4 + side * 7;
+        const dx = Math.cos(a) * w * 0.06;
+        const z = (Math.sin(a) + 1) / 2;
+        c.strokeStyle = hexA(col, 0.18 + 0.2 * z);
+        c.lineWidth = 1;
+        c.beginPath();
+        c.moveTo(side * w - dx, y);
+        c.lineTo(side * w + dx, y);
+        c.stroke();
+        c.fillStyle = hexA(col, 0.4 + 0.5 * z);
+        c.beginPath();
+        c.arc(side * w + dx, y, 2 + z * 1.5, 0, TAU);
+        c.arc(side * w - dx, y, 2 + (1 - z) * 1.5, 0, TAU);
+        c.fill();
+      }
+    }
+    if (!s.sp) {
+      const r = seeded(5);
+      s.sp = Array.from({ length: 18 }, () => ({ x: r(), y: r(), ph: r() * TAU }));
+    }
+    for (const p of s.sp) {
+      const x = (p.x + Math.sin(t * 0.6 + p.ph) * 0.03) * w;
+      const y = (((p.y - t * 0.03) % 1) + 1) % 1;
+      c.fillStyle = hexA(col, 0.6 * Math.sin(y * Math.PI));
+      c.beginPath();
+      c.arc(x, y * h, 2.4, 0, TAU);
+      c.fill();
+    }
+  },
+  maths(c, t, w, h, col) {
+    const glyphs = ["π", "∑", "∞", "√", "θ", "∫", "Δ", "φ", "x²", "≠"];
+    c.font = `500 ${Math.round(w * 0.075)}px Georgia, serif`;
+    c.textAlign = "center";
+    c.textBaseline = "middle";
+    glyphs.forEach((g, i) => {
+      const a = t * 0.5 + (i / glyphs.length) * TAU;
+      const z = (Math.sin(a) + 1) / 2;
+      c.fillStyle = hexA(col, 0.25 + 0.7 * z);
+      c.fillText(g, w / 2 + Math.cos(a) * w * 0.44, h * 0.42 + Math.sin(a) * h * 0.1 - (i % 3) * h * 0.12 + h * 0.12);
+    });
+    c.save();
+    c.translate(w / 2, h * 0.18);
+    c.rotate(t * 0.3);
+    c.strokeStyle = hexA(col, 0.45);
+    c.lineWidth = 1.2;
+    c.beginPath();
+    for (let i = 0; i <= 6; i++) c.lineTo(Math.cos((i * TAU) / 6) * w * 0.12, Math.sin((i * TAU) / 6) * w * 0.12);
+    c.stroke();
+    c.beginPath();
+    c.arc(0, 0, w * 0.12, 0, TAU);
+    c.stroke();
+    c.restore();
+    c.textAlign = "start";
+    c.textBaseline = "alphabetic";
+  },
+  commerce(c, t, w, h, col, s) {
+    // A rising chart line behind, and coins spinning upward.
+    c.strokeStyle = hexA(col, 0.5);
+    c.lineWidth = 2;
+    c.beginPath();
+    for (let i = 0; i <= 20; i++) {
+      const x = (i / 20) * w;
+      const y = h * (0.85 - (i / 20) * 0.55) + Math.sin(i * 1.3 + t * 2) * h * 0.03;
+      i ? c.lineTo(x, y) : c.moveTo(x, y);
+    }
+    c.stroke();
+    if (!s.coins) {
+      const r = seeded(3);
+      s.coins = Array.from({ length: 12 }, () => ({ x: r(), v: 0.06 + r() * 0.08, ph: r() }));
+    }
+    for (const k of s.coins) {
+      const y = 1 - ((t * k.v + k.ph) % 1);
+      const a = Math.sin(y * Math.PI);
+      const rw = Math.abs(Math.cos(t * 3 + k.ph * 9)) * 7 + 1;
+      c.fillStyle = hexA(col, 0.75 * a);
+      c.strokeStyle = `rgba(255,255,255,${0.5 * a})`;
+      c.beginPath();
+      c.ellipse(k.x * w, y * h, rw, 8, 0, 0, TAU);
+      c.fill();
+      c.stroke();
+    }
+  },
+  words(c, t, w, h, col, s) {
+    if (!s.l) {
+      const r = seeded(9);
+      const abc = "AaBbEeGgKkMmQqRrSsWw&?!¶“”";
+      s.l = Array.from({ length: 22 }, () => ({ x: r(), v: 0.04 + r() * 0.06, ph: r(), ch: abc[Math.floor(r() * abc.length)], sz: 0.04 + r() * 0.05 }));
+    }
+    for (const p of s.l) {
+      const y = 1 - ((t * p.v + p.ph) % 1);
+      c.font = `italic ${Math.round(w * p.sz)}px Georgia, serif`;
+      c.fillStyle = hexA(col, 0.7 * Math.sin(y * Math.PI));
+      c.fillText(p.ch, (p.x + Math.sin(t + p.ph * 9) * 0.02) * w, y * h);
+    }
+  },
+  art(c, t, w, h, col, s) {
+    // Paint flung outward in bursts, with a sweeping brush arc.
+    const cycle = t % 2.4;
+    const r = seeded(Math.floor(t / 2.4) + 2);
+    for (let k = 0; k < 18; k++) {
+      const a = r() * TAU;
+      const d = (0.15 + r() * 0.35) * Math.min(1, cycle * 1.6);
+      const x = w / 2 + Math.cos(a) * w * d;
+      const y = h * 0.45 + Math.sin(a) * h * d * 0.8;
+      c.fillStyle = hexA(k % 3 ? col : "#ffffff", 0.75 * (1 - cycle / 2.4));
+      c.beginPath();
+      c.arc(x, y, 2 + r() * 5, 0, TAU);
+      c.fill();
+    }
+    c.strokeStyle = hexA(col, 0.5);
+    c.lineWidth = 6;
+    c.lineCap = "round";
+    c.beginPath();
+    c.arc(w / 2, h * 0.5, w * 0.44, Math.PI * 0.9 + t * 0.4, Math.PI * 1.5 + t * 0.4);
+    c.stroke();
+  },
+};
+
+/**
+ * The effect layer for a chosen guardian. Returns { canvas, show(family,
+ * colour, w, h), destroy }. It moves continuously when `lively()` says so
+ * (or on the landing, `always`), otherwise plays for a few seconds after
+ * each choice and rests on a still frame.
+ */
+export function createAura({ always = () => false } = {}) {
+  const canvas = document.createElement("canvas");
+  canvas.className = "aura";
+  canvas.setAttribute("aria-hidden", "true");
+  let ctx = null;
+  let w = 0;
+  let h = 0;
+  let fam = "words";
+  let col = "#ffffff";
+  let state = {};
+  let until = 0;
+  const p = {
+    canvas,
+    animate: false,
+    draw() {
+      if (!ctx) return;
+      ctx.clearRect(0, 0, w, h);
+      ctx.globalCompositeOperation = "lighter";
+      (AURAS[fam] || AURAS.words)(ctx, this.t, w, h, col, state);
+      ctx.globalCompositeOperation = "source-over";
+      if (!always() && performance.now() > until) p.animate = false;
+    },
+  };
+  register(p);
+  return {
+    canvas,
+    show(family, colour, width, height) {
+      fam = family;
+      col = colour;
+      state = {};
+      w = Math.max(1, Math.round(width));
+      h = Math.max(1, Math.round(height));
+      ctx = setup(canvas, w, h);
+      p.t = 1.2;
+      until = performance.now() + 4500;
+      p.animate = !reducedMotion();
+      p.draw(0);
+      kick();
+    },
+    destroy: () => unregister(p),
+  };
+}

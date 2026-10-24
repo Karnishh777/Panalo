@@ -121,8 +121,9 @@ try {
       name: document.querySelector(".hud-name").textContent,
       here: [...document.querySelectorAll(".thread-stars li")].findIndex((li) => li.classList.contains("here")),
       counts: [...document.querySelectorAll("[data-count]")].map((n) => n.textContent),
+      want: [...document.querySelectorAll("#landing section[data-chapter]")].findIndex((x) => x.id === "numbers"),
     }));
-    check("the HUD names the chapter you're in and its star is lit", hudState.name === "In numbers" && hudState.here === 3);
+    check("the HUD names the chapter you're in and its star is lit", hudState.name === "In numbers" && hudState.here === hudState.want && hudState.want > 2);
     check("the numbers count to their real values", hudState.counts.join() === "06,90,00,00");
     await page.evaluate(() => document.getElementById("faq").scrollIntoView());
     await page.waitForTimeout(900);
@@ -264,7 +265,7 @@ try {
   await page.fill("#login-email", "qa@panalo.test");
   await page.fill("#login-password", "wrong-password");
   await page.click("#login-submit");
-  await page.waitForTimeout(500);
+  await page.waitForFunction(() => /\S/.test(document.querySelector("#auth-message")?.textContent || ""), null, { timeout: 8000 }).catch(() => {});
   check("a wrong password is reported plainly", /don't match/.test(await page.textContent("#auth-message")));
   // Phase 25: a username works too, but only with the right password.
   await page.fill("#login-email", "@alex");

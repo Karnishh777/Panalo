@@ -11,6 +11,7 @@ import { el } from "./ui.js";
 import { reducedMotion, lively } from "./motion.js";
 import { globeDock, dockToggle } from "./globe-dock.js";
 import { initLandingHud } from "./landing-hud.js";
+import { initLandingArt } from "./landing-art.js";
 
 let started = false;
 
@@ -38,6 +39,7 @@ export function initLanding() {
   window.addEventListener("scroll", onScroll, { passive: true });
   onScroll();
   reveal(document.getElementById("landing"));
+  initLandingArt();
   initLandingHud();
 
   // The calls to action land with a hit.

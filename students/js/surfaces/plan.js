@@ -11,11 +11,11 @@ import * as L from "../model/learner.js";
 import * as P from "../model/plan.js";
 import { weekCapacity } from "../model/capacity.js";
 import { formatMinutes, DAY, clockOf } from "../model/time.js";
-import { reducedMotion } from "../motion.js";
+import { reducedMotion, lively } from "../motion.js";
 import { hasPlan, profile, loadBanks, banksReady, currentPlan, subjectView, colourOf, nameOf, stateOf, saveTopic, addResult } from "../planner.js";
 import { startBlock } from "../block-check.js";
 import { art, artImg, onArt, GUARDIANS, guardianOf } from "../art.js";
-import { createEmblem, createPan } from "../motion-art.js";
+import { createEmblem, createPan, createAura } from "../motion-art.js";
 
 let root;
 let body;
@@ -65,9 +65,10 @@ function hero(plan) {
   return el("section", { class: "pl-hero", style: `--subj:${colourOf(next.subject)}`, "aria-labelledby": "pl-next" }, [...heroText(plan, next, di), pan("idle", "pl-pan")]);
 }
 
-// The stage: the student's subjects as a row, in black and white; the
-// chosen one turns to colour with its glow and scene, and its subject's
-// next block sits beside it. With the guardian paintings (art.js) the row
+// The stage: the student's subjects as a row, small, grey and faint; the
+// chosen one steps forward large and in colour, with its glow, its scene
+// and its own effect (circuits carrying data for computing, arcs for
+// physics ...), and its subject's next block sits beside it. With the guardian paintings (art.js) the row
 // is a lineup of portraits; without them, the chosen subject's coded
 // emblem (motion-art.js) plays large above a strip of small ones. Left
 // and right (or a tap) move along the row.
@@ -87,6 +88,7 @@ function stage(plan, fams) {
   const root = el("section", { class: "pl-stage", "aria-labelledby": "pl-next" }, [sceneA, sceneB, info, right]);
   const big = new Map();
   let playing = null;
+  const aura = createAura({ always: lively });
   const pick = (f, focus = false) => {
     sel = f;
     root.style.setProperty("--subj", GUARDIANS[f]);
@@ -95,14 +97,20 @@ function stage(plan, fams) {
       btn.classList.toggle("on", on);
       btn.setAttribute("aria-pressed", String(on));
       if (on && focus) btn.focus();
+      if (on && painted) btn.append(aura.canvas);
     }
     if (feature) {
       if (!big.has(f)) big.set(f, createEmblem(f, GUARDIANS[f], { width: 300, height: 260 }));
       playing?.setActive(false);
       playing = big.get(f);
       playing.setActive(true);
-      feature.replaceChildren(playing.canvas);
+      feature.replaceChildren(playing.canvas, aura.canvas);
     }
+    // Sized once the chosen one has its new size (after the transition starts).
+    requestAnimationFrame(() => {
+      const host = aura.canvas.parentElement;
+      if (host) aura.show(f, GUARDIANS[f], aura.canvas.offsetWidth, aura.canvas.offsetHeight);
+    });
     const src = art(`scene-${f}`);
     const back = front === sceneA ? sceneB : sceneA;
     back.style.backgroundImage = src ? `url("${src}")` : "";
