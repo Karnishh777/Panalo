@@ -949,3 +949,171 @@ body.in-app[data-view="plan"] .wall {
     padding-bottom: 6px;
   }
 }
+
+/* ---- customize: tell Pan, or set it yourself (plan-custom.js) ---- */
+.pl-custom {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 12px;
+}
+.pl-tell {
+  flex: 1 1 260px;
+  justify-content: flex-start;
+  min-height: 42px;
+  border: 1px dashed var(--line-2);
+  color: var(--text-3);
+  text-align: left;
+}
+.pl-own {
+  flex-basis: 100%;
+  margin: 0;
+  font-size: 13px;
+}
+.pl-own b {
+  color: var(--text-2);
+  font-weight: 600;
+}
+.pl-block {
+  position: relative;
+}
+.pl-block:has(.pl-more) {
+  grid-template-columns: auto 1fr auto auto;
+}
+.pl-block:has(.pl-time):has(.pl-more) {
+  grid-template-columns: 44px auto 1fr auto auto;
+}
+.pl-more {
+  width: 28px;
+  height: 28px;
+  padding: 0;
+  border: 0;
+  border-radius: 6px;
+  background: none;
+  color: var(--text-3);
+  font-size: 18px;
+  line-height: 1;
+  cursor: pointer;
+  opacity: 0.55;
+}
+.pl-more:hover,
+.pl-more:focus-visible,
+.pl-block:hover .pl-more {
+  opacity: 1;
+  color: var(--text);
+  background: rgba(255, 255, 255, 0.06);
+}
+.pl-block.pinned .pl-what small {
+  color: var(--time);
+}
+.customize .sheet-body {
+  display: grid;
+  gap: 22px;
+}
+.cz-ask {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 16px;
+  align-items: start;
+}
+.cz-pan {
+  width: 72px;
+  height: auto;
+}
+.cz-ask-main {
+  display: grid;
+  gap: 10px;
+  min-width: 0;
+}
+.cz-h {
+  margin: 0;
+  font-size: 15px;
+  font-weight: 600;
+}
+.cz-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 12px;
+}
+.cz-yours {
+  justify-content: space-between;
+  margin-top: 8px;
+}
+.cz-examples .chip {
+  font-size: 12px;
+}
+.cz-preview:empty {
+  display: none;
+}
+.cz-preview {
+  display: grid;
+  gap: 10px;
+  padding: 12px 14px;
+  border-left: 2px solid var(--time);
+  background: rgba(255, 255, 255, 0.03);
+}
+.cz-summary {
+  margin: 0;
+  color: var(--text);
+}
+.cz-changes,
+.cz-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  gap: 6px;
+}
+.cz-changes li::before {
+  content: "→ ";
+  color: var(--time);
+}
+.cz-list li {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 6px 0;
+  border-bottom: 1px solid var(--line);
+}
+.cz-own {
+  display: grid;
+  gap: 10px;
+}
+.cz-label {
+  margin: 4px 0 0;
+  font-size: 12px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text-3);
+}
+.cz-days,
+.cz-subjects {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: 8px;
+}
+.cz-day,
+.cz-subject,
+.cz-start {
+  display: grid;
+  gap: 4px;
+  font-size: 13px;
+  color: var(--text-2);
+}
+.cz-start {
+  max-width: 200px;
+}
+@media (max-width: 560px) {
+  .cz-ask {
+    grid-template-columns: 1fr;
+  }
+  .cz-pan {
+    width: 56px;
+  }
+  .cz-days,
+  .cz-subjects {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
