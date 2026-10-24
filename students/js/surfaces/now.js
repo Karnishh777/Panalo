@@ -21,7 +21,8 @@ import { parseQuickAdd } from "../model/quick-add.js";
 import { hasPlan, currentPlan, loadBanks, banksReady, colourOf, focusedToday } from "../planner.js";
 import { KINDS, nextBlock } from "../model/plan.js";
 import { startBlock } from "../block-check.js";
-import { artImg, onArt } from "../art.js";
+import { art, artImg, onArt } from "../art.js";
+import { createPan } from "../motion-art.js";
 
 let root;
 let orbitSlot;
@@ -326,8 +327,14 @@ function nextStep(now) {
   ].filter(Boolean);
 }
 
+// Pan beside the greeting: the painting if there is one, else the live one.
+let greetPan = null;
+function panFor(name, pose, cls, size) {
+  return artImg(name, { cls: `pan ${cls}` }) || Object.assign(createPan({ size, pose }).canvas, { className: `pan pan-live ${cls}` });
+}
 function render() {
-  greetEl.replaceChildren(greeting(), ...[artImg("pan-idle", { cls: "pan greet-pan" })].filter(Boolean));
+  if (!greetPan || (art("pan-idle") && greetPan.tagName === "CANVAS")) greetPan = panFor("pan-idle", "idle", "greet-pan", 64);
+  greetEl.replaceChildren(greeting(), greetPan);
   renderOrbit();
   renderLog();
 }
@@ -343,7 +350,7 @@ export function mount(section, ctx) {
   logEl = el("div", { class: "now-log" });
   // Idle, Pan dozes beside your world.
   const sleeper = el("div", { class: "now-sleeper", "aria-hidden": "true" });
-  onArt(() => sleeper.replaceChildren(...[artImg("pan-sleep", { cls: "pan" })].filter(Boolean)));
+  onArt(() => sleeper.replaceChildren(panFor("pan-sleep", "sleep", "", 140)));
   root.append(
     el("div", { class: "s-head" }, [el("div", { class: "now-head" }, [el("p", { class: "kicker toned tone-time", text: longDate(new Date()) }), greetEl, subEl, stepEl, captureForm()])]),
     el("div", { class: "now-grid" }, [el("div", { class: "now-instrument" }, [sleeper, orbitSlot, el("p", { class: "orbit-legend faint" }, [legend("time", "classes & events"), legend("focus", "focus done"), legend("alert", "deadlines"), legend("hand", "now")])]), logEl])

@@ -196,11 +196,11 @@ try {
     await page.waitForSelector(".now-log .plan-today, .now-log .panel-head h2:has-text(\"Today's plan\")", { timeout: 10000 }).catch(() => {});
     check("Now shows today's plan", /Today's plan/.test(await page.textContent(".now-log")));
     await go(page, "#/plan");
-    await page.waitForSelector(".pl-hero #plan-start", { timeout: 10000 });
+    await page.waitForSelector(":is(.pl-stage, .pl-hero) #plan-start", { timeout: 10000 });
     check("the plan leads with the next block", await page.isVisible("#plan-start"));
     check("the week has seven days", (await page.locator(".pl-day").count()) === 7);
     check("each subject is a map of its topics, grey until met", (await page.locator(".pl-subject").count()) === 2 && (await page.locator(".pl-topic:not(.met)").count()) > 10);
-    check("a new student's first block is a quick check", /Quick check/.test(await page.textContent(".pl-hero")));
+    check("a new student's first block is a quick check", /Quick check/.test(await page.textContent(":is(.pl-stage, .pl-hero)")));
     check("the exam from the setup shows on its subject", /Exam in \d+ days/.test(await page.textContent(".pl-subjects")));
     await shot(page, "plan");
     await page.click("#plan-start");
@@ -521,8 +521,8 @@ try {
   const ampm = /\d (am|pm)/;
   check("the 12-hour clock shows on the study profile", ampm.test(await page.textContent(".surface[data-surface=settings]")));
   await go(page, "#/plan");
-  await page.waitForSelector(".pl-hero", { timeout: 10000 }).catch(() => {});
-  check("…on the plan", ampm.test(await page.textContent(".surface[data-surface=plan]")) && !/\b\d\d:\d\d\b(?! ?[ap]m)/.test(await page.textContent(".pl-hero")));
+  await page.waitForSelector(":is(.pl-stage, .pl-hero)", { timeout: 10000 }).catch(() => {});
+  check("…on the plan", ampm.test(await page.textContent(".surface[data-surface=plan]")) && !/\b\d\d:\d\d\b(?! ?[ap]m)/.test(await page.textContent(":is(.pl-stage, .pl-hero)")));
   await go(page, "#/now");
   check("…and on Now's day orbit", (await page.locator(".orbit-label").allTextContents()).includes("6 am"));
   await go(page, "#/settings");
@@ -550,8 +550,8 @@ try {
     check("nothing scrolls sideways", !overflow);
     await shot(m, "phone-calendar");
     await m.click(".dock a[data-route=plan]");
-    await m.waitForSelector(".pl-hero", { timeout: 10000 }).catch(() => {});
-    check("the dock goes to Plan", (await m.evaluate(() => document.body.dataset.view)) === "plan" && (await m.isVisible(".pl-hero")));
+    await m.waitForSelector(":is(.pl-stage, .pl-hero)", { timeout: 10000 }).catch(() => {});
+    check("the dock goes to Plan", (await m.evaluate(() => document.body.dataset.view)) === "plan" && (await m.isVisible(":is(.pl-stage, .pl-hero)")));
     check("the plan fits a phone: nothing scrolls sideways", !(await m.evaluate(() => document.documentElement.scrollWidth > window.innerWidth + 1)));
     await m.waitForTimeout(900);
     await shot(m, "phone-plan");

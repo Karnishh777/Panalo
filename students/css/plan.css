@@ -618,18 +618,27 @@
   inset: 0;
   z-index: 0;
   pointer-events: none;
+  background: radial-gradient(120% 70% at 50% 110%, rgba(255, 110, 30, 0.12), transparent 60%);
+  opacity: 0;
+  transition: opacity 0.8s ease;
+}
+.wall.painted {
   background:
     linear-gradient(to bottom, rgba(5, 7, 14, 0.25) 0%, rgba(5, 7, 14, 0.55) 45%, rgba(5, 7, 14, 0.96) 78%, #05070e 100%),
     var(--wall-wide) center top / cover no-repeat;
-  opacity: 0;
-  transition: opacity 0.8s ease;
+}
+.wall .embers {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
 }
 body.in-app[data-view="now"] .wall,
 body.in-app[data-view="plan"] .wall {
   opacity: 1;
 }
 @media (max-aspect-ratio: 3/4) {
-  .wall {
+  .wall.painted {
     background:
       linear-gradient(to bottom, rgba(5, 7, 14, 0.2) 0%, rgba(5, 7, 14, 0.6) 40%, rgba(5, 7, 14, 0.97) 70%, #05070e 100%),
       var(--wall-tall) center top / cover no-repeat;
@@ -656,6 +665,7 @@ body.in-app[data-view="plan"] .wall {
   display: inline-block;
   height: 1.25em;
   width: auto;
+  filter: none;
   margin-left: 0.25em;
   vertical-align: -0.2em;
   animation: pan-float 5s ease-in-out infinite;
@@ -773,6 +783,7 @@ body.in-app[data-view="plan"] .wall {
   width: 100%;
   height: auto;
 }
+
 .st-guard:hover,
 .st-guard:focus-visible {
   filter: grayscale(0.4) brightness(0.85);
@@ -814,5 +825,91 @@ body.in-app[data-view="plan"] .wall {
   .wall,
   .now-sleeper {
     transition: none;
+  }
+}
+/* Without the paintings: the chosen subject's coded emblem plays large,
+   above a strip of small ones (black and white until chosen). */
+.st-right {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  align-content: end;
+  min-height: 100%;
+}
+.st-feature {
+  display: grid;
+  place-items: center;
+  padding: 18px 0 6px;
+}
+.st-feature canvas {
+  width: min(300px, 100%) !important;
+  height: auto !important;
+  filter: drop-shadow(0 0 24px color-mix(in srgb, var(--subj) 40%, transparent));
+}
+.st-lineup.strip {
+  -webkit-mask-image: none;
+  mask-image: none;
+  min-height: 0;
+  height: auto;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding: 6px 18px 20px;
+}
+.st-lineup.strip .st-guard {
+  width: auto;
+  margin: 0;
+  display: grid;
+  justify-items: center;
+  gap: 4px;
+  transform: none;
+}
+.st-lineup.strip .st-guard.on {
+  transform: translateY(-3px);
+  filter: grayscale(0) brightness(1);
+}
+.st-emblem {
+  display: block;
+  width: 56px;
+  height: 56px;
+  border-radius: 14px;
+  border: 1px solid color-mix(in srgb, var(--g) 25%, transparent);
+  background: linear-gradient(170deg, color-mix(in srgb, var(--g) 12%, #0b0f1d), #070912 80%);
+  overflow: hidden;
+}
+.st-emblem canvas {
+  display: block;
+  width: 100% !important;
+  height: 100% !important;
+}
+.st-guard.on .st-emblem {
+  border-color: color-mix(in srgb, var(--g) 75%, transparent);
+  box-shadow: 0 0 18px color-mix(in srgb, var(--g) 40%, transparent);
+}
+.st-name {
+  font-size: 11px;
+  color: var(--text-3);
+  max-width: 72px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.st-guard.on .st-name {
+  color: var(--g);
+}
+.pl-subject h3 .num {
+  margin-left: 0.35em;
+}
+@media (max-width: 760px) {
+  .st-right {
+    order: -1;
+  }
+  .st-feature {
+    padding: 8px 0 0;
+  }
+  .st-feature canvas {
+    width: 150px !important;
+  }
+  .st-lineup.strip {
+    padding-bottom: 6px;
   }
 }
