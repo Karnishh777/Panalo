@@ -1928,8 +1928,13 @@ input[type="range"].range {
 .cast-pan[hidden] {
   display: none;
 }
+/* Pan keeps its size: the row's text wraps around it, never squeezes it */
+.cast-pan-art {
+  flex: none;
+}
 .cast-pan-img {
   width: 160px;
+  max-width: none;
   height: auto;
   filter: drop-shadow(0 10px 30px rgba(255, 150, 60, 0.45));
   animation: pan-float 5s ease-in-out infinite;
