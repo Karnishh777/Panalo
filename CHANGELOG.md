@@ -35,6 +35,12 @@ only where nothing else can).
 - **Phase 30**: progress per topic, pace per subject, results.
 - **Boarders** (phase 31): the setup asks for the evening prep time, and
   school-day blocks are planned inside it.
+- **The painted art** (slots ready, images coming): Pan the mascot, eight
+  subject guardians in a lineup on the Plan page (black and white until
+  chosen, then colour, glow and their scene behind), wallpapers behind Now
+  and Plan. Prompts in `students/assets/art/PROMPTS.md`; drop images in
+  with `python3 -I tools/art/process.py <folder>`. Each subject's colour is
+  now its guardian's.
 - **Now, around the plan**: the next block leads, in its subject's colour;
   today's focus folds into today's plan; left alone for two minutes, Now
   fades to just your world and its day (any touch brings it back).

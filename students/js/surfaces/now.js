@@ -21,6 +21,7 @@ import { parseQuickAdd } from "../model/quick-add.js";
 import { hasPlan, currentPlan, loadBanks, banksReady, colourOf, focusedToday } from "../planner.js";
 import { KINDS, nextBlock } from "../model/plan.js";
 import { startBlock } from "../block-check.js";
+import { artImg, onArt } from "../art.js";
 
 let root;
 let orbitSlot;
@@ -326,7 +327,7 @@ function nextStep(now) {
 }
 
 function render() {
-  greetEl.textContent = greeting();
+  greetEl.replaceChildren(greeting(), ...[artImg("pan-idle", { cls: "pan greet-pan" })].filter(Boolean));
   renderOrbit();
   renderLog();
 }
@@ -340,9 +341,12 @@ export function mount(section, ctx) {
   const globeCanvas = el("canvas", { class: "orbit-world", role: "img", "aria-label": "Your world. Open World for what shapes it." });
   orbitSlot = el("a", { class: "orbit-wrap", href: "#/world", "aria-label": "Your day and your world" }, [globeCanvas]);
   logEl = el("div", { class: "now-log" });
+  // Idle, Pan dozes beside your world.
+  const sleeper = el("div", { class: "now-sleeper", "aria-hidden": "true" });
+  onArt(() => sleeper.replaceChildren(...[artImg("pan-sleep", { cls: "pan" })].filter(Boolean)));
   root.append(
     el("div", { class: "s-head" }, [el("div", { class: "now-head" }, [el("p", { class: "kicker toned tone-time", text: longDate(new Date()) }), greetEl, subEl, stepEl, captureForm()])]),
-    el("div", { class: "now-grid" }, [el("div", { class: "now-instrument" }, [orbitSlot, el("p", { class: "orbit-legend faint" }, [legend("time", "classes & events"), legend("focus", "focus done"), legend("alert", "deadlines"), legend("hand", "now")])]), logEl])
+    el("div", { class: "now-grid" }, [el("div", { class: "now-instrument" }, [sleeper, orbitSlot, el("p", { class: "orbit-legend faint" }, [legend("time", "classes & events"), legend("focus", "focus done"), legend("alert", "deadlines"), legend("hand", "now")])]), logEl])
   );
   section.append(root);
   try {
@@ -375,6 +379,7 @@ function wake() {
 
 export function show() {
   if (hasPlan()) loadBanks();
+  onArt(render);
   render();
   clearInterval(minuteTimer);
   minuteTimer = setInterval(() => !document.hidden && render(), 30000);

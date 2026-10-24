@@ -20,6 +20,7 @@ import { maybeDawn, dawnDue } from "./dawn.js";
 import { openCheckin, openIntention } from "./checkin.js";
 import { checkMomentsSoon } from "./moment.js";
 import { VERSION } from "./version.js";
+import { art, onArt } from "./art.js";
 
 const $ = (id) => document.getElementById(id);
 
@@ -137,6 +138,22 @@ export function navigate(path) {
 // size of text. Applied on entry, and again whenever preferences change
 // (Settings here, or another device).
 let lastClock12 = null;
+// The painted wallpaper (art.js) behind Now and Plan, when it exists.
+function wallpaper() {
+  onArt(() => {
+    const wide = art("wall-wide");
+    const tall = art("wall-tall") || wide;
+    if (!wide && !tall) return;
+    let w = document.getElementById("wall");
+    if (!w) {
+      w = el("div", { id: "wall", class: "wall", "aria-hidden": "true" });
+      document.body.prepend(w);
+    }
+    w.style.setProperty("--wall-wide", `url("${wide || tall}")`);
+    w.style.setProperty("--wall-tall", `url("${tall}")`);
+  });
+}
+
 export function applyDisplayPrefs() {
   const p = getPrefs();
   setClock12(p.clock12);
@@ -365,6 +382,7 @@ export async function enterShell({ firstTime = false } = {}) {
   $("landing").hidden = true;
   $("auth").hidden = true;
   renderMe();
+  wallpaper();
   schemaBanner();
   if (!wasActive) {
     // Petals and embers drifting behind everything (paused in the Study Room).

@@ -14,6 +14,7 @@ import { formatMinutes, DAY, clockOf } from "../model/time.js";
 import { reducedMotion } from "../motion.js";
 import { hasPlan, profile, loadBanks, banksReady, currentPlan, subjectView, colourOf, nameOf, stateOf, saveTopic, addResult } from "../planner.js";
 import { startBlock } from "../block-check.js";
+import { art, artImg, onArt, GUARDIANS, guardianOf } from "../art.js";
 
 let root;
 let body;
@@ -39,14 +40,9 @@ function blockLine(b, { time = false } = {}) {
 
 // The one thing: the next block, big, with its subject's glow behind it.
 // With today done, it is tomorrow's first -- startable now, if wanted.
-function hero(plan) {
-  const di = plan.findIndex((d) => d.blocks.length);
-  const next = di >= 0 ? plan[di].blocks[0] : null;
-  if (!next) {
-    return el("section", { class: "pl-hero quiet" }, [el("p", { class: "pl-hero-kicker faint", text: "This week" }), el("p", { class: "pl-hero-title", text: "Nothing to plan this week." })]);
-  }
+function heroText(plan, next, di) {
   const when = di === 0 ? hhmm(next.start) : `${dayLabel(plan[di].date, di)}, ${hhmm(next.start)}`;
-  return el("section", { class: "pl-hero", style: `--subj:${colourOf(next.subject)}`, "aria-labelledby": "pl-next" }, [
+  return [
     el("p", { class: "pl-hero-kicker" }, [el("span", { text: di === 0 ? "Next" : "Today's plan is done · next" }), el("span", { class: "num faint", text: ` · ${when}` })]),
     el("h2", { class: "pl-hero-title", id: "pl-next", text: next.own ? next.subjectName : next.topicName }),
     el("p", { class: "pl-hero-sub" }, [next.own ? "" : `${next.subjectName} · `, el("b", { text: P.KINDS[next.kind].label }), ` · ${next.minutes} min — ${P.KINDS[next.kind].verb.toLowerCase()}`]),
@@ -54,7 +50,82 @@ function hero(plan) {
       el("button", { type: "button", class: di === 0 ? "btn btn-primary" : "btn btn-ghost", id: "plan-start", text: di === 0 ? "Start" : "Start it now", onClick: () => startBlock(next) }),
       plan[di].blocks.length > 1 ? el("button", { type: "button", class: "btn btn-quiet", id: "plan-unsure", text: "Not sure? Pick from three", onClick: () => deck(plan[di].blocks.slice(0, 3)) }) : null,
     ]),
-  ]);
+  ];
+}
+
+function hero(plan) {
+  const di = plan.findIndex((d) => d.blocks.length);
+  const next = di >= 0 ? plan[di].blocks[0] : null;
+  if (!next) {
+    return el("section", { class: "pl-hero quiet" }, [el("p", { class: "pl-hero-kicker faint", text: "This week" }), el("p", { class: "pl-hero-title", text: "Nothing to plan this week." })]);
+  }
+  const fams = [...new Set(profile().subjects.map((s) => guardianOf(s.id)))].filter((f) => art(`guardian-${f}`));
+  if (fams.length) return stage(plan, fams);
+  return el("section", { class: "pl-hero", style: `--subj:${colourOf(next.subject)}`, "aria-labelledby": "pl-next" }, [...heroText(plan, next, di), pan("idle", "pl-pan")]);
+}
+
+// The stage (with the painted art): the student's guardians in a row, in
+// black and white; the chosen one steps forward in colour, its scene fades
+// in behind, and its subject's next block is beside it. Left and right
+// (or a tap) move along the row.
+function stage(plan, fams) {
+  const flat = plan.flatMap((d, di) => d.blocks.map((b, bi) => ({ b, di, bi })));
+  const firstFor = (f) => flat.find((x) => guardianOf(x.b.subject) === f);
+  const lead = flat[0];
+  let sel = fams.includes(guardianOf(lead.b.subject)) ? guardianOf(lead.b.subject) : fams[0];
+  const sceneA = el("div", { class: "st-scene" });
+  const sceneB = el("div", { class: "st-scene" });
+  let front = sceneA;
+  const info = el("div", { class: "st-info" });
+  const row = el("div", { class: "st-lineup", role: "toolbar", "aria-label": "Your subjects" });
+  const root = el("section", { class: "pl-stage", "aria-labelledby": "pl-next" }, [sceneA, sceneB, info, row]);
+  const pick = (f, focus = false) => {
+    sel = f;
+    root.style.setProperty("--subj", GUARDIANS[f]);
+    for (const btn of row.children) {
+      const on = btn.dataset.f === f;
+      btn.classList.toggle("on", on);
+      btn.setAttribute("aria-pressed", String(on));
+      if (on && focus) btn.focus();
+    }
+    const src = art(`scene-${f}`);
+    const back = front === sceneA ? sceneB : sceneA;
+    back.style.backgroundImage = src ? `url("${src}")` : "";
+    back.classList.add("show");
+    front.classList.remove("show");
+    front = back;
+    const x = firstFor(f) || lead;
+    info.replaceChildren(...heroText(plan, x.b, x.di));
+  };
+  fams.forEach((f, i) => {
+    const subj = profile().subjects.filter((s) => guardianOf(s.id) === f).map((s) => nameOf(s.id)).join(", ");
+    row.append(
+      el(
+        "button",
+        {
+          type: "button",
+          class: "st-guard",
+          "data-f": f,
+          style: `--g:${GUARDIANS[f]};--i:${i};--n:${fams.length}`,
+          "aria-label": subj,
+          title: subj,
+          onClick: () => pick(f),
+          onKeydown: (e) => {
+            const k = fams.indexOf(f) + (e.key === "ArrowRight" ? 1 : e.key === "ArrowLeft" ? -1 : 0);
+            if (k !== fams.indexOf(f) && fams[k]) (e.preventDefault(), pick(fams[k], true));
+          },
+        },
+        [artImg(`guardian-${f}`, { cls: "st-img" })]
+      )
+    );
+  });
+  pick(sel);
+  return root;
+}
+
+// Pan, the mascot, if its picture is there.
+function pan(pose, cls) {
+  return artImg(`pan-${pose}`, { cls: `pan ${cls}` });
 }
 
 function week(plan) {
@@ -347,6 +418,7 @@ export function mount(section) {
 
 export function show() {
   loadBanks();
+  onArt(render);
   render();
 }
 
