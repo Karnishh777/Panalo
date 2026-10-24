@@ -130,7 +130,7 @@ export function runSetup({ onDone, editing = false }) {
     {
       id: "levels",
       title: "How is each one going?",
-      lead: "Be honest: weaker subjects get more time in your plan. Your last grade is optional.",
+      lead: "A rough guess is fine: weaker subjects get more time, and short quick checks find out the rest. Your last grade is optional.",
       body: () => {
         const offered = subjectsFor(a.stage);
         const grades = gradesFor(a.stage);
@@ -192,7 +192,7 @@ export function runSetup({ onDone, editing = false }) {
     {
       id: "boarding",
       title: "Boarder or day scholar?",
-      lead: "Boarders get the evening prep hour; day scholars get their travel time back.",
+      lead: "Boarders study in prep; day scholars lose their travel time. The plan fits either.",
       body: () => {
         const travel = chipGroup({
           label: "Travel each way",
@@ -202,6 +202,13 @@ export function runSetup({ onDone, editing = false }) {
           toneOf: () => "tone-time",
         });
         const travelBox = el("div", { class: "setup-sub", hidden: a.boarding }, [el("p", { class: "faint", text: "Travel to school, each way" }), travel.node]);
+        const prepBox = el("div", { class: "setup-sub", hidden: !a.boarding }, [
+          el("p", { class: "faint", text: "Evening prep on school days" }),
+          el("div", { class: "setup-times" }, [
+            el("label", { class: "field" }, [el("span", { text: "Starts" }), timeInput("setup-prep-start", a.prepStart || "18:00", (v) => (a.prepStart = v))]),
+            el("label", { class: "field" }, [el("span", { text: "Ends" }), timeInput("setup-prep-end", a.prepEnd || "19:30", (v) => (a.prepEnd = v))]),
+          ]),
+        ]);
         return [
           choices(
             [
@@ -212,11 +219,14 @@ export function runSetup({ onDone, editing = false }) {
             (v) => {
               a.boarding = v;
               travelBox.hidden = v;
+              prepBox.hidden = !v;
             }
           ),
           travelBox,
+          prepBox,
         ];
       },
+      ok: () => !a.boarding || (a.prepEnd || "19:30") > (a.prepStart || "18:00") || "Prep has to end after it starts.",
     },
     {
       id: "sleep",

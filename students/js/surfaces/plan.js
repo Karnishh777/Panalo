@@ -180,8 +180,12 @@ function render() {
   const light = cap.find((d) => d.light);
   const shortSleep = cap.some((d) => d.shortSleep);
   const summary = el("p", { class: "s-sub" }, [
-    `About ${formatMinutes(total)} a week, fitted around school${profile().tuitionHours ? ", tuition" : ""} and sleep. A fifth of your free time is kept free`,
+    profile().boarding && profile().prepStart
+      ? `About ${formatMinutes(total)} a week: your evening prep on school days, and around sleep at weekends. A fifth is kept free`
+      : `About ${formatMinutes(total)} a week, fitted around school${profile().tuitionHours ? ", tuition" : ""} and sleep. A fifth of your free time is kept free`,
     light ? `, and ${new Date(2026, 0, 4 + light.day).toLocaleDateString(undefined, { weekday: "long" })} is lighter.` : ".",
+    " ",
+    el("a", { href: "#/settings", class: "faint", text: "Change my answers" }),
   ]);
   body.replaceChildren(
     ...[

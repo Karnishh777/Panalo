@@ -5,7 +5,8 @@
 //   - Sleep is a hard limit. Teenagers need 8–10 hours; if the profile's
 //     bedtime leaves less than 8, the plan ends as if it left 8.
 //   - School days: nothing before school; after it, travel home, then a
-//     rest before any study. Boarders fill their prep slots instead.
+//     rest before any study. Boarders with a prep time study in prep:
+//     it is a fixed slot, so nothing else comes off it.
 //   - Coaching (tuition) hours come off first, spread over the week.
 //   - Soft caps on self-study, homework included: about 1–2 h for grade 9,
 //     up to 3 h for grades 10–12 on school days; more at weekends.
@@ -45,10 +46,15 @@ export function dayCapacity(p, day) {
   const travel = p.boarding ? 0 : Math.max(0, p.travelMinutes || 0);
   const from = school ? minutesOf(p.schoolEnd) + travel + REST : wake + MORNING;
 
-  const tuition = ((p.tuitionHours || 0) * 60) / 7;
-  const open = Math.max(0, to - from - MEALS - LEISURE - tuition);
   const grade = stageOf(p.stage)?.grade;
   const cap = caps(grade)[school ? "school" : "free"];
+  if (school && p.boarding && p.prepStart && p.prepEnd) {
+    const ps = minutesOf(p.prepStart);
+    const pe = Math.min(minutesOf(p.prepEnd), to);
+    return { day, school, from: ps, to: pe, minutes: Math.round(Math.max(0, Math.min(pe - ps, cap))), shortSleep, prep: true };
+  }
+  const tuition = ((p.tuitionHours || 0) * 60) / 7;
+  const open = Math.max(0, to - from - MEALS - LEISURE - tuition);
   return { day, school, from, to, minutes: Math.round(Math.min(open, cap)), shortSleep };
 }
 

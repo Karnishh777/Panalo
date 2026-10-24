@@ -33,6 +33,8 @@ only where nothing else can).
   away; results can be added and pull the plan towards what they show.
   "Not sure? Pick from three" for when choosing is the hard part.
 - **Phase 30**: progress per topic, pace per subject, results.
+- **Boarders** (phase 31): the setup asks for the evening prep time, and
+  school-day blocks are planned inside it.
 - **The planner's core**: per-topic mastery (Elo),
   memory (FSRS-6) and per-subject pace, and how much study each day really
   has room for (sleep as a hard limit, caps, one lighter day, a 20%
