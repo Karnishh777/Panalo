@@ -15,6 +15,7 @@ import { reducedMotion } from "../motion.js";
 import { hasPlan, profile, loadBanks, banksReady, currentPlan, subjectView, colourOf, nameOf, stateOf, saveTopic, addResult } from "../planner.js";
 import { startBlock } from "../block-check.js";
 import { art, artImg, onArt, GUARDIANS, guardianOf } from "../art.js";
+import { createEmblem, createPan } from "../motion-art.js";
 
 let root;
 let body;
@@ -59,26 +60,33 @@ function hero(plan) {
   if (!next) {
     return el("section", { class: "pl-hero quiet" }, [el("p", { class: "pl-hero-kicker faint", text: "This week" }), el("p", { class: "pl-hero-title", text: "Nothing to plan this week." })]);
   }
-  const fams = [...new Set(profile().subjects.map((s) => guardianOf(s.id)))].filter((f) => art(`guardian-${f}`));
+  const fams = [...new Set(profile().subjects.map((s) => guardianOf(s.id)))];
   if (fams.length) return stage(plan, fams);
   return el("section", { class: "pl-hero", style: `--subj:${colourOf(next.subject)}`, "aria-labelledby": "pl-next" }, [...heroText(plan, next, di), pan("idle", "pl-pan")]);
 }
 
-// The stage (with the painted art): the student's guardians in a row, in
-// black and white; the chosen one steps forward in colour, its scene fades
-// in behind, and its subject's next block is beside it. Left and right
-// (or a tap) move along the row.
+// The stage: the student's subjects as a row, in black and white; the
+// chosen one turns to colour with its glow and scene, and its subject's
+// next block sits beside it. With the guardian paintings (art.js) the row
+// is a lineup of portraits; without them, the chosen subject's coded
+// emblem (motion-art.js) plays large above a strip of small ones. Left
+// and right (or a tap) move along the row.
 function stage(plan, fams) {
   const flat = plan.flatMap((d, di) => d.blocks.map((b, bi) => ({ b, di, bi })));
   const firstFor = (f) => flat.find((x) => guardianOf(x.b.subject) === f);
   const lead = flat[0];
+  const painted = fams.every((f) => art(`guardian-${f}`));
   let sel = fams.includes(guardianOf(lead.b.subject)) ? guardianOf(lead.b.subject) : fams[0];
   const sceneA = el("div", { class: "st-scene" });
   const sceneB = el("div", { class: "st-scene" });
   let front = sceneA;
   const info = el("div", { class: "st-info" });
-  const row = el("div", { class: "st-lineup", role: "toolbar", "aria-label": "Your subjects" });
-  const root = el("section", { class: "pl-stage", "aria-labelledby": "pl-next" }, [sceneA, sceneB, info, row]);
+  const row = el("div", { class: `st-lineup${painted ? "" : " strip"}`, role: "toolbar", "aria-label": "Your subjects" });
+  const feature = painted ? null : el("div", { class: "st-feature", "aria-hidden": "true" });
+  const right = el("div", { class: "st-right" }, [feature, row].filter(Boolean));
+  const root = el("section", { class: "pl-stage", "aria-labelledby": "pl-next" }, [sceneA, sceneB, info, right]);
+  const big = new Map();
+  let playing = null;
   const pick = (f, focus = false) => {
     sel = f;
     root.style.setProperty("--subj", GUARDIANS[f]);
@@ -87,6 +95,13 @@ function stage(plan, fams) {
       btn.classList.toggle("on", on);
       btn.setAttribute("aria-pressed", String(on));
       if (on && focus) btn.focus();
+    }
+    if (feature) {
+      if (!big.has(f)) big.set(f, createEmblem(f, GUARDIANS[f], { width: 300, height: 260 }));
+      playing?.setActive(false);
+      playing = big.get(f);
+      playing.setActive(true);
+      feature.replaceChildren(playing.canvas);
     }
     const src = art(`scene-${f}`);
     const back = front === sceneA ? sceneB : sceneA;
@@ -115,7 +130,7 @@ function stage(plan, fams) {
             if (k !== fams.indexOf(f) && fams[k]) (e.preventDefault(), pick(fams[k], true));
           },
         },
-        [artImg(`guardian-${f}`, { cls: "st-img" })]
+        [painted ? artImg(`guardian-${f}`, { cls: "st-img" }) : el("span", { class: "st-emblem" }, [createEmblem(f, GUARDIANS[f], { width: 64, height: 64 }).canvas]), painted ? null : el("small", { class: "st-name", text: subj.split(",")[0] })]
       )
     );
   });
@@ -123,9 +138,9 @@ function stage(plan, fams) {
   return root;
 }
 
-// Pan, the mascot, if its picture is there.
+// Pan, the mascot: the painting if there is one, else the live one.
 function pan(pose, cls) {
-  return artImg(`pan-${pose}`, { cls: `pan ${cls}` });
+  return artImg(`pan-${pose}`, { cls: `pan ${cls}` }) || Object.assign(createPan({ size: 120, pose }).canvas, { className: `pan pan-live ${cls}` });
 }
 
 function week(plan) {

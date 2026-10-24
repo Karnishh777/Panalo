@@ -21,6 +21,7 @@ import { openCheckin, openIntention } from "./checkin.js";
 import { checkMomentsSoon } from "./moment.js";
 import { VERSION } from "./version.js";
 import { art, onArt } from "./art.js";
+import { createEmbers } from "./motion-art.js";
 
 const $ = (id) => document.getElementById(id);
 
@@ -58,6 +59,7 @@ function arrive(name, section) {
   // Anything that follows the page you're on (js/details.js) hears it here.
   window.dispatchEvent(new CustomEvent("panalo:arrive", { detail: { name } }));
   ambient?.setPaused(!EXPRESSIVE.has(name) || !lively());
+  embersFollow(name);
   if (reducedMotion() || name === "study") return;
   enter(section);
   if (!EXPRESSIVE.has(name) || !comic()) return;
@@ -139,19 +141,31 @@ export function navigate(path) {
 // (Settings here, or another device).
 let lastClock12 = null;
 // The painted wallpaper (art.js) behind Now and Plan, when it exists.
+// Embers rise over it (motion-art.js): moving only with Lively effects,
+// on Now and Plan; a still frame otherwise.
+let embers = null;
+const WALL_VIEWS = new Set(["now", "plan"]);
 function wallpaper() {
+  let w = document.getElementById("wall");
+  if (!w) {
+    w = el("div", { id: "wall", class: "wall", "aria-hidden": "true" });
+    document.body.prepend(w);
+  }
+  if (!embers) {
+    embers = createEmbers({ animate: false });
+    w.append(embers.canvas);
+  }
   onArt(() => {
     const wide = art("wall-wide");
     const tall = art("wall-tall") || wide;
     if (!wide && !tall) return;
-    let w = document.getElementById("wall");
-    if (!w) {
-      w = el("div", { id: "wall", class: "wall", "aria-hidden": "true" });
-      document.body.prepend(w);
-    }
+    w.classList.add("painted");
     w.style.setProperty("--wall-wide", `url("${wide || tall}")`);
     w.style.setProperty("--wall-tall", `url("${tall}")`);
   });
+}
+function embersFollow(name) {
+  embers?.setAnimate(lively() && WALL_VIEWS.has(name || document.body.dataset.view));
 }
 
 export function applyDisplayPrefs() {
@@ -162,6 +176,7 @@ export function applyDisplayPrefs() {
   lastClock12 = !!p.clock12;
   document.documentElement.setAttribute("data-effects", p.effects === "lively" ? "lively" : "calm");
   ambient?.setPaused(!lively() || !EXPRESSIVE.has(document.body.dataset.view));
+  embersFollow();
   const size = ["small", "large", "larger"].includes(p.textSize) ? p.textSize : null;
   if (size) document.documentElement.setAttribute("data-text", size);
   else document.documentElement.removeAttribute("data-text");

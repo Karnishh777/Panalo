@@ -35,6 +35,13 @@ only where nothing else can).
 - **Phase 30**: progress per topic, pace per subject, results.
 - **Boarders** (phase 31): the setup asks for the evening prep time, and
   school-day blocks are planned inside it.
+- **Coded motion art** (`js/motion-art.js`, live canvas, no files): Pan
+  the mascot (a molten star with a flame crown; waves, blinks, cheers in a
+  burst of sparks after a good check, thinks, dozes in idle mode), eight
+  animated subject emblems on the Plan page (the chosen one plays large in
+  its colour above a strip of still black-and-white ones), and embers
+  rising behind Now and Plan (moving with Lively effects only). Only what
+  is on screen animates; reduced motion gets still frames.
 - **The painted art** (slots ready, images coming): Pan the mascot, eight
   subject guardians in a lineup on the Plan page (black and white until
   chosen, then colour, glow and their scene behind), wallpapers behind Now
