@@ -1,0 +1,379 @@
+/* Forge: the in-app finish of the default look. Not glass cards and
+   pills: poster type with outlined numerals, cut-corner plates with an
+   ember notch, slanted ember buttons, segmented meters, diamonds for
+   topics, and a film grain over the dark. Scoped to the app (body.in-app)
+   in the default look, so Signal and Verse keep their own character. */
+
+html[data-look="glass"] body.in-app {
+  --forge: #ff7a2f;
+  --forge-2: #ffb547;
+  --forge-ink: #1c0900;
+  --f-poster: "Big Shoulders Display", "Oswald", "Arial Narrow", sans-serif;
+  --cut: 14px;
+  --plate: linear-gradient(165deg, rgba(255, 138, 64, 0.06), rgba(255, 138, 64, 0) 38%), rgba(13, 11, 17, 0.8);
+  --plate-edge: linear-gradient(135deg, rgba(255, 150, 80, 0.5), rgba(255, 255, 255, 0.07) 30%, rgba(255, 255, 255, 0.04) 70%, rgba(255, 150, 80, 0.28));
+  background:
+    radial-gradient(70% 40% at 50% 112%, rgba(255, 96, 32, 0.16), transparent 70%),
+    radial-gradient(40% 35% at 100% 0%, rgba(255, 150, 70, 0.08), transparent 70%),
+    #07060a;
+  background-attachment: fixed;
+}
+/* film grain over everything, never in the way */
+html[data-look="glass"] body.in-app::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: 90;
+  pointer-events: none;
+  opacity: 0.06;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 0.9 0'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+/* ---- the bar: a slash under the page you're on, not a pill ---- */
+html[data-look="glass"] body.in-app .bar {
+  background: rgba(7, 6, 10, 0.72);
+  border-bottom: 1px solid rgba(255, 140, 70, 0.14);
+}
+html[data-look="glass"] body.in-app .bar-nav a {
+  border-radius: 0;
+  font: 700 15px/1 var(--f-poster);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+html[data-look="glass"] body.in-app .bar-nav a:hover {
+  background: none;
+  color: var(--forge-2);
+}
+html[data-look="glass"] body.in-app .bar-nav a[aria-current="page"] {
+  background: none;
+  box-shadow: none;
+  color: var(--forge-2);
+}
+html[data-look="glass"] body.in-app .bar-nav a[aria-current="page"]::after {
+  left: 10px;
+  right: 10px;
+  bottom: -1px;
+  width: auto;
+  height: 3px;
+  margin: 0;
+  border-radius: 0;
+  background: linear-gradient(90deg, var(--forge), var(--forge-2));
+  box-shadow: 0 0 12px rgba(255, 122, 47, 0.7);
+  transform: skewX(-30deg);
+}
+
+/* the gliding marker (details.js) becomes a slanted ember bar */
+html[data-look="glass"] body.in-app .bar-nav .nav-ink {
+  top: auto;
+  bottom: 4px;
+  height: 3px;
+  border-radius: 0;
+  background: linear-gradient(90deg, var(--forge), var(--forge-2));
+  box-shadow: none;
+  clip-path: polygon(3px 0, 100% 0, calc(100% - 3px) 100%, 0 100%);
+}
+html[data-look="glass"] body.in-app .nav-ink::after {
+  display: none;
+}
+html[data-look="glass"] body.in-app .dock .nav-ink {
+  border-radius: 0;
+  background: rgba(255, 122, 47, 0.14);
+  box-shadow: inset 0 -3px 0 var(--forge);
+}
+
+/* ---- page titles: poster type, burning at the base ---- */
+html[data-look="glass"] body.in-app .s-head h1 {
+  font: 800 clamp(46px, 7vw, 104px) / 0.86 var(--f-poster);
+  letter-spacing: -0.005em;
+  text-transform: uppercase;
+  background: linear-gradient(180deg, #fff 35%, #ffd2a1 70%, var(--forge) 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+html[data-look="glass"] body.in-app .s-head h1::after {
+  content: "";
+  display: block;
+  width: 64px;
+  height: 4px;
+  margin-top: 14px;
+  background: linear-gradient(90deg, var(--forge), var(--forge-2));
+  transform: skewX(-30deg);
+}
+
+/* ---- plates instead of glass cards: cut corners, an ember notch ---- */
+html[data-look="glass"] body.in-app .panel {
+  border: 1px solid transparent;
+  border-radius: 0;
+  background: var(--plate) padding-box, var(--plate-edge) border-box;
+  box-shadow: none;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+  clip-path: polygon(0 0, calc(100% - var(--cut)) 0, 100% var(--cut), 100% 100%, var(--cut) 100%, 0 calc(100% - var(--cut)));
+}
+html[data-look="glass"] body.in-app .panel::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: calc(var(--cut) + 8px);
+  height: calc(var(--cut) + 8px);
+  background: linear-gradient(225deg, transparent 0 calc(50% - 6px), var(--forge) calc(50% - 6px) 50%, transparent 50%);
+  pointer-events: none;
+}
+html[data-look="glass"] body.in-app .panel-head h2 {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font: 700 15px/1 var(--f-poster);
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--text);
+}
+html[data-look="glass"] body.in-app .panel-head h2::before {
+  content: "";
+  flex: none;
+  width: 14px;
+  height: 3px;
+  background: var(--forge);
+  transform: skewX(-30deg);
+}
+
+/* ---- buttons: slanted, ember for the one that matters ---- */
+html[data-look="glass"] body.in-app .btn {
+  border-radius: 0;
+  font-family: var(--f-poster);
+  font-weight: 700;
+  font-size: 16px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  clip-path: polygon(10px 0, 100% 0, calc(100% - 10px) 100%, 0 100%);
+  padding-left: 22px;
+  padding-right: 22px;
+}
+html[data-look="glass"] body.in-app .btn-primary {
+  background: linear-gradient(100deg, #ff5f24, var(--forge) 45%, var(--forge-2));
+  color: var(--forge-ink);
+  box-shadow: none;
+}
+html[data-look="glass"] body.in-app .btn-primary:hover:not(:disabled) {
+  filter: brightness(1.08) saturate(1.1);
+}
+/* a clipped button can't show an outline outside itself: ring it inside */
+html[data-look="glass"] body.in-app .btn:focus-visible {
+  outline: none;
+  box-shadow: inset 0 0 0 2px #fff, inset 0 0 0 4px var(--forge-ink);
+}
+html[data-look="glass"] body.in-app .btn-ghost,
+html[data-look="glass"] body.in-app .btn-toned {
+  background: rgba(255, 140, 70, 0.08);
+  box-shadow: inset 0 0 0 1px rgba(255, 150, 80, 0.3);
+  backdrop-filter: none;
+}
+html[data-look="glass"] body.in-app .chip {
+  border-radius: 2px;
+  backdrop-filter: none;
+}
+html[data-look="glass"] body.in-app .chip[aria-checked="true"],
+html[data-look="glass"] body.in-app .chip[aria-pressed="true"] {
+  background: var(--forge);
+  color: var(--forge-ink);
+}
+html[data-look="glass"] body.in-app .field input,
+html[data-look="glass"] body.in-app .field select,
+html[data-look="glass"] body.in-app .field textarea,
+html[data-look="glass"] body.in-app .input,
+html[data-look="glass"] body.in-app .surface select {
+  border-radius: 0;
+  background: rgba(255, 255, 255, 0.03);
+  border-color: transparent;
+  border-bottom: 1px solid rgba(255, 150, 80, 0.4);
+}
+html[data-look="glass"] body.in-app .field input:focus,
+html[data-look="glass"] body.in-app .field select:focus,
+html[data-look="glass"] body.in-app .field textarea:focus {
+  border-bottom-color: var(--forge-2);
+  box-shadow: 0 6px 14px -10px var(--forge);
+}
+
+/* the one-line capture on Now: a ruled line, not a pill */
+html[data-look="glass"] body.in-app .capture {
+  border: 0;
+  border-bottom: 1px solid rgba(255, 150, 80, 0.4);
+  border-radius: 0;
+  background: linear-gradient(90deg, rgba(255, 122, 47, 0.07), transparent 80%);
+}
+html[data-look="glass"] body.in-app .capture:focus-within {
+  border-bottom-color: var(--forge-2);
+  box-shadow: 0 8px 18px -12px var(--forge);
+}
+html[data-look="glass"] body.in-app .capture-plus {
+  color: var(--forge);
+}
+
+/* meters: segmented, like a charge bar */
+html[data-look="glass"] body.in-app .meter {
+  height: 8px;
+  border-radius: 0;
+  background: repeating-linear-gradient(90deg, rgba(255, 255, 255, 0.08) 0 9px, transparent 9px 12px);
+}
+html[data-look="glass"] body.in-app .meter i {
+  border-radius: 0;
+  -webkit-mask: repeating-linear-gradient(90deg, #000 0 9px, transparent 9px 12px);
+  mask: repeating-linear-gradient(90deg, #000 0 9px, transparent 9px 12px);
+}
+
+/* sheets and menus: plates too */
+html[data-look="glass"] body.in-app dialog.sheet,
+html[data-look="glass"] body.in-app .look-menu,
+html[data-look="glass"] body.in-app .menu {
+  border-radius: 0;
+  background: rgba(12, 10, 15, 0.94);
+  box-shadow: inset 0 0 0 1px rgba(255, 150, 80, 0.22), 0 40px 80px -30px #000;
+}
+html[data-look="glass"] body.in-app .toast {
+  border-radius: 0;
+  border-left: 3px solid var(--forge);
+  background: rgba(12, 10, 15, 0.94);
+}
+
+/* ---- the plan ---- */
+html[data-look="glass"] body.in-app .plan-body {
+  counter-reset: sec;
+}
+/* section heads: an outlined number, then the name in poster type */
+html[data-look="glass"] body.in-app .pl-h {
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+  font: 800 clamp(26px, 3vw, 38px) / 1 var(--f-poster);
+  letter-spacing: 0.02em;
+  color: var(--text);
+}
+html[data-look="glass"] body.in-app .pl-h::before {
+  counter-increment: sec;
+  content: counter(sec, decimal-leading-zero);
+  font-size: 0.8em;
+  color: transparent;
+  -webkit-text-stroke: 1px var(--forge);
+}
+html[data-look="glass"] body.in-app .pl-stage {
+  border: 0;
+  border-radius: 0;
+  clip-path: polygon(0 0, calc(100% - 28px) 0, 100% 28px, 100% 100%, 28px 100%, 0 calc(100% - 28px));
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--subj) 35%, transparent);
+}
+html[data-look="glass"] body.in-app .pl-hero-title {
+  font: 800 clamp(34px, 4.6vw, 64px) / 0.92 var(--f-poster);
+  text-transform: uppercase;
+  letter-spacing: 0;
+}
+html[data-look="glass"] body.in-app .pl-hero-kicker {
+  font-family: var(--f-poster);
+  font-size: 15px;
+  letter-spacing: 0.22em;
+}
+/* the week: a timeline with a burning spine; times in poster numerals */
+html[data-look="glass"] body.in-app .pl-day {
+  position: relative;
+  padding: 14px 0 14px 18px;
+  border-top: 0;
+  border-left: 2px solid rgba(255, 255, 255, 0.08);
+}
+html[data-look="glass"] body.in-app .pl-day.today {
+  border-left-color: var(--forge);
+  background: linear-gradient(90deg, rgba(255, 122, 47, 0.08), transparent 60%);
+}
+html[data-look="glass"] body.in-app .pl-day::before {
+  content: "";
+  position: absolute;
+  left: -6px;
+  top: 18px;
+  width: 10px;
+  height: 10px;
+  background: #07060a;
+  border: 2px solid rgba(255, 255, 255, 0.25);
+  transform: rotate(45deg);
+}
+html[data-look="glass"] body.in-app .pl-day.today::before {
+  background: var(--forge);
+  border-color: var(--forge-2);
+  box-shadow: 0 0 12px var(--forge);
+}
+html[data-look="glass"] body.in-app .pl-day-head b {
+  font: 800 20px/1 var(--f-poster);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+html[data-look="glass"] body.in-app .pl-day.today .pl-day-head b {
+  color: var(--forge-2);
+}
+html[data-look="glass"] body.in-app .pl-time {
+  font: 700 17px/1 var(--f-poster);
+  letter-spacing: 0.04em;
+  color: var(--text-2);
+}
+html[data-look="glass"] body.in-app .pl-dot {
+  border-radius: 0;
+  transform: rotate(45deg);
+}
+/* subjects: a plate each, with a spine in the subject's colour */
+html[data-look="glass"] body.in-app .pl-subject {
+  position: relative;
+  padding: 16px 18px 18px 22px;
+  border-top: 0;
+  background: linear-gradient(100deg, color-mix(in srgb, var(--subj) 10%, transparent), transparent 55%), rgba(13, 11, 17, 0.7);
+  clip-path: polygon(0 0, calc(100% - 12px) 0, 100% 12px, 100% 100%, 0 100%);
+}
+html[data-look="glass"] body.in-app .pl-subject::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 4px;
+  background: var(--subj);
+  box-shadow: 0 0 16px var(--subj);
+}
+html[data-look="glass"] body.in-app .pl-subject h3 {
+  font: 800 24px/1 var(--f-poster);
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+}
+html[data-look="glass"] body.in-app .pl-subject h3::before {
+  display: none;
+}
+html[data-look="glass"] body.in-app .pl-ready > span:last-child,
+html[data-look="glass"] body.in-app .pl-ready .num {
+  font: 800 22px/1 var(--f-poster);
+  color: var(--subj);
+}
+/* topics: diamonds */
+html[data-look="glass"] body.in-app .pl-topic {
+  border-radius: 1px;
+  transform: rotate(45deg) scale(0.82);
+}
+html[data-look="glass"] body.in-app .pl-topic:hover,
+html[data-look="glass"] body.in-app .pl-topic:focus-visible {
+  transform: rotate(45deg) scale(1.05);
+}
+html[data-look="glass"] body.in-app .pl-topic.met {
+  box-shadow: 0 0 10px color-mix(in srgb, var(--subj) calc(var(--m, 0.5) * 60%), transparent);
+}
+
+/* ---- Now: the next step as a plate with an ember edge ---- */
+html[data-look="glass"] body.in-app .now-step.plan-step {
+  border-radius: 0;
+  clip-path: polygon(0 0, calc(100% - var(--cut)) 0, 100% var(--cut), 100% 100%, 0 100%);
+}
+html[data-look="glass"] body.in-app .now-step .step-label {
+  font-family: var(--f-poster);
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html[data-look="glass"] body.in-app .pl-topic {
+    transition: none;
+  }
+}

@@ -25,7 +25,7 @@
   <script src="js/boot.js"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@400..700&family=Unbounded:wght@300..600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@600..900&family=Instrument+Serif:ital@0;1&family=Inter:wght@400..700&family=Unbounded:wght@300..600&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="css/tokens.css">
   <link rel="stylesheet" href="css/base.css">
   <link rel="stylesheet" href="css/public.css">
@@ -35,6 +35,7 @@
   <link rel="stylesheet" href="css/looks.css">
   <link rel="stylesheet" href="css/features.css">
   <link rel="stylesheet" href="css/plan.css">
+  <link rel="stylesheet" href="css/forge.css">
   <link rel="stylesheet" href="css/details.css">
   <link rel="stylesheet" href="css/phone.css">
 </head>
@@ -179,6 +180,26 @@
         <!-- The world's controls are added here once it exists (globe-dock.js). -->
         </div>
         <a class="scroll-cue" href="#idea"><span>What is this?</span><i aria-hidden="true"></i></a>
+      </section>
+
+      <!-- The cast and Pan (landing-art.js fills these from assets/art; the
+           section stays hidden if the paintings aren't there). -->
+      <section class="cast" id="cast" aria-labelledby="cast-title" data-chapter="The cast" hidden>
+        <div class="cast-scene" aria-hidden="true"><i></i><i></i></div>
+        <div class="cast-copy">
+          <p class="kicker">The cast</p>
+          <h2 id="cast-title" class="section-title display">Every subject gets<br>a guardian.</h2>
+          <p class="cast-sub">Pick one. Its plan steps forward.</p>
+          <p class="cast-name" aria-live="polite"></p>
+        </div>
+        <div class="cast-row" role="toolbar" aria-label="The subject guardians"></div>
+        <div class="cast-pan">
+          <div class="cast-pan-art"></div>
+          <div>
+            <h3 class="serif">And this is Pan.</h3>
+            <p>Pan plans your week around school, tuition and sleep. Quick checks find what you already know, reviews come back before you forget, and when life happens, the plan fixes itself.</p>
+          </div>
+        </div>
       </section>
 
       <section class="idea" id="idea" aria-labelledby="idea-title" data-chapter="The idea">

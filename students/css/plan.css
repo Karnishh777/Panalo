@@ -713,7 +713,7 @@ body.in-app[data-view="plan"] .wall {
   display: grid;
   grid-template-columns: minmax(0, 1fr) minmax(0, 1.15fr);
   align-items: end;
-  min-height: 380px;
+  min-height: 460px;
   border-radius: 20px;
   border: 1px solid color-mix(in srgb, var(--subj) 28%, var(--line));
   background: #05070e;
@@ -766,16 +766,20 @@ body.in-app[data-view="plan"] .wall {
 }
 .st-guard {
   position: relative;
-  flex: 0 1 auto;
-  width: clamp(90px, calc(46vw / var(--n)), 200px);
-  margin: 0 -14px;
+  flex: 0 0 auto;
+  /* bigger with fewer guardians; neighbours overlap like a cast photo */
+  width: clamp(110px, calc(80vw / (var(--n) + 2)), 260px);
+  margin: 0 calc(-1 * clamp(18px, calc(14vw / (var(--n) + 2)), 46px));
   padding: 0;
   border: 0;
   background: none;
   cursor: pointer;
   transform-origin: 50% 100%;
-  transition: transform 0.35s cubic-bezier(0.2, 0.8, 0.2, 1), filter 0.35s ease;
-  filter: grayscale(1) brightness(0.62);
+  transition: transform 0.45s cubic-bezier(0.2, 0.8, 0.2, 1), filter 0.45s ease, opacity 0.45s ease;
+  /* the others wait small, grey and faint */
+  filter: grayscale(1) brightness(0.5);
+  opacity: 0.45;
+  transform: scale(0.78);
   z-index: 1;
 }
 .st-guard .st-img {
@@ -786,13 +790,42 @@ body.in-app[data-view="plan"] .wall {
 
 .st-guard:hover,
 .st-guard:focus-visible {
-  filter: grayscale(0.4) brightness(0.85);
+  filter: grayscale(0.5) brightness(0.8);
+  opacity: 0.8;
+  transform: scale(0.84);
   outline: none;
 }
 .st-guard.on {
-  z-index: 2;
+  z-index: 3;
   filter: grayscale(0) brightness(1) drop-shadow(0 0 28px color-mix(in srgb, var(--g) 55%, transparent));
-  transform: scale(1.08) translateY(-4px);
+  opacity: 1;
+  transform: scale(1.3) translateY(-8px);
+}
+/* The chosen one's effect (motion-art.js createAura), over and around it. */
+.aura {
+  position: absolute;
+  left: -30%;
+  top: -18%;
+  width: 160%;
+  height: 136%;
+  max-width: none;
+  pointer-events: none;
+  z-index: 2;
+  animation: aura-in 0.6s ease both;
+}
+.st-feature {
+  position: relative;
+}
+.st-feature .aura {
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+}
+@keyframes aura-in {
+  from {
+    opacity: 0;
+  }
 }
 @media (max-width: 760px) {
   .pl-stage {
@@ -818,6 +851,9 @@ body.in-app[data-view="plan"] .wall {
   .pl-hero .pl-pan,
   .pl-stage .st-pan,
   .bc-pan.cheer {
+    animation: none;
+  }
+  .aura {
     animation: none;
   }
   .st-guard,
@@ -861,7 +897,7 @@ body.in-app[data-view="plan"] .wall {
   display: grid;
   justify-items: center;
   gap: 4px;
-  transform: none;
+  transform: scale(0.9);
 }
 .st-lineup.strip .st-guard.on {
   transform: translateY(-3px);

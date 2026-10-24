@@ -1,3 +1,26 @@
 {
-  "files": []
+  "files": [
+    "guardian-art",
+    "guardian-biology",
+    "guardian-chemistry",
+    "guardian-commerce",
+    "guardian-computing",
+    "guardian-maths",
+    "guardian-physics",
+    "guardian-words",
+    "pan-cheer",
+    "pan-idle",
+    "pan-sleep",
+    "pan-think",
+    "scene-art",
+    "scene-biology",
+    "scene-chemistry",
+    "scene-commerce",
+    "scene-computing",
+    "scene-maths",
+    "scene-physics",
+    "scene-words",
+    "wall-tall",
+    "wall-wide"
+  ]
 }
