@@ -8,12 +8,15 @@ const ok = (label, cond) => (cond ? passed++ : failures.push(label));
 
 const calls = [];
 let reply = null;
+let left = 29;
+const asks = () => (left === "missing" ? new Response('{"code":"PGRST202"}', { status: 404 }) : new Response(JSON.stringify(left--)));
 globalThis.fetch = async (url, init = {}) => {
   calls.push({ url: String(url), init });
   if (String(url).endsWith("/auth/v1/user")) {
     const good = init.headers?.authorization === "Bearer good-token";
     return new Response(good ? '{"id":"u1"}' : '{"msg":"bad jwt"}', { status: good ? 200 : 401 });
   }
+  if (String(url).endsWith("/rest/v1/rpc/pan_take")) return asks();
   if (String(url) === "https://api.anthropic.com/v1/messages") return reply();
   throw new Error(`unexpected fetch ${url}`);
 };
@@ -72,6 +75,19 @@ async function main() {
   reply = () => new Response(JSON.stringify({ content: [{ type: "text", text: "not json" }] }));
   r = await onRequestPost({ request: req("good-token", good), env });
   ok("an unreadable answer → 502", r.status === 502);
+
+  left = -1;
+  reply = answer({ summary: "x", changes: [] });
+  const before = calls.filter((c) => c.url.includes("anthropic")).length;
+  r = await onRequestPost({ request: req("good-token", good), env });
+  ok("over the daily limit → 429 pan-limit", r.status === 429 && (await r.json()).error === "pan-limit");
+  ok("…and the model is not called", calls.filter((c) => c.url.includes("anthropic")).length === before);
+  left = "missing";
+  r = await onRequestPost({ request: req("good-token", good), env });
+  ok("if the limit can't be checked, Pan doesn't run", r.status === 503 && calls.filter((c) => c.url.includes("anthropic")).length === before);
+  const take = calls.find((c) => c.url.endsWith("/rest/v1/rpc/pan_take"));
+  ok("the ask is taken as the student", take.init.headers.authorization === "Bearer good-token");
+  left = 10;
 
   ok("clean caps minutes", clean({ changes: [{ op: "day_minutes", weekday: 6, minutes: 9999 }] }, []).changes[0].minutes === 600);
   ok("clean drops bad times", !("time" in clean({ changes: [{ op: "start_after", time: "25:99" }] }, []).changes[0]));

@@ -42,6 +42,8 @@ only where nothing else can).
   into today. Your changes are listed, each undoable, with Reset all.
   Pan is `functions/api/pan.js` (Claude Haiku, `ANTHROPIC_API_KEY`
   secret); without it, simple sentences are understood in the app.
+  Each student can ask Pan 30 times a day (phase 33), so the AI bill
+  can't run away.
 - **Guardians step forward**: the chosen one grows into colour with its
   subject's live effect (circuits and data for computing, arcs for
   physics, bubbles for chemistry, a helix for biology ...), the others

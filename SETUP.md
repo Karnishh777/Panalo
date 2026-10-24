@@ -92,6 +92,7 @@ For each: **SQL Editor → New query** → paste the whole file → **Run**.
 | 28 | [`supabase-phase30.sql`](supabase-phase30.sql) | Progress behind the plan: per topic how well it is known and when it fades (`student_topics`), each subject's pace, test results (`student_results`), and which topic a focus block was on. All private to the student | Required by Students v0.2 |
 | 29 | [`supabase-phase31.sql`](supabase-phase31.sql) | Boarders' evening prep time, so the plan fits school-day study inside it | Required by Students v0.2 |
 | 30 | [`supabase-phase32.sql`](supabase-phase32.sql) | The student's own changes to the plan (days off, caps, a later start, more or less of a subject, skipped and moved blocks), set by hand or by telling Pan. Private, size-capped | Required by Students v0.2 |
+| 31 | [`supabase-phase33.sql`](supabase-phase33.sql) | A daily limit on asking Pan: 30 asks per student per day, counted by `pan_take()` (only a count per day is kept, for 7 days) | Required for "Tell Pan" |
 
 Phase 8 is self-contained and re-applies everything phase 7 does, so running 8
 is enough if you are starting fresh. Run 7 anyway if you prefer the history to
@@ -126,7 +127,9 @@ the key in the code or a chat. Without it, the app understands simple
 sentences ("Sundays off", "only an hour on Saturday", "more maths",
 "start after 5", "skip tomorrow") on its own, and everything can be set
 by hand anyway. Each request is a few hundred tokens; only signed-in
-students can call it, and their message is capped at 500 characters.
+students can call it, 30 times a day each (phase 33; if that limit can't
+be checked, Pan doesn't run), and their message is capped at 500
+characters.
 
 ### Before you rely on it
 

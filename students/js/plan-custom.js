@@ -30,6 +30,11 @@ export async function askPan(text, { fetchImpl = fetch } = {}) {
       headers: { "content-type": "application/json", authorization: `Bearer ${data.session?.access_token || ""}` },
       body: JSON.stringify({ text, today: R.dateKey(now.getTime()), weekday: now.getDay(), subjects: subjects.map(({ id, name }) => ({ id, name })), rules: planRules() }),
     });
+    if (res.status === 429) {
+      // The day's asks are used up (30 a day): still understand what we can.
+      const mine = local();
+      return { ...mine, summary: `Pan's resting until tomorrow (30 asks a day).${mine.changes.length ? " Here's what I understood myself:" : " You can still set it yourself below."}` };
+    }
     if (!res.ok || !/json/.test(res.headers.get("content-type") || "")) return local();
     const out = await res.json();
     return Array.isArray(out.changes) ? { summary: out.summary || "", changes: out.changes } : local();

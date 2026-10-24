@@ -109,7 +109,7 @@ async function migrationTests() {
   // Phase 22's age and consent functions check who's asking themselves.
   const EXPECTED_DEFINERS = ["decide_parent_consent", "delete_my_account", "find_profile_by_username", "login_email", "moderation_claim", "moderation_delete_message",
     "moderation_history", "moderation_reports", "moderation_set_birth", "moderation_set_passphrase", "moderation_set_status", "moderation_status",
-    "moderation_suspend", "my_age_status", "my_children_requests", "my_storage_objects", "request_parent_consent", "request_to_join",
+    "moderation_suspend", "my_age_status", "my_children_requests", "my_storage_objects", "pan_take", "request_parent_consent", "request_to_join",
     "set_my_birth", "withdraw_parent_consent"];
   ok("only the known SECURITY DEFINER functions are callable by signed-in users",
      JSON.stringify(exposed.map((r) => r.proname)) === JSON.stringify(EXPECTED_DEFINERS),
@@ -1226,8 +1226,31 @@ async function planRulesTests() {
   ok("phase 32 is safe to re-run", again.ok, again.error);
 }
 
+async function panLimitTests() {
+  const db = await createDb();
+  const upTo32 = await replay(db, MIGRATIONS.slice(0, MIGRATIONS.indexOf("supabase-phase33.sql")));
+  ok("phases 1-32 replay", upTo32.ok, upTo32.error);
+  const r = await runFile(db, "supabase-phase33.sql");
+  ok("phase 33 applies", r.ok, r.error);
+  const me = await createUser(db, "p_me");
+  const other = await createUser(db, "p_other");
+  const take = (u) => as(db, u, async (tx) => (await tx.query("select public.pan_take() as n")).rows[0].n);
+  ok("the first ask leaves 29", (await take(me)) === 29);
+  let n;
+  for (let i = 0; i < 29; i++) n = await take(me);
+  ok("the 30th ask leaves none", n === 0);
+  ok("the 31st is refused", (await take(me)) < 0);
+  ok("another student has their own 30", (await take(other)) === 29);
+  const peek = await attempt(db, me, (tx) => tx.query("select * from public.pan_usage"));
+  ok("nobody can read the counts directly", !peek.ok);
+  const cheat = await attempt(db, me, (tx) => tx.query("delete from public.pan_usage"));
+  ok("…or reset them", !cheat.ok);
+  const again = await runFile(db, "supabase-phase33.sql");
+  ok("phase 33 is safe to re-run", again.ok, again.error);
+}
+
 async function main() {
-  const sections = [migrationTests, chatTests, takeoverTests, callTests, accountTests, backfillTests, historyTests, disappearTests, studentsTests, moderationTests, deviceStateTests, consentTests, logTests, dailyTests, usernameLoginTests, examQualityTests, privateStudentsTests, studyProfileTests, progressTests, prepTests, planRulesTests];
+  const sections = [migrationTests, chatTests, takeoverTests, callTests, accountTests, backfillTests, historyTests, disappearTests, studentsTests, moderationTests, deviceStateTests, consentTests, logTests, dailyTests, usernameLoginTests, examQualityTests, privateStudentsTests, studyProfileTests, progressTests, prepTests, planRulesTests, panLimitTests];
   for (const run of sections) {
     try {
       await run();
