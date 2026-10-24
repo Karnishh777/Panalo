@@ -11,7 +11,7 @@ import { dayOrbit } from "../dayorbit.js";
 import { occurrencesOnDay, occurrencesBetween, tasksAsDeadlines, EVENT_KINDS, countdowns } from "../model/timeline.js";
 import { parseQuickAdd } from "../model/quick-add.js";
 import { toIcs } from "../model/ics.js";
-import { startOfDay, startOfWeek, addDays, clockTime, sameDay, formatMinutes, DAY, HOUR } from "../model/time.js";
+import { startOfDay, startOfWeek, addDays, clockTime, sameDay, formatMinutes, DAY, HOUR, isClock12, hourLabel } from "../model/time.js";
 
 let root;
 let day = startOfDay(new Date());
@@ -92,7 +92,7 @@ function renderWeek() {
   const hours = last - first;
   const days = Array.from({ length: 7 }, (_, i) => addDays(start, i));
   const grid = el("div", { class: "week-grid", style: `--hours:${hours}` }, [
-    el("div", { class: "week-hours", "aria-hidden": "true" }, Array.from({ length: hours }, (_, i) => el("span", { text: `${String(first + i).padStart(2, "0")}:00` }))),
+    el("div", { class: "week-hours", "aria-hidden": "true" }, Array.from({ length: hours }, (_, i) => el("span", { text: isClock12() ? hourLabel(first + i) : `${String(first + i).padStart(2, "0")}:00` }))),
     ...days.map((d) => {
       const col = el("div", { class: `week-col${sameDay(d, Date.now()) ? " today" : ""}` }, [
         el("button", { type: "button", class: "week-day", onClick: () => { day = startOfDay(d); setView("day"); } }, [el("span", { text: d.toLocaleDateString(undefined, { weekday: "short" }) }), el("b", { class: "num", text: String(d.getDate()) })]),

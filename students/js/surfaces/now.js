@@ -10,7 +10,7 @@ import { dayOrbit } from "../dayorbit.js";
 import { createGlobe } from "../world-render.js";
 import { buildWorld, weatherLine } from "../model/world-model.js";
 import { nextUp, tasksAsDeadlines, EVENT_KINDS, countdowns } from "../model/timeline.js";
-import { relTime, clockTime, formatMinutes, DAY, sameDay } from "../model/time.js";
+import { relTime, clockTime, clockOf, formatMinutes, DAY, sameDay } from "../model/time.js";
 import * as T from "../model/focus-timer.js";
 import { loadTimer, onTimer } from "../timer-state.js";
 import { state } from "../../../src/state.js";
@@ -253,7 +253,7 @@ function renderLog() {
   globe?.setLayers(w.layers, w.moons);
 }
 
-const hhmm = (m) => `${String(Math.floor(m / 60) % 24).padStart(2, "0")}:${String(m % 60).padStart(2, "0")}`;
+const hhmm = (m) => clockOf(m);
 
 function planPanel(now) {
   const today = currentPlan({ now, days: 1 })[0];

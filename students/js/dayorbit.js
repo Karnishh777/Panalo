@@ -10,7 +10,7 @@
 // The same information is always also available as a list next to it, so
 // the ring is never the only way to read the day.
 import { occurrencesOnDay, arcOnDay, EVENT_KINDS } from "./model/timeline.js";
-import { startOfDay, addDays, dayFraction, clockTime, sameDay } from "./model/time.js";
+import { startOfDay, addDays, dayFraction, clockTime, sameDay, hourLabel } from "./model/time.js";
 
 const NS = "http://www.w3.org/2000/svg";
 const C = 200;
@@ -64,7 +64,7 @@ export function dayOrbit({ day, events, sessions = [], tasks = [], now = Date.no
     if (major) {
       const [lx, ly] = polar(h / 24, 194);
       const t = s("text", { x: lx, y: ly + 3.5, class: "orbit-label", "text-anchor": "middle" });
-      t.textContent = String(h).padStart(2, "0");
+      t.textContent = hourLabel(h);
       svg.append(t);
     }
   }

@@ -11,7 +11,7 @@ import { countdowns } from "../students/js/model/timeline.js";
 import { toIcs, icsStamp, icsText } from "../students/js/model/ics.js";
 import * as S from "../students/js/model/subjects.js";
 import * as P from "../students/js/model/profile.js";
-import { relTime, formatMinutes, startOfWeek, dayKey, parseDayKey, MINUTE, HOUR, DAY } from "../students/js/model/time.js";
+import { relTime, formatMinutes, startOfWeek, dayKey, parseDayKey, MINUTE, HOUR, DAY, clockOf, clockOfText, clockTime, hourLabel, setClock12 } from "../students/js/model/time.js";
 
 let passed = 0;
 const failures = [];
@@ -137,6 +137,14 @@ ok("under a minute is not worth recording", T.sessionRow(T.start("focus", 25, NO
 ok("rest is never recorded as focus", T.sessionRow(T.start("rest", 5, NOW), NOW + 5 * MINUTE) === null);
 ok("readout", T.readout(25 * MINUTE) === "25:00" && T.readout(61000) === "01:01");
 ok("revive refuses junk", T.revive({ phase: "focus", status: "running" }).phase === "idle" && T.revive(null).phase === "idle");
+{
+  setClock12(false);
+  ok("24-hour times", clockOf(16 * 60 + 5) === "16:05" && clockOfText("08:10") === "08:10" && hourLabel(6) === "06");
+  setClock12(true);
+  ok("12-hour times everywhere", clockOf(16 * 60 + 5) === "4:05 pm" && clockOf(0) === "12:00 am" && clockOf(12 * 60) === "12:00 pm" && clockOfText("08:10:00") === "8:10 am" && hourLabel(18) === "6 pm" && clockTime(new Date(2026, 0, 1, 23, 30)) === "11:30 pm");
+  ok("a late block past midnight wraps", clockOf(24 * 60 + 15) === "12:15 am");
+  setClock12(false);
+}
 ok("revive keeps a real state", T.revive(JSON.parse(JSON.stringify(s))).plannedMs === 25 * MINUTE);
 {
   const b = T.start("focus", 25, NOW, { subject: "Physics", block: { kind: "learn", subject: "phy", topic: "1.3", minutes: 25 } });

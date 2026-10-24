@@ -4,7 +4,7 @@
 // Surfaces load on first visit (dynamic import), so opening the app costs
 // the Now screen and nothing else.
 import { el, openSheet, showToast, getPrefs } from "./ui.js";
-import { store, on } from "./store.js";
+import { store, on, emit } from "./store.js";
 import { clockTime, setClock12 } from "./model/time.js";
 import { state } from "../../src/state.js";
 import { settleTimer } from "./timer-state.js";
@@ -136,9 +136,13 @@ export function navigate(path) {
 // Display preferences that apply everywhere: the clock's format and the
 // size of text. Applied on entry, and again whenever preferences change
 // (Settings here, or another device).
+let lastClock12 = null;
 export function applyDisplayPrefs() {
   const p = getPrefs();
   setClock12(p.clock12);
+  // Every time on screen follows the clock format: redraw what's open.
+  if (lastClock12 !== null && lastClock12 !== !!p.clock12) emit("display");
+  lastClock12 = !!p.clock12;
   document.documentElement.setAttribute("data-effects", p.effects === "lively" ? "lively" : "calm");
   ambient?.setPaused(!lively() || !EXPRESSIVE.has(document.body.dataset.view));
   const size = ["small", "large", "larger"].includes(p.textSize) ? p.textSize : null;
