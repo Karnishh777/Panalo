@@ -150,8 +150,9 @@ function renderLog() {
   const { current, next } = nextUp(allEvents(), now);
   const parts = [];
 
-  // 00. Today's plan (v0.2): what the planner has for the rest of today.
-  if (hasPlan() && banksReady()) parts.push(planPanel(now));
+  // 00. Today's plan (v0.2): what the planner has for the rest of today,
+  // with today's focus (and a running block) folded in.
+  if (hasPlan() && banksReady()) parts.push(planPanel(now, w));
 
   // 0. Today: the intention, the week's rhythm, closing the day (phase 24).
   if (!store.entriesMissing) parts.push(todayPanel(now));
@@ -190,7 +191,7 @@ function renderLog() {
   // 2. Focus.
   const t = loadTimer();
   const live = t.phase !== "idle" ? el("p", { class: "now-live" }, [el("span", { class: "live-dot", "aria-hidden": "true" }), `${t.phase === "focus" ? "Focusing" : "Resting"}${t.subject ? ` on ${t.subject}` : ""} — ${T.readout(T.remaining(t, now))} left${t.status === "paused" ? " (paused)" : ""}`]) : null;
-  parts.push(
+  if (!(hasPlan() && banksReady())) parts.push(
     panel("tone-focus", "Focus today", { href: "#/study", label: "Study Room" }, [
       el("p", { class: "now-big" }, [el("b", { class: "num", text: formatMinutes(w.stats.focusMinutesToday) }), el("span", { class: "muted", text: ` · ${formatMinutes(w.stats.focusMinutesWeek)} this week` })]),
       live,
@@ -255,10 +256,12 @@ function renderLog() {
 
 const hhmm = (m) => clockOf(m);
 
-function planPanel(now) {
+function planPanel(now, w) {
   const today = currentPlan({ now, days: 1 })[0];
   const done = focusedToday(now);
   const blocks = today?.blocks || [];
+  const t = loadTimer();
+  const live = t.phase !== "idle" ? el("p", { class: "now-live" }, [el("span", { class: "live-dot", "aria-hidden": "true" }), `${t.phase === "focus" ? "Focusing" : "Resting"}${t.subject ? ` on ${t.subject}` : ""} — ${T.readout(T.remaining(t, now))} left${t.status === "paused" ? " (paused)" : ""}`]) : null;
   return panel("tone-focus", "Today's plan", { href: "#/plan", label: "The week" }, [
     blocks.length
       ? el(
@@ -274,7 +277,8 @@ function planPanel(now) {
           )
         )
       : el("p", { class: "muted", text: done ? "That's today's plan done. The rest of the evening is yours." : "Nothing more planned for today." }),
-    done ? el("p", { class: "faint small", text: `${formatMinutes(done)} studied today.` }) : null,
+    live,
+    el("p", { class: "faint small plan-studied", text: `${formatMinutes(done)} studied today · ${formatMinutes(w.stats.focusMinutesWeek)} this week` }),
   ]);
 }
 
@@ -283,6 +287,8 @@ function planPanel(now) {
 // (it pre-empts the plan); then the plan's next block; then the newest
 // open task; with nothing to do, a plain focus block.
 function nextStep(now) {
+  stepEl.classList.remove("plan-step");
+  stepEl.style.removeProperty("--subj");
   const t = loadTimer();
   if (t.phase === "focus") {
     const task = t.taskId ? store.tasks.find((x) => x.id === t.taskId) : null;
@@ -295,10 +301,12 @@ function nextStep(now) {
   if (!urgent && hasPlan() && banksReady()) {
     const b = nextBlock(currentPlan({ now, days: 1 }));
     if (b) {
+      stepEl.classList.add("plan-step");
+      stepEl.style.setProperty("--subj", colourOf(b.subject));
       return [
-        el("span", { class: "step-label", text: "Next step" }),
-        el("b", { class: "step-subj", style: `--subj:${colourOf(b.subject)}`, text: b.own ? b.subjectName : b.topicName }),
-        el("span", { class: "muted", text: ` · ${b.own ? "" : `${b.subjectName} · `}${KINDS[b.kind].label}, ${b.minutes} min` }),
+        el("span", { class: "step-label", text: `Next step · ${clockOf(b.start)}` }),
+        el("b", { class: "step-subj", text: b.own ? b.subjectName : b.topicName }),
+        el("span", { class: "muted step-meta", text: `${b.own ? "" : `${b.subjectName} · `}${KINDS[b.kind].label}, ${b.minutes} min` }),
         el("button", { type: "button", class: "btn btn-primary btn-sm", id: "now-plan-go", text: "Start", onClick: () => startBlock(b) }),
       ];
     }
@@ -351,15 +359,34 @@ function legend(tone, text) {
   return el("span", { class: `lg lg-${tone}` }, [el("i", { "aria-hidden": "true" }), text]);
 }
 
+// Left alone for two minutes, Now fades to just your world and its day,
+// like a screensaver; any touch, key or scroll brings it back.
+const IDLE_MS = 120000;
+let idleTimer = null;
+const WAKE = ["pointermove", "pointerdown", "keydown", "wheel", "touchstart", "scroll"];
+function wake() {
+  root?.classList.remove("is-idle");
+  clearTimeout(idleTimer);
+  idleTimer = setTimeout(() => {
+    if (document.querySelector("dialog[open]") || document.body.dataset.view !== "now") return wake();
+    root?.classList.add("is-idle");
+  }, window.__qa?.idleMs || IDLE_MS); // the browser QA shortens it
+}
+
 export function show() {
   if (hasPlan()) loadBanks();
   render();
   clearInterval(minuteTimer);
   minuteTimer = setInterval(() => !document.hidden && render(), 30000);
+  WAKE.forEach((e) => window.addEventListener(e, wake, { passive: true }));
+  wake();
 }
 
 export function hide() {
   clearInterval(minuteTimer);
+  clearTimeout(idleTimer);
+  WAKE.forEach((e) => window.removeEventListener(e, wake));
+  root?.classList.remove("is-idle");
 }
 
 export function destroy() {

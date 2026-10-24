@@ -35,6 +35,9 @@ only where nothing else can).
 - **Phase 30**: progress per topic, pace per subject, results.
 - **Boarders** (phase 31): the setup asks for the evening prep time, and
   school-day blocks are planned inside it.
+- **Now, around the plan**: the next block leads, in its subject's colour;
+  today's focus folds into today's plan; left alone for two minutes, Now
+  fades to just your world and its day (any touch brings it back).
 - **12-hour clock everywhere**: the setting now also covers the plan, the
   day orbit, the calendar's hours, the study profile, the setup's wake and
   sleep times and moderation dates, and redraws the open page at once.
