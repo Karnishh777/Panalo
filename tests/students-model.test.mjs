@@ -344,6 +344,11 @@ ok("anything else is just bytes", T_("application/zip", "a.zip") === "applicatio
   ok("travel is clamped", row.travel_minutes === 240);
   ok("the setup is marked done", row.setup_at === new Date(NOW).toISOString());
   ok("a boarder has no travel", P.toRow({ stage: "as", boarding: true, travelMinutes: 45 }).travel_minutes === 0);
+  const prep = P.toRow({ stage: "as", boarding: true, prepStart: "18:30", prepEnd: "20:00" });
+  ok("a boarder's prep time is saved", prep.prep_start === "18:30" && prep.prep_end === "20:00");
+  ok("a day scholar has no prep", P.toRow({ stage: "as", boarding: false, prepStart: "18:30", prepEnd: "20:00" }).prep_start === null);
+  ok("prep that ends before it starts isn't saved", P.toRow({ stage: "as", boarding: true, prepStart: "20:00", prepEnd: "19:00" }).prep_end === null);
+  ok("prep reads back", P.fromRow({ prep_start: "18:30:00", prep_end: "20:00:00" }).prepStart === "18:30" && P.fromRow({}).prepStart === null);
   const back = P.fromRow({ ...row, school_start: "08:10:00" });
   ok("a saved row reads back as answers", back.stage === "as" && back.schoolStart === "08:10" && back.subjects.length === 2 && back.tuitionHours === 4);
   ok("no profile means the defaults", P.fromRow(null).schoolStart === P.DEFAULTS.schoolStart);

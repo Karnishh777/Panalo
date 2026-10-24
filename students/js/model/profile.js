@@ -13,6 +13,8 @@ export const DEFAULTS = {
   schoolEnd: "15:10",
   boarding: false,
   travelMinutes: 30, // each way
+  prepStart: "18:00", // boarders: the school's evening prep
+  prepEnd: "19:30",
   wakeAt: "06:00",
   sleepAt: "22:00", // 8 hours after a 06:00 wake: the planner never plans into less
   tuitionHours: 0, // a week
@@ -51,11 +53,20 @@ export function toRow(a, now = new Date()) {
     school_end: time(a.schoolEnd, DEFAULTS.schoolEnd),
     boarding: !!a.boarding,
     travel_minutes: a.boarding ? 0 : clamp(a.travelMinutes, 0, 240),
+    ...prepOf(a),
     wake_at: time(a.wakeAt, DEFAULTS.wakeAt),
     sleep_at: time(a.sleepAt, DEFAULTS.sleepAt),
     tuition_hours: clamp(a.tuitionHours, 0, 40),
     setup_at: now.toISOString(),
   };
+}
+
+// Prep time (phase 31): only for boarders, and only a real slot.
+function prepOf(a) {
+  if (!a.boarding) return { prep_start: null, prep_end: null };
+  const start = time(a.prepStart, DEFAULTS.prepStart);
+  const end = time(a.prepEnd, DEFAULTS.prepEnd);
+  return end > start ? { prep_start: start, prep_end: end } : { prep_start: null, prep_end: null };
 }
 
 /** A saved row back as answers (for the planner, or to edit the setup). */
@@ -71,6 +82,8 @@ export function fromRow(row) {
     schoolEnd: time(row.school_end, DEFAULTS.schoolEnd),
     boarding: !!row.boarding,
     travelMinutes: row.travel_minutes ?? DEFAULTS.travelMinutes,
+    prepStart: row.prep_start ? time(row.prep_start, null) : null,
+    prepEnd: row.prep_end ? time(row.prep_end, null) : null,
     wakeAt: time(row.wake_at, DEFAULTS.wakeAt),
     sleepAt: time(row.sleep_at, DEFAULTS.sleepAt),
     tuitionHours: row.tuition_hours ?? DEFAULTS.tuitionHours,

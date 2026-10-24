@@ -160,7 +160,8 @@ landing ──► the crossing (sign in / sign up) ──► first time? the set
 - **The plan** (`js/surfaces/plan.js`, `js/planner.js`, `model/plan.js`,
   v0.2): Panalo plans the week from the study profile and what the student
   does. Each day's room comes from `model/capacity.js` (school, travel,
-  tuition, sleep as a hard limit, caps, one lighter day, a fifth kept free);
+  tuition, sleep as a hard limit, caps, one lighter day, a fifth kept free;
+  a boarder's school days are their evening prep, phase 31);
   the blocks from `model/plan.js`: a **quick check** for a topic not met yet
   (a few questions: known → review later, not → learn), **learn** (25 min,
   then a check), **practice** (25 min, below the aim) and **review** (15 min,

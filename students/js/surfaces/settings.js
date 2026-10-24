@@ -53,7 +53,7 @@ function studyProfileBlock(ctx) {
   const a = fromRow(store.student);
   const stage = stageOf(a.stage);
   const names = a.subjects.map((x) => subjectName(a.stage, x.id));
-  const school = `${a.schoolStart}–${a.schoolEnd}, ${a.boarding ? "boarder" : `day scholar, ${a.travelMinutes} min travel`}`;
+  const school = `${a.schoolStart}–${a.schoolEnd}, ${a.boarding ? (a.prepStart ? `boarder, prep ${a.prepStart}–${a.prepEnd}` : "boarder") : `day scholar, ${a.travelMinutes} min travel`}`;
   return [
     el("p", { class: "muted", text: stage ? `${stage.label}${stage.sub ? ` (${stage.sub})` : ""} · ${names.length} subjects · school ${school}.` : "Not set up yet." }),
     names.length ? el("p", { class: "faint", text: names.join(", ") }) : null,

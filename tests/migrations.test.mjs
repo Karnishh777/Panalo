@@ -1186,8 +1186,25 @@ async function progressTests() {
   ok("phase 30 is safe to re-run", again.ok, again.error);
 }
 
+async function prepTests() {
+  const db = await createDb();
+  const upTo30 = await replay(db, MIGRATIONS.slice(0, MIGRATIONS.indexOf("supabase-phase31.sql")));
+  ok("phases 1-30 replay", upTo30.ok, upTo30.error);
+  const me = await createUser(db, "b_me");
+  await as(db, me, (tx) => tx.query("insert into student_profiles (world_name, boarding) values ('W', true)"));
+  const r = await runFile(db, "supabase-phase31.sql");
+  ok("phase 31 applies", r.ok, r.error);
+  const set = await as(db, me, async (tx) => (await tx.query("update student_profiles set prep_start = '18:00', prep_end = '19:30' where user_id = auth.uid() returning prep_end::text as e")).rows[0]?.e);
+  ok("a boarder can save their prep time", set === "19:30:00");
+  const bad = async (sql) => !(await attempt(db, me, (tx) => tx.query(sql))).ok;
+  ok("prep must end after it starts", await bad("update student_profiles set prep_start = '19:00', prep_end = '18:00' where user_id = auth.uid()"));
+  ok("prep needs both ends", await bad("update student_profiles set prep_start = '18:00', prep_end = null where user_id = auth.uid()"));
+  const again = await runFile(db, "supabase-phase31.sql");
+  ok("phase 31 is safe to re-run", again.ok, again.error);
+}
+
 async function main() {
-  const sections = [migrationTests, chatTests, takeoverTests, callTests, accountTests, backfillTests, historyTests, disappearTests, studentsTests, moderationTests, deviceStateTests, consentTests, logTests, dailyTests, usernameLoginTests, examQualityTests, privateStudentsTests, studyProfileTests, progressTests];
+  const sections = [migrationTests, chatTests, takeoverTests, callTests, accountTests, backfillTests, historyTests, disappearTests, studentsTests, moderationTests, deviceStateTests, consentTests, logTests, dailyTests, usernameLoginTests, examQualityTests, privateStudentsTests, studyProfileTests, progressTests, prepTests];
   for (const run of sections) {
     try {
       await run();

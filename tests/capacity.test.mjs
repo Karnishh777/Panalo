@@ -55,6 +55,17 @@ const day12 = { ...DEFAULTS, stage: "a2", travelMinutes: 40, wakeAt: "06:30", sl
   ok("with school every day, there is still one lighter day", allSchool.filter((d) => d.light).length === 1);
 }
 
+// ---- boarders' prep ----
+{
+  const prep = { ...boarder9, prepStart: "18:00", prepEnd: "19:30" };
+  const mon = C.dayCapacity(prep, 1);
+  ok("a boarder's school day is their prep", mon.prep && mon.from === 18 * 60 && mon.to === 19 * 60 + 30);
+  ok("prep is capped like any school day (grade 9: 2 h)", mon.minutes === 90 && C.dayCapacity({ ...prep, prepEnd: "21:00" }, 1).minutes === 120);
+  ok("prep never runs into sleep", C.dayCapacity({ ...prep, prepEnd: "21:20" }, 1).to === 21 * 60);
+  ok("days without school are planned as usual", !C.dayCapacity(prep, 0).prep);
+  ok("a day scholar is unaffected", !C.dayCapacity({ ...DEFAULTS, prepStart: "18:00", prepEnd: "19:30" }, 1).prep);
+}
+
 console.log(`\n${passed} passed, ${failures.length} failed`);
 if (failures.length) {
   failures.forEach((f) => console.log(`  ✗ ${f}`));
