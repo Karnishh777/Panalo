@@ -91,6 +91,7 @@ For each: **SQL Editor → New query** → paste the whole file → **Run**.
 | 27 | [`supabase-phase29.sql`](supabase-phase29.sql) | The study profile behind the v0.2 plan: board, year, subjects and how each is going, aim, school day, boarding or travel, sleep, tuition. Drift's saved state is erased | Required by Students v0.2 |
 | 28 | [`supabase-phase30.sql`](supabase-phase30.sql) | Progress behind the plan: per topic how well it is known and when it fades (`student_topics`), each subject's pace, test results (`student_results`), and which topic a focus block was on. All private to the student | Required by Students v0.2 |
 | 29 | [`supabase-phase31.sql`](supabase-phase31.sql) | Boarders' evening prep time, so the plan fits school-day study inside it | Required by Students v0.2 |
+| 30 | [`supabase-phase32.sql`](supabase-phase32.sql) | The student's own changes to the plan (days off, caps, a later start, more or less of a subject, skipped and moved blocks), set by hand or by telling Pan. Private, size-capped | Required by Students v0.2 |
 
 Phase 8 is self-contained and re-applies everything phase 7 does, so running 8
 is enough if you are starting fresh. Run 7 anyway if you prefer the history to
@@ -114,6 +115,18 @@ It needs phases 16 and 17, and one more dashboard setting: add your site's
 `/students/` URL (e.g. `https://your-site.pages.dev/students/`) under
 **Authentication → URL Configuration → Redirect URLs**, so sign-up
 confirmation and password-reset links can land there.
+
+**Pan, the AI (optional).** "Tell Pan what to change" on the Plan page
+goes through [`functions/api/pan.js`](functions/api/pan.js), which asks
+Claude (the small Haiku model) to turn the sentence into changes the
+student confirms before they apply. Add your Anthropic API key in
+Cloudflare: **Pages → your project → Settings → Variables and secrets →
+Add**, type **Secret**, name `ANTHROPIC_API_KEY`, then redeploy. Never put
+the key in the code or a chat. Without it, the app understands simple
+sentences ("Sundays off", "only an hour on Saturday", "more maths",
+"start after 5", "skip tomorrow") on its own, and everything can be set
+by hand anyway. Each request is a few hundred tokens; only signed-in
+students can call it, and their message is capped at 500 characters.
 
 ### Before you rely on it
 

@@ -35,6 +35,20 @@ only where nothing else can).
 - **Phase 30**: progress per topic, pace per subject, results.
 - **Boarders** (phase 31): the setup asks for the evening prep time, and
   school-day blocks are planned inside it.
+- **Customize the plan** (phase 32): tell Pan ("Sundays off, only an hour
+  on Saturday, more maths") and see what will change before it applies,
+  or set it yourself: each day off or capped, nothing before a time, each
+  subject paused, less, normal or more. Any block can be skipped or pulled
+  into today. Your changes are listed, each undoable, with Reset all.
+  Pan is `functions/api/pan.js` (Claude Haiku, `ANTHROPIC_API_KEY`
+  secret); without it, simple sentences are understood in the app.
+- **Guardians step forward**: the chosen one grows into colour with its
+  subject's live effect (circuits and data for computing, arcs for
+  physics, bubbles for chemistry, a helix for biology ...), the others
+  wait small, grey and faint. The landing gets the cast too.
+- **Forge**: the app's default look gets a finish of its own: poster
+  type, cut-corner plates with an ember notch, slanted ember buttons,
+  segmented meters, diamonds for topics, a film grain.
 - **The painted art is in**: the eight subject guardians, Pan's four
   poses, eight scenes and both wallpapers (originals in `art-source/`,
   web versions made by `tools/art/process.py`: green cut out, corner mark

@@ -24,6 +24,7 @@ import * as L from "./learner.js";
 import { weekCapacity } from "./capacity.js";
 import { stageOf, subjectName } from "./subjects.js";
 import { minutesOf } from "./profile.js";
+import * as R_ from "./rules.js";
 
 const DAY = 86400000;
 const BREAK = 5;
@@ -121,8 +122,9 @@ function simulate(t, kind, minutes, at, perTopic) {
  * @param {number} o.now       ms
  * @param {number} [o.days]    how many days, from today (7)
  */
-export function buildPlan({ profile, syllabi = {}, topics = {}, pace = {}, events = [], doneToday = 0, now = Date.now(), days = 7 }) {
+export function buildPlan({ profile, syllabi = {}, topics = {}, pace = {}, events = [], doneToday = 0, now = Date.now(), days = 7, rules = null }) {
   const target = TARGET[profile.aim] || TARGET.good;
+  const R = rules || R_.empty();
   const level = stageOf(profile.stage)?.level || "other";
   const week = weekCapacity(profile);
 
@@ -144,44 +146,24 @@ export function buildPlan({ profile, syllabi = {}, topics = {}, pace = {}, event
     const date = new Date(midnight);
     date.setDate(midnight.getDate() + d);
     const cap = week[date.getDay()];
-    let from = cap.from;
-    let room = cap.planned;
+    // The student's own changes (rules.js): a day off, a cap, a later start.
+    const own = R_.dayRule(R, date.getTime());
+    let from = Math.max(cap.from, own.from);
+    let room = own.off ? 0 : own.cap != null ? Math.min(own.cap, cap.to - from) : Math.min(cap.planned, cap.to - from);
     if (d === 0) {
       const nowMin = Math.ceil((now - date.getTime()) / 60000 / 5) * 5;
       from = Math.max(from, nowMin);
       room = Math.max(0, Math.min(room - doneToday, cap.to - from));
     }
     const at = date.getTime() + Math.max(from, minutesOf("12:00")) * 60000; // a moment in the study window
-    const day = { date: date.getTime(), weekday: date.getDay(), light: cap.light, school: cap.school, planned: cap.planned, from, to: cap.to, blocks: [] };
+    const day = { date: date.getTime(), weekday: date.getDay(), light: cap.light, school: cap.school, planned: cap.planned, from, to: cap.to, off: own.off, capped: own.cap != null, blocks: [] };
     const perSubject = new Map(); // minutes
     const blocksOf = new Map();
     const checksOf = new Map();
     const usedTopics = new Set();
     const maxPerSubject = subjects.length > 1 ? Math.max(50, room / 2) : Infinity;
     let start = from;
-
-    while (room >= 10) {
-      let best = null;
-      for (const s of subjects) {
-        const used = perSubject.get(s.id) || 0;
-        const count = blocksOf.get(s.id) || 0;
-        const checks = checksOf.get(s.id) || 0;
-        const examAt = nextExam(s, events, date.getTime());
-        // Only the first new topic in syllabus order is offered at a time.
-        const firstNewId = s.list.find((tp) => untouched(s.state[tp.id]) && !usedTopics.has(`${s.id}/${tp.id}`))?.id;
-        for (const tp of s.list) {
-          const key = `${s.id}/${tp.id}`;
-          if (usedTopics.has(key)) continue;
-          const n = need(s.state[tp.id], { at, target, examAt, level: s.level, firstNew: tp.id === firstNewId, own: s.own });
-          if (!n || (n.kind === "check" && checks >= 3)) continue;
-          const minutes = KINDS[n.kind].minutes;
-          if (minutes > room || used + minutes > maxPerSubject) continue;
-          const score = n.score * Math.pow(0.75, count);
-          if (!best || score > best.score) best = { ...n, score, s, tp, minutes };
-        }
-      }
-      if (!best) break;
-      const { s, tp, kind, minutes } = best;
+    const place = (s, tp, kind, minutes) => {
       day.blocks.push({ kind, subject: s.id, subjectName: s.name, topic: tp.id, topicName: tp.name, minutes, start, own: s.own });
       s.state[tp.id] = simulate(s.state[tp.id], kind, minutes, at, s.perTopic);
       perSubject.set(s.id, (perSubject.get(s.id) || 0) + minutes);
@@ -190,6 +172,42 @@ export function buildPlan({ profile, syllabi = {}, topics = {}, pace = {}, event
       usedTopics.add(`${s.id}/${tp.id}`);
       room -= minutes + BREAK;
       start += minutes + BREAK;
+    };
+    // Blocks the student pulled into this day go first.
+    for (const pin of R.pins.filter((p) => p.date === own.key)) {
+      const s = subjects.find((x) => x.id === pin.subject);
+      const tp = s?.list.find((x) => x.id === pin.topic);
+      const minutes = KINDS[pin.kind]?.minutes;
+      if (!s || !tp || !minutes || minutes > room) continue;
+      place(s, tp, pin.kind, minutes);
+      day.blocks[day.blocks.length - 1].pinned = true;
+    }
+    const skipped = new Set(R.skips.filter((k) => k.startsWith(own.key)).map((k) => k.slice(11)));
+
+    while (room >= 10) {
+      let best = null;
+      for (const s of subjects) {
+        const weight = R.weight[s.id] ?? 1;
+        if (!weight) continue;
+        const used = perSubject.get(s.id) || 0;
+        const count = blocksOf.get(s.id) || 0;
+        const checks = checksOf.get(s.id) || 0;
+        const examAt = nextExam(s, events, date.getTime());
+        // Only the first new topic in syllabus order is offered at a time.
+        const firstNewId = s.list.find((tp) => untouched(s.state[tp.id]) && !usedTopics.has(`${s.id}/${tp.id}`))?.id;
+        for (const tp of s.list) {
+          const key = `${s.id}/${tp.id}`;
+          if (usedTopics.has(key) || skipped.has(`${s.id}|${tp.id}`)) continue;
+          const n = need(s.state[tp.id], { at, target, examAt, level: s.level, firstNew: tp.id === firstNewId, own: s.own });
+          if (!n || (n.kind === "check" && checks >= 3)) continue;
+          const minutes = KINDS[n.kind].minutes;
+          if (minutes > room || used + minutes > maxPerSubject * Math.max(1, weight)) continue;
+          const score = n.score * weight * Math.pow(0.75, count);
+          if (!best || score > best.score) best = { ...n, score, s, tp, minutes };
+        }
+      }
+      if (!best) break;
+      place(best.s, best.tp, best.kind, best.minutes);
     }
     day.minutes = day.blocks.reduce((n, b) => n + b.minutes, 0);
     out.push(day);

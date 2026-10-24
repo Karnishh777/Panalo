@@ -372,6 +372,16 @@ html[data-look="glass"] body.in-app .now-step .step-label {
   letter-spacing: 0.02em;
 }
 
+/* Forge: Pan's preview is an ember-edged plate */
+html[data-look="glass"] body.in-app .cz-preview {
+  border-left-color: var(--forge);
+  background: linear-gradient(90deg, rgba(255, 122, 47, 0.08), transparent 70%);
+}
+html[data-look="glass"] body.in-app .pl-tell {
+  border-color: rgba(255, 150, 80, 0.35);
+  clip-path: none;
+}
+
 @media (prefers-reduced-motion: reduce) {
   html[data-look="glass"] body.in-app .pl-topic {
     transition: none;

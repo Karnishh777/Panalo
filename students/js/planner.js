@@ -6,6 +6,7 @@ import { store, api, on, emit } from "./store.js";
 import { fromRow } from "./model/profile.js";
 import * as L from "./model/learner.js";
 import * as P from "./model/plan.js";
+import * as R from "./model/rules.js";
 import { startOfDay } from "./model/time.js";
 import { stageOf, subjectName } from "./model/subjects.js";
 import { GUARDIANS, guardianOf } from "./art.js";
@@ -103,7 +104,22 @@ export function focusedToday(now = Date.now()) {
 /** The plan for the next `days` days, from now. */
 export function currentPlan({ now = Date.now(), days = 7 } = {}) {
   if (!hasPlan()) return [];
-  return P.buildPlan({ profile: profile(), syllabi: syllabi(), topics: topicStates(), pace: paceOf(), events: store.events, doneToday: focusedToday(now), now, days });
+  return P.buildPlan({ profile: profile(), syllabi: syllabi(), topics: topicStates(), pace: paceOf(), events: store.events, doneToday: focusedToday(now), now, days, rules: planRules(now) });
+}
+
+/** The student's own changes to the plan (phase 32), cleaned. */
+export function planRules(now = Date.now()) {
+  return R.normalize(store.student?.plan_rules, { subjects: profile().subjects.map((s) => s.id), now });
+}
+
+/** Apply changes (from the editor or Pan) and save them. */
+export async function changePlan(changes, now = Date.now()) {
+  const next = R.applyChanges(planRules(now), changes, { subjects: profile().subjects.map((s) => s.id), now });
+  return saveRules(next);
+}
+
+export function saveRules(rules) {
+  return api.saveStudent({ plan_rules: rules });
 }
 
 /** Everything about one subject the plan page shows. */

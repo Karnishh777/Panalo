@@ -12,7 +12,9 @@ import * as P from "../model/plan.js";
 import { weekCapacity } from "../model/capacity.js";
 import { formatMinutes, DAY, clockOf } from "../model/time.js";
 import { reducedMotion, lively } from "../motion.js";
-import { hasPlan, profile, loadBanks, banksReady, currentPlan, subjectView, colourOf, nameOf, stateOf, saveTopic, addResult } from "../planner.js";
+import { hasPlan, profile, loadBanks, banksReady, currentPlan, subjectView, colourOf, nameOf, stateOf, saveTopic, addResult, planRules, changePlan } from "../planner.js";
+import { openCustomize } from "../plan-custom.js";
+import * as R from "../model/rules.js";
 import { startBlock } from "../block-check.js";
 import { art, artImg, onArt, GUARDIANS, guardianOf } from "../art.js";
 import { createEmblem, createPan, createAura } from "../motion-art.js";
@@ -30,13 +32,35 @@ function dayLabel(ms, i) {
   return new Date(ms).toLocaleDateString(undefined, { weekday: "long" });
 }
 
-function blockLine(b, { time = false } = {}) {
-  return el("li", { class: `pl-block k-${b.kind}`, style: `--subj:${colourOf(b.subject)}` }, [
+function blockLine(b, { time = false, date = null, today = false } = {}) {
+  const what = b.own ? b.subjectName : b.topicName;
+  return el("li", { class: `pl-block k-${b.kind}${b.pinned ? " pinned" : ""}`, style: `--subj:${colourOf(b.subject)}` }, [
     time ? el("span", { class: "pl-time num faint", text: hhmm(b.start) }) : null,
     el("i", { class: "pl-dot", "aria-hidden": "true" }),
-    el("span", { class: "pl-what" }, [el("b", { text: b.own ? b.subjectName : b.topicName }), el("small", { class: "faint", text: b.own ? P.KINDS[b.kind].verb : `${b.subjectName} · ${P.KINDS[b.kind].label}` })]),
+    el("span", { class: "pl-what" }, [el("b", { text: what }), el("small", { class: "faint", text: `${b.own ? P.KINDS[b.kind].verb : `${b.subjectName} · ${P.KINDS[b.kind].label}`}${b.pinned ? " · moved here" : ""}` })]),
     el("span", { class: "pl-min num faint", text: `${b.minutes} min` }),
+    date != null ? el("button", { type: "button", class: "pl-more", "aria-label": `Change: ${what}`, title: "Skip it, or do it today", text: "⋯", onClick: () => blockSheet(b, date, today) }) : null,
   ]);
+}
+
+// One block, changed by hand: start it, pull it into today, or skip it.
+function blockSheet(b, date, today) {
+  const key = R.dateKey(date);
+  const done = async (changes, said) => {
+    const { error } = await changePlan(changes);
+    if (error) return reportError(error, "Couldn't change the plan. Try again.");
+    showToast(said);
+  };
+  openSheet({
+    title: b.own ? b.subjectName : b.topicName,
+    lead: `${b.subjectName} · ${P.KINDS[b.kind].label} · ${b.minutes} min`,
+    form: false,
+    actions: [
+      { label: "Start now", kind: "btn-primary", id: "blk-start", onClick: () => startBlock(b) },
+      today ? null : { label: "Do it today", id: "blk-today", onClick: () => done([{ op: "pin", date: R.dateKey(Date.now()), subject: b.subject, topic: b.topic, kind: b.kind }], "Moved to today") },
+      { label: today ? "Skip it today" : "Skip it that day", id: "blk-skip", onClick: () => done([{ op: "skip", date: key, subject: b.subject, topic: b.topic }], "Skipped. The plan has re-planned around it.") },
+    ].filter(Boolean),
+  });
 }
 
 // The one thing: the next block, big, with its subject's glow behind it.
@@ -154,12 +178,12 @@ function week(plan) {
       "ol",
       { class: "pl-days" },
       plan.map((d, i) =>
-        el("li", { class: `pl-day${i === 0 ? " today" : ""}${d.light ? " light" : ""}` }, [
+        el("li", { class: `pl-day${i === 0 ? " today" : ""}${d.light ? " light" : ""}${d.off ? " off" : ""}`, "data-weekday": String(d.weekday) }, [
           el("div", { class: "pl-day-head" }, [
             el("b", { text: dayLabel(d.date, i) }),
-            el("span", { class: "faint", text: d.blocks.length ? `${formatMinutes(d.minutes)}${d.light ? " · lighter day" : ""}` : d.light ? "lighter day" : "free" }),
+            el("span", { class: "faint", text: d.off ? "day off" : d.blocks.length ? `${formatMinutes(d.minutes)}${d.light ? " · lighter day" : ""}` : d.light ? "lighter day" : "free" }),
           ]),
-          d.blocks.length ? el("ul", { class: "pl-blocks" }, d.blocks.map((b) => blockLine(b, { time: i === 0 }))) : null,
+          d.blocks.length ? el("ul", { class: "pl-blocks" }, d.blocks.map((b) => blockLine(b, { time: i === 0, date: d.date, today: i === 0 }))) : null,
         ])
       )
     ),
@@ -277,9 +301,17 @@ function render() {
     " ",
     el("a", { href: "#/settings", class: "faint", text: "Change my answers" }),
   ]);
+  // Customize: tell Pan, or set it yourself; and what's already changed.
+  const own = R.describe(planRules(now), { nameOf, now });
+  const custom = el("div", { class: "pl-custom" }, [
+    el("button", { type: "button", class: "btn btn-ghost", id: "plan-customize", text: "Customize", onClick: () => openCustomize() }),
+    el("button", { type: "button", class: "btn btn-quiet pl-tell", id: "plan-tell", onClick: () => openCustomize() }, [el("span", { text: "Tell Pan what to change…" })]),
+    own.length ? el("p", { class: "pl-own faint", id: "plan-own" }, [el("b", { text: "Your changes: " }), own.map((l) => l.text).join(" · ")]) : null,
+  ]);
   body.replaceChildren(
     ...[
       summary,
+      custom,
       shortSleep ? el("p", { class: "pl-note", text: "Your bedtime leaves under 8 hours of sleep, so your plan stops 8 hours before you wake. Teenagers need 8 to 10." }) : null,
       store.progressMissing ? el("p", { class: "pl-note", text: "This Panalo can't save progress yet (supabase-phase30.sql). The plan shows, but checks won't be kept." }) : null,
       hero(plan),
