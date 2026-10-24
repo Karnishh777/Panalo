@@ -13,8 +13,10 @@
 //   ANTHROPIC_API_KEY   the key Pan uses (never sent to the browser)
 //
 // With no key this answers 501, and the app understands simple sentences
-// on its own instead. Only a signed-in Panalo user can call it; the input
-// is capped at 500 characters and the answer at a few hundred tokens.
+// on its own instead. Only a signed-in Panalo user can call it, 30 times a
+// day each (pan_take(), supabase-phase33.sql; refused if that can't be
+// checked); the input is capped at 500 characters and the answer at a few
+// hundred tokens.
 //
 // SUPABASE_URL / SUPABASE_ANON_KEY can be overridden with variables of the
 // same name; the defaults are the public values already in src/config.js.
@@ -88,6 +90,23 @@ async function signedIn(request, env) {
   return res.ok;
 }
 
+// Take one of the student's asks for today (as them, so the database knows
+// who). Returns how many are left, or null when it can't be checked.
+async function takeAsk(request, env) {
+  const res = await fetch(`${env.SUPABASE_URL || DEFAULT_SUPABASE_URL}/rest/v1/rpc/pan_take`, {
+    method: "POST",
+    headers: {
+      apikey: env.SUPABASE_ANON_KEY || DEFAULT_SUPABASE_ANON_KEY,
+      authorization: request.headers.get("authorization"),
+      "content-type": "application/json",
+    },
+    body: "{}",
+  });
+  if (!res.ok) return null;
+  const n = await res.json().catch(() => null);
+  return Number.isInteger(n) ? n : null;
+}
+
 /** Keep only changes the app understands, about subjects the student has. */
 export function clean(out, subjectIds) {
   const ids = new Set(subjectIds);
@@ -126,6 +145,12 @@ export async function onRequestPost({ request, env }) {
     .filter((s) => s.id);
   const today = /^\d{4}-\d{2}-\d{2}$/.test(body.today || "") ? body.today : new Date().toISOString().slice(0, 10);
   const weekday = Number.isInteger(body.weekday) ? body.weekday : new Date(`${today}T12:00:00Z`).getUTCDay();
+
+  // The daily limit, before anything is spent. If it can't be checked, Pan
+  // doesn't run: the cost is real, and the app copes without Pan.
+  const left = await takeAsk(request, env);
+  if (left == null) return json({ error: "pan-unavailable" }, 503);
+  if (left < 0) return json({ error: "pan-limit" }, 429);
 
   const context = {
     today,
