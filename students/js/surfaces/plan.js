@@ -10,7 +10,7 @@ import { store, on } from "../store.js";
 import * as L from "../model/learner.js";
 import * as P from "../model/plan.js";
 import { weekCapacity } from "../model/capacity.js";
-import { formatMinutes, DAY } from "../model/time.js";
+import { formatMinutes, DAY, clockOf } from "../model/time.js";
 import { reducedMotion } from "../motion.js";
 import { hasPlan, profile, loadBanks, banksReady, currentPlan, subjectView, colourOf, nameOf, stateOf, saveTopic, addResult } from "../planner.js";
 import { startBlock } from "../block-check.js";
@@ -19,7 +19,7 @@ let root;
 let body;
 let unsubs = [];
 
-const hhmm = (m) => `${String(Math.floor(m / 60) % 24).padStart(2, "0")}:${String(m % 60).padStart(2, "0")}`;
+const hhmm = (m) => clockOf(m);
 const pct = (x) => `${Math.round(x * 100)}%`;
 
 function dayLabel(ms, i) {

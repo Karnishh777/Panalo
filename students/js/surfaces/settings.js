@@ -1,5 +1,6 @@
 // Settings: motion, the Study Room, your study profile, your password.
 import { el, showToast, getPrefs, setPrefs } from "../ui.js";
+import { clockOfText } from "../model/time.js";
 import { withBusy } from "../../../src/util.js";
 import { store, emit } from "../store.js";
 import { fromRow } from "../model/profile.js";
@@ -53,7 +54,8 @@ function studyProfileBlock(ctx) {
   const a = fromRow(store.student);
   const stage = stageOf(a.stage);
   const names = a.subjects.map((x) => subjectName(a.stage, x.id));
-  const school = `${a.schoolStart}–${a.schoolEnd}, ${a.boarding ? (a.prepStart ? `boarder, prep ${a.prepStart}–${a.prepEnd}` : "boarder") : `day scholar, ${a.travelMinutes} min travel`}`;
+  const t = clockOfText;
+  const school = `${t(a.schoolStart)}–${t(a.schoolEnd)}, ${a.boarding ? (a.prepStart ? `boarder, prep ${t(a.prepStart)}–${t(a.prepEnd)}` : "boarder") : `day scholar, ${a.travelMinutes} min travel`}`;
   return [
     el("p", { class: "muted", text: stage ? `${stage.label}${stage.sub ? ` (${stage.sub})` : ""} · ${names.length} subjects · school ${school}.` : "Not set up yet." }),
     names.length ? el("p", { class: "faint", text: names.join(", ") }) : null,

@@ -498,13 +498,27 @@ try {
   await page.click('[data-view-btn="day"]');
   // Nothing anywhere prints a stray null, undefined or NaN.
   const stray = [];
-  for (const r of ["now", "study", "world", "calendar", "archive", "safety", "settings"]) {
+  for (const r of ["now", "plan", "study", "world", "calendar", "archive", "safety", "settings"]) {
     await page.evaluate((r) => (location.hash = `#/${r}`), r);
     await page.waitForTimeout(700);
     const t = await page.evaluate((r) => document.querySelector(`.surface[data-surface="${r}"]`)?.innerText || "", r);
     if (/\b(null|undefined|NaN)\b/.test(t)) stray.push(r);
   }
   check(`no page prints a stray null, undefined or NaN${stray.length ? ` (${stray.join(", ")})` : ""}`, !stray.length);
+  // The 12-hour clock applies everywhere: plan, Now's orbit, Settings.
+  await go(page, "#/settings");
+  await page.locator('label.setting:has-text("12-hour clock") input').check();
+  await page.waitForTimeout(300);
+  const ampm = /\d (am|pm)/;
+  check("the 12-hour clock shows on the study profile", ampm.test(await page.textContent(".surface[data-surface=settings]")));
+  await go(page, "#/plan");
+  await page.waitForSelector(".pl-hero", { timeout: 10000 }).catch(() => {});
+  check("…on the plan", ampm.test(await page.textContent(".surface[data-surface=plan]")) && !/\b\d\d:\d\d\b(?! ?[ap]m)/.test(await page.textContent(".pl-hero")));
+  await go(page, "#/now");
+  check("…and on Now's day orbit", (await page.locator(".orbit-label").allTextContents()).includes("6 am"));
+  await go(page, "#/settings");
+  await page.locator('label.setting:has-text("12-hour clock") input').uncheck();
+  await page.waitForTimeout(300);
   check("no console errors (desktop)", page.errors.length === 0);
   if (page.errors.length) console.log(page.errors.join("\n"));
   await page.close();
@@ -526,6 +540,12 @@ try {
     const overflow = await m.evaluate(() => document.documentElement.scrollWidth > window.innerWidth + 1);
     check("nothing scrolls sideways", !overflow);
     await shot(m, "phone-calendar");
+    await m.click(".dock a[data-route=plan]");
+    await m.waitForSelector(".pl-hero", { timeout: 10000 }).catch(() => {});
+    check("the dock goes to Plan", (await m.evaluate(() => document.body.dataset.view)) === "plan" && (await m.isVisible(".pl-hero")));
+    check("the plan fits a phone: nothing scrolls sideways", !(await m.evaluate(() => document.documentElement.scrollWidth > window.innerWidth + 1)));
+    await m.waitForTimeout(900);
+    await shot(m, "phone-plan");
     check("no console errors (phone)", m.errors.length === 0);
     if (m.errors.length) console.log(m.errors.join("\n"));
   }

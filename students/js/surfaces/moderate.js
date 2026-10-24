@@ -8,6 +8,7 @@
 //
 // Deliberately calm: no effects, no colour beyond what carries meaning.
 import { el, openSheet, confirmSheet, showToast, chipGroup, emptyState, reportError } from "../ui.js";
+import { clockTime } from "../model/time.js";
 import { supabaseClient } from "../../../src/client.js";
 import { refreshModeration } from "../moderation-badge.js";
 
@@ -24,7 +25,7 @@ let body;
 let filter = "active";
 let rows = [];
 
-const when = (d) => new Date(d).toLocaleString(undefined, { day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" });
+const when = (d) => `${new Date(d).toLocaleDateString(undefined, { day: "numeric", month: "short" })}, ${clockTime(d)}`;
 const who = (name, fallback) => (name ? `@${name}` : fallback);
 
 async function rpc(name, args) {

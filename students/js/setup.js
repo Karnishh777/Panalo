@@ -7,6 +7,7 @@ import { el, chipGroup, showToast, reportError } from "./ui.js";
 import { api, store } from "./store.js";
 import { BOARDS, STAGES, AIMS, LEVELS, subjectsFor, gradesFor } from "./model/subjects.js";
 import { toRow, fromRow } from "./model/profile.js";
+import { clockOfText } from "./model/time.js";
 
 const $ = (id) => document.getElementById(id);
 const DAYS = [
@@ -234,9 +235,9 @@ export function runSetup({ onDone, editing = false }) {
       lead: "Sleep is protected: Panalo never plans study into it.",
       body: () => [
         el("p", { class: "faint", text: "Wake up" }),
-        chipGroup({ label: "Wake up", value: a.wakeAt, options: ["05:30", "06:00", "06:30", "07:00", "07:30"].map((t) => ({ id: t, label: t })), onChange: (v) => (a.wakeAt = v), toneOf: () => "tone-time" }).node,
+        chipGroup({ label: "Wake up", value: a.wakeAt, options: ["05:30", "06:00", "06:30", "07:00", "07:30"].map((t) => ({ id: t, label: clockOfText(t) })), onChange: (v) => (a.wakeAt = v), toneOf: () => "tone-time" }).node,
         el("p", { class: "faint", text: "Go to sleep" }),
-        chipGroup({ label: "Go to sleep", value: a.sleepAt, options: ["21:30", "22:00", "22:30", "23:00", "23:30"].map((t) => ({ id: t, label: t })), onChange: (v) => (a.sleepAt = v), toneOf: () => "tone-time" }).node,
+        chipGroup({ label: "Go to sleep", value: a.sleepAt, options: ["21:30", "22:00", "22:30", "23:00", "23:30"].map((t) => ({ id: t, label: clockOfText(t) })), onChange: (v) => (a.sleepAt = v), toneOf: () => "tone-time" }).node,
       ],
     },
     {

@@ -81,9 +81,30 @@ let hour12 = false;
 export function setClock12(on) {
   hour12 = !!on;
 }
+export const isClock12 = () => hour12;
 export function clockTime(d) {
   const x = new Date(d);
-  const mm = String(x.getMinutes()).padStart(2, "0");
-  if (hour12) return `${x.getHours() % 12 || 12}:${mm} ${x.getHours() < 12 ? "am" : "pm"}`;
-  return `${String(x.getHours()).padStart(2, "0")}:${mm}`;
+  return clockOf(x.getHours() * 60 + x.getMinutes());
+}
+
+// The same, for minutes since midnight (a planned block's start; may pass
+// 1440 for a late night).
+export function clockOf(minutes) {
+  const m = ((Math.round(minutes) % 1440) + 1440) % 1440;
+  const h = Math.floor(m / 60);
+  const mm = String(m % 60).padStart(2, "0");
+  if (hour12) return `${h % 12 || 12}:${mm} ${h < 12 ? "am" : "pm"}`;
+  return `${String(h).padStart(2, "0")}:${mm}`;
+}
+
+// The same, for a stored "HH:MM" (school hours, prep, sleep).
+export function clockOfText(t) {
+  const [h, m] = String(t || "").split(":").map(Number);
+  return Number.isFinite(h) && Number.isFinite(m) ? clockOf(h * 60 + m) : String(t || "");
+}
+
+// An hour mark on a dial or a timeline: "06" or "6 am".
+export function hourLabel(h) {
+  const x = ((h % 24) + 24) % 24;
+  return hour12 ? `${x % 12 || 12} ${x < 12 ? "am" : "pm"}` : String(x).padStart(2, "0");
 }
