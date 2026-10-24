@@ -1,7 +1,9 @@
 #!/usr/bin/env python3
 """Turn generated art into web files for Panalo Students.
 
-    python3 -I tools/art/process.py <image or folder> [...]
+    python3 -I tools/art/process.py art-source/
+
+Originals live in art-source/ (kept as made, never served by the app).
 
 Each input is named as in students/assets/art/PROMPTS.md (pan-idle.png,
 guardian-physics.png, scene-art.png, wall-wide.png ...). Cut-outs (pan-*,
@@ -56,17 +58,30 @@ def fit(img, box):
     return img
 
 
+def unmark(img, cutout):
+    """Remove the generator's small corner mark (bottom right). Cut-outs get
+    the corner painted with their own background green; paintings are
+    trimmed by a few percent on the right and bottom."""
+    w, h = img.size
+    if cutout:
+        img = img.convert("RGB")
+        bg = img.getpixel((8, 8))
+        box = (int(w * 0.9), int(h * 0.93), w, h)
+        img.paste(bg, box)
+        return img
+    return img.crop((0, 0, int(w * 0.955), int(h * 0.955)))
+
+
 def process(path):
-    stem = path.stem.lower()
+    stem = path.stem.lower().replace("_", "-")
     kind, _, name = stem.partition("-")
     if kind not in KNOWN or name not in KNOWN[kind]:
         print(f"skip {path.name}: not a name from PROMPTS.md")
         return None
     img = Image.open(path)
-    if kind in ("pan", "guardian"):
-        img = key_green(img)
-    else:
-        img = img.convert("RGB")
+    cutout = kind in ("pan", "guardian")
+    img = unmark(img, cutout)
+    img = key_green(img) if cutout else img.convert("RGB")
     img = fit(img, SIZES[kind])
     out = OUT / f"{stem}.webp"
     img.save(out, "WEBP", quality=QUALITY, method=6)

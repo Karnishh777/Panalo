@@ -159,9 +159,12 @@ function wallpaper() {
     const wide = art("wall-wide");
     const tall = art("wall-tall") || wide;
     if (!wide && !tall) return;
+    // Absolute: a url() inside a custom property resolves against the
+    // stylesheet that uses it (css/), not this page.
+    const abs = (u) => new URL(u, location.href).href;
     w.classList.add("painted");
-    w.style.setProperty("--wall-wide", `url("${wide || tall}")`);
-    w.style.setProperty("--wall-tall", `url("${tall}")`);
+    w.style.setProperty("--wall-wide", `url("${abs(wide || tall)}")`);
+    w.style.setProperty("--wall-tall", `url("${abs(tall)}")`);
   });
 }
 function embersFollow(name) {

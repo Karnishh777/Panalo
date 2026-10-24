@@ -713,7 +713,7 @@ body.in-app[data-view="plan"] .wall {
   display: grid;
   grid-template-columns: minmax(0, 1fr) minmax(0, 1.15fr);
   align-items: end;
-  min-height: 380px;
+  min-height: 460px;
   border-radius: 20px;
   border: 1px solid color-mix(in srgb, var(--subj) 28%, var(--line));
   background: #05070e;
@@ -766,9 +766,10 @@ body.in-app[data-view="plan"] .wall {
 }
 .st-guard {
   position: relative;
-  flex: 0 1 auto;
-  width: clamp(90px, calc(46vw / var(--n)), 200px);
-  margin: 0 -14px;
+  flex: 0 0 auto;
+  /* bigger with fewer guardians; neighbours overlap like a cast photo */
+  width: clamp(110px, calc(80vw / (var(--n) + 2)), 260px);
+  margin: 0 calc(-1 * clamp(18px, calc(14vw / (var(--n) + 2)), 46px));
   padding: 0;
   border: 0;
   background: none;
@@ -790,9 +791,9 @@ body.in-app[data-view="plan"] .wall {
   outline: none;
 }
 .st-guard.on {
-  z-index: 2;
+  z-index: 3;
   filter: grayscale(0) brightness(1) drop-shadow(0 0 28px color-mix(in srgb, var(--g) 55%, transparent));
-  transform: scale(1.08) translateY(-4px);
+  transform: scale(1.16) translateY(-6px);
 }
 @media (max-width: 760px) {
   .pl-stage {

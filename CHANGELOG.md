@@ -35,6 +35,11 @@ only where nothing else can).
 - **Phase 30**: progress per topic, pace per subject, results.
 - **Boarders** (phase 31): the setup asks for the evening prep time, and
   school-day blocks are planned inside it.
+- **The painted art is in**: the eight subject guardians, Pan's four
+  poses, eight scenes and both wallpapers (originals in `art-source/`,
+  web versions made by `tools/art/process.py`: green cut out, corner mark
+  removed, near-lossless WebP). The Plan stage is a lineup of the cast;
+  the wallpaper's ember river sits behind Now and Plan.
 - **Coded motion art** (`js/motion-art.js`, live canvas, no files): Pan
   the mascot (a molten star with a flame crown; waves, blinks, cheers in a
   burst of sparks after a good check, thinks, dozes in idle mode), eight
