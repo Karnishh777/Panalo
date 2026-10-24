@@ -19,7 +19,7 @@ export const LOOKS = [
   {
     id: "glass",
     name: "Glass",
-    line: "Frosted, layered and calm.",
+    line: "Dark glass and ember: poster type, calm by default.",
     fonts: "family=Instrument+Serif:ital@0;1&family=Geist:wght@300..700&family=Geist+Mono:wght@400;500",
   },
   {

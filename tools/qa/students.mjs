@@ -1104,7 +1104,7 @@ try {
     await t.waitForSelector("#parent-code-form:not([hidden])", { timeout: 5000 }).catch(() => {});
     await t.fill("#parent-code", "000000");
     await t.click("#parent-verify");
-    await t.waitForTimeout(400);
+    await t.waitForFunction(() => /\S/.test(document.querySelector("#auth-message")?.textContent || ""), null, { timeout: 8000 }).catch(() => {});
     check("a wrong code is refused", /didn't work/.test(await t.textContent("#auth-message")));
     await t.fill("#parent-code", "123456");
     await t.click("#parent-verify");
