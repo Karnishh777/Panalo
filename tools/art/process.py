@@ -17,7 +17,9 @@ from pathlib import Path
 from PIL import Image, ImageFilter
 
 OUT = Path(__file__).resolve().parents[2] / "students" / "assets" / "art"
-SIZES = {"pan": (900, 900), "guardian": (900, 1350), "scene": (1920, 1080), "wall": (2560, 2560)}
+# Big enough for sharp retina screens: the wallpaper up to 4K, scenes at 1440p.
+SIZES = {"pan": (1200, 1200), "guardian": (1200, 1800), "scene": (2560, 1440), "wall": (3840, 3840)}
+QUALITY = 92  # WebP; visually lossless for painted art
 KNOWN = {
     "pan": ["idle", "cheer", "think", "sleep"],
     "guardian": ["physics", "chemistry", "biology", "maths", "computing", "commerce", "words", "art"],
@@ -67,7 +69,7 @@ def process(path):
         img = img.convert("RGB")
     img = fit(img, SIZES[kind])
     out = OUT / f"{stem}.webp"
-    img.save(out, "WEBP", quality=82, method=6)
+    img.save(out, "WEBP", quality=QUALITY, method=6)
     print(f"ok   {path.name} -> {out.name} {img.size[0]}x{img.size[1]}")
     return stem
 
