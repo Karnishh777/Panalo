@@ -48,6 +48,14 @@ only where nothing else can).
   subject's live effect (circuits and data for computing, arcs for
   physics, bubbles for chemistry, a helix for biology ...), the others
   wait small, grey and faint. The landing gets the cast too.
+- **The rest of the week** (phase 34): the setup asks for sport, art,
+  music and coaching at set times (days, from, to). The plan keeps those
+  times clear, with a little time to get there and back, and so does any
+  calendar entry with times (a class, a function, a trip): the day holds
+  less, nothing is placed over it, and something long gets a rest after
+  it. "Busy today? Take it off" on the Plan page; a crash day (up to six
+  hours, sleep still protected) for any date, by hand or by telling Pan;
+  and when yesterday didn't happen, the plan says it has re-planned.
 - **Lighter and steadier**: the painted art is re-exported at the size it
   is shown (guardians 720 px, Pan 512, scenes 1600, walls 1920): about
   88 MB of decoded images instead of 227, 4.9 MB to download instead of

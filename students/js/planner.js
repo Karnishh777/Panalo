@@ -101,6 +101,25 @@ export function focusedToday(now = Date.now()) {
   return store.sessions.filter((s) => Date.parse(s.started_at) >= from).reduce((n, s) => n + (s.focused_minutes || 0), 0);
 }
 
+/**
+ * Whether yesterday went by with no study logged when the plan had some
+ * (and the student had a plan by then, and hadn't taken it off). The plan
+ * re-plans by itself either way; this only lets it say so.
+ */
+export function missedYesterday(now = Date.now()) {
+  const today = startOfDay(new Date(now)).getTime();
+  const y = new Date(today);
+  y.setDate(y.getDate() - 1);
+  const from = y.getTime();
+  const since = Date.parse(store.student?.setup_at || "");
+  if (!hasPlan() || !(since < from)) return false;
+  if (R.dayRule(planRules(now), from).off) return false;
+  return !store.sessions.some((s) => {
+    const t = Date.parse(s.started_at);
+    return t >= from && t < today;
+  });
+}
+
 /** The plan for the next `days` days, from now. */
 export function currentPlan({ now = Date.now(), days = 7 } = {}) {
   if (!hasPlan()) return [];

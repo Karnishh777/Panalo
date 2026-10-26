@@ -1249,8 +1249,25 @@ async function panLimitTests() {
   ok("phase 33 is safe to re-run", again.ok, again.error);
 }
 
+async function activitiesTests() {
+  const db = await createDb();
+  const upTo33 = await replay(db, MIGRATIONS.slice(0, MIGRATIONS.indexOf("supabase-phase34.sql")));
+  ok("phases 1-33 replay", upTo33.ok, upTo33.error);
+  const me = await createUser(db, "a_me");
+  await as(db, me, (tx) => tx.query("insert into student_profiles (world_name) values ('W')"));
+  const r = await runFile(db, "supabase-phase34.sql");
+  ok("phase 34 applies", r.ok, r.error);
+  const set = await as(db, me, async (tx) => (await tx.query(`update student_profiles set activities = '[{"kind":"sport","name":"Football","days":[2,4],"start":"17:00","end":"18:30"}]' where user_id = auth.uid() returning activities->0->>'name' as n`)).rows[0]?.n);
+  ok("a student can save their activities", set === "Football");
+  const bad = async (sql) => !(await attempt(db, me, (tx) => tx.query(sql))).ok;
+  ok("activities must be a list", await bad(`update student_profiles set activities = '{"a":1}' where user_id = auth.uid()`));
+  ok("at most twelve activities", await bad(`update student_profiles set activities = (select jsonb_agg(jsonb_build_object('n', g)) from generate_series(1, 13) g) where user_id = auth.uid()`));
+  const again = await runFile(db, "supabase-phase34.sql");
+  ok("phase 34 is safe to re-run", again.ok, again.error);
+}
+
 async function main() {
-  const sections = [migrationTests, chatTests, takeoverTests, callTests, accountTests, backfillTests, historyTests, disappearTests, studentsTests, moderationTests, deviceStateTests, consentTests, logTests, dailyTests, usernameLoginTests, examQualityTests, privateStudentsTests, studyProfileTests, progressTests, prepTests, planRulesTests, panLimitTests];
+  const sections = [migrationTests, chatTests, takeoverTests, callTests, accountTests, backfillTests, historyTests, disappearTests, studentsTests, moderationTests, deviceStateTests, consentTests, logTests, dailyTests, usernameLoginTests, examQualityTests, privateStudentsTests, studyProfileTests, progressTests, prepTests, planRulesTests, panLimitTests, activitiesTests];
   for (const run of sections) {
     try {
       await run();

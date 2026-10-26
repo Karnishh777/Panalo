@@ -1117,3 +1117,25 @@ body.in-app[data-view="plan"] .wall {
   }
 }
 
+.cz-oneday {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) auto;
+  gap: 8px;
+  align-items: center;
+}
+@media (max-width: 560px) {
+  .cz-oneday {
+    grid-template-columns: 1fr 1fr;
+  }
+  .cz-oneday .btn {
+    grid-column: 1 / -1;
+  }
+}
+.pl-day.crash .pl-day-head span {
+  color: var(--time);
+}
+.pl-replanned {
+  margin: 0;
+  font-size: 14px;
+  color: var(--text-2);
+}

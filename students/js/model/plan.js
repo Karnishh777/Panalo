@@ -21,13 +21,44 @@
 // Nothing new in a subject in the last two days before its exam; nothing
 // at all for it on the exam day.
 import * as L from "./learner.js";
-import { weekCapacity } from "./capacity.js";
+import { weekCapacity, activitiesOn, busyWithin } from "./capacity.js";
 import { stageOf, subjectName } from "./subjects.js";
 import { minutesOf } from "./profile.js";
 import * as R_ from "./rules.js";
 
 const DAY = 86400000;
 const BREAK = 5;
+const CRASH = 360; // minutes a crash day may hold
+const DAY_MS = 86400000;
+// Calendar entries that take the student's time (deadlines don't, and a
+// study entry is study).
+const BLOCKING = new Set(["class", "event", "personal", "exam"]);
+
+/**
+ * When a day is already taken: fixed activities (profile) and calendar
+ * entries with times, as intervals in minutes since that day's midnight.
+ * A weekly entry counts on its weekday from its first date on.
+ */
+export function busyOf(profile, events, dayStart) {
+  const date = new Date(dayStart);
+  const out = activitiesOn(profile, date.getDay());
+  const end = dayStart + DAY_MS;
+  for (const e of events || []) {
+    if (!BLOCKING.has(e.kind)) continue;
+    const s = new Date(e.starts_at);
+    const en = e.ends_at ? new Date(e.ends_at) : new Date(s.getTime() + 3600000);
+    // Time to get there and back; after something long, a rest as well.
+    const pad = (a, b) => out.push([a - 15, b + (b - a >= 180 ? 45 : 15)]);
+    if (e.repeat_weekly) {
+      if (s.getDay() !== date.getDay() || s.getTime() >= end) continue;
+      const a = s.getHours() * 60 + s.getMinutes();
+      pad(a, a + Math.max(15, (en - s) / 60000));
+    } else if (en.getTime() > dayStart && s.getTime() < end) {
+      pad(Math.max(0, (s.getTime() - dayStart) / 60000), Math.min(1800, (en.getTime() - dayStart) / 60000));
+    }
+  }
+  return out;
+}
 
 /** Mastery each aim plans towards. */
 export const TARGET = { pass: 0.6, good: 0.75, top: 0.88 };
@@ -149,21 +180,37 @@ export function buildPlan({ profile, syllabi = {}, topics = {}, pace = {}, event
     // The student's own changes (rules.js): a day off, a cap, a later start.
     const own = R_.dayRule(R, date.getTime());
     let from = Math.max(cap.from, own.from);
-    let room = own.off ? 0 : own.cap != null ? Math.min(own.cap, cap.to - from) : Math.min(cap.planned, cap.to - from);
+    // What's already taken (sport, coaching, a function on the calendar):
+    // it comes off the day, and no block goes over it.
+    const busy = busyOf(profile, events, date.getTime());
+    const free = (a) => Math.max(0, cap.to - a - busyWithin(busy, a, cap.to));
+    let room = own.off ? 0 : own.crash ? Math.min(CRASH, free(from)) : own.cap != null ? Math.min(own.cap, free(from)) : Math.min(cap.planned, free(from));
     if (d === 0) {
       const nowMin = Math.ceil((now - date.getTime()) / 60000 / 5) * 5;
       from = Math.max(from, nowMin);
-      room = Math.max(0, Math.min(room - doneToday, cap.to - from));
+      room = Math.max(0, Math.min(room - doneToday, free(from)));
     }
     const at = date.getTime() + Math.max(from, minutesOf("12:00")) * 60000; // a moment in the study window
-    const day = { date: date.getTime(), weekday: date.getDay(), light: cap.light, school: cap.school, planned: cap.planned, from, to: cap.to, off: own.off, capped: own.cap != null, blocks: [] };
+    const day = { date: date.getTime(), weekday: date.getDay(), light: cap.light, school: cap.school, planned: cap.planned, from, to: cap.to, off: own.off, crash: !own.off && own.crash, capped: own.cap != null, busy: busyWithin(busy, from, cap.to), blocks: [] };
     const perSubject = new Map(); // minutes
     const blocksOf = new Map();
     const checksOf = new Map();
     const usedTopics = new Set();
-    const maxPerSubject = subjects.length > 1 ? Math.max(50, room / 2) : Infinity;
+    const maxPerSubject = subjects.length > 1 ? Math.max(50, room * (own.crash ? 0.6 : 0.5)) : Infinity;
     let start = from;
+    // The first start at or after `start` where `minutes` fit before the
+    // day ends without crossing anything already taken; null if none.
+    const slot = (minutes) => {
+      let t = start;
+      for (let guard = 0; guard < 20; guard++) {
+        const hit = busy.find(([a, b]) => a < t + minutes && b > t);
+        if (!hit) return t + minutes <= cap.to ? t : null;
+        t = Math.ceil((hit[1] + BREAK) / 5) * 5;
+      }
+      return null;
+    };
     const place = (s, tp, kind, minutes) => {
+      start = slot(minutes) ?? start;
       day.blocks.push({ kind, subject: s.id, subjectName: s.name, topic: tp.id, topicName: tp.name, minutes, start, own: s.own });
       s.state[tp.id] = simulate(s.state[tp.id], kind, minutes, at, s.perTopic);
       perSubject.set(s.id, (perSubject.get(s.id) || 0) + minutes);
@@ -178,7 +225,7 @@ export function buildPlan({ profile, syllabi = {}, topics = {}, pace = {}, event
       const s = subjects.find((x) => x.id === pin.subject);
       const tp = s?.list.find((x) => x.id === pin.topic);
       const minutes = KINDS[pin.kind]?.minutes;
-      if (!s || !tp || !minutes || minutes > room) continue;
+      if (!s || !tp || !minutes || minutes > room || slot(minutes) == null) continue;
       place(s, tp, pin.kind, minutes);
       day.blocks[day.blocks.length - 1].pinned = true;
     }
@@ -201,7 +248,7 @@ export function buildPlan({ profile, syllabi = {}, topics = {}, pace = {}, event
           const n = need(s.state[tp.id], { at, target, examAt, level: s.level, firstNew: tp.id === firstNewId, own: s.own });
           if (!n || (n.kind === "check" && checks >= 3)) continue;
           const minutes = KINDS[n.kind].minutes;
-          if (minutes > room || used + minutes > maxPerSubject * Math.max(1, weight)) continue;
+          if (minutes > room || used + minutes > maxPerSubject * Math.max(1, weight) || slot(minutes) == null) continue;
           const score = n.score * weight * Math.pow(0.75, count);
           if (!best || score > best.score) best = { ...n, score, s, tp, minutes };
         }

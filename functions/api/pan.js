@@ -26,7 +26,7 @@ const DEFAULT_SUPABASE_ANON_KEY = "sb_publishable_TQ1NrHUU3HaIcFRkOWXHuQ_yC3REqu
 const MODEL = "claude-haiku-5-5";
 const MAX_TEXT = 500;
 
-export const OPS = ["day_off", "day_on", "day_minutes", "date_off", "date_minutes", "date_clear", "start_after", "subject_weight", "reset"];
+export const OPS = ["day_off", "day_on", "day_minutes", "date_off", "date_minutes", "date_crash", "date_clear", "start_after", "subject_weight", "reset"];
 
 const json = (body, status = 200) =>
   new Response(JSON.stringify(body), {
@@ -69,6 +69,7 @@ The changes you can make:
 - day_minutes (weekday, minutes): at most that many minutes on that weekday, every week. minutes null puts it back to the planner's choice.
 - date_off (date): no study on one date (YYYY-MM-DD), e.g. "this Saturday", "tomorrow", "the 30th".
 - date_minutes (date, minutes): at most that many minutes on one date.
+- date_crash (date): a crash day on one date: an intensive day of study (up to six hours, sleep still protected), e.g. "make Saturday a crash day before my exam".
 - date_clear (date): undo a one-off change for that date.
 - start_after (time "HH:MM", 24-hour): nothing planned before that time; null removes it.
 - subject_weight (subject, weight): weight 0 pauses a subject, 0.5 less, 1 normal, 1.5 more, 2 a lot more. subject must be one of the ids given.

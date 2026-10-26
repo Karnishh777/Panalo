@@ -2058,3 +2058,28 @@ input[type="range"].range {
     animation: none;
   }
 }
+
+/* The rest of the week (setup): activities at set times */
+.setup-activities {
+  display: grid;
+  gap: 12px;
+}
+.setup-activity {
+  display: grid;
+  gap: 10px;
+  padding: 12px 14px;
+  border: 1px solid var(--line-2);
+  border-radius: var(--r-2);
+}
+.setup-activity-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 10px;
+}
+.setup-activity .setup-times {
+  margin-top: 0;
+}
+.setup-activities > .btn {
+  justify-self: start;
+}

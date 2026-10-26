@@ -554,3 +554,8 @@ html[data-look="glass"] body.in-setup .setup-exams li {
   border-radius: 0;
 }
 
+html[data-look="glass"] body.in-setup .setup-activity {
+  border-radius: 0;
+  border-color: rgba(255, 150, 80, 0.18);
+  box-shadow: inset 3px 0 0 var(--forge);
+}

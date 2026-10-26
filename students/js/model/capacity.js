@@ -8,6 +8,9 @@
 //     rest before any study. Boarders with a prep time study in prep:
 //     it is a fixed slot, so nothing else comes off it.
 //   - Coaching (tuition) hours come off first, spread over the week.
+//   - Fixed activities (sport, art, coaching at set times) come off their
+//     days, with a little time to get there and back; the planner also
+//     never puts a block over them (busyOf, plan.js).
 //   - Soft caps on self-study, homework included: about 1–2 h for grade 9,
 //     up to 3 h for grades 10–12 on school days; more at weekends.
 //   - One lighter day a week, and 20% of the week left unplanned for the
@@ -22,6 +25,30 @@ const REST = 45; // after getting home from school
 const MEALS = 60; // dinner and a snack, on any day
 const LEISURE = 60; // time that is theirs, every day
 export const BUFFER = 0.2; // of the week, left unplanned
+const GETTING_THERE = 15; // before and after a fixed activity
+
+/**
+ * The fixed activities on a weekday, as busy intervals (minutes since
+ * midnight), padded for getting there and back.
+ */
+export function activitiesOn(p, day) {
+  return (p.activities || [])
+    .filter((a) => a.days.includes(day))
+    .map((a) => [minutesOf(a.start) - GETTING_THERE, minutesOf(a.end) + GETTING_THERE]);
+}
+
+/** Minutes of [from, to] covered by busy intervals (which may overlap). */
+export function busyWithin(busy, from, to) {
+  const xs = busy.map(([a, b]) => [Math.max(a, from), Math.min(b, to)]).filter(([a, b]) => b > a).sort((x, y) => x[0] - y[0]);
+  let total = 0;
+  let end = -Infinity;
+  for (const [a, b] of xs) {
+    if (b <= end) continue;
+    total += b - Math.max(a, end);
+    end = b;
+  }
+  return total;
+}
 
 /** School-day and other-day caps (minutes) by grade. */
 export function caps(grade) {
@@ -54,7 +81,8 @@ export function dayCapacity(p, day) {
     return { day, school, from: ps, to: pe, minutes: Math.round(Math.max(0, Math.min(pe - ps, cap))), shortSleep, prep: true };
   }
   const tuition = ((p.tuitionHours || 0) * 60) / 7;
-  const open = Math.max(0, to - from - MEALS - LEISURE - tuition);
+  const fixed = busyWithin(activitiesOn(p, day), from, to);
+  const open = Math.max(0, to - from - MEALS - LEISURE - tuition - fixed);
   return { day, school, from, to, minutes: Math.round(Math.min(open, cap)), shortSleep };
 }
 

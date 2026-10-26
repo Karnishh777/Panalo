@@ -8,12 +8,12 @@
 //   minutes: { weekday: minutes }       at most this much on that day
 //   start:   "HH:MM" | null             nothing before this time
 //   weight:  { subject: 0 | 0.5 | 1.5 | 2 }   less, more; 0 pauses it
-//   dates:   { "YYYY-MM-DD": { off } | { minutes } }   one-off days
+//   dates:   { "YYYY-MM-DD": { off } | { crash } | { minutes } }   one-off days
 //   skips:   ["YYYY-MM-DD|subject|topic"]  not this block on that day
 //   pins:    [{ date, subject, topic, kind }]  this block first that day
 
 export const WEIGHTS = [0, 0.5, 1, 1.5, 2];
-export const OPS = ["day_off", "day_on", "day_minutes", "date_off", "date_minutes", "date_clear", "start_after", "subject_weight", "reset"];
+export const OPS = ["day_off", "day_on", "day_minutes", "date_off", "date_minutes", "date_crash", "date_clear", "start_after", "subject_weight", "reset"];
 const WEEKDAYS = ["sunday", "monday", "tuesday", "wednesday", "thursday", "friday", "saturday"];
 const TIME = /^([01]\d|2[0-3]):[0-5]\d$/;
 const DATE = /^\d{4}-\d{2}-\d{2}$/;
@@ -50,6 +50,7 @@ export function normalize(raw, { subjects = null, now = Date.now() } = {}) {
   for (const [k, v] of Object.entries(raw.dates || {}).slice(0, MAX_ITEMS)) {
     if (!DATE.test(k) || k < today || !v) continue;
     if (v.off) r.dates[k] = { off: true };
+    else if (v.crash) r.dates[k] = { crash: true };
     else if (v.minutes != null) r.dates[k] = { minutes: minutes(v.minutes) };
   }
   r.skips = [...new Set((raw.skips || []).filter((s) => typeof s === "string" && DATE.test(s.slice(0, 10)) && s.slice(0, 10) >= today))].slice(-MAX_ITEMS);
@@ -93,6 +94,9 @@ export function applyChanges(rules, changes, opts = {}) {
       case "date_off":
         if (DATE.test(c.date || "")) r.dates[c.date] = { off: true };
         break;
+      case "date_crash":
+        if (DATE.test(c.date || "")) r.dates[c.date] = { crash: true };
+        break;
       case "date_minutes":
         if (DATE.test(c.date || "") && c.minutes != null) r.dates[c.date] = { minutes: minutes(c.minutes) };
         break;
@@ -135,6 +139,7 @@ export function dayRule(r, ms) {
   const [h, m] = (r.start || "00:00").split(":").map(Number);
   return {
     off: !!one?.off || (!one && r.off.includes(wd)),
+    crash: !!one?.crash,
     cap: one?.minutes ?? r.minutes[wd] ?? null,
     from: r.start ? h * 60 + m : 0,
     key,
@@ -165,7 +170,7 @@ export function describe(r, { nameOf = (s) => s, clock = (t) => t, now = Date.no
     const how = w === 0 ? "paused" : w < 1 ? "less" : w >= 2 ? "a lot more" : "more";
     out.push({ text: `${nameOf(s)}: ${how}`, undo: { op: "subject_weight", subject: s, weight: 1 } });
   }
-  for (const [k, v] of Object.entries(r.dates).sort()) out.push({ text: `${dayOf(k, now)}: ${v.off ? "off" : `at most ${hours(v.minutes)}`}`, undo: { op: "date_clear", date: k } });
+  for (const [k, v] of Object.entries(r.dates).sort()) out.push({ text: `${dayOf(k, now)}: ${v.off ? "off" : v.crash ? "crash day" : `at most ${hours(v.minutes)}`}`, undo: { op: "date_clear", date: k } });
   if (r.skips.length) out.push({ text: `${r.skips.length} block${r.skips.length > 1 ? "s" : ""} skipped`, undo: { op: "clear_skips" } });
   for (const p of r.pins) out.push({ text: `${dayOf(p.date, now)}: ${nameOf(p.subject)} first`, undo: { op: "unpin", subject: p.subject, topic: p.topic } });
   return out;
@@ -185,6 +190,8 @@ export function describeChange(c, { nameOf = (s) => s, clock = (t) => t, now = D
       return `${dayOf(c.date, now)}: off`;
     case "date_minutes":
       return `${dayOf(c.date, now)}: at most ${hours(minutes(c.minutes))}`;
+    case "date_crash":
+      return `${dayOf(c.date, now)}: crash day`;
     case "date_clear":
       return `${dayOf(c.date, now)}: as planned`;
     case "start_after":
@@ -295,8 +302,14 @@ export function understand(sentence, { subjects = [], now = Date.now() } = {}) {
     const m = amount(text);
     const off = /\b(off|free|no (study|studying|work|plan)|rest|holiday|skip|break|busy|can't|cannot|nothing)\b/.test(text);
     const on = /\b(back on|study again|resume|on again)\b/.test(text);
+    const crash = /\b(crash|cram|intensive|marathon|full[- ]day)\b/.test(text);
     for (const d of days) {
-      if (m != null && !off) {
+      if (crash && !off) {
+        // A crash day is one day: a weekday means the next one.
+        const today = new Date(now);
+        const date = d.date || dateKey(new Date(today.getFullYear(), today.getMonth(), today.getDate() + ((d.weekday - today.getDay() + 7) % 7)).getTime());
+        changes.push({ op: "date_crash", date });
+      } else if (m != null && !off) {
         if (d.date && (d.once || d.weekday == null)) changes.push({ op: "date_minutes", date: d.date, minutes: m });
         else changes.push({ op: "day_minutes", weekday: d.weekday, minutes: m });
       } else if (on) {
