@@ -48,6 +48,15 @@ only where nothing else can).
   subject's live effect (circuits and data for computing, arcs for
   physics, bubbles for chemistry, a helix for biology ...), the others
   wait small, grey and faint. The landing gets the cast too.
+- **Lighter and steadier**: the painted art is re-exported at the size it
+  is shown (guardians 720 px, Pan 512, scenes 1600, walls 1920): about
+  88 MB of decoded images instead of 227, 4.9 MB to download instead of
+  13. The landing's two WebGL worlds exist only while the landing is on
+  screen; sign-up, the setup and the app stop them and free the GPU
+  memory (a low-memory laptop hung making an account). The guardian
+  effect is now one quiet circuit trace in the subject's colour that
+  plays a few seconds after a choice and then holds still, with a
+  smaller zoom.
 - **Forge**: the app's default look gets a finish of its own: poster
   type, cut-corner plates with an ember notch, slanted ember buttons,
   segmented meters, diamonds for topics, a film grain.

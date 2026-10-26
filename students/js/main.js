@@ -3,7 +3,7 @@
 // crypto.js and the Supabase SDK are classic scripts loaded before this
 // module, so window.PanaloCrypto and window.supabase already exist.
 import { startSky } from "./sky.js";
-import { initLanding } from "./landing.js";
+import { initLanding, stopGlobes } from "./landing.js";
 import { initAuth, restoreSession, showForm, signOut } from "./auth.js";
 import { showParent } from "./parent.js";
 import { runSetup } from "./setup.js";
@@ -50,6 +50,7 @@ function showOutside() {
   $("auth").hidden = !auth;
   $("app").hidden = true;
   if (auth) {
+    stopGlobes();
     showForm(h === "#signup" ? "signup-form" : "login-form");
     if (deepLink) {
       deepLink = false;
@@ -119,6 +120,7 @@ function enter({ firstTime = false } = {}) {
   } catch {}
   if (after) history.replaceState(null, "", after);
   document.body.classList.add("in-app");
+  stopGlobes();
   enterShell({ firstTime });
 }
 

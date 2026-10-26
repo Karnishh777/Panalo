@@ -19,8 +19,12 @@ from pathlib import Path
 from PIL import Image, ImageFilter
 
 OUT = Path(__file__).resolve().parents[2] / "students" / "assets" / "art"
-# Big enough for sharp retina screens: the wallpaper up to 4K, scenes at 1440p.
-SIZES = {"pan": (1200, 1200), "guardian": (1200, 1800), "scene": (2560, 1440), "wall": (3840, 3840)}
+# Sized for how big each is ever shown, at 2x for sharp screens, and no
+# bigger: every image is decoded in full into memory, and a page showing
+# eight 1200-px guardians as thumbnails ran low-memory laptops out of it.
+# Guardians are at most ~340 CSS px wide, Pan ~190 px, scenes and walls sit
+# dimmed and blurred behind everything.
+SIZES = {"pan": (512, 512), "guardian": (720, 1080), "scene": (1600, 900), "wall": (1920, 1920)}
 QUALITY = 92  # WebP; visually lossless for painted art
 KNOWN = {
     "pan": ["idle", "cheer", "think", "sleep"],
