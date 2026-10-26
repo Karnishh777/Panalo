@@ -100,7 +100,7 @@ export function lookPicker({ compact = false, onPick } = {}) {
           setLook(l.id);
           onPick?.(l.id);
         });
-        return el("label", { class: `look-opt look-opt-${l.id}` }, [
+        return el("label", { class: `look-opt look-opt-${l.id}${l.id === now ? " on" : ""}` }, [
           input,
           el("span", { class: "look-swatch", "aria-hidden": "true" }, [el("i"), el("i"), el("i")]),
           el("span", { class: "look-text" }, [el("b", { text: l.name }), compact ? null : el("small", { text: l.line })]),
@@ -225,9 +225,9 @@ export function enter(section) {
   if (reducedMotion() || !section) return;
   const index = () => section.querySelectorAll(".panel").forEach((p, i) => p.style.setProperty("--i", String(Math.min(i, 8))));
   index();
+  // Restart the entrance a frame later rather than forcing a layout now.
   section.classList.remove("look-enter");
-  void section.offsetWidth;
-  section.classList.add("look-enter");
+  requestAnimationFrame(() => requestAnimationFrame(() => section.classList.add("look-enter")));
   // Content may still be arriving (a first visit loads the surface).
   setTimeout(index, 60);
   setTimeout(index, 400);

@@ -6,7 +6,7 @@
 // Nothing here needs filling in; the plan is rebuilt from what the student
 // does, so a missed day simply re-plans.
 import { el, emptyState, openSheet, field, reportError, showToast, shortDate } from "../ui.js";
-import { store, on } from "../store.js";
+import { store, redrawOn } from "../store.js";
 import * as L from "../model/learner.js";
 import * as P from "../model/plan.js";
 import { weekCapacity } from "../model/capacity.js";
@@ -16,6 +16,8 @@ import { hasPlan, profile, loadBanks, banksReady, currentPlan, subjectView, colo
 import { openCustomize } from "../plan-custom.js";
 import * as R from "../model/rules.js";
 import { startBlock } from "../block-check.js";
+import { openCheckIn, uncheckedSubjects, checkInSummary } from "../check-in.js";
+import * as D from "../model/diagnose.js";
 import { art, artImg, onArt, GUARDIANS, guardianOf } from "../art.js";
 import { createEmblem, createPan, createAura } from "../motion-art.js";
 
@@ -34,7 +36,8 @@ function dayLabel(ms, i) {
 
 function blockLine(b, { time = false, date = null, today = false } = {}) {
   const what = b.own ? b.subjectName : b.topicName;
-  return el("li", { class: `pl-block k-${b.kind}${b.pinned ? " pinned" : ""}`, style: `--subj:${colourOf(b.subject)}` }, [
+  // has-time / has-more: what the row's grid makes room for (not :has(), for older browsers).
+  return el("li", { class: `pl-block k-${b.kind}${b.pinned ? " pinned" : ""}${time ? " has-time" : ""}${date != null ? " has-more" : ""}`, style: `--subj:${colourOf(b.subject)}` }, [
     time ? el("span", { class: "pl-time num faint", text: hhmm(b.start) }) : null,
     el("i", { class: "pl-dot", "aria-hidden": "true" }),
     el("span", { class: "pl-what" }, [el("b", { text: what }), el("small", { class: "faint", text: `${b.own ? P.KINDS[b.kind].verb : `${b.subjectName} · ${P.KINDS[b.kind].label}`}${b.pinned ? " · moved here" : ""}` })]),
@@ -238,7 +241,38 @@ function subjectCard(s, now) {
           el("span", { class: "num small", text: pct(ready) }),
         ]),
     dots,
+    v.own ? null : checkInLine(s.id, v),
     v.pace?.n >= 3 ? el("p", { class: "faint small", text: v.pace.pace > 1.15 ? `You take a little longer here (×${v.pace.pace.toFixed(1)}): your plan allows for it.` : v.pace.pace < 0.85 ? `You move quickly here (×${v.pace.pace.toFixed(1)}).` : "Your pace here is about typical." }) : null,
+  ]);
+}
+
+// Each subject's check-in: offered until it's done, then a summary and a
+// way to redo it.
+function checkInLine(id, v) {
+  const done = D.checkedIn(v.list, v.states);
+  return el("div", { class: `pl-checkin${done ? "" : " todo"}` }, [
+    el("span", { class: "small", text: done ? checkInSummary(v) : "Not checked in yet: the plan is guessing." }),
+    el("button", { type: "button", class: done ? "link-btn" : "btn btn-ghost btn-sm", "data-checkin": id, text: done ? "Redo check-in" : "Check in", onClick: () => openCheckIn(id) }),
+  ]);
+}
+
+// Until every subject is checked in, a card at the top offers to do them
+// all in one go. "Not now" hides it for this visit.
+let checkInLater = false;
+function checkInCard() {
+  if (checkInLater || store.progressMissing) return null;
+  const todo = uncheckedSubjects();
+  if (!todo.length) return null;
+  const first = profile().subjects.length === todo.length;
+  return el("section", { class: "pl-checkin-card", id: "plan-checkin", "aria-labelledby": "pl-ci-h" }, [
+    el("div", {}, [
+      el("h2", { id: "pl-ci-h", class: "pl-checkin-h", text: first ? "Tell your plan where you are" : `${todo.length} subject${todo.length > 1 ? "s" : ""} still to check in` }),
+      el("p", { class: "faint small", text: "About two minutes a subject: any marks so far, then how it's going (all at once, or chapter by chapter if you like). The plan gives weak and untaught chapters the time." }),
+    ]),
+    el("div", { class: "pl-checkin-acts" }, [
+      el("button", { type: "button", class: "btn btn-primary", id: "plan-checkin-start", text: todo.length > 1 ? `Check in on ${todo.length} subjects` : `Check in on ${nameOf(todo[0].id)}`, onClick: () => openCheckIn(todo[0].id, { then: todo.slice(1).map((x) => x.id) }) }),
+      el("button", { type: "button", class: "btn btn-quiet", id: "plan-checkin-later", text: "Not now", onClick: () => { checkInLater = true; render(); } }),
+    ]),
   ]);
 }
 
@@ -331,6 +365,7 @@ function render() {
       custom,
       shortSleep ? el("p", { class: "pl-note", text: "Your bedtime leaves under 8 hours of sleep, so your plan stops 8 hours before you wake. Teenagers need 8 to 10." }) : null,
       store.progressMissing ? el("p", { class: "pl-note", text: "This Panalo can't save progress yet (supabase-phase30.sql). The plan shows, but checks won't be kept." }) : null,
+      checkInCard(),
       hero(plan),
       el("div", { class: "pl-grid" }, [week(plan), el("div", { class: "pl-side" }, [subjects(now), results()])]),
     ].filter(Boolean)
@@ -479,9 +514,9 @@ function deck(cards) {
 export function mount(section) {
   root = el("div", { class: "plan" });
   body = el("div", { class: "plan-body" });
-  root.append(el("div", { class: "s-head" }, [el("p", { class: "kicker toned tone-focus", text: "Your plan" }), el("h1", { text: "This week" })]), body);
+  root.append(el("div", { class: "s-head" }, [el("div", {}, [el("p", { class: "kicker toned tone-focus", text: "Your plan" }), el("h1", { text: "This week" })])]), body);
   section.append(root);
-  unsubs.push(on("any", render));
+  unsubs.push(redrawOn(root, render));
 }
 
 export function show() {

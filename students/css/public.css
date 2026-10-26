@@ -128,6 +128,7 @@ html[data-effects="lively"][data-look="verse"] .brand .mark {
 }
 .land-bar.scrolled {
   background: rgba(7, 9, 18, 0.82);
+  -webkit-backdrop-filter: blur(10px);
   backdrop-filter: blur(10px);
   border-bottom-color: var(--line);
 }
@@ -405,12 +406,16 @@ html[data-effects="lively"][data-look="verse"] .brand .mark {
   z-index: 3;
   margin-top: -9%;
   display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  max-width: 100%;
   align-items: center;
   gap: 4px;
   padding: 6px 8px;
   border: 1px solid var(--line-2);
   border-radius: var(--r-pill);
   background: rgba(10, 13, 25, 0.72);
+  -webkit-backdrop-filter: blur(10px);
   backdrop-filter: blur(10px);
   animation: rise 0.8s var(--ease-out) 1.9s both;
 }
@@ -439,6 +444,18 @@ html[data-effects="lively"][data-look="verse"] .brand .mark {
 }
 #gd-play[aria-pressed="false"] {
   color: var(--time);
+}
+@media (max-width: 420px) {
+  .globe-dock {
+    border-radius: 20px;
+  }
+  .gd-btn {
+    width: 30px;
+    height: 30px;
+  }
+  .gd-speed input {
+    width: 64px;
+  }
 }
 .gd-speed {
   display: flex;
@@ -1157,7 +1174,7 @@ input[type="range"].range {
 }
 /* Beside the questions: the painted wallpaper, and Pan with a line for
    each step (setup.js). On a phone it shrinks to a strip above. */
-.setup:has(.setup-side) {
+.setup.has-side {
   grid-template-columns: minmax(0, 0.85fr) minmax(0, 1.15fr);
   place-items: initial;
   align-items: center;
@@ -1260,6 +1277,7 @@ input[type="range"].range {
 }
 .setup-choice[aria-checked="true"] {
   border-color: var(--focus);
+  background: rgba(154, 216, 255, 0.1);
   background: color-mix(in srgb, var(--focus) 10%, transparent);
 }
 .setup-subjects .chip small {
@@ -1335,7 +1353,7 @@ input[type="range"].range {
   margin-left: auto;
 }
 @media (max-width: 860px) {
-  .setup:has(.setup-side) {
+  .setup.has-side {
     grid-template-columns: 1fr;
     align-content: start;
     align-items: start;
@@ -1396,6 +1414,7 @@ input[type="range"].range {
   border: 1px solid var(--line-2);
   border-radius: 16px;
   background: rgba(10, 13, 25, 0.94);
+  -webkit-backdrop-filter: blur(12px);
   backdrop-filter: blur(12px);
   box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
   text-align: left;
@@ -1825,6 +1844,7 @@ input[type="range"].range {
   padding: 14px 16px;
   border: 1px solid var(--line-2);
   border-radius: var(--r-2);
+  background: rgba(185, 163, 255, 0.07);
   background: color-mix(in srgb, var(--signal) 7%, transparent);
 }
 .guardian-status {

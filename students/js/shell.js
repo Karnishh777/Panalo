@@ -424,7 +424,8 @@ export async function enterShell({ firstTime = false } = {}) {
   }
   // Changing the hash routes (hashchange); only route by hand when it
   // doesn't change, or the surface would be shown twice.
-  const target = location.hash.startsWith("#/") ? location.hash : "#/now";
+  // Straight after the setup, the plan: its check-ins come next.
+  const target = location.hash.startsWith("#/") ? location.hash : firstTime ? "#/plan" : "#/now";
   if (location.hash !== target) location.hash = target;
   else await route();
   if (firstTime) showToast("Welcome to your universe. Press Warp (Ctrl K) to go anywhere.", "success");

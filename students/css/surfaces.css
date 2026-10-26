@@ -398,6 +398,8 @@ body[data-view="study"] .sky {
 }
 .study-controls {
   display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
   gap: 10px;
   align-items: center;
 }
@@ -820,7 +822,7 @@ body.midnight .sky {
 @media (max-width: 1000px) {
   .world-grid,
   .world-lower {
-    grid-template-columns: 1fr;
+    grid-template-columns: minmax(0, 1fr);
   }
 }
 
@@ -1104,11 +1106,16 @@ body.midnight .sky {
 .tips li {
   margin-bottom: 8px;
 }
+.setting > span:first-child {
+  flex: 1 1 12rem;
+  min-width: 0;
+}
 .setting {
   display: flex;
+  flex-wrap: wrap;
   justify-content: space-between;
   align-items: center;
-  gap: 16px;
+  gap: 8px 16px;
   padding: 12px 0;
   border-top: 1px solid var(--line);
   cursor: pointer;
@@ -1160,7 +1167,7 @@ body.midnight .sky {
 @media (max-width: 900px) {
   .safety-cols,
   .settings-cols {
-    grid-template-columns: 1fr;
+    grid-template-columns: minmax(0, 1fr);
   }
 }
 
@@ -1511,6 +1518,7 @@ body.midnight .sky {
   grid-template-columns: repeat(3, 1fr);
   gap: 12px;
   padding-bottom: 14px;
+  border-bottom: 2px solid rgba(231, 209, 155, 0.45);
   border-bottom: 2px solid color-mix(in srgb, var(--archive) 45%, transparent);
 }
 .shelf-file {
@@ -1535,10 +1543,10 @@ body.midnight .sky {
 .shelf-file.f5 { --c: var(--focus); --r: 1deg; }
 @media (max-width: 760px) {
   .archive-empty {
-    grid-template-columns: 1fr;
+    grid-template-columns: minmax(0, 1fr);
   }
   .shelf-art {
-    grid-template-columns: repeat(6, 1fr);
+    grid-template-columns: repeat(6, minmax(0, 1fr));
     gap: 6px;
   }
   .shelf-file {
@@ -1747,6 +1755,7 @@ body.in-dawn .fx-ambient {
 .intention.done .intention-text {
   color: var(--text-2);
   text-decoration: line-through;
+  text-decoration-color: rgba(134, 232, 180, 0.6);
   text-decoration-color: color-mix(in srgb, var(--world) 60%, transparent);
 }
 .intention-set {
@@ -1783,9 +1792,11 @@ body.in-dawn .fx-ambient {
 .rhythm li.lit i {
   border-color: transparent;
   background: var(--time);
+  box-shadow: 0 0 10px rgba(255, 196, 122, 0.7);
   box-shadow: 0 0 10px color-mix(in srgb, var(--time) 70%, transparent);
 }
 .rhythm li.today i {
+  outline: 1px solid rgba(255, 196, 122, 0.55);
   outline: 1px solid color-mix(in srgb, var(--time) 55%, transparent);
   outline-offset: 3px;
 }
@@ -1860,6 +1871,7 @@ body.in-dawn .fx-ambient {
   fill: var(--time);
 }
 .sky-link {
+  stroke: rgba(255, 196, 122, 0.45);
   stroke: color-mix(in srgb, var(--time) 45%, transparent);
   stroke-width: 0.22;
   stroke-linecap: round;
@@ -1881,6 +1893,7 @@ body.in-dawn .fx-ambient {
 }
 .sky-today {
   fill: none;
+  stroke: rgba(255, 196, 122, 0.6);
   stroke: color-mix(in srgb, var(--time) 60%, transparent);
   stroke-width: 0.25;
   transform-box: fill-box;
@@ -2031,8 +2044,10 @@ html[data-motion="reduce"] .sky-today {
   align-items: baseline;
   gap: 0 6px;
   padding: 10px 14px;
+  border: 1px solid rgba(255, 159, 198, 0.35);
   border: 1px solid color-mix(in srgb, var(--drift) 35%, transparent);
   border-radius: var(--r-2);
+  background: rgba(255, 159, 198, 0.07);
   background: color-mix(in srgb, var(--drift) 7%, transparent);
   color: var(--text);
   text-align: left;
@@ -2126,4 +2141,8 @@ html[data-motion="reduce"] .sky-today {
 .arch-count {
   align-self: center;
   font-size: 13px;
+}
+.archive-empty-copy .btn {
+  max-width: 100%;
+  white-space: normal;
 }

@@ -38,6 +38,70 @@
   <link rel="stylesheet" href="css/forge.css">
   <link rel="stylesheet" href="css/details.css">
   <link rel="stylesheet" href="css/phone.css">
+  <!-- modulepreload: tools/preload.mjs -->
+  <link rel="modulepreload" href="../src/attachments.js">
+  <link rel="modulepreload" href="../src/captcha.js">
+  <link rel="modulepreload" href="../src/client.js">
+  <link rel="modulepreload" href="../src/config.js">
+  <link rel="modulepreload" href="../src/disappear.js">
+  <link rel="modulepreload" href="../src/encryption.js">
+  <link rel="modulepreload" href="../src/filestore.js">
+  <link rel="modulepreload" href="../src/keyflow.js">
+  <link rel="modulepreload" href="../src/keystatus.js">
+  <link rel="modulepreload" href="../src/login-id.js">
+  <link rel="modulepreload" href="../src/password.js">
+  <link rel="modulepreload" href="../src/search.js">
+  <link rel="modulepreload" href="../src/sendpolicy.js">
+  <link rel="modulepreload" href="../src/state.js">
+  <link rel="modulepreload" href="../src/util.js">
+  <link rel="modulepreload" href="js/age-gate.js">
+  <link rel="modulepreload" href="js/art.js">
+  <link rel="modulepreload" href="js/auth.js">
+  <link rel="modulepreload" href="js/checkin.js">
+  <link rel="modulepreload" href="js/dawn.js">
+  <link rel="modulepreload" href="js/details.js">
+  <link rel="modulepreload" href="js/device-tier.js">
+  <link rel="modulepreload" href="js/earth.js">
+  <link rel="modulepreload" href="js/focus-shield.js">
+  <link rel="modulepreload" href="js/fx.js">
+  <link rel="modulepreload" href="js/globe-dock.js">
+  <link rel="modulepreload" href="js/landing-art.js">
+  <link rel="modulepreload" href="js/landing-hud.js">
+  <link rel="modulepreload" href="js/landing.js">
+  <link rel="modulepreload" href="js/local-change.js">
+  <link rel="modulepreload" href="js/looks.js">
+  <link rel="modulepreload" href="js/model/capacity.js">
+  <link rel="modulepreload" href="js/model/chronicle.js">
+  <link rel="modulepreload" href="js/model/daily.js">
+  <link rel="modulepreload" href="js/model/focus-timer.js">
+  <link rel="modulepreload" href="js/model/learner.js">
+  <link rel="modulepreload" href="js/model/plan.js">
+  <link rel="modulepreload" href="js/model/profile.js">
+  <link rel="modulepreload" href="js/model/rules.js">
+  <link rel="modulepreload" href="js/model/subjects.js">
+  <link rel="modulepreload" href="js/model/time.js">
+  <link rel="modulepreload" href="js/model/world-model.js">
+  <link rel="modulepreload" href="js/moderation-badge.js">
+  <link rel="modulepreload" href="js/moment.js">
+  <link rel="modulepreload" href="js/motion-art.js">
+  <link rel="modulepreload" href="js/motion.js">
+  <link rel="modulepreload" href="js/parent.js">
+  <link rel="modulepreload" href="js/perf-guard.js">
+  <link rel="modulepreload" href="js/planner.js">
+  <link rel="modulepreload" href="js/rules-reminder.js">
+  <link rel="modulepreload" href="js/setup.js">
+  <link rel="modulepreload" href="js/shell.js">
+  <link rel="modulepreload" href="js/sky.js">
+  <link rel="modulepreload" href="js/store.js">
+  <link rel="modulepreload" href="js/sync.js">
+  <link rel="modulepreload" href="js/timer-state.js">
+  <link rel="modulepreload" href="js/ui.js">
+  <link rel="modulepreload" href="js/version.js">
+  <link rel="modulepreload" href="js/world-gl.js">
+  <link rel="modulepreload" href="js/world-light.js">
+  <link rel="modulepreload" href="js/world-render.js">
+  <link rel="modulepreload" href="js/world-surface.js">
+  <!-- /modulepreload -->
 </head>
 <body>
   <a class="skip-link" href="#main">Skip to content</a>
@@ -291,7 +355,7 @@
           <div data-fx="slash"><h3>Files stay yours</h3><p>Private, always.</p></div>
           <div data-fx="slash"><h3>13 and over</h3><p>Under 18? A parent or guardian says yes first.</p></div>
           <div data-fx="slash"><h3>Take it with you</h3><p>Download everything, or delete it, any time.</p></div>
-          <div data-fx="slash"><h3>No ads, no AI, no feed</h3><p>Nothing sold. No algorithm.</p></div>
+          <div data-fx="slash"><h3>No ads, no feed</h3><p>Nothing sold, no algorithm. AI only when you ask Pan to change your plan.</p></div>
         </div>
       </section>
       <svg class="brush" data-fx="ink" viewBox="0 0 1200 40" preserveAspectRatio="none" aria-hidden="true"><path d="M6 24C160 8 300 30 470 18S820 6 980 20 1150 26 1194 14"/></svg>
@@ -558,8 +622,8 @@
     </nav>
   </div>
 
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="../crypto.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2" defer></script>
+  <script src="../crypto.js" defer></script>
   <script type="module" src="js/main.js"></script>
 </body>
 </html>

@@ -187,6 +187,11 @@ export function saveTopic(subjectId, topicId, t) {
   return api.saveTopic(L.toTopicRow(subjectId, topicId, t));
 }
 
+/** Save many topics of one subject at once: { topicId: state }. */
+export function saveTopics(subjectId, states) {
+  return api.saveTopics(Object.entries(states).map(([id, t]) => L.toTopicRow(subjectId, id, t)));
+}
+
 /** Update a subject's pace after a learn block. */
 export async function savePace(subjectId, { minutes, covered }) {
   const p = profile();
@@ -207,13 +212,8 @@ export async function addResult({ subject, title, takenOn, score, outOf, topics 
   const list = P.topicsInScope(syllabi()[subject], p.stage);
   const ids = topics.length ? topics : list.map((t) => t.id);
   const weight = topics.length ? 1 / 3 : 1 / 6;
-  for (const id of ids) {
-    const t = stateOf(subject, id);
-    const next = L.applyMark(t, score / outOf, weight);
-    const s = await saveTopic(subject, id, next);
-    if (s.error) return s;
-  }
-  return r;
+  const s = await saveTopics(subject, Object.fromEntries(ids.map((id) => [id, L.applyMark(stateOf(subject, id), score / outOf, weight)])));
+  return s.error ? s : r;
 }
 
 // Re-plan whenever something the plan depends on changes.

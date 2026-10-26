@@ -6,7 +6,7 @@
 // "creative" would only get in the way. Classes repeat weekly; tasks with a
 // due date appear as deadlines automatically.
 import { el, openSheet, confirmSheet, showToast, chipGroup, reportError, toLocalInput, longDate } from "../ui.js";
-import { store, on, api } from "../store.js";
+import { store, api, redrawOn } from "../store.js";
 import { dayOrbit } from "../dayorbit.js";
 import { occurrencesOnDay, occurrencesBetween, tasksAsDeadlines, EVENT_KINDS, countdowns } from "../model/timeline.js";
 import { parseQuickAdd } from "../model/quick-add.js";
@@ -60,7 +60,7 @@ function renderDay() {
           occ.length
             ? el("ul", { class: "agenda" }, occ.map((o) => occLine(o)))
             : el("div", { class: "cal-empty" }, [
-                el("p", { class: "cal-empty-lead", text: "A clear orbit. What goes on it?" }),
+                el("p", { class: "cal-empty-lead", text: "No classes or events on this day yet. Your study blocks are on the Plan; add classes, tests and plans here." }),
                 el("div", { class: "quick-add" }, Object.entries(EVENT_KINDS).map(([k, v]) =>
                   el("button", { type: "button", class: `quick-chip tone-${v.tone}`, onClick: () => openEvent(null, k) }, [el("i", { "aria-hidden": "true" }), el("span", { text: v.label })]))),
                 el("p", { class: "faint", text: "Classes can repeat every week — add your timetable once and it fills every orbit." }),
@@ -316,7 +316,9 @@ export function mount(section, ctx) {
   qForm.addEventListener("submit", async (e) => {
     e.preventDefault();
     draft = parseQuickAdd(qInput.value);
-    if (!draft) return qInput.focus();
+    if (!draft) return showToast("Type what and when, like “Physics test Friday 10am”."), qInput.focus();
+    // No time given (and not a deadline): ask, instead of guessing 9 am.
+    if (!draft.timed && draft.kind !== "deadline") return openEvent(null, null, draft);
     const row = { title: draft.title, kind: draft.kind, starts_at: draft.start.toISOString(), ends_at: draft.end ? draft.end.toISOString() : null, repeat_weekly: draft.repeat_weekly, location: null };
     const { error } = await api.addEvent(row);
     if (error) return reportError(error, "Couldn't add that.");
@@ -351,7 +353,7 @@ export function mount(section, ctx) {
     el("p", { class: "cal-foot faint" }, ["Take your timetable elsewhere: ", el("button", { type: "button", class: "link-btn", id: "cal-export", text: "download it as a calendar file (.ics)", onClick: downloadIcs }), "."])
   );
   section.append(root);
-  unsubs.push(on("any", render));
+  unsubs.push(redrawOn(root, render));
   render();
 }
 

@@ -169,10 +169,12 @@ html[data-look="glass"] body.in-app .btn-ghost,
 html[data-look="glass"] body.in-app .btn-toned {
   background: rgba(255, 140, 70, 0.08);
   box-shadow: inset 0 0 0 1px rgba(255, 150, 80, 0.3);
+  -webkit-backdrop-filter: none;
   backdrop-filter: none;
 }
 html[data-look="glass"] body.in-app .chip {
   border-radius: 2px;
+  -webkit-backdrop-filter: none;
   backdrop-filter: none;
 }
 html[data-look="glass"] body.in-app .chip[aria-checked="true"],
@@ -257,6 +259,11 @@ html[data-look="glass"] body.in-app .pl-h::before {
   font-size: 0.8em;
   color: transparent;
   -webkit-text-stroke: 1px var(--forge);
+}
+html[data-look="glass"] body.in-app .pl-checkin-h {
+  font: 800 clamp(22px, 2.4vw, 28px) / 1.05 var(--f-poster);
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
 }
 html[data-look="glass"] body.in-app .pl-stage {
   border: 0;
@@ -402,7 +409,7 @@ html[data-look="glass"] body.in-app .archive-empty,
 html[data-look="glass"] body.in-app .shelf-file {
   border-radius: 0;
 }
-html[data-look="glass"] body.in-app .look-opt:has(input:checked) {
+html[data-look="glass"] body.in-app .look-opt.on {
   box-shadow: inset 3px 0 0 var(--forge);
   border-color: rgba(255, 150, 80, 0.45);
 }
@@ -505,6 +512,7 @@ html[data-look="glass"] body.in-setup .setup-choice[aria-checked="true"] {
 }
 html[data-look="glass"] body.in-setup .setup .chip {
   border-radius: 2px;
+  -webkit-backdrop-filter: none;
   backdrop-filter: none;
 }
 html[data-look="glass"] body.in-setup .setup .chip[aria-pressed="true"],

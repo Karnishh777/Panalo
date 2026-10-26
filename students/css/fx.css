@@ -225,10 +225,11 @@ body[data-view="world"] .stage .btn-primary::after,
   height: 200%;
   transform: rotate(22deg);
   background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.75), transparent);
-  animation: glint 3.6s ease-in-out infinite;
+  animation: btn-glint 3.6s ease-in-out infinite;
   pointer-events: none;
 }
-@keyframes glint {
+/* Its own name: looks.css has a different "glint" for .fx-glint. */
+@keyframes btn-glint {
   0%,
   70% {
     left: -70%;
@@ -271,6 +272,9 @@ body.in-app:not([data-view="now"]):not([data-view="world"]) .fx-ambient {
   }
   .fx-enter *,
   .fx-punch {
+    animation: none !important;
+  }
+  .btn-primary::after {
     animation: none !important;
   }
 }

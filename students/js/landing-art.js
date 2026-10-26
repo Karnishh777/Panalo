@@ -19,7 +19,9 @@ const abs = (u) => new URL(u, location.href).href;
 
 export function initLandingArt() {
   onArt(() => {
-    const wall = art("wall-wide");
+    // A phone's hero is tall: the tall wallpaper fits it.
+    const narrow = window.matchMedia?.("(max-width: 860px)").matches;
+    const wall = (narrow && art("wall-tall")) || art("wall-wide");
     const hero = document.querySelector("#landing .hero");
     if (wall && hero) {
       hero.style.setProperty("--hero-wall", `url("${abs(wall)}")`);
@@ -37,6 +39,18 @@ function cast() {
   const [sceneA, sceneB] = section.querySelectorAll(".cast-scene i");
   const name = section.querySelector(".cast-name");
   let front = sceneA;
+  // The scenes are big: none is fetched until the section is near.
+  let near = !("IntersectionObserver" in window);
+  let chosen = null;
+  if (!near) {
+    const io = new IntersectionObserver((es) => {
+      if (!es.some((e) => e.isIntersecting)) return;
+      io.disconnect();
+      near = true;
+      if (chosen) pick(...chosen);
+    }, { rootMargin: "600px 0px" });
+    io.observe(section);
+  }
   // The chosen one's effect: a few seconds after each choice, then still.
   const aura = createAura();
   const pick = (f, label) => {
@@ -48,7 +62,8 @@ function cast() {
         aura.show(f, GUARDIANS[f]);
       }
     }
-    const src = art(`scene-${f}`);
+    chosen = [f, label];
+    const src = near ? art(`scene-${f}`) : null;
     const back = front === sceneA ? sceneB : sceneA;
     back.style.backgroundImage = src ? `url("${abs(src)}")` : "";
     back.classList.add("show");

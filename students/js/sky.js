@@ -68,6 +68,24 @@ export function startSky(canvas) {
   );
   resize();
 
-  loop = animationLoop(canvas, draw);
+  // On a slow machine (html[data-lite]) about 30 frames a second is plenty.
+  let acc = 0;
+  loop = animationLoop(canvas, (t, dt) => {
+    acc += dt;
+    if (acc < 30 && document.documentElement.hasAttribute("data-lite")) return;
+    draw(t, acc);
+    acc = 0;
+  });
   if (!reducedMotion()) loop.start();
+}
+
+/**
+ * Inside the app the sky holds still: it sits behind everything at a third
+ * of its brightness, and drawing it every frame made the whole page repaint
+ * every frame. Outside (the landing, signing in) it drifts again.
+ */
+export function stillSky(still) {
+  if (!loop) return;
+  if (still || reducedMotion()) loop.stop();
+  else loop.start();
 }

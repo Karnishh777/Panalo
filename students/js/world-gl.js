@@ -1231,9 +1231,7 @@ export function createGlobeGL(canvas, { seed, tilt = 0.38, interactive = false, 
     });
   }
 
-  // On a weak device, ~30 fps while it simply turns; every frame while
-  // someone is handling it. Elsewhere, every frame.
-  let skip = false;
+  // Time since the last drawn frame (the loop below draws only some).
   let acc = 0;
   function advance(t, step) {
     const rate = motion.paused ? 0 : BASE_RATE * motion.speed * motion.direction;
@@ -1263,8 +1261,12 @@ export function createGlobeGL(canvas, { seed, tilt = 0.38, interactive = false, 
       acc = 0;
       return advance(t, step);
     }
-    skip = low && !skip;
-    if (skip && !lively) return;
+    // The world turns slowly, so it needn't be drawn every frame: about 30
+    // a second when calm (the default), 10 on a weak or slow machine
+    // (html[data-lite]), every frame only with Lively effects or while
+    // someone is turning it.
+    const gap = livelyEffects() ? 0 : low || document.documentElement.hasAttribute("data-lite") ? 100 : 33;
+    if (!lively && acc < gap) return;
     const step = acc / 1000;
     acc = 0;
     advance(t, step);

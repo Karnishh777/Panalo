@@ -26,6 +26,18 @@ const fillBirth = async (page, age, prefix = "#signup-birth") => {
   await page.selectOption(`${prefix}-month`, "1");
   await page.fill(`${prefix}-year`, String(new Date().getFullYear() - age - 1));
 };
+// Where a page actually is, so a wait that times out is diagnosable.
+const where = (page) =>
+  page.evaluate(() => ({
+    hash: location.hash,
+    shown: ["landing", "auth", "setup", "app"].filter((id) => !document.getElementById(id).hidden),
+    forms: [...document.querySelectorAll(".airlock-form")].filter((f) => !f.hidden).map((f) => f.id),
+    message: document.getElementById("auth-message").textContent,
+    body: document.body.className,
+    busy: [...document.querySelectorAll("button[disabled]")].map((b) => b.id || b.textContent.trim().slice(0, 20)).slice(0, 6),
+    fields: ["signup-username", "signup-email", "login-email"].map((id) => `${id}=${JSON.stringify(document.getElementById(id)?.value ?? null)}`),
+    fieldLog: window.__fieldLog,
+  })).then((w) => ({ ...w, navs: page.navs }));
 const go = async (page, route, wait = 900) => {
   await page.evaluate((r) => (location.hash = r), route);
   await page.waitForTimeout(wait);
@@ -37,7 +49,7 @@ async function finishSetup(page, { board = "Cambridge", stage = "AS", subjects =
     await page.waitForSelector("#setup:not([hidden]) #setup-form[data-step]", { timeout: 20000 });
   } catch (e) {
     // Say where we actually are, so a failure here is diagnosable.
-    console.log("finishSetup: stuck at", await page.evaluate(() => ({
+    console.log("finishSetup: stuck at", await where(page), await page.evaluate(() => ({
       hash: location.hash,
       shown: ["landing", "auth", "setup", "app"].filter((id) => !document.getElementById(id).hidden),
       forms: [...document.querySelectorAll(".airlock-form")].filter((f) => !f.hidden).map((f) => f.id),
@@ -201,10 +213,11 @@ try {
     check("…and the school day", prof?.school_start === "08:10" && prof?.school_days.length === 5);
     check("…and the rest of the week", prof?.activities?.[0]?.name === "Football" && prof.activities[0].days.join() === "2,4" && prof.activities[0].start === "17:00", JSON.stringify(prof?.activities));
     check("an exam from the setup is on the calendar", await page.evaluate(() => window.__qa.db.student_events.some((e) => e.kind === "exam" && /Physics test/.test(e.title))));
-    check("a new account lands on Now", /Now/.test(await page.title()));
+    check("a new account lands on its plan, to check in on each subject", /Plan/.test(await page.title()) && (await page.isVisible("#plan-checkin")));
     check("the new account has encryption keys", await page.evaluate(() => window.__qa.db.user_keys.length === 2));
 
     // ---- The plan (v0.2) ----
+    await go(page, "#/now");
     await page.waitForSelector(".now-log .plan-today, .now-log .panel-head h2:has-text(\"Today's plan\")", { timeout: 10000 }).catch(() => {});
     check("Now shows today's plan", /Today's plan/.test(await page.textContent(".now-log")));
     await go(page, "#/plan");
@@ -260,6 +273,41 @@ try {
     check("…and it shows on the plan", /Mock, Paper 1/.test(await page.textContent(".pl-results")));
     const after = await thetaOf();
     check("a poor mark lowers the topics it covered", after != null && (before == null ? after < 0 : after < before), `${before} → ${after}`);
+
+    // ---- Check-in: past marks, then a check-over or chapter by chapter ----
+    await page.click("#plan-checkin-start");
+    await page.waitForSelector(".check-in #ci-exam-title");
+    check("the check-in starts with past exams", /Check-in · Physics/.test(await page.textContent(".check-in h2")));
+    await page.fill("#ci-exam-title", "Mid-term");
+    await page.fill("#ci-exam-got", "41");
+    await page.fill("#ci-exam-total", "50");
+    await page.click("#ci-exam-add");
+    check("…a mark can be added (total and got)", /Mid-term\s*41\/50/.test(await page.textContent("#ci-marks")));
+    await page.click("#ci-next");
+    await page.click('.ci-taught .chip[data-value="0.5"]');
+    await page.click('.ci-feel .chip[data-value="weak"]');
+    check("a quick check-over is enough to save", !(await page.isDisabled("#ci-next")));
+    await page.click('.ci-ways .chip[data-value="chapters"]');
+    const chapters = await page.locator(".ci-chapter").count();
+    check("chapter by chapter is optional, and starts from the check-over", chapters > 5 && (await page.locator('.ci-chapter .chip[data-value="untaught"][aria-checked="true"]').count()) > 0 && !(await page.isDisabled("#ci-next")));
+    await page.click('.ci-chapter >> nth=0 >> .chip[data-value="okay"]');
+    await page.click(".ci-chapter >> nth=0 >> .ci-quick-btn");
+    for (let i = 0; i < 3 && (await page.isVisible(".ci-chapter >> nth=0 >> .bc-option")); i++) await page.click(".ci-chapter >> nth=0 >> .bc-option[data-correct]");
+    check("…with an optional quick check that corrects the rating", /3 of 3 right/.test(await page.textContent(".ci-chapter >> nth=0 >> .ci-verdict")) && (await page.getAttribute('.ci-chapter >> nth=0 >> .chip[aria-checked="true"]', "data-value")) === "strong");
+    await page.click("#ci-next");
+    await page.waitForSelector(".check-in h2:has-text('Chemistry')", { timeout: 15000 }).catch(() => {});
+    check("checking in on all goes on to the next subject", /Chemistry/.test(await page.textContent(".check-in h2")));
+    await page.click("#ci-next");
+    await page.click('.ci-taught .chip[data-value="1"]');
+    await page.click('.ci-feel .chip[data-value="strong"]');
+    await page.click("#ci-next");
+    await page.waitForTimeout(600);
+    const phy = await page.evaluate(() => window.__qa.db.student_topics.filter((t) => t.subject === "phy"));
+    check("the check-in is saved to every topic", phy.length >= chapters && phy.some((t) => Number(t.covered) === 0) && phy.some((t) => Number(t.covered) === 1));
+    check("…the exam mark with it", await page.evaluate(() => window.__qa.db.student_results.some((r) => r.title === "Mid-term" && r.subject === "phy" && Number(r.out_of) === 50)));
+    check("once every subject is checked in, the card goes", !(await page.isVisible("#plan-checkin")) && /not taught yet/.test(await page.textContent(".pl-subjects")));
+    check("untaught chapters get learn blocks", /Learn/.test(await page.textContent(".pl-week")));
+    check("a check-in can be redone any time", (await page.locator(".pl-checkin [data-checkin]").count()) === 2);
     // Customize (phase 32): tell Pan, or set it yourself. Pan's function
     // isn't served here, so the app understands the sentence itself.
     const rulesOf = () => page.evaluate(() => window.__qa.db.student_profiles.find((r) => r.setup_at)?.plan_rules || {});
@@ -340,6 +388,7 @@ try {
   await page.click("#login-submit");
   await finishSetup(page);
   check("you can log in with your username", await page.isVisible("#app"));
+  await go(page, "#/now");
   check("Now shows the day orbit", await page.isVisible(".orbit-svg"));
   check("Panalo Students is private: no chat, no Signals, nothing from other people", !(await page.isVisible("a[data-route=signals]")) && !(await page.textContent(".now-log")).includes("Signals"));
   check("Now leads with the next step, one tap from a focus block", (await page.isVisible(".now-step")) && /Next step/.test(await page.textContent(".now-step")));
@@ -630,7 +679,7 @@ try {
     await d.fill("#login-email", "qa@panalo.test");
     await d.fill("#login-password", "correct-horse-42");
     await d.click("#login-submit");
-    await d.waitForSelector(".dawn", { timeout: 15000 }).catch(() => {});
+    await d.waitForSelector(".dawn", { timeout: 15000 }).catch(async () => console.log("dawn: not shown", await where(d), d.errors));
     check("the first open of the day plays the dawn", await d.isVisible(".dawn"));
     check("the dawn names the day of your world", /Day \d+/.test(await d.textContent(".dawn-title").catch(() => "")));
     check("the dawn says what changed since you were last here", (await d.locator(".dawn-lines li").count()) >= 1);
@@ -712,7 +761,7 @@ try {
     await w.fill("#login-email", "qa@panalo.test");
     await w.fill("#login-password", "correct-horse-42");
     await w.click("#login-submit");
-    await w.waitForSelector(".dawn", { timeout: 15000 }).catch(() => {});
+    await w.waitForSelector(".dawn", { timeout: 15000 }).catch(async () => console.log("dawn (2): not shown", await where(w), w.errors));
     check("the dawn shows today's date, and no seasons", /\d/.test(await w.textContent(".dawn-date").catch(() => "")) && !/Season/.test(await w.textContent(".dawn-date").catch(() => "")));
     await w.click(".dawn-skip");
     await w.waitForTimeout(800);
@@ -1104,7 +1153,7 @@ try {
     await fillBirth(t, 15);
     await t.check("#signup-age");
     await t.click("#signup-submit");
-    await t.waitForSelector("#guardian-form:not([hidden])", { timeout: 15000 }).catch(() => {});
+    await t.waitForSelector("#guardian-form:not([hidden])", { timeout: 15000 }).catch(async () => console.log("guardian: not shown", await where(t), t.errors));
     check("a 15-year-old is asked for a parent before anything else", (await t.isVisible("#guardian-form")) && !(await t.isVisible("#setup")) && !(await t.isVisible("#app")));
     const blocked = await t.evaluate(async () => (await window.supabase.createClient("x", "y").from("student_tasks").insert([{ title: "x" }])).error?.message || "");
     check("nothing can be stored for them yet", /parent or guardian/.test(blocked));

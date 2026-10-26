@@ -22,6 +22,7 @@
 }
 .capture:focus-within {
   border-color: var(--focus);
+  box-shadow: 0 0 0 3px rgba(154, 216, 255, 0.18);
   box-shadow: 0 0 0 3px color-mix(in srgb, var(--focus) 18%, transparent);
 }
 .capture-plus {
@@ -67,6 +68,7 @@
   text-decoration: none;
 }
 .focus-on:hover {
+  background: rgba(154, 216, 255, 0.16);
   background: color-mix(in srgb, var(--focus) 16%, transparent);
 }
 
@@ -81,6 +83,8 @@
 }
 .seg {
   display: inline-flex;
+  flex-wrap: wrap;
+  max-width: 100%;
   padding: 3px;
   border: 1px solid var(--line-2);
   border-radius: 999px;
@@ -100,6 +104,7 @@
   cursor: pointer;
 }
 .seg-btn[aria-checked="true"] {
+  background: rgba(154, 216, 255, 0.22);
   background: color-mix(in srgb, var(--focus) 22%, transparent);
   color: var(--text);
 }
@@ -407,6 +412,7 @@ html[data-look="verse"] .fm-cell.l4 {
 }
 .star-btn.on {
   color: var(--time);
+  text-shadow: 0 0 10px rgba(255, 196, 122, 0.6);
   text-shadow: 0 0 10px color-mix(in srgb, var(--time) 60%, transparent);
 }
 .stratum.starred .stratum-h span {
@@ -468,10 +474,12 @@ html[data-look="verse"] .fm-cell.l4 {
   gap: 8px;
   min-height: 44px;
   padding: 8px 14px;
+  border: 1px solid rgba(255, 143, 128, 0.45);
   border: 1px solid color-mix(in srgb, var(--alert) 45%, transparent);
   border-radius: 12px;
   color: var(--text);
   text-decoration: none;
+  background: rgba(255, 143, 128, 0.09);
   background: color-mix(in srgb, var(--alert) 9%, transparent);
 }
 .help-call b {
@@ -570,8 +578,10 @@ html[data-text="larger"] body {
   max-width: 640px;
   margin: 14px 0 0;
   padding: 10px 12px 10px 16px;
+  border: 1px solid rgba(154, 216, 255, 0.35);
   border: 1px solid color-mix(in srgb, var(--focus) 35%, transparent);
   border-radius: var(--r-2);
+  background: rgba(154, 216, 255, 0.06);
   background: color-mix(in srgb, var(--focus) 6%, transparent);
 }
 .now-step:empty {

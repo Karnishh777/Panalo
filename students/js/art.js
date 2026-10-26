@@ -5,6 +5,7 @@
 // fallback, so a missing image never leaves a hole.
 const BASE = "assets/art/";
 let have = null;
+let sizes = {};
 let loading = null;
 const listeners = new Set();
 
@@ -16,6 +17,7 @@ export function loadArt() {
     .catch(() => ({ files: [] }))
     .then((j) => {
       have = new Set(Array.isArray(j.files) ? j.files : []);
+      sizes = j.sizes && typeof j.sizes === "object" ? j.sizes : {};
       listeners.forEach((fn) => fn());
       return have;
     });
@@ -80,6 +82,10 @@ export function artImg(name, { cls = "", alt = "" } = {}) {
   img.decoding = "async";
   img.loading = "lazy";
   img.draggable = false;
+  // Its shape before it loads: a lazy image with no size in a clipped row
+  // never comes into view, so it would never load.
+  const wh = sizes[name];
+  if (Array.isArray(wh) && wh[0] > 0 && wh[1] > 0) img.style.aspectRatio = `${wh[0]} / ${wh[1]}`;
   if (cls) img.className = cls;
   if (!alt) img.setAttribute("aria-hidden", "true");
   return img;

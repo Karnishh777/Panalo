@@ -117,7 +117,8 @@ function render() {
     return;
   }
   const used = A.usedBytes();
-  headSub.textContent = `Only you can see these. You're using ${bytes(used)} of ${bytes(A.ARCHIVE_QUOTA)}.`;
+  const quota = bytes(A.ARCHIVE_QUOTA).replace(/\.0 /, " ");
+  headSub.textContent = used > 0 ? `Only you can see these. You're using ${bytes(used)} of ${quota}.` : `Only you can see these. Room for ${quota}.`;
   const share = Math.min(1, used / A.ARCHIVE_QUOTA);
   meterEl.style.setProperty("--used", `${(share * 100).toFixed(1)}%`);
   meterEl.classList.toggle("high", share > 0.85);
@@ -369,7 +370,7 @@ export function mount(section) {
   root = el("div", { class: "archive" });
   headSub = el("p", { class: "s-sub" });
   meterEl = el("span", { class: "arch-meter", role: "meter", "aria-label": "Storage used", "aria-valuemin": "0", "aria-valuemax": "100", "aria-valuenow": "0" }, [el("i")]);
-  const search = el("input", { type: "search", class: "input arch-search", placeholder: "Search titles, files, shelves, notes  ( / )", "aria-label": "Search the archive", "aria-keyshortcuts": "/" });
+  const search = el("input", { type: "search", class: "input arch-search", placeholder: window.matchMedia?.("(pointer: fine)").matches ? "Search titles, files, shelves, notes  ( / )" : "Search titles, files, shelves, notes", "aria-label": "Search the archive", "aria-keyshortcuts": "/" });
   // "/" jumps to the search box, as on most sites.
   const slash = (e) => {
     if (e.key === "/" && document.body.dataset.view === "archive" && !e.target.closest?.("input, textarea, select, [contenteditable]") && !document.querySelector("dialog[open]")) {

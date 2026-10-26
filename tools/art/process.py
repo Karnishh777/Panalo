@@ -102,7 +102,10 @@ def main(args):
     for p in paths:
         process(p)
     have = sorted(f.stem for f in OUT.glob("*.webp"))
-    (OUT / "manifest.json").write_text(json.dumps({"files": have}, indent=2) + "\n")
+    # Each image's size, so the app can hold its space before it loads (a
+    # lazy image with no size never loads in a clipped row).
+    sizes = {f.stem: list(Image.open(f).size) for f in sorted(OUT.glob("*.webp"))}
+    (OUT / "manifest.json").write_text(json.dumps({"files": have, "sizes": sizes}, indent=2) + "\n")
     print(f"manifest: {len(have)} images")
 
 

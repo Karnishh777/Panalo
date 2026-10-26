@@ -5,7 +5,7 @@
 // readable, never a mystery score. Goals are moons; milestones are
 // discoveries; things you did away from the desk are logged here.
 import { el, openSheet, confirmSheet, showToast, chipGroup, reportError, emptyState, toLocalInput } from "../ui.js";
-import { store, on, api } from "../store.js";
+import { store, api, redrawOn } from "../store.js";
 import { createGlobe } from "../world-render.js";
 import { globeDock } from "../globe-dock.js";
 import { buildWorld, weatherLine } from "../model/world-model.js";
@@ -479,7 +479,7 @@ export function mount(section) {
     console.error(e);
     canvas.replaceWith(emptyState("Your world can't be drawn in this browser.", "Everything it would show is listed beside it."));
   }
-  unsubs.push(on("any", render));
+  unsubs.push(redrawOn(root, render));
   render();
 }
 
