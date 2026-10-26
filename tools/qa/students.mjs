@@ -174,10 +174,20 @@ try {
     await page.click('#setup-form .setup-level:has-text("Physics") .chip:has-text("Struggling")');
     await page.selectOption('#setup-form .setup-level:has-text("Chemistry") select', "b");
     await shot(page, "setup-levels");
-    while ((await page.getAttribute("#setup-form", "data-step")) !== "exams") {
+    while ((await page.getAttribute("#setup-form", "data-step")) !== "tuition") {
       await page.click("#setup-form button[type=submit]");
       await page.waitForTimeout(60);
     }
+    // The rest of the week: football on Tuesdays and Thursdays, 17:00-18:30.
+    await page.click("#setup-add-activity");
+    await page.fill('.setup-activity input[type="text"]', "Football");
+    await page.click('.setup-activity .chip:has-text("Tue")');
+    await page.click('.setup-activity .chip:has-text("Thu")');
+    await page.fill("#setup-act-0-start", "17:00");
+    await page.fill("#setup-act-0-end", "18:30");
+    await page.click("#setup-form button[type=submit]");
+    await page.waitForTimeout(80);
+    check("the setup asks about sport, art and coaching at set times", (await page.getAttribute("#setup-form", "data-step")) === "exams");
     const soon = new Date(Date.now() + 9 * 86400000).toISOString().slice(0, 10);
     await page.fill("#setup-exam-date", soon);
     await page.click("#setup-form .setup-exam-add button");
@@ -189,6 +199,7 @@ try {
     check("the setup saves the study profile", prof?.board === "cambridge" && prof.stage === "as" && prof.subjects.length === 2 && !!prof.setup_at, JSON.stringify(prof));
     check("…with how each subject is going", prof?.subjects.find((x) => x.id === "phy")?.level === 1 && prof?.subjects.find((x) => x.id === "chem")?.grade === "b");
     check("…and the school day", prof?.school_start === "08:10" && prof?.school_days.length === 5);
+    check("…and the rest of the week", prof?.activities?.[0]?.name === "Football" && prof.activities[0].days.join() === "2,4" && prof.activities[0].start === "17:00", JSON.stringify(prof?.activities));
     check("an exam from the setup is on the calendar", await page.evaluate(() => window.__qa.db.student_events.some((e) => e.kind === "exam" && /Physics test/.test(e.title))));
     check("a new account lands on Now", /Now/.test(await page.title()));
     check("the new account has encryption keys", await page.evaluate(() => window.__qa.db.user_keys.length === 2));
@@ -278,7 +289,21 @@ try {
     await page.click("#blk-skip");
     await page.waitForTimeout(400);
     check("…and skipping it is saved", (await rulesOf()).skips?.length === 1);
+    // A busy day: one tap takes today off, and the plan says so.
+    await page.click("#plan-busy-today");
+    await page.waitForTimeout(400);
+    check("busy today? one tap takes it off", (await rulesOf()).dates?.[await page.evaluate(() => { const d = new Date(); return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`; })]?.off === true && /day off/.test(await page.textContent(".pl-day.today .pl-day-head")));
+    // Football is on Tuesdays and Thursdays; at least one of them isn't today.
+    const footballDay = await page.evaluate(() => [...document.querySelectorAll('.pl-day:not(.today):is([data-weekday="2"], [data-weekday="4"]) .pl-day-head')].map((h) => h.textContent).join(" | "));
+    check("football's times are kept clear", /taken/.test(footballDay), footballDay);
     await page.click("#plan-customize");
+    await page.waitForSelector("#cz-one-date", { timeout: 5000 }).catch(() => {});
+    const crashDay = await page.evaluate(() => { const d = new Date(Date.now() + 2 * 86400000); return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`; });
+    await page.fill("#cz-one-date", crashDay);
+    await page.selectOption("#cz-one-what", "crash");
+    await page.click("#cz-one-add");
+    await page.waitForTimeout(400);
+    check("a day can be made a crash day", (await rulesOf()).dates?.[crashDay]?.crash === true);
     await page.waitForSelector("#cz-reset", { timeout: 5000 }).catch(() => {});
     await page.click("#cz-reset");
     await page.waitForTimeout(400);

@@ -127,6 +127,25 @@ export function openCustomize() {
       })
     );
     const start = el("input", { type: "time", id: "cz-start", class: "input", value: r.start || "", "aria-label": "Nothing before" });
+    // One day: off (a function, a trip), a crash day before an exam, or capped.
+    const today = R.dateKey(Date.now());
+    const oneDate = el("input", { type: "date", id: "cz-one-date", class: "input", min: today, value: today, "aria-label": "Which day" });
+    const oneWhat = el("select", { id: "cz-one-what", class: "input", "aria-label": "What that day is" }, [
+      el("option", { value: "off", text: "Day off" }),
+      el("option", { value: "crash", text: "Crash day (intensive)" }),
+      ...CAPS.slice(0, 4).map(([m, t]) => el("option", { value: String(m), text: `At most ${t}` })),
+    ]);
+    const oneAdd = el("button", {
+      type: "button",
+      class: "btn btn-ghost btn-sm",
+      id: "cz-one-add",
+      text: "Set",
+      onClick: () => {
+        if (!oneDate.value) return oneDate.focus();
+        const v = oneWhat.value;
+        change([v === "off" ? { op: "date_off", date: oneDate.value } : v === "crash" ? { op: "date_crash", date: oneDate.value } : { op: "date_minutes", date: oneDate.value, minutes: Number(v) }]);
+      },
+    });
     start.addEventListener("change", () => change([{ op: "start_after", time: start.value || null }]));
     const subjects = el(
       "div",
@@ -147,6 +166,8 @@ export function openCustomize() {
       el("p", { class: "cz-label", text: "How much on each day" }),
       days,
       el("label", { class: "cz-start" }, [el("span", { class: "cz-label", text: "Nothing before" }), start]),
+      el("p", { class: "cz-label", text: "One day" }),
+      el("div", { class: "cz-oneday" }, [oneDate, oneWhat, oneAdd]),
       el("p", { class: "cz-label", text: "Subjects" }),
       subjects,
       el("div", { class: "cz-row cz-yours" }, [el("h3", { class: "cz-h", text: "Your changes" }), lines.length ? el("button", { type: "button", class: "btn btn-quiet", id: "cz-reset", text: "Reset all", onClick: () => change([{ op: "reset" }]) }) : null]),

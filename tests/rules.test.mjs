@@ -53,6 +53,8 @@ const opts = { subjects: SUBJECTS.map((s) => s.id), now: NOW };
   ok("'more maths and less chemistry'", has(mix, { op: "subject_weight", subject: "math", weight: 1.5 }) && has(mix, { op: "subject_weight", subject: "chem", weight: 0.5 }));
   ok("'pause physics'", has(u("pause physics for now"), { op: "subject_weight", subject: "phy", weight: 0 }));
   ok("'weekends off'", has(u("weekends off"), { op: "day_off", weekday: 0 }) && has(u("weekends off"), { op: "day_off", weekday: 6 }));
+  ok("'crash day on saturday' is a one-off crash day", has(u("crash day on saturday"), { op: "date_crash", date: "2026-10-24" }));
+  ok("'make tomorrow a crash day'", has(u("make tomorrow a crash day"), { op: "date_crash", date: "2026-10-20" }));
   ok("'back to normal'", has(u("back to normal"), { op: "reset" }));
   ok("nonsense changes nothing", u("what is the capital of france").length === 0);
 }
@@ -82,6 +84,36 @@ const opts = { subjects: SUBJECTS.map((s) => s.id), now: NOW };
   const later = base.slice(1).flatMap((d) => d.blocks).find((b) => !base[0].blocks.some((x) => x.subject === b.subject && x.topic === b.topic));
   const pinned = plan([{ op: "pin", date: "2026-10-19", subject: later.subject, topic: later.topic, kind: later.kind }]);
   ok("a block pulled into today goes first", pinned[0].blocks[0].subject === later.subject && pinned[0].blocks[0].topic === later.topic && pinned[0].blocks[0].pinned);
+}
+
+// ---- real life: activities, the calendar, crash days ----
+{
+  const base = { ...DEFAULTS, board: "cambridge", stage: "as", aim: "good", subjects: [{ id: "phy", level: 2 }, { id: "chem", level: 3 }, { id: "math", level: 1 }], wakeAt: "06:30", sleepAt: "22:30" };
+  const syllabi = {};
+  for (const s of base.subjects) syllabi[s.id] = load(P.syllabusPath(base.stage, s.id));
+  const overlaps = (b, [a, z]) => b.start < z && b.start + b.minutes > a;
+  // Football on Tuesdays and Thursdays, 17:00-18:30.
+  const profile = { ...base, activities: [{ kind: "sport", name: "Football", days: [2, 4], start: "17:00", end: "18:30" }] };
+  const plan = P.buildPlan({ profile, syllabi, now: NOW });
+  const tue = plan.find((d) => d.weekday === 2);
+  ok("no block goes over a fixed activity", tue.blocks.length > 0 && tue.blocks.every((b) => !overlaps(b, [17 * 60 - 15, 18 * 60 + 30 + 15])), JSON.stringify(tue.blocks.map((b) => [b.start, b.minutes])));
+  const without = P.buildPlan({ profile: base, syllabi, now: NOW }).find((d) => d.weekday === 2);
+  ok("…and the day holds less", tue.minutes <= without.minutes, `${without.minutes} → ${tue.minutes}`);
+  // A function on Wednesday 21 Oct, 16:00-21:00, from the calendar.
+  const fn = { kind: "personal", title: "Cousin's function", starts_at: new Date(2026, 9, 21, 16, 0).toISOString(), ends_at: new Date(2026, 9, 21, 21, 0).toISOString() };
+  const withFn = P.buildPlan({ profile: base, syllabi, now: NOW, events: [fn] });
+  const wed = withFn.find((d) => d.weekday === 3);
+  ok("a calendar entry with times blocks that time", wed.blocks.every((b) => !overlaps(b, [16 * 60, 21 * 60])) && wed.minutes < without.minutes + 999);
+  ok("…with a rest after something long: only a short block fits after it", wed.minutes <= 15 && wed.blocks.every((b) => b.start >= 21 * 60 + 45), JSON.stringify(wed.blocks.map((b) => [b.start, b.minutes])));
+  // Weekly class at 18:00-19:00 on Mondays (from the timetable).
+  const cls = { kind: "class", title: "Evening class", starts_at: new Date(2026, 8, 7, 18, 0).toISOString(), ends_at: new Date(2026, 8, 7, 19, 0).toISOString(), repeat_weekly: true };
+  const nextMon = P.buildPlan({ profile: base, syllabi, now: NOW, events: [cls] }).filter((d) => d.weekday === 1).pop();
+  ok("a weekly class is kept clear every week", nextMon.blocks.every((b) => !overlaps(b, [18 * 60, 19 * 60])));
+  // A crash day on Saturday 24 Oct.
+  const normal = P.buildPlan({ profile: base, syllabi, now: NOW }).find((d) => d.weekday === 6);
+  const crash = P.buildPlan({ profile: base, syllabi, now: NOW, rules: R.applyChanges(R.empty(), [{ op: "date_crash", date: "2026-10-24" }], opts) }).find((d) => d.weekday === 6);
+  ok("a crash day holds more than a normal one", crash.crash && crash.minutes > normal.minutes, `${normal.minutes} → ${crash.minutes}`);
+  ok("…but never more than six hours", crash.minutes <= 360);
 }
 
 console.log(`${passed} passed, ${failures.length} failed`);

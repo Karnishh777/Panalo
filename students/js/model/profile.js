@@ -17,8 +17,35 @@ export const DEFAULTS = {
   prepEnd: "19:30",
   wakeAt: "06:00",
   sleepAt: "22:00", // 8 hours after a 06:00 wake: the planner never plans into less
-  tuitionHours: 0, // a week
+  tuitionHours: 0, // a week, for coaching without fixed times
+  activities: [], // [{ kind, name, days: [0..6], start: "HH:MM", end: "HH:MM" }] (phase 34)
 };
+
+export const ACTIVITY_KINDS = [
+  ["coaching", "Coaching"],
+  ["sport", "Sport"],
+  ["art", "Art"],
+  ["music", "Music"],
+  ["other", "Other"],
+];
+
+/**
+ * Sports, art, coaching and the like at fixed times (phase 34): cleaned,
+ * at most 12, each on real weekdays with an end after its start.
+ */
+export function cleanActivities(list) {
+  const kinds = new Set(ACTIVITY_KINDS.map(([k]) => k));
+  return (Array.isArray(list) ? list : [])
+    .map((x) => ({
+      kind: kinds.has(x?.kind) ? x.kind : "other",
+      name: String(x?.name || "").trim().slice(0, 40),
+      days: [...new Set((x?.days || []).map(Number).filter((d) => Number.isInteger(d) && d >= 0 && d <= 6))].sort(),
+      start: time(x?.start, ""),
+      end: time(x?.end, ""),
+    }))
+    .filter((x) => x.days.length && x.start && x.end && x.end > x.start)
+    .slice(0, 12);
+}
 
 const TIME = /^([01]\d|2[0-3]):[0-5]\d$/;
 const clamp = (n, lo, hi) => Math.min(hi, Math.max(lo, Math.round(Number(n) || 0)));
@@ -57,6 +84,7 @@ export function toRow(a, now = new Date()) {
     wake_at: time(a.wakeAt, DEFAULTS.wakeAt),
     sleep_at: time(a.sleepAt, DEFAULTS.sleepAt),
     tuition_hours: clamp(a.tuitionHours, 0, 40),
+    activities: cleanActivities(a.activities),
     setup_at: now.toISOString(),
   };
 }
@@ -87,6 +115,7 @@ export function fromRow(row) {
     wakeAt: time(row.wake_at, DEFAULTS.wakeAt),
     sleepAt: time(row.sleep_at, DEFAULTS.sleepAt),
     tuitionHours: row.tuition_hours ?? DEFAULTS.tuitionHours,
+    activities: cleanActivities(row.activities),
   };
 }
 

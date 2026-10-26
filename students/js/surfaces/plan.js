@@ -12,7 +12,7 @@ import * as P from "../model/plan.js";
 import { weekCapacity } from "../model/capacity.js";
 import { formatMinutes, DAY, clockOf } from "../model/time.js";
 import { reducedMotion, lively } from "../motion.js";
-import { hasPlan, profile, loadBanks, banksReady, currentPlan, subjectView, colourOf, nameOf, stateOf, saveTopic, addResult, planRules, changePlan } from "../planner.js";
+import { hasPlan, profile, loadBanks, banksReady, currentPlan, subjectView, colourOf, nameOf, stateOf, saveTopic, addResult, planRules, changePlan, missedYesterday } from "../planner.js";
 import { openCustomize } from "../plan-custom.js";
 import * as R from "../model/rules.js";
 import { startBlock } from "../block-check.js";
@@ -178,10 +178,10 @@ function week(plan) {
       "ol",
       { class: "pl-days" },
       plan.map((d, i) =>
-        el("li", { class: `pl-day${i === 0 ? " today" : ""}${d.light ? " light" : ""}${d.off ? " off" : ""}`, "data-weekday": String(d.weekday) }, [
+        el("li", { class: `pl-day${i === 0 ? " today" : ""}${d.light ? " light" : ""}${d.off ? " off" : ""}${d.crash ? " crash" : ""}`, "data-weekday": String(d.weekday) }, [
           el("div", { class: "pl-day-head" }, [
             el("b", { text: dayLabel(d.date, i) }),
-            el("span", { class: "faint", text: d.off ? "day off" : d.blocks.length ? `${formatMinutes(d.minutes)}${d.light ? " · lighter day" : ""}` : d.light ? "lighter day" : "free" }),
+            el("span", { class: "faint", text: d.off ? "day off" : d.crash ? `crash day · ${formatMinutes(d.minutes)}` : `${d.blocks.length ? formatMinutes(d.minutes) : d.light ? "lighter day" : "free"}${d.blocks.length && d.light ? " · lighter day" : ""}${d.busy >= 30 ? ` · ${formatMinutes(d.busy)} taken` : ""}` }),
           ]),
           d.blocks.length ? el("ul", { class: "pl-blocks" }, d.blocks.map((b) => blockLine(b, { time: i === 0, date: d.date, today: i === 0 }))) : null,
         ])
@@ -303,10 +303,27 @@ function render() {
   ]);
   // Customize: tell Pan, or set it yourself; and what's already changed.
   const own = R.describe(planRules(now), { nameOf, now });
+  // Busy today (a function, a trip, a bad day)? One tap takes it off;
+  // the rest of the week re-plans around it.
+  const todayKey = R.dateKey(now);
+  const todayOff = R.dayRule(planRules(now), now).off;
+  const busyBtn = el("button", {
+    type: "button",
+    class: "btn btn-quiet btn-sm",
+    id: "plan-busy-today",
+    text: todayOff ? "Today's off · undo" : "Busy today? Take it off",
+    onClick: async () => {
+      const { error } = await changePlan([todayOff ? { op: "date_clear", date: todayKey } : { op: "date_off", date: todayKey }]);
+      if (error) return reportError(error, "Couldn't change the plan. Try again.");
+      showToast(todayOff ? "Today's back in the plan" : "Today's off. The week has re-planned around it.");
+    },
+  });
   const custom = el("div", { class: "pl-custom" }, [
     el("button", { type: "button", class: "btn btn-ghost", id: "plan-customize", text: "Customize", onClick: () => openCustomize() }),
     el("button", { type: "button", class: "btn btn-quiet pl-tell", id: "plan-tell", onClick: () => openCustomize() }, [el("span", { text: "Tell Pan what to change…" })]),
+    busyBtn,
     own.length ? el("p", { class: "pl-own faint", id: "plan-own" }, [el("b", { text: "Your changes: " }), own.map((l) => l.text).join(" · ")]) : null,
+    missedYesterday(now) ? el("p", { class: "pl-replanned", id: "plan-replanned", text: "Yesterday didn't go to plan, and that's okay: the week has re-planned around it." }) : null,
   ]);
   body.replaceChildren(
     ...[

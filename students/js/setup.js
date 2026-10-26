@@ -6,7 +6,7 @@
 import { el, chipGroup, showToast, reportError } from "./ui.js";
 import { api, store } from "./store.js";
 import { BOARDS, STAGES, AIMS, LEVELS, subjectsFor, gradesFor } from "./model/subjects.js";
-import { toRow, fromRow } from "./model/profile.js";
+import { toRow, fromRow, ACTIVITY_KINDS, cleanActivities } from "./model/profile.js";
 import { clockOfText } from "./model/time.js";
 import { art, artImg, onArt, GUARDIANS, guardianOf } from "./art.js";
 import { createPan } from "./motion-art.js";
@@ -21,7 +21,7 @@ const PAN = {
   school: ["think", "School comes first. I plan around it, never over it."],
   boarding: ["think", "Boarding or travelling: it changes your evenings."],
   sleep: ["idle", "Sleep is protected. I never plan into it."],
-  tuition: ["think", "Tuition counts as study. I'll leave room for it."],
+  tuition: ["think", "Sport, art, coaching: I plan around all of it."],
   exams: ["cheer", "Last one. Then your plan is ready."],
 };
 
@@ -111,6 +111,7 @@ export function runSetup({ onDone, editing = false }) {
 
   const a = { ...fromRow(store.student) };
   if (!a.subjects.length) a.subjects = [];
+  a.activities = cleanActivities(a.activities).map((x) => ({ ...x }));
   const exams = [];
 
   const steps = [
@@ -288,17 +289,65 @@ export function runSetup({ onDone, editing = false }) {
     },
     {
       id: "tuition",
-      title: "Tuition or coaching?",
-      lead: "Hours a week outside school. Panalo counts them as study already done.",
-      body: () => [
-        chipGroup({
-          label: "Tuition hours a week",
-          value: a.tuitionHours,
-          options: [0, 2, 4, 6, 8, 10].map((h) => ({ id: h, label: h ? (h === 10 ? "10+" : `${h} h`) : "None" })),
-          onChange: (v) => (a.tuitionHours = v),
-          toneOf: () => "tone-time",
-        }).node,
-      ],
+      title: "The rest of your week",
+      lead: "Sport, art, music, coaching: add what happens at set times, and your plan keeps those times free. Skip it if there's nothing.",
+      body: () => {
+        const DAYS = [[1, "Mon"], [2, "Tue"], [3, "Wed"], [4, "Thu"], [5, "Fri"], [6, "Sat"], [0, "Sun"]];
+        const list = el("div", { class: "setup-activities" });
+        const draw = () => {
+          list.replaceChildren(
+            ...a.activities.map((x, i) =>
+              el("div", { class: "setup-activity" }, [
+                el("div", { class: "setup-activity-head" }, [
+                  chipGroup({ label: "Kind", value: x.kind, options: ACTIVITY_KINDS.map(([id, label]) => ({ id, label })), onChange: (v) => (x.kind = v), toneOf: () => "tone-time" }).node,
+                  el("button", { type: "button", class: "link-btn", text: "Remove", "aria-label": `Remove ${x.name || "this activity"}`, onClick: () => (a.activities.splice(i, 1), draw()) }),
+                ]),
+                (() => {
+                  const name = el("input", { type: "text", class: "input", maxlength: "40", placeholder: "Name (optional), e.g. Football", value: x.name || "", "aria-label": "Name" });
+                  name.addEventListener("input", () => (x.name = name.value));
+                  return name;
+                })(),
+                el(
+                  "div",
+                  { class: "chips", role: "group", "aria-label": "Days" },
+                  DAYS.map(([d, label]) => {
+                    const b = el("button", { type: "button", class: "chip tone-time", "aria-pressed": String(x.days.includes(d)), text: label });
+                    b.addEventListener("click", () => {
+                      x.days = x.days.includes(d) ? x.days.filter((y) => y !== d) : [...x.days, d];
+                      b.setAttribute("aria-pressed", String(x.days.includes(d)));
+                    });
+                    return b;
+                  })
+                ),
+                el("div", { class: "setup-times" }, [
+                  el("label", { class: "field" }, [el("span", { text: "From" }), timeInput(`setup-act-${i}-start`, x.start, (v) => (x.start = v))]),
+                  el("label", { class: "field" }, [el("span", { text: "To" }), timeInput(`setup-act-${i}-end`, x.end, (v) => (x.end = v))]),
+                ]),
+              ])
+            ),
+            a.activities.length < 12
+              ? el("button", { type: "button", class: "btn btn-ghost btn-sm", id: "setup-add-activity", text: a.activities.length ? "Add another" : "Add an activity", onClick: () => (a.activities.push({ kind: "sport", name: "", days: [], start: "17:00", end: "18:00" }), draw()) })
+              : null
+          );
+        };
+        draw();
+        return [
+          list,
+          el("p", { class: "faint", text: "Coaching without fixed times? Hours a week:" }),
+          chipGroup({
+            label: "Coaching hours a week without fixed times",
+            value: a.tuitionHours,
+            options: [0, 2, 4, 6, 8, 10].map((h) => ({ id: h, label: h ? (h === 10 ? "10+" : `${h} h`) : "None" })),
+            onChange: (v) => (a.tuitionHours = v),
+            toneOf: () => "tone-time",
+          }).node,
+        ];
+      },
+      ok: () => {
+        const bad = a.activities.find((x) => !x.days.length || !x.start || !x.end || x.end <= x.start);
+        if (!bad) return true;
+        return !bad.days.length ? `Pick the days for ${bad.name || "each activity"}.` : `${bad.name || "An activity"} has to end after it starts.`;
+      },
     },
     {
       id: "exams",
