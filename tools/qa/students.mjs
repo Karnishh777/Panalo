@@ -26,6 +26,16 @@ const fillBirth = async (page, age, prefix = "#signup-birth") => {
   await page.selectOption(`${prefix}-month`, "1");
   await page.fill(`${prefix}-year`, String(new Date().getFullYear() - age - 1));
 };
+// Where a page actually is, so a wait that times out is diagnosable.
+const where = (page) =>
+  page.evaluate(() => ({
+    hash: location.hash,
+    shown: ["landing", "auth", "setup", "app"].filter((id) => !document.getElementById(id).hidden),
+    forms: [...document.querySelectorAll(".airlock-form")].filter((f) => !f.hidden).map((f) => f.id),
+    message: document.getElementById("auth-message").textContent,
+    body: document.body.className,
+    busy: [...document.querySelectorAll("button[disabled]")].map((b) => b.id || b.textContent.trim().slice(0, 20)).slice(0, 6),
+  }));
 const go = async (page, route, wait = 900) => {
   await page.evaluate((r) => (location.hash = r), route);
   await page.waitForTimeout(wait);
@@ -667,7 +677,7 @@ try {
     await d.fill("#login-email", "qa@panalo.test");
     await d.fill("#login-password", "correct-horse-42");
     await d.click("#login-submit");
-    await d.waitForSelector(".dawn", { timeout: 15000 }).catch(() => {});
+    await d.waitForSelector(".dawn", { timeout: 15000 }).catch(async () => console.log("dawn: not shown", await where(d), d.errors));
     check("the first open of the day plays the dawn", await d.isVisible(".dawn"));
     check("the dawn names the day of your world", /Day \d+/.test(await d.textContent(".dawn-title").catch(() => "")));
     check("the dawn says what changed since you were last here", (await d.locator(".dawn-lines li").count()) >= 1);
@@ -1141,7 +1151,7 @@ try {
     await fillBirth(t, 15);
     await t.check("#signup-age");
     await t.click("#signup-submit");
-    await t.waitForSelector("#guardian-form:not([hidden])", { timeout: 15000 }).catch(() => {});
+    await t.waitForSelector("#guardian-form:not([hidden])", { timeout: 15000 }).catch(async () => console.log("guardian: not shown", await where(t), t.errors));
     check("a 15-year-old is asked for a parent before anything else", (await t.isVisible("#guardian-form")) && !(await t.isVisible("#setup")) && !(await t.isVisible("#app")));
     const blocked = await t.evaluate(async () => (await window.supabase.createClient("x", "y").from("student_tasks").insert([{ title: "x" }])).error?.message || "");
     check("nothing can be stored for them yet", /parent or guardian/.test(blocked));
