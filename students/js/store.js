@@ -41,6 +41,23 @@ export function emit(topic) {
   if (topic !== "any") listeners.get("any")?.forEach((fn) => fn(topic));
 }
 
+/**
+ * Redraw a page when the store changes: at most once a frame, and only
+ * while `node` is on screen. A hidden page skips it (its show() redraws).
+ */
+export function redrawOn(node, fn, topic = "any") {
+  let queued = false;
+  const run = () => {
+    queued = false;
+    if (node.isConnected && !node.closest("[hidden]")) fn();
+  };
+  return on(topic, () => {
+    if (queued) return;
+    queued = true;
+    requestAnimationFrame(run);
+  });
+}
+
 function missingTable(error) {
   return !!error && (error.code === "42P01" || error.code === "PGRST205" || /relation .* does not exist|could not find the table/i.test(error.message || ""));
 }
@@ -142,6 +159,21 @@ export const api = {
     const i = store.topics.findIndex((t) => t.subject === data.subject && t.topic === data.topic);
     if (i >= 0) store.topics[i] = data;
     else store.topics.push(data);
+    emit("topics");
+    return { data };
+  },
+
+  // Many topics at once (a subject check-in), in one request.
+  async saveTopics(rows) {
+    if (!rows.length) return { data: [] };
+    const full = rows.map((row) => ({ user_id: state.currentUser.id, ...row }));
+    const { data, error } = await supabaseClient.from("student_topics").upsert(full, { onConflict: "user_id,subject,topic" }).select();
+    if (error) return { error };
+    for (const d of data || []) {
+      const i = store.topics.findIndex((t) => t.subject === d.subject && t.topic === d.topic);
+      if (i >= 0) store.topics[i] = d;
+      else store.topics.push(d);
+    }
     emit("topics");
     return { data };
   },

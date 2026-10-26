@@ -1139,3 +1139,176 @@ body.in-app[data-view="plan"] .wall {
   font-size: 14px;
   color: var(--text-2);
 }
+
+/* ---- Subject check-in (js/check-in.js) ---- */
+.pl-checkin {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-top: 8px;
+  color: var(--text-2);
+}
+.pl-checkin.todo span {
+  color: var(--subj, var(--focus));
+}
+.pl-checkin-card {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px 20px;
+  padding: 16px 18px;
+  border: 1px solid color-mix(in srgb, var(--focus) 40%, var(--line));
+  border-radius: var(--r-3, 16px);
+  background: color-mix(in srgb, var(--focus) 7%, transparent);
+}
+.pl-checkin-card > div:first-child {
+  flex: 1 1 320px;
+  min-width: 0;
+}
+.pl-checkin-h {
+  margin: 0 0 4px;
+  font-size: 18px;
+  letter-spacing: 0;
+}
+.pl-checkin-card p {
+  margin: 0;
+}
+.pl-checkin-acts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.check-in .sheet-body {
+  display: grid;
+  gap: 12px;
+}
+.check-in .sheet-body > * {
+  min-width: 0;
+}
+.ci-steps {
+  margin: 0;
+}
+.ci-stage {
+  display: grid;
+  gap: 10px;
+  min-width: 0;
+}
+.ci-h {
+  margin: 0;
+  font-size: 17px;
+}
+.ci-stage > p,
+.ci-going > p {
+  margin: 0;
+}
+.ci-q {
+  margin-top: 6px !important;
+  font-weight: 600;
+}
+.ci-marks {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 6px;
+}
+.ci-marks:empty {
+  display: none;
+}
+.ci-marks li {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  padding: 8px 10px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+}
+.ci-marks li > span {
+  flex: 1;
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+.ci-exam-row {
+  display: grid;
+  grid-template-columns: minmax(0, 2fr) minmax(0, 1fr) minmax(0, 1fr) auto;
+  gap: 8px;
+  align-items: center;
+}
+.ci-going {
+  display: grid;
+  gap: 8px;
+}
+.ci-chapters {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 10px;
+  max-height: min(52vh, 520px);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding-right: 4px;
+}
+.ci-chapter {
+  display: grid;
+  gap: 6px;
+  padding: 10px 0;
+  border-top: 1px solid var(--line);
+}
+.ci-chapter:first-child {
+  border-top: 0;
+}
+.ci-chapter-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 4px 10px;
+}
+.ci-name {
+  flex: 1 1 200px;
+  min-width: 0;
+  font-weight: 600;
+}
+.ci-rate .chip {
+  padding-block: 5px;
+  font-size: 13px;
+}
+.ci-quick {
+  display: grid;
+  gap: 8px;
+  padding: 10px;
+  border-radius: 12px;
+  background: color-mix(in srgb, var(--subj, var(--focus)) 8%, transparent);
+}
+.ci-quick .bc-q {
+  margin: 0;
+}
+.ci-foot {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 8px;
+}
+.ci-foot .btn {
+  max-width: 100%;
+  white-space: normal;
+}
+@media (max-width: 560px) {
+  .ci-exam-row {
+    grid-template-columns: 1fr 1fr;
+  }
+  .ci-exam-row > :first-child,
+  .ci-exam-row .btn {
+    grid-column: 1 / -1;
+  }
+  .pl-checkin-acts,
+  .pl-checkin-acts .btn,
+  .ci-foot #ci-next {
+    width: 100%;
+  }
+  .ci-foot {
+    flex-direction: column-reverse;
+  }
+}

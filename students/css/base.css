@@ -604,3 +604,13 @@ dialog.sheet::backdrop {
 .captcha-box:empty {
   pointer-events: none;
 }
+
+/* A slower machine (js/perf-guard.js): no backdrop blur, and looping
+   animations play once and rest. Everything still reads the same. */
+html[data-lite] *,
+html[data-lite] *::before,
+html[data-lite] *::after {
+  -webkit-backdrop-filter: none !important;
+  backdrop-filter: none !important;
+  animation-iteration-count: 1 !important;
+}

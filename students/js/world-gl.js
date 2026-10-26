@@ -1263,7 +1263,9 @@ export function createGlobeGL(canvas, { seed, tilt = 0.38, interactive = false, 
       acc = 0;
       return advance(t, step);
     }
-    skip = low && !skip;
+    // The world turns slowly: half the frames look the same, so a weak
+    // device or a calm app (the default) draws every other one.
+    skip = (low || !livelyEffects()) && !skip;
     if (skip && !lively) return;
     const step = acc / 1000;
     acc = 0;

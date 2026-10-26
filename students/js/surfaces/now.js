@@ -5,7 +5,7 @@
 // urgency: what's on now or next, how today's focus is going, what's due,
 // how your world is doing -- and, last, an offer of rest.
 import { el, emptyState, reportError, shortDate, longDate, showToast } from "../ui.js";
-import { store, on, api } from "../store.js";
+import { store, api, redrawOn } from "../store.js";
 import { dayOrbit } from "../dayorbit.js";
 import { createGlobe } from "../world-render.js";
 import { buildWorld, weatherLine } from "../model/world-model.js";
@@ -361,7 +361,7 @@ export function mount(section, ctx) {
   } catch (e) {
     console.error(e);
   }
-  unsubs.push(on("any", render), onTimer(renderLog));
+  unsubs.push(redrawOn(root, render), onTimer(renderLog));
   if (store.resources === null) import("../archive-data.js").then((m) => m.loadResources()).catch(() => {});
   if (store.schemaMissing) logEl.before(emptyState("Your study data can't be saved here yet.", "See the note at the top of the page."));
 }

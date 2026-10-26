@@ -3,6 +3,7 @@
 // each is going, the aim, the school day, boarding or travel, sleep,
 // tuition and any exams coming up -- and saves it to the study profile
 // (phase 29). It replaces the old intro film.
+import { stillSky } from "./sky.js";
 import { el, chipGroup, showToast, reportError } from "./ui.js";
 import { api, store } from "./store.js";
 import { BOARDS, STAGES, AIMS, LEVELS, subjectsFor, gradesFor } from "./model/subjects.js";
@@ -78,6 +79,7 @@ export function runSetup({ onDone, editing = false }) {
   const form = $("setup-form");
   root.hidden = false;
   document.body.classList.add("in-setup");
+  stillSky(true);
 
   // The side: the painted wallpaper and Pan, with a line for each step.
   root.querySelector(".setup-side")?.remove();

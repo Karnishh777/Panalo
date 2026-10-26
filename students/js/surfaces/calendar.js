@@ -6,7 +6,7 @@
 // "creative" would only get in the way. Classes repeat weekly; tasks with a
 // due date appear as deadlines automatically.
 import { el, openSheet, confirmSheet, showToast, chipGroup, reportError, toLocalInput, longDate } from "../ui.js";
-import { store, on, api } from "../store.js";
+import { store, api, redrawOn } from "../store.js";
 import { dayOrbit } from "../dayorbit.js";
 import { occurrencesOnDay, occurrencesBetween, tasksAsDeadlines, EVENT_KINDS, countdowns } from "../model/timeline.js";
 import { parseQuickAdd } from "../model/quick-add.js";
@@ -351,7 +351,7 @@ export function mount(section, ctx) {
     el("p", { class: "cal-foot faint" }, ["Take your timetable elsewhere: ", el("button", { type: "button", class: "link-btn", id: "cal-export", text: "download it as a calendar file (.ics)", onClick: downloadIcs }), "."])
   );
   section.append(root);
-  unsubs.push(on("any", render));
+  unsubs.push(redrawOn(root, render));
   render();
 }
 

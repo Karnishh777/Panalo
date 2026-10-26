@@ -258,6 +258,11 @@ html[data-look="glass"] body.in-app .pl-h::before {
   color: transparent;
   -webkit-text-stroke: 1px var(--forge);
 }
+html[data-look="glass"] body.in-app .pl-checkin-h {
+  font: 800 clamp(22px, 2.4vw, 28px) / 1.05 var(--f-poster);
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+}
 html[data-look="glass"] body.in-app .pl-stage {
   border: 0;
   border-radius: 0;

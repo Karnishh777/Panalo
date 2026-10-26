@@ -65,6 +65,23 @@ only where nothing else can).
   effect is now one quiet circuit trace in the subject's colour that
   plays a few seconds after a choice and then holds still, with a
   smaller zoom.
+- **Subject check-in**: Plan offers, for each subject, a two-minute
+  check-in (straight after the setup, and any time after to redo it):
+  past exams first (what it was, got, out of), then either a quick
+  check-over (how much school has taught, and how it's going) or, if the
+  student wants, chapter by chapter (not taught yet / weak / okay /
+  strong), each with an optional quick check of three questions that
+  corrects the rating. Untaught chapters get learn blocks, weak ones
+  practice and early reviews, strong ones later reviews, staggered so
+  they don't all fall due on one day (`js/model/diagnose.js`,
+  `js/check-in.js`). A result now saves all its topics in one request.
+- **Faster**: the starfield behind the app holds still inside it (it was
+  repainting the whole page every frame); hidden pages no longer redraw on
+  every change, and visible ones at most once a frame; the world turns at
+  half the frames when effects are calm; the browser fetches every module
+  at once (`modulepreload`, kept in sync by `tools/preload.mjs`) and
+  doesn't wait on scripts to draw the page; a machine that drops frames
+  gets a lighter finish (no backdrop blur, looping animations play once).
 - **Forge**: the app's default look gets a finish of its own: poster
   type, cut-corner plates with an ember notch, slanted ember buttons,
   segmented meters, diamonds for topics, a film grain.

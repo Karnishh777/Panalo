@@ -225,9 +225,9 @@ export function enter(section) {
   if (reducedMotion() || !section) return;
   const index = () => section.querySelectorAll(".panel").forEach((p, i) => p.style.setProperty("--i", String(Math.min(i, 8))));
   index();
+  // Restart the entrance a frame later rather than forcing a layout now.
   section.classList.remove("look-enter");
-  void section.offsetWidth;
-  section.classList.add("look-enter");
+  requestAnimationFrame(() => requestAnimationFrame(() => section.classList.add("look-enter")));
   // Content may still be arriving (a first visit loads the surface).
   setTimeout(index, 60);
   setTimeout(index, 400);

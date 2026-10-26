@@ -71,3 +71,14 @@ export function startSky(canvas) {
   loop = animationLoop(canvas, draw);
   if (!reducedMotion()) loop.start();
 }
+
+/**
+ * Inside the app the sky holds still: it sits behind everything at a third
+ * of its brightness, and drawing it every frame made the whole page repaint
+ * every frame. Outside (the landing, signing in) it drifts again.
+ */
+export function stillSky(still) {
+  if (!loop) return;
+  if (still || reducedMotion()) loop.stop();
+  else loop.start();
+}

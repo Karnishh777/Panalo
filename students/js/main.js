@@ -2,7 +2,7 @@
 //
 // crypto.js and the Supabase SDK are classic scripts loaded before this
 // module, so window.PanaloCrypto and window.supabase already exist.
-import { startSky } from "./sky.js";
+import { startSky, stillSky } from "./sky.js";
 import { initLanding, stopGlobes } from "./landing.js";
 import { initAuth, restoreSession, showForm, signOut } from "./auth.js";
 import { showParent } from "./parent.js";
@@ -15,6 +15,7 @@ import { reducedMotion } from "./motion.js";
 import { showToast } from "./ui.js";
 import { state } from "../../src/state.js";
 import { wirePlanner } from "./planner.js";
+import { guardFrames } from "./perf-guard.js";
 
 const $ = (id) => document.getElementById(id);
 // A link to somewhere inside (e.g. #/moderate) opened while signed out:
@@ -121,7 +122,9 @@ function enter({ firstTime = false } = {}) {
   if (after) history.replaceState(null, "", after);
   document.body.classList.add("in-app");
   stopGlobes();
+  stillSky(true);
   enterShell({ firstTime });
+  guardFrames();
 }
 
 function onSignedOut() {
@@ -130,6 +133,7 @@ function onSignedOut() {
   resetStore();
   leaveShell();
   document.body.classList.remove("in-app");
+  stillSky(false);
   location.hash = "#login";
   showOutside();
 }
