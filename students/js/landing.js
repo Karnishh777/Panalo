@@ -31,7 +31,7 @@ function demoLayers({ focusHours, tasks, createHours, away }) {
 const $ = (id) => document.getElementById(id);
 
 export function initLanding() {
-  if (started) return;
+  if (started) return startGlobes();
   started = true;
 
   const bar = document.querySelector(".land-bar");
@@ -52,9 +52,44 @@ export function initLanding() {
     });
   });
 
+  startGlobes();
+}
+
+// The two worlds on the landing are WebGL, each with its own textures and
+// buffers. They exist only while the landing is on screen: sign-up, the
+// setup and the app stop them and give the GPU memory back (low-memory
+// laptops ran out of it while an account was being made).
+let globes = null;
+
+export function stopGlobes() {
+  if (!globes) return;
+  const g = globes;
+  globes = null;
+  clearTimeout(g.timer);
+  if (g.idle && window.cancelIdleCallback) window.cancelIdleCallback(g.idle);
+  for (const f of g.stops) {
+    try {
+      f();
+    } catch (e) {
+      console.error(e);
+    }
+  }
+}
+
+function startGlobes() {
+  if (globes || !started) return;
+  const g = (globes = { stops: [], timer: 0, idle: 0 });
+  const go = () => {
+    if (globes !== g) return;
+    buildGlobes(g);
+  };
   // Defer the globes until the browser is idle: the words matter first.
-  const later = window.requestIdleCallback || ((fn) => setTimeout(fn, 300));
-  later(() => {
+  if (window.requestIdleCallback) g.idle = window.requestIdleCallback(go, { timeout: 1500 });
+  else g.timer = setTimeout(go, 300);
+}
+
+function buildGlobes(g) {
+  {
     let dock = null;
     try {
       const hero = createGlobe($("hero-globe"), { seed: "panalo-students", interactive: true, maxDisk: 300, maxPixels: 1500, onMotion: (m) => dock?.sync(m) });
@@ -85,18 +120,32 @@ export function initLanding() {
           }
         };
         sync();
-        onLook(sync);
+        const offLook = onLook(sync);
+        g.stops.push(() => {
+          offLook();
+          fx?.destroy();
+          fx = null;
+        });
         extra.push(
           dockToggle("≋", "Ink water and flame (Verse)", wanted, (on) => {
             wanted = on;
             sync();
           })
         );
-        if (lively()) drift(document.querySelector(".hero-drift"), { count: 26 });
+        if (lively()) {
+          const d = drift(document.querySelector(".hero-drift"), { count: 26 });
+          g.stops.push(() => d.destroy());
+        }
       }
       dock = globeDock(hero, { extra });
       dock.node.id = "hero-dock";
       document.querySelector(".hero-stage").append(dock.node);
+      g.stops.push(() => {
+        dock?.destroy?.();
+        dock?.node.remove();
+        document.querySelector(".hero-world .hero-flare")?.remove();
+        hero.destroy?.();
+      });
     } catch (e) {
       console.error("hero globe", e);
     }
@@ -105,6 +154,7 @@ export function initLanding() {
     let demo;
     try {
       demo = createGlobe(canvas, { seed: "your-world", interactive: true, maxDisk: 260 });
+      g.stops.push(() => demo.destroy?.());
     } catch (e) {
       console.error("demo globe", e);
       return;
@@ -129,6 +179,8 @@ export function initLanding() {
       demo.setLayers(demoLayers(v));
     };
     Object.values(inputs).forEach((i) => i.addEventListener("input", update));
+    g.stops.push(() => Object.values(inputs).forEach((i) => i.removeEventListener("input", update)));
     update();
-  });
+  }
 }
+

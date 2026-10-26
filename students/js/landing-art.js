@@ -37,8 +37,8 @@ function cast() {
   const [sceneA, sceneB] = section.querySelectorAll(".cast-scene i");
   const name = section.querySelector(".cast-name");
   let front = sceneA;
-  // The chosen one's own effect; the landing is a show, so it keeps moving.
-  const aura = createAura({ always: () => true });
+  // The chosen one's effect: a few seconds after each choice, then still.
+  const aura = createAura();
   const pick = (f, label) => {
     section.style.setProperty("--g", GUARDIANS[f]);
     for (const b of row.children) {
