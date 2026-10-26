@@ -1,5 +1,5 @@
 // Keeps the app smooth on slower machines. On a low-tier device, or when
-// frames are seen running slow once the app has settled, html[data-lite]
+// frames are seen running slow once the page has settled, html[data-lite]
 // turns off the costliest painting (backdrop blur, looping animations);
 // see base.css. It is checked once a visit and never turned back on.
 import { deviceTier } from "./device-tier.js";

@@ -68,7 +68,7 @@ function passwordBlock() {
   const again = el("input", { type: "password", autocomplete: "new-password" });
   const btn = el("button", { type: "submit", class: "btn btn-ghost btn-sm", text: "Change password" });
   const form = el("form", { class: "pw-form", novalidate: "" }, [
-    el("label", { class: "field" }, [el("span", { text: "New password" }), next, el("small", { class: "field-hint", text: `${describePasswordPolicy()} Your Panalo Chat key moves to the new password automatically — stay online until it's done.` })]),
+    el("label", { class: "field" }, [el("span", { text: "New password" }), next, el("small", { class: "field-hint", text: `${describePasswordPolicy()} Your private key moves to the new password automatically — stay online until it's done.` })]),
     el("label", { class: "field" }, [el("span", { text: "Again" }), again]),
     btn,
   ]);

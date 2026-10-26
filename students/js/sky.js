@@ -68,7 +68,14 @@ export function startSky(canvas) {
   );
   resize();
 
-  loop = animationLoop(canvas, draw);
+  // On a slow machine (html[data-lite]) about 30 frames a second is plenty.
+  let acc = 0;
+  loop = animationLoop(canvas, (t, dt) => {
+    acc += dt;
+    if (acc < 30 && document.documentElement.hasAttribute("data-lite")) return;
+    draw(t, acc);
+    acc = 0;
+  });
   if (!reducedMotion()) loop.start();
 }
 

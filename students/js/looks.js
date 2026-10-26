@@ -100,7 +100,7 @@ export function lookPicker({ compact = false, onPick } = {}) {
           setLook(l.id);
           onPick?.(l.id);
         });
-        return el("label", { class: `look-opt look-opt-${l.id}` }, [
+        return el("label", { class: `look-opt look-opt-${l.id}${l.id === now ? " on" : ""}` }, [
           input,
           el("span", { class: "look-swatch", "aria-hidden": "true" }, [el("i"), el("i"), el("i")]),
           el("span", { class: "look-text" }, [el("b", { text: l.name }), compact ? null : el("small", { text: l.line })]),

@@ -187,7 +187,7 @@ function renderLog() {
   if (current) scheduled.push(whenLine(current, true));
   if (next) scheduled.push(whenLine(next, false));
   parts.push(
-    panel("tone-time", current ? "Right now" : "Next", { href: "#/calendar", label: "Calendar" }, scheduled.length ? scheduled : [el("p", { class: "muted", text: "Nothing scheduled. " }, [el("a", { href: "#/calendar/add", text: "Add your timetable" }), " and it appears on the orbit."])])
+    panel("tone-time", current ? "Right now" : "Next", { href: "#/calendar", label: "Calendar" }, scheduled.length ? scheduled : [el("p", { class: "muted", text: hasPlan() ? "No classes or events on your calendar yet (your study blocks are in today's plan). " : "Nothing scheduled. " }, [el("a", { href: "#/calendar/add", text: "Add your timetable" }), " and it appears on the orbit."])])
   );
 
   // 2. Focus.

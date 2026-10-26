@@ -12,7 +12,7 @@ import { store, loadStudentProfile, loadAll, resetStore } from "./store.js";
 import { initShell, enterShell, leaveShell } from "./shell.js";
 import { initLooks } from "./looks.js";
 import { reducedMotion } from "./motion.js";
-import { showToast } from "./ui.js";
+import { showToast, wireRadioGroups } from "./ui.js";
 import { state } from "../../src/state.js";
 import { wirePlanner } from "./planner.js";
 import { guardFrames } from "./perf-guard.js";
@@ -124,7 +124,6 @@ function enter({ firstTime = false } = {}) {
   stopGlobes();
   stillSky(true);
   enterShell({ firstTime });
-  guardFrames();
 }
 
 function onSignedOut() {
@@ -139,6 +138,8 @@ function onSignedOut() {
 }
 
 startSky($("sky"));
+guardFrames();
+wireRadioGroups();
 initAuth({
   onReady,
   onSignedOut,

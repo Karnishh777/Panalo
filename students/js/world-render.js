@@ -66,7 +66,6 @@ function createGlobe2D(canvas, { seed, tilt = 0.38, interactive = false, maxDisk
   let disk = null;
   let diskCtx = null;
   let img = null;
-  let frameSkip = false;
   let dragging = null;
   // The same motion controls as the WebGL world, minus tipping and zoom.
   const home = { speed: spin, direction: 1, paused: false, pitch: 0, zoom: 1 };
@@ -282,9 +281,9 @@ function createGlobe2D(canvas, { seed, tilt = 0.38, interactive = false, maxDisk
   }
 
   const loop = animationLoop(canvas, (t, dt) => {
-    frameSkip = !frameSkip;
     acc += dt;
-    if (frameSkip) return; // ~30 fps is plenty for a slow spin
+    // ~30 fps is plenty for a slow spin; 10 on a slow machine (html[data-lite]).
+    if (!dragging && acc < (document.documentElement.hasAttribute("data-lite") ? 100 : 30)) return;
     const step = acc / 1000;
     acc = 0;
     const rate = motion.paused ? 0 : 0.16 * motion.speed * motion.direction;

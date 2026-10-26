@@ -116,6 +116,24 @@ export async function launch({ headless = true } = {}) {
     );
 
     const page = await context.newPage();
+    // For diagnosing a form that submits empty: every main-frame navigation,
+    // and any script that blanks a sign-up or log-in field (with where).
+    page.navs = [];
+    page.on("framenavigated", (f) => f === page.mainFrame() && page.navs.push(f.url().replace(base, "")));
+    await page.addInitScript(() => {
+      window.__fieldLog = [];
+      const d = Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, "value");
+      Object.defineProperty(HTMLInputElement.prototype, "value", {
+        configurable: true,
+        get() {
+          return d.get.call(this);
+        },
+        set(v) {
+          if (/^(signup|login)-/.test(this.id || "") && !v) window.__fieldLog.push(`${this.id} blanked at ${new Error().stack.split("\n").slice(2, 5).join(" | ")}`);
+          d.set.call(this, v);
+        },
+      });
+    });
     page.errors = [];
     page.on("pageerror", (e) => page.errors.push(`pageerror: ${e.message}`));
     page.on("console", (m) => {

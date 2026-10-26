@@ -87,6 +87,7 @@ export function runSetup({ onDone, editing = false }) {
   const panLine = el("p", { class: "setup-pan-line", "aria-hidden": "true" });
   const side = el("aside", { class: "setup-side", "aria-hidden": "true" }, [panBox, panLine]);
   root.prepend(side);
+  root.classList.add("has-side");
   let panPose = null;
   let livePan = null;
   const showPan = (id) => {
@@ -134,7 +135,8 @@ export function runSetup({ onDone, editing = false }) {
       id: "stage",
       title: "Which year are you in?",
       lead: "This sets your syllabus and how close your exams are.",
-      skip: () => (STAGES[a.board] || []).length < 2,
+      // Counted until a board is chosen, so the step count doesn't jump.
+      skip: () => !!a.board && (STAGES[a.board] || []).length < 2,
       body: () => [choices(STAGES[a.board] || [], () => a.stage, (id) => {
         if (a.stage !== id) {
           const keep = new Set(subjectsFor(id).map((s) => s.id));
@@ -437,6 +439,7 @@ export function runSetup({ onDone, editing = false }) {
   function close() {
     root.hidden = true;
     side.remove();
+    root.classList.remove("has-side");
     document.body.classList.remove("in-setup");
     form.replaceChildren();
     onDone();

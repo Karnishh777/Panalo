@@ -104,7 +104,7 @@ export function splitLinks(text) {
     let raw = m[0];
     // Peel closing punctuation that isn't balanced inside the URL.
     while (/[.,!?;:)\]}]$/.test(raw)) {
-      const ch = raw.at(-1);
+      const ch = raw[raw.length - 1];
       if (ch === ")" && (raw.match(/\(/g) || []).length >= (raw.match(/\)/g) || []).length) break;
       raw = raw.slice(0, -1);
     }

@@ -22,5 +22,95 @@
     "scene-words",
     "wall-tall",
     "wall-wide"
-  ]
+  ],
+  "sizes": {
+    "guardian-art": [
+      720,
+      942
+    ],
+    "guardian-biology": [
+      720,
+      1051
+    ],
+    "guardian-chemistry": [
+      720,
+      1017
+    ],
+    "guardian-commerce": [
+      720,
+      1040
+    ],
+    "guardian-computing": [
+      720,
+      831
+    ],
+    "guardian-maths": [
+      720,
+      955
+    ],
+    "guardian-physics": [
+      720,
+      1058
+    ],
+    "guardian-words": [
+      720,
+      887
+    ],
+    "pan-cheer": [
+      423,
+      512
+    ],
+    "pan-idle": [
+      378,
+      512
+    ],
+    "pan-sleep": [
+      317,
+      512
+    ],
+    "pan-think": [
+      371,
+      512
+    ],
+    "scene-art": [
+      1600,
+      893
+    ],
+    "scene-biology": [
+      1600,
+      893
+    ],
+    "scene-chemistry": [
+      1600,
+      893
+    ],
+    "scene-commerce": [
+      1600,
+      893
+    ],
+    "scene-computing": [
+      1600,
+      893
+    ],
+    "scene-maths": [
+      1600,
+      893
+    ],
+    "scene-physics": [
+      1600,
+      893
+    ],
+    "scene-words": [
+      1600,
+      893
+    ],
+    "wall-tall": [
+      1071,
+      1920
+    ],
+    "wall-wide": [
+      1920,
+      1071
+    ]
+  }
 }

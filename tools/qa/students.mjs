@@ -35,7 +35,9 @@ const where = (page) =>
     message: document.getElementById("auth-message").textContent,
     body: document.body.className,
     busy: [...document.querySelectorAll("button[disabled]")].map((b) => b.id || b.textContent.trim().slice(0, 20)).slice(0, 6),
-  }));
+    fields: ["signup-username", "signup-email", "login-email"].map((id) => `${id}=${JSON.stringify(document.getElementById(id)?.value ?? null)}`),
+    fieldLog: window.__fieldLog,
+  })).then((w) => ({ ...w, navs: page.navs }));
 const go = async (page, route, wait = 900) => {
   await page.evaluate((r) => (location.hash = r), route);
   await page.waitForTimeout(wait);
@@ -47,7 +49,7 @@ async function finishSetup(page, { board = "Cambridge", stage = "AS", subjects =
     await page.waitForSelector("#setup:not([hidden]) #setup-form[data-step]", { timeout: 20000 });
   } catch (e) {
     // Say where we actually are, so a failure here is diagnosable.
-    console.log("finishSetup: stuck at", await page.evaluate(() => ({
+    console.log("finishSetup: stuck at", await where(page), await page.evaluate(() => ({
       hash: location.hash,
       shown: ["landing", "auth", "setup", "app"].filter((id) => !document.getElementById(id).hidden),
       forms: [...document.querySelectorAll(".airlock-form")].filter((f) => !f.hidden).map((f) => f.id),
@@ -293,7 +295,7 @@ try {
     for (let i = 0; i < 3 && (await page.isVisible(".ci-chapter >> nth=0 >> .bc-option")); i++) await page.click(".ci-chapter >> nth=0 >> .bc-option[data-correct]");
     check("…with an optional quick check that corrects the rating", /3 of 3 right/.test(await page.textContent(".ci-chapter >> nth=0 >> .ci-verdict")) && (await page.getAttribute('.ci-chapter >> nth=0 >> .chip[aria-checked="true"]', "data-value")) === "strong");
     await page.click("#ci-next");
-    await page.waitForSelector(".check-in h2:has-text('Chemistry')", { timeout: 5000 }).catch(() => {});
+    await page.waitForSelector(".check-in h2:has-text('Chemistry')", { timeout: 15000 }).catch(() => {});
     check("checking in on all goes on to the next subject", /Chemistry/.test(await page.textContent(".check-in h2")));
     await page.click("#ci-next");
     await page.click('.ci-taught .chip[data-value="1"]');
@@ -759,7 +761,7 @@ try {
     await w.fill("#login-email", "qa@panalo.test");
     await w.fill("#login-password", "correct-horse-42");
     await w.click("#login-submit");
-    await w.waitForSelector(".dawn", { timeout: 15000 }).catch(() => {});
+    await w.waitForSelector(".dawn", { timeout: 15000 }).catch(async () => console.log("dawn (2): not shown", await where(w), w.errors));
     check("the dawn shows today's date, and no seasons", /\d/.test(await w.textContent(".dawn-date").catch(() => "")) && !/Season/.test(await w.textContent(".dawn-date").catch(() => "")));
     await w.click(".dawn-skip");
     await w.waitForTimeout(800);

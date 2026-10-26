@@ -82,6 +82,19 @@ only where nothing else can).
   at once (`modulepreload`, kept in sync by `tools/preload.mjs`) and
   doesn't wait on scripts to draw the page; a machine that drops frames
   gets a lighter finish (no backdrop blur, looping animations play once).
+- **UI audit fixes** (a full pass over every page, phone and laptop):
+  - **Phones:** Settings and World no longer scroll sideways, and every page fits a 320 px screen.
+  - **Landing:** all eight guardians load on phones (art images now know their size before they load). The chapter label no longer reads "The cast" over the hero. Phones get the tall wallpaper, and scenes load only when near.
+  - **Lite mode:** bars and docks turn solid when the blur is off.
+  - **Plan's heading** sits together.
+  - **The setup's step count** no longer jumps from "1 of 9" to "2 of 10".
+  - **Now and Calendar** say the study blocks are on the Plan instead of "nothing scheduled". Quick-add asks for a time instead of guessing 9 am.
+  - **The landing** no longer claims "no AI": Pan uses it when asked.
+  - **Older browsers:** `:has()` is gone, and color-mix, backdrop blur, dvh and randomUUID have fallbacks.
+  - **Arrow keys** move through every chip and segment group.
+  - **Touch targets** are at least 24 px.
+  - **Reduced motion:** the button glint no longer loops when motion is reduced.
+  - **Globes:** the turning worlds draw about 30 frames a second when calm and 10 on a slow machine, and the landing checks for a slow machine too.
 - **Forge**: the app's default look gets a finish of its own: poster
   type, cut-corner plates with an ember notch, slanted ember buttons,
   segmented meters, diamonds for topics, a film grain.

@@ -248,3 +248,24 @@ export function setPrefs(patch) {
   localChange("prefs");
   return next;
 }
+
+// Arrow keys move through a radio group (chips, segments, choices), as
+// they do in a native one; the choice follows the focus.
+let radiosWired = false;
+export function wireRadioGroups() {
+  if (radiosWired) return;
+  radiosWired = true;
+  document.addEventListener("keydown", (e) => {
+    if (!["ArrowLeft", "ArrowRight", "ArrowUp", "ArrowDown"].includes(e.key) || e.altKey || e.ctrlKey || e.metaKey) return;
+    const radio = e.target.closest?.('[role="radio"]');
+    const group = radio?.closest('[role="radiogroup"]');
+    if (!group) return;
+    const all = [...group.querySelectorAll('[role="radio"]')].filter((r) => !r.disabled && !r.hidden && r.closest('[role="radiogroup"]') === group);
+    const i = all.indexOf(radio);
+    if (i < 0) return;
+    e.preventDefault();
+    const next = all[(i + (e.key === "ArrowLeft" || e.key === "ArrowUp" ? all.length - 1 : 1)) % all.length];
+    next.focus();
+    next.click();
+  });
+}

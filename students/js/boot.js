@@ -8,6 +8,18 @@
 //   4. Apply the chosen look (and load its fonts).
 (function () {
   var root = document.documentElement;
+  // 0. crypto.randomUUID is Safari 15.4+: older browsers get the same
+  //    random (version 4) id from getRandomValues.
+  if (window.crypto && !crypto.randomUUID && crypto.getRandomValues) {
+    crypto.randomUUID = function () {
+      var b = crypto.getRandomValues(new Uint8Array(16));
+      b[6] = (b[6] & 15) | 64;
+      b[8] = (b[8] & 63) | 128;
+      var h = [];
+      for (var i = 0; i < 16; i++) h.push((b[i] + 256).toString(16).slice(1));
+      return h.slice(0, 4).join("") + "-" + h.slice(4, 6).join("") + "-" + h.slice(6, 8).join("") + "-" + h.slice(8, 10).join("") + "-" + h.slice(10).join("");
+    };
+  }
   var signedIn = false;
   try {
     [localStorage, sessionStorage].forEach(function (store) {

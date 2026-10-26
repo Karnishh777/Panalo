@@ -104,7 +104,9 @@ function hud(landing) {
     // Which chapter is in front of you, and how far through it you are.
     const mark = innerHeight * 0.45;
     let idx = 0;
-    for (let i = 0; i < sections.length; i++) if (sections[i].getBoundingClientRect().top <= mark) idx = i;
+    // A hidden section (the cast, until its art is in) measures at the top
+    // of the page; it isn't where you are.
+    for (let i = 0; i < sections.length; i++) if (!sections[i].hidden && sections[i].getBoundingClientRect().top <= mark) idx = i;
     if (p > 0.995) idx = last;
     let frac = 0;
     if (idx < last) {
@@ -132,6 +134,8 @@ function hud(landing) {
   };
   addEventListener("scroll", queue, { passive: true });
   addEventListener("resize", queue);
+  // A section appearing (the cast) moves everything below it.
+  new MutationObserver(queue).observe(landing, { subtree: true, attributes: true, attributeFilter: ["hidden"] });
   update();
 }
 

@@ -36,7 +36,8 @@ function dayLabel(ms, i) {
 
 function blockLine(b, { time = false, date = null, today = false } = {}) {
   const what = b.own ? b.subjectName : b.topicName;
-  return el("li", { class: `pl-block k-${b.kind}${b.pinned ? " pinned" : ""}`, style: `--subj:${colourOf(b.subject)}` }, [
+  // has-time / has-more: what the row's grid makes room for (not :has(), for older browsers).
+  return el("li", { class: `pl-block k-${b.kind}${b.pinned ? " pinned" : ""}${time ? " has-time" : ""}${date != null ? " has-more" : ""}`, style: `--subj:${colourOf(b.subject)}` }, [
     time ? el("span", { class: "pl-time num faint", text: hhmm(b.start) }) : null,
     el("i", { class: "pl-dot", "aria-hidden": "true" }),
     el("span", { class: "pl-what" }, [el("b", { text: what }), el("small", { class: "faint", text: `${b.own ? P.KINDS[b.kind].verb : `${b.subjectName} · ${P.KINDS[b.kind].label}`}${b.pinned ? " · moved here" : ""}` })]),
@@ -513,7 +514,7 @@ function deck(cards) {
 export function mount(section) {
   root = el("div", { class: "plan" });
   body = el("div", { class: "plan-body" });
-  root.append(el("div", { class: "s-head" }, [el("p", { class: "kicker toned tone-focus", text: "Your plan" }), el("h1", { text: "This week" })]), body);
+  root.append(el("div", { class: "s-head" }, [el("div", {}, [el("p", { class: "kicker toned tone-focus", text: "Your plan" }), el("h1", { text: "This week" })])]), body);
   section.append(root);
   unsubs.push(redrawOn(root, render));
 }
