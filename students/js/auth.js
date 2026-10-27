@@ -40,7 +40,10 @@ export function showForm(id) {
   FORMS.forEach((f) => ($(f).hidden = f !== id));
   message("");
   const first = $(id).querySelector("input");
-  if (first && window.matchMedia("(min-width: 861px)").matches) setTimeout(() => first.focus(), 60);
+  // Focus the first field, but never take the cursor from one someone is
+  // already typing in (a form shown again would move their typing).
+  const idle = () => !document.activeElement || document.activeElement === document.body;
+  if (first && window.matchMedia("(min-width: 861px)").matches) setTimeout(() => idle() && first.focus(), 60);
 }
 
 // Encryption that fails silently is how a chat ends up unencrypted without
