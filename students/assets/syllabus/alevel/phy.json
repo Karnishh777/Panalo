@@ -11,6 +11,9 @@
         { "q": "A length is measured as 2.50 ± 0.05 m. What is the percentage uncertainty?", "o": ["0.05%", "1%", "2%", "5%"], "a": 2, "why": "0.05 ÷ 2.50 × 100 = 2%." },
         { "q": "Which pair contains one scalar and one vector?", "o": ["Speed and mass", "Velocity and acceleration", "Work and momentum", "Force and displacement"], "a": 2, "why": "Work is a scalar; momentum is a vector." },
         { "q": "When two quantities are multiplied, their percentage uncertainties are…", "o": ["multiplied", "added", "subtracted", "averaged"], "a": 1, "why": "For products and quotients, add the percentage uncertainties." }
+      ],
+      "long": [
+        { "q": "A student measures the length of a pendulum as 0.800 ± 0.002 m and its period as 1.80 ± 0.02 s. The acceleration of free fall is given by g = 4π²l/T². Calculate g and its absolute uncertainty.", "marks": 4, "paper": "2", "scheme": ["C1: g = 4π² × 0.800 ÷ 1.80² = 9.75 m s⁻²", "C1: percentage uncertainties 0.25% and 2 × 1.1% = 2.2%", "C1: total about 2.5%, so Δg ≈ 0.24", "A1: g = (9.7 ± 0.2) m s⁻²"], "ans": "(9.7 ± 0.2) m s⁻²" }
       ]
     },
     {
@@ -20,6 +23,9 @@
         { "q": "A ball is thrown horizontally off a cliff. Ignoring air resistance, its horizontal velocity…", "o": ["increases", "decreases", "stays constant", "becomes zero"], "a": 2, "why": "No horizontal force acts, so horizontal velocity is constant; only the vertical velocity changes." },
         { "q": "The gradient of a displacement–time graph gives…", "o": ["acceleration", "velocity", "displacement", "force"], "a": 1, "why": "Velocity = rate of change of displacement." },
         { "q": "An object is dropped from rest. How fast is it moving after falling 20 m? (g = 9.81 m s⁻²)", "o": ["14 m s⁻¹", "20 m s⁻¹", "196 m s⁻¹", "9.8 m s⁻¹"], "a": 1, "why": "v² = u² + 2as = 2 × 9.81 × 20 ≈ 392, so v ≈ 19.8 ≈ 20 m s⁻¹." }
+      ],
+      "long": [
+        { "q": "A ball is thrown horizontally at 15 m s⁻¹ from the top of a cliff 45 m high. Air resistance is negligible. Calculate the time taken to reach the sea and the horizontal distance travelled. (g = 9.81 m s⁻²)", "marks": 4, "paper": "2", "scheme": ["C1: 45 = ½ × 9.81 × t²", "A1: t = 3.03 s", "C1: horizontal distance = 15 × t", "A1: 45.4 m"], "ans": "3.03 s; 45.4 m" }
       ]
     },
     {
@@ -29,6 +35,9 @@
         { "q": "In a perfectly elastic collision, what is conserved besides momentum?", "o": ["Velocity", "Kinetic energy", "Force", "Nothing else"], "a": 1, "why": "Elastic means total kinetic energy is conserved; the relative speed of approach equals that of separation." },
         { "q": "Newton's second law states that resultant force equals…", "o": ["mass × velocity", "the rate of change of momentum", "weight × height", "impulse × time"], "a": 1, "why": "F = Δp/Δt, which becomes F = ma for constant mass." },
         { "q": "The pairs in Newton's third law act on…", "o": ["the same object", "different objects", "only stationary objects", "only in collisions"], "a": 1, "why": "Third-law pairs are equal and opposite and act on different bodies." }
+      ],
+      "long": [
+        { "q": "A ball of mass 0.15 kg hits a wall at 20 m s⁻¹ and rebounds along the same line at 15 m s⁻¹. It is in contact with the wall for 0.050 s. Calculate the change in momentum of the ball and the average force on it.", "marks": 3, "paper": "2", "scheme": ["C1: change in momentum = 0.15 × (15 − (−20))", "A1: 5.25 N s", "A1: average force = 5.25 ÷ 0.050 = 105 N"], "ans": "5.25 N s; 105 N" }
       ]
     },
     {
@@ -37,6 +46,9 @@
         { "q": "For an object in equilibrium, which is true?", "o": ["The resultant force is zero only", "The resultant moment is zero only", "Both the resultant force and the resultant moment are zero", "It must be at rest"], "a": 2, "why": "Equilibrium needs no resultant force and no resultant torque." },
         { "q": "What is upthrust on a submerged object equal to?", "o": ["Its weight", "The weight of fluid displaced", "Its mass × g", "Pressure × its height"], "a": 1, "why": "Archimedes' principle; it comes from the pressure difference across the object (ρgV)." },
         { "q": "The torque of a couple equals…", "o": ["one force × the perpendicular distance between the forces", "the sum of the forces", "force × time", "zero"], "a": 0, "why": "Two equal, opposite, parallel forces produce a torque F × d." }
+      ],
+      "long": [
+        { "q": "Calculate the pressure due to the water 3.0 m below the surface of a lake. The density of water is 1000 kg m⁻³. (g = 9.81 m s⁻²)", "marks": 2, "paper": "2", "scheme": ["C1: p = ρgh", "A1: 2.9 × 10⁴ Pa"], "ans": "2.9 × 10⁴ Pa" }
       ]
     },
     {
@@ -45,6 +57,9 @@
         { "q": "A motor lifts a 20 kg load 3.0 m in 4.0 s. What is its useful power output? (g = 9.81)", "o": ["15 W", "60 W", "147 W", "589 W"], "a": 2, "why": "P = mgh/t = 20 × 9.81 × 3.0 ÷ 4.0 ≈ 147 W." },
         { "q": "Power can also be written as…", "o": ["Fv", "Fs", "mv", "½mv"], "a": 0, "why": "P = W/t = F × (s/t) = Fv." },
         { "q": "A machine has 600 J input and 450 J useful output. Its efficiency is…", "o": ["25%", "75%", "133%", "150%"], "a": 1, "why": "450 ÷ 600 = 0.75." }
+      ],
+      "long": [
+        { "q": "A climber of mass 60 kg climbs a vertical height of 25 m in 50 s. Calculate the gain in gravitational potential energy and the average useful power. (g = 9.81 m s⁻²)", "marks": 3, "paper": "2", "scheme": ["C1: ΔEp = mgΔh", "A1: 1.47 × 10⁴ J", "A1: power = 294 W"], "ans": "1.47 × 10⁴ J; 294 W" }
       ]
     },
     {
@@ -53,6 +68,9 @@
         { "q": "Young modulus is defined as…", "o": ["force ÷ extension", "stress ÷ strain", "strain ÷ stress", "force × area"], "a": 1, "why": "E = stress/strain, in Pa." },
         { "q": "What does the area under a force–extension graph (within the limit of proportionality) represent?", "o": ["Stiffness", "Elastic potential energy stored", "Young modulus", "Stress"], "a": 1, "why": "Work done stretching it = ½Fx." },
         { "q": "Plastic deformation means the material…", "o": ["returns to its original shape", "does not return to its original shape when the load is removed", "snaps immediately", "becomes stiffer"], "a": 1, "why": "Beyond the elastic limit, the deformation is permanent." }
+      ],
+      "long": [
+        { "q": "A wire of length 2.0 m and cross-sectional area 0.40 mm² extends by 1.2 mm when a load of 50 N hangs from it. Calculate the Young modulus of the wire.", "marks": 4, "paper": "2", "scheme": ["C1: stress = 50 ÷ (0.40 × 10⁻⁶) = 1.25 × 10⁸ Pa", "C1: strain = 1.2 × 10⁻³ ÷ 2.0 = 6.0 × 10⁻⁴", "C1: E = stress ÷ strain", "A1: 2.1 × 10¹¹ Pa"], "ans": "2.1 × 10¹¹ Pa" }
       ]
     },
     {
@@ -62,6 +80,9 @@
         { "q": "A source moves towards a stationary observer. The observed frequency is…", "o": ["lower", "higher", "unchanged", "zero"], "a": 1, "why": "Doppler effect: wavefronts bunch up, so the frequency observed is higher." },
         { "q": "Which waves can be polarised?", "o": ["Only longitudinal waves", "Only transverse waves", "All waves", "Only sound"], "a": 1, "why": "Polarisation restricts oscillation to one plane, which needs transverse oscillations." },
         { "q": "Unpolarised light passes through a polariser, then an analyser at 60°. What fraction of the light after the polariser gets through? (Malus's law)", "o": ["0.25", "0.5", "0.75", "0.87"], "a": 0, "why": "I = I₀ cos²60° = 0.25 I₀." }
+      ],
+      "long": [
+        { "q": "The graph shows the displacement of the particles of a wave against distance at one instant. The frequency of the wave is 50 Hz. Use the graph to find the amplitude and the wavelength, and calculate the speed of the wave.", "marks": 3, "paper": "2", "scheme": ["B1: amplitude = 3.0 mm", "B1: wavelength = 0.40 m", "A1: v = fλ = 20 m s⁻¹"], "ans": "3.0 mm; 0.40 m; 20 m s⁻¹", "fig": "assets/syllabus/fig/9702-wave.svg" }
       ]
     },
     {
@@ -71,6 +92,9 @@
         { "q": "In Young's double-slit experiment, fringe spacing x = λD/a. What happens if the slit separation a is halved?", "o": ["x halves", "x doubles", "x is unchanged", "x quadruples"], "a": 1, "why": "x is inversely proportional to a." },
         { "q": "A diffraction grating has 500 lines per mm. What is the line spacing d?", "o": ["2.0 × 10⁻⁶ m", "5.0 × 10⁻⁷ m", "2.0 × 10⁻³ m", "5.0 × 10⁵ m"], "a": 0, "why": "d = 1/(500 × 10³) m = 2.0 × 10⁻⁶ m." },
         { "q": "For a stable interference pattern, the sources must be…", "o": ["of different frequencies", "coherent", "at different amplitudes", "very bright"], "a": 1, "why": "Coherent sources have a constant phase difference." }
+      ],
+      "long": [
+        { "q": "In a double-slit experiment the slits are 0.50 mm apart and the screen is 2.0 m away. Light of wavelength 600 nm is used. Calculate the fringe separation.", "marks": 2, "paper": "2", "scheme": ["C1: x = λD ÷ a", "A1: 2.4 mm"], "ans": "2.4 mm" }
       ]
     },
     {
@@ -79,6 +103,9 @@
         { "q": "A wire of length 2.0 m and cross-sectional area 1.0 × 10⁻⁶ m² has resistivity 1.7 × 10⁻⁸ Ω m. What is its resistance?", "o": ["0.0085 Ω", "0.034 Ω", "0.34 Ω", "3.4 Ω"], "a": 1, "why": "R = ρL/A = 1.7 × 10⁻⁸ × 2.0 ÷ 1.0 × 10⁻⁶ = 0.034 Ω." },
         { "q": "In I = Anvq, what is v?", "o": ["Voltage", "The mean drift velocity of the charge carriers", "Volume", "The speed of light"], "a": 1, "why": "n is the number density, A the area, q the charge, v the drift velocity." },
         { "q": "Power dissipated in a resistor can be written as…", "o": ["V/R", "I²R", "IR²", "V²R"], "a": 1, "why": "P = VI = I²R = V²/R." }
+      ],
+      "long": [
+        { "q": "A wire of length 1.5 m and diameter 0.40 mm is made of metal of resistivity 4.9 × 10⁻⁷ Ω m. Calculate its resistance.", "marks": 3, "paper": "2", "scheme": ["C1: A = π(0.20 × 10⁻³)² = 1.26 × 10⁻⁷ m²", "C1: R = ρL ÷ A", "A1: 5.8 Ω"], "ans": "5.8 Ω" }
       ]
     },
     {
@@ -87,6 +114,9 @@
         { "q": "Kirchhoff's first law is a consequence of conservation of…", "o": ["energy", "charge", "momentum", "mass"], "a": 1, "why": "Current into a junction equals current out: charge is conserved." },
         { "q": "A cell of e.m.f. 6.0 V and internal resistance 1.0 Ω is connected to a 5.0 Ω resistor. What is the current?", "o": ["0.83 A", "1.0 A", "1.2 A", "6.0 A"], "a": 1, "why": "I = E/(R + r) = 6.0 ÷ 6.0 = 1.0 A." },
         { "q": "In a potential divider of 2 kΩ (top) and 8 kΩ (bottom) across 10 V, what is the output across the 8 kΩ?", "o": ["2 V", "5 V", "8 V", "10 V"], "a": 2, "why": "Vout = 10 × 8/(2 + 8) = 8 V." }
+      ],
+      "long": [
+        { "q": "In the circuit shown, the battery has an e.m.f. of 12 V and negligible internal resistance. Calculate the current from the battery and the potential difference across the 3.0 Ω resistor.", "marks": 4, "paper": "2", "scheme": ["C1: the parallel pair is 2.0 Ω", "C1: total resistance 6.0 Ω", "A1: current = 2.0 A", "A1: p.d. across the 3.0 Ω resistor = 4.0 V"], "ans": "2.0 A; 4.0 V", "fig": "assets/syllabus/fig/9702-circuit.svg" }
       ]
     },
     {
@@ -95,6 +125,9 @@
         { "q": "What is the quark composition of a proton?", "o": ["uud", "udd", "uuu", "ud̄"], "a": 0, "why": "Two up (+2/3 each) and one down (−1/3): total charge +1." },
         { "q": "In β⁻ decay, a down quark changes into…", "o": ["a strange quark", "an up quark", "a top quark", "an electron"], "a": 1, "why": "d → u + e⁻ + ν̄ₑ." },
         { "q": "Which are leptons?", "o": ["Protons and neutrons", "Electrons and neutrinos", "Pions", "Quarks"], "a": 1, "why": "Leptons are fundamental particles that don't feel the strong force." }
+      ],
+      "long": [
+        { "q": "A proton is made of up (u) and down (d) quarks. State its quark composition and show that its charge is +e.", "marks": 2, "paper": "2", "scheme": ["B1: uud", "B1: (+⅔ e) + (+⅔ e) + (−⅓ e) = +e"], "ans": "uud" }
       ]
     },
     {

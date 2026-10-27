@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 430 250" width="430" height="250" font-family="Helvetica, Arial, sans-serif" font-size="14" fill="#111" stroke-linecap="round">
+<rect width="400" height="250" fill="#fff"/>
+<line x1="55.0" y1="205.0" x2="403.0" y2="205.0" stroke="#111" stroke-width="1.6" />
+<path d="M403.0,205.0 L396.1,209.0 L396.1,201.0 Z" fill="#111"/>
+<line x1="55.0" y1="205.0" x2="55.0" y2="16.5" stroke="#111" stroke-width="1.6" />
+<path d="M55.0,16.5 L59.0,23.4 L51.0,23.4 Z" fill="#111"/>
+<path d="M55,205 L151,49 L295,49 L367,205" fill="none" stroke="#111" stroke-width="2"/>
+<line x1="151.0" y1="205.0" x2="151.0" y2="210.0" stroke="#111" stroke-width="1.6" />
+<text x="151.0" y="225.0" text-anchor="middle" font-size="14" >4</text>
+<line x1="295.0" y1="205.0" x2="295.0" y2="210.0" stroke="#111" stroke-width="1.6" />
+<text x="295.0" y="225.0" text-anchor="middle" font-size="14" >10</text>
+<line x1="367.0" y1="205.0" x2="367.0" y2="210.0" stroke="#111" stroke-width="1.6" />
+<text x="367.0" y="225.0" text-anchor="middle" font-size="14" >13</text>
+<line x1="50.0" y1="49.0" x2="55.0" y2="49.0" stroke="#111" stroke-width="1.6" />
+<text x="45.0" y="54.0" text-anchor="end" font-size="14" >12</text>
+<line x1="55.0" y1="49.0" x2="151.0" y2="49.0" stroke="#111" stroke-width="1" stroke-dasharray="4 4"/>
+<text x="403.0" y="225.0" text-anchor="end" font-size="12" >t (s)</text>
+<text x="61.0" y="20.5" text-anchor="start" font-size="12" >v (m s⁻¹)</text>
+<text x="45.0" y="221.0" text-anchor="end" font-size="14" >O</text>
+</svg>

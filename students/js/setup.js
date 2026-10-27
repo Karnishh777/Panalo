@@ -6,7 +6,9 @@
 import { stillSky } from "./sky.js";
 import { el, chipGroup, showToast, reportError } from "./ui.js";
 import { api, store } from "./store.js";
-import { BOARDS, STAGES, AIMS, LEVELS, subjectsFor, gradesFor } from "./model/subjects.js";
+import { BOARDS, STAGES, AIMS, LEVELS, subjectsFor, gradesFor, stageOf } from "./model/subjects.js";
+import * as PP from "./model/papers.js";
+import { paperChooser, seriesChooser } from "./paper-sheets.js";
 import { toRow, fromRow, ACTIVITY_KINDS, cleanActivities } from "./model/profile.js";
 import { clockOfText } from "./model/time.js";
 import { art, artImg, onArt, GUARDIANS, guardianOf } from "./art.js";
@@ -18,6 +20,7 @@ const PAN = {
   stage: ["idle", "Which year? The syllabus changes with it."],
   subjects: ["cheer", "Every subject you pick gets a guardian."],
   levels: ["think", "Be honest. Weaker subjects get more time, not less."],
+  papers: ["think", "Your papers decide what we study, and when the countdown ends."],
   aim: ["idle", "Aim high or steady: both are good plans."],
   school: ["think", "School comes first. I plan around it, never over it."],
   boarding: ["think", "Boarding or travelling: it changes your evenings."],
@@ -75,6 +78,9 @@ function timeInput(id, value, onChange) {
  * @param {{ onDone: () => void, editing?: boolean }} opts
  */
 export function runSetup({ onDone, editing = false }) {
+  // Subjects with papers listed (model/papers.js), by syllabus code.
+  const codeOf = (id) => subjectsFor(a.stage).find((x) => x.id === id)?.code || null;
+  const withPapers = () => a.subjects.filter((s) => PP.papersOf(codeOf(s.id)).length);
   const root = $("setup");
   const form = $("setup-form");
   root.hidden = false;
@@ -204,6 +210,29 @@ export function runSetup({ onDone, editing = false }) {
           ),
         ];
       },
+    },
+    {
+      id: "papers",
+      title: "Your papers",
+      lead: "The papers you're sitting, and the exam series. The usual ones are chosen; change them if yours are different. Exact dates can be added later in Plan.",
+      skip: () => !withPapers().length,
+      body: () => {
+        const level = stageOf(a.stage)?.level;
+        const offered = subjectsFor(a.stage);
+        const subs = withPapers();
+        for (const s of subs) if (!s.papers?.length) s.papers = PP.defaultPapers(codeOf(s.id), level);
+        const series = subs.find((s) => s.series)?.series || null;
+        return [
+          el(
+            "div",
+            { class: "setup-papers" },
+            subs.map((s) => el("div", { class: "setup-paper", "data-subject": s.id }, [el("b", { text: `${offered.find((o) => o.id === s.id)?.name || s.id} ${codeOf(s.id)}` }), PP.SYLLABUS_PAPERS[codeOf(s.id)]?.note ? el("small", { class: "faint", text: PP.SYLLABUS_PAPERS[codeOf(s.id)].note }) : null, paperChooser(codeOf(s.id), a.stage, s.papers)]))
+          ),
+          el("p", { class: "setup-q", text: "Which exam series?" }),
+          seriesChooser(series, (k) => subs.forEach((s) => (s.series = k))),
+        ];
+      },
+      ok: () => withPapers().every((s) => s.papers?.length) || "Choose at least one paper for each subject.",
     },
     {
       id: "aim",

@@ -14,6 +14,7 @@ import * as P from "./model/plan.js";
 import { questionsFor, topicName, nameOf, stateOf, saveTopic, savePace, colourOf, currentPlan } from "./planner.js";
 import { artImg } from "./art.js";
 import { createPan } from "./motion-art.js";
+import { openPastPaper, openPaperMarks } from "./paper-sheets.js";
 
 const COUNT = { check: 5, review: 3, practice: 3, learn: 3 };
 const COVERED = [[0.25, "A quarter"], [0.5, "Half"], [0.75, "Most of it"], [1, "All of it"]];
@@ -48,6 +49,8 @@ const dayName = (ms) => {
  * @param {Function} [o.onDone]
  */
 export function openBlockCheck(block, { minutes = 0, sessionId = null, onDone } = {}) {
+  // A timed past paper ends in its marks, not a few questions.
+  if (block.kind === "paper") return openPaperMarks(block.subject, String(block.topic).replace(/^paper-/, ""));
   const started = Date.now();
   const own = block.topic === "*";
   const questions = own ? [] : shuffle(questionsFor(block.subject, block.topic)).slice(0, COUNT[block.kind] || 3);
@@ -203,6 +206,7 @@ export function openBlockCheck(block, { minutes = 0, sessionId = null, onDone } 
  * the others go to the Study Room with a focus block set up for them.
  */
 export function startBlock(block) {
+  if (block.kind === "paper") return openPastPaper(block);
   if (block.kind === "check" || block.kind === "review") {
     if (block.topic !== "*" && questionsFor(block.subject, block.topic).length) return openBlockCheck(block);
   }

@@ -6,7 +6,8 @@ import { stageOf, subjectsFor } from "./subjects.js";
 export const DEFAULTS = {
   board: null,
   stage: null,
-  subjects: [], // [{ id, level: 1..4, grade?: string }]
+  // [{ id, level: 1..4, grade?, papers?: ["1", "5"], series?: "2027-fm", dates?: { "1": "2027-03-02" } }]
+  subjects: [],
   aim: "good",
   schoolDays: [1, 2, 3, 4, 5], // 0 = Sunday
   schoolStart: "08:10",
@@ -68,7 +69,7 @@ export function toRow(a, now = new Date()) {
   const subjects = (a.subjects || [])
     .filter((s) => offered.has(s.id) && !seen.has(s.id) && seen.add(s.id))
     .slice(0, 16)
-    .map((s) => ({ id: s.id, level: clamp(s.level ?? 2, 1, 4), ...(s.grade ? { grade: String(s.grade).slice(0, 8) } : {}) }));
+    .map((s) => ({ id: s.id, level: clamp(s.level ?? 2, 1, 4), ...(s.grade ? { grade: String(s.grade).slice(0, 8) } : {}), ...cleanPapers(s) }));
   const days = [...new Set((a.schoolDays || []).map(Number).filter((d) => Number.isInteger(d) && d >= 0 && d <= 6))].sort();
   return {
     board: ["cambridge", "cbse", "other"].includes(a.board) ? a.board : null,
@@ -95,6 +96,23 @@ function prepOf(a) {
   const start = time(a.prepStart, DEFAULTS.prepStart);
   const end = time(a.prepEnd, DEFAULTS.prepEnd);
   return end > start ? { prep_start: start, prep_end: end } : { prep_start: null, prep_end: null };
+}
+
+/**
+ * A subject's papers, series and paper dates (model/papers.js), kept small:
+ * the whole subjects list has 4 KB in the database.
+ */
+export function cleanPapers(s) {
+  const out = {};
+  const ids = [...new Set((Array.isArray(s.papers) ? s.papers : []).map(String).filter((x) => /^[0-9]{1,2}$/.test(x)))].slice(0, 8);
+  if (ids.length) out.papers = ids;
+  if (/^20[2-9][0-9]-(fm|mj|on)$/.test(s.series || "")) out.series = s.series;
+  const dates = {};
+  for (const [k, v] of Object.entries(s.dates && typeof s.dates === "object" ? s.dates : {})) {
+    if (ids.includes(k) && /^20[2-9][0-9]-[01][0-9]-[0-3][0-9]$/.test(v)) dates[k] = v;
+  }
+  if (Object.keys(dates).length) out.dates = dates;
+  return out;
 }
 
 /** A saved row back as answers (for the planner, or to edit the setup). */

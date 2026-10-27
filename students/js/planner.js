@@ -3,13 +3,14 @@
 // changed. The plan itself is never stored: it is rebuilt from the
 // student's state whenever it is shown.
 import { store, api, on, emit } from "./store.js";
-import { fromRow } from "./model/profile.js";
+import { fromRow, toRow } from "./model/profile.js";
 import * as L from "./model/learner.js";
 import * as P from "./model/plan.js";
 import * as R from "./model/rules.js";
-import { startOfDay } from "./model/time.js";
+import { startOfDay, DAY } from "./model/time.js";
 import { stageOf, subjectName } from "./model/subjects.js";
 import { GUARDIANS, guardianOf } from "./art.js";
+import * as PP from "./model/papers.js";
 
 const banks = new Map(); // path -> syllabus json, or null when there is none
 const loading = new Map();
@@ -123,7 +124,45 @@ export function missedYesterday(now = Date.now()) {
 /** The plan for the next `days` days, from now. */
 export function currentPlan({ now = Date.now(), days = 7 } = {}) {
   if (!hasPlan()) return [];
-  return P.buildPlan({ profile: profile(), syllabi: syllabi(), topics: topicStates(), pace: paceOf(), events: store.events, doneToday: focusedToday(now), now, days, rules: planRules(now) });
+  return P.buildPlan({ profile: profile(), syllabi: syllabi(), topics: topicStates(), pace: paceOf(), events: store.events, doneToday: focusedToday(now), now, days, rules: planRules(now), papersDone: papersDone() });
+}
+
+/** A past paper's result is titled "Paper 5 · …" (past-paper.js). */
+export const PAPER_TITLE = /^Paper (\d{1,2}) · /;
+
+/** When each paper was last done as a past paper: { subject: { paperId: ms } }. */
+export function papersDone() {
+  const out = {};
+  for (const r of store.results) {
+    const m = PAPER_TITLE.exec(r.title || "");
+    if (!m) continue;
+    const at = Date.parse(r.taken_on || r.created_at || "");
+    const s = (out[r.subject] ||= {});
+    if (Number.isFinite(at) && !(s[m[1]] > at)) s[m[1]] = at;
+  }
+  return out;
+}
+
+/** The topics a subject studies: its chosen papers', or its stage's. */
+export function scopeOf(subjectId) {
+  const p = profile();
+  const s = p.subjects.find((x) => x.id === subjectId);
+  return P.topicsInScope(syllabi()[subjectId], p.stage, s?.papers);
+}
+
+/** A subject's chosen papers, each with its date (ms or null). */
+export function papersOfSubject(subjectId) {
+  const s = profile().subjects.find((x) => x.id === subjectId);
+  const code = syllabi()[subjectId]?.code;
+  return (s?.papers || []).map((id) => PP.paperOf(code, id)).filter(Boolean).map((p) => ({ ...p, at: PP.paperDate(s, p.id) }));
+}
+
+/** Change one subject's papers, series or dates (and nothing else). */
+export function savePapers(subjectId, patch) {
+  const p = profile();
+  const subjects = p.subjects.map((s) => (s.id === subjectId ? { ...s, ...patch } : s));
+  const row = toRow({ ...p, subjects });
+  return api.saveStudent({ subjects: row.subjects });
 }
 
 /** The student's own changes to the plan (phase 32), cleaned. */
@@ -145,9 +184,12 @@ export function saveRules(rules) {
 export function subjectView(s, now = Date.now()) {
   const p = profile();
   const bank = syllabi()[s.id];
-  const list = P.topicsInScope(bank, p.stage);
+  const list = P.topicsInScope(bank, p.stage, s.papers);
   const states = topicStates()[s.id] || {};
-  const examAt = P.nextExam({ id: s.id, name: nameOf(s.id), code: bank?.code }, store.events, now);
+  // The next exam: one on the calendar, or the first of the chosen papers.
+  const papers = papersOfSubject(s.id);
+  const dates = [P.nextExam({ id: s.id, name: nameOf(s.id), code: bank?.code }, store.events, now), ...papers.map((x) => x.at).filter((at) => at != null && at >= now - DAY / 2)].filter((x) => x != null);
+  const examAt = dates.length ? Math.min(...dates) : null;
   return {
     id: s.id,
     name: nameOf(s.id),
@@ -160,6 +202,7 @@ export function subjectView(s, now = Date.now()) {
     target: P.TARGET[p.aim] || P.TARGET.good,
     examAt,
     pace: paceOf()[s.id] || null,
+    papers,
   };
 }
 
@@ -169,6 +212,7 @@ export function nameOf(subjectId) {
 
 export function topicName(subjectId, topicId) {
   if (topicId === "*") return "Your own work";
+  if (/^paper-\d{1,2}$/.test(topicId)) return PP.paperLabel(PP.paperOf(syllabi()[subjectId]?.code, topicId.slice(6))) || topicId;
   return syllabi()[subjectId]?.topics.find((t) => t.id === topicId)?.name || topicId;
 }
 
@@ -195,8 +239,7 @@ export function saveTopics(subjectId, states) {
 /** Update a subject's pace after a learn block. */
 export async function savePace(subjectId, { minutes, covered }) {
   const p = profile();
-  const bank = syllabi()[subjectId];
-  const n = P.topicsInScope(bank, p.stage).length;
+  const n = scopeOf(subjectId).length;
   const typical = L.typicalMinutes(stageOf(p.stage)?.level || "other", n);
   const cur = paceOf()[subjectId] || L.newPace();
   const next = L.updatePace(cur, { minutes, typical, covered });
@@ -208,9 +251,7 @@ export async function savePace(subjectId, { minutes, covered }) {
 export async function addResult({ subject, title, takenOn, score, outOf, topics }) {
   const r = await api.addResult({ subject, title, taken_on: takenOn, score, out_of: outOf, topics });
   if (r.error) return r;
-  const p = profile();
-  const list = P.topicsInScope(syllabi()[subject], p.stage);
-  const ids = topics.length ? topics : list.map((t) => t.id);
+  const ids = topics.length ? topics : scopeOf(subject).map((t) => t.id);
   const weight = topics.length ? 1 / 3 : 1 / 6;
   const s = await saveTopics(subject, Object.fromEntries(ids.map((id) => [id, L.applyMark(stateOf(subject, id), score / outOf, weight)])));
   return s.error ? s : r;

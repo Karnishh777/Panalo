@@ -65,6 +65,24 @@ only where nothing else can).
   effect is now one quiet circuit trace in the subject's colour that
   plays a few seconds after a choice and then holds still, with a
   smaller zoom.
+- **Papers and exam series**: each subject knows its papers (every
+  IGCSE and AS & A Level syllabus in the app: 9709 Paper 1 Pure
+  Mathematics 1 … Paper 5 Probability & Statistics 1; 9702 Paper 1
+  Multiple Choice, Paper 2 AS Structured, Paper 3 Practical; with each
+  paper's kind, length and marks, `js/model/papers.js`). The setup asks
+  which papers and which series (February/March, May/June,
+  October/November), with the usual route chosen; Plan's subject cards
+  change them and take each paper's date. The plan studies only what the
+  chosen papers examine, counts each topic down to its own paper, and in
+  the last six weeks fits in timed past papers (the paper's full time in
+  the Study Room, then its marks, saved on the paper's topics).
+- **Exam-style questions**: original written questions with their marks
+  [n], a mark scheme to tick yourself against (M1/A1/B1, C1/A1), and
+  diagrams (tree diagrams, the normal curve, a sector, v–t graphs, a
+  circuit…), by paper, by marks (1–2, 3–4, 5+) and by topic: 9709 Pure 1,
+  Probability & Statistics 1 and Mechanics, 9702 AS, 0580. Each mark
+  moves its topic. 9709's Mechanics and Probability & Statistics 1 are
+  now split into their syllabus sections, with new checked questions.
 - **Subject check-in**: Plan offers, for each subject, a two-minute
   check-in (straight after the setup, and any time after to redo it):
   past exams first (what it was, got, out of), then either a quick

@@ -712,8 +712,9 @@ export function show(param) {
   } else if (param?.startsWith("block=")) {
     // A block from the plan: its subject, its length, begun.
     const [subject, topic, kind, minutes] = decodeURIComponent(param.slice(6)).split("~");
-    const block = { subject, topic, kind, minutes: Math.max(5, Math.min(90, Number(minutes) || 25)) };
-    if (timer.phase === "idle" && /^[a-z0-9]{1,12}$/.test(subject) && /^[A-Za-z0-9.*]{1,12}$/.test(topic) && KINDS[kind]) {
+    // A past paper runs for its full time (up to three hours); other blocks up to 90 minutes.
+    const block = { subject, topic, kind, minutes: Math.max(5, Math.min(kind === "paper" ? 180 : 90, Number(minutes) || 25)) };
+    if (timer.phase === "idle" && /^[a-z0-9]{1,12}$/.test(subject) && /^[A-Za-z0-9.*-]{1,12}$/.test(topic) && KINDS[kind]) {
       loadBanks().then(() => {
         if (timer.phase !== "idle") return;
         subjectInput.value = nameOf(subject).slice(0, 40);

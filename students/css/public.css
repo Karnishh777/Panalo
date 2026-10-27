@@ -2103,3 +2103,17 @@ input[type="range"].range {
 .setup-activities > .btn {
   justify-self: start;
 }
+
+/* The setup's papers step (js/setup.js) */
+.setup-papers {
+  display: grid;
+  gap: 16px;
+}
+.setup-paper {
+  display: grid;
+  gap: 6px;
+}
+.setup-q {
+  margin: 14px 0 6px;
+  font-weight: 600;
+}
