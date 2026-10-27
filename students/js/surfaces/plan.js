@@ -17,6 +17,9 @@ import { openCustomize } from "../plan-custom.js";
 import * as R from "../model/rules.js";
 import { startBlock } from "../block-check.js";
 import { openCheckIn, uncheckedSubjects, checkInSummary } from "../check-in.js";
+import { openPapers, papersLine, openPaperMarks } from "../paper-sheets.js";
+import { openExamQuestions, hasExamQuestions } from "../exam-questions.js";
+import * as PP from "../model/papers.js";
 import * as D from "../model/diagnose.js";
 import { art, artImg, onArt, GUARDIANS, guardianOf } from "../art.js";
 import { createEmblem, createPan, createAura } from "../motion-art.js";
@@ -242,7 +245,23 @@ function subjectCard(s, now) {
         ]),
     dots,
     v.own ? null : checkInLine(s.id, v),
+    paperRow(s.id, v, now),
     v.pace?.n >= 3 ? el("p", { class: "faint small", text: v.pace.pace > 1.15 ? `You take a little longer here (×${v.pace.pace.toFixed(1)}): your plan allows for it.` : v.pace.pace < 0.85 ? `You move quickly here (×${v.pace.pace.toFixed(1)}).` : "Your pace here is about typical." }) : null,
+  ]);
+}
+
+// Papers: which ones, when, and their questions and past papers.
+function paperRow(id, v, now) {
+  if (!PP.papersOf(v.code).length) return null;
+  const line = papersLine(v, now);
+  const first = v.papers?.[0]?.id;
+  return el("div", { class: "pl-papers" }, [
+    el("p", { class: "small pl-papers-line", text: line || "Which papers are you sitting, and when? Add them and the plan counts down to each one." }),
+    el("div", { class: "pl-papers-acts" }, [
+      el("button", { type: "button", class: line ? "link-btn" : "btn btn-ghost btn-sm", "data-papers": id, text: line ? "Papers & dates" : "Add your papers", onClick: () => openPapers(id) }),
+      hasExamQuestions(id) ? el("button", { type: "button", class: "link-btn", "data-questions": id, text: "Exam-style questions", onClick: () => openExamQuestions(id) }) : null,
+      first ? el("button", { type: "button", class: "link-btn", "data-pastpaper": id, text: "Past-paper marks", onClick: () => openPaperMarks(id, first) }) : null,
+    ]),
   ]);
 }
 

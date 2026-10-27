@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 420 260" width="420" height="260" font-family="Helvetica, Arial, sans-serif" font-size="14" fill="#111" stroke-linecap="round">
+<rect width="420" height="260" fill="#fff"/>
+<line x1="50.0" y1="50.0" x2="250.0" y2="50.0" stroke="#111" stroke-width="1.6" />
+<rect x="110.0" y="40.0" width="60" height="20" fill="#fff" stroke="#111" stroke-width="1.8"/>
+<text x="140.0" y="32.0" text-anchor="middle" font-size="13" >4.0 Ω</text>
+<line x1="250.0" y1="50.0" x2="250.0" y2="150.0" stroke="#111" stroke-width="1.6" />
+<line x1="250.0" y1="90.0" x2="380.0" y2="90.0" stroke="#111" stroke-width="1.6" />
+<line x1="250.0" y1="150.0" x2="380.0" y2="150.0" stroke="#111" stroke-width="1.6" />
+<line x1="380.0" y1="90.0" x2="380.0" y2="215.0" stroke="#111" stroke-width="1.6" />
+<rect x="285.0" y="80.0" width="60" height="20" fill="#fff" stroke="#111" stroke-width="1.8"/>
+<text x="315.0" y="72.0" text-anchor="middle" font-size="13" >6.0 Ω</text>
+<rect x="285.0" y="140.0" width="60" height="20" fill="#fff" stroke="#111" stroke-width="1.8"/>
+<text x="315.0" y="178.0" text-anchor="middle" font-size="13" >3.0 Ω</text>
+<line x1="380.0" y1="215.0" x2="226.0" y2="215.0" stroke="#111" stroke-width="1.6" />
+<line x1="210.0" y1="215.0" x2="50.0" y2="215.0" stroke="#111" stroke-width="1.6" />
+<line x1="50.0" y1="215.0" x2="50.0" y2="50.0" stroke="#111" stroke-width="1.6" />
+<line x1="226.0" y1="193.0" x2="226.0" y2="237.0" stroke="#111" stroke-width="2.2" />
+<line x1="210.0" y1="203.0" x2="210.0" y2="227.0" stroke="#111" stroke-width="4" />
+<text x="218.0" y="255.0" text-anchor="middle" font-size="13" >12 V</text>
+</svg>

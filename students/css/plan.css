@@ -1337,3 +1337,165 @@ body.in-app[data-view="plan"] .wall {
     padding-block: 2px;
   }
 }
+
+/* ---- Papers, past papers, exam-style questions (js/paper-sheets.js, js/exam-questions.js) ---- */
+.pl-papers {
+  display: grid;
+  gap: 4px;
+  margin-top: 8px;
+}
+.pl-papers-line {
+  margin: 0;
+  color: var(--text-2);
+}
+.pl-papers-acts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 14px;
+}
+.pp-h {
+  margin: 6px 0 0;
+  font-weight: 600;
+}
+.pp-papers {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 220px), 1fr));
+  gap: 8px;
+}
+.pp-paper {
+  display: grid;
+  justify-items: start;
+  gap: 2px;
+  height: auto;
+  min-height: 0;
+  padding: 10px 12px;
+  border-radius: 12px;
+  text-align: left;
+  white-space: normal;
+}
+.pp-paper span {
+  font-size: 14px;
+}
+.pp-dates {
+  display: grid;
+  gap: 8px;
+}
+.pp-date {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 10px;
+  font-size: 14px;
+}
+.pp-steps {
+  margin: 0;
+  padding-left: 20px;
+  display: grid;
+  gap: 8px;
+}
+.exam-questions .sheet-body {
+  display: grid;
+  gap: 12px;
+}
+.xq-stage {
+  display: grid;
+  gap: 10px;
+  min-width: 0;
+}
+.xq-topic {
+  max-width: 100%;
+}
+.xq-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 8px;
+}
+.xq-item {
+  width: 100%;
+  display: grid;
+  gap: 4px;
+  padding: 10px 12px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: none;
+  color: var(--text);
+  text-align: left;
+  cursor: pointer;
+}
+.xq-item:hover,
+.xq-item:focus-visible {
+  border-color: var(--subj, var(--focus));
+}
+.xq-meta {
+  margin: 0;
+  font-size: 13px;
+  color: var(--text-2);
+}
+.xq-meta b {
+  color: var(--subj, var(--focus));
+}
+.xq-q {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.xq-done {
+  justify-self: end;
+  font-size: 13px;
+  color: var(--world);
+}
+.xq-text {
+  margin: 0;
+  font-size: 16px;
+  line-height: 1.55;
+}
+/* Diagrams are drawn like a question paper: dark on white. */
+.xq-fig {
+  margin: 0;
+  padding: 10px;
+  border-radius: 10px;
+  background: #fff;
+  justify-self: start;
+  max-width: 100%;
+}
+.xq-fig img {
+  display: block;
+  max-width: 100%;
+  height: auto;
+}
+.xq-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.xq-points {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 6px;
+}
+.xq-points label {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  cursor: pointer;
+}
+.xq-points input {
+  margin-top: 3px;
+  flex: none;
+}
+.xq-ans,
+.xq-score {
+  margin: 0;
+}
+.xq-score {
+  font-weight: 600;
+  color: var(--subj, var(--focus));
+}
+.k-paper .pl-dot {
+  border-radius: 2px;
+}

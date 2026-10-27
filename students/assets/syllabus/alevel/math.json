@@ -10,6 +10,10 @@
         { "q": "For which values of k does x² + kx + 9 = 0 have equal roots?", "o": ["k = ±3", "k = ±6", "k = 9", "k = 0"], "a": 1, "why": "Equal roots need b² − 4ac = 0: k² − 36 = 0, so k = ±6." },
         { "q": "Write x² − 6x + 11 in completed-square form.", "o": ["(x − 3)² + 2", "(x − 6)² − 25", "(x + 3)² + 2", "(x − 3)² + 11"], "a": 0, "why": "x² − 6x = (x − 3)² − 9, so the expression is (x − 3)² + 2; the minimum point is (3, 2)." },
         { "q": "Solve x² − 5x + 4 < 0.", "o": ["x < 1 or x > 4", "1 < x < 4", "x < 4", "x > 1"], "a": 1, "why": "(x − 1)(x − 4) < 0 between the roots." }
+      ],
+      "long": [
+        { "q": "Express 2x² − 12x + 23 in the form a(x + b)² + c. Hence state the coordinates of the minimum point of y = 2x² − 12x + 23.", "marks": 4, "paper": "1", "scheme": ["B1: a = 2", "B1: b = −3", "B1: c = 5", "B1: minimum point (3, 5)"], "ans": "2(x − 3)² + 5; minimum (3, 5)" },
+        { "q": "The line y = kx − 1 is a tangent to the curve y = x² + 3. Find the possible values of k.", "marks": 3, "paper": "1", "scheme": ["M1: equate and rearrange: x² − kx + 4 = 0", "M1: use b² − 4ac = 0, giving k² − 16 = 0", "A1: k = 4 or k = −4"], "ans": "k = ±4" }
       ]
     },
     {
@@ -18,6 +22,10 @@
         { "q": "f(x) = 2x + 3. What is f⁻¹(x)?", "o": ["(x − 3)/2", "(x + 3)/2", "2x − 3", "1/(2x + 3)"], "a": 0, "why": "Swap and rearrange: x = 2y + 3, so y = (x − 3)/2." },
         { "q": "f(x) = x² and g(x) = x + 1. What is fg(x)?", "o": ["x² + 1", "(x + 1)²", "x² + x", "2x + 1"], "a": 1, "why": "fg(x) = f(g(x)) = (x + 1)²." },
         { "q": "A function has an inverse only if it is…", "o": ["even", "one-one", "continuous", "quadratic"], "a": 1, "why": "Each output must come from exactly one input." }
+      ],
+      "long": [
+        { "q": "f(x) = 3x − 2 and g(x) = x² + 1. Find fg(x) and solve fg(x) = 10.", "marks": 3, "paper": "1", "scheme": ["B1: fg(x) = 3x² + 1", "M1: 3x² + 1 = 10, so x² = 3", "A1: x = ±√3"], "ans": "fg(x) = 3x² + 1; x = ±√3" },
+        { "q": "f(x) = (2x + 1)/(x − 3) for x ≠ 3. Find an expression for f⁻¹(x).", "marks": 3, "paper": "1", "scheme": ["M1: y(x − 3) = 2x + 1", "M1: collect x terms: x(y − 2) = 3y + 1", "A1: f⁻¹(x) = (3x + 1)/(x − 2), x ≠ 2"], "ans": "f⁻¹(x) = (3x + 1)/(x − 2)" }
       ]
     },
     {
@@ -25,6 +33,10 @@
       "questions": [
         { "q": "What is the centre and radius of (x − 2)² + (y + 1)² = 25?", "o": ["(2, −1), 5", "(−2, 1), 5", "(2, −1), 25", "(2, 1), 5"], "a": 0, "why": "(x − a)² + (y − b)² = r² has centre (a, b) and radius r." },
         { "q": "What is the length of the line from (1, 2) to (4, 6)?", "o": ["5", "7", "25", "√7"], "a": 0, "why": "√(3² + 4²) = 5." }
+      ],
+      "long": [
+        { "q": "A is the point (1, 2) and B is the point (7, 10). Find the equation of the perpendicular bisector of AB.", "marks": 4, "paper": "1", "scheme": ["B1: midpoint (4, 6)", "B1: gradient of AB = 4/3", "M1: perpendicular gradient −3/4 through the midpoint", "A1: 3x + 4y = 36 (or equivalent)"], "ans": "3x + 4y = 36" },
+        { "q": "A circle has equation x² + y² − 6x + 4y − 12 = 0. Find its centre and radius.", "marks": 3, "paper": "1", "scheme": ["M1: complete the square: (x − 3)² + (y + 2)² = 25", "A1: centre (3, −2)", "A1: radius 5"], "ans": "centre (3, −2), radius 5" }
       ]
     },
     {
@@ -32,6 +44,10 @@
       "questions": [
         { "q": "An arc of a circle of radius 6 cm subtends 0.5 radians. How long is the arc?", "o": ["3 cm", "6 cm", "9 cm", "12 cm"], "a": 0, "why": "s = rθ = 6 × 0.5 = 3 cm." },
         { "q": "The area of a sector of radius 4 and angle 1.2 rad is…", "o": ["4.8", "9.6", "19.2", "2.4"], "a": 1, "why": "A = ½r²θ = ½ × 16 × 1.2 = 9.6." }
+      ],
+      "long": [
+        { "q": "The diagram shows a sector OAB of a circle with centre O and radius 8 cm. Angle AOB = 1.2 radians. Find (a) the length of the arc AB, (b) the area of the segment between the arc AB and the chord AB.", "marks": 5, "paper": "1", "scheme": ["B1: arc AB = 8 × 1.2 = 9.6 cm", "B1: sector area = ½ × 8² × 1.2 = 38.4 cm²", "M1: triangle area = ½ × 8² × sin 1.2", "M1: segment = sector − triangle", "A1: 8.58 cm² (3 s.f.)"], "ans": "(a) 9.6 cm (b) 8.58 cm²", "fig": "assets/syllabus/fig/9709-p1-sector.svg" },
+        { "q": "Convert 135° to radians, giving your answer in terms of π. Find the area of a sector of radius 6 cm with this angle.", "marks": 3, "paper": "1", "scheme": ["B1: 135° = 3π/4", "M1: area = ½r²θ with r = 6", "A1: 27π/2 cm² (≈ 42.4 cm²)"], "ans": "3π/4; 27π/2 cm²" }
       ]
     },
     {
@@ -40,6 +56,10 @@
         { "q": "Which identity is always true?", "o": ["sin θ + cos θ = 1", "sin²θ + cos²θ = 1", "tan θ = cos θ / sin θ", "sin 2θ = 2 sin θ"], "a": 1, "why": "This is the fundamental Pythagorean identity." },
         { "q": "Solve sin x = 0.5 for 0° ≤ x ≤ 360°.", "o": ["30° only", "30° and 150°", "30° and 330°", "60° and 120°"], "a": 1, "why": "Sine is positive in the first and second quadrants: 30° and 180° − 30°." },
         { "q": "What is the period of y = cos 2x?", "o": ["90°", "180°", "360°", "720°"], "a": 1, "why": "The period of cos kx is 360°/k." }
+      ],
+      "long": [
+        { "q": "Solve the equation 2 sin²θ + 3 cos θ = 3 for 0° ≤ θ ≤ 360°.", "marks": 5, "paper": "1", "scheme": ["M1: use sin²θ = 1 − cos²θ", "A1: 2cos²θ − 3cos θ + 1 = 0", "M1: solve the quadratic in cos θ", "A1: θ = 60°, 300°", "A1: θ = 0°, 360°"], "ans": "θ = 0°, 60°, 300°, 360°" },
+        { "q": "Prove the identity (1 − cos²x)/(1 − sin²x) ≡ tan²x.", "marks": 2, "paper": "1", "scheme": ["M1: 1 − cos²x = sin²x and 1 − sin²x = cos²x", "A1: sin²x/cos²x = tan²x, shown convincingly"], "ans": "sin²x / cos²x = tan²x" }
       ]
     },
     {
@@ -48,6 +68,10 @@
         { "q": "What is the coefficient of x² in (1 + 2x)⁵?", "o": ["10", "20", "40", "80"], "a": 2, "why": "⁵C₂ × 2² = 10 × 4 = 40." },
         { "q": "A geometric series has a = 8 and r = ½. What is its sum to infinity?", "o": ["4", "8", "16", "∞"], "a": 2, "why": "S∞ = a/(1 − r) = 8 ÷ ½ = 16, valid because |r| < 1." },
         { "q": "The 10th term of the arithmetic progression 3, 7, 11, … is…", "o": ["39", "40", "43", "36"], "a": 0, "why": "uₙ = a + (n − 1)d = 3 + 9 × 4 = 39." }
+      ],
+      "long": [
+        { "q": "Find the coefficient of x³ in the expansion of (2 − x)⁶.", "marks": 3, "paper": "1", "scheme": ["M1: the term ⁶C₃ × 2³ × (−x)³", "A1: ⁶C₃ = 20 and 2³ = 8 used", "A1: −160"], "ans": "−160" },
+        { "q": "The first term of a geometric progression is 81 and its sum to infinity is 243. Find the common ratio and the fourth term.", "marks": 4, "paper": "1", "scheme": ["M1: 81 ÷ (1 − r) = 243", "A1: r = 2/3", "M1: ar³ with their r", "A1: 24"], "ans": "r = 2/3; fourth term 24" }
       ]
     },
     {
@@ -56,6 +80,10 @@
         { "q": "Differentiate y = 3x⁴ − 2x.", "o": ["12x³ − 2", "12x³", "3x³ − 2", "x⁴ − 2"], "a": 0, "why": "d/dx(axⁿ) = naxⁿ⁻¹." },
         { "q": "At a stationary point, dy/dx equals…", "o": ["1", "0", "−1", "the y-value"], "a": 1, "why": "The gradient is zero; the second derivative tells maximum or minimum." },
         { "q": "Differentiate y = (2x + 1)³.", "o": ["3(2x + 1)²", "6(2x + 1)²", "6(2x + 1)³", "(2x + 1)²"], "a": 1, "why": "Chain rule: 3(2x + 1)² × 2." }
+      ],
+      "long": [
+        { "q": "A curve has equation y = x³ − 6x² + 9x + 2. Find the coordinates of the stationary points and determine their nature.", "marks": 6, "paper": "1", "scheme": ["B1: dy/dx = 3x² − 12x + 9", "M1: set dy/dx = 0 and solve", "A1: x = 1 and x = 3", "A1: (1, 6) and (3, 2)", "M1: d²y/dx² = 6x − 12 (or another valid test)", "A1: (1, 6) is a maximum, (3, 2) a minimum"], "ans": "(1, 6) maximum; (3, 2) minimum" },
+        { "q": "Find the equation of the normal to the curve y = 4/x at the point (2, 2).", "marks": 4, "paper": "1", "scheme": ["B1: dy/dx = −4x⁻²", "M1: gradient at x = 2 is −1", "M1: normal gradient 1 through (2, 2)", "A1: y = x"], "ans": "y = x" }
       ]
     },
     {
@@ -63,6 +91,10 @@
       "questions": [
         { "q": "Find ∫ 6x² dx.", "o": ["12x + c", "2x³ + c", "6x³ + c", "3x² + c"], "a": 1, "why": "Raise the power by one and divide: 6x³/3 = 2x³." },
         { "q": "Evaluate ∫₀² 3x² dx.", "o": ["4", "6", "8", "12"], "a": 2, "why": "[x³]₀² = 8." }
+      ],
+      "long": [
+        { "q": "The diagram shows the curve y = x² − 4x + 3, which crosses the x-axis at x = 1 and x = 3. Find the area of the shaded region between the curve and the x-axis.", "marks": 4, "paper": "1", "scheme": ["M1: integrate: x³/3 − 2x² + 3x", "M1: use the limits 1 and 3", "A1: value −4/3", "A1: area = 4/3"], "ans": "4/3", "fig": "assets/syllabus/fig/9709-p1-curve.svg" },
+        { "q": "A curve has gradient dy/dx = 6x² − 2x and passes through the point (1, 5). Find the equation of the curve.", "marks": 3, "paper": "1", "scheme": ["B1: 2x³ − x²", "M1: substitute (1, 5) to find c", "A1: y = 2x³ − x² + 4"], "ans": "y = 2x³ − x² + 4" }
       ]
     },
     {
@@ -127,20 +159,125 @@
       ]
     },
     {
-      "id": "M1", "stage": "as", "name": "Mechanics",
+      "id": "M1.1", "stage": "as", "name": "Mechanics: Forces and equilibrium",
       "questions": [
-        { "q": "A 5 kg box on a smooth floor is pulled by a 20 N horizontal force. What is its acceleration?", "o": ["0.25 m s⁻²", "4 m s⁻²", "25 m s⁻²", "100 m s⁻²"], "a": 1, "why": "F = ma: a = 20 ÷ 5." },
         { "q": "Limiting friction is given by F = μR. What is R?", "o": ["The weight always", "The normal contact force", "The resultant force", "The tension"], "a": 1, "why": "R is the normal reaction; it equals the weight only on a horizontal surface with no other vertical forces." },
-        { "q": "A particle moves with constant acceleration from rest to 12 m s⁻¹ in 4 s. How far does it go?", "o": ["12 m", "24 m", "48 m", "3 m"], "a": 1, "why": "s = ½(u + v)t = ½ × 12 × 4 = 24 m." }
+        { "q": "A particle is in equilibrium under three forces. Their resultant is…", "o": ["zero", "equal to the largest force", "the sum of their magnitudes", "the particle's weight"], "a": 0, "why": "Equilibrium means no resultant force: the forces form a closed triangle." },
+        { "q": "A 4 kg block rests on a rough horizontal plane with μ = 0.5 (g = 10 m s⁻²). The greatest friction possible is…", "o": ["2 N", "20 N", "40 N", "80 N"], "a": 1, "why": "R = 4 × 10 = 40 N, and limiting friction is μR = 0.5 × 40 = 20 N." },
+        { "q": "A particle of weight mg rests on a slope at angle θ to the horizontal. The component of its weight down the slope is…", "o": ["mg sin θ", "mg cos θ", "mg tan θ", "mg"], "a": 0, "why": "Resolve parallel to the slope: mg sin θ; perpendicular to it: mg cos θ." }
+      ],
+      "long": [
+        { "q": "A particle of mass 2 kg rests on a rough plane inclined at 30° to the horizontal. A force of P N acts on it up the plane, parallel to a line of greatest slope. The coefficient of friction is 0.4. Find the least value of P for which the particle does not slide down the plane. (g = 10 m s⁻²)", "marks": 5, "paper": "4", "scheme": ["B1: R = 20 cos 30° (= 17.3 N)", "B1: F = 0.4R", "M1: resolve along the plane with friction acting up the plane", "A1: P + 6.93 = 10", "A1: P = 3.07 (3 s.f.)"], "ans": "P = 3.07", "fig": "assets/syllabus/fig/9709-m1-slope.svg" }
       ]
     },
     {
-      "id": "S1", "stage": "as", "name": "Probability and Statistics 1",
+      "id": "M1.2", "stage": "as", "name": "Mechanics: Kinematics of motion in a straight line",
+      "questions": [
+        { "q": "A particle moves with constant acceleration from rest to 12 m s⁻¹ in 4 s. How far does it go?", "o": ["12 m", "24 m", "48 m", "3 m"], "a": 1, "why": "s = ½(u + v)t = ½ × 12 × 4 = 24 m." },
+        { "q": "On a velocity–time graph, the area under the graph gives the…", "o": ["acceleration", "displacement", "speed", "force"], "a": 1, "why": "Area = velocity × time = displacement; the gradient is the acceleration." },
+        { "q": "A stone is dropped from rest (g = 10 m s⁻²). What is its speed after 3 s?", "o": ["10 m s⁻¹", "30 m s⁻¹", "45 m s⁻¹", "90 m s⁻¹"], "a": 1, "why": "v = u + at = 0 + 10 × 3 = 30 m s⁻¹." },
+        { "q": "A particle has velocity v = 3t² − 2t m s⁻¹. What is its acceleration when t = 2?", "o": ["8 m s⁻²", "10 m s⁻²", "12 m s⁻²", "4 m s⁻²"], "a": 1, "why": "a = dv/dt = 6t − 2 = 10 m s⁻²." }
+      ],
+      "long": [
+        { "q": "The diagram shows the velocity–time graph of a cyclist, who accelerates from rest to 12 m s⁻¹ in 4 s, rides at that speed for 6 s, then decelerates uniformly to rest in 3 s. Find the total distance travelled and the deceleration.", "marks": 4, "paper": "4", "scheme": ["M1: distance = area under the graph", "A1: 24 + 72 + 18", "A1: 114 m", "B1: deceleration = 12 ÷ 3 = 4 m s⁻²"], "ans": "114 m; 4 m s⁻²", "fig": "assets/syllabus/fig/9709-m1-vt.svg" }
+      ]
+    },
+    {
+      "id": "M1.3", "stage": "as", "name": "Mechanics: Momentum",
+      "questions": [
+        { "q": "What is the momentum of a 2 kg particle moving at 3 m s⁻¹?", "o": ["1.5 N s", "5 N s", "6 N s", "9 N s"], "a": 2, "why": "Momentum = mv = 2 × 3 = 6 N s." },
+        { "q": "A 3 kg particle moving at 4 m s⁻¹ hits a 1 kg particle at rest and they coalesce. Their common speed is…", "o": ["1 m s⁻¹", "3 m s⁻¹", "4 m s⁻¹", "12 m s⁻¹"], "a": 1, "why": "Momentum is conserved: 3 × 4 = 4v, so v = 3 m s⁻¹." },
+        { "q": "In a collision with no external impulse, which is always conserved?", "o": ["Kinetic energy", "Total momentum", "Each particle's speed", "Each particle's velocity"], "a": 1, "why": "Total momentum is conserved; kinetic energy usually isn't (some is lost)." }
+      ],
+      "long": [
+        { "q": "A particle P of mass 0.3 kg moving at 5 m s⁻¹ collides with a particle Q of mass 0.2 kg moving towards it at 2 m s⁻¹. After the collision, P moves at 1 m s⁻¹ in its original direction. Find the speed and direction of Q after the collision.", "marks": 4, "paper": "4", "scheme": ["M1: conservation of momentum, with signs for direction", "A1: 0.3 × 5 − 0.2 × 2 = 0.3 × 1 + 0.2v", "A1: v = 4 m s⁻¹", "A1: in P's original direction of motion"], "ans": "4 m s⁻¹, in P's original direction" }
+      ]
+    },
+    {
+      "id": "M1.4", "stage": "as", "name": "Mechanics: Newton's laws of motion",
+      "questions": [
+        { "q": "A 5 kg box on a smooth floor is pulled by a 20 N horizontal force. What is its acceleration?", "o": ["0.25 m s⁻²", "4 m s⁻²", "25 m s⁻²", "100 m s⁻²"], "a": 1, "why": "F = ma: a = 20 ÷ 5." },
+        { "q": "Two particles hang on either side of a smooth, light pulley on a light string. The tension is…", "o": ["the same on both sides", "greater on the heavier side", "zero", "the sum of the weights"], "a": 0, "why": "A light string over a smooth pulley has the same tension throughout." },
+        { "q": "A 60 kg person stands in a lift accelerating upwards at 2 m s⁻² (g = 10 m s⁻²). The floor pushes up with…", "o": ["480 N", "600 N", "720 N", "1200 N"], "a": 2, "why": "R − 600 = 60 × 2, so R = 720 N." }
+      ],
+      "long": [
+        { "q": "Particles A of mass 3 kg and B of mass 2 kg are attached to the ends of a light inextensible string that passes over a smooth fixed pulley. They are released from rest with the string taut. Find the acceleration of the particles and the tension in the string. (g = 10 m s⁻²)", "marks": 4, "paper": "4", "scheme": ["M1: Newton's second law for each particle", "A1: 30 − T = 3a and T − 20 = 2a", "A1: a = 2 m s⁻²", "A1: T = 24 N"], "ans": "a = 2 m s⁻², T = 24 N" }
+      ]
+    },
+    {
+      "id": "M1.5", "stage": "as", "name": "Mechanics: Energy, work and power",
+      "questions": [
+        { "q": "A 10 N force moves its point of application 3 m in its own direction. The work done is…", "o": ["3.3 J", "13 J", "30 J", "300 J"], "a": 2, "why": "Work = force × distance in the direction of the force = 30 J." },
+        { "q": "A car moves at 20 m s⁻¹ with a driving force of 500 N. Its power is…", "o": ["25 W", "520 W", "10 kW", "100 kW"], "a": 2, "why": "P = Fv = 500 × 20 = 10 000 W." },
+        { "q": "What is the kinetic energy of a 2 kg particle moving at 5 m s⁻¹?", "o": ["10 J", "25 J", "50 J", "100 J"], "a": 1, "why": "KE = ½mv² = ½ × 2 × 25 = 25 J." }
+      ],
+      "long": [
+        { "q": "A car of mass 1200 kg moves on a horizontal road against a constant resistance of 600 N. Its engine works at 30 kW. Find the acceleration of the car when its speed is 20 m s⁻¹.", "marks": 3, "paper": "4", "scheme": ["M1: driving force = P ÷ v = 1500 N", "M1: 1500 − 600 = 1200a", "A1: a = 0.75 m s⁻²"], "ans": "0.75 m s⁻²" }
+      ]
+    },
+    {
+      "id": "S1.1", "stage": "as", "name": "Probability & Statistics 1: Representation of data",
+      "questions": [
+        { "q": "What is the median of 3, 7, 7, 9, 12, 15?", "o": ["7", "8", "9", "7.5"], "a": 1, "why": "Six values: the median is halfway between the 3rd and 4th, (7 + 9) ÷ 2 = 8." },
+        { "q": "In a histogram, the area of each bar is proportional to the…", "o": ["frequency density", "frequency", "class width", "cumulative frequency"], "a": 1, "why": "Height is frequency density, so area = density × width = frequency." },
+        { "q": "n = 10, Σx = 60 and Σx² = 400. What is the variance?", "o": ["4", "40", "2", "34"], "a": 0, "why": "Mean = 6; variance = Σx²/n − mean² = 40 − 36 = 4." },
+        { "q": "A box plot has lower quartile 12 and upper quartile 20. Using 1.5 × IQR beyond a quartile, which value is an outlier?", "o": ["28", "31", "33", "25"], "a": 2, "why": "IQR = 8, so the limit is 20 + 12 = 32: only 33 is beyond it." }
+      ],
+      "long": [
+        { "q": "The times, in minutes, taken by 8 students to finish a puzzle are 12, 15, 9, 20, 14, 11, 16, 23. Find the mean and the standard deviation.", "marks": 4, "paper": "5", "scheme": ["B1: mean = 15", "M1: Σx² = 1952 (or Σ(x − 15)² = 152)", "M1: variance = 1952/8 − 15² = 19", "A1: standard deviation = 4.36 (3 s.f.)"], "ans": "mean 15, sd 4.36" },
+        { "q": "In a histogram, the class 10 ≤ x < 15 has frequency 30 and the class 15 ≤ x < 25 has frequency 40. Find the frequency density of each class.", "marks": 2, "paper": "5", "scheme": ["B1: 30 ÷ 5 = 6", "B1: 40 ÷ 10 = 4"], "ans": "6 and 4" }
+      ]
+    },
+    {
+      "id": "S1.2", "stage": "as", "name": "Probability & Statistics 1: Permutations and combinations",
       "questions": [
         { "q": "In how many ways can 5 different books be arranged on a shelf?", "o": ["5", "25", "120", "3125"], "a": 2, "why": "Five choices for the first place, then four, three, two, one: 5! = 120." },
+        { "q": "In how many ways can 3 people be chosen from 8?", "o": ["56", "336", "24", "512"], "a": 0, "why": "The order doesn't matter: ⁸C₃ = 56." },
+        { "q": "How many different arrangements are there of the letters of LEVEL?", "o": ["120", "60", "30", "20"], "a": 2, "why": "5! ÷ (2! × 2!) for the repeated L and E = 30." },
+        { "q": "Six people sit in a row. Two of them must sit together. How many arrangements?", "o": ["720", "240", "120", "480"], "a": 1, "why": "Treat the pair as one: 5! ways, × 2 for the pair's order = 240." }
+      ],
+      "long": [
+        { "q": "Find the number of different arrangements of the letters of the word PARALLEL. How many of these begin and end with L?", "marks": 4, "paper": "5", "scheme": ["M1: 8! ÷ (2! × 3!)", "A1: 3360", "M1: fix an L at each end; arrange the other 6 with A repeated: 6! ÷ 2!", "A1: 360"], "ans": "3360; 360" },
+        { "q": "A committee of 4 is chosen from 6 men and 5 women. How many different committees contain at least one woman?", "marks": 3, "paper": "5", "scheme": ["M1: total ¹¹C₄ = 330", "M1: subtract the all-men committees ⁶C₄ = 15", "A1: 315"], "ans": "315" }
+      ]
+    },
+    {
+      "id": "S1.3", "stage": "as", "name": "Probability & Statistics 1: Probability",
+      "questions": [
+        { "q": "Events A and B are independent when…", "o": ["P(A ∩ B) = 0", "P(A ∩ B) = P(A) × P(B)", "P(A) + P(B) = 1", "A and B can't both happen"], "a": 1, "why": "Mutually exclusive events are a different idea (P(A ∩ B) = 0)." },
+        { "q": "P(A) = 0.4, P(B) = 0.5 and P(A ∪ B) = 0.7. What is P(A ∩ B)?", "o": ["0.2", "0.9", "0.1", "0.3"], "a": 0, "why": "P(A ∪ B) = P(A) + P(B) − P(A ∩ B), so P(A ∩ B) = 0.9 − 0.7 = 0.2." },
+        { "q": "P(A | B) is…", "o": ["P(A ∩ B) ÷ P(B)", "P(A ∩ B) ÷ P(A)", "P(A) × P(B)", "P(B) ÷ P(A)"], "a": 0, "why": "Given B, only the part of A inside B counts, out of all of B." },
+        { "q": "Two fair dice are thrown. What is the probability that the total is 7?", "o": ["1/12", "1/6", "7/36", "1/3"], "a": 1, "why": "Six of the 36 equally likely outcomes give 7: 6/36 = 1/6." }
+      ],
+      "long": [
+        { "q": "A bag contains 3 red counters and 2 blue counters. Two counters are taken at random, without replacement, as shown in the tree diagram. Find the probability that (a) both are red, (b) they are different colours, (c) the first is red, given that they are different colours.", "marks": 6, "paper": "5", "scheme": ["B1: correct branch probabilities", "M1: multiply along the branches", "A1: (a) 3/10", "A1: (b) 3/5", "M1: P(first red and different) ÷ P(different)", "A1: (c) 1/2"], "ans": "(a) 3/10 (b) 3/5 (c) 1/2", "fig": "assets/syllabus/fig/9709-s1-tree.svg" },
+        { "q": "Events A and B have P(A) = 0.3, P(B) = 0.5 and P(A ∪ B) = 0.65. Determine whether A and B are independent.", "marks": 3, "paper": "5", "scheme": ["M1: P(A ∩ B) = 0.3 + 0.5 − 0.65", "A1: P(A ∩ B) = 0.15", "A1: P(A) × P(B) = 0.15 as well, so independent"], "ans": "Independent" }
+      ]
+    },
+    {
+      "id": "S1.4", "stage": "as", "name": "Probability & Statistics 1: Discrete random variables",
+      "questions": [
         { "q": "X ~ B(10, 0.3). What is E(X)?", "o": ["0.3", "3", "2.1", "7"], "a": 1, "why": "E(X) = np = 10 × 0.3 = 3." },
+        { "q": "X ~ B(5, 0.5). What is P(X = 0)?", "o": ["0", "1/32", "1/5", "1/10"], "a": 1, "why": "P(X = 0) = 0.5⁵ = 1/32." },
+        { "q": "X ~ Geo(p). What is P(X = 3)?", "o": ["p³", "(1 − p)²p", "3p", "(1 − p)³"], "a": 1, "why": "Two failures, then the first success on the third try." },
+        { "q": "X takes 1, 2, 3 with probabilities 0.2, 0.5, 0.3. What is E(X)?", "o": ["2", "2.1", "1.9", "6"], "a": 1, "why": "E(X) = 0.2 + 1.0 + 0.9 = 2.1." }
+      ],
+      "long": [
+        { "q": "X ~ B(8, 0.25). Find P(X ≤ 1).", "marks": 3, "paper": "5", "scheme": ["M1: a binomial term ⁸C₁ × 0.25 × 0.75⁷", "M1: P(0) + P(1), with P(0) = 0.75⁸", "A1: 0.367 (3 s.f.)"], "ans": "0.367" },
+        { "q": "The random variable X takes the values 0, 1, 2 and 3, with P(X = x) = k(x + 1). Find k, E(X) and Var(X).", "marks": 5, "paper": "5", "scheme": ["M1: k + 2k + 3k + 4k = 1", "A1: k = 0.1", "B1: E(X) = 2", "M1: Var(X) = E(X²) − [E(X)]², with E(X²) = 5", "A1: Var(X) = 1"], "ans": "k = 0.1, E(X) = 2, Var(X) = 1" }
+      ]
+    },
+    {
+      "id": "S1.5", "stage": "as", "name": "Probability & Statistics 1: The normal distribution",
+      "questions": [
         { "q": "X ~ N(50, 4²). What is P(X > 50)?", "o": ["0", "0.25", "0.5", "1"], "a": 2, "why": "The normal distribution is symmetric about its mean." },
-        { "q": "Events A and B are independent when…", "o": ["P(A ∩ B) = 0", "P(A ∩ B) = P(A) × P(B)", "P(A) + P(B) = 1", "A and B can't both happen"], "a": 1, "why": "Mutually exclusive events are a different idea (P(A ∩ B) = 0)." }
+        { "q": "X ~ N(30, 5²). What is the standardised value of X = 40?", "o": ["2", "10", "0.4", "8"], "a": 0, "why": "z = (40 − 30) ÷ 5 = 2." },
+        { "q": "When may B(n, p) be approximated by a normal distribution (the 9709 rule)?", "o": ["When n > 30", "When np > 5 and nq > 5", "Only when p = 0.5", "When np < 5"], "a": 1, "why": "Both np and nq must exceed 5." },
+        { "q": "Approximating a binomial X by a normal Y, P(X ≤ 20) becomes…", "o": ["P(Y < 20)", "P(Y < 20.5)", "P(Y < 19.5)", "P(Y ≤ 21)"], "a": 1, "why": "The continuity correction: 20 covers up to 20.5." }
+      ],
+      "long": [
+        { "q": "The masses of apples are normally distributed with mean 150 g and standard deviation 12 g. Find the probability that a randomly chosen apple has a mass between 138 g and 174 g (the shaded region).", "marks": 4, "paper": "5", "scheme": ["M1: standardise: (138 − 150)/12 = −1 and (174 − 150)/12 = 2", "M1: Φ(2) − Φ(−1), or Φ(2) − (1 − Φ(1))", "A1: 0.9772 − 0.1587", "A1: 0.819 (3 s.f.)"], "ans": "0.819", "fig": "assets/syllabus/fig/9709-s1-normal.svg" },
+        { "q": "X ~ N(μ, σ²). P(X < 40) = 0.8 and P(X < 30) = 0.3. Find μ and σ.", "marks": 5, "paper": "5", "scheme": ["B1: z = 0.842 (or 0.8416)", "B1: z = −0.524 (or −0.5244)", "M1: (40 − μ)/σ = 0.842 and (30 − μ)/σ = −0.524", "M1: solve the two equations", "A1: σ = 7.32 and μ = 33.8 (3 s.f.)"], "ans": "μ = 33.8, σ = 7.32" }
       ]
     },
     {

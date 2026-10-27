@@ -25,6 +25,7 @@ import { weekCapacity, activitiesOn, busyWithin } from "./capacity.js";
 import { stageOf, subjectName } from "./subjects.js";
 import { minutesOf } from "./profile.js";
 import * as R_ from "./rules.js";
+import * as PP from "./papers.js";
 
 const DAY = 86400000;
 const BREAK = 5;
@@ -68,7 +69,13 @@ export const KINDS = {
   learn: { label: "Learn", minutes: 25, verb: "Learn it, then a short check" },
   practice: { label: "Practise", minutes: 25, verb: "Questions with answers explained" },
   review: { label: "Review", minutes: 15, verb: "A short self-test before it fades" },
+  // A whole paper, timed, then marked with its scheme (minutes vary by paper).
+  paper: { label: "Past paper", minutes: null, verb: "A timed paper, then marked with the scheme" },
 };
+
+// Past papers start this long before a paper's date, this often (days).
+const PAPER_WINDOW = 42;
+const paperGap = (daysLeft) => (daysLeft <= 14 ? 4 : 8);
 
 const LEVEL_BOOST = { 1: 1.3, 2: 1.15, 3: 1, 4: 0.9 };
 
@@ -79,10 +86,30 @@ export function syllabusPath(stageId, subjectId) {
   return dir ? `assets/syllabus/${dir}/${subjectId}.json` : null;
 }
 
-/** The topics a stage studies: AS students the AS half; others all of it. */
-export function topicsInScope(syllabus, stageId) {
+/**
+ * The topics a student studies: those their chosen papers examine; with no
+ * papers chosen, AS students the AS half and others all of it.
+ */
+export function topicsInScope(syllabus, stageId, papers = []) {
   if (!syllabus?.topics?.length) return [{ id: "*", name: "Your own work", questions: [] }];
+  const byPapers = papers?.length ? PP.topicsForPapers(syllabus, papers) : null;
+  if (byPapers?.length) return byPapers;
   return stageId === "as" ? syllabus.topics.filter((t) => t.stage !== "a2") : syllabus.topics;
+}
+
+/**
+ * A subject's chosen papers with their dates, and each topic's exam: the
+ * earliest of the papers that examine it (null when none has a date).
+ */
+export function paperPlan(s, syllabus, list, now) {
+  const papers = (s.papers || []).map((id) => PP.paperOf(syllabus?.code, id)).filter(Boolean).map((p) => ({ ...p, at: PP.paperDate(s, p.id) }));
+  const examOf = {};
+  for (const tp of list) {
+    let best = null;
+    for (const p of papers) if (p.at != null && p.at >= now - DAY / 2 && PP.paperTopics(syllabus, p).some((x) => x.id === tp.id) && (best == null || p.at < best)) best = p.at;
+    examOf[tp.id] = best;
+  }
+  return { papers, examOf };
 }
 
 /** The next exam in a subject: an exam event naming it. */
@@ -152,8 +179,9 @@ function simulate(t, kind, minutes, at, perTopic) {
  * @param {number} o.doneToday focus minutes already done today
  * @param {number} o.now       ms
  * @param {number} [o.days]    how many days, from today (7)
+ * @param {object} [o.papersDone] { subjectId: { paperId: ms } }: the last past paper of each
  */
-export function buildPlan({ profile, syllabi = {}, topics = {}, pace = {}, events = [], doneToday = 0, now = Date.now(), days = 7, rules = null }) {
+export function buildPlan({ profile, syllabi = {}, topics = {}, pace = {}, events = [], doneToday = 0, now = Date.now(), days = 7, rules = null, papersDone = {} }) {
   const target = TARGET[profile.aim] || TARGET.good;
   const R = rules || R_.empty();
   const level = stageOf(profile.stage)?.level || "other";
@@ -162,12 +190,14 @@ export function buildPlan({ profile, syllabi = {}, topics = {}, pace = {}, event
   // Every subject's topics, with live (simulated) state.
   const subjects = (profile.subjects || []).map((s) => {
     const syllabus = syllabi[s.id] || null;
-    const list = topicsInScope(syllabus, profile.stage);
+    const list = topicsInScope(syllabus, profile.stage, s.papers);
     const own = list[0].id === "*";
+    const { papers, examOf } = paperPlan(s, syllabus, list, now);
     const perTopic = L.typicalMinutes(level, own ? 1 : list.length) * (pace[s.id]?.pace || 1) * pad(pace[s.id]);
     const state = {};
     for (const tp of list) state[tp.id] = topics[s.id]?.[tp.id] || L.newTopic(s.level ?? 2);
-    return { id: s.id, code: syllabus?.code, name: subjectName(profile.stage, s.id) || syllabus?.name || s.id, level: s.level ?? 2, list, own, perTopic, state };
+    const lastPaper = { ...(papersDone[s.id] || {}) };
+    return { id: s.id, code: syllabus?.code, name: subjectName(profile.stage, s.id) || syllabus?.name || s.id, level: s.level ?? 2, list, own, perTopic, state, papers, examOf, lastPaper };
   });
 
   const out = [];
@@ -211,8 +241,9 @@ export function buildPlan({ profile, syllabi = {}, topics = {}, pace = {}, event
     };
     const place = (s, tp, kind, minutes) => {
       start = slot(minutes) ?? start;
-      day.blocks.push({ kind, subject: s.id, subjectName: s.name, topic: tp.id, topicName: tp.name, minutes, start, own: s.own });
-      s.state[tp.id] = simulate(s.state[tp.id], kind, minutes, at, s.perTopic);
+      day.blocks.push({ kind, subject: s.id, subjectName: s.name, topic: tp.id, topicName: tp.name, minutes, start, own: s.own, ...(tp.paper ? { paper: tp.paper } : {}) });
+      if (kind === "paper") s.lastPaper[tp.paper] = at;
+      else s.state[tp.id] = simulate(s.state[tp.id], kind, minutes, at, s.perTopic);
       perSubject.set(s.id, (perSubject.get(s.id) || 0) + minutes);
       blocksOf.set(s.id, (blocksOf.get(s.id) || 0) + 1);
       if (kind === "check") checksOf.set(s.id, (checksOf.get(s.id) || 0) + 1);
@@ -239,13 +270,29 @@ export function buildPlan({ profile, syllabi = {}, topics = {}, pace = {}, event
         const used = perSubject.get(s.id) || 0;
         const count = blocksOf.get(s.id) || 0;
         const checks = checksOf.get(s.id) || 0;
-        const examAt = nextExam(s, events, date.getTime());
+        const calendarExam = nextExam(s, events, date.getTime());
+        const examFor = (tp) => [calendarExam, s.examOf[tp.id]].filter((x) => x != null).reduce((a, b) => Math.min(a, b), Infinity);
+        // A timed past paper of each chosen paper, as its date nears.
+        const papersToday = day.blocks.filter((b) => b.kind === "paper").length;
+        for (const p of s.papers) {
+          if (p.at == null || papersToday >= (own.crash ? 2 : 1) || skipped.has(`${s.id}|paper-${p.id}`)) continue;
+          const left = (p.at - date.getTime()) / DAY;
+          if (left < 1 || left > PAPER_WINDOW) continue;
+          const last = s.lastPaper[p.id];
+          if (last != null && (at - last) / DAY < paperGap(left)) continue;
+          const minutes = Math.min(180, Math.ceil(((p.minutes || 90) + 15) / 5) * 5);
+          const tp = { id: `paper-${p.id}`, name: PP.paperLabel(p), paper: p.id };
+          if (usedTopics.has(`${s.id}/${tp.id}`) || minutes > room || used + minutes > Math.max(maxPerSubject, minutes) * Math.max(1, weight) || slot(minutes) == null) continue;
+          const score = (1.3 + 2 * Math.exp(-left / 14)) * weight * Math.pow(0.75, count);
+          if (!best || score > best.score) best = { kind: "paper", score, s, tp, minutes };
+        }
         // Only the first new topic in syllabus order is offered at a time.
         const firstNewId = s.list.find((tp) => untouched(s.state[tp.id]) && !usedTopics.has(`${s.id}/${tp.id}`))?.id;
         for (const tp of s.list) {
           const key = `${s.id}/${tp.id}`;
           if (usedTopics.has(key) || skipped.has(`${s.id}|${tp.id}`)) continue;
-          const n = need(s.state[tp.id], { at, target, examAt, level: s.level, firstNew: tp.id === firstNewId, own: s.own });
+          const exam = examFor(tp);
+          const n = need(s.state[tp.id], { at, target, examAt: Number.isFinite(exam) ? exam : null, level: s.level, firstNew: tp.id === firstNewId, own: s.own });
           if (!n || (n.kind === "check" && checks >= 3)) continue;
           const minutes = KINDS[n.kind].minutes;
           if (minutes > room || used + minutes > maxPerSubject * Math.max(1, weight) || slot(minutes) == null) continue;

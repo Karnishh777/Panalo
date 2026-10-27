@@ -308,6 +308,47 @@ try {
     check("once every subject is checked in, the card goes", !(await page.isVisible("#plan-checkin")) && /not taught yet/.test(await page.textContent(".pl-subjects")));
     check("untaught chapters get learn blocks", /Learn/.test(await page.textContent(".pl-week")));
     check("a check-in can be redone any time", (await page.locator(".pl-checkin [data-checkin]").count()) === 2);
+
+    // ---- Papers: which ones, when; exam-style questions; past-paper marks ----
+    const subj = await page.evaluate(() => window.__qa.db.student_profiles.find((r) => r.setup_at)?.subjects || []);
+    check("the setup chose each subject's usual papers", subj.find((x) => x.id === "phy")?.papers?.join() === "1,2,3" && subj.find((x) => x.id === "chem")?.papers?.join() === "1,2,3", JSON.stringify(subj));
+    await page.click('[data-papers="phy"]');
+    await page.waitForSelector(".papers-sheet #pp-date-2");
+    await page.click('.papers-sheet .pp-paper[data-paper="3"]');
+    await page.click('.papers-sheet .pp-series .chip >> nth=1');
+    await page.fill("#pp-date-2", "2027-03-04");
+    await page.click("#pp-save");
+    await page.waitForTimeout(500);
+    const phySaved = await page.evaluate(() => window.__qa.db.student_profiles.find((r) => r.setup_at).subjects.find((x) => x.id === "phy"));
+    check("a subject's papers, series and dates can be changed", phySaved.papers.join() === "1,2" && /^20\d\d-(fm|mj|on)$/.test(phySaved.series) && phySaved.dates?.["2"] === "2027-03-04", JSON.stringify(phySaved));
+    check("…and the subject says when its paper is", /Paper 2 (in \d+ days|today|tomorrow)/.test(await page.textContent('.pl-subject:has([data-papers="phy"]) .pl-papers-line')));
+    await page.click('[data-questions="phy"]');
+    await page.waitForSelector(".exam-questions .xq-item");
+    const twoMark = await page.click('.xq-marks .chip[data-value="1"]').then(() => page.locator(".xq-item").count());
+    check("exam-style questions can be picked by their marks", twoMark > 0 && (await page.$$eval(".xq-item .xq-meta b", (b) => b.every((x) => /\[[12]\]/.test(x.textContent)))));
+    await page.click('.xq-marks .chip[data-value="all"]');
+    await page.click('.xq-item:has-text("circuit")');
+    await page.waitForFunction(() => document.querySelector(".xq-fig img")?.naturalWidth > 0, null, { timeout: 5000 }).catch(() => {});
+    check("a question can show its diagram", await page.isVisible(".xq-fig img"));
+    await page.click("#xq-reveal");
+    check("the mark scheme lists each mark", (await page.locator(".xq-points li").count()) === 4);
+    await page.check("#xq-pt-0");
+    await page.check("#xq-pt-1");
+    await page.check("#xq-pt-2");
+    await page.click("#xq-save");
+    await page.waitForTimeout(500);
+    const dc = await page.evaluate(() => window.__qa.db.student_topics.find((t) => t.subject === "phy" && t.topic === "10"));
+    check("marking yourself moves the topic", dc && Number(dc.covered) === 1 && dc.stability > 0, JSON.stringify(dc));
+    await page.keyboard.press("Escape");
+    await page.waitForTimeout(300);
+    await page.click('[data-pastpaper="phy"]');
+    await page.waitForSelector("#pp-got");
+    await page.selectOption("#pp-paper", "2");
+    await page.fill("#pp-which", "Feb/Mar 2025, 22");
+    await page.fill("#pp-got", "45");
+    await page.click("#pp-marks-save");
+    await page.waitForTimeout(600);
+    check("a past paper's marks are saved, on its paper", await page.evaluate(() => window.__qa.db.student_results.some((r) => r.subject === "phy" && r.title === "Paper 2 · Feb/Mar 2025, 22" && Number(r.out_of) === 60 && Number(r.score) === 45)));
     // Customize (phase 32): tell Pan, or set it yourself. Pan's function
     // isn't served here, so the app understands the sentence itself.
     const rulesOf = () => page.evaluate(() => window.__qa.db.student_profiles.find((r) => r.setup_at)?.plan_rules || {});
