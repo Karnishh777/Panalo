@@ -65,6 +65,25 @@ only where nothing else can).
   effect is now one quiet circuit trace in the subject's colour that
   plays a few seconds after a choice and then holds still, with a
   smaller zoom.
+- **Timetable (phase 36)**: Plan shows today in full, with times; other
+  days come up by tapping them (or "The whole week"), and the choice is
+  remembered on the device. Boarders give every study time the school
+  keeps (evening prep, morning prep, night study, weekend prep, each on
+  its days) and the plan uses all of it, with no buffer taken off: an
+  evening prep of 90 minutes was planned as 70 before. Short blocks run
+  together, with a break after each 25 minutes or more. Boarders say how
+  weekends go (in the hostel, at home, or it changes); going home, the
+  evening of leaving is the journey, and the last day ends early for the
+  journey back; staying, the weekend is study time with any weekend prep
+  in full. When weekends change, Plan asks about each coming weekend, and
+  Pan understands "I'm going home this weekend".
+- **Your journey (phase 36)**: Settings → Your journey downloads
+  everything done here as one file, starts again from nothing (after a
+  last chance to download, and typing "start again"), or brings a
+  download back. The database seals each download to its account
+  (`journey_export`), so a journey can only come back into the account it
+  came from, and only as it was downloaded; "Download my data" carries the
+  same sealed journey.
 - **Other subjects (phase 35)**: the subject list (at sign-up and in
   Settings → Change my answers) has "+ Other subject": a name and its
   syllabus code ("Marine Science 9693"). Pan works out the syllabus

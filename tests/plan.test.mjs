@@ -49,11 +49,11 @@ for (const s of profile.subjects) syllabi[s.id] = load(P.syllabusPath(profile.st
   ok("the struggling subject comes first", today.blocks[0].subject === "math", today.blocks[0].subject);
   const all = plan.flatMap((d) => d.blocks);
   ok("checks lead to learning later in the week", all.some((b) => b.kind === "learn"));
-  ok("every day fits its capacity", plan.every((d) => d.minutes + d.blocks.length * 5 <= d.planned + 5 || d === plan[0]), JSON.stringify(plan.map((d) => [d.minutes, d.planned])));
+  ok("every day fits its capacity", plan.every((d) => d.minutes <= d.planned || d === plan[0]), JSON.stringify(plan.map((d) => [d.minutes, d.planned])));
   ok("no subject takes more than half a day", plan.every((d) => ["phy", "chem", "math"].every((s) => d.blocks.filter((b) => b.subject === s).reduce((n, b) => n + b.minutes, 0) <= Math.max(50, d.planned / 2))));
-  ok("days are well used", plan.slice(1).every((d) => d.minutes + d.blocks.length * 5 >= d.planned - 30), JSON.stringify(plan.map((d) => [d.minutes, d.planned])));
+  ok("days are well used", plan.slice(1).every((d) => d.minutes + d.blocks.length * 5 >= d.planned - 30 && d.minutes <= d.planned), JSON.stringify(plan.map((d) => [d.minutes, d.planned])));
   ok("no topic twice in a day", plan.every((d) => new Set(d.blocks.map((b) => b.subject + b.topic)).size === d.blocks.length));
-  ok("blocks have start times, with breaks between", today.blocks.every((b, i) => i === 0 || b.start >= today.blocks[i - 1].start + today.blocks[i - 1].minutes + 5));
+  ok("blocks have start times, with a break after each long one", plan.every((d) => d.blocks.every((b, i) => i === 0 || b.start >= d.blocks[i - 1].start + d.blocks[i - 1].minutes + (d.blocks[i - 1].minutes >= 25 ? 5 : 0))));
   ok("blocks end before bedtime", plan.every((d) => d.blocks.every((b) => b.start + b.minutes <= d.to + 5)));
   ok("the next block is today's first", P.nextBlock(plan) === today.blocks[0]);
   const late = P.buildPlan({ profile, syllabi, now: new Date(2026, 9, 19, 22, 10).getTime() });
@@ -115,6 +115,23 @@ for (const s of profile.subjects) syllabi[s.id] = load(P.syllabusPath(profile.st
   ok("a poor mark lowers the topics it covered", L.mastery(after[ids[0]]) < L.mastery(states[ids[0]]) && after[ids[5]] === states[ids[5]]);
   ok("readiness is the mean mastery", P.readiness(P.topicsInScope(syllabi.phy, "as"), after) < before && Math.abs(before - 0.6) < 0.01);
   ok("estimates are padded 1.5× until there is data", P.pad(null) === 1.5 && P.pad({ n: 5 }) === 1);
+}
+
+// ---- a boarder: blocks inside study times; a weekend at home ----
+{
+  const boarder = { ...profile, boarding: true, schoolDays: [1, 2, 3, 4, 5, 6], wakeAt: "06:00", sleepAt: "22:00", prepSlots: [{ start: "06:15", end: "07:00", days: [1, 2, 3, 4, 5, 6] }, { start: "18:00", end: "19:30", days: [1, 2, 3, 4, 5, 6] }], homeTravel: 60 };
+  const morning = new Date(2026, 9, 20, 5, 0).getTime(); // Tuesday 05:00
+  const plan = P.buildPlan({ profile: boarder, syllabi, now: morning });
+  const inside = (d, b) => [[375, 420], [1080, 1170]].some(([a, z]) => b.start >= a && b.start + b.minutes <= z);
+  ok("a boarder's blocks sit inside their study times", plan.filter((d) => d.prep).every((d) => d.blocks.every((b) => inside(d, b))), JSON.stringify(plan[0].blocks.map((b) => [b.start, b.minutes])));
+  ok("study times are well used", plan.filter((d) => d.prep).every((d) => d.minutes >= 90), JSON.stringify(plan.map((d) => d.minutes)));
+  const rules = { off: [], minutes: {}, start: null, weight: {}, dates: {}, skips: [], pins: [], away: { "2026-10-25": "home" } };
+  const sun = new Date(2026, 9, 24, 5, 0).getTime(); // Saturday 05:00
+  const home = P.buildPlan({ profile: boarder, syllabi, now: sun, days: 2, rules });
+  ok("the day of going home has no prep, only an evening after the journey", !home[0].prep && home[0].travel === 60 && home[0].blocks.every((b) => b.start >= 15 * 60 + 10 + 60 + 45));
+  ok("at home on Sunday, back before bed", home[1].where === "home" && home[1].blocks.every((b) => b.start + b.minutes <= 21 * 60 + 30 - 90));
+  const stay = P.buildPlan({ profile: boarder, syllabi, now: sun, days: 2 });
+  ok("staying in the hostel keeps Saturday's prep", stay[0].prep && stay[1].where === "stay");
 }
 
 console.log(`\n${passed} passed, ${failures.length} failed`);

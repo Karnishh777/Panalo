@@ -753,6 +753,45 @@
       }
       return { data: out, error: null };
     }
+    // Phase 36: the journey, sealed to its account (a stand-in seal: the
+    // account and the text's length and checksum; the real one is a keyed hash).
+    const JOURNEY = { tasks: "student_tasks", sessions: "focus_sessions", events: "student_events", activities: "activity_log", goals: "student_goals", journal: "daily_entries", topics: "student_topics", results: "student_results" };
+    const sealOf = (uid, text) => {
+      let h = 0;
+      for (let i = 0; i < text.length; i++) h = (h * 31 + text.charCodeAt(i)) >>> 0;
+      return `${uid}:${text.length}:${h.toString(16)}`.padEnd(64, "0");
+    };
+    const strip = ({ user_id, ...rest }) => rest;
+    const clearJourney = (uid) => {
+      for (const t of Object.values(JOURNEY)) db[t] = (db[t] || []).filter((r) => r.user_id !== uid);
+    };
+    if (name === "journey_export") {
+      const uid = me();
+      const body = { version: 1, made_at: nowIso(), profile: strip((db.student_profiles || []).find((r) => r.user_id === uid) || {}) };
+      for (const [k, t] of Object.entries(JOURNEY)) body[k] = (db[t] || []).filter((r) => r.user_id === uid).map(strip);
+      const text = JSON.stringify(body);
+      return { data: { account: uid, journey: text, seal: sealOf(uid, text) }, error: null };
+    }
+    if (name === "journey_reset") {
+      const uid = me();
+      clearJourney(uid);
+      const keep = (db.student_profiles || []).find((r) => r.user_id === uid)?.device_state || {};
+      db.student_profiles = db.student_profiles.filter((r) => r.user_id !== uid);
+      db.student_profiles.push({ user_id: uid, born_at: nowIso(), interests: [], device_state: keep, setup_at: null });
+      persist();
+      return { data: null, error: null };
+    }
+    if (name === "journey_import") {
+      const uid = me();
+      if (sealOf(uid, String(args?.journey || "")) !== args?.seal) return { data: null, error: { message: "That journey belongs to another account, or it was changed after it was downloaded.", code: "42501" } };
+      const j = JSON.parse(args.journey);
+      clearJourney(uid);
+      db.student_profiles = db.student_profiles.filter((r) => r.user_id !== uid);
+      db.student_profiles.push({ ...j.profile, user_id: uid });
+      for (const [k, t] of Object.entries(JOURNEY)) for (const r of j[k] || []) db[t].push({ ...r, user_id: uid });
+      persist();
+      return { data: { sessions: (j.sessions || []).length, topics: (j.topics || []).length, results: (j.results || []).length, made_at: j.made_at }, error: null };
+    }
     if (name === "delete_my_account") {
       const uid = me();
       // Phase 18: conversations only they were in go too.

@@ -11,15 +11,16 @@
 //   dates:   { "YYYY-MM-DD": { off } | { crash } | { minutes } }   one-off days
 //   skips:   ["YYYY-MM-DD|subject|topic"]  not this block on that day
 //   pins:    [{ date, subject, topic, kind }]  this block first that day
+//   away:    { "YYYY-MM-DD": "home" | "stay" }  boarders: that weekend at home or in the hostel
 
 export const WEIGHTS = [0, 0.5, 1, 1.5, 2];
-export const OPS = ["day_off", "day_on", "day_minutes", "date_off", "date_minutes", "date_crash", "date_clear", "start_after", "subject_weight", "reset"];
+export const OPS = ["day_off", "day_on", "day_minutes", "date_off", "date_minutes", "date_crash", "date_clear", "start_after", "subject_weight", "weekend_home", "weekend_stay", "reset"];
 const WEEKDAYS = ["sunday", "monday", "tuesday", "wednesday", "thursday", "friday", "saturday"];
 const TIME = /^([01]\d|2[0-3]):[0-5]\d$/;
 const DATE = /^\d{4}-\d{2}-\d{2}$/;
 const MAX_ITEMS = 60;
 
-export const empty = () => ({ off: [], minutes: {}, start: null, weight: {}, dates: {}, skips: [], pins: [] });
+export const empty = () => ({ off: [], minutes: {}, start: null, weight: {}, dates: {}, skips: [], pins: [], away: {} });
 
 /** "YYYY-MM-DD" for a moment, in local time. */
 export function dateKey(ms) {
@@ -53,6 +54,9 @@ export function normalize(raw, { subjects = null, now = Date.now() } = {}) {
     else if (v.crash) r.dates[k] = { crash: true };
     else if (v.minutes != null) r.dates[k] = { minutes: minutes(v.minutes) };
   }
+  // A weekend's answer stays until the weekend is over (a week at most).
+  const weekAgo = dateKey(now - 7 * 86400000);
+  for (const [k, v] of Object.entries(raw.away || {}).slice(0, MAX_ITEMS)) if (DATE.test(k) && k >= weekAgo && (v === "home" || v === "stay")) r.away[k] = v;
   r.skips = [...new Set((raw.skips || []).filter((s) => typeof s === "string" && DATE.test(s.slice(0, 10)) && s.slice(0, 10) >= today))].slice(-MAX_ITEMS);
   r.pins = (raw.pins || [])
     .filter((p) => p && DATE.test(p.date) && p.date >= today && typeof p.subject === "string" && typeof p.topic === "string" && (!known || known.has(p.subject)))
@@ -63,7 +67,7 @@ export function normalize(raw, { subjects = null, now = Date.now() } = {}) {
 
 /** Whether rules change anything at all. */
 export function isEmpty(r) {
-  return !r.off.length && !Object.keys(r.minutes).length && !r.start && !Object.keys(r.weight).length && !Object.keys(r.dates).length && !r.skips.length && !r.pins.length;
+  return !r.off.length && !Object.keys(r.minutes).length && !r.start && !Object.keys(r.weight).length && !Object.keys(r.dates).length && !r.skips.length && !r.pins.length && !Object.keys(r.away || {}).length;
 }
 
 /**
@@ -122,6 +126,10 @@ export function applyChanges(rules, changes, opts = {}) {
           r.pins.push({ date: c.date, subject: c.subject, topic: c.topic, kind: c.kind || "learn" });
         }
         break;
+      case "weekend_home":
+      case "weekend_stay":
+        if (DATE.test(c.date || "")) r.away[c.date] = c.op === "weekend_home" ? "home" : "stay";
+        break;
       case "reset":
         r = empty();
         break;
@@ -144,6 +152,39 @@ export function dayRule(r, ms) {
     from: r.start ? h * 60 + m : 0,
     key,
   };
+}
+
+/**
+ * A boarder's answer for the weekend a day belongs to: "home", "stay", or
+ * null when not given. The weekend is the run of days without school
+ * around `ms`; an answer on any of its days, or on the school day before
+ * it (the day of leaving), counts for all of them.
+ */
+export function awayOn(r, ms, schoolDays = []) {
+  const school = (t) => schoolDays.includes(new Date(t).getDay());
+  if (school(ms)) return null;
+  const DAYMS = 86400000;
+  let first = ms;
+  for (let i = 0; i < 6 && !school(first - DAYMS); i++) first -= DAYMS;
+  let found = r.away?.[dateKey(first - DAYMS)] || null;
+  for (let t = first, i = 0; i < 7 && !school(t); t += DAYMS, i++) found = r.away?.[dateKey(t)] || found;
+  return found;
+}
+
+/** The first day of the next weekend (days without school) from `now`, or null. */
+export function nextWeekend(schoolDays, now = Date.now()) {
+  if (!schoolDays?.length || schoolDays.length >= 7) return null;
+  const d = new Date(now);
+  d.setHours(12, 0, 0, 0);
+  const school = (t) => schoolDays.includes(new Date(t).getDay());
+  let t = d.getTime();
+  // Today inside a weekend: that weekend, from its first day.
+  if (!school(t)) {
+    while (!school(t - 86400000)) t -= 86400000;
+    return t;
+  }
+  while (school(t)) t += 86400000;
+  return t;
 }
 
 const WD_LABEL = ["Sundays", "Mondays", "Tuesdays", "Wednesdays", "Thursdays", "Fridays", "Saturdays"];
@@ -173,6 +214,7 @@ export function describe(r, { nameOf = (s) => s, clock = (t) => t, now = Date.no
   for (const [k, v] of Object.entries(r.dates).sort()) out.push({ text: `${dayOf(k, now)}: ${v.off ? "off" : v.crash ? "crash day" : `at most ${hours(v.minutes)}`}`, undo: { op: "date_clear", date: k } });
   if (r.skips.length) out.push({ text: `${r.skips.length} block${r.skips.length > 1 ? "s" : ""} skipped`, undo: { op: "clear_skips" } });
   for (const p of r.pins) out.push({ text: `${dayOf(p.date, now)}: ${nameOf(p.subject)} first`, undo: { op: "unpin", subject: p.subject, topic: p.topic } });
+  for (const [k, v] of Object.entries(r.away || {}).sort()) out.push({ text: `Weekend of ${dayOf(k, now)}: ${v === "home" ? "going home" : "in the hostel"}`, undo: { op: "unaway", date: k } });
   return out;
 }
 
@@ -200,6 +242,10 @@ export function describeChange(c, { nameOf = (s) => s, clock = (t) => t, now = D
       const w = nearestWeight(Number(c.weight ?? 1));
       return `${nameOf(c.subject)}: ${w === 0 ? "paused" : w === 1 ? "as normal" : w < 1 ? "less" : w >= 2 ? "a lot more" : "more"}`;
     }
+    case "weekend_home":
+      return `Weekend of ${dayOf(c.date, now)}: going home`;
+    case "weekend_stay":
+      return `Weekend of ${dayOf(c.date, now)}: in the hostel`;
     case "reset":
       return "Back to the plan as the planner made it";
     default:
@@ -210,6 +256,11 @@ export function describeChange(c, { nameOf = (s) => s, clock = (t) => t, now = D
 /** Undo one line from describe() (the two that aren't plain changes). */
 export function undo(r, change, opts = {}) {
   if (change.op === "clear_skips") return normalize({ ...r, skips: [] }, opts);
+  if (change.op === "unaway") {
+    const away = { ...r.away };
+    delete away[change.date];
+    return normalize({ ...r, away }, opts);
+  }
   if (change.op === "unpin") return normalize({ ...r, pins: r.pins.filter((p) => !(p.subject === change.subject && p.topic === change.topic)) }, opts);
   return applyChanges(r, [change], opts);
 }
@@ -276,6 +327,16 @@ export function understand(sentence, { subjects = [], now = Date.now() } = {}) {
     if (!text) continue;
     if (/\b(reset|back to normal|undo everything|clear (all|everything)|start over)\b/.test(text)) {
       changes.push({ op: "reset" });
+      continue;
+    }
+    // Boarders: "going home this weekend", "staying in the hostel".
+    const homeward = /\b(go(ing)? home|home this weekend|home for the weekend|leave for home)\b/.test(text);
+    const staying = /\b(stay(ing)? (in|at) (the )?(hostel|school|boarding)|hostel this weekend|not going home)\b/.test(text);
+    if (homeward || staying) {
+      const sat = new Date(now);
+      const ahead = (6 - sat.getDay() + 7) % 7;
+      const date = daysIn(text, now).find((d) => d.date)?.date || dateKey(new Date(sat.getFullYear(), sat.getMonth(), sat.getDate() + (sat.getDay() === 0 ? 0 : ahead)).getTime());
+      changes.push({ op: staying ? "weekend_stay" : "weekend_home", date });
       continue;
     }
     const t = clockTime(text);

@@ -10,7 +10,7 @@ import { BOARDS, STAGES, AIMS, LEVELS, subjectsFor, gradesFor, stageOf } from ".
 import * as PP from "./model/papers.js";
 import { paperChooser, seriesChooser } from "./paper-sheets.js";
 import { otherSubjectForm } from "./other-subject.js";
-import { toRow, fromRow, ACTIVITY_KINDS, cleanActivities } from "./model/profile.js";
+import { toRow, fromRow, ACTIVITY_KINDS, cleanActivities, prepSlotsOf, MAX_PREP } from "./model/profile.js";
 import { clockOfText } from "./model/time.js";
 import { art, artImg, onArt, GUARDIANS, guardianOf } from "./art.js";
 import { createPan } from "./motion-art.js";
@@ -24,7 +24,7 @@ const PAN = {
   papers: ["think", "Your papers decide what we study, and when the countdown ends."],
   aim: ["idle", "Aim high or steady: both are good plans."],
   school: ["think", "School comes first. I plan around it, never over it."],
-  boarding: ["think", "Boarding or travelling: it changes your evenings."],
+  boarding: ["think", "Boarding or travelling: it changes your evenings and weekends."],
   sleep: ["idle", "Sleep is protected. I never plan into it."],
   tuition: ["think", "Sport, art, coaching: I plan around all of it."],
   exams: ["cheer", "Last one. Then your plan is ready."],
@@ -314,12 +314,62 @@ export function runSetup({ onDone, editing = false }) {
           toneOf: () => "tone-time",
         });
         const travelBox = el("div", { class: "setup-sub", hidden: a.boarding }, [el("p", { class: "faint", text: "Travel to school, each way" }), travel.node]);
+        // Boarders: every study time the school keeps (phase 36), and weekends.
+        if (!a.prepSlots?.length) a.prepSlots = prepSlotsOf({ ...a, boarding: true }).map((x) => ({ ...x }));
+        if (!a.prepSlots.length) a.prepSlots = [{ start: a.prepStart || "18:00", end: a.prepEnd || "19:30", days: [...a.schoolDays].sort() }];
+        const slots = el("div", { class: "setup-activities setup-preps" });
+        const drawSlots = () =>
+          slots.replaceChildren(
+            ...a.prepSlots.map((x, i) =>
+              el("div", { class: "setup-activity setup-prep", "data-prep": String(i) }, [
+                el("div", { class: "setup-activity-head" }, [
+                  el("b", { class: "small", text: i ? `Study time ${i + 1}` : "Prep" }),
+                  a.prepSlots.length > 1 ? el("button", { type: "button", class: "link-btn", text: "Remove", "aria-label": `Remove study time ${i + 1}`, onClick: () => (a.prepSlots.splice(i, 1), drawSlots()) }) : null,
+                ]),
+                el("div", { class: "setup-times" }, [
+                  el("label", { class: "field" }, [el("span", { text: "Starts" }), timeInput(i ? `setup-prep-${i}-start` : "setup-prep-start", x.start, (v) => (x.start = v))]),
+                  el("label", { class: "field" }, [el("span", { text: "Ends" }), timeInput(i ? `setup-prep-${i}-end` : "setup-prep-end", x.end, (v) => (x.end = v))]),
+                ]),
+                el(
+                  "div",
+                  { class: "chips", role: "group", "aria-label": "Days" },
+                  DAYS.map((d) => {
+                    const b = el("button", { type: "button", class: "chip tone-time", "aria-pressed": String(x.days.includes(d.id)), text: d.label });
+                    b.addEventListener("click", () => {
+                      x.days = x.days.includes(d.id) ? x.days.filter((y) => y !== d.id) : [...x.days, d.id];
+                      b.setAttribute("aria-pressed", String(x.days.includes(d.id)));
+                    });
+                    return b;
+                  })
+                ),
+              ])
+            ),
+            a.prepSlots.length < MAX_PREP
+              ? el("button", { type: "button", class: "btn btn-ghost btn-sm", id: "setup-add-prep", text: "Add another study time", onClick: () => (a.prepSlots.push({ start: "06:15", end: "07:00", days: [...a.schoolDays].sort() }), drawSlots()) })
+              : null
+          );
+        drawSlots();
+        const homeBox = el("div", { class: "setup-sub", hidden: a.weekend === "stay" }, [
+          el("p", { class: "faint", text: "Travel home, each way" }),
+          chipGroup({ label: "Travel home, each way", value: a.homeTravel ?? 60, options: [30, 60, 90, 120, 180, 240].map((m) => ({ id: m, label: m < 60 ? `${m} min` : `${m / 60} h${m % 60 ? " 30" : ""}` })), onChange: (v) => (a.homeTravel = v), toneOf: () => "tone-time" }).node,
+        ]);
         const prepBox = el("div", { class: "setup-sub", hidden: !a.boarding }, [
-          el("p", { class: "faint", text: "Evening prep on school days" }),
-          el("div", { class: "setup-times" }, [
-            el("label", { class: "field" }, [el("span", { text: "Starts" }), timeInput("setup-prep-start", a.prepStart || "18:00", (v) => (a.prepStart = v))]),
-            el("label", { class: "field" }, [el("span", { text: "Ends" }), timeInput("setup-prep-end", a.prepEnd || "19:30", (v) => (a.prepEnd = v))]),
-          ]),
+          el("p", { class: "faint", text: "When does school keep time for study? Evening prep, morning prep, night study, weekend prep: add each one. The plan uses all of it." }),
+          slots,
+          el("p", { class: "setup-q", text: "At weekends, do you…" }),
+          choices(
+            [
+              { id: "stay", label: "Stay in the hostel", sub: "Weekends are study time" },
+              { id: "home", label: "Go home", sub: "The plan allows for the journey" },
+              { id: "ask", label: "It changes", sub: "Plan asks each week" },
+            ],
+            () => a.weekend || "stay",
+            (v) => {
+              a.weekend = v;
+              homeBox.hidden = v === "stay";
+            }
+          ),
+          homeBox,
         ]);
         return [
           choices(
@@ -338,7 +388,12 @@ export function runSetup({ onDone, editing = false }) {
           prepBox,
         ];
       },
-      ok: () => !a.boarding || (a.prepEnd || "19:30") > (a.prepStart || "18:00") || "Prep has to end after it starts.",
+      ok: () => {
+        if (!a.boarding) return true;
+        const bad = (a.prepSlots || []).find((x) => !x.days.length || !x.start || !x.end || x.end <= x.start);
+        if (!bad) return true;
+        return !bad.days.length ? "Pick the days for each study time." : "Each study time has to end after it starts.";
+      },
     },
     {
       id: "sleep",

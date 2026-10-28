@@ -2,6 +2,7 @@
 // if you need it, your data to download or ask about, and how to leave.
 // Written to be accurate rather than reassuring -- see LIMITATIONS.md.
 import { el, openSheet, showToast, getPrefs, setPrefs } from "../ui.js";
+import { sealedJourney } from "../journey.js";
 import { supabaseClient } from "../../../src/client.js";
 import { deleteAllMyFiles } from "../../../src/filestore.js";
 import { idbDelKey } from "../../../src/encryption.js";
@@ -156,6 +157,14 @@ async function downloadMyData(btn) {
       blocked: await get("blocks", (q) => q.eq("blocker_id", me)),
       reports_sent: await get("reports", (q) => q.eq("reporter_id", me)),
     };
+    // The study journey, sealed to this account: this file can bring it
+    // back (Settings → Your journey).
+    try {
+      const { journey, seal } = await sealedJourney();
+      Object.assign(out, { journey, seal });
+    } catch {
+      /* before phase 36: the rest is still the full download */
+    }
     const blob = new Blob([JSON.stringify(out, null, 2)], { type: "application/json" });
     const a = document.createElement("a");
     a.href = URL.createObjectURL(blob);

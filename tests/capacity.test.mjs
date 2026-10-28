@@ -60,10 +60,32 @@ const day12 = { ...DEFAULTS, stage: "a2", travelMinutes: 40, wakeAt: "06:30", sl
   const prep = { ...boarder9, prepStart: "18:00", prepEnd: "19:30" };
   const mon = C.dayCapacity(prep, 1);
   ok("a boarder's school day is their prep", mon.prep && mon.from === 18 * 60 && mon.to === 19 * 60 + 30);
-  ok("prep is capped like any school day (grade 9: 2 h)", mon.minutes === 90 && C.dayCapacity({ ...prep, prepEnd: "21:00" }, 1).minutes === 120);
+  ok("prep is used in full: the school keeps it for study", mon.minutes === 90 && mon.fixed === 90 && C.dayCapacity({ ...prep, prepEnd: "21:00" }, 1).minutes === 180);
+  ok("prep has no buffer off it", C.weekCapacity(prep)[1].planned === 90);
   ok("prep never runs into sleep", C.dayCapacity({ ...prep, prepEnd: "21:20" }, 1).to === 21 * 60);
   ok("days without school are planned as usual", !C.dayCapacity(prep, 0).prep);
   ok("a day scholar is unaffected", !C.dayCapacity({ ...DEFAULTS, prepStart: "18:00", prepEnd: "19:30" }, 1).prep);
+}
+
+// ---- boarders: several study times, and weekends (phase 36) ----
+{
+  const b = { ...boarder9, stage: "as", wakeAt: "06:00", sleepAt: "22:00", prepSlots: [{ start: "06:15", end: "07:00", days: [1, 2, 3, 4, 5, 6] }, { start: "18:00", end: "19:30", days: [1, 2, 3, 4, 5, 6] }, { start: "10:00", end: "12:00", days: [0] }], homeTravel: 90 };
+  const mon = C.dayCapacity(b, 1);
+  ok("every study time counts, in full", mon.minutes === 135 && mon.fixed === 135 && mon.windows.length === 2 && mon.from === 6 * 60 + 15 && mon.to === 19 * 60 + 30, JSON.stringify(mon));
+  const stay = C.dayCapacity(b, 0, { where: "stay" });
+  ok("a weekend in the hostel: weekend prep in full, and free time", stay.where === "stay" && stay.fixed === 120 && stay.minutes >= 120 && stay.minutes <= 300);
+  const home = C.dayCapacity(b, 0, { where: "home", returning: true });
+  ok("going home: the last day ends early for the journey back", home.where === "home" && home.to === 21 * 60 + 30 - 90 - 30 && home.fixed === 0 && home.travel === 90);
+  const sat = C.dayCapacity(b, 6, { leaving: true });
+  ok("the evening of leaving is travel, not prep", !sat.prep && sat.from === 15 * 60 + 30 + 90 + 45 && sat.travel === 90);
+  const week = C.weekCapacity(b);
+  ok("prep days keep all their time", week[1].planned === 135);
+  const sunday = new Date(2026, 10, 1, 12).getTime();
+  const saturday = new Date(2026, 9, 31, 12).getTime();
+  ok("a date knows its weekend", C.dateCapacity(b, sunday, () => "home").where === "home" && C.dateCapacity(b, saturday, (t) => (t === sunday ? "home" : null)).travel === 90 && C.dateCapacity(b, sunday).where === "stay");
+  ok("a usual weekend at home", C.dateCapacity({ ...b, weekend: "home" }, sunday).where === "home");
+  const old = { ...boarder9, prepStart: "18:00", prepEnd: "19:30", prepSlots: [] };
+  ok("an older profile's one prep counts on school days", C.dayCapacity(old, 3).minutes === 90 && !C.dayCapacity(old, 0).fixed);
 }
 
 console.log(`\n${passed} passed, ${failures.length} failed`);

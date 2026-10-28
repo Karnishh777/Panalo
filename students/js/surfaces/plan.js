@@ -178,22 +178,111 @@ function pan(pose, cls) {
   return artImg(`pan-${pose}`, { cls: `pan ${cls}` }) || Object.assign(createPan({ size: 120, pose }).canvas, { className: `pan pan-live ${cls}` });
 }
 
+// The week: today in full; any other day when asked for. The days chosen
+// stay chosen on this device.
+const DAYS_KEY = "panalo.plan.days";
+function shownDays() {
+  try {
+    return new Set(JSON.parse(localStorage.getItem(DAYS_KEY) || "[]").filter((x) => Number.isInteger(x)));
+  } catch {
+    return new Set();
+  }
+}
+function keepShown(set) {
+  try {
+    localStorage.setItem(DAYS_KEY, JSON.stringify([...set]));
+  } catch {
+    /* private window: they're chosen for this visit */
+  }
+}
+
+function dayNote(d) {
+  if (d.off) return "day off";
+  if (d.crash) return `crash day · ${formatMinutes(d.minutes)}`;
+  const parts = [d.blocks.length ? formatMinutes(d.minutes) : d.light ? "lighter day" : "free"];
+  if (d.blocks.length && d.light) parts.push("lighter day");
+  if (d.prep) parts.push(d.school ? "in your study times" : "weekend prep");
+  if (d.travel) parts.push(d.school ? "travelling home" : "travelling back");
+  else if (d.where === "home") parts.push("at home");
+  if (d.busy >= 30) parts.push(`${formatMinutes(d.busy)} taken`);
+  return parts.join(" · ");
+}
+
+function dayCard(d, i) {
+  return el("li", { class: `pl-day${i === 0 ? " today" : ""}${d.light ? " light" : ""}${d.off ? " off" : ""}${d.crash ? " crash" : ""}`, "data-weekday": String(d.weekday) }, [
+    el("div", { class: "pl-day-head" }, [el("b", { text: dayLabel(d.date, i) }), el("span", { class: "faint", text: dayNote(d) })]),
+    d.blocks.length ? el("ul", { class: "pl-blocks" }, d.blocks.map((b) => blockLine(b, { time: true, date: d.date, today: i === 0 }))) : i === 0 ? el("p", { class: "faint small", text: d.off ? "Today's off." : "Nothing more today." }) : null,
+  ]);
+}
+
 function week(plan) {
+  const shown = shownDays();
+  const list = el("ol", { class: "pl-days" });
+  const chips = el("div", { class: "chips pl-day-chips", role: "group", "aria-label": "Show other days" });
+  const draw = () => {
+    list.replaceChildren(...plan.map((d, i) => (i === 0 || shown.has(d.weekday) ? dayCard(d, i) : null)).filter(Boolean));
+    const all = plan.slice(1).every((d) => shown.has(d.weekday));
+    chips.replaceChildren(
+      ...plan.slice(1).map((d, k) =>
+        el("button", {
+          type: "button",
+          class: "chip pl-day-chip",
+          "data-weekday": String(d.weekday),
+          "aria-pressed": String(shown.has(d.weekday)),
+          onClick: () => {
+            if (shown.has(d.weekday)) shown.delete(d.weekday);
+            else shown.add(d.weekday);
+            keepShown(shown);
+            draw();
+          },
+        }, [el("b", { text: k === 0 ? "Tomorrow" : new Date(d.date).toLocaleDateString(undefined, { weekday: "short" }) }), el("small", { class: "faint", text: d.off ? " off" : d.blocks.length ? ` ${formatMinutes(d.minutes)}` : " free" })])
+      ),
+      el("button", {
+        type: "button",
+        class: "link-btn pl-day-all",
+        id: "plan-days-all",
+        text: all ? "Only today" : "The whole week",
+        onClick: () => {
+          if (all) shown.clear();
+          else plan.slice(1).forEach((d) => shown.add(d.weekday));
+          keepShown(shown);
+          draw();
+        },
+      })
+    );
+  };
+  draw();
   return el("section", { class: "pl-week", "aria-labelledby": "pl-week-h" }, [
-    el("h2", { id: "pl-week-h", class: "pl-h", text: "The week" }),
-    el(
-      "ol",
-      { class: "pl-days" },
-      plan.map((d, i) =>
-        el("li", { class: `pl-day${i === 0 ? " today" : ""}${d.light ? " light" : ""}${d.off ? " off" : ""}${d.crash ? " crash" : ""}`, "data-weekday": String(d.weekday) }, [
-          el("div", { class: "pl-day-head" }, [
-            el("b", { text: dayLabel(d.date, i) }),
-            el("span", { class: "faint", text: d.off ? "day off" : d.crash ? `crash day · ${formatMinutes(d.minutes)}` : `${d.blocks.length ? formatMinutes(d.minutes) : d.light ? "lighter day" : "free"}${d.blocks.length && d.light ? " · lighter day" : ""}${d.busy >= 30 ? ` · ${formatMinutes(d.busy)} taken` : ""}` }),
-          ]),
-          d.blocks.length ? el("ul", { class: "pl-blocks" }, d.blocks.map((b) => blockLine(b, { time: i === 0, date: d.date, today: i === 0 }))) : null,
-        ])
-      )
-    ),
+    el("h2", { id: "pl-week-h", class: "pl-h", text: "Today" }),
+    list,
+    el("p", { class: "pl-h pl-h-sm faint", text: "Other days" }),
+    chips,
+  ]);
+}
+
+// Boarders: is the coming weekend in the hostel or at home? Asked when
+// they said it changes; otherwise their usual, one tap to change.
+function weekendRow(now) {
+  const p = profile();
+  if (!p.boarding) return null;
+  const first = R.nextWeekend(p.schoolDays, now);
+  if (first == null || first - now > 6 * DAY) return null;
+  const rules = planRules(now);
+  const said = R.awayOn(rules, first, p.schoolDays);
+  const where = said || (p.weekend === "home" ? "home" : "stay");
+  const asking = p.weekend === "ask" && !said;
+  const when = new Date(first).toLocaleDateString(undefined, { weekday: "long", day: "numeric", month: "short" });
+  const pick = async (v) => {
+    const { error } = await changePlan([{ op: v === "home" ? "weekend_home" : "weekend_stay", date: R.dateKey(first) }]);
+    if (error) return reportError(error, "Couldn't change the plan. Try again.");
+    showToast(v === "home" ? "Going home: the plan allows for the journey." : "In the hostel: the weekend has study time.");
+  };
+  return el("div", { class: `pl-weekend${asking ? " ask" : ""}`, id: "plan-weekend" }, [
+    el("span", { class: "small", text: asking ? `This weekend (from ${when}): staying in the hostel or going home?` : `This weekend (from ${when}):` }),
+    el("div", { class: "seg", role: "radiogroup", "aria-label": "This weekend" }, [
+      ["stay", "In the hostel"],
+      ["home", "Going home"],
+    ].map(([v, label]) => el("button", { type: "button", role: "radio", class: "seg-btn", "data-where": v, "aria-checked": String(!asking && where === v), text: label, onClick: () => pick(v) }))),
   ]);
 }
 
@@ -359,8 +448,8 @@ function render() {
   const light = cap.find((d) => d.light);
   const shortSleep = cap.some((d) => d.shortSleep);
   const summary = el("p", { class: "s-sub" }, [
-    profile().boarding && profile().prepStart
-      ? `About ${formatMinutes(total)} a week: your evening prep on school days, and around sleep at weekends. A fifth is kept free`
+    profile().boarding && cap.some((d) => d.fixed)
+      ? `About ${formatMinutes(total)} a week: all of your prep and study times, and free time at weekends. A fifth of the free time is kept free`
       : `About ${formatMinutes(total)} a week, fitted around school${profile().tuitionHours ? ", tuition" : ""} and sleep. A fifth of your free time is kept free`,
     light ? `, and ${new Date(2026, 0, 4 + light.day).toLocaleDateString(undefined, { weekday: "long" })} is lighter.` : ".",
     " ",
@@ -388,6 +477,7 @@ function render() {
     el("button", { type: "button", class: "btn btn-quiet pl-tell", id: "plan-tell", onClick: () => openCustomize() }, [el("span", { text: "Tell Pan what to change…" })]),
     busyBtn,
     own.length ? el("p", { class: "pl-own faint", id: "plan-own" }, [el("b", { text: "Your changes: " }), own.map((l) => l.text).join(" · ")]) : null,
+    weekendRow(now),
     missedYesterday(now) ? el("p", { class: "pl-replanned", id: "plan-replanned", text: "Yesterday didn't go to plan, and that's okay: the week has re-planned around it." }) : null,
   ]);
   body.replaceChildren(

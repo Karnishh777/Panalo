@@ -26,7 +26,7 @@ const DEFAULT_SUPABASE_ANON_KEY = "sb_publishable_TQ1NrHUU3HaIcFRkOWXHuQ_yC3REqu
 export const MODEL = "claude-haiku-5-5";
 const MAX_TEXT = 500;
 
-export const OPS = ["day_off", "day_on", "day_minutes", "date_off", "date_minutes", "date_crash", "date_clear", "start_after", "subject_weight", "reset"];
+export const OPS = ["day_off", "day_on", "day_minutes", "date_off", "date_minutes", "date_crash", "date_clear", "start_after", "subject_weight", "weekend_home", "weekend_stay", "reset"];
 
 export const json = (body, status = 200) =>
   new Response(JSON.stringify(body), {
@@ -73,6 +73,8 @@ The changes you can make:
 - date_clear (date): undo a one-off change for that date.
 - start_after (time "HH:MM", 24-hour): nothing planned before that time; null removes it.
 - subject_weight (subject, weight): weight 0 pauses a subject, 0.5 less, 1 normal, 1.5 more, 2 a lot more. subject must be one of the ids given.
+- weekend_home (date): a boarder goes home for the weekend that date is in (any of its days, e.g. this Saturday); the plan allows for the journey.
+- weekend_stay (date): a boarder stays in the hostel for that weekend.
 - reset: back to the plan as the planner made it.
 
 Rules:

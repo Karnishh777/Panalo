@@ -17,6 +17,12 @@ export const DEFAULTS = {
   travelMinutes: 30, // each way
   prepStart: "18:00", // boarders: the school's evening prep
   prepEnd: "19:30",
+  // Boarders (phase 36): every study time the school keeps, on its days
+  // (evening prep, morning prep, night study, weekend prep); the plan uses
+  // them in full. [{ start: "HH:MM", end: "HH:MM", days: [0..6] }]
+  prepSlots: [],
+  weekend: "stay", // boarders: weekends in the hostel ("stay"), at home ("home"), or asked each week ("ask")
+  homeTravel: 60, // boarders going home: minutes each way
   wakeAt: "06:00",
   sleepAt: "22:00", // 8 hours after a 06:00 wake: the planner never plans into less
   tuitionHours: 0, // a week, for coaching without fixed times
@@ -54,6 +60,31 @@ const TIME = /^([01]\d|2[0-3]):[0-5]\d$/;
 const clamp = (n, lo, hi) => Math.min(hi, Math.max(lo, Math.round(Number(n) || 0)));
 const time = (t, fallback) => (TIME.test(String(t || "").slice(0, 5)) ? String(t).slice(0, 5) : fallback);
 
+export const WEEKENDS = ["stay", "home", "ask"];
+export const MAX_PREP = 6;
+
+/** A boarder's study times: cleaned, at most six, each on real days. */
+export function cleanPrepSlots(list) {
+  return (Array.isArray(list) ? list : [])
+    .map((x) => ({
+      start: time(x?.start, ""),
+      end: time(x?.end, ""),
+      days: [...new Set((x?.days || []).map(Number).filter((d) => Number.isInteger(d) && d >= 0 && d <= 6))].sort(),
+    }))
+    .filter((x) => x.days.length && x.start && x.end && x.end > x.start)
+    .slice(0, MAX_PREP);
+}
+
+/**
+ * A boarder's study times, or [] for a day scholar. Profiles from before
+ * phase 36 have one evening prep: it counts on school days.
+ */
+export function prepSlotsOf(a) {
+  if (!a?.boarding) return [];
+  if (a.prepSlots?.length) return cleanPrepSlots(a.prepSlots);
+  return a.prepStart && a.prepEnd && a.prepEnd > a.prepStart ? [{ start: a.prepStart, end: a.prepEnd, days: [...(a.schoolDays || [])].sort() }] : [];
+}
+
 /** Minutes since midnight for "HH:MM". */
 export function minutesOf(t) {
   const [h, m] = String(t).split(":").map(Number);
@@ -87,6 +118,9 @@ export function toRow(a, now = new Date()) {
     boarding: !!a.boarding,
     travel_minutes: a.boarding ? 0 : clamp(a.travelMinutes, 0, 240),
     ...prepOf(a),
+    prep_slots: a.boarding ? cleanPrepSlots(a.prepSlots) : [],
+    weekend_plan: a.boarding ? (WEEKENDS.includes(a.weekend) ? a.weekend : "stay") : null,
+    home_travel_minutes: a.boarding ? clamp(a.homeTravel ?? DEFAULTS.homeTravel, 0, 720) : null,
     wake_at: time(a.wakeAt, DEFAULTS.wakeAt),
     sleep_at: time(a.sleepAt, DEFAULTS.sleepAt),
     tuition_hours: clamp(a.tuitionHours, 0, 40),
@@ -96,11 +130,13 @@ export function toRow(a, now = new Date()) {
   };
 }
 
-// Prep time (phase 31): only for boarders, and only a real slot.
+// Prep time (phase 31): only for boarders, and only a real slot. Since
+// phase 36 it mirrors the first study time, for older versions of the app.
 function prepOf(a) {
   if (!a.boarding) return { prep_start: null, prep_end: null };
-  const start = time(a.prepStart, DEFAULTS.prepStart);
-  const end = time(a.prepEnd, DEFAULTS.prepEnd);
+  const first = cleanPrepSlots(a.prepSlots)[0];
+  const start = time(first?.start ?? a.prepStart, DEFAULTS.prepStart);
+  const end = time(first?.end ?? a.prepEnd, DEFAULTS.prepEnd);
   return end > start ? { prep_start: start, prep_end: end } : { prep_start: null, prep_end: null };
 }
 
@@ -136,6 +172,9 @@ export function fromRow(row) {
     travelMinutes: row.travel_minutes ?? DEFAULTS.travelMinutes,
     prepStart: row.prep_start ? time(row.prep_start, null) : null,
     prepEnd: row.prep_end ? time(row.prep_end, null) : null,
+    prepSlots: cleanPrepSlots(row.prep_slots),
+    weekend: WEEKENDS.includes(row.weekend_plan) ? row.weekend_plan : DEFAULTS.weekend,
+    homeTravel: row.home_travel_minutes ?? DEFAULTS.homeTravel,
     wakeAt: time(row.wake_at, DEFAULTS.wakeAt),
     sleepAt: time(row.sleep_at, DEFAULTS.sleepAt),
     tuitionHours: row.tuition_hours ?? DEFAULTS.tuitionHours,

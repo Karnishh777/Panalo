@@ -3,13 +3,14 @@ import { el, showToast, getPrefs, setPrefs } from "../ui.js";
 import { clockOfText } from "../model/time.js";
 import { withBusy } from "../../../src/util.js";
 import { store, emit } from "../store.js";
-import { fromRow } from "../model/profile.js";
+import { fromRow, prepSlotsOf } from "../model/profile.js";
 import { stageOf, subjectName } from "../model/subjects.js";
 import { supabaseClient } from "../../../src/client.js";
 import { rewrapPrivateKey } from "../../../src/encryption.js";
 import { validatePassword, describePasswordPolicy, breachedPassword } from "../../../src/password.js";
 import { state } from "../../../src/state.js";
 import { lookPicker } from "../looks.js";
+import { journeyPanel } from "../journey.js";
 
 let root;
 let ctx;
@@ -55,7 +56,9 @@ function studyProfileBlock(ctx) {
   const stage = stageOf(a.stage);
   const names = a.subjects.map((x) => subjectName(a.stage, x.id));
   const t = clockOfText;
-  const school = `${t(a.schoolStart)}–${t(a.schoolEnd)}, ${a.boarding ? (a.prepStart ? `boarder, prep ${t(a.prepStart)}–${t(a.prepEnd)}` : "boarder") : `day scholar, ${a.travelMinutes} min travel`}`;
+  const preps = prepSlotsOf(a);
+  const weekends = { stay: "weekends in the hostel", home: "weekends at home", ask: "weekends vary" }[a.weekend] || "";
+  const school = `${t(a.schoolStart)}–${t(a.schoolEnd)}, ${a.boarding ? `boarder${preps.length ? `, ${preps.length > 1 ? `${preps.length} study times` : `prep ${t(preps[0].start)}–${t(preps[0].end)}`}` : ""}, ${weekends}` : `day scholar, ${a.travelMinutes} min travel`}`;
   return [
     el("p", { class: "muted", text: stage ? `${stage.label}${stage.sub ? ` (${stage.sub})` : ""} · ${names.length} subjects · school ${school}.` : "Not set up yet." }),
     names.length ? el("p", { class: "faint", text: names.join(", ") }) : null,
@@ -135,6 +138,7 @@ export function show() {
         ...displayBlock(),
       ]),
       el("section", { class: "panel tone-world" }, [el("div", { class: "panel-head" }, [el("h2", { text: "Your study profile" })]), ...studyProfileBlock(ctx)]),
+      journeyPanel(),
       el("section", { class: "panel tone-signal" }, [el("div", { class: "panel-head" }, [el("h2", { text: "Password" })]), passwordBlock()]),
       el("section", { class: "panel tone-time" }, [
         el("div", { class: "panel-head" }, [el("h2", { text: "Session" })]),

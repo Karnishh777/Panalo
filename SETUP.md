@@ -95,6 +95,7 @@ For each: **SQL Editor → New query** → paste the whole file → **Run**.
 | 31 | [`supabase-phase33.sql`](supabase-phase33.sql) | A daily limit on asking Pan: 30 asks per student per day, counted by `pan_take()` (only a count per day is kept, for 7 days) | Required for "Tell Pan" |
 | 32 | [`supabase-phase34.sql`](supabase-phase34.sql) | The rest of the week: sport, art, music and coaching at set times, so the plan keeps them free | Required by Students v0.2 |
 | 33 | [`supabase-phase35.sql`](supabase-phase35.sql) | Other subjects: a subject the app doesn't list, with the syllabus Pan found for it (`custom_syllabi`) | Required by Students v0.2 |
+| 34 | [`supabase-phase36.sql`](supabase-phase36.sql) | Boarders' study times and weekends (`prep_slots`, `weekend_plan`, `home_travel_minutes`); your journey: a sealed download, starting again, and bringing a download back (`journey_export`, `journey_reset`, `journey_import`) | Required by Students v0.2 |
 
 Phase 8 is self-contained and re-applies everything phase 7 does, so running 8
 is enough if you are starting fresh. Run 7 anyway if you prefer the history to
