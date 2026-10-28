@@ -197,7 +197,7 @@ export function buildPlan({ profile, syllabi = {}, topics = {}, pace = {}, event
     const state = {};
     for (const tp of list) state[tp.id] = topics[s.id]?.[tp.id] || L.newTopic(s.level ?? 2);
     const lastPaper = { ...(papersDone[s.id] || {}) };
-    return { id: s.id, code: syllabus?.code, name: subjectName(profile.stage, s.id) || syllabus?.name || s.id, level: s.level ?? 2, list, own, perTopic, state, papers, examOf, lastPaper };
+    return { id: s.id, code: syllabus?.code, name: (s.custom && s.name) || subjectName(profile.stage, s.id) || syllabus?.name || s.id, level: s.level ?? 2, list, own, perTopic, state, papers, examOf, lastPaper };
   });
 
   const out = [];

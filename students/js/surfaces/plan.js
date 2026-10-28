@@ -20,6 +20,7 @@ import { openCheckIn, uncheckedSubjects, checkInSummary } from "../check-in.js";
 import { openPapers, papersLine, openPaperMarks } from "../paper-sheets.js";
 import { openExamQuestions, hasExamQuestions } from "../exam-questions.js";
 import * as PP from "../model/papers.js";
+import { openCustomSyllabus, foundLine } from "../other-subject.js";
 import * as D from "../model/diagnose.js";
 import { art, artImg, onArt, GUARDIANS, guardianOf } from "../art.js";
 import { createEmblem, createPan, createAura } from "../motion-art.js";
@@ -246,7 +247,18 @@ function subjectCard(s, now) {
     dots,
     v.own ? null : checkInLine(s.id, v),
     paperRow(s.id, v, now),
+    s.custom ? customRow(s) : null,
     v.pace?.n >= 3 ? el("p", { class: "faint small", text: v.pace.pace > 1.15 ? `You take a little longer here (×${v.pace.pace.toFixed(1)}): your plan allows for it.` : v.pace.pace < 0.85 ? `You move quickly here (×${v.pace.pace.toFixed(1)}).` : "Your pace here is about typical." }) : null,
+  ]);
+}
+
+// An other subject: its syllabus as Pan found it, to check or change.
+function customRow(s) {
+  const p = profile();
+  const syl = p.customSyllabi?.[s.id];
+  return el("div", { class: "pl-papers" }, [
+    el("p", { class: "small pl-papers-line", text: syl ? foundLine(syl) : "No topics yet: planned as blocks of your own work. Pan can find its syllabus." }),
+    el("div", { class: "pl-papers-acts" }, [el("button", { type: "button", class: syl ? "link-btn" : "btn btn-ghost btn-sm", "data-syllabus": s.id, text: syl ? "Check the topics" : "Ask Pan for its topics", onClick: () => openCustomSyllabus(s, syl, { board: p.board, stage: p.stage }) })]),
   ]);
 }
 

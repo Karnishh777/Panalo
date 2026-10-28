@@ -94,6 +94,7 @@ For each: **SQL Editor → New query** → paste the whole file → **Run**.
 | 30 | [`supabase-phase32.sql`](supabase-phase32.sql) | The student's own changes to the plan (days off, caps, a later start, more or less of a subject, skipped and moved blocks), set by hand or by telling Pan. Private, size-capped | Required by Students v0.2 |
 | 31 | [`supabase-phase33.sql`](supabase-phase33.sql) | A daily limit on asking Pan: 30 asks per student per day, counted by `pan_take()` (only a count per day is kept, for 7 days) | Required for "Tell Pan" |
 | 32 | [`supabase-phase34.sql`](supabase-phase34.sql) | The rest of the week: sport, art, music and coaching at set times, so the plan keeps them free | Required by Students v0.2 |
+| 33 | [`supabase-phase35.sql`](supabase-phase35.sql) | Other subjects: a subject the app doesn't list, with the syllabus Pan found for it (`custom_syllabi`) | Required by Students v0.2 |
 
 Phase 8 is self-contained and re-applies everything phase 7 does, so running 8
 is enough if you are starting fresh. Run 7 anyway if you prefer the history to
@@ -118,8 +119,11 @@ It needs phases 16 and 17, and one more dashboard setting: add your site's
 **Authentication → URL Configuration → Redirect URLs**, so sign-up
 confirmation and password-reset links can land there.
 
-**Pan, the AI (optional).** "Tell Pan what to change" on the Plan page
-goes through [`functions/api/pan.js`](functions/api/pan.js), which asks
+**Pan, the AI (optional).** Two things use it, with the same key and the
+same 30 asks a day: "Other subject" (in the setup) asks
+[`functions/api/pan-subject.js`](functions/api/pan-subject.js) for the
+syllabus of a subject the app doesn't list, and "Tell Pan what to change"
+on the Plan page goes through [`functions/api/pan.js`](functions/api/pan.js), which asks
 Claude (the small Haiku model) to turn the sentence into changes the
 student confirms before they apply. Add your Anthropic API key in
 Cloudflare: **Pages → your project → Settings → Variables and secrets →

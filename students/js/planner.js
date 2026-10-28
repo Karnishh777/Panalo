@@ -11,6 +11,7 @@ import { startOfDay, DAY } from "./model/time.js";
 import { stageOf, subjectName } from "./model/subjects.js";
 import { GUARDIANS, guardianOf } from "./art.js";
 import * as PP from "./model/papers.js";
+import { asBank } from "./model/custom.js";
 
 const banks = new Map(); // path -> syllabus json, or null when there is none
 const loading = new Map();
@@ -57,10 +58,14 @@ async function fetchBank(path) {
   return loading.get(path);
 }
 
+// A subject's bank: the listed one's file, or an other subject's syllabus
+// as Pan found it (phase 35, model/custom.js).
+const pathOf = (p, s) => (s.custom ? null : P.syllabusPath(p.stage, s.id));
+
 /** Load every chosen subject's bank; resolves when all are in. */
 export async function loadBanks() {
   const p = profile();
-  const paths = p.subjects.map((s) => P.syllabusPath(p.stage, s.id)).filter(Boolean);
+  const paths = p.subjects.map((s) => pathOf(p, s)).filter(Boolean);
   const fresh = paths.some((x) => !banks.has(x));
   await Promise.all(paths.map(fetchBank));
   if (fresh) emit("plan");
@@ -71,6 +76,10 @@ export function syllabi() {
   const p = profile();
   const out = {};
   for (const s of p.subjects) {
+    if (s.custom) {
+      out[s.id] = asBank(s.id, p.customSyllabi?.[s.id]);
+      continue;
+    }
     const path = P.syllabusPath(p.stage, s.id);
     out[s.id] = path ? banks.get(path) || null : null;
   }
@@ -80,7 +89,7 @@ export function syllabi() {
 export function banksReady() {
   const p = profile();
   return p.subjects.every((s) => {
-    const path = P.syllabusPath(p.stage, s.id);
+    const path = pathOf(p, s);
     return !path || banks.has(path);
   });
 }
@@ -207,6 +216,8 @@ export function subjectView(s, now = Date.now()) {
 }
 
 export function nameOf(subjectId) {
+  const own = profile().subjects.find((s) => s.id === subjectId && s.custom);
+  if (own) return own.name;
   return subjectName(profile().stage, subjectId) || syllabi()[subjectId]?.name || subjectId;
 }
 

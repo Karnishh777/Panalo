@@ -1266,8 +1266,29 @@ async function activitiesTests() {
   ok("phase 34 is safe to re-run", again.ok, again.error);
 }
 
+async function customSyllabiTests() {
+  const db = await createDb();
+  const upTo34 = await replay(db, MIGRATIONS.slice(0, MIGRATIONS.indexOf("supabase-phase35.sql")));
+  ok("phases 1-34 replay", upTo34.ok, upTo34.error);
+  const me = await createUser(db, "c_me");
+  const other = await createUser(db, "c_other");
+  await as(db, me, (tx) => tx.query("insert into student_profiles (world_name) values ('W')"));
+  await as(db, other, (tx) => tx.query("insert into student_profiles (world_name) values ('O')"));
+  const r = await runFile(db, "supabase-phase35.sql");
+  ok("phase 35 applies", r.ok, r.error);
+  const set = await as(db, me, async (tx) => (await tx.query(`update student_profiles set custom_syllabi = '{"xfurther":{"name":"Further Mathematics","code":"9231","topics":[{"id":"c1","name":"Roots of polynomial equations"}]}}' where user_id = auth.uid() returning custom_syllabi->'xfurther'->>'code' as c`)).rows[0]?.c);
+  ok("a student can save another subject's syllabus", set === "9231");
+  const seen = await as(db, other, async (tx) => (await tx.query("select count(*)::int as n from student_profiles where custom_syllabi <> '{}'::jsonb")).rows[0].n);
+  ok("nobody else can see it", seen === 0);
+  const bad = async (sql) => !(await attempt(db, me, (tx) => tx.query(sql))).ok;
+  ok("it must be an object", await bad(`update student_profiles set custom_syllabi = '[1]' where user_id = auth.uid()`));
+  ok("it is size-capped", await bad(`update student_profiles set custom_syllabi = jsonb_build_object('x', repeat('a', 30000)) where user_id = auth.uid()`));
+  const again = await runFile(db, "supabase-phase35.sql");
+  ok("phase 35 is safe to re-run", again.ok, again.error);
+}
+
 async function main() {
-  const sections = [migrationTests, chatTests, takeoverTests, callTests, accountTests, backfillTests, historyTests, disappearTests, studentsTests, moderationTests, deviceStateTests, consentTests, logTests, dailyTests, usernameLoginTests, examQualityTests, privateStudentsTests, studyProfileTests, progressTests, prepTests, planRulesTests, panLimitTests, activitiesTests];
+  const sections = [migrationTests, chatTests, takeoverTests, callTests, accountTests, backfillTests, historyTests, disappearTests, studentsTests, moderationTests, deviceStateTests, consentTests, logTests, dailyTests, usernameLoginTests, examQualityTests, privateStudentsTests, studyProfileTests, progressTests, prepTests, planRulesTests, panLimitTests, activitiesTests, customSyllabiTests];
   for (const run of sections) {
     try {
       await run();

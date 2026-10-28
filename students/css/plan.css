@@ -1499,3 +1499,23 @@ body.in-app[data-view="plan"] .wall {
 .k-paper .pl-dot {
   border-radius: 2px;
 }
+
+/* An other subject's syllabus (js/other-subject.js) */
+.cs-body {
+  display: grid;
+  gap: 8px;
+}
+.cs-topics {
+  margin: 0;
+  padding-left: 22px;
+  display: grid;
+  gap: 6px;
+  max-height: min(50vh, 460px);
+  overflow-y: auto;
+}
+.cs-topics li {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 6px;
+  align-items: center;
+}
