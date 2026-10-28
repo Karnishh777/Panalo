@@ -1330,8 +1330,16 @@ try {
     await b.evaluate(() => window.__qa.ready).catch(() => {});
     const back = await b.evaluate(() => window.__qa.db.student_profiles.find((r) => r.setup_at));
     check("the same account brings its journey back", back?.prep_slots?.length === 2 && back?.weekend_plan === "ask", JSON.stringify(back?.prep_slots));
-    check("no console errors (boarder and journey)", b.errors.length === 0);
-    if (b.errors.length) console.log(b.errors.join("\n"));
+    const errorsBefore = b.errors.slice();
+    check("no console errors (boarder and journey)", errorsBefore.length === 0);
+    // A part that fails to load (a tab opened before a new version went
+    // live) reloads the page once, then says so with a Retry.
+    await b.route("**/js/surfaces/calendar.js", (r) => r.abort());
+    const navsBefore = b.navs.length;
+    await b.evaluate(() => (location.hash = "#/calendar"));
+    await b.waitForSelector("section[data-surface=calendar] .empty", { timeout: 15000 }).catch(() => {});
+    check("a part that won't load reloads once, then offers Retry", b.navs.length > navsBefore && /didn't load/.test(await b.textContent("section[data-surface=calendar]").catch(() => "")), JSON.stringify(b.navs.slice(navsBefore)));
+    if (errorsBefore.length) console.log(errorsBefore.join("\n"));
     await b.close();
   }
 

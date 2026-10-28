@@ -115,7 +115,13 @@ async function route() {
     } catch (e) {
       loading.delete(name);
       console.error(e);
-      section.replaceChildren(el("div", { class: "empty" }, [el("h3", { text: "This part didn't load." }), el("p", { text: "Check your connection and try again." }), el("button", { class: "btn btn-ghost", type: "button", text: "Retry", onClick: () => route() })]));
+      // Online, a page that failed to load a part is almost always a page
+      // opened before a new version went live: its modules no longer fit
+      // the new one's. Reload once to pick up the new version whole. (A
+      // failed import is remembered by the browser, so trying the import
+      // again can't help; only a reload can.)
+      if (navigator.onLine && reloadOnce()) return;
+      section.replaceChildren(el("div", { class: "empty" }, [el("h3", { text: "This part didn't load." }), el("p", { text: "Check your connection and try again." }), el("button", { class: "btn btn-ghost", type: "button", text: "Retry", onClick: () => location.reload() })]));
       return;
     }
     loading.delete(name);
@@ -129,6 +135,20 @@ async function route() {
     return;
   }
   mod.show?.(param);
+}
+
+// Reload at most once a minute, so a part that truly can't load shows its
+// message instead of reloading for ever.
+function reloadOnce() {
+  try {
+    const last = Number(sessionStorage.getItem("panalo.reloaded") || 0);
+    if (Date.now() - last < 60_000) return false;
+    sessionStorage.setItem("panalo.reloaded", String(Date.now()));
+  } catch {
+    return false;
+  }
+  location.reload();
+  return true;
 }
 
 export function navigate(path) {
