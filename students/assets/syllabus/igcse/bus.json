@@ -10,6 +10,9 @@
         { "q": "Which business is in the secondary sector?", "o": ["A farm", "A car factory", "A bank", "A mine"], "a": 1, "why": "Primary extracts raw materials, secondary manufactures, tertiary provides services." },
         { "q": "What does limited liability mean?", "o": ["Owners can only lose what they invested", "The business can't borrow", "Owners pay all debts personally", "There is only one owner"], "a": 0, "why": "Shareholders' personal assets are protected if the company fails." },
         { "q": "Which is a stakeholder of a school?", "o": ["Only the owner", "Students, parents, teachers and the local community", "Only the government", "Only shareholders"], "a": 1, "why": "Stakeholders are anyone with an interest in the organisation's activities." }
+      ],
+      "long": [
+        { "q": "Explain two differences between a sole trader and a partnership.", "marks": 4, "paper": "1", "scheme": ["B1: a sole trader is owned by one person; a partnership by 2 to 20 partners", "B1: so a partnership can raise more capital / share skills and workload", "B1: decisions: a sole trader decides alone; partners must agree (may disagree)", "B1: profits shared between partners; a sole trader keeps all profit"] }
       ]
     },
     {
@@ -18,6 +21,9 @@
         { "q": "In Maslow's hierarchy, which need is at the top?", "o": ["Safety", "Social", "Self-actualisation", "Physiological"], "a": 2, "why": "Physiological, safety, social, esteem, then self-actualisation." },
         { "q": "A wide span of control means a manager…", "o": ["has few subordinates", "has many subordinates", "has no authority", "works part-time"], "a": 1, "why": "Wide spans suit flat structures with fewer layers." },
         { "q": "On-the-job training is…", "o": ["done at a college", "learning while doing the job, often from an experienced worker", "always expensive", "only for managers"], "a": 1, "why": "It is cheap and relevant but may pass on bad habits." }
+      ],
+      "long": [
+        { "q": "Explain two methods of training new employees.", "marks": 4, "paper": "1", "scheme": ["B1: induction training: introduces the business, its rules and the people", "B1: explained, e.g. helps new workers settle in quickly and become productive", "B1: on-the-job or off-the-job training", "B1: explained with an advantage, e.g. on-the-job is cheap and practical"] }
       ]
     },
     {
@@ -26,6 +32,9 @@
         { "q": "What are the 4 Ps of the marketing mix?", "o": ["Price, product, promotion, place", "People, profit, planet, price", "Product, packaging, price, profit", "Price, place, people, process"], "a": 0, "why": "These four elements are combined to meet customer needs." },
         { "q": "Primary market research is…", "o": ["using existing published data", "collecting new data first-hand, e.g. surveys", "only online", "free"], "a": 1, "why": "Secondary research uses data that already exists." },
         { "q": "Penetration pricing means…", "o": ["a high price at launch", "a low price at launch to gain market share", "pricing at cost", "copying rivals' prices"], "a": 1, "why": "Price skimming is the opposite: high at launch." }
+      ],
+      "long": [
+        { "q": "Explain two methods of primary market research a new café could use.", "marks": 4, "paper": "1", "scheme": ["B1: questionnaires / surveys", "B1: advantage in context, e.g. asks local people what food and prices they want", "B1: a second method, e.g. observation / interviews / focus groups / test marketing", "B1: advantage in context"] }
       ]
     },
     {
@@ -42,6 +51,9 @@
         { "q": "Which is a short-term source of finance?", "o": ["Share issue", "Bank overdraft", "Mortgage", "Debenture"], "a": 1, "why": "Overdrafts cover temporary cash shortages." },
         { "q": "A cash-flow forecast shows…", "o": ["profit", "expected cash inflows and outflows over time", "assets and liabilities", "share prices"], "a": 1, "why": "It helps spot when cash will run short." },
         { "q": "The current ratio is…", "o": ["current assets ÷ current liabilities", "profit ÷ revenue", "current liabilities ÷ current assets", "revenue ÷ costs"], "a": 0, "why": "It measures liquidity: whether short-term debts can be paid." }
+      ],
+      "long": [
+        { "q": "A business sells 2000 units at $15 each. Its fixed costs are $8000 and its variable cost is $6 a unit. Calculate its profit.", "marks": 3, "paper": "1", "scheme": ["M1: revenue = 2000 × 15 = $30 000", "M1: total costs = 8000 + 2000 × 6 = $20 000", "A1: profit = $10 000"], "ans": "$10 000" }
       ]
     },
     {

@@ -10,6 +10,10 @@
         { "q": "What is −5 in 8-bit two's complement?", "o": ["10000101", "11111011", "11111010", "00000101"], "a": 1, "why": "5 = 00000101; invert to 11111010; add 1 to get 11111011." },
         { "q": "How many characters can 8-bit extended ASCII represent?", "o": ["128", "256", "1024", "65 536"], "a": 1, "why": "2⁸ = 256; standard ASCII uses 7 bits (128)." },
         { "q": "Increasing the sampling rate of a sound file…", "o": ["reduces file size", "increases accuracy and file size", "has no effect", "changes the bit depth"], "a": 1, "why": "More samples per second capture the sound more accurately." }
+      ],
+      "long": [
+        { "q": "Convert the denary number −45 into an 8-bit two's complement binary integer. Show your working.", "marks": 3, "paper": "1", "scheme": ["M1: +45 = 00101101", "M1: invert the bits: 11010010", "A1: add 1: 11010011"], "ans": "11010011" },
+        { "q": "A bitmap image is 1024 × 768 pixels with a colour depth of 24 bits. Calculate the file size in mebibytes (MiB), ignoring any header.", "marks": 3, "paper": "1", "scheme": ["M1: 1024 × 768 × 24 bits, or × 3 bytes", "M1: = 2 359 296 bytes", "A1: ÷ 1024 ÷ 1024 = 2.25 MiB"], "ans": "2.25 MiB" }
       ]
     },
     {
@@ -24,6 +28,9 @@
       "questions": [
         { "q": "Which memory must be refreshed constantly?", "o": ["SRAM", "DRAM", "ROM", "Flash"], "a": 1, "why": "DRAM stores bits as charge in capacitors, which leaks." },
         { "q": "A logic circuit outputs 1 when exactly one input is 1. It is…", "o": ["AND", "OR", "XOR", "NOR"], "a": 2, "why": "XOR is exclusive OR." }
+      ],
+      "long": [
+        { "q": "Describe two differences between static RAM (SRAM) and dynamic RAM (DRAM).", "marks": 4, "paper": "1", "scheme": ["B1: SRAM uses flip-flops; DRAM stores bits as charge in capacitors", "B1: DRAM must be refreshed regularly; SRAM does not", "B1: SRAM is faster to access, so it is used for cache", "B1: DRAM is cheaper per bit and denser, so it is used for main memory"] }
       ]
     },
     {
@@ -31,6 +38,9 @@
       "questions": [
         { "q": "In the fetch–execute cycle, what happens first?", "o": ["The instruction is decoded", "The address in the PC is copied to the MAR", "The ALU runs", "The result is stored"], "a": 1, "why": "MAR ← [PC]; then MDR ← memory; CIR ← [MDR]; PC incremented." },
         { "q": "Which addressing mode uses the operand as the actual value?", "o": ["Direct", "Indirect", "Immediate", "Indexed"], "a": 2, "why": "Direct uses it as an address; immediate uses it as the value." }
+      ],
+      "long": [
+        { "q": "Describe the roles of the program counter (PC) and the memory address register (MAR) in the fetch stage of the fetch–execute cycle.", "marks": 4, "paper": "1", "scheme": ["B1: the PC holds the address of the next instruction", "B1: this address is copied to the MAR", "B1: the instruction at the address in the MAR is fetched into the MDR (then CIR)", "B1: the PC is incremented to point to the next instruction"] }
       ]
     },
     {
@@ -57,18 +67,27 @@
       "questions": [
         { "q": "A table is in 1NF when…", "o": ["it has no repeating groups and every field is atomic", "it has no partial dependencies", "it has no transitive dependencies", "it has a foreign key"], "a": 0, "why": "2NF removes partial dependencies; 3NF removes transitive ones." },
         { "q": "A foreign key…", "o": ["uniquely identifies records in its own table", "links to the primary key of another table", "is encrypted", "is always a number"], "a": 1, "why": "It creates the relationship between tables." }
+      ],
+      "long": [
+        { "q": "Explain what is meant by a foreign key, with an example from a school database with the tables STUDENT and CLASS.", "marks": 3, "paper": "1", "scheme": ["B1: an attribute in one table that is the primary key of another table", "B1: it is used to create a relationship between the two tables", "B1: e.g. ClassID in STUDENT links to ClassID, the primary key of CLASS"] }
       ]
     },
     {
       "id": "9", "stage": "as", "name": "Algorithm design and problem-solving",
       "questions": [
         { "q": "Abstraction means…", "o": ["adding detail", "removing unnecessary detail to focus on what matters", "writing comments", "testing code"], "a": 1, "why": "Decomposition, by contrast, breaks a problem into parts." }
+      ],
+      "long": [
+        { "q": "Write pseudocode for a function LinearSearch(Items, Target) that returns the index of Target in the 1D array Items[1:100], or −1 if it is not found.", "marks": 5, "paper": "2", "scheme": ["M1: function header with parameters and RETURNS INTEGER", "M1: a loop over indices 1 to 100", "M1: compares Items[Index] with Target", "M1: returns Index as soon as it is found", "M1: returns −1 after the loop if not found"] }
       ]
     },
     {
       "id": "10", "stage": "as", "name": "Data types and structures",
       "questions": [
         { "q": "A stack works on which principle?", "o": ["FIFO", "LIFO", "Random access", "Sorted order"], "a": 1, "why": "Last in, first out; a queue is first in, first out." }
+      ],
+      "long": [
+        { "q": "A stack is held in a 1D array Stack[1:50] with a variable TopPointer (0 when empty). Describe how an item is pushed onto the stack.", "marks": 4, "paper": "2", "scheme": ["B1: check whether the stack is full (TopPointer = 50)", "B1: if full, report an error / do not add", "B1: otherwise increment TopPointer by 1", "B1: store the item at Stack[TopPointer]"] }
       ]
     },
     {

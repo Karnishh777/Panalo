@@ -11,6 +11,9 @@
         { "q": "Which feature is found in prokaryotic cells?", "o": ["A nucleus", "Mitochondria", "70S ribosomes and circular DNA", "Endoplasmic reticulum"], "a": 2, "why": "Prokaryotes have no membrane-bound organelles; their ribosomes are 70S." },
         { "q": "The resolution of a light microscope is limited by…", "o": ["the magnification", "the wavelength of light", "the size of the slide", "the stain"], "a": 1, "why": "Resolution is about half the wavelength used; electrons have much shorter wavelengths." },
         { "q": "An eyepiece graticule must be calibrated using…", "o": ["a ruler", "a stage micrometer", "a hand lens", "the field diameter only"], "a": 1, "why": "The stage micrometer's known divisions give the value of each graticule unit at that magnification." }
+      ],
+      "long": [
+        { "q": "In an electron micrograph a mitochondrion measures 18 mm. Its actual length is 3 µm. Calculate the magnification of the image.", "marks": 2, "paper": "2", "scheme": ["M1: 18 mm = 18 000 µm", "A1: magnification = 18 000 ÷ 3 = × 6000"], "ans": "× 6000" }
       ]
     },
     {
@@ -20,6 +23,9 @@
         { "q": "What gives cellulose its strength?", "o": ["Branching", "Hydrogen bonds between parallel chains of β-glucose forming microfibrils", "Ionic bonds", "Helical shape"], "a": 1, "why": "Alternate β-glucose units are inverted, giving straight chains that hydrogen-bond together." },
         { "q": "Which level of protein structure is the sequence of amino acids?", "o": ["Primary", "Secondary", "Tertiary", "Quaternary"], "a": 0, "why": "The primary structure determines how the chain folds." },
         { "q": "Why is water a good solvent?", "o": ["It is non-polar", "It is polar, so ions and polar molecules dissolve", "It has a high density", "It is ionic"], "a": 1, "why": "Its δ+ and δ− regions surround charged and polar particles." }
+      ],
+      "long": [
+        { "q": "Describe the structure of cellulose and explain how it suits its role in plant cell walls.", "marks": 3, "paper": "2", "scheme": ["B1: β-glucose monomers joined by 1,4 glycosidic bonds, alternate ones rotated 180°", "B1: long straight chains held together by many hydrogen bonds into microfibrils", "B1: giving high tensile strength, so the wall resists bursting when the cell is turgid"] }
       ]
     },
     {
@@ -28,6 +34,9 @@
         { "q": "A competitive inhibitor…", "o": ["binds to the active site, competing with the substrate", "binds elsewhere and changes the active site", "raises Vmax", "denatures the enzyme"], "a": 0, "why": "Raising substrate concentration can overcome it; Vmax is unchanged." },
         { "q": "A low Km means the enzyme has…", "o": ["low affinity for its substrate", "high affinity for its substrate", "a slow maximum rate", "been inhibited"], "a": 1, "why": "Km is the substrate concentration at half Vmax; low Km means it reaches it at low concentration." },
         { "q": "Why are immobilised enzymes useful?", "o": ["They work faster than free enzymes always", "They can be reused and are more stable, and the product isn't contaminated", "They don't need substrate", "They never denature"], "a": 1, "why": "Fixing enzymes in beads makes separation and reuse easy." }
+      ],
+      "long": [
+        { "q": "Explain how a non-competitive inhibitor affects the Vmax and the Michaelis–Menten constant (Km) of an enzyme.", "marks": 4, "paper": "2", "scheme": ["B1: it binds to a site other than the active site (allosteric site)", "B1: changing the shape of the active site, so fewer enzyme–substrate complexes form", "B1: Vmax is lower; adding more substrate does not overcome it", "B1: Km is unchanged (the affinity of the remaining active enzymes is the same)"] }
       ]
     },
     {
@@ -36,6 +45,9 @@
         { "q": "In the fluid mosaic model, what makes the membrane fluid?", "o": ["Proteins", "Phospholipids that move within the layer", "Cellulose", "Glycogen"], "a": 1, "why": "Phospholipids move laterally; cholesterol regulates fluidity." },
         { "q": "Facilitated diffusion uses…", "o": ["ATP", "channel or carrier proteins, down a concentration gradient", "vesicles", "a pump against the gradient"], "a": 1, "why": "It is passive, but needs proteins for polar or charged molecules." },
         { "q": "Water potential of pure water is…", "o": ["positive", "zero", "negative", "infinite"], "a": 1, "why": "Ψ of pure water is 0 kPa; solutes make it negative." }
+      ],
+      "long": [
+        { "q": "A plant cell is placed in pure water. Explain, in terms of water potential, what happens to the cell.", "marks": 3, "paper": "2", "scheme": ["B1: pure water has a higher (less negative) water potential than the cell (0 kPa)", "B1: water moves into the cell by osmosis, down the water potential gradient, through the partially permeable membrane", "B1: the cell becomes turgid; the cell wall stops it bursting"] }
       ]
     },
     {
@@ -53,6 +65,9 @@
         { "q": "Which enzyme joins Okazaki fragments?", "o": ["DNA polymerase", "DNA ligase", "Helicase", "RNA polymerase"], "a": 1, "why": "Ligase seals the gaps in the lagging strand." },
         { "q": "During translation, tRNA anticodons pair with…", "o": ["DNA bases", "mRNA codons", "amino acids", "ribosomal proteins"], "a": 1, "why": "Complementary base pairing places the right amino acid." },
         { "q": "A substitution mutation may have no effect because…", "o": ["DNA always repairs it", "the genetic code is degenerate (several codons per amino acid)", "it affects RNA only", "proteins ignore it"], "a": 1, "why": "A different codon can still code for the same amino acid." }
+      ],
+      "long": [
+        { "q": "Describe how DNA replicates semi-conservatively.", "marks": 4, "paper": "2", "scheme": ["B1: hydrogen bonds between bases break and the double helix unwinds (helicase)", "B1: each strand acts as a template", "B1: free nucleotides pair with complementary bases (A–T, C–G)", "B1: DNA polymerase joins the nucleotides, so each new molecule has one old strand and one new strand"] }
       ]
     },
     {
@@ -69,6 +84,9 @@
         { "q": "The Bohr effect means that high CO₂ concentration…", "o": ["increases haemoglobin's affinity for oxygen", "decreases haemoglobin's affinity for oxygen", "has no effect", "stops respiration"], "a": 1, "why": "Oxygen is released more readily where respiration is high." },
         { "q": "What starts each heartbeat?", "o": ["The AVN", "The SAN (pacemaker)", "The brain", "The Purkyne tissue"], "a": 1, "why": "The SAN starts a wave of excitation; the AVN delays it before the ventricles contract." },
         { "q": "Tissue fluid forms because at the arterial end of a capillary…", "o": ["osmosis pulls water in", "hydrostatic pressure is greater than the osmotic pull", "proteins leave", "blood stops"], "a": 1, "why": "Fluid is forced out; most returns at the venous end." }
+      ],
+      "long": [
+        { "q": "Explain the Bohr shift and why it is useful in actively respiring tissues.", "marks": 3, "paper": "2", "scheme": ["B1: high carbon dioxide concentration lowers the affinity of haemoglobin for oxygen (curve shifts right)", "B1: CO₂ forms carbonic acid, and H⁺ ions bind to haemoglobin forming haemoglobinic acid", "B1: so more oxygen is released (unloaded) where it is needed for respiration"] }
       ]
     },
     {
@@ -83,6 +101,9 @@
       "questions": [
         { "q": "Which organism causes malaria?", "o": ["A bacterium", "A virus", "Plasmodium (a protoctist)", "A fungus"], "a": 2, "why": "Plasmodium is transmitted by female Anopheles mosquitoes." },
         { "q": "How does penicillin kill bacteria?", "o": ["It destroys DNA", "It stops cell wall synthesis, so cells burst", "It blocks ribosomes in human cells", "It dissolves membranes"], "a": 1, "why": "Without strong walls, bacteria burst by osmosis as they grow." }
+      ],
+      "long": [
+        { "q": "Explain how a population of bacteria becomes resistant to an antibiotic.", "marks": 3, "paper": "2", "scheme": ["B1: a random mutation gives a bacterium resistance (e.g. a gene for an enzyme that breaks down the antibiotic)", "B1: when the antibiotic is used, resistant bacteria survive and non-resistant ones die (selection pressure)", "B1: resistant bacteria reproduce and pass on the allele, also by horizontal gene transfer on plasmids"] }
       ]
     },
     {
@@ -91,6 +112,9 @@
         { "q": "Which cells produce antibodies?", "o": ["T helper cells", "Plasma cells (from B lymphocytes)", "Macrophages", "Neutrophils"], "a": 1, "why": "Activated B cells divide and differentiate into plasma cells." },
         { "q": "Passive immunity is…", "o": ["long-lasting", "antibodies received from outside, short-lived", "from vaccination", "from being infected"], "a": 1, "why": "No memory cells are made, e.g. antibodies across the placenta." },
         { "q": "Monoclonal antibodies are produced by…", "o": ["many different B cells", "a single clone of cells (hybridomas)", "T cells", "bacteria naturally"], "a": 1, "why": "They are identical and target one specific antigen." }
+      ],
+      "long": [
+        { "q": "Distinguish between active and passive immunity, giving one example of each.", "marks": 4, "paper": "2", "scheme": ["B1: active: the person's own immune system makes antibodies after meeting an antigen", "B1: example: vaccination, or recovering from an infection", "B1: passive: antibodies are given from outside; no memory cells form, so it is short-lived", "B1: example: antibodies across the placenta or in breast milk, or an injection of antibodies"] }
       ]
     },
     {

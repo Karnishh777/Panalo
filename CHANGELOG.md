@@ -123,7 +123,9 @@ only where nothing else can).
   [n], a mark scheme to tick yourself against (M1/A1/B1, C1/A1), and
   diagrams (tree diagrams, the normal curve, a sector, v–t graphs, a
   circuit…), by paper, by marks (1–2, 3–4, 5+) and by topic: 9709 Pure 1,
-  Probability & Statistics 1 and Mechanics, 9702 AS, 0580. Each mark
+  Probability & Statistics 1 and Mechanics, 9702 AS, 0580; and (138 in
+  all) every other subject's theory papers: 9701, 9700, 9708, 9609, 9618,
+  9706, 9990, 9699 (AS), and 0625, 0620, 0610, 0455, 0450, 0478, 0452. Each mark
   moves its topic. 9709's Mechanics and Probability & Statistics 1 are
   now split into their syllabus sections, with new checked questions.
 - **Subject check-in**: Plan offers, for each subject, a two-minute

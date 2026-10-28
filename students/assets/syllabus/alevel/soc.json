@@ -9,6 +9,9 @@
       "questions": [
         { "q": "Primary socialisation happens mainly through…", "o": ["the media", "the family", "the workplace", "religion"], "a": 1, "why": "It is the first stage of learning norms and values, in early childhood." },
         { "q": "Norms are…", "o": ["laws only", "shared expectations about how to behave in a situation", "beliefs about God", "statistics"], "a": 1, "why": "Values are broader beliefs about what is important." }
+      ],
+      "long": [
+        { "q": "Explain what is meant by socialisation, referring to two agencies of socialisation.", "marks": 4, "paper": "1", "scheme": ["B1: the process of learning the norms and values of a culture", "B1: primary socialisation, e.g. the family, in early childhood", "B1: secondary socialisation, e.g. school, peers, the media, religion", "B1: explained how one agency transmits norms, e.g. sanctions, role models"] }
       ]
     },
     {
@@ -17,6 +20,10 @@
         { "q": "Interpretivists prefer methods that…", "o": ["produce statistics", "give rich qualitative data about meanings", "use experiments", "avoid people"], "a": 1, "why": "Positivists favour quantitative methods such as surveys." },
         { "q": "A longitudinal study…", "o": ["studies one moment", "follows the same group over time", "uses secondary data only", "is always an experiment"], "a": 1, "why": "It can show change and development." },
         { "q": "The Hawthorne effect is when…", "o": ["data is lost", "people change behaviour because they know they are being studied", "samples are too small", "questions are biased"], "a": 1, "why": "It reduces the validity of observation." }
+      ],
+      "long": [
+        { "q": "Explain two strengths of using participant observation in sociological research.", "marks": 4, "paper": "1", "scheme": ["B1: a strength: high validity / rich qualitative data", "B1: explained: the researcher sees behaviour in its natural setting and from the group's point of view (verstehen)", "B1: a second strength: access to hidden or deviant groups", "B1: explained: trust built over time lets the researcher see what interviews would miss"] },
+        { "q": "Explain the difference between reliability and validity in research.", "marks": 4, "paper": "1", "scheme": ["B1: reliability: research that can be repeated with the same results", "B1: e.g. standardised methods such as structured questionnaires are more reliable", "B1: validity: research that gives a true picture of what it set out to study", "B1: e.g. qualitative methods such as unstructured interviews are often more valid"] }
       ]
     },
     {
@@ -24,6 +31,9 @@
       "questions": [
         { "q": "A nuclear family consists of…", "o": ["three generations", "two parents and their dependent children", "one parent and children", "unrelated adults"], "a": 1, "why": "Extended families include other relatives." },
         { "q": "Functionalists see the family as…", "o": ["a source of conflict", "performing essential functions for society", "oppressing women", "irrelevant"], "a": 1, "why": "Marxists and feminists offer critical views." }
+      ],
+      "long": [
+        { "q": "Explain two ways in which family roles may have changed in modern industrial societies.", "marks": 4, "paper": "2", "scheme": ["B1: one change, e.g. more symmetrical / joint conjugal roles", "B1: explained, e.g. more women in paid work, men sharing domestic tasks (Young and Willmott)", "B1: a second change, e.g. the 'dual burden' / changing children's roles / more lone-parent households", "B1: explained with a reason or evidence"] }
       ]
     },
     {

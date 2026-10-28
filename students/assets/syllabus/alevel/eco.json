@@ -10,6 +10,9 @@
         { "q": "A positive statement is one that…", "o": ["contains a value judgement", "can be tested against evidence", "is always true", "is about the future"], "a": 1, "why": "Normative statements contain opinions about what ought to be." },
         { "q": "The ceteris paribus assumption means…", "o": ["all else stays equal", "prices are fixed", "markets are perfect", "governments don't intervene"], "a": 0, "why": "It isolates the effect of one variable." },
         { "q": "In a mixed economy, resources are allocated by…", "o": ["the market only", "the state only", "both the market and the state", "tradition"], "a": 2, "why": "Most economies combine private markets with public provision." }
+      ],
+      "long": [
+        { "q": "Use a production possibility curve to explain the meaning of opportunity cost.", "marks": 3, "paper": "2", "scheme": ["B1: opportunity cost is the next best alternative given up", "B1: a PPC shows the combinations of two goods that can be made with all resources fully used", "B1: moving along the curve, making more of one good means making less of the other: that amount is the opportunity cost"] }
       ]
     },
     {
@@ -19,6 +22,9 @@
         { "q": "Cross elasticity of demand between two goods is positive. They are…", "o": ["complements", "substitutes", "unrelated", "inferior"], "a": 1, "why": "A rise in one's price raises demand for the other." },
         { "q": "Consumer surplus is…", "o": ["the difference between what consumers are willing to pay and what they pay", "producer profit", "tax revenue", "excess supply"], "a": 0, "why": "It is the area below the demand curve and above the price." },
         { "q": "If demand is price inelastic, a price rise will…", "o": ["reduce total revenue", "increase total revenue", "leave revenue unchanged", "reduce quantity to zero"], "a": 1, "why": "Quantity falls proportionally less than price rises." }
+      ],
+      "long": [
+        { "q": "When the price of a good rises from $10 to $12, the quantity demanded falls from 500 to 450 units. Calculate the price elasticity of demand and explain what happens to total revenue.", "marks": 4, "paper": "2", "scheme": ["M1: % change in quantity = −10%; % change in price = +20%", "A1: PED = −0.5", "B1: demand is price inelastic", "B1: total revenue rises, from $5000 to $5400"], "ans": "PED = −0.5" }
       ]
     },
     {
@@ -27,6 +33,9 @@
         { "q": "An indirect tax on a good with inelastic demand falls mainly on…", "o": ["producers", "consumers", "the government", "workers"], "a": 1, "why": "Producers can pass most of the tax on as higher prices." },
         { "q": "A negative externality of production leads a free market to…", "o": ["underproduce", "overproduce", "produce efficiently", "stop producing"], "a": 1, "why": "Firms ignore external costs, so marginal social cost exceeds private cost." },
         { "q": "A public good is…", "o": ["rival and excludable", "non-rival and non-excludable", "provided only by the state", "always free"], "a": 1, "why": "These features create the free-rider problem." }
+      ],
+      "long": [
+        { "q": "Explain why a maximum price set below the equilibrium price may lead to a shortage and a black market.", "marks": 4, "paper": "2", "scheme": ["B1: at the lower price quantity demanded rises", "B1: and quantity supplied falls", "B1: so there is excess demand (a shortage)", "B1: some buyers will pay more than the legal price, so goods are sold illegally above it"] }
       ]
     },
     {
@@ -35,6 +44,9 @@
         { "q": "Aggregate demand is…", "o": ["C + I + G + (X − M)", "C + S + T", "GDP − taxes", "C + I only"], "a": 0, "why": "Consumption, investment, government spending and net exports." },
         { "q": "Cost-push inflation is caused by…", "o": ["rising demand", "rising costs of production, such as wages or oil", "falling interest rates", "a budget surplus"], "a": 1, "why": "Higher costs shift short-run aggregate supply left." },
         { "q": "Which is counted as unemployed?", "o": ["A retired person", "A student not seeking work", "Someone able and willing to work and actively seeking work", "A homemaker not seeking work"], "a": 2, "why": "The ILO definition requires being without work, available and looking." }
+      ],
+      "long": [
+        { "q": "Distinguish between demand-pull and cost-push inflation.", "marks": 4, "paper": "2", "scheme": ["B1: demand-pull: aggregate demand rises faster than aggregate supply / the economy's capacity", "B1: an example cause: rising consumer spending, lower interest rates, more government spending", "B1: cost-push: rising costs of production push up the price level (AS shifts left)", "B1: an example cause: higher wages, oil or import prices, a weaker exchange rate"] }
       ]
     },
     {
@@ -42,6 +54,9 @@
       "questions": [
         { "q": "Expansionary fiscal policy involves…", "o": ["raising taxes", "raising government spending or cutting taxes", "raising interest rates", "selling bonds"], "a": 1, "why": "It boosts aggregate demand." },
         { "q": "Supply-side policies aim to…", "o": ["raise aggregate demand quickly", "increase the productive capacity of the economy", "cause inflation", "cut exports"], "a": 1, "why": "Examples: education, training, deregulation, infrastructure." }
+      ],
+      "long": [
+        { "q": "Explain how a rise in the central bank's rate of interest might reduce inflation.", "marks": 4, "paper": "2", "scheme": ["B1: borrowing becomes more expensive and saving more rewarding", "B1: so consumption and investment fall", "B1: aggregate demand falls (also via a stronger exchange rate cutting net exports)", "B1: so demand-pull pressure on the price level eases"] }
       ]
     },
     {
@@ -49,6 +64,9 @@
       "questions": [
         { "q": "Comparative advantage means a country should specialise where it has…", "o": ["the lowest absolute cost", "the lowest opportunity cost", "the most workers", "the highest prices"], "a": 1, "why": "Trade can benefit both countries even if one is better at everything." },
         { "q": "The Marshall–Lerner condition states a depreciation improves the current account if…", "o": ["PEDx + PEDm > 1", "PEDx + PEDm < 1", "inflation is zero", "imports are elastic only"], "a": 0, "why": "Sum of export and import price elasticities (absolute values) must exceed 1." }
+      ],
+      "long": [
+        { "q": "A worker in Country A can make 10 units of wheat or 5 units of cloth. A worker in Country B can make 6 units of wheat or 6 units of cloth. Explain which country has a comparative advantage in each good.", "marks": 4, "paper": "2", "scheme": ["M1: opportunity cost of 1 cloth: A gives up 2 wheat, B gives up 1 wheat", "M1: opportunity cost of 1 wheat: A gives up 0.5 cloth, B gives up 1 cloth", "B1: A has the comparative advantage in wheat", "B1: B has the comparative advantage in cloth, so each should specialise and trade"] }
       ]
     },
     {

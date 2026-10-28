@@ -10,6 +10,9 @@
         { "q": "Added value is…", "o": ["the price minus the cost of bought-in materials", "total profit", "revenue minus all costs", "the cost of labour"], "a": 0, "why": "It measures what the business adds to its inputs." },
         { "q": "A social enterprise…", "o": ["aims only to maximise profit", "has social or environmental aims and reinvests profit to meet them", "is owned by the government", "can't make a profit"], "a": 1, "why": "It can make profits but uses them for its social purpose." },
         { "q": "Which is an internal stakeholder?", "o": ["Customers", "Employees", "Suppliers", "The government"], "a": 1, "why": "Internal stakeholders are within the organisation: employees, managers, owners." }
+      ],
+      "long": [
+        { "q": "Explain two differences between a private limited company and a public limited company.", "marks": 4, "paper": "1", "scheme": ["B1: a public limited company can sell shares to the public on a stock exchange", "B1: a private limited company can only sell shares privately, with the agreement of other shareholders", "B1: a public company must publish more detailed accounts", "B1: so it can raise much more capital but risks takeover"] }
       ]
     },
     {
@@ -17,6 +20,9 @@
       "questions": [
         { "q": "Herzberg's hygiene factors…", "o": ["motivate when present", "cause dissatisfaction if absent but don't motivate", "are about achievement", "are financial only"], "a": 1, "why": "Motivators include recognition, responsibility and achievement." },
         { "q": "Labour turnover is…", "o": ["the number of workers", "the percentage of staff leaving in a period", "output per worker", "wages ÷ hours"], "a": 1, "why": "(Number leaving ÷ average number employed) × 100." }
+      ],
+      "long": [
+        { "q": "Explain two non-financial methods a manager could use to motivate employees.", "marks": 4, "paper": "1", "scheme": ["B1: one method, e.g. job enrichment / job rotation / empowerment / team working", "B1: explained, e.g. more responsible, varied work meets higher-level needs (Maslow, Herzberg's motivators)", "B1: a second method, e.g. recognition / training / delegation", "B1: explained, e.g. employees feel valued, so effort and retention rise"] }
       ]
     },
     {
@@ -24,6 +30,9 @@
       "questions": [
         { "q": "In the product life cycle, sales grow fastest during…", "o": ["introduction", "growth", "maturity", "decline"], "a": 1, "why": "Sales rise rapidly as the product gains acceptance." },
         { "q": "Market segmentation means…", "o": ["selling everywhere", "dividing a market into groups of customers with similar needs", "cutting prices", "merging with a rival"], "a": 1, "why": "Segments can be based on age, income, location or lifestyle." }
+      ],
+      "long": [
+        { "q": "Explain two elements of the marketing mix a business could use to launch a new smartphone.", "marks": 4, "paper": "1", "scheme": ["B1: one element identified, e.g. price (penetration or skimming)", "B1: explained in context, e.g. skimming earns high profit from early adopters", "B1: a second element, e.g. promotion (social media, influencers) or place (online and retail)", "B1: explained in context, e.g. reaching young buyers where they shop"] }
       ]
     },
     {
@@ -31,6 +40,9 @@
       "questions": [
         { "q": "Capacity utilisation is…", "o": ["actual output ÷ maximum possible output × 100", "costs ÷ revenue", "output per worker", "inventory ÷ sales"], "a": 0, "why": "High utilisation spreads fixed costs; very high leaves no slack." },
         { "q": "Just-in-time inventory management aims to…", "o": ["hold large buffer stocks", "receive inputs only as they are needed", "produce in bulk", "avoid suppliers"], "a": 1, "why": "It cuts storage costs but depends on reliable suppliers." }
+      ],
+      "long": [
+        { "q": "A factory can make 5000 units a month and makes 3500. Calculate its capacity utilisation and explain one problem of operating at this level.", "marks": 3, "paper": "2", "scheme": ["M1: 3500 ÷ 5000 × 100", "A1: = 70%", "B1: fixed costs are spread over fewer units, so the average cost per unit is higher (or idle resources, lower morale)"], "ans": "70%" }
       ]
     },
     {
@@ -38,6 +50,10 @@
       "questions": [
         { "q": "Working capital is…", "o": ["current assets − current liabilities", "total assets", "profit after tax", "share capital"], "a": 0, "why": "It funds day-to-day operations." },
         { "q": "Profit and cash differ because…", "o": ["they are always equal", "sales on credit count as revenue before cash is received", "cash includes loans only", "profit is measured in cash"], "a": 1, "why": "Timing differences mean a profitable business can run out of cash." }
+      ],
+      "long": [
+        { "q": "A business has fixed costs of $24 000 a month. It sells its product for $20 and the variable cost is $12 a unit. Calculate the break-even output and the margin of safety when it sells 4000 units.", "marks": 4, "paper": "2", "scheme": ["M1: contribution per unit = $20 − $12 = $8", "A1: break-even = 24 000 ÷ 8 = 3000 units", "M1: margin of safety = 4000 − 3000", "A1: = 1000 units"], "ans": "3000 units; margin of safety 1000 units" },
+        { "q": "A business has current assets of $45 000, of which $15 000 is inventory, and current liabilities of $30 000. Calculate its current ratio and acid test ratio.", "marks": 4, "paper": "2", "scheme": ["M1: current ratio = 45 000 ÷ 30 000", "A1: = 1.5 : 1", "M1: acid test = (45 000 − 15 000) ÷ 30 000", "A1: = 1 : 1"], "ans": "1.5 : 1 and 1 : 1" }
       ]
     },
     {

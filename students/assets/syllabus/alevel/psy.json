@@ -11,6 +11,11 @@
         { "q": "An independent measures design…", "o": ["uses the same participants in every condition", "uses different participants in each condition", "matches pairs", "has no conditions"], "a": 1, "why": "It avoids order effects but participant variables may differ." },
         { "q": "Ecological validity is about…", "o": ["whether findings apply to real-life settings", "the sample size", "ethics", "inter-rater reliability"], "a": 0, "why": "Lab settings can be artificial, reducing ecological validity." },
         { "q": "Which ethical guideline lets participants leave a study at any time?", "o": ["Debriefing", "Right to withdraw", "Confidentiality", "Deception"], "a": 1, "why": "Participants must be told they can withdraw themselves and their data." }
+      ],
+      "long": [
+        { "q": "Explain one difference between an independent measures design and a repeated measures design, and give one advantage of each.", "marks": 4, "paper": "2", "scheme": ["B1: independent measures: different participants in each condition; repeated: the same participants do every condition", "B1: advantage of independent measures: no order effects (practice, fatigue)", "B1: advantage of repeated measures: no participant variables between conditions", "B1: or fewer participants are needed for repeated measures"] },
+        { "q": "A researcher wants to test whether doodling while listening improves recall of a phone message. Write a directional hypothesis and identify the independent and dependent variables.", "marks": 3, "paper": "2", "scheme": ["B1: e.g. participants who doodle will recall more names from the message than those who do not", "B1: IV: whether the participant doodles or not", "B1: DV: the number of items correctly recalled (operationalised)"] },
+        { "q": "Explain what is meant by inter-rater reliability and suggest how a researcher could improve it in an observation.", "marks": 3, "paper": "2", "scheme": ["B1: the extent to which two or more observers record the same behaviour in the same way", "B1: improve by using clear, operationalised behavioural categories", "B1: and by training observers together / comparing scores and checking correlation"] }
       ]
     },
     {
@@ -31,12 +36,18 @@
       "questions": [
         { "q": "In operant conditioning, behaviour followed by a reward is…", "o": ["less likely to recur", "more likely to recur", "forgotten", "punished"], "a": 1, "why": "Positive reinforcement strengthens behaviour." },
         { "q": "Learning by watching others is called…", "o": ["classical conditioning", "social learning (observational learning)", "habituation", "insight"], "a": 1, "why": "Bandura's work showed children imitate modelled behaviour." }
+      ],
+      "long": [
+        { "q": "Bandura et al. (1961) studied the imitation of aggression. Describe two findings of the study.", "marks": 4, "paper": "1", "scheme": ["B1: children who saw an aggressive model imitated more physical and verbal aggression than those who saw a non-aggressive model or no model", "B1: elaborated, e.g. hitting the Bobo doll with the mallet in the same way", "B1: boys showed more imitative physical aggression than girls", "B1: children (especially boys) imitated a same-sex model more"] }
       ]
     },
     {
       "id": "5", "stage": "as", "name": "Social approach",
       "questions": [
         { "q": "Obedience research studies how people respond to…", "o": ["peers", "orders from an authority figure", "their own thoughts", "rewards"], "a": 1, "why": "Milgram-type studies tested obedience to authority." }
+      ],
+      "long": [
+        { "q": "Describe the results of Milgram's (1963) study of obedience.", "marks": 3, "paper": "1", "scheme": ["B1: 26 of the 40 participants (65%) went to the maximum 450 V", "B1: all participants went to at least 300 V", "B1: many showed signs of extreme stress, e.g. sweating, trembling, nervous laughter"] }
       ]
     },
     {
