@@ -2,6 +2,7 @@
 // it. Pure (tested in Node): the setup builds a row with toRow(), and the
 // planner reads one back with fromRow().
 import { stageOf, subjectsFor } from "./subjects.js";
+import { cleanCustomSubject, cleanCustomSyllabi, MAX_CUSTOM } from "./custom.js";
 
 export const DEFAULTS = {
   board: null,
@@ -20,6 +21,7 @@ export const DEFAULTS = {
   sleepAt: "22:00", // 8 hours after a 06:00 wake: the planner never plans into less
   tuitionHours: 0, // a week, for coaching without fixed times
   activities: [], // [{ kind, name, days: [0..6], start: "HH:MM", end: "HH:MM" }] (phase 34)
+  customSyllabi: {}, // { subjectId: { name, code, board, known, topics: [{ id, name, stage? }] } } (phase 35)
 };
 
 export const ACTIVITY_KINDS = [
@@ -66,10 +68,13 @@ export function toRow(a, now = new Date()) {
   const stage = stageOf(a.stage) ? a.stage : null;
   const offered = new Set(subjectsFor(stage).map((s) => s.id));
   const seen = new Set();
+  // Listed subjects, and up to six of the student's own ("other subjects").
+  let custom = 0;
   const subjects = (a.subjects || [])
-    .filter((s) => offered.has(s.id) && !seen.has(s.id) && seen.add(s.id))
+    .map((s) => (offered.has(s.id) ? { s, own: null } : { s, own: cleanCustomSubject(s) }))
+    .filter(({ s, own }) => (offered.has(s.id) || (own && custom++ < MAX_CUSTOM)) && !seen.has(s.id) && seen.add(s.id))
     .slice(0, 16)
-    .map((s) => ({ id: s.id, level: clamp(s.level ?? 2, 1, 4), ...(s.grade ? { grade: String(s.grade).slice(0, 8) } : {}), ...cleanPapers(s) }));
+    .map(({ s, own }) => ({ id: s.id, ...(own || {}), level: clamp(s.level ?? 2, 1, 4), ...(s.grade ? { grade: String(s.grade).slice(0, 8) } : {}), ...(own ? {} : cleanPapers(s)) }));
   const days = [...new Set((a.schoolDays || []).map(Number).filter((d) => Number.isInteger(d) && d >= 0 && d <= 6))].sort();
   return {
     board: ["cambridge", "cbse", "other"].includes(a.board) ? a.board : null,
@@ -86,6 +91,7 @@ export function toRow(a, now = new Date()) {
     sleep_at: time(a.sleepAt, DEFAULTS.sleepAt),
     tuition_hours: clamp(a.tuitionHours, 0, 40),
     activities: cleanActivities(a.activities),
+    custom_syllabi: cleanCustomSyllabi(a.customSyllabi, subjects.filter((s) => s.custom).map((s) => s.id)),
     setup_at: now.toISOString(),
   };
 }
@@ -134,6 +140,7 @@ export function fromRow(row) {
     sleepAt: time(row.sleep_at, DEFAULTS.sleepAt),
     tuitionHours: row.tuition_hours ?? DEFAULTS.tuitionHours,
     activities: cleanActivities(row.activities),
+    customSyllabi: row.custom_syllabi && typeof row.custom_syllabi === "object" ? row.custom_syllabi : {},
   };
 }
 

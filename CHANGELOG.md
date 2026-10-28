@@ -65,6 +65,18 @@ only where nothing else can).
   effect is now one quiet circuit trace in the subject's colour that
   plays a few seconds after a choice and then holds still, with a
   smaller zoom.
+- **Other subjects (phase 35)**: the subject list (at sign-up and in
+  Settings → Change my answers) has "+ Other subject": a name and its
+  syllabus code ("Marine Science 9693"). Pan works out the syllabus
+  (`functions/api/pan-subject.js`: board, name, code and its topics in
+  order, marked AS or A Level; when Pan isn't sure it says so and gives
+  its best guess) and the plan works through those topics like any other
+  subject. Plan's subject card shows what Pan found, and its topics can be
+  checked, renamed, removed or added (each keeps its progress). Without
+  Pan (no key, offline, the day's asks used) the subject is still added,
+  as blocks of your own work. A subject that's already listed points back
+  to the list. Up to six; kept in `student_profiles.custom_syllabi`. Blocks
+  on a topic with no questions now ask how it went.
 - **Papers and exam series**: each subject knows its papers (every
   IGCSE and AS & A Level syllabus in the app: 9709 Paper 1 Pure
   Mathematics 1 … Paper 5 Probability & Statistics 1; 9702 Paper 1

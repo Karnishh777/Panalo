@@ -2117,3 +2117,33 @@ input[type="range"].range {
   margin: 14px 0 6px;
   font-weight: 600;
 }
+
+/* Other subject (js/other-subject.js) */
+.setup-other {
+  border-style: dashed;
+}
+.setup-custom:empty {
+  display: none;
+}
+.setup-custom {
+  margin-top: 8px;
+}
+.other-subject {
+  display: grid;
+  gap: 6px;
+  margin-top: 10px;
+}
+.other-row {
+  display: grid;
+  grid-template-columns: minmax(0, 2fr) minmax(0, 1fr) auto;
+  gap: 8px;
+  align-items: center;
+}
+.other-status {
+  margin: 0;
+}
+@media (max-width: 560px) {
+  .other-row {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}

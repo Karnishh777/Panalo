@@ -1183,6 +1183,71 @@ try {
     await p.close();
   }
 
+  // ---- Other subjects: added by name and code; Pan finds the syllabus (phase 35) ----------
+  {
+    const o = await qa.open({ viewport: "laptop", path: "students/#signup" });
+    await o.evaluate(() => window.__qa.ready);
+    await appReady(o);
+    let asked = null;
+    await o.route("**/api/pan-subject", async (route) => {
+      asked = JSON.parse(route.request().postData() || "{}");
+      if (/history/i.test(asked.name)) return route.fulfill({ status: 501, contentType: "application/json", body: '{"error":"pan-not-configured"}' });
+      return route.fulfill({ status: 200, contentType: "application/json", body: JSON.stringify({ known: true, name: "Marine Science", code: "9693", board: "Cambridge International AS & A Level", note: "Found it.", topics: [{ name: "Scientific method", stage: "as" }, { name: "Marine ecosystems and biodiversity", stage: "as" }, { name: "Fisheries for the future", stage: "a2" }] }) });
+    });
+    await o.fill("#signup-username", "other_q");
+    await o.fill("#signup-email", "other@panalo.test");
+    await o.fill("#signup-password", "a-long-enough-pass");
+    await fillBirth(o, 17);
+    await o.check("#signup-age");
+    await o.click("#signup-submit");
+    await o.waitForSelector("#setup:not([hidden]) #setup-form[data-step]", { timeout: 20000 });
+    await o.click('#setup-form .setup-choice:has-text("Cambridge")');
+    await o.click("#setup-form button[type=submit]");
+    await o.click('#setup-form .setup-choice:has-text("AS")');
+    await o.click("#setup-form button[type=submit]");
+    await o.click('#setup-form .setup-subjects .chip:has-text("Physics") >> nth=0');
+    await o.click("#setup-other");
+    check("subjects have an Other subject choice", await o.isVisible("#other-name"));
+    await o.fill("#other-name", "Further Mathematics");
+    await o.click("#other-add");
+    check("a listed subject typed as Other points back to the list", (await o.locator(".setup-custom [data-custom]").count()) === 0 && /in the list above/.test(await o.textContent("#toast-region, .toasts, body")));
+    await o.fill("#other-name", "Marine Sci");
+    await o.fill("#other-code", "9693");
+    await o.click("#other-add");
+    await o.waitForSelector('.setup-custom [data-custom] >> text=topics', { timeout: 8000 }).catch(() => {});
+    check("Pan is asked with the subject, its code and the year", asked?.name === "Marine Sci" && asked?.code === "9693" && /AS/.test(asked?.year || ""), JSON.stringify(asked));
+    check("…and says what it found", /Pan found .*9693.*3 topics/.test(await o.textContent(".other-status")) && /3 topics/.test(await o.textContent(".setup-custom")));
+    await o.fill("#other-name", "World History");
+    await o.click("#other-add");
+    await o.waitForTimeout(500);
+    check("without Pan, the subject is still added, as your own work", (await o.locator(".setup-custom [data-custom]").count()) === 2 && /own work/.test(await o.textContent(".other-status")));
+    for (let i = 0; i < 14 && (await o.isVisible("#setup")); i++) {
+      await o.click("#setup-form button[type=submit]", { timeout: 3000 }).catch(() => {});
+      await o.waitForTimeout(60);
+    }
+    await o.waitForSelector("#app:not([hidden])", { timeout: 15000 });
+    const row = await o.evaluate(() => window.__qa.db.student_profiles.find((r) => r.setup_at));
+    const fm = row.subjects.find((x) => x.custom && x.code === "9693");
+    check("other subjects are saved with their name and code", fm?.name === "Marine Sci" && row.subjects.some((x) => x.custom && x.name === "World History"), JSON.stringify(row.subjects));
+    check("…and Pan's syllabus with them", row.custom_syllabi?.[fm?.id]?.topics?.length === 3);
+    await go(o, "#/plan", 1200);
+    const card = `.pl-subject:has([data-syllabus="${fm.id}"])`;
+    check("the plan works through the other subject's topics", (await o.locator(`${card} .pl-topic`).count()) === 2 && /Pan found/.test(await o.textContent(`${card} .pl-papers-line`)));
+    check("an other subject without topics is your own work", /own work/.test(await o.textContent('.pl-subject:has-text("World History")')));
+    await o.click(`[data-syllabus="${fm.id}"]`);
+    await o.waitForSelector("#cs-topics input");
+    await o.fill("#cs-topics li:nth-child(2) input", "Marine ecosystems");
+    await o.click("#cs-add");
+    await o.fill("#cs-topics li:last-child input", "Matrices");
+    await o.click("#cs-save");
+    await o.waitForTimeout(500);
+    const after = await o.evaluate((id) => window.__qa.db.student_profiles.find((r) => r.setup_at).custom_syllabi[id].topics, fm.id);
+    check("its topics can be checked and changed, keeping their ids", after.length === 4 && after[1].id === "c2" && after[1].name === "Marine ecosystems" && after[3].name === "Matrices", JSON.stringify(after));
+    check("no console errors (other subjects)", o.errors.length === 0);
+    if (o.errors.length) console.log(o.errors.join("\n"));
+    await o.close();
+  }
+
   // ---- Under 18: a parent or guardian agrees first (phase 22) ----------------------------
   {
     const t = await qa.open({ viewport: "laptop", path: "students/#signup" });

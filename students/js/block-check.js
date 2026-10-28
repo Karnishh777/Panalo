@@ -129,9 +129,10 @@ export function openBlockCheck(block, { minutes = 0, sessionId = null, onDone } 
         el("p", { class: "bc-ask", text: "How much of this topic have you now covered?" }),
         chips("How much is covered", COVERED.filter(([v]) => v > cur), (v) => { covered = v; save.disabled = false; })
       );
-    } else if (own) {
+    } else if (own || !questions.length) {
+      // No questions for this topic (own work, or an other subject's topic): the student says.
       save.disabled = true;
-      parts.push(el("p", { class: "bc-ask", text: "How did it go?" }), chips("How it went", RATINGS, (v) => { rating = v; save.disabled = false; }));
+      parts.push(el("p", { class: "bc-ask", text: block.kind === "check" ? "How well do you know it?" : "How did it go?" }), chips("How it went", RATINGS, (v) => { rating = v; save.disabled = false; }));
     }
     if (!parts.length || (answers.length && block.kind !== "learn" && !own)) return finish(save, parts);
     stage.replaceChildren(...parts, el("div", { class: "bc-foot" }, [save]));
@@ -141,7 +142,9 @@ export function openBlockCheck(block, { minutes = 0, sessionId = null, onDone } 
     if (btn) btn.disabled = true;
     const now = Date.now();
     const spent = minutes || Math.max(1, Math.round((now - started) / 60000));
-    const before = stateOf(block.subject, block.topic);
+    let before = stateOf(block.subject, block.topic);
+    // A check with no questions: "okay" or better means it has been taught.
+    if (block.kind === "check" && !answers.length && rating >= 2) before = { ...before, covered: 1 };
     const t = P.afterBlock(before, { kind: block.kind, answers, covered, rating, minutes: spent, now });
     if (!store.progressMissing) {
       const { error } = await saveTopic(block.subject, block.topic, t);

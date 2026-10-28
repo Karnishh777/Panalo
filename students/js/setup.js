@@ -9,6 +9,7 @@ import { api, store } from "./store.js";
 import { BOARDS, STAGES, AIMS, LEVELS, subjectsFor, gradesFor, stageOf } from "./model/subjects.js";
 import * as PP from "./model/papers.js";
 import { paperChooser, seriesChooser } from "./paper-sheets.js";
+import { otherSubjectForm } from "./other-subject.js";
 import { toRow, fromRow, ACTIVITY_KINDS, cleanActivities } from "./model/profile.js";
 import { clockOfText } from "./model/time.js";
 import { art, artImg, onArt, GUARDIANS, guardianOf } from "./art.js";
@@ -155,14 +156,42 @@ export function runSetup({ onDone, editing = false }) {
     {
       id: "subjects",
       title: "Your subjects",
-      lead: "Tap every subject you take. You can change them later in Settings.",
+      lead: "Tap every subject you take. Not listed? Add it under Other subject, with its code, and Pan finds its syllabus. You can change them later in Settings.",
       body: () => {
         const chosen = new Set(a.subjects.map((s) => s.id));
+        // Other subjects: added by name and code; Pan finds the syllabus.
+        const customs = el("div", { class: "chips setup-custom", role: "group", "aria-label": "Other subjects" });
+        const drawCustoms = () =>
+          customs.replaceChildren(
+            ...a.subjects
+              .filter((s) => s.custom)
+              .map((s) =>
+                el("button", { type: "button", class: "chip tone-focus", "aria-pressed": "true", "data-custom": s.id, title: "Remove", "aria-label": `${s.name}: remove`, onClick: () => { a.subjects = a.subjects.filter((x) => x.id !== s.id); if (a.customSyllabi) delete a.customSyllabi[s.id]; drawCustoms(); } }, [
+                  el("span", { text: s.name }),
+                  s.code ? el("small", { class: "num", text: ` ${s.code}` }) : null,
+                  a.customSyllabi?.[s.id] ? el("small", { class: "faint", text: ` · ${a.customSyllabi[s.id].topics.length} topics` }) : null,
+                ])
+              )
+          );
+        drawCustoms();
+        const form = otherSubjectForm(a, drawCustoms);
+        const other = el("button", {
+          type: "button",
+          class: "chip setup-other",
+          id: "setup-other",
+          "aria-expanded": "false",
+          text: "+ Other subject",
+          onClick: () => {
+            form.hidden = !form.hidden;
+            other.setAttribute("aria-expanded", String(!form.hidden));
+            if (!form.hidden) form.querySelector("input")?.focus();
+          },
+        });
         return [
           el(
             "div",
             { class: "chips setup-subjects", role: "group", "aria-label": "Subjects" },
-            subjectsFor(a.stage).map((s) => {
+            [...subjectsFor(a.stage).map((s) => {
               const b = el("button", { type: "button", class: "chip tone-focus", style: `--g:${GUARDIANS[guardianOf(s.id)]}`, "aria-pressed": String(chosen.has(s.id)) }, [
                 el("span", { text: s.name }),
                 s.code ? el("small", { class: "num", text: ` ${s.code}` }) : null,
@@ -179,8 +208,10 @@ export function runSetup({ onDone, editing = false }) {
                 b.setAttribute("aria-pressed", String(chosen.has(s.id)));
               });
               return b;
-            })
+            }), other]
           ),
+          customs,
+          form,
         ];
       },
       ok: () => a.subjects.length > 0 || "Pick at least one subject.",
@@ -197,7 +228,7 @@ export function runSetup({ onDone, editing = false }) {
             "div",
             { class: "setup-levels" },
             a.subjects.map((s) => {
-              const name = offered.find((o) => o.id === s.id)?.name || s.id;
+              const name = offered.find((o) => o.id === s.id)?.name || s.name || s.id;
               const group = chipGroup({ label: `How ${name} is going`, value: s.level, options: LEVELS, onChange: (v) => (s.level = v), toneOf: (v) => (v === 1 ? "tone-drift" : v === 4 ? "tone-world" : "tone-focus") });
               const select = el("select", { "aria-label": `Last grade in ${name}` }, [el("option", { value: "", text: "Last grade" }), ...grades.map((g) => el("option", { value: g, text: g }))]);
               select.value = s.grade || "";
@@ -397,7 +428,7 @@ export function runSetup({ onDone, editing = false }) {
               ])
             )
           );
-        const subjects = subjectsFor(a.stage).filter((s) => a.subjects.some((x) => x.id === s.id));
+        const subjects = [...subjectsFor(a.stage).filter((s) => a.subjects.some((x) => x.id === s.id)), ...a.subjects.filter((s) => s.custom).map((s) => ({ id: s.id, name: s.name }))];
         const what = el("select", { id: "setup-exam-subject", "aria-label": "Subject" }, subjects.map((s) => el("option", { value: s.name, text: s.name })));
         const when = el("input", { type: "date", id: "setup-exam-date", "aria-label": "Date", min: new Date().toISOString().slice(0, 10) });
         const add = el("button", {
