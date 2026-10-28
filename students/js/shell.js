@@ -263,7 +263,6 @@ function warpItems() {
     ...LOOKS.map((l) => ({ label: `Look: ${l.name}`, hint: l.line, run: () => setLook(l.id) })),
     { label: "Add a task", hint: "Study Room", run: () => navigate("study/add-task") },
     { label: "World", hint: "your world, goals, discoveries", run: go("world") },
-    { label: "Log an activity", hint: "World", run: () => navigate("world/log") },
     { label: "Calendar", hint: "timetable and deadlines", run: go("calendar") },
     { label: "Add to calendar", hint: "Calendar", run: () => navigate("calendar/add") },
     { label: "Archive", hint: "your files", run: go("archive") },

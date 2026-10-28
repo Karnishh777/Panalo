@@ -64,16 +64,22 @@ ok("focus raises Earth's land", tenHours.layers.earth > 0.1 && tenHours.layers.e
 ok("Earth rises fully, and no further", lots.layers.earth === 1);
 ok("finished tasks light Earth's cities", withTasks.layers.cities > 0.05 && withTasks.layers.cities < 0.2 && withTasks.layers.earth === 0, withTasks.layers.cities);
 
-const creative = buildWorld({ logs: [{ kind: "create", minutes: 120, occurred_on: dayKey(at(2)) }], now: NOW });
-const oldCreative = buildWorld({ logs: [{ kind: "create", minutes: 120, occurred_on: dayKey(at(45)) }], now: NOW });
-ok("making things lights the aurora", creative.layers.aurora > 0.2);
-ok("the aurora reflects the last 30 days", oldCreative.layers.aurora === 0);
-const body = buildWorld({ logs: [{ kind: "move", minutes: 300, occurred_on: dayKey(at(1)) }], now: NOW });
-ok("moving and resting greens the land", body.layers.forest > empty.layers.forest);
-const reading = buildWorld({ logs: [{ kind: "read", minutes: 200, occurred_on: dayKey(at(1)) }], now: NOW });
-ok("reading lights the oceans", reading.layers.glow > 0.4 && empty.layers.glow === 0);
-const social = buildWorld({ logs: [{ kind: "connect", minutes: 300, occurred_on: dayKey(at(1)) }], now: NOW });
-ok("time with people thickens the atmosphere", social.layers.atmosphere > empty.layers.atmosphere + 0.3);
+// Only studying grows the world (phase 37).
+const q = (daysAgo, marks, outOf) => ({ kind: "questions", minutes: Math.round(outOf * 1.5), marks, out_of: outOf, occurred_on: dayKey(at(daysAgo)) });
+const marked = buildWorld({ logs: [q(2, 40, 50)], now: NOW });
+const oldMarked = buildWorld({ logs: [q(45, 40, 50)], now: NOW });
+ok("marks earned light the aurora", marked.layers.aurora > 0.2 && empty.layers.aurora === 0);
+ok("the aurora reflects the last 30 days", oldMarked.layers.aurora === 0);
+ok("exam-style questions count as study time", marked.stats.studyMinutesTotal === 75 && marked.layers.land > empty.layers.land);
+const notStudy = buildWorld({ logs: [{ kind: "create", minutes: 300, occurred_on: dayKey(at(1)) }, { kind: "move", minutes: 300, occurred_on: dayKey(at(1)) }, { kind: "read", minutes: 300, occurred_on: dayKey(at(1)) }, { kind: "connect", minutes: 300, occurred_on: dayKey(at(1)) }], entries: [{ day: dayKey(at(0)), closed_at: at(0, 21) }], now: NOW });
+ok("things that aren't studying don't grow it", JSON.stringify(notStudy.layers) === JSON.stringify(empty.layers), JSON.stringify(notStudy.layers));
+const knows = buildWorld({ knowledge: { total: 40, covered: 20, known: 10, due: 0 }, now: NOW });
+ok("chapters covered green the land", knows.layers.forest > empty.layers.forest + 0.3 && knows.stats.covered === 20);
+ok("chapters known light the seas", Math.abs(knows.layers.glow - 0.25) < 1e-9 && empty.layers.glow === 0);
+const fading = buildWorld({ sessions: [session(0, 30)], knowledge: { total: 40, covered: 20, known: 10, due: 10 }, now: NOW });
+ok("chapters due for review gather mist, never more than weather", fading.layers.clouds > 0.1 && fading.layers.clouds <= 0.4 && fading.layers.forest === knows.layers.forest);
+const papers = buildWorld({ results: [{ title: "Paper 1 · Feb/Mar 2025", score: 60, out_of: 75, taken_on: dayKey(at(3)), created_at: at(3) }, { title: "Mock", score: 50, out_of: 100, taken_on: dayKey(at(3)), created_at: at(3) }], now: NOW });
+ok("past papers thicken the atmosphere and earn marks", papers.stats.papers60 === 1 && papers.layers.atmosphere > empty.layers.atmosphere + 0.2 && papers.stats.marks30 === 32);
 
 const streak = buildWorld({ sessions: [0, 1, 2, 3, 4].map((d) => session(d, 30)), now: NOW });
 ok("five active days of seven make a ring", streak.layers.ring > 0.7 && streak.stats.active7 === 5);
@@ -181,7 +187,7 @@ ok("anything else is just bytes", T_("application/zip", "a.zip") === "applicatio
     {
       sessions: [session(0, 40), session(2, 30)],
       tasks: [{ done_at: at(0, 9) }, { done_at: at(5) }],
-      logs: [{ kind: "read", minutes: 20, occurred_on: key(1) }, { kind: "read", minutes: 10, occurred_on: key(0) }, { kind: "move", minutes: 30, occurred_on: key(4) }],
+      logs: [{ kind: "questions", minutes: 9, marks: 5, out_of: 6, occurred_on: key(1) }, { kind: "questions", minutes: 6, marks: 3, out_of: 4, occurred_on: key(0) }, { kind: "questions", minutes: 6, marks: 4, out_of: 4, occurred_on: key(4) }, { kind: "read", minutes: 30, occurred_on: key(0) }],
       discoveries: [{ title: "First hour", at: at(0, 8) }],
     },
     Date.parse(at(1, 8)),
@@ -189,7 +195,7 @@ ok("anything else is just bytes", T_("application/zip", "a.zip") === "applicatio
   );
   ok("since last: focus after then", since.focusMinutes === 40, String(since.focusMinutes));
   ok("since last: tasks after then", since.tasksDone === 1);
-  ok("since last: logs from that day on", since.logged.read === 30 && !since.logged.move, JSON.stringify(since.logged));
+  ok("since last: marks from that day on, and only studying", since.logged.questions === 8 && !since.logged.read, JSON.stringify(since.logged));
   const lines = D.sinceLines(since);
   ok("discoveries lead the dawn", lines[0] === "Discovery: First hour", lines.join(" | "));
   ok("at most four lines", lines.length <= 4);
@@ -210,7 +216,8 @@ ok("anything else is just bytes", T_("application/zip", "a.zip") === "applicatio
   ok("another person's sky is a different shape", JSON.stringify(D.monthSky(days, NOW, "user-2").stars) !== JSON.stringify(sky.stars));
   ok("links join lit stars in order", sky.links.length === Math.max(0, sky.lit - 1));
 
-  ok("a closed day counts toward the ring", buildWorld({ entries: [{ day: key(0), closed_at: at(0, 21) }], now: NOW }).stats.active7 === 1);
+  ok("a closed day isn't a study day", buildWorld({ entries: [{ day: key(0), closed_at: at(0, 21) }], now: NOW }).stats.active7 === 0);
+  ok("a marked question is", buildWorld({ logs: [{ kind: "questions", minutes: 6, marks: 2, out_of: 4, occurred_on: key(0) }], now: NOW }).stats.active7 === 1);
   ok("an opened-but-not-closed day doesn't", buildWorld({ entries: [{ day: key(0), opened_at: at(0, 7) }], now: NOW }).stats.active7 === 0);
   ok("the first closed day is a discovery", discoveries({ entries: [{ day: key(1), closed_at: at(1, 21) }], now: NOW }).some((d) => d.id === "pages-1"));
   ok("day numbers count from one", D.dayNumber(at(0, 1), NOW) === 1 && D.dayNumber(at(9), NOW) === 10);
@@ -246,7 +253,7 @@ ok("anything else is just bytes", T_("application/zip", "a.zip") === "applicatio
   ok("top subjects, biggest first", c.subjects[0].subject === "Physics" && c.subjects[0].minutes === 140 && c.subjects[1].subject === "Chemistry");
   ok("tasks finished that week", c.tasksDone === 1);
   ok("logged time by kind", c.logged.read === 40);
-  ok("days shown up", c.shown.length === 5, String(c.shown.length));
+  ok("days shown up: studied or closed (activity logs aren't)", c.shown.length === 4, String(c.shown.length));
   ok("how the days felt, on average", c.mood === 3.5);
   ok("intentions set and kept", c.intentions === 2 && c.kept === 1);
   ok("what you wrote is kept for the chronicle", c.words.length === 2 && c.words.some((w) => w.text === "Snell's law"));

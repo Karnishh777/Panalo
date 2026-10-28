@@ -17,6 +17,7 @@ import { todayEntry, lastVisit, sinceLast, sinceLines, dayPart, dayNumber } from
 import { reducedMotion } from "./motion.js";
 import { state } from "../../src/state.js";
 import { openIntention, openCheckin } from "./checkin.js";
+import { worldInput } from "./planner.js";
 
 let playing = false;
 const SUN_FROM = 172; // degrees: behind the world, a rim of fire
@@ -62,7 +63,7 @@ export async function maybeDawn({ quiet = false } = {}) {
 function play({ since, now }) {
   return new Promise((resolve) => {
     const still = reducedMotion();
-    const w = buildWorld({ sessions: store.sessions, tasks: store.tasks, logs: store.logs, goals: store.goals, entries: store.entries, bornAt: store.student?.born_at, now });
+    const w = buildWorld(worldInput(now));
     const part = dayPart(now);
     const n = dayNumber(store.student?.born_at, now);
     const name = store.student?.world_name || "your world";

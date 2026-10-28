@@ -74,27 +74,25 @@ export function sinceLast({ sessions = [], tasks = [], logs = [], discoveries = 
   const focusMinutes = sessions.filter((s) => after(s.started_at, since)).reduce((n, s) => n + (s.focused_minutes || 0), 0);
   const tasksDone = tasks.filter((t) => t.done_at && after(t.done_at, since)).length;
   const logged = {};
-  for (const l of logs) if (l.occurred_on >= sinceDay) logged[l.kind] = (logged[l.kind] || 0) + (l.minutes || 0);
+  for (const l of logs) if (l.occurred_on >= sinceDay && l.kind === "questions") logged.questions = (logged.questions || 0) + (l.marks || 0);
   const found = discoveries.filter((d) => after(d.at, since) && Date.parse(d.at) <= now);
   const daysAway = Math.max(0, Math.round((startOfDay(now).getTime() - startOfDay(since).getTime()) / DAY));
   return { focusMinutes, tasksDone, logged, discoveries: found, daysAway };
 }
 
+// Only studying grows the world (phase 37): of the logs, exam-style
+// questions marked.
 const KIND_LINE = {
-  read: (m) => `${formatMinutes(m)} of reading lit the seas`,
-  create: (m) => `${formatMinutes(m)} of making lit the aurora`,
-  move: (m) => `${formatMinutes(m)} of moving greened the land`,
-  rest: (m) => `${formatMinutes(m)} of rest greened the land`,
-  connect: (m) => `${formatMinutes(m)} with people thickened the air`,
+  questions: (m) => `${m} mark${m === 1 ? "" : "s"} on exam-style questions lit the aurora`,
 };
 
 /** Up to four short lines for the dawn, most striking first. */
 export function sinceLines(d) {
   const lines = [];
   for (const disc of d.discoveries.slice(0, 2)) lines.push(`Discovery: ${disc.title}`);
-  if (d.focusMinutes) lines.push(`${formatMinutes(d.focusMinutes)} of focus raised new land`);
+  if (d.focusMinutes) lines.push(`${formatMinutes(d.focusMinutes)} of study raised new land`);
   if (d.tasksDone) lines.push(`${d.tasksDone} new light${d.tasksDone === 1 ? "" : "s"} on the night side`);
-  for (const k of ["create", "read", "move", "rest", "connect"]) if (d.logged[k]) lines.push(KIND_LINE[k](d.logged[k]));
+  if (d.logged.questions) lines.push(KIND_LINE.questions(d.logged.questions));
   if (!lines.length) {
     if (d.daysAway >= 2) lines.push(`${d.daysAway} days away. The clouds clear as soon as you do anything.`);
     else lines.push("A quiet day yesterday. Today is unwritten.");

@@ -4,7 +4,7 @@
 // printed next to the number that drives it, so the world is always
 // readable, never a mystery score. Goals are moons; milestones are
 // discoveries; things you did away from the desk are logged here.
-import { el, openSheet, confirmSheet, showToast, chipGroup, reportError, emptyState, toLocalInput } from "../ui.js";
+import { el, openSheet, confirmSheet, showToast, chipGroup, reportError, emptyState } from "../ui.js";
 import { store, api, redrawOn } from "../store.js";
 import { createGlobe } from "../world-render.js";
 import { globeDock } from "../globe-dock.js";
@@ -14,12 +14,12 @@ import { state } from "../../../src/state.js";
 import { activeDays } from "../model/world-model.js";
 import { monthSky, journal, MOODS, ENERGY, DONE } from "../model/daily.js";
 import { openCheckin } from "../checkin.js";
+import { worldInput } from "../planner.js";
 
 let root;
 let legendEl;
 let moonsEl;
 let discEl;
-let logsEl;
 let titleEl;
 let subEl;
 let skyEl;
@@ -30,16 +30,9 @@ let dock = null;
 let globe = null;
 let unsubs = [];
 
-const LOG_KINDS = [
-  { id: "read", label: "Reading", hint: "lights the seas" },
-  { id: "create", label: "Making something", hint: "art, music, writing, code — lights the aurora" },
-  { id: "move", label: "Moving", hint: "sport, a walk, dance — greens the land" },
-  { id: "rest", label: "Resting", hint: "sleep, a real break — greens the land" },
-  { id: "connect", label: "Time with people", hint: "thickens the atmosphere" },
-];
 
 function world() {
-  return buildWorld({ sessions: store.sessions, tasks: store.tasks, logs: store.logs, goals: store.goals, entries: store.entries, bornAt: store.student?.born_at });
+  return buildWorld(worldInput());
 }
 
 function row(tone, name, value, explain) {
@@ -50,18 +43,18 @@ function render() {
   const w = world();
   const s = w.stats;
   titleEl.textContent = store.student?.world_name || "Your world";
-  subEl.textContent = `${s.ageDays === 0 ? "Born today" : `${s.ageDays} day${s.ageDays === 1 ? "" : "s"} old`}. Every feature here is something you actually did — drag to turn it.`;
+  subEl.textContent = `${s.ageDays === 0 ? "Born today" : `${s.ageDays} day${s.ageDays === 1 ? "" : "s"} old`}. Only studying grows it: every feature here is study you actually did — drag to turn it.`;
   globe?.setLayers(w.layers, w.moons);
   renderNumbers(w);
 
   legendEl.replaceChildren(
-    row("tone-world", "Land", formatMinutes(s.focusMinutesTotal), `Focus, all time. ${landLine(w.layers.earth)} It never sinks again.`),
+    row("tone-world", "Land", formatMinutes(s.studyMinutesTotal), `Study, all time: focus sessions and exam-style questions. ${landLine(w.layers.earth)} It never sinks again.`),
     row("tone-time", "Lights", String(s.tasksDone), "Tasks finished, all time — Earth's real cities light up on the night side, the brightest first."),
-    row("tone-drift", "Aurora", formatMinutes(s.createMinutes30), "Making things, last 30 days."),
-    row("tone-world", "Forests", formatMinutes(s.bodyMinutes30), "Moving and resting, last 30 days."),
-    row("tone-focus", "Glowing seas", formatMinutes(s.readMinutes30), "Reading, last 30 days."),
-    row("tone-signal", "Atmosphere", formatMinutes(s.connectMinutes7), "Time logged with people, last 7 days."),
-    row("tone-time", "Ring", `${s.active7} of 7 days`, w.layers.ring ? "You showed up five or more of the last seven days." : "Appears when you show up five days out of seven."),
+    row("tone-world", "Forests", s.chapters ? `${s.covered} of ${s.chapters}` : "—", "Chapters covered: green spreads over the land as your syllabus gets covered. It stays."),
+    row("tone-focus", "Glowing seas", s.chapters ? `${s.known} of ${s.chapters}` : "—", "Chapters you know to your aim. The seas glow with what you know well."),
+    row("tone-drift", "Aurora", `${s.marks30} marks`, "Marks earned in the last 30 days: exam-style questions you marked, and past papers."),
+    row("tone-signal", "Atmosphere", `${s.papers60} paper${s.papers60 === 1 ? "" : "s"}`, "Past papers marked in the last 60 days: each one thickens the air."),
+    row("tone-time", "Ring", `${s.active7} of 7 days`, w.layers.ring ? "You studied on five or more of the last seven days." : "Appears when you study five days out of seven."),
     row("tone-signal", "Weather", s.daysSinceActive == null ? "—" : s.daysSinceActive === 0 ? "clear" : `${s.daysSinceActive} d away`, weatherLine(s))
   );
 
@@ -108,28 +101,6 @@ function render() {
     renderSky();
     renderJournal();
   }
-
-  // Recent logs.
-  const recent = store.logs.slice(0, 8);
-  logsEl.replaceChildren(
-    ...(recent.length
-      ? [
-          el(
-            "ul",
-            { class: "log" },
-            recent.map((l) =>
-              el("li", {}, [
-                el("span", { class: "t", text: parseDayKey(l.occurred_on).toLocaleDateString(undefined, { day: "numeric", month: "short" }) }),
-                el("div", { class: "log-line" }, [
-                  el("span", {}, [el("b", { text: LOG_KINDS.find((k) => k.id === l.kind)?.label || l.kind }), ` · ${formatMinutes(l.minutes)}${l.note ? ` · ${l.note}` : ""}`]),
-                  el("button", { type: "button", class: "icon-btn sm", "aria-label": "Delete this entry", text: "✕", onClick: async () => { const { error } = await api.deleteLog(l.id); if (error) reportError(error); } }),
-                ]),
-              ])
-            )
-          ),
-        ]
-      : [el("p", { class: "faint", text: "Read a chapter, made a sketch, went for a run? Log it — it shapes your world too." })])
-  );
 }
 
 // This month as a constellation: a star for every day, lit where you
@@ -137,7 +108,7 @@ function render() {
 // nothing is lost.
 function renderSky() {
   const NS = "http://www.w3.org/2000/svg";
-  const days = activeDays({ sessions: store.sessions, tasks: store.tasks, logs: store.logs, entries: store.entries });
+  const days = activeDays({ sessions: store.sessions, tasks: store.tasks, logs: store.logs, results: store.results, entries: store.entries });
   const sky = monthSky(days, Date.now(), state.currentUser.id);
   const svg = document.createElementNS(NS, "svg");
   svg.setAttribute("viewBox", "0 0 100 60");
@@ -214,35 +185,6 @@ function renderJournal() {
   );
 }
 
-function openLog() {
-  let kind = "read";
-  const kinds = chipGroup({ label: "What did you do?", value: kind, options: LOG_KINDS.map((k) => ({ id: k.id, label: k.label })), onChange: (v) => { kind = v; hint.textContent = LOG_KINDS.find((k) => k.id === v).hint; }, toneOf: () => "tone-world" });
-  const hint = el("small", { class: "field-hint", text: LOG_KINDS[0].hint });
-  const minutes = el("input", { type: "number", min: "1", max: "720", value: "30", inputmode: "numeric" });
-  const day = el("input", { type: "date", value: toLocalInput(new Date(), "date"), max: toLocalInput(new Date(), "date") });
-  const note = el("input", { type: "text", maxlength: "140", placeholder: "Optional: what was it?" });
-  openSheet({
-    title: "Log an activity",
-    lead: "For things that happen away from the Study Room. Be honest — it's only for you.",
-    body: [el("div", { class: "field" }, [el("span", { class: "field-label", text: "What did you do?" }), kinds.node, hint]), el("div", { class: "field-row" }, [el("label", { class: "field" }, [el("span", { text: "Minutes" }), minutes]), el("label", { class: "field" }, [el("span", { text: "Day" }), day])]), el("label", { class: "field" }, [el("span", { text: "Note" }), note])],
-    actions: [
-      { label: "Cancel", kind: "btn-quiet" },
-      {
-        label: "Log it",
-        kind: "btn-primary",
-        submit: true,
-        onClick: async () => {
-          const m = Math.round(Number(minutes.value));
-          if (!(m >= 1 && m <= 720)) return showToast("Minutes between 1 and 720."), false;
-          const { error } = await api.addLog({ kind, minutes: m, occurred_on: day.value || dayKey(new Date()), note: note.value.trim() || null });
-          if (error) return reportError(error, "Couldn't log that."), false;
-          showToast("Logged. Your world noticed.", "success");
-        },
-      },
-    ],
-  });
-}
-
 function openGoal() {
   let type = "weekly";
   const title = el("input", { type: "text", maxlength: "80", placeholder: "e.g. Physics revision" });
@@ -310,14 +252,14 @@ function numbers(w) {
   }
   let best = null;
   for (const [k, m] of byDay) if (!best || m > best.m) best = { k, m };
-  const logged = store.logs.reduce((n, l) => n + (l.minutes || 0), 0);
   return [
     { v: String(s.ageDays + 1), u: s.ageDays === 0 ? "day old" : "days old", hint: "Since your universe began" },
-    { v: formatMinutes(s.focusMinutesTotal), u: "of focus", hint: "All time" },
+    { v: formatMinutes(s.studyMinutesTotal), u: "of study", hint: "All time" },
     { v: best ? formatMinutes(best.m) : "—", u: "best day", hint: best ? parseDayKey(best.k).toLocaleDateString(undefined, { day: "numeric", month: "short" }) : "Not yet" },
     { v: longest ? formatMinutes(longest) : "—", u: "longest session", hint: "One sitting" },
     { v: String(s.tasksDone), u: s.tasksDone === 1 ? "task finished" : "tasks finished", hint: "Lights on the night side" },
-    { v: formatMinutes(logged), u: "logged", hint: "Reading, making, moving" },
+    { v: String(s.questionsDone), u: s.questionsDone === 1 ? "question marked" : "questions marked", hint: "Exam-style, by the scheme" },
+    { v: String(s.papersDone), u: s.papersDone === 1 ? "past paper" : "past papers", hint: "Marked" },
     { v: String(store.goals.filter((g) => g.done_at).length), u: "moons completed", hint: "Goals reached" },
   ];
 }
@@ -386,7 +328,7 @@ async function postcard() {
   ctx.fillText(`DAY ${s.ageDays + 1}`, W / 2, 1112);
   ctx.font = `400 30px ${body}`;
   ctx.fillStyle = "#c3cbe2";
-  ctx.fillText(`${formatMinutes(s.focusMinutesTotal)} of focus · ${s.tasksDone} ${s.tasksDone === 1 ? "light" : "lights"} · ${store.goals.length} ${store.goals.length === 1 ? "moon" : "moons"}`, W / 2, 1166);
+  ctx.fillText(`${formatMinutes(s.studyMinutesTotal)} of study · ${s.tasksDone} ${s.tasksDone === 1 ? "light" : "lights"} · ${store.goals.length} ${store.goals.length === 1 ? "moon" : "moons"}`, W / 2, 1166);
   ctx.font = `600 20px ${body}`;
   ctx.fillStyle = "#6f7c9c";
   ctx.fillText("A WORLD MADE OF WHAT I ACTUALLY DID  ·  PANALO STUDENTS", W / 2, H - 70);
@@ -436,7 +378,6 @@ export function mount(section) {
   legendEl = el("ul", { class: "legend" });
   moonsEl = el("ul", { class: "moons" });
   discEl = el("div");
-  logsEl = el("div");
   skyEl = el("div", { class: "sky-wrap" });
   journalEl = el("div");
   const canvas = el("canvas", { class: "world-globe", tabindex: "0", role: "img", "aria-label": "Your world. Drag it, or use the arrow keys to turn and tip it. The legend lists what each feature means." });
@@ -449,7 +390,7 @@ export function mount(section) {
           el("button", { type: "button", class: "btn btn-quiet btn-sm", text: "Rename", onClick: rename }),
           el("button", { type: "button", class: "btn btn-ghost btn-sm", id: "world-postcard", text: "Postcard", onClick: () => postcard().catch((e) => reportError(e)) }),
         ]),
-        el("button", { type: "button", class: "btn btn-primary", text: "Log an activity", onClick: openLog }),
+        el("a", { class: "btn btn-primary", href: "#/plan", text: "Study" }),
       ]),
     ]),
     el("div", { class: "world-grid" }, [
@@ -460,7 +401,6 @@ export function mount(section) {
     el("div", { class: "world-lower" }, [
       el("section", { class: "panel tone-world" }, [el("div", { class: "panel-head" }, [el("h2", { text: "Moons — your goals" }), el("button", { type: "button", class: "link-btn", text: "Add a moon", onClick: openGoal })]), moonsEl]),
       el("section", { class: "panel tone-time" }, [el("div", { class: "panel-head" }, [el("h2", { text: "Discoveries" })]), discEl]),
-      el("section", { class: "panel tone-drift" }, [el("div", { class: "panel-head" }, [el("h2", { text: "Logged lately" }), el("button", { type: "button", class: "link-btn", text: "Log", onClick: openLog })]), logsEl]),
     ])
   );
   if (!store.entriesMissing)
@@ -485,7 +425,6 @@ export function mount(section) {
 
 export function show(param) {
   render();
-  if (param === "log") openLog();
   if (param === "journal") requestAnimationFrame(() => root.querySelector("#journal")?.scrollIntoView({ block: "start", behavior: "smooth" }));
 }
 

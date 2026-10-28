@@ -275,3 +275,36 @@ export function wirePlanner() {
   wired = true;
   on("student", () => loadBanks());
 }
+
+/**
+ * The chapters in the student's syllabus scope, for the world (phase 37):
+ * how many, covered, known to the aim, and due for review. Null until the
+ * question banks have loaded (they're asked for here).
+ */
+export function knowledge(now = Date.now()) {
+  if (!hasPlan()) return null;
+  if (!banksReady()) {
+    loadBanks();
+    return null;
+  }
+  const out = { total: 0, covered: 0, known: 0, due: 0 };
+  for (const s of profile().subjects) {
+    const v = subjectView(s, now);
+    if (v.own) continue;
+    for (const tp of v.list) {
+      const t = v.states[tp.id];
+      out.total++;
+      if (!t) continue;
+      if (t.covered >= 1) out.covered++;
+      if (t.covered >= 1 && L.mastery(t) >= v.target) out.known++;
+      const due = t.covered >= 1 && L.dueAt(t, { examAt: v.examAt, now });
+      if (due && due <= now) out.due++;
+    }
+  }
+  return out;
+}
+
+/** Everything the world grows from (model/world-model.js buildWorld). */
+export function worldInput(now = Date.now()) {
+  return { sessions: store.sessions, tasks: store.tasks, logs: store.logs, goals: store.goals, entries: store.entries, results: store.results, knowledge: knowledge(now), bornAt: store.student?.born_at, now };
+}

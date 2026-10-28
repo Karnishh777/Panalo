@@ -65,6 +65,18 @@ only where nothing else can).
   effect is now one quiet circuit trace in the subject's colour that
   plays a few seconds after a choice and then holds still, with a
   smaller zoom.
+- **Only studying grows the world (phase 37)**: land is study time (focus
+  sessions and exam-style questions); forests spread as chapters are
+  covered and stay; the seas glow with the chapters known to your aim;
+  the aurora is the marks earned in the last 30 days (exam-style
+  questions you marked and past papers); the atmosphere thickens with
+  each past paper in the last 60 days; the ring needs five study days of
+  seven; and mist gathers over chapters due for review, clearing as they
+  are reviewed (weather, never loss). Reading, making, moving, resting
+  and time with people no longer shape it: "Log an activity" is gone from
+  World and from closing the day, which keeps mood, energy and what you
+  learned. Each exam-style question marked is kept (`activity_log` kind
+  `questions`, with its marks).
 - **Timetable (phase 36)**: Plan shows today in full, with times; other
   days come up by tapping them (or "The whole week"), and the choice is
   remembered on the device. Boarders give every study time the school
