@@ -1519,3 +1519,40 @@ body.in-app[data-view="plan"] .wall {
   gap: 6px;
   align-items: center;
 }
+
+/* ---- today, and other days when asked for (phase 36) ---- */
+.pl-h-sm {
+  margin-top: 18px;
+  font-size: 12px;
+}
+.pl-day-chips {
+  align-items: center;
+  margin-top: 8px;
+}
+.pl-day-chip {
+  display: inline-flex;
+  gap: 4px;
+  align-items: baseline;
+}
+.pl-day-chip small {
+  font-size: 11px;
+}
+.pl-day-all {
+  margin-left: 4px;
+}
+
+/* ---- a boarder's weekend: hostel or home ---- */
+.pl-weekend {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 12px;
+  margin-top: 10px;
+  min-width: 0;
+}
+.pl-weekend.ask {
+  padding: 10px 12px;
+  border: 1px solid color-mix(in srgb, var(--focus) 45%, transparent);
+  border-radius: 12px;
+  background: color-mix(in srgb, var(--focus) 8%, transparent);
+}

@@ -607,3 +607,11 @@ html[data-text="larger"] body {
     margin-left: 0;
   }
 }
+
+/* Settings: your journey (js/journey.js) */
+.journey-acts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 10px;
+}

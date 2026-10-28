@@ -5,8 +5,12 @@
 //   - Sleep is a hard limit. Teenagers need 8–10 hours; if the profile's
 //     bedtime leaves less than 8, the plan ends as if it left 8.
 //   - School days: nothing before school; after it, travel home, then a
-//     rest before any study. Boarders with a prep time study in prep:
-//     it is a fixed slot, so nothing else comes off it.
+//     rest before any study. Boarders study in their study times (evening
+//     prep, morning prep, night study: phase 36): the school keeps them for
+//     study, so they are used in full, with no buffer off them.
+//   - Boarders' weekends: in the hostel, a free day with any weekend prep;
+//     going home, the evening before is travel, and the last day ends
+//     early for the journey back.
 //   - Coaching (tuition) hours come off first, spread over the week.
 //   - Fixed activities (sport, art, coaching at set times) come off their
 //     days, with a little time to get there and back; the planner also
@@ -16,7 +20,7 @@
 //   - One lighter day a week, and 20% of the week left unplanned for the
 //     things nobody can plan (rule 3 of the research report).
 import { stageOf } from "./subjects.js";
-import { minutesOf } from "./profile.js";
+import { minutesOf, prepSlotsOf } from "./profile.js";
 
 const SLEEP_MIN = 8 * 60; // the hard floor
 const MORNING = 60; // wake to ready
@@ -26,6 +30,22 @@ const MEALS = 60; // dinner and a snack, on any day
 const LEISURE = 60; // time that is theirs, every day
 export const BUFFER = 0.2; // of the week, left unplanned
 const GETTING_THERE = 15; // before and after a fixed activity
+const SETTLE = 30; // after a journey home or back
+const DAY_MS = 86400000;
+
+/** A boarder's study times on a weekday, as [start, end] minutes, in order. */
+export function prepOn(p, day) {
+  return prepSlotsOf(p)
+    .filter((s) => s.days.includes(day))
+    .map((s) => [minutesOf(s.start), minutesOf(s.end)])
+    .sort((x, y) => x[0] - y[0])
+    .reduce((out, [a, b]) => {
+      const last = out[out.length - 1];
+      if (last && a <= last[1]) last[1] = Math.max(last[1], b);
+      else out.push([a, b]);
+      return out;
+    }, []);
+}
 
 /**
  * The fixed activities on a weekday, as busy intervals (minutes since
@@ -58,10 +78,15 @@ export function caps(grade) {
 
 /**
  * The study window and minutes for one weekday (0 = Sunday).
- * Returns { day, school, from, to, minutes, shortSleep }; from/to are
- * minutes since midnight (to may pass 1440 for a late bedtime).
+ * Returns { day, school, from, to, minutes, fixed, windows?, shortSleep };
+ * from/to are minutes since midnight (to may pass 1440 for a late
+ * bedtime). `fixed` is the part of `minutes` in a boarder's study times
+ * (used in full); `windows`, when set, are the only times to study in.
+ * For boarders, `o` says where the weekend is: { where: "stay" | "home" }
+ * on a day without school, { leaving: true } on a school day before a
+ * weekend at home, { returning: true } on the last day of one.
  */
-export function dayCapacity(p, day) {
+export function dayCapacity(p, day, o = {}) {
   const wake = minutesOf(p.wakeAt);
   let sleep = minutesOf(p.sleepAt);
   if (sleep <= wake) sleep += 1440;
@@ -70,20 +95,49 @@ export function dayCapacity(p, day) {
   const to = bed - WIND_DOWN;
 
   const school = (p.schoolDays || []).includes(day);
-  const travel = p.boarding ? 0 : Math.max(0, p.travelMinutes || 0);
-  const from = school ? minutesOf(p.schoolEnd) + travel + REST : wake + MORNING;
-
   const grade = stageOf(p.stage)?.grade;
   const cap = caps(grade)[school ? "school" : "free"];
-  if (school && p.boarding && p.prepStart && p.prepEnd) {
-    const ps = minutesOf(p.prepStart);
-    const pe = Math.min(minutesOf(p.prepEnd), to);
-    return { day, school, from: ps, to: pe, minutes: Math.round(Math.max(0, Math.min(pe - ps, cap))), shortSleep, prep: true };
-  }
   const tuition = ((p.tuitionHours || 0) * 60) / 7;
-  const fixed = busyWithin(activitiesOn(p, day), from, to);
-  const open = Math.max(0, to - from - MEALS - LEISURE - tuition - fixed);
-  return { day, school, from, to, minutes: Math.round(Math.min(open, cap)), shortSleep };
+  const base = { day, school, to, shortSleep, fixed: 0 };
+  // Free time from `from` to `end`, after meals, leisure, coaching and
+  // fixed activities, up to the day's cap.
+  const open = (from, end, less = 0) => Math.round(Math.max(0, Math.min(end - from - MEALS - LEISURE - tuition - busyWithin(activitiesOn(p, day), from, end) - less, cap)));
+
+  if (p.boarding) {
+    const home = Math.max(0, p.homeTravel ?? 60);
+    if (school && o.leaving) {
+      const from = minutesOf(p.schoolEnd) + home + REST;
+      return { ...base, from, minutes: open(from, to), travel: home };
+    }
+    const prep = prepOn(p, day).map(([a, b]) => [a, Math.min(b, to)]).filter(([a, b]) => b > a);
+    const fixed = prep.reduce((n, [a, b]) => n + b - a, 0);
+    if (school && prep.length) return { ...base, from: prep[0][0], to: prep[prep.length - 1][1], minutes: Math.min(fixed, 300), fixed: Math.min(fixed, 300), windows: prep, prep: true };
+    if (!school && o.where === "home") {
+      const from = wake + MORNING;
+      const end = o.returning ? to - home - SETTLE : to;
+      return { ...base, from, to: end, minutes: open(from, end), where: "home", travel: o.returning ? home : 0 };
+    }
+    if (!school) {
+      // In the hostel: weekend prep in full, and free time around it.
+      const from = wake + MORNING;
+      const flex = Math.max(0, open(from, to) - fixed);
+      return { ...base, from, minutes: fixed + flex, fixed, where: "stay", prep: fixed > 0 };
+    }
+    const from = minutesOf(p.schoolEnd) + REST;
+    return { ...base, from, minutes: open(from, to) };
+  }
+  const travel = Math.max(0, p.travelMinutes || 0);
+  const from = school ? minutesOf(p.schoolEnd) + travel + REST : wake + MORNING;
+  return { ...base, from, minutes: open(from, to) };
+}
+
+/**
+ * Planned minutes for a day: its study times in full, and the rest of its
+ * time halved on the lighter day, less the buffer.
+ */
+export function plannedOf(d, light) {
+  const flex = Math.max(0, d.minutes - (d.fixed || 0));
+  return (d.fixed || 0) + Math.round((flex * (light ? 0.5 : 1) * (1 - BUFFER)) / 5) * 5;
 }
 
 /**
@@ -93,14 +147,40 @@ export function dayCapacity(p, day) {
  * evenly so no single day is the "catch-up" day.
  */
 export function weekCapacity(p) {
-  const days = [0, 1, 2, 3, 4, 5, 6].map((d) => dayCapacity(p, d));
+  const where = p.boarding && p.weekend === "home" ? "home" : "stay";
+  const days = [0, 1, 2, 3, 4, 5, 6].map((d) => dayCapacity(p, d, { where }));
+  const light = lightDay(days);
+  return days.map((d) => ({ ...d, light: d.day === light, planned: plannedOf(d, d.day === light) }));
+}
+
+// The lighter day: the non-school day with the most room (Sunday on a tie).
+function lightDay(days) {
   const free = days.filter((d) => !d.school);
   const pool = free.length ? free : days;
-  const light = pool.reduce((a, b) => (b.minutes > a.minutes || (b.minutes === a.minutes && b.day === 0) ? b : a)).day;
-  return days.map((d) => {
-    const raw = d.day === light ? d.minutes / 2 : d.minutes;
-    return { ...d, light: d.day === light, planned: Math.round((raw * (1 - BUFFER)) / 5) * 5 };
-  });
+  return pool.reduce((a, b) => (b.minutes > a.minutes || (b.minutes === a.minutes && b.day === 0) ? b : a)).day;
+}
+
+/**
+ * One date's capacity, with a boarder's weekend: `whereOf(ms)` says
+ * "home" or "stay" for a day without school (the student's answer for
+ * that weekend, or their usual).
+ */
+export function dateCapacity(p, ms, whereOf = () => null) {
+  const day = new Date(ms).getDay();
+  const school = (d) => (p.schoolDays || []).includes(d);
+  const usual = p.boarding && p.weekend === "home" ? "home" : "stay";
+  const where = (t) => whereOf(t) || usual;
+  const o = {};
+  if (p.boarding) {
+    if (school(day)) o.leaving = !school((day + 1) % 7) && where(ms + DAY_MS) === "home";
+    else {
+      o.where = where(ms);
+      o.returning = o.where === "home" && school((day + 1) % 7);
+    }
+  }
+  const d = dayCapacity(p, day, o);
+  const light = lightDay([0, 1, 2, 3, 4, 5, 6].map((x) => dayCapacity(p, x, { where: usual }))) === day;
+  return { ...d, light, planned: plannedOf(d, light) };
 }
 
 /** Total planned minutes in a week. */

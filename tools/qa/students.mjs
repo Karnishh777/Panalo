@@ -223,7 +223,11 @@ try {
     await go(page, "#/plan");
     await page.waitForSelector(":is(.pl-stage, .pl-hero) #plan-start", { timeout: 10000 });
     check("the plan leads with the next block", await page.isVisible("#plan-start"));
-    check("the week has seven days", (await page.locator(".pl-day").count()) === 7);
+    check("the plan shows today, and other days when asked", (await page.locator(".pl-day").count()) === 1 && (await page.locator(".pl-day-chip").count()) === 6);
+    await page.click(".pl-day-chip >> nth=1");
+    check("…one day at a time", (await page.locator(".pl-day").count()) === 2);
+    await page.click("#plan-days-all");
+    check("…or the whole week", (await page.locator(".pl-day").count()) === 7 && /Only today/.test(await page.textContent("#plan-days-all")));
     check("each subject is a map of its topics, grey until met", (await page.locator(".pl-subject").count()) === 2 && (await page.locator(".pl-topic:not(.met)").count()) > 10);
     check("a new student's first block is a quick check", /Quick check/.test(await page.textContent(":is(.pl-stage, .pl-hero)")));
     check("the exam from the setup shows on its subject", /Exam in \d+ days/.test(await page.textContent(".pl-subjects")));
@@ -1246,6 +1250,92 @@ try {
     check("no console errors (other subjects)", o.errors.length === 0);
     if (o.errors.length) console.log(o.errors.join("\n"));
     await o.close();
+  }
+
+  // ---- A boarder: study times, weekends, and the journey (phase 36) ----------------------
+  {
+    const b = await qa.open({ viewport: "laptop", path: "students/#signup" });
+    await b.evaluate(() => window.__qa.ready);
+    await appReady(b);
+    await b.fill("#signup-username", "board_q");
+    await b.fill("#signup-email", "board@panalo.test");
+    await b.fill("#signup-password", "a-long-enough-pass");
+    await fillBirth(b, 17);
+    await b.check("#signup-age");
+    await b.click("#signup-submit");
+    await b.waitForSelector("#setup:not([hidden]) #setup-form[data-step]", { timeout: 20000 });
+    await b.click('#setup-form .setup-choice:has-text("Cambridge")');
+    await b.click("#setup-form button[type=submit]");
+    await b.click('#setup-form .setup-choice:has-text("AS")');
+    await b.click("#setup-form button[type=submit]");
+    await b.click('#setup-form .setup-subjects .chip:has-text("Physics") >> nth=0');
+    for (let i = 0; i < 10 && (await b.getAttribute("#setup-form", "data-step")) !== "boarding"; i++) {
+      await b.click("#setup-form button[type=submit]");
+      await b.waitForTimeout(60);
+    }
+    await b.click('#setup-form .setup-choice:has-text("Boarder")');
+    check("boarders give every study time the school keeps", (await b.locator(".setup-prep").count()) === 1 && (await b.isVisible("#setup-add-prep")));
+    await b.click("#setup-add-prep");
+    await b.fill("#setup-prep-1-start", "20:30");
+    await b.fill("#setup-prep-1-end", "21:15");
+    await b.click('#setup-form .setup-choice:has-text("It changes")');
+    check("…and how weekends go, with the journey home", await b.isVisible('#setup-form .setup-sub:has-text("Travel home")'));
+    for (let i = 0; i < 14 && (await b.isVisible("#setup")); i++) {
+      await b.click("#setup-form button[type=submit]", { timeout: 3000 }).catch(() => {});
+      await b.waitForTimeout(60);
+    }
+    await b.waitForSelector("#app:not([hidden])", { timeout: 15000 });
+    const row = await b.evaluate(() => window.__qa.db.student_profiles.find((r) => r.setup_at));
+    check("study times and weekends are saved", row.boarding && row.prep_slots?.length === 2 && row.prep_slots[1].start === "20:30" && row.weekend_plan === "ask" && row.home_travel_minutes === 60 && row.prep_start === row.prep_slots[0].start, JSON.stringify([row.prep_slots, row.weekend_plan]));
+    await go(b, "#/plan", 1200);
+    check("the plan counts all of the study times", /all of your prep and study times/.test(await b.textContent(".plan-body .s-sub")));
+    check("a boarder is asked about the coming weekend", (await b.isVisible("#plan-weekend.ask")) && /hostel or going home/.test(await b.textContent("#plan-weekend")));
+    await b.click('#plan-weekend [data-where="home"]');
+    await b.waitForTimeout(400);
+    const away = await b.evaluate(() => window.__qa.db.student_profiles.find((r) => r.setup_at).plan_rules?.away || {});
+    check("…and going home is kept for that weekend", Object.values(away).includes("home") && !(await b.isVisible("#plan-weekend.ask")), JSON.stringify(away));
+
+    // The journey: download, start again, bring back.
+    await go(b, "#/settings");
+    check("Settings has your journey", await b.isVisible("#journey-panel"));
+    const [dl] = await Promise.all([b.waitForEvent("download"), b.click("#journey-download")]);
+    const file = await dl.path();
+    const sealed = JSON.parse(await (await import("node:fs/promises")).readFile(file, "utf8"));
+    check("a journey downloads, sealed to the account", sealed.kind === "panalo-journey" && typeof sealed.journey === "string" && sealed.seal && sealed.account === row.user_id);
+    await b.click("#journey-reset");
+    await b.click("#journey-reset-go");
+    check("starting again needs it typed", await b.isVisible("#journey-reset-word"));
+    await b.fill("#journey-reset-word", "start again");
+    await b.click("#journey-reset-go");
+    await b.waitForSelector("#setup:not([hidden]) #setup-form[data-step]", { timeout: 15000 }).catch(() => {});
+    check("starting again clears the journey and runs the setup", (await b.isVisible("#setup")) && (await b.evaluate(() => !window.__qa.db.student_profiles.some((r) => r.setup_at))));
+    await b.evaluate(() => (location.hash = "#/settings"));
+    // A journey that isn't this account's, and one that was changed, are refused.
+    const other = JSON.stringify({ ...sealed, account: "00000000-0000-4000-8000-000000000000" });
+    const changed = JSON.stringify({ ...sealed, journey: sealed.journey.replace('"version":1', '"version":1,"x":1') });
+    check("the journey file is checked before anything changes", await b.evaluate(async ([o, s]) => {
+      const m = await import("/students/js/journey.js");
+      const me = window.__qa.db.student_profiles[0] && JSON.parse(s).account;
+      return !!m.readJourneyFile(o, me).error && !m.readJourneyFile("not json", me).journey && !!m.readJourneyFile(s, me).journey;
+    }, [other, JSON.stringify(sealed)]));
+    const importOn = async (text) => {
+      await b.evaluate(() => import("/students/js/journey.js").then((m) => m.openImport()));
+      await b.setInputFiles("#journey-file", { name: "journey.json", mimeType: "application/json", buffer: Buffer.from(text) });
+      await b.waitForTimeout(200);
+      await b.click("#journey-import-go");
+      await b.waitForTimeout(400);
+    };
+    await importOn(changed);
+    check("a changed journey is refused", /changed after it was downloaded/.test(await b.textContent(".sheet .sheet-body")));
+    await b.keyboard.press("Escape");
+    await importOn(JSON.stringify(sealed));
+    await b.waitForTimeout(900);
+    await b.evaluate(() => window.__qa.ready).catch(() => {});
+    const back = await b.evaluate(() => window.__qa.db.student_profiles.find((r) => r.setup_at));
+    check("the same account brings its journey back", back?.prep_slots?.length === 2 && back?.weekend_plan === "ask", JSON.stringify(back?.prep_slots));
+    check("no console errors (boarder and journey)", b.errors.length === 0);
+    if (b.errors.length) console.log(b.errors.join("\n"));
+    await b.close();
   }
 
   // ---- Under 18: a parent or guardian agrees first (phase 22) ----------------------------

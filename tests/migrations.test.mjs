@@ -107,7 +107,7 @@ async function migrationTests() {
   // Phase 20's moderation_* functions each check for a moderator first
   // (moderation_claim and moderation_status excepted, by design).
   // Phase 22's age and consent functions check who's asking themselves.
-  const EXPECTED_DEFINERS = ["decide_parent_consent", "delete_my_account", "find_profile_by_username", "login_email", "moderation_claim", "moderation_delete_message",
+  const EXPECTED_DEFINERS = ["decide_parent_consent", "delete_my_account", "find_profile_by_username", "journey_export", "journey_import", "journey_reset", "login_email", "moderation_claim", "moderation_delete_message",
     "moderation_history", "moderation_reports", "moderation_set_birth", "moderation_set_passphrase", "moderation_set_status", "moderation_status",
     "moderation_suspend", "my_age_status", "my_children_requests", "my_storage_objects", "pan_take", "request_parent_consent", "request_to_join",
     "set_my_birth", "withdraw_parent_consent"];
@@ -1287,8 +1287,66 @@ async function customSyllabiTests() {
   ok("phase 35 is safe to re-run", again.ok, again.error);
 }
 
+async function journeyTests() {
+  const db = await createDb();
+  const upTo35 = await replay(db, MIGRATIONS.slice(0, MIGRATIONS.indexOf("supabase-phase36.sql")));
+  ok("phases 1-35 replay", upTo35.ok, upTo35.error);
+  const me = await createUser(db, "j_me");
+  const other = await createUser(db, "j_other");
+  await as(db, me, (tx) => tx.query("insert into student_profiles (world_name) values ('Mine')"));
+  await as(db, other, (tx) => tx.query("insert into student_profiles (world_name) values ('Theirs')"));
+  const r = await runFile(db, "supabase-phase36.sql");
+  ok("phase 36 applies", r.ok, r.error);
+  const bad = async (sql) => !(await attempt(db, me, (tx) => tx.query(sql))).ok;
+
+  // Boarders' study times and weekends.
+  const set = await as(db, me, async (tx) => (await tx.query(`update student_profiles set boarding = true, prep_slots = '[{"start":"06:15","end":"07:00","days":[1,2,3]},{"start":"18:00","end":"19:30","days":[1,2,3]}]', weekend_plan = 'ask', home_travel_minutes = 90, setup_at = now(), stage = 'as' where user_id = auth.uid() returning jsonb_array_length(prep_slots) as n`)).rows[0]?.n);
+  ok("a boarder can keep several study times", set === 2);
+  ok("study times are a short list", await bad(`update student_profiles set prep_slots = (select jsonb_agg(x) from generate_series(1, 7) x) where user_id = auth.uid()`));
+  ok("weekends are stay, home or ask", await bad(`update student_profiles set weekend_plan = 'away' where user_id = auth.uid()`));
+  ok("the journey home has a sane length", await bad(`update student_profiles set home_travel_minutes = 2000 where user_id = auth.uid()`));
+
+  // A journey: download, start again, bring back.
+  await as(db, me, async (tx) => {
+    const t = (await tx.query("insert into student_tasks (title) values ('Essay') returning id")).rows[0].id;
+    await tx.query("insert into focus_sessions (task_id, started_at, ended_at, planned_minutes, focused_minutes, completed) values ($1, now() - interval '30 minutes', now(), 25, 25, true)", [t]);
+    await tx.query("insert into student_topics (subject, topic, covered) values ('phy', 'P1.1', 1)");
+    await tx.query("insert into student_results (subject, title, taken_on, score, out_of) values ('phy', 'Paper 1 · mock', current_date, 31.5, 40)");
+    await tx.query("insert into daily_entries (day, intention) values (current_date, 'Finish the essay')");
+  });
+  const exp = await as(db, me, async (tx) => (await tx.query("select journey_export() as x")).rows[0].x);
+  ok("a download carries the journey and its seal", typeof exp.journey === "string" && /^[0-9a-f]{64}$/.test(exp.seal) && exp.account === me);
+  const j = JSON.parse(exp.journey);
+  ok("the journey has everything", j.sessions.length === 1 && j.topics.length === 1 && j.results.length === 1 && j.journal.length === 1 && j.profile.world_name === "Mine" && !("user_id" in j.profile));
+  const theirs = await attempt(db, other, (tx) => tx.query("select journey_import($1, $2)", [exp.journey, exp.seal]));
+  ok("another account can't bring it in", !theirs.ok && /another account/.test(theirs.error), theirs.error);
+  const changed = await attempt(db, me, (tx) => tx.query("select journey_import($1, $2)", [exp.journey.replace('"covered": 1', '"covered": 0.5'), exp.seal]));
+  ok("a changed journey isn't taken", !changed.ok);
+  const theirsLeft = await as(db, other, async (tx) => (await tx.query("select world_name from student_profiles")).rows[0].world_name);
+  ok("their journey is untouched", theirsLeft === "Theirs");
+  ok("nobody can call the seal directly", await bad(`select private.journey_seal(auth.uid(), 'x')`));
+  ok("nobody can read the sealing key", await bad(`select secret from private.journey_key`));
+
+  await as(db, me, (tx) => tx.query("select journey_reset()"));
+  const after = await as(db, me, async (tx) => (await tx.query("select (select count(*)::int from focus_sessions) s, (select count(*)::int from student_topics) t, (select count(*)::int from student_results) r, (select count(*)::int from daily_entries) d, (select count(*)::int from student_tasks) k, (select setup_at is null and world_name is null from student_profiles) fresh")).rows[0]);
+  ok("starting again clears the journey and the setup", after.s === 0 && after.t === 0 && after.r === 0 && after.d === 0 && after.k === 0 && after.fresh, JSON.stringify(after));
+
+  const back = await as(db, me, async (tx) => (await tx.query("select journey_import($1, $2) as c", [exp.journey, exp.seal])).rows[0].c);
+  ok("the same account can bring it back", back?.sessions === 1 && back?.topics === 1);
+  const restored = await as(db, me, async (tx) => (await tx.query("select (select count(*)::int from focus_sessions where task_id is not null) s, (select score::text from student_results) score, (select world_name from student_profiles) w, (select weekend_plan from student_profiles) wp, (select jsonb_array_length(prep_slots) from student_profiles) ps, (select setup_at is not null from student_profiles) setup")).rows[0]);
+  ok("everything comes back as it was", restored.s === 1 && restored.score === "31.50" && restored.w === "Mine" && restored.wp === "ask" && restored.ps === 2 && restored.setup, JSON.stringify(restored));
+  const twice = await as(db, me, async (tx) => (await tx.query("select journey_import($1, $2) as c", [exp.journey, exp.seal])).rows[0].c);
+  ok("bringing it back twice doesn't double it", twice?.sessions === 1 && (await as(db, me, async (tx) => (await tx.query("select count(*)::int n from focus_sessions")).rows[0].n)) === 1);
+  ok("anyone signed out is turned away", !(await attempt(db, null, (tx) => tx.query("select journey_reset()"))).ok);
+
+  const again = await runFile(db, "supabase-phase36.sql");
+  ok("phase 36 is safe to re-run", again.ok, again.error);
+  const still = await attempt(db, me, (tx) => tx.query("select journey_import($1, $2)", [exp.journey, exp.seal]));
+  ok("re-running keeps the sealing key", still.ok, still.error);
+}
+
 async function main() {
-  const sections = [migrationTests, chatTests, takeoverTests, callTests, accountTests, backfillTests, historyTests, disappearTests, studentsTests, moderationTests, deviceStateTests, consentTests, logTests, dailyTests, usernameLoginTests, examQualityTests, privateStudentsTests, studyProfileTests, progressTests, prepTests, planRulesTests, panLimitTests, activitiesTests, customSyllabiTests];
+  const sections = [migrationTests, chatTests, takeoverTests, callTests, accountTests, backfillTests, historyTests, disappearTests, studentsTests, moderationTests, deviceStateTests, consentTests, logTests, dailyTests, usernameLoginTests, examQualityTests, privateStudentsTests, studyProfileTests, progressTests, prepTests, planRulesTests, panLimitTests, activitiesTests, customSyllabiTests, journeyTests];
   for (const run of sections) {
     try {
       await run();
