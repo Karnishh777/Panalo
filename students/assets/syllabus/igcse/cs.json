@@ -12,6 +12,10 @@
         { "q": "How many bytes is 1 kibibyte (KiB)?", "o": ["1000", "1024", "8", "1 000 000"], "a": 1, "why": "Binary prefixes use powers of 2: 2¹⁰ = 1024." },
         { "q": "Why does lossy compression make files smaller than lossless?", "o": ["It removes data permanently that is less noticeable", "It encrypts the file", "It stores data twice", "It uses hexadecimal"], "a": 0, "why": "Lossy discards some data (e.g. detail in an image); lossless can rebuild the original exactly." },
         { "q": "An image is 100 × 100 pixels with a colour depth of 8 bits. What is its file size?", "o": ["10 000 bits", "10 000 bytes", "80 000 bytes", "800 bytes"], "a": 1, "why": "100 × 100 × 8 bits = 80 000 bits = 10 000 bytes." }
+      ],
+      "long": [
+        { "q": "Convert the hexadecimal number 3F into 8-bit binary and into denary.", "marks": 2, "paper": "1", "scheme": ["B1: 00111111", "B1: 63"], "ans": "00111111; 63" },
+        { "q": "A 10-second sound recording is sampled 44 100 times a second with a sample resolution of 16 bits, in mono. Calculate the file size in bytes.", "marks": 3, "paper": "1", "scheme": ["M1: 44 100 × 16 × 10 = 7 056 000 bits", "M1: ÷ 8", "A1: = 882 000 bytes"], "ans": "882 000 bytes" }
       ]
     },
     {
@@ -20,6 +24,9 @@
         { "q": "Which method sends bits one at a time down a single wire?", "o": ["Parallel", "Serial", "Duplex", "Simplex only"], "a": 1, "why": "Serial transmission uses one channel; parallel uses several at once." },
         { "q": "What does a parity bit help detect?", "o": ["Viruses", "Errors in transmission", "Lost packets only", "Encryption keys"], "a": 1, "why": "An odd or even count of 1s that doesn't match shows a bit has changed." },
         { "q": "Symmetric encryption uses…", "o": ["one shared key to encrypt and decrypt", "a public and a private key", "no key", "a parity bit"], "a": 0, "why": "Asymmetric encryption uses a public/private key pair." }
+      ],
+      "long": [
+        { "q": "Describe how an even parity check is used to detect errors in data transmission.", "marks": 3, "paper": "1", "scheme": ["B1: sender and receiver agree to use even parity", "B1: a parity bit is set so that each byte has an even number of 1s", "B1: the receiver counts the 1s; an odd number means an error has occurred"] }
       ]
     },
     {
@@ -59,6 +66,9 @@
         { "q": "Which search needs the list to be sorted first?", "o": ["Linear search", "Binary search", "Both", "Neither"], "a": 1, "why": "Binary search repeatedly halves a sorted list." },
         { "q": "What is a trace table used for?", "o": ["Drawing flowcharts", "Following the values of variables through an algorithm to find errors", "Sorting data", "Storing records"], "a": 1, "why": "It records each variable's value step by step." },
         { "q": "A range check on an age field rejects 150. This is…", "o": ["verification", "validation", "encryption", "decomposition"], "a": 1, "why": "Validation checks data is sensible; verification checks it was entered correctly." }
+      ],
+      "long": [
+        { "q": "Write pseudocode that inputs 10 numbers and outputs the largest.", "marks": 5, "paper": "2", "scheme": ["M1: initialise Largest with the first number (or a very small value)", "M1: a loop that runs 10 times", "M1: INPUT a number inside the loop", "M1: IF Number > Largest THEN Largest ← Number", "M1: OUTPUT Largest after the loop"] }
       ]
     },
     {
@@ -74,6 +84,9 @@
       "questions": [
         { "q": "What is a primary key?", "o": ["The first field", "A field that uniquely identifies each record", "A password", "The largest value"], "a": 1, "why": "No two records share the same primary key value." },
         { "q": "Which SQL keyword chooses which fields to show?", "o": ["FROM", "WHERE", "SELECT", "ORDER BY"], "a": 2, "why": "SELECT fields FROM table WHERE condition ORDER BY field." }
+      ],
+      "long": [
+        { "q": "A table PRODUCT has fields ProductID, Name and Price. Write an SQL query to show the Name and Price of products costing more than 20, cheapest first.", "marks": 4, "paper": "2", "scheme": ["B1: SELECT Name, Price", "B1: FROM PRODUCT", "B1: WHERE Price > 20", "B1: ORDER BY Price ASC"] }
       ]
     },
     {
@@ -81,6 +94,9 @@
       "questions": [
         { "q": "What is the output of an XOR gate with inputs 1 and 1?", "o": ["0", "1", "2", "Undefined"], "a": 0, "why": "XOR outputs 1 only when the inputs differ." },
         { "q": "A NAND gate outputs 0 only when…", "o": ["both inputs are 0", "both inputs are 1", "one input is 1", "never"], "a": 1, "why": "NAND is NOT AND: AND gives 1 only for 1,1, so NAND gives 0 only for 1,1." }
+      ],
+      "long": [
+        { "q": "An alarm (X) sounds when a door is open (D = 1) AND either the system is armed (A = 1) OR a window is open (W = 1). Write the logic expression.", "marks": 2, "paper": "2", "scheme": ["B1: X = D AND (A OR W)", "B1: correct use of brackets so OR is evaluated first"], "ans": "X = D AND (A OR W)" }
       ]
     }
   ]

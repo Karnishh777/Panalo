@@ -16,6 +16,9 @@
       "questions": [
         { "q": "Which document is sent by a seller to request payment?", "o": ["Credit note", "Invoice", "Receipt", "Statement of account"], "a": 1, "why": "A credit note reduces the amount owed, e.g. for returns." },
         { "q": "In double entry, buying goods on credit is recorded as…", "o": ["Debit purchases, credit supplier", "Debit supplier, credit purchases", "Debit cash, credit purchases", "Debit purchases, credit cash"], "a": 0, "why": "Purchases increase (debit); the amount owed to the supplier increases (credit)." }
+      ],
+      "long": [
+        { "q": "State the difference between an invoice and a credit note.", "marks": 2, "paper": "2", "scheme": ["B1: an invoice is sent by the seller to a credit customer, showing the amount owed for goods sold", "B1: a credit note is sent by the seller to reduce the amount owed, e.g. for returned or faulty goods"] }
       ]
     },
     {
@@ -31,6 +34,9 @@
         { "q": "A machine costs $10 000, lasts 5 years and has no residual value. What is straight-line depreciation per year?", "o": ["$1000", "$2000", "$5000", "$500"], "a": 1, "why": "(cost − residual value) ÷ useful life = 10 000 ÷ 5." },
         { "q": "Prepaid expenses are shown as…", "o": ["a current liability", "a current asset", "income", "capital"], "a": 1, "why": "They are paid in advance for a future period." },
         { "q": "Writing off an irrecoverable debt…", "o": ["increases profit", "reduces profit", "increases cash", "has no effect"], "a": 1, "why": "It is an expense in the income statement." }
+      ],
+      "long": [
+        { "q": "A van cost $12 000 and is expected to last 5 years, with a residual value of $2000. Calculate the annual depreciation using the straight-line method and the net book value after 2 years.", "marks": 3, "paper": "2", "scheme": ["M1: (12 000 − 2000) ÷ 5", "A1: = $2000 a year", "A1: net book value after 2 years = $8000"], "ans": "$2000; $8000" }
       ]
     },
     {
@@ -38,6 +44,9 @@
       "questions": [
         { "q": "Revenue $50 000, cost of sales $30 000. What is gross profit?", "o": ["$80 000", "$20 000", "$30 000", "$50 000"], "a": 1, "why": "Gross profit = revenue − cost of sales." },
         { "q": "Cost of sales is calculated as…", "o": ["opening inventory + purchases − closing inventory", "purchases − sales", "sales − expenses", "closing inventory − opening inventory"], "a": 0, "why": "It is the cost of the goods actually sold in the period." }
+      ],
+      "long": [
+        { "q": "Revenue was $80 000. Opening inventory was $6000, purchases $50 000 and closing inventory $8000. Calculate the cost of sales and the gross profit.", "marks": 3, "paper": "2", "scheme": ["M1: cost of sales = 6000 + 50 000 − 8000", "A1: = $48 000", "A1: gross profit = 80 000 − 48 000 = $32 000"], "ans": "$48 000; $32 000" }
       ]
     },
     {
@@ -45,6 +54,9 @@
       "questions": [
         { "q": "Gross profit $20 000 on revenue $80 000. What is the gross margin?", "o": ["20%", "25%", "40%", "400%"], "a": 1, "why": "20 000 ÷ 80 000 × 100 = 25%." },
         { "q": "A quick (acid test) ratio excludes…", "o": ["cash", "inventory", "trade receivables", "trade payables"], "a": 1, "why": "Inventory may be slow to turn into cash." }
+      ],
+      "long": [
+        { "q": "A trader has current assets of $18 000 and current liabilities of $12 000. Calculate the current ratio and comment on it.", "marks": 3, "paper": "2", "scheme": ["M1: 18 000 ÷ 12 000", "A1: = 1.5 : 1", "B1: comment, e.g. the business can cover its short-term debts, though below the 2 : 1 often suggested"], "ans": "1.5 : 1" }
       ]
     },
     {

@@ -16,6 +16,7 @@ import { impactFrame } from "./fx.js";
 import { focusing } from "./focus-shield.js";
 import { state } from "../../src/state.js";
 import { DAY } from "./model/time.js";
+import { worldInput } from "./planner.js";
 
 let showing = false;
 let timer = 0;
@@ -38,7 +39,7 @@ export function checkMomentsSoon(ms = 1200) {
 export async function checkMoments() {
   if (!store.loaded || store.schemaMissing || !store.student) return;
   if (busy()) return checkMomentsSoon(4000);
-  const w = buildWorld({ sessions: store.sessions, tasks: store.tasks, logs: store.logs, goals: store.goals, entries: store.entries, bornAt: store.student.born_at });
+  const w = buildWorld(worldInput());
   const prefs = getPrefs();
   // The first time this runs for an account, only the last day counts as news.
   const firstRun = !Array.isArray(prefs.momentsSeen);

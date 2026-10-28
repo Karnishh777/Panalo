@@ -1345,8 +1345,27 @@ async function journeyTests() {
   ok("re-running keeps the sealing key", still.ok, still.error);
 }
 
+async function studyWorldTests() {
+  const db = await createDb();
+  const upTo36 = await replay(db, MIGRATIONS.slice(0, MIGRATIONS.indexOf("supabase-phase37.sql")));
+  ok("phases 1-36 replay", upTo36.ok, upTo36.error);
+  const me = await createUser(db, "w_me");
+  await as(db, me, (tx) => tx.query("insert into activity_log (kind, minutes) values ('read', 20)"));
+  const r = await runFile(db, "supabase-phase37.sql");
+  ok("phase 37 applies, keeping older logs", r.ok, r.error);
+  const got = await as(db, me, async (tx) => (await tx.query("insert into activity_log (kind, minutes, marks, out_of, note) values ('questions', 9, 5, 6, 'Physics · Paper 2') returning marks")).rows[0]?.marks);
+  ok("a marked question is kept with its marks", got === 5);
+  const bad = async (sql) => !(await attempt(db, me, (tx) => tx.query(sql))).ok;
+  ok("never more marks than it was worth", await bad("insert into activity_log (kind, minutes, marks, out_of) values ('questions', 5, 7, 6)"));
+  ok("a question needs its marks", await bad("insert into activity_log (kind, minutes) values ('questions', 5)"));
+  ok("other logs carry no marks", await bad("insert into activity_log (kind, minutes, marks, out_of) values ('read', 5, 1, 2)"));
+  ok("kinds are still checked", await bad("insert into activity_log (kind, minutes) values ('nap', 5)"));
+  const again = await runFile(db, "supabase-phase37.sql");
+  ok("phase 37 is safe to re-run", again.ok, again.error);
+}
+
 async function main() {
-  const sections = [migrationTests, chatTests, takeoverTests, callTests, accountTests, backfillTests, historyTests, disappearTests, studentsTests, moderationTests, deviceStateTests, consentTests, logTests, dailyTests, usernameLoginTests, examQualityTests, privateStudentsTests, studyProfileTests, progressTests, prepTests, planRulesTests, panLimitTests, activitiesTests, customSyllabiTests, journeyTests];
+  const sections = [migrationTests, chatTests, takeoverTests, callTests, accountTests, backfillTests, historyTests, disappearTests, studentsTests, moderationTests, deviceStateTests, consentTests, logTests, dailyTests, usernameLoginTests, examQualityTests, privateStudentsTests, studyProfileTests, progressTests, prepTests, planRulesTests, panLimitTests, activitiesTests, customSyllabiTests, journeyTests, studyWorldTests];
   for (const run of sections) {
     try {
       await run();

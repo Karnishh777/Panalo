@@ -18,7 +18,7 @@ import { activeDays } from "../model/world-model.js";
 import { todayEntry, rhythm, rhythmLine, dayPart, MOODS } from "../model/daily.js";
 import { openCheckin, openIntention } from "../checkin.js";
 import { parseQuickAdd } from "../model/quick-add.js";
-import { hasPlan, currentPlan, loadBanks, banksReady, colourOf, focusedToday } from "../planner.js";
+import { hasPlan, currentPlan, loadBanks, banksReady, colourOf, focusedToday, worldInput } from "../planner.js";
 import { KINDS, nextBlock } from "../model/plan.js";
 import { startBlock } from "../block-check.js";
 import { art, artImg, onArt } from "../art.js";
@@ -46,7 +46,7 @@ function allEvents() {
 }
 
 function world() {
-  return buildWorld({ sessions: store.sessions, tasks: store.tasks, logs: store.logs, goals: store.goals, entries: store.entries, bornAt: store.student?.born_at });
+  return buildWorld(worldInput());
 }
 
 function panel(tone, title, link, children) {
@@ -71,7 +71,7 @@ function renderOrbit() {
 
 function todayPanel(now) {
   const entry = todayEntry(store.entries, now);
-  const days = activeDays({ sessions: store.sessions, tasks: store.tasks, logs: store.logs, entries: store.entries });
+  const days = activeDays({ sessions: store.sessions, tasks: store.tasks, logs: store.logs, results: store.results, entries: store.entries });
   const r = rhythm(days, now);
   const dots = el(
     "ol",

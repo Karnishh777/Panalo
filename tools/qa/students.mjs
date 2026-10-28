@@ -80,7 +80,7 @@ const qa = await launch();
 // Discovery moments are full-screen and would land in the middle of the
 // older flows: every page starts with them seen,
 // unless a test asks for them (storage: { "panalo.students.prefs": "{}" }).
-const ALL_MOMENTS = ["first-focus", "focus-1", "focus-10", "focus-25", "focus-50", "focus-100", "focus-250", "tasks-1", "tasks-10", "tasks-50", "tasks-200", "first-aurora", "streak-7", "first-moon", "pages-1", "pages-7", "pages-30", "pages-100"];
+const ALL_MOMENTS = ["first-focus", "focus-1", "focus-10", "focus-25", "focus-50", "focus-100", "focus-250", "tasks-1", "tasks-10", "tasks-50", "tasks-200", "first-aurora", "first-paper", "streak-7", "first-moon", "pages-1", "pages-7", "pages-30", "pages-100"];
 const QUIET = { "panalo.students.prefs": JSON.stringify({ momentsSeen: ALL_MOMENTS }) };
 const openPage = qa.open;
 qa.open = (o = {}) => openPage({ ...o, storage: { ...QUIET, ...(o.storage || {}) } });
@@ -343,6 +343,8 @@ try {
     await page.waitForTimeout(500);
     const dc = await page.evaluate(() => window.__qa.db.student_topics.find((t) => t.subject === "phy" && t.topic === "10"));
     check("marking yourself moves the topic", dc && Number(dc.covered) === 1 && dc.stability > 0, JSON.stringify(dc));
+    const qlog = await page.evaluate(() => window.__qa.db.activity_log.find((l) => l.kind === "questions"));
+    check("…and the marks are kept for the world", qlog?.marks === 3 && qlog?.out_of === 4 && qlog.minutes === 6, JSON.stringify(qlog));
     await page.keyboard.press("Escape");
     await page.waitForTimeout(300);
     await page.click('[data-pastpaper="phy"]');
@@ -493,12 +495,8 @@ try {
   const legend = await page.textContent(".legend");
   check("the world legend shows the focus that grew the land", /25 min/.test(legend));
   check("the world legend counts the finished task as a light", /Lights\s*Tasks finished.*1/s.test(legend));
-  await page.click("text=Log an activity");
-  await page.click("dialog .chip >> text=Making something");
-  await page.fill("dialog input[type=number]", "45");
-  await page.click("dialog .btn-primary");
-  await page.waitForTimeout(1100); // the number rolls up to its new value
-  check("logging an activity lights the aurora", /Aurora\s*Making things, last 30 days\.\s*45 min/.test(await page.textContent(".legend")));
+  check("only studying grows the world: no activity logging", !(await page.isVisible("text=Log an activity")) && /Only studying grows it/.test(await page.textContent(".world .s-sub")));
+  check("the legend explains each feature as study", /Forests\s*Chapters covered/.test(legend) && /Aurora\s*Marks earned/.test(legend) && /Atmosphere\s*Past papers/.test(legend));
   check("the first session is a discovery", /First session/.test(await page.textContent(".world-lower")));
   await shot(page, "world");
 
@@ -757,7 +755,6 @@ try {
     check("closing the day needs only how it felt", await d.isVisible("#checkin-save"));
     await d.click(".chips.scale .chip.tone-drift[data-v='4']");
     await d.click(".chips.scale .chip.tone-focus[data-v='3']");
-    await d.click(".checkin-acts [data-kind='read']");
     await d.fill("input[aria-label='One thing you learned']", "Light bends more in glass than in water");
     await d.click("#checkin-save");
     await d.waitForTimeout(700);
@@ -767,7 +764,7 @@ try {
       return { mood: e?.mood, energy: e?.energy, closed: !!e?.closed_at, learned: e?.learned, read: window.__qa.db.activity_log.filter((l) => l.kind === "read" && l.occurred_on === today).reduce((n, l) => n + l.minutes, 0) };
     });
     check("closing the day keeps mood, energy and what you learned", closed.closed && closed.mood === 4 && closed.energy === 3 && /glass/.test(closed.learned || ""));
-    check("what you tapped is logged to your world", closed.read === 30);
+    check("closing the day logs nothing to the world (only studying grows it)", closed.read === 0 && !(await d.isVisible(".checkin-acts")));
     check("Now shows the day closed", /Day closed · Good/.test(await d.textContent(".closed-line").catch(() => "")));
     check("today's star is lit in the week", await d.isVisible(".rhythm li.today.lit"));
 

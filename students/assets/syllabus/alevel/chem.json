@@ -10,6 +10,9 @@
         { "q": "What is the electron configuration of Fe (Z = 26)?", "o": ["1s² 2s² 2p⁶ 3s² 3p⁶ 3d⁸", "1s² 2s² 2p⁶ 3s² 3p⁶ 4s² 3d⁶", "1s² 2s² 2p⁶ 3s² 3p⁶ 4s² 4p⁶", "1s² 2s² 2p⁶ 3s² 3p⁶ 3d⁶ 4p²"], "a": 1, "why": "26 electrons: [Ar] 4s² 3d⁶." },
         { "q": "Why is the first ionisation energy of oxygen lower than that of nitrogen?", "o": ["Oxygen has fewer protons", "The paired electrons in oxygen's 2p orbital repel each other", "Oxygen's electron is in a higher shell", "Nitrogen is a gas"], "a": 1, "why": "Spin-pair repulsion in one 2p orbital makes that electron easier to remove." },
         { "q": "Which particle has 10 electrons and 11 protons?", "o": ["Ne", "Na", "Na⁺", "F⁻"], "a": 2, "why": "Sodium (Z = 11) that has lost one electron." }
+      ],
+      "long": [
+        { "q": "Explain why the first ionisation energy of aluminium is lower than that of magnesium, and why that of sulfur is lower than that of phosphorus.", "marks": 4, "paper": "2", "scheme": ["B1: Al's outer electron is in a 3p orbital, Mg's in 3s", "B1: 3p is higher in energy / further from the nucleus / shielded by the 3s electrons, so easier to remove", "B1: in S the electron removed is from a 3p orbital that holds a pair of electrons", "B1: spin-pair repulsion makes it easier to remove"] }
       ]
     },
     {
@@ -18,6 +21,9 @@
         { "q": "How many molecules are in 0.25 mol of CO₂? (L = 6.02 × 10²³ mol⁻¹)", "o": ["1.5 × 10²³", "6.02 × 10²³", "2.4 × 10²⁴", "1.1 × 10²³"], "a": 0, "why": "0.25 × 6.02 × 10²³ ≈ 1.5 × 10²³." },
         { "q": "A compound is 40.0% C, 6.7% H and 53.3% O by mass. What is its empirical formula?", "o": ["CHO", "CH₂O", "C₂H₄O", "CH₃O"], "a": 1, "why": "Moles: C 3.33, H 6.7, O 3.33 → ratio 1 : 2 : 1." },
         { "q": "What is the percentage yield if 8.0 g is made and 10.0 g was expected?", "o": ["8%", "20%", "80%", "125%"], "a": 2, "why": "8.0 ÷ 10.0 × 100 = 80%." }
+      ],
+      "long": [
+        { "q": "0.212 g of an anhydrous carbonate, M₂CO₃, reacts exactly with 20.0 cm³ of 0.200 mol dm⁻³ hydrochloric acid. Calculate the relative atomic mass of M and identify M.", "marks": 4, "paper": "2", "scheme": ["M1: M₂CO₃ + 2HCl → 2MCl + H₂O + CO₂ (ratio 1 : 2)", "M1: n(HCl) = 0.0200 × 0.200 = 4.00 × 10⁻³ mol", "M1: n(M₂CO₃) = 2.00 × 10⁻³ mol, so Mr = 0.212 ÷ 0.00200 = 106", "A1: 2Ar(M) = 106 − 60 = 46, Ar = 23: sodium"], "ans": "Ar = 23, sodium" }
       ]
     },
     {
@@ -27,6 +33,9 @@
         { "q": "What is the bond angle in methane?", "o": ["90°", "104.5°", "109.5°", "120°"], "a": 2, "why": "Four bonding pairs repel equally: tetrahedral, 109.5°." },
         { "q": "Why does water have an unusually high boiling point for its size?", "o": ["Strong covalent bonds", "Hydrogen bonding between molecules", "Ionic bonding", "It is dense"], "a": 1, "why": "O–H…O hydrogen bonds are much stronger than other intermolecular forces." },
         { "q": "Which molecule is non-polar overall even though it has polar bonds?", "o": ["H₂O", "NH₃", "CO₂", "HCl"], "a": 2, "why": "CO₂ is linear; the two bond dipoles cancel." }
+      ],
+      "long": [
+        { "q": "Explain why water (Mr 18) has a much higher boiling point than hydrogen sulfide (Mr 34).", "marks": 3, "paper": "2", "scheme": ["B1: water forms hydrogen bonds between molecules", "B1: because O is much more electronegative than S (O–H strongly polar, lone pairs on O)", "B1: hydrogen bonds need more energy to overcome than the van der Waals forces between H₂S molecules"] }
       ]
     },
     {
@@ -42,6 +51,9 @@
         { "q": "Hess's law is based on conservation of…", "o": ["mass", "energy", "charge", "atoms"], "a": 1, "why": "The enthalpy change is independent of the route taken." },
         { "q": "50.0 g of water rises by 6.0 °C. How much energy was transferred? (c = 4.18 J g⁻¹ K⁻¹)", "o": ["125 J", "1254 J", "209 J", "2508 J"], "a": 1, "why": "q = mcΔT = 50.0 × 4.18 × 6.0 = 1254 J." },
         { "q": "Standard enthalpy change of combustion is always…", "o": ["positive", "negative", "zero", "either"], "a": 1, "why": "Combustion releases energy, so it is exothermic." }
+      ],
+      "long": [
+        { "q": "Use these standard enthalpy changes of combustion (kJ mol⁻¹) to calculate the standard enthalpy change of formation of propane, C₃H₈: C(s) −394, H₂(g) −286, C₃H₈(g) −2219.", "marks": 3, "paper": "2", "scheme": ["M1: a correct Hess cycle or ΔHf = Σ ΔHc(reactants) − ΔHc(propane)", "M1: 3(−394) + 4(−286) = −2326", "A1: ΔHf = −2326 + 2219 = −107 kJ mol⁻¹"], "ans": "−107 kJ mol⁻¹" }
       ]
     },
     {
@@ -57,6 +69,9 @@
         { "q": "Adding a catalyst to an equilibrium…", "o": ["shifts it to the right", "shifts it to the left", "makes equilibrium reached faster but doesn't move it", "increases Kc"], "a": 2, "why": "A catalyst speeds up forward and reverse reactions equally." },
         { "q": "For an exothermic forward reaction, raising the temperature makes Kc…", "o": ["increase", "decrease", "stay the same", "zero"], "a": 1, "why": "The equilibrium shifts to the endothermic (reverse) direction, so Kc falls." },
         { "q": "A Brønsted–Lowry acid is a…", "o": ["proton donor", "proton acceptor", "electron-pair donor", "hydroxide donor"], "a": 0, "why": "Acids donate H⁺; bases accept them." }
+      ],
+      "long": [
+        { "q": "0.50 mol of H₂ and 0.50 mol of I₂ are heated in a sealed 1.00 dm³ flask until equilibrium: H₂(g) + I₂(g) ⇌ 2HI(g). At equilibrium there are 0.78 mol of HI. Calculate Kc.", "marks": 4, "paper": "2", "scheme": ["M1: H₂ and I₂ used = 0.39 mol each", "M1: at equilibrium [H₂] = [I₂] = 0.11 mol dm⁻³", "M1: Kc = [HI]² ÷ ([H₂][I₂]) = 0.78² ÷ 0.11²", "A1: Kc = 50 (no units)"], "ans": "Kc ≈ 50, no units" }
       ]
     },
     {
@@ -64,6 +79,9 @@
       "questions": [
         { "q": "On a Boltzmann distribution, raising the temperature…", "o": ["moves the peak left and up", "moves the peak right and down, with more molecules above Ea", "has no effect", "reduces the area under the curve"], "a": 1, "why": "More molecules have energy at or above the activation energy; the total area stays the same." },
         { "q": "A catalyst works by…", "o": ["increasing the energy of molecules", "providing an alternative route with a lower activation energy", "increasing ΔH", "shifting equilibrium"], "a": 1, "why": "More particles then have enough energy to react." }
+      ],
+      "long": [
+        { "q": "Use the Boltzmann distribution to explain why a small rise in temperature greatly increases the rate of a reaction.", "marks": 3, "paper": "2", "scheme": ["B1: at higher temperature the curve shifts right / lower peak, area unchanged", "B1: many more molecules have energy ≥ Ea", "B1: so more frequent successful collisions per second (frequency of collisions rises only slightly)"] }
       ]
     },
     {
@@ -107,6 +125,9 @@
       "questions": [
         { "q": "Alkanes react with chlorine in UV light by…", "o": ["electrophilic addition", "free-radical substitution", "nucleophilic substitution", "elimination"], "a": 1, "why": "UV splits Cl₂ into radicals: initiation, propagation, termination." },
         { "q": "Ethene reacts with bromine by…", "o": ["free-radical substitution", "electrophilic addition", "nucleophilic addition", "hydrolysis"], "a": 1, "why": "The electron-rich C=C attacks the polarised Br₂." }
+      ],
+      "long": [
+        { "q": "But-1-ene reacts with hydrogen bromide to give two products. Name the major product and explain why it is formed in the larger amount.", "marks": 3, "paper": "2", "scheme": ["B1: 2-bromobutane", "B1: via the secondary carbocation (CH₃CH⁺CH₂CH₃)", "B1: which is more stable than the primary one, because alkyl groups push electrons towards (are electron-donating to) the positive carbon"], "ans": "2-bromobutane" }
       ]
     },
     {
@@ -121,6 +142,9 @@
       "questions": [
         { "q": "Which alcohol is NOT oxidised by acidified dichromate(VI)?", "o": ["Ethanol", "Propan-2-ol", "2-methylpropan-2-ol", "Methanol"], "a": 2, "why": "Tertiary alcohols have no H on the carbon bearing the OH." },
         { "q": "Distilling a primary alcohol with acidified dichromate as it forms gives…", "o": ["a ketone", "an aldehyde", "a carboxylic acid", "an ester"], "a": 1, "why": "Distilling removes the aldehyde before it oxidises further; heating under reflux gives the acid." }
+      ],
+      "long": [
+        { "q": "Describe how you could use acidified potassium dichromate(VI) and one other reagent to distinguish between propan-1-ol, propan-2-ol and 2-methylpropan-2-ol.", "marks": 4, "paper": "2", "scheme": ["B1: warm each with acidified K₂Cr₂O₇: propan-1-ol and propan-2-ol turn it orange to green", "B1: 2-methylpropan-2-ol (tertiary) leaves it orange", "B1: distil off the product: propan-1-ol gives an aldehyde, propan-2-ol a ketone", "B1: Tollens' reagent gives a silver mirror with the aldehyde only (or Fehling's: red precipitate)"] }
       ]
     },
     {

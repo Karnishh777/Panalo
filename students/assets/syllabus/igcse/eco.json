@@ -20,6 +20,10 @@
         { "q": "Price elasticity of demand is −0.5. Demand is…", "o": ["elastic", "inelastic", "unit elastic", "perfectly elastic"], "a": 1, "why": "Its value is less than 1 (ignoring the sign), so quantity changes less than price." },
         { "q": "A maximum price set below the equilibrium price causes…", "o": ["a surplus", "a shortage", "no effect", "higher prices"], "a": 1, "why": "Quantity demanded exceeds quantity supplied at the lower price." },
         { "q": "A merit good is…", "o": ["harmful and overconsumed", "beneficial and underconsumed in a free market", "free to everyone", "a public good"], "a": 1, "why": "Examples are education and healthcare; people underestimate their benefits." }
+      ],
+      "long": [
+        { "q": "Explain two factors that could cause the supply of a product to increase.", "marks": 4, "paper": "2", "scheme": ["B1: one factor, e.g. lower costs of production (raw materials, wages)", "B1: explained: more profitable to produce at each price, so the supply curve shifts right", "B1: a second factor, e.g. improved technology / a subsidy / good weather", "B1: explained with its effect on supply"] },
+        { "q": "The price of a good falls from $5 to $4 and the quantity demanded rises from 100 to 130 units. Calculate the price elasticity of demand and state whether demand is elastic or inelastic.", "marks": 3, "paper": "2", "scheme": ["M1: % change in quantity = +30%, % change in price = −20%", "A1: PED = −1.5", "B1: elastic (greater than 1, ignoring the sign)"], "ans": "−1.5, elastic" }
       ]
     },
     {
@@ -37,6 +41,9 @@
         { "q": "A progressive tax…", "o": ["takes the same percentage from everyone", "takes a larger percentage from higher incomes", "takes a smaller percentage from higher incomes", "is only on goods"], "a": 1, "why": "Income tax with rising rates is an example." },
         { "q": "Inflation is measured in many countries using…", "o": ["the GDP figure", "a consumer price index", "the exchange rate", "the unemployment rate"], "a": 1, "why": "A CPI tracks the price of a weighted basket of goods and services." },
         { "q": "Cutting interest rates is likely to…", "o": ["reduce borrowing", "increase spending and investment", "raise saving", "reduce the money supply"], "a": 1, "why": "Cheaper borrowing encourages consumption and investment." }
+      ],
+      "long": [
+        { "q": "Explain two causes of unemployment.", "marks": 4, "paper": "2", "scheme": ["B1: one cause, e.g. cyclical: a fall in aggregate demand in a recession", "B1: explained: firms produce less, so need fewer workers", "B1: a second cause, e.g. structural: decline of an industry / skills mismatch, or frictional", "B1: explained with how it creates unemployment"] }
       ]
     },
     {
@@ -52,6 +59,9 @@
         { "q": "A tariff is…", "o": ["a limit on quantity", "a tax on imports", "a subsidy to exporters", "an exchange rate"], "a": 1, "why": "Quotas limit quantity; tariffs raise import prices." },
         { "q": "If a country's currency depreciates, its exports become…", "o": ["more expensive abroad", "cheaper abroad", "illegal", "unchanged"], "a": 1, "why": "Foreign buyers need less of their currency to buy the same goods." },
         { "q": "A current account deficit means…", "o": ["exports of goods and services exceed imports", "imports of goods and services exceed exports", "the government has a deficit", "inflation is high"], "a": 1, "why": "The current account mainly records trade in goods and services plus income flows." }
+      ],
+      "long": [
+        { "q": "Explain two benefits of free trade for a country.", "marks": 4, "paper": "2", "scheme": ["B1: one benefit, e.g. countries specialise where they have a comparative advantage", "B1: explained: more output overall, lower costs and prices", "B1: a second benefit, e.g. more choice for consumers / bigger markets for firms / competition raising efficiency", "B1: explained"] }
       ]
     }
   ]

@@ -96,6 +96,7 @@ For each: **SQL Editor → New query** → paste the whole file → **Run**.
 | 32 | [`supabase-phase34.sql`](supabase-phase34.sql) | The rest of the week: sport, art, music and coaching at set times, so the plan keeps them free | Required by Students v0.2 |
 | 33 | [`supabase-phase35.sql`](supabase-phase35.sql) | Other subjects: a subject the app doesn't list, with the syllabus Pan found for it (`custom_syllabi`) | Required by Students v0.2 |
 | 34 | [`supabase-phase36.sql`](supabase-phase36.sql) | Boarders' study times and weekends (`prep_slots`, `weekend_plan`, `home_travel_minutes`); your journey: a sealed download, starting again, and bringing a download back (`journey_export`, `journey_reset`, `journey_import`) | Required by Students v0.2 |
+| 35 | [`supabase-phase37.sql`](supabase-phase37.sql) | Only studying grows the world: exam-style questions marked are kept as `activity_log` kind `questions` with `marks` and `out_of` | Required by Students v0.2 |
 
 Phase 8 is self-contained and re-applies everything phase 7 does, so running 8
 is enough if you are starting fresh. Run 7 anyway if you prefer the history to

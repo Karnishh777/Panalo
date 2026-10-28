@@ -2,11 +2,13 @@
 // scheme to mark yourself against, and diagrams, by paper, by marks and by
 // topic. Original questions in the style of the papers, not past papers
 // (those are Cambridge's). Each mark ticked or not moves the topic, as
-// answers do (model/learner.js).
+// answers do (model/learner.js), and the marks grow the world (phase 37).
 import { el, openSheet, reportError, showToast } from "./ui.js";
 import * as P from "./model/plan.js";
 import * as PP from "./model/papers.js";
 import { nameOf, syllabi, scopeOf, stateOf, saveTopic, colourOf, profile } from "./planner.js";
+import { api } from "./store.js";
+import { dayKey } from "./model/time.js";
 
 const MARKS = [["all", "All"], ["1", "1–2 marks"], ["3", "3–4 marks"], ["5", "5+ marks"]];
 const inBand = (m, band) => band === "all" || (band === "1" ? m <= 2 : band === "3" ? m >= 3 && m <= 4 : m >= 5);
@@ -104,6 +106,9 @@ export function openExamQuestions(subjectId) {
       const { error } = await saveTopic(subjectId, q.topic, t);
       save.disabled = false;
       if (error) return reportError(error, "Couldn't save your marks.");
+      // Kept for the world (phase 37): about a minute and a half a mark.
+      const logged = await api.addLog({ kind: "questions", minutes: Math.min(720, Math.max(1, Math.round(q.marks * 1.5))), marks: got, out_of: q.marks, occurred_on: dayKey(new Date()), note: `${nameOf(subjectId)} · Paper ${q.paper}`.slice(0, 140) });
+      if (logged.error) console.error(logged.error);
       done.set(q.key, got);
       showToast(`${got}/${q.marks} saved to ${q.topicName.replace(/^[^:]+: /, "")}.`, "success");
       const i = shown.indexOf(q);

@@ -166,7 +166,7 @@ vec3 shadeEarth(vec3 n, vec3 f, vec3 L, vec3 V, vec2 uv, vec3 P) {
   float land = smoothstep(uEarthT - 0.005, uEarthT + 0.005, e + wobble) * isLand;
   vec3 map = texture2D(uMoist, eu).rgb;
   map = map * map * (0.8 + 0.2 * map);             // to linear light
-  // Forests (moving and resting) keep the greens lush; without them the
+  // Forests (chapters covered) keep the greens lush; without them the
   // land dries towards ochre.
   float green = clamp((map.g - map.r) * 7.0 + 0.25, 0.0, 1.0);
   vec3 dry = vec3(dot(map, vec3(0.5, 0.38, 0.12))) * vec3(1.2, 0.98, 0.7);
@@ -201,7 +201,7 @@ vec3 shadeEarth(vec3 n, vec3 f, vec3 L, vec3 V, vec2 uv, vec3 P) {
   col += vec3(0.06, 0.16, 0.45) * fresnel * 0.5 * water;
 
   float night = smoothstep(0.12, -0.18, d);
-  // Reading makes the seas glow along the coasts, faintly, at night.
+  // Chapters known make the seas glow along the coasts, faintly, at night.
   if (uGlow > 0.0) {
     vec2 o = vec2(0.004, 0.006);
     float near = 0.0;
@@ -281,7 +281,7 @@ vec3 shadePlanet(vec2 p, float zp) {
   float snow = smoothstep(0.9, 0.97, up + (d1 - 0.5) * 0.2 + ridge * 0.05);
   landCol = mix(landCol, vec3(0.72, 0.75, 0.8), snow);
 
-  // Sea: deep blue, turquoise shallows, a glow along the coasts from reading.
+  // Sea: deep blue, turquoise shallows, a glow along the coasts from chapters known.
   // Open ocean is nearly black; only a thin rim of shallows shows colour.
   float depth = clamp((uSea - hd) / 0.22, 0.0, 1.0);
   vec3 seaCol = mix(vec3(0.007, 0.028, 0.06), vec3(0.002, 0.008, 0.024), sqrt(depth));

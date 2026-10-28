@@ -5,8 +5,7 @@
   "code": "0625",
   "topics": [
     {
-      "id": "1.1",
-      "name": "Physical quantities and measurement",
+      "id": "1.1", "name": "Physical quantities and measurement",
       "questions": [
         { "q": "Which of these is a vector quantity?", "o": ["Speed", "Mass", "Velocity", "Energy"], "a": 2, "why": "A vector has size and direction; velocity is speed in a stated direction." },
         { "q": "A stopwatch times 20 swings of a pendulum as 30.0 s. What is the period of one swing?", "o": ["0.67 s", "1.5 s", "10 s", "600 s"], "a": 1, "why": "Period = total time ÷ number of swings = 30.0 ÷ 20 = 1.5 s. Timing many swings reduces the reaction-time error." },
@@ -15,19 +14,20 @@
       ]
     },
     {
-      "id": "1.2",
-      "name": "Motion",
+      "id": "1.2", "name": "Motion",
       "questions": [
         { "q": "A car travels 120 m in 8.0 s at constant speed. What is its speed?", "o": ["0.067 m/s", "15 m/s", "112 m/s", "960 m/s"], "a": 1, "why": "Speed = distance ÷ time = 120 ÷ 8.0 = 15 m/s." },
         { "q": "On a speed–time graph, what does the area under the line give?", "o": ["Acceleration", "Distance travelled", "Force", "Time taken"], "a": 1, "why": "Area under a speed–time graph = speed × time = distance travelled." },
         { "q": "A cyclist speeds up from 2 m/s to 8 m/s in 3 s. What is the acceleration?", "o": ["2 m/s²", "3.3 m/s²", "6 m/s²", "18 m/s²"], "a": 0, "why": "a = change in velocity ÷ time = (8 − 2) ÷ 3 = 2 m/s²." },
         { "q": "A distance–time graph is a straight sloping line. What does this show?", "o": ["Acceleration", "Constant speed", "The object is stationary", "Deceleration"], "a": 1, "why": "A constant gradient on a distance–time graph means constant speed." },
         { "q": "Near the Earth's surface and without air resistance, a falling object accelerates at about…", "o": ["1 m/s²", "5 m/s²", "9.8 m/s²", "98 m/s²"], "a": 2, "why": "The acceleration of free fall, g, is about 9.8 m/s²." }
+      ],
+      "long": [
+        { "q": "A car accelerates uniformly from 5.0 m/s to 25 m/s in 8.0 s. Calculate its acceleration and the distance it travels in this time.", "marks": 4, "paper": "4", "scheme": ["C1: a = (25 − 5.0) ÷ 8.0", "A1: a = 2.5 m/s²", "C1: distance = average speed × time = 15 × 8.0", "A1: = 120 m"], "ans": "2.5 m/s²; 120 m" }
       ]
     },
     {
-      "id": "1.3",
-      "name": "Mass and weight",
+      "id": "1.3", "name": "Mass and weight",
       "questions": [
         { "q": "What is the weight of a 5.0 kg mass where g = 9.8 N/kg?", "o": ["0.51 N", "5.0 N", "49 N", "490 N"], "a": 2, "why": "W = mg = 5.0 × 9.8 = 49 N." },
         { "q": "An astronaut goes from the Earth to the Moon. What happens?", "o": ["Mass and weight both fall", "Mass falls, weight stays", "Mass stays, weight falls", "Both stay the same"], "a": 2, "why": "Mass is the amount of matter and doesn't change; weight depends on the gravitational field strength, which is weaker on the Moon." },
@@ -35,17 +35,18 @@
       ]
     },
     {
-      "id": "1.4",
-      "name": "Density",
+      "id": "1.4", "name": "Density",
       "questions": [
         { "q": "A block has mass 600 g and volume 200 cm³. What is its density?", "o": ["0.33 g/cm³", "3.0 g/cm³", "400 g/cm³", "120 000 g/cm³"], "a": 1, "why": "Density = mass ÷ volume = 600 ÷ 200 = 3.0 g/cm³." },
         { "q": "An object floats in water. What can you say about its density?", "o": ["It is greater than water's", "It is less than water's", "It equals water's exactly", "Density does not affect floating"], "a": 1, "why": "Objects less dense than the liquid float in it." },
         { "q": "How do you find the volume of an irregular stone?", "o": ["Weigh it", "Measure its length three times", "Lower it into a measuring cylinder of water and read the rise", "Heat it"], "a": 2, "why": "The volume of water displaced equals the stone's volume." }
+      ],
+      "long": [
+        { "q": "A stone of mass 240 g is lowered into a measuring cylinder. The water level rises from 50 cm³ to 146 cm³. Calculate the density of the stone.", "marks": 3, "paper": "4", "scheme": ["C1: volume = 146 − 50 = 96 cm³", "C1: density = 240 ÷ 96", "A1: = 2.5 g/cm³"], "ans": "2.5 g/cm³" }
       ]
     },
     {
-      "id": "1.5",
-      "name": "Forces",
+      "id": "1.5", "name": "Forces",
       "questions": [
         { "q": "A resultant force of 12 N acts on a 3.0 kg mass. What is its acceleration?", "o": ["0.25 m/s²", "4.0 m/s²", "9.0 m/s²", "36 m/s²"], "a": 1, "why": "F = ma, so a = F ÷ m = 12 ÷ 3.0 = 4.0 m/s²." },
         { "q": "A spring stretches 2.0 cm with a 4.0 N load. Within its limit of proportionality, what load stretches it 5.0 cm?", "o": ["8.0 N", "10 N", "12 N", "20 N"], "a": 1, "why": "Extension is proportional to load: k = 4.0 ÷ 2.0 = 2.0 N/cm, so 5.0 cm needs 10 N." },
@@ -55,8 +56,7 @@
       ]
     },
     {
-      "id": "1.6",
-      "name": "Momentum",
+      "id": "1.6", "name": "Momentum",
       "questions": [
         { "q": "What is the momentum of a 2.0 kg ball moving at 3.0 m/s?", "o": ["0.67 kg m/s", "1.5 kg m/s", "5.0 kg m/s", "6.0 kg m/s"], "a": 3, "why": "p = mv = 2.0 × 3.0 = 6.0 kg m/s." },
         { "q": "In a collision with no external forces, what is conserved?", "o": ["Total kinetic energy only", "Total momentum", "The speed of each object", "Nothing"], "a": 1, "why": "Total momentum is always conserved when no external force acts." },
@@ -64,28 +64,31 @@
       ]
     },
     {
-      "id": "1.7",
-      "name": "Energy, work and power",
+      "id": "1.7", "name": "Energy, work and power",
       "questions": [
         { "q": "A 2.0 kg ball moves at 3.0 m/s. What is its kinetic energy?", "o": ["3.0 J", "6.0 J", "9.0 J", "18 J"], "a": 2, "why": "Ek = ½mv² = ½ × 2.0 × 3.0² = 9.0 J." },
         { "q": "A 50 kg student climbs 4.0 m. What is the gain in gravitational potential energy? (g = 9.8 N/kg)", "o": ["12.5 J", "200 J", "1960 J", "19 600 J"], "a": 2, "why": "ΔEp = mgΔh = 50 × 9.8 × 4.0 = 1960 J." },
         { "q": "A motor does 600 J of work in 12 s. What is its power?", "o": ["0.02 W", "50 W", "612 W", "7200 W"], "a": 1, "why": "Power = work done ÷ time = 600 ÷ 12 = 50 W." },
         { "q": "A lamp takes in 100 J and gives out 20 J as light. What is its efficiency?", "o": ["20%", "80%", "120%", "500%"], "a": 0, "why": "Efficiency = useful output ÷ total input × 100% = 20 ÷ 100 = 20%." },
         { "q": "Which energy resource is renewable?", "o": ["Coal", "Natural gas", "Geothermal", "Uranium"], "a": 2, "why": "Geothermal energy comes from heat inside the Earth and is not used up." }
+      ],
+      "long": [
+        { "q": "A student of mass 60 kg climbs a flight of stairs 3.0 m high in 4.0 s. Calculate the useful power developed. (g = 9.8 N/kg)", "marks": 4, "paper": "4", "scheme": ["C1: work done = mgh = 60 × 9.8 × 3.0", "A1: = 1764 J", "C1: power = 1764 ÷ 4.0", "A1: = 440 W (441 W)"], "ans": "440 W" }
       ]
     },
     {
-      "id": "1.8",
-      "name": "Pressure",
+      "id": "1.8", "name": "Pressure",
       "questions": [
         { "q": "A 600 N force acts on 0.20 m². What is the pressure?", "o": ["120 Pa", "600 Pa", "3000 Pa", "30 000 Pa"], "a": 2, "why": "p = F ÷ A = 600 ÷ 0.20 = 3000 Pa." },
         { "q": "Why do snowshoes stop you sinking into snow?", "o": ["They increase your weight", "They spread your weight over a larger area, reducing pressure", "They reduce your mass", "They increase the pressure"], "a": 1, "why": "Same force over a larger area gives a smaller pressure." },
         { "q": "What is the pressure due to 10 m of water? (density 1000 kg/m³, g = 9.8 N/kg)", "o": ["980 Pa", "9800 Pa", "98 000 Pa", "980 000 Pa"], "a": 2, "why": "Δp = ρgΔh = 1000 × 9.8 × 10 = 98 000 Pa." }
+      ],
+      "long": [
+        { "q": "Calculate the pressure due to the water at a depth of 12 m. (Density of water = 1000 kg/m³, g = 9.8 N/kg)", "marks": 2, "paper": "4", "scheme": ["C1: p = ρgh = 1000 × 9.8 × 12", "A1: = 1.2 × 10⁵ Pa (117 600 Pa)"], "ans": "1.2 × 10⁵ Pa" }
       ]
     },
     {
-      "id": "2.1",
-      "name": "Kinetic particle model of matter",
+      "id": "2.1", "name": "Kinetic particle model of matter",
       "questions": [
         { "q": "In which state are particles close together but able to move past each other?", "o": ["Solid", "Liquid", "Gas", "All three"], "a": 1, "why": "Liquid particles touch but can slide past one another." },
         { "q": "Gas in a sealed container is heated. Why does its pressure rise?", "o": ["The particles get bigger", "The particles move faster and hit the walls harder and more often", "More particles are made", "The container shrinks"], "a": 1, "why": "Higher temperature means faster particles, so more frequent and harder collisions with the walls." },
@@ -95,17 +98,18 @@
       ]
     },
     {
-      "id": "2.2",
-      "name": "Thermal properties and temperature",
+      "id": "2.2", "name": "Thermal properties and temperature",
       "questions": [
         { "q": "Why are gaps left between sections of railway track?", "o": ["To save metal", "To allow for thermal expansion in hot weather", "To drain rain", "To make the ride smoother"], "a": 1, "why": "Steel expands when heated; the gaps stop the rails buckling." },
         { "q": "How much energy raises 2.0 kg of water by 5.0 °C? (c = 4200 J/(kg °C))", "o": ["840 J", "4200 J", "21 000 J", "42 000 J"], "a": 3, "why": "ΔE = mcΔθ = 2.0 × 4200 × 5.0 = 42 000 J." },
         { "q": "While ice melts at 0 °C, its temperature…", "o": ["rises steadily", "stays constant", "falls", "rises then falls"], "a": 1, "why": "Energy goes into breaking the forces between particles, not raising the temperature." }
+      ],
+      "long": [
+        { "q": "Calculate the energy needed to heat 0.50 kg of water from 20 °C to 80 °C. (Specific heat capacity of water = 4200 J/(kg °C))", "marks": 2, "paper": "4", "scheme": ["C1: E = mcΔT = 0.50 × 4200 × 60", "A1: = 126 000 J"], "ans": "126 000 J" }
       ]
     },
     {
-      "id": "2.3",
-      "name": "Transfer of thermal energy",
+      "id": "2.3", "name": "Transfer of thermal energy",
       "questions": [
         { "q": "How does thermal energy reach the Earth from the Sun?", "o": ["Conduction", "Convection", "Infrared radiation", "Evaporation"], "a": 2, "why": "Space is a vacuum, so only radiation can carry energy across it." },
         { "q": "Which surface is the best emitter of infrared radiation?", "o": ["Shiny white", "Shiny silver", "Dull black", "Dull white"], "a": 2, "why": "Dull black surfaces are the best emitters and absorbers of infrared." },
@@ -114,8 +118,7 @@
       ]
     },
     {
-      "id": "3.1",
-      "name": "General properties of waves",
+      "id": "3.1", "name": "General properties of waves",
       "questions": [
         { "q": "A wave has frequency 50 Hz and wavelength 4.0 m. What is its speed?", "o": ["12.5 m/s", "46 m/s", "54 m/s", "200 m/s"], "a": 3, "why": "v = fλ = 50 × 4.0 = 200 m/s." },
         { "q": "Which wave is longitudinal?", "o": ["Light", "Sound", "Water ripples", "Radio"], "a": 1, "why": "In sound the vibrations are parallel to the direction the wave travels." },
@@ -124,18 +127,19 @@
       ]
     },
     {
-      "id": "3.2",
-      "name": "Light",
+      "id": "3.2", "name": "Light",
       "questions": [
         { "q": "A ray hits a plane mirror at 30° to the normal. What is the angle of reflection?", "o": ["30°", "60°", "90°", "120°"], "a": 0, "why": "The angle of reflection equals the angle of incidence, both measured from the normal." },
         { "q": "Light enters glass at 40° to the normal and refracts to 25°. What is the refractive index? (sin 40° = 0.643, sin 25° = 0.423)", "o": ["0.66", "1.52", "1.60", "15"], "a": 1, "why": "n = sin i ÷ sin r = 0.643 ÷ 0.423 = 1.52." },
         { "q": "Total internal reflection can happen when light…", "o": ["goes from air into glass", "goes from glass into air at more than the critical angle", "hits a mirror", "goes from glass into air at less than the critical angle"], "a": 1, "why": "It needs light travelling into a less dense medium at an angle bigger than the critical angle." },
         { "q": "What kind of image does a converging lens make of a distant object on a screen?", "o": ["Real and inverted", "Virtual and upright", "Real and upright", "Virtual and inverted"], "a": 0, "why": "An image you can catch on a screen is real; for a distant object it is inverted and diminished." }
+      ],
+      "long": [
+        { "q": "Light passes from air into glass. The angle of incidence is 40° and the angle of refraction is 25°. Calculate the refractive index of the glass.", "marks": 3, "paper": "4", "scheme": ["C1: n = sin i ÷ sin r", "C1: = sin 40° ÷ sin 25° = 0.643 ÷ 0.423", "A1: = 1.5 (1.52)"], "ans": "1.5" }
       ]
     },
     {
-      "id": "3.3",
-      "name": "Electromagnetic spectrum",
+      "id": "3.3", "name": "Electromagnetic spectrum",
       "questions": [
         { "q": "Which part of the electromagnetic spectrum has the shortest wavelength?", "o": ["Radio waves", "Visible light", "X-rays", "Gamma rays"], "a": 3, "why": "Gamma rays have the shortest wavelength and highest frequency." },
         { "q": "All electromagnetic waves travel in a vacuum at…", "o": ["340 m/s", "3.0 × 10⁸ m/s", "different speeds depending on frequency", "1500 m/s"], "a": 1, "why": "All EM waves travel at the speed of light, 3.0 × 10⁸ m/s, in a vacuum." },
@@ -144,8 +148,7 @@
       ]
     },
     {
-      "id": "3.4",
-      "name": "Sound",
+      "id": "3.4", "name": "Sound",
       "questions": [
         { "q": "What is the range of human hearing?", "o": ["2 Hz to 2000 Hz", "20 Hz to 20 000 Hz", "200 Hz to 200 000 Hz", "20 kHz to 200 kHz"], "a": 1, "why": "Healthy young people hear roughly 20 Hz to 20 kHz." },
         { "q": "Why can't sound travel through space?", "o": ["Space is too cold", "There are no particles to vibrate", "Sound is too slow", "Space is dark"], "a": 1, "why": "Sound needs a medium; a vacuum has no particles to pass on the vibrations." },
@@ -154,8 +157,7 @@
       ]
     },
     {
-      "id": "4.1",
-      "name": "Simple phenomena of magnetism",
+      "id": "4.1", "name": "Simple phenomena of magnetism",
       "questions": [
         { "q": "Which material is magnetically soft, used in electromagnet cores?", "o": ["Steel", "Iron", "Copper", "Aluminium"], "a": 1, "why": "Soft iron magnetises and demagnetises easily." },
         { "q": "What happens when two north poles are brought together?", "o": ["They attract", "They repel", "Nothing", "They turn into south poles"], "a": 1, "why": "Like poles repel." },
@@ -163,8 +165,7 @@
       ]
     },
     {
-      "id": "4.2",
-      "name": "Electrical quantities",
+      "id": "4.2", "name": "Electrical quantities",
       "questions": [
         { "q": "A current of 2.0 A flows for 30 s. How much charge passes?", "o": ["15 C", "28 C", "32 C", "60 C"], "a": 3, "why": "Q = It = 2.0 × 30 = 60 C." },
         { "q": "A resistor has 6.0 V across it and 0.50 A through it. What is its resistance?", "o": ["3.0 Ω", "6.5 Ω", "12 Ω", "30 Ω"], "a": 2, "why": "R = V ÷ I = 6.0 ÷ 0.50 = 12 Ω." },
@@ -174,18 +175,19 @@
       ]
     },
     {
-      "id": "4.3",
-      "name": "Electric circuits",
+      "id": "4.3", "name": "Electric circuits",
       "questions": [
         { "q": "Resistors of 4 Ω and 6 Ω are in series. What is the total resistance?", "o": ["2.4 Ω", "5 Ω", "10 Ω", "24 Ω"], "a": 2, "why": "In series, resistances add: 4 + 6 = 10 Ω." },
         { "q": "Two 6 Ω resistors are in parallel. What is the combined resistance?", "o": ["3 Ω", "6 Ω", "12 Ω", "36 Ω"], "a": 0, "why": "1/R = 1/6 + 1/6 = 1/3, so R = 3 Ω. Parallel is always less than the smallest branch." },
         { "q": "In a parallel circuit, what is the same across each branch?", "o": ["Current", "Voltage (p.d.)", "Resistance", "Power"], "a": 1, "why": "Each branch is connected across the same two points, so has the same p.d." },
         { "q": "A light-dependent resistor's resistance in bright light is…", "o": ["high", "low", "infinite", "unchanged from the dark"], "a": 1, "why": "An LDR's resistance falls as light intensity increases." }
+      ],
+      "long": [
+        { "q": "Resistors of 6.0 Ω and 3.0 Ω are connected in parallel to a 6.0 V supply. Calculate the combined resistance and the current from the supply.", "marks": 3, "paper": "4", "scheme": ["C1: 1/R = 1/6.0 + 1/3.0", "A1: R = 2.0 Ω", "A1: I = 6.0 ÷ 2.0 = 3.0 A"], "ans": "2.0 Ω; 3.0 A" }
       ]
     },
     {
-      "id": "4.4",
-      "name": "Electrical safety",
+      "id": "4.4", "name": "Electrical safety",
       "questions": [
         { "q": "What does a fuse do?", "o": ["Increases the current", "Melts and breaks the circuit if the current is too large", "Stores charge", "Earths the casing"], "a": 1, "why": "It protects the cable from overheating by breaking the circuit when the current is too high." },
         { "q": "A kettle uses 2300 W on 230 V. Which fuse fits best?", "o": ["3 A", "5 A", "13 A", "30 A"], "a": 2, "why": "I = P ÷ V = 10 A, so use the next fuse rating above: 13 A." },
@@ -193,8 +195,7 @@
       ]
     },
     {
-      "id": "4.5",
-      "name": "Electromagnetic effects",
+      "id": "4.5", "name": "Electromagnetic effects",
       "questions": [
         { "q": "A magnet is pushed into a coil connected to a meter. What happens?", "o": ["Nothing", "An e.m.f. is induced while the magnet moves", "A current flows only when the magnet is still", "The coil becomes a permanent magnet"], "a": 1, "why": "A changing magnetic field through the coil induces an e.m.f.; no movement, no induced e.m.f." },
         { "q": "A transformer has 100 turns on the primary and 500 on the secondary. Input is 12 V a.c. What is the output?", "o": ["2.4 V", "12 V", "60 V", "600 V"], "a": 2, "why": "Vs/Vp = Ns/Np, so Vs = 12 × 500 ÷ 100 = 60 V (a step-up transformer)." },
@@ -203,8 +204,7 @@
       ]
     },
     {
-      "id": "5.1",
-      "name": "The nuclear model of the atom",
+      "id": "5.1", "name": "The nuclear model of the atom",
       "questions": [
         { "q": "A nucleus of carbon-14 has 6 protons. How many neutrons?", "o": ["6", "8", "14", "20"], "a": 1, "why": "Neutrons = nucleon number − proton number = 14 − 6 = 8." },
         { "q": "Isotopes of an element have the same number of…", "o": ["neutrons", "protons", "nucleons", "particles in total"], "a": 1, "why": "Isotopes have the same proton number but different numbers of neutrons." },
@@ -212,18 +212,19 @@
       ]
     },
     {
-      "id": "5.2",
-      "name": "Radioactivity",
+      "id": "5.2", "name": "Radioactivity",
       "questions": [
         { "q": "Which radiation is stopped by a sheet of paper?", "o": ["Alpha", "Beta", "Gamma", "None of them"], "a": 0, "why": "Alpha particles are large and highly ionising, so they are stopped by paper or a few cm of air." },
         { "q": "A sample has a half-life of 3 days. What fraction is left after 9 days?", "o": ["1/2", "1/3", "1/8", "1/9"], "a": 2, "why": "9 days is 3 half-lives: ½ × ½ × ½ = 1/8." },
         { "q": "What is emitted in beta decay?", "o": ["A helium nucleus", "A fast-moving electron from the nucleus", "An electromagnetic wave only", "A proton"], "a": 1, "why": "A neutron changes into a proton and a fast electron (beta particle) leaves the nucleus." },
         { "q": "Which is the most penetrating radiation?", "o": ["Alpha", "Beta", "Gamma", "They are all equal"], "a": 2, "why": "Gamma is only reduced by thick lead or concrete." }
+      ],
+      "long": [
+        { "q": "A radioactive source has a half-life of 6 hours and an activity of 800 Bq. Calculate its activity after 24 hours.", "marks": 2, "paper": "4", "scheme": ["C1: 24 h = 4 half-lives", "A1: 800 → 400 → 200 → 100 → 50 Bq"], "ans": "50 Bq" }
       ]
     },
     {
-      "id": "6.1",
-      "name": "Earth and the Solar System",
+      "id": "6.1", "name": "Earth and the Solar System",
       "questions": [
         { "q": "What causes day and night on Earth?", "o": ["The Earth orbiting the Sun", "The Earth spinning on its axis", "The Moon's orbit", "The tilt of the Earth"], "a": 1, "why": "One rotation of the Earth on its axis takes about 24 hours." },
         { "q": "What causes the seasons?", "o": ["The Earth's changing distance from the Sun", "The tilt of the Earth's axis", "The Moon", "Sunspots"], "a": 1, "why": "The tilted axis means each hemisphere gets more direct sunlight for part of the year." },
@@ -231,8 +232,7 @@
       ]
     },
     {
-      "id": "6.2",
-      "name": "Stars and the Universe",
+      "id": "6.2", "name": "Stars and the Universe",
       "questions": [
         { "q": "What is a light-year?", "o": ["A unit of time", "The distance light travels in one year", "The age of a star", "The time for light to reach the Moon"], "a": 1, "why": "It is a distance: about 9.5 × 10¹⁵ m." },
         { "q": "What is the evidence that the Universe is expanding?", "o": ["Stars twinkle", "Light from distant galaxies is redshifted", "The Sun is getting hotter", "The Moon is moving away"], "a": 1, "why": "Redshift shows galaxies moving away; the further away, the faster (and greater the redshift)." },
