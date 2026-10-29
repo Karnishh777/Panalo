@@ -151,7 +151,8 @@ function buildGlobes(g) {
     } catch (e) {
       console.error("hero globe", e);
     }
-
+  }
+  {
     const canvas = $("demo-globe");
     let demo;
     try {
