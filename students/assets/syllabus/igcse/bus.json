@@ -31,7 +31,8 @@
       "questions": [
         { "q": "What are the 4 Ps of the marketing mix?", "o": ["Price, product, promotion, place", "People, profit, planet, price", "Product, packaging, price, profit", "Price, place, people, process"], "a": 0, "why": "These four elements are combined to meet customer needs." },
         { "q": "Primary market research is…", "o": ["using existing published data", "collecting new data first-hand, e.g. surveys", "only online", "free"], "a": 1, "why": "Secondary research uses data that already exists." },
-        { "q": "Penetration pricing means…", "o": ["a high price at launch", "a low price at launch to gain market share", "pricing at cost", "copying rivals' prices"], "a": 1, "why": "Price skimming is the opposite: high at launch." }
+        { "q": "Penetration pricing means…", "o": ["a high price at launch", "a low price at launch to gain market share", "pricing at cost", "copying rivals' prices"], "a": 1, "why": "Price skimming is the opposite: high at launch." },
+        { "q": "Which statement about primary market research is accurate?", "o": ["It is always more accurate than secondary research", "It is collected first-hand for a specific purpose", "It is cheaper than secondary research", "It is taken from government statistics"], "a": 1, "why": "Examiners (2023): primary research was often wrongly stated as being more accurate; it is up to date and specific but costly." }
       ],
       "long": [
         { "q": "Explain two methods of primary market research a new café could use.", "marks": 4, "paper": "1", "scheme": ["B1: questionnaires / surveys", "B1: advantage in context, e.g. asks local people what food and prices they want", "B1: a second method, e.g. observation / interviews / focus groups / test marketing", "B1: advantage in context"] }
@@ -42,7 +43,8 @@
       "questions": [
         { "q": "Batch production means…", "o": ["making one unique item", "making a set of identical items, then switching to another", "continuous mass production", "only services"], "a": 1, "why": "Job, batch and flow are the three methods." },
         { "q": "Break-even output is where…", "o": ["profit is highest", "total revenue equals total costs", "costs are zero", "sales stop"], "a": 1, "why": "Break-even = fixed costs ÷ contribution per unit." },
-        { "q": "Fixed costs are $2000; price $10; variable cost $6. What is break-even output?", "o": ["200", "333", "500", "1000"], "a": 2, "why": "Contribution = 10 − 6 = $4; 2000 ÷ 4 = 500 units." }
+        { "q": "Fixed costs are $2000; price $10; variable cost $6. What is break-even output?", "o": ["200", "333", "500", "1000"], "a": 2, "why": "Contribution = 10 − 6 = $4; 2000 ÷ 4 = 500 units." },
+        { "q": "What does an increase in labour productivity mean?", "o": ["Total output rises", "Output per worker rises", "More workers are employed", "Wages rise"], "a": 1, "why": "Examiners (2023): the weakest answers said output would increase rather than output per worker." }
       ]
     },
     {
@@ -50,7 +52,8 @@
       "questions": [
         { "q": "Which is a short-term source of finance?", "o": ["Share issue", "Bank overdraft", "Mortgage", "Debenture"], "a": 1, "why": "Overdrafts cover temporary cash shortages." },
         { "q": "A cash-flow forecast shows…", "o": ["profit", "expected cash inflows and outflows over time", "assets and liabilities", "share prices"], "a": 1, "why": "It helps spot when cash will run short." },
-        { "q": "The current ratio is…", "o": ["current assets ÷ current liabilities", "profit ÷ revenue", "current liabilities ÷ current assets", "revenue ÷ costs"], "a": 0, "why": "It measures liquidity: whether short-term debts can be paid." }
+        { "q": "The current ratio is…", "o": ["current assets ÷ current liabilities", "profit ÷ revenue", "current liabilities ÷ current assets", "revenue ÷ costs"], "a": 0, "why": "It measures liquidity: whether short-term debts can be paid." },
+        { "q": "Which is a cause of a cash-flow problem, rather than a definition of one?", "o": ["Cash outflows exceed cash inflows", "Customers are given too long to pay", "The bank balance is negative", "The business is short of cash"], "a": 1, "why": "Examiners (2023): a common error was to define a cash-flow problem instead of giving reasons it might happen." }
       ],
       "long": [
         { "q": "A business sells 2000 units at $15 each. Its fixed costs are $8000 and its variable cost is $6 a unit. Calculate its profit.", "marks": 3, "paper": "1", "scheme": ["M1: revenue = 2000 × 15 = $30 000", "M1: total costs = 8000 + 2000 × 6 = $20 000", "A1: profit = $10 000"], "ans": "$10 000" }

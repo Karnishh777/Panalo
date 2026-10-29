@@ -1,0 +1,62 @@
+{
+  "subject": "dt",
+  "name": "Design and Technology",
+  "board": "Cambridge IGCSE",
+  "code": "0445",
+  "topics": [
+    {
+      "id": "1", "name": "The design process",
+      "questions": [
+        { "q": "A design specification", "o": ["lists the requirements a product must meet", "is the final product", "is a sketch", "is the evaluation"], "a": 0, "why": "It's written after research and used to evaluate." },
+        { "q": "Anthropometrics is", "o": ["the study of human body measurements for design", "the study of materials", "a type of joint", "the cost of production"], "a": 0, "why": "Ergonomics uses this data." }
+      ],
+      "long": [
+        { "q": "Explain why a designer would write a specification before producing ideas.", "marks": 3, "paper": "1", "scheme": ["B1: it sets measurable requirements (function, size, cost, users)", "B1: ideas can be judged against it", "B1: the final product is evaluated against it"] }
+      ]
+    },
+    {
+      "id": "2", "name": "Materials and their properties",
+      "questions": [
+        { "q": "Which is a thermoplastic?", "o": ["acrylic", "urea-formaldehyde", "epoxy resin", "melamine"], "a": 0, "why": "Thermoplastics can be reheated and reshaped." },
+        { "q": "A hardwood comes from", "o": ["deciduous, broad-leaved trees", "coniferous trees", "plastic", "metal ore"], "a": 0, "why": "e.g. oak, beech." },
+        { "q": "An alloy is", "o": ["a mixture of a metal with other elements", "a pure metal", "a type of plastic", "a wood joint"], "a": 0, "why": "e.g. brass (copper and zinc)." }
+      ],
+      "long": [
+        { "q": "A child's toy is to be made from beech. Give two reasons why beech is suitable and one finish you would apply.", "marks": 3, "paper": "3", "scheme": ["B1: close grain, so it can be shaped and smoothed well", "B1: hard and durable, so it survives rough use", "B1: a non-toxic finish, e.g. food-safe oil or water-based varnish"] }
+      ]
+    },
+    {
+      "id": "3", "name": "Manufacturing processes",
+      "questions": [
+        { "q": "Injection moulding is best suited to", "o": ["mass production of identical plastic parts", "one-off wooden furniture", "casting bronze", "hand-sewing"], "a": 0, "why": "High setup cost, very low unit cost." },
+        { "q": "A jig is used to", "o": ["guide a tool so parts are made accurately and repeatably", "hold a drink", "measure temperature", "join wood"], "a": 0, "why": "Useful in batch production." }
+      ]
+    },
+    {
+      "id": "4", "name": "Product analysis and sustainability",
+      "questions": [
+        { "q": "Designing for disassembly helps", "o": ["recycling and repair at the end of a product's life", "make products cheaper to sell", "hide fixings", "speed up delivery"], "a": 0, "why": "Part of the circular economy." }
+      ]
+    },
+    {
+      "id": "5", "name": "Graphic communication",
+      "questions": [
+        { "q": "An exploded drawing shows", "o": ["how parts fit together", "a product in use", "a cross-section", "colour schemes"], "a": 0, "why": "Parts are drawn spaced along their assembly lines." },
+        { "q": "Orthographic projection shows", "o": ["front, side and plan views to scale", "a 3D view in perspective", "an exploded view", "a free sketch"], "a": 0, "why": "Used for manufacturing drawings." }
+      ]
+    },
+    {
+      "id": "6", "name": "Systems and control",
+      "questions": [
+        { "q": "A potential divider with an LDR can be used to", "o": ["switch on a light when it gets dark", "measure temperature", "store energy", "increase voltage"], "a": 0, "why": "The LDR's resistance rises in the dark." },
+        { "q": "A cam converts", "o": ["rotary motion into reciprocating motion", "linear into rotary", "electrical into light", "heat into motion"], "a": 0, "why": "The follower rises and falls." }
+      ]
+    },
+    {
+      "id": "7", "name": "Coursework: design and make project",
+      "questions": [
+        { "q": "The project folio should show", "o": ["research, ideas, development, making and evaluation", "only the final product", "only sketches", "only an evaluation"], "a": 0, "why": "Every stage of the design process is marked." }
+      ]
+    }
+  ]
+}

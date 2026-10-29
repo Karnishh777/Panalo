@@ -1,0 +1,74 @@
+{
+  "subject": "eng1",
+  "name": "English First Language",
+  "board": "Cambridge IGCSE",
+  "code": "0500",
+  "topics": [
+    {
+      "id": "1", "name": "Reading: explicit and implicit meaning",
+      "questions": [
+        { "q": "An implicit meaning is one that is", "o": ["suggested rather than stated", "stated directly", "in the title", "a spelling error"], "a": 0, "why": "You infer it from clues in the text." },
+        { "q": "When asked to answer 'using your own words', you should", "o": ["rephrase the idea without copying key words", "quote the whole sentence", "write a summary of the passage", "give your opinion"], "a": 0, "why": "Lifting the text's words shows no understanding." }
+      ]
+    },
+    {
+      "id": "2", "name": "Summary writing",
+      "questions": [
+        { "q": "A good summary", "o": ["selects the relevant points and writes them concisely in your own words", "copies sentences in order", "adds your opinion", "includes every example"], "a": 0, "why": "Selection and concision are what's rewarded." },
+        { "q": "Before writing a summary, you should first", "o": ["identify the points that answer the question", "write the conclusion", "count words in the passage", "find quotations"], "a": 0, "why": "Plan the content, then write it fluently." }
+      ],
+      "long": [
+        { "q": "Summarise, in no more than 120 words, the reasons a writer gives for a change they describe (use a passage of your choice). Use this scheme to mark yourself.", "marks": 4, "paper": "1", "scheme": ["B1: 8 or more relevant points selected", "B1: points written in your own words", "B1: concise: no examples, repetition or opinion", "B1: organised and fluent, within the word limit"] }
+      ]
+    },
+    {
+      "id": "3", "name": "Writer's effects: language analysis",
+      "questions": [
+        { "q": "'The wind howled like a wounded animal' is an example of", "o": ["a simile", "a metaphor", "alliteration", "onomatopoeia only"], "a": 0, "why": "It compares using 'like'." },
+        { "q": "In a language question you earn most credit for", "o": ["explaining the effect of specific word choices", "naming as many techniques as possible", "retelling the plot", "quoting long passages"], "a": 0, "why": "Analysis of effect beats technique-spotting." },
+        { "q": "Connotation means", "o": ["the associations a word carries", "the dictionary definition", "a word's spelling", "the word's origin"], "a": 0, "why": "e.g. 'lair' suggests danger in a way 'home' does not." }
+      ],
+      "long": [
+        { "q": "Re-read a paragraph of description from a passage you are studying. Choose three words or phrases and explain how each creates an effect. (Practise on any unseen passage; mark yourself with this scheme.)", "marks": 4, "paper": "1", "scheme": ["B1: three well-chosen, precise words or phrases (not whole sentences)", "B1: the meaning of each explained in context", "B1: the effect on the reader explained (what it makes you feel or picture)", "B1: links between choices, e.g. a pattern of violent or calm imagery"] }
+      ]
+    },
+    {
+      "id": "4", "name": "Extended response to reading",
+      "questions": [
+        { "q": "In an extended response (e.g. a letter or speech based on a text), you should", "o": ["use and develop ideas from the text in the required form", "copy the text's structure", "ignore the text", "write a story"], "a": 0, "why": "Reading marks come from using the text's ideas, writing marks from form and audience." }
+      ]
+    },
+    {
+      "id": "5", "name": "Directed writing",
+      "questions": [
+        { "q": "Directed writing tests your ability to", "o": ["evaluate ideas from texts and write for a purpose and audience", "write a story", "describe a picture", "correct grammar"], "a": 0, "why": "You must select, evaluate and argue from the source material." },
+        { "q": "A discursive piece should", "o": ["consider different viewpoints before reaching a view", "argue only one side", "be informal", "avoid paragraphs"], "a": 0, "why": "Balance is the key feature." }
+      ],
+      "long": [
+        { "q": "Write a speech to your school's parents arguing whether homework should be banned for students under 16. Mark yourself with this scheme.", "marks": 5, "paper": "2", "scheme": ["B1: a clear view, developed and sustained", "B1: counter-arguments considered and answered", "B1: register suited to the audience (parents) and the form (a speech)", "B1: well-structured paragraphs with linking", "B1: accurate spelling, punctuation and grammar"] }
+      ]
+    },
+    {
+      "id": "6", "name": "Descriptive writing",
+      "questions": [
+        { "q": "The best descriptive writing usually", "o": ["focuses on sensory detail and atmosphere rather than plot", "tells a long story", "uses lists of adjectives", "is written in the second person"], "a": 0, "why": "Description creates a scene, not a sequence of events." }
+      ],
+      "long": [
+        { "q": "Describe a market at the moment it opens in the morning. Mark yourself with this scheme.", "marks": 5, "paper": "2", "scheme": ["B1: a vivid, sustained atmosphere rather than a story", "B1: precise sensory detail (sounds, smells, light)", "B1: varied sentence structures for effect", "B1: ambitious, well-chosen vocabulary", "B1: accurate spelling, punctuation and grammar"] }
+      ]
+    },
+    {
+      "id": "7", "name": "Narrative writing",
+      "questions": [
+        { "q": "A strong narrative usually has", "o": ["a clear structure with a developed climax and resolution", "as many characters as possible", "no dialogue", "a dream ending"], "a": 0, "why": "Control of structure is what's rewarded." }
+      ]
+    },
+    {
+      "id": "8", "name": "Spelling, punctuation and grammar",
+      "questions": [
+        { "q": "Which sentence is punctuated correctly?", "o": ["It's raining, so we stayed in.", "Its raining so, we stayed in.", "It's raining so we stayed, in.", "Its' raining, so we stayed in."], "a": 0, "why": "It's = it is; the comma comes before 'so'." },
+        { "q": "A comma splice is", "o": ["two main clauses joined only by a comma", "a list with commas", "a comma before 'and'", "a missing apostrophe"], "a": 0, "why": "Use a full stop, semicolon or conjunction instead." }
+      ]
+    }
+  ]
+}

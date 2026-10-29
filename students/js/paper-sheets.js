@@ -4,6 +4,7 @@
 import { el, openSheet, reportError, showToast } from "./ui.js";
 import * as PP from "./model/papers.js";
 import { stageOf } from "./model/subjects.js";
+import { tipsFor, SOURCE } from "./model/examiner.js";
 import { profile, nameOf, syllabi, savePapers, addResult, colourOf } from "./planner.js";
 
 const fmtMin = (m) => (m == null ? "" : m >= 60 ? `${Math.floor(m / 60)} h${m % 60 ? ` ${m % 60}` : ""}` : `${m} min`);
@@ -143,6 +144,9 @@ export function openPastPaper(block) {
         el("li", { text: `Sit it in exam conditions: ${fmtMin(p.minutes) || "its full time"}, no notes${p.kind === "written" ? ", a calculator only if the paper allows it" : ""}.` }),
         el("li", { text: "Mark it with its mark scheme, honestly, then enter the marks here: the plan leans on what it shows." }),
       ]),
+      tipsFor(code, p.id).length
+        ? el("details", { class: "xq-tips" }, [el("summary", { text: "What the examiners say about this paper" }), el("ul", {}, tipsFor(code, p.id).map((t) => el("li", { text: t }))), el("p", { class: "faint small", text: SOURCE })])
+        : null,
     ],
     actions: [
       { label: "Enter marks", kind: "btn-quiet", id: "pp-marks-now", onClick: () => (sheet.close(), openPaperMarks(block.subject, p.id), false) },
@@ -167,7 +171,7 @@ export function openPaperMarks(subjectId, paperId) {
   if (!p) return null;
   // Any of the subject's chosen papers (or all of them, if none chosen).
   const mine = profile().subjects.find((s) => s.id === subjectId)?.papers || [];
-  const options = PP.papersOf(bank.code).filter((x) => !mine.length || mine.includes(x.id));
+  const options = PP.papersOf(bank.code).filter((x) => PP.timedPaper(x) && (!mine.length || mine.includes(x.id)));
   const pick = el("select", { class: "input", id: "pp-paper", "aria-label": "Paper" }, options.map((x) => el("option", { value: x.id, text: PP.paperLabel(x) })));
   pick.value = p.id;
   const which = el("input", { type: "text", class: "input", id: "pp-which", maxlength: "40", placeholder: "e.g. Feb/Mar 2025, variant 52", "aria-label": "Which paper" });

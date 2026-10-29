@@ -39,7 +39,8 @@
       "id": "4", "stage": "as", "name": "Operations management",
       "questions": [
         { "q": "Capacity utilisation is…", "o": ["actual output ÷ maximum possible output × 100", "costs ÷ revenue", "output per worker", "inventory ÷ sales"], "a": 0, "why": "High utilisation spreads fixed costs; very high leaves no slack." },
-        { "q": "Just-in-time inventory management aims to…", "o": ["hold large buffer stocks", "receive inputs only as they are needed", "produce in bulk", "avoid suppliers"], "a": 1, "why": "It cuts storage costs but depends on reliable suppliers." }
+        { "q": "Just-in-time inventory management aims to…", "o": ["hold large buffer stocks", "receive inputs only as they are needed", "produce in bulk", "avoid suppliers"], "a": 1, "why": "It cuts storage costs but depends on reliable suppliers." },
+        { "q": "Why does more output not guarantee more profit?", "o": ["Output always equals sales", "Goods may not be sold, and extra output adds costs", "Profit only depends on price", "It does guarantee more profit"], "a": 1, "why": "Examiners (2023): a common assumption was that more output guarantees more sales and profits." }
       ],
       "long": [
         { "q": "A factory can make 5000 units a month and makes 3500. Calculate its capacity utilisation and explain one problem of operating at this level.", "marks": 3, "paper": "2", "scheme": ["M1: 3500 ÷ 5000 × 100", "A1: = 70%", "B1: fixed costs are spread over fewer units, so the average cost per unit is higher (or idle resources, lower morale)"], "ans": "70%" }
@@ -49,7 +50,11 @@
       "id": "5", "stage": "as", "name": "Finance and accounting",
       "questions": [
         { "q": "Working capital is…", "o": ["current assets − current liabilities", "total assets", "profit after tax", "share capital"], "a": 0, "why": "It funds day-to-day operations." },
-        { "q": "Profit and cash differ because…", "o": ["they are always equal", "sales on credit count as revenue before cash is received", "cash includes loans only", "profit is measured in cash"], "a": 1, "why": "Timing differences mean a profitable business can run out of cash." }
+        { "q": "Profit and cash differ because…", "o": ["they are always equal", "sales on credit count as revenue before cash is received", "cash includes loans only", "profit is measured in cash"], "a": 1, "why": "Timing differences mean a profitable business can run out of cash." },
+        { "q": "Which is a full definition of fixed costs?", "o": ["Costs that do not change", "Costs that do not change with the level of output in the short run", "Costs that are paid once", "Costs of raw materials"], "a": 1, "why": "Examiners (2023): many gave only a partial definition such as 'costs that do not change'." },
+        { "q": "What is a cash-flow forecast used for?", "o": ["Calculating profit", "Predicting future cash inflows and outflows to spot shortfalls", "Valuing assets", "Setting prices"], "a": 1, "why": "Examiners (2023): candidates continue to believe cash-flow forecasts calculate profit." },
+        { "q": "Net cash flow is calculated as:", "o": ["Cash outflows − cash inflows", "Cash inflows − cash outflows", "Revenue − costs", "Opening balance + inflows"], "a": 1, "why": "Examiners (2023): errors often came from subtracting inflows from outflows rather than the other way round." },
+        { "q": "ARR uses which figure for investment?", "o": ["The total initial investment", "The average investment", "The final year's profit", "The payback period"], "a": 1, "why": "Examiners (2023): many did not calculate the average investment and so got the ARR wrong." }
       ],
       "long": [
         { "q": "A business has fixed costs of $24 000 a month. It sells its product for $20 and the variable cost is $12 a unit. Calculate the break-even output and the margin of safety when it sells 4000 units.", "marks": 4, "paper": "2", "scheme": ["M1: contribution per unit = $20 − $12 = $8", "A1: break-even = 24 000 ÷ 8 = 3000 units", "M1: margin of safety = 4000 − 3000", "A1: = 1000 units"], "ans": "3000 units; margin of safety 1000 units" },
@@ -62,6 +67,10 @@
         { "q": "A SWOT analysis looks at…", "o": ["strengths, weaknesses, opportunities, threats", "sales, wages, output, tax", "only external factors", "only finance"], "a": 0, "why": "Strengths and weaknesses are internal; opportunities and threats external." },
         { "q": "Ansoff's matrix: selling new products in new markets is…", "o": ["market penetration", "product development", "market development", "diversification"], "a": 3, "why": "It is the riskiest strategy." },
         { "q": "Investment appraisal: net present value accounts for…", "o": ["the time value of money", "only the payback period", "only accounting profit", "inflation alone"], "a": 0, "why": "Future cash flows are discounted to present values." }
+      ],
+      "long": [
+        { "q": "Evaluate whether a business should use Porter's generic strategies to compete in a new overseas market.", "marks": 4, "paper": "3", "scheme": ["B1: cost leadership, differentiation or focus explained", "B1: applied to the business's strengths and the market", "B1: limits: hybrid strategies, local conditions", "B1: a supported judgement"] },
+        { "q": "A project costs $50 000 and returns $15 000 a year for five years. Calculate the payback period and the average rate of return (ARR).", "marks": 4, "paper": "3", "scheme": ["M1: payback = 50 000 ÷ 15 000", "A1: = 3.33 years (3 years 4 months)", "M1: average annual profit = (75 000 − 50 000) ÷ 5 = 5000", "A1: ARR = 5000 ÷ 50 000 × 100 = 10%"], "ans": "3.33 years; 10%" }
       ]
     }
   ]

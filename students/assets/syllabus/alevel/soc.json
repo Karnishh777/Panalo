@@ -19,7 +19,8 @@
       "questions": [
         { "q": "Interpretivists prefer methods that…", "o": ["produce statistics", "give rich qualitative data about meanings", "use experiments", "avoid people"], "a": 1, "why": "Positivists favour quantitative methods such as surveys." },
         { "q": "A longitudinal study…", "o": ["studies one moment", "follows the same group over time", "uses secondary data only", "is always an experiment"], "a": 1, "why": "It can show change and development." },
-        { "q": "The Hawthorne effect is when…", "o": ["data is lost", "people change behaviour because they know they are being studied", "samples are too small", "questions are biased"], "a": 1, "why": "It reduces the validity of observation." }
+        { "q": "The Hawthorne effect is when…", "o": ["data is lost", "people change behaviour because they know they are being studied", "samples are too small", "questions are biased"], "a": 1, "why": "It reduces the validity of observation." },
+        { "q": "Why do interpretivists prefer participant observation?", "o": ["It gives large, representative samples", "It gives valid, in-depth understanding of meanings from the actor's view", "It is quick and cheap", "It produces statistics"], "a": 1, "why": "Examiners (2023): candidates gave strengths of participant observation alone rather than the interpretivist rationale." }
       ],
       "long": [
         { "q": "Explain two strengths of using participant observation in sociological research.", "marks": 4, "paper": "1", "scheme": ["B1: a strength: high validity / rich qualitative data", "B1: explained: the researcher sees behaviour in its natural setting and from the group's point of view (verstehen)", "B1: a second strength: access to hidden or deviant groups", "B1: explained: trust built over time lets the researcher see what interviews would miss"] },
@@ -30,7 +31,9 @@
       "id": "3", "stage": "as", "name": "The family",
       "questions": [
         { "q": "A nuclear family consists of…", "o": ["three generations", "two parents and their dependent children", "one parent and children", "unrelated adults"], "a": 1, "why": "Extended families include other relatives." },
-        { "q": "Functionalists see the family as…", "o": ["a source of conflict", "performing essential functions for society", "oppressing women", "irrelevant"], "a": 1, "why": "Marxists and feminists offer critical views." }
+        { "q": "Functionalists see the family as…", "o": ["a source of conflict", "performing essential functions for society", "oppressing women", "irrelevant"], "a": 1, "why": "Marxists and feminists offer critical views." },
+        { "q": "Why is a reconstituted (step) family not automatically evidence of family diversity?", "o": ["It is always single-parent", "It can still be a nuclear family structure", "It is illegal in many countries", "It has no children"], "a": 1, "why": "Examiners (2023): a common misconception was that reconstituted families are an example of diversity, when they can still be nuclear." },
+        { "q": "A question asks for the main reason for the increase in divorce. Which answer addresses it?", "o": ["Domestic violence causes divorce", "Changes in law and attitudes made divorce easier and more acceptable", "Women prefer cohabitation", "Couples marry later"], "a": 1, "why": "Examiners (2023): weak answers gave a reason why people divorce rather than why divorce has increased." }
       ],
       "long": [
         { "q": "Explain two ways in which family roles may have changed in modern industrial societies.", "marks": 4, "paper": "2", "scheme": ["B1: one change, e.g. more symmetrical / joint conjugal roles", "B1: explained, e.g. more women in paid work, men sharing domestic tasks (Young and Willmott)", "B1: a second change, e.g. the 'dual burden' / changing children's roles / more lone-parent households", "B1: explained with a reason or evidence"] }
@@ -40,7 +43,11 @@
       "id": "4", "stage": "a2", "name": "Education",
       "questions": [
         { "q": "The hidden curriculum is…", "o": ["the timetable", "norms and values taught informally through school life", "secret exams", "the official syllabus"], "a": 1, "why": "For example, punctuality and obedience." },
-        { "q": "Labelling theory in education suggests…", "o": ["teachers' expectations can affect pupils' achievement", "intelligence is fixed", "exams are fair", "only class matters"], "a": 0, "why": "It can create a self-fulfilling prophecy." }
+        { "q": "Labelling theory in education suggests…", "o": ["teachers' expectations can affect pupils' achievement", "intelligence is fixed", "exams are fair", "only class matters"], "a": 0, "why": "It can create a self-fulfilling prophecy." },
+        { "q": "A question asks how education 'legitimises' inequality. What must the answer focus on?", "o": ["How education reproduces inequality", "How education makes inequality seem fair and deserved (e.g. the myth of meritocracy)", "Why some pupils fail", "The history of schooling"], "a": 1, "why": "Examiners (2023): many ignored the key word 'legitimise' and only explained reproduction." }
+      ],
+      "long": [
+        { "q": "Explain how material deprivation may affect working-class students' achievement.", "marks": 4, "paper": "3", "scheme": ["B1: lack of resources, e.g. books, devices, quiet space", "B1: poor diet and housing affect health and attendance", "B1: may need to work part-time / leave education early", "B1: evidence or a sociologist, e.g. Douglas"] }
       ]
     },
     {
@@ -53,6 +60,9 @@
       "id": "6", "stage": "a2", "name": "Media",
       "questions": [
         { "q": "Agenda setting means the media…", "o": ["tells people what to think", "influences which issues people think about", "has no effect", "only reports facts"], "a": 1, "why": "Choosing what to cover shapes public priorities." }
+      ],
+      "long": [
+        { "q": "Assess the view that the media set the agenda for public debate.", "marks": 4, "paper": "4", "scheme": ["B1: agenda-setting: the media choose what is newsworthy (gatekeeping)", "B1: evidence, e.g. news values (Galtung and Ruge)", "B1: counter: audiences are active; social media lets the public set agendas", "B1: a supported judgement"] }
       ]
     },
     {

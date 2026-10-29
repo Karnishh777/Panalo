@@ -10,7 +10,12 @@
         { "q": "In an experiment, the variable the researcher changes is the…", "o": ["dependent variable", "independent variable", "extraneous variable", "controlled variable"], "a": 1, "why": "The DV is what is measured." },
         { "q": "An independent measures design…", "o": ["uses the same participants in every condition", "uses different participants in each condition", "matches pairs", "has no conditions"], "a": 1, "why": "It avoids order effects but participant variables may differ." },
         { "q": "Ecological validity is about…", "o": ["whether findings apply to real-life settings", "the sample size", "ethics", "inter-rater reliability"], "a": 0, "why": "Lab settings can be artificial, reducing ecological validity." },
-        { "q": "Which ethical guideline lets participants leave a study at any time?", "o": ["Debriefing", "Right to withdraw", "Confidentiality", "Deception"], "a": 1, "why": "Participants must be told they can withdraw themselves and their data." }
+        { "q": "Which ethical guideline lets participants leave a study at any time?", "o": ["Debriefing", "Right to withdraw", "Confidentiality", "Deception"], "a": 1, "why": "Participants must be told they can withdraw themselves and their data." },
+        { "q": "In a repeated measures design, participants:", "o": ["Repeat the same condition several times", "Take part in all the conditions of the IV", "Are matched on key variables", "Are different in each condition"], "a": 1, "why": "Examiners (2023): a common error: repeating the same condition is replication, not repeated measures." },
+        { "q": "Inter-rater reliability means:", "o": ["Having more than one observer", "The level of agreement between two or more observers", "Repeating a study to get the same results", "Using a standardised procedure"], "a": 1, "why": "Examiners (2023): candidates still think it simply means having more than one observer." },
+        { "q": "Reliability refers to:", "o": ["Repeating a study (replication)", "The consistency of a test, task or measure", "Whether a study measures what it claims", "Ethics"], "a": 1, "why": "Examiners (2023): many confused reliability with replication." },
+        { "q": "A semi-structured interview:", "o": ["Uses a mix of open and closed questions", "Has prepared questions plus follow-ups asked in response to answers", "Has no prepared questions", "Is a questionnaire read aloud"], "a": 1, "why": "Examiners (2023): some thought it means a mix of open and closed questions." },
+        { "q": "Which is a conclusion rather than a result?", "o": ["Group A scored a mean of 12, group B 8", "Watching aggression may increase children's aggressive behaviour", "The bar chart shows group A higher", "The median was 10"], "a": 1, "why": "Examiners (2023): some candidates gave a result or description of data rather than a conclusion." }
       ],
       "long": [
         { "q": "Explain one difference between an independent measures design and a repeated measures design, and give one advantage of each.", "marks": 4, "paper": "2", "scheme": ["B1: independent measures: different participants in each condition; repeated: the same participants do every condition", "B1: advantage of independent measures: no order effects (practice, fatigue)", "B1: advantage of repeated measures: no participant variables between conditions", "B1: or fewer participants are needed for repeated measures"] },
@@ -22,7 +27,8 @@
       "id": "2", "stage": "as", "name": "Biological approach",
       "questions": [
         { "q": "The biological approach explains behaviour mainly through…", "o": ["childhood experiences", "genes, hormones and the brain", "rewards and punishments", "social roles"], "a": 1, "why": "Its core studies examine brain activity, hormones and physiology." },
-        { "q": "A strength of brain scanning studies is that they…", "o": ["are cheap", "give objective, quantitative data", "always have high ecological validity", "have no ethical issues"], "a": 1, "why": "Scans measure activity directly, though tasks may be artificial." }
+        { "q": "A strength of brain scanning studies is that they…", "o": ["are cheap", "give objective, quantitative data", "always have high ecological validity", "have no ethical issues"], "a": 1, "why": "Scans measure activity directly, though tasks may be artificial." },
+        { "q": "Which statement about sleep is correct?", "o": ["REM sleep is deeper than NREM sleep", "Stage 3 NREM (slow-wave) is the deepest sleep", "Dreams never occur in REM", "REM only occurs once a night"], "a": 1, "why": "Examiners (2023): many incorrectly stated that REM sleep is deeper than NREM." }
       ]
     },
     {
@@ -54,6 +60,9 @@
       "id": "6", "stage": "a2", "name": "Clinical psychology",
       "questions": [
         { "q": "Cognitive behavioural therapy (CBT) works by…", "o": ["changing unhelpful thoughts and behaviours", "medication only", "free association", "brain surgery"], "a": 0, "why": "It targets the link between thinking, feeling and behaviour." }
+      ],
+      "long": [
+        { "q": "Describe one biological explanation of depression.", "marks": 4, "paper": "3", "scheme": ["B1: names the explanation, e.g. the monoamine (serotonin) hypothesis", "B1: low levels of serotonin / noradrenaline linked to low mood", "B1: evidence, e.g. antidepressants (SSRIs) raise serotonin and reduce symptoms", "B1: or a genetic explanation with twin-study evidence"] }
       ]
     },
     {
@@ -66,6 +75,9 @@
       "id": "8", "stage": "a2", "name": "Health psychology",
       "questions": [
         { "q": "Adherence to medical advice means…", "o": ["the doctor's diagnosis", "the patient following the treatment as advised", "side effects", "a placebo"], "a": 1, "why": "Non-adherence is a major health problem." }
+      ],
+      "long": [
+        { "q": "Evaluate the use of fear appeals in health promotion.", "marks": 4, "paper": "3", "scheme": ["B1: strength: can motivate change when people feel able to act (efficacy)", "B1: evidence from a study", "B1: weakness: very high fear can cause denial or avoidance", "B1: a judgement"] }
       ]
     },
     {

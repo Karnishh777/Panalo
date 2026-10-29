@@ -10,7 +10,8 @@
         { "q": "Which organelle is the site of protein synthesis?", "o": ["Golgi body", "Ribosome", "Lysosome", "Centriole"], "a": 1, "why": "Ribosomes translate mRNA into polypeptides." },
         { "q": "Which feature is found in prokaryotic cells?", "o": ["A nucleus", "Mitochondria", "70S ribosomes and circular DNA", "Endoplasmic reticulum"], "a": 2, "why": "Prokaryotes have no membrane-bound organelles; their ribosomes are 70S." },
         { "q": "The resolution of a light microscope is limited by…", "o": ["the magnification", "the wavelength of light", "the size of the slide", "the stain"], "a": 1, "why": "Resolution is about half the wavelength used; electrons have much shorter wavelengths." },
-        { "q": "An eyepiece graticule must be calibrated using…", "o": ["a ruler", "a stage micrometer", "a hand lens", "the field diameter only"], "a": 1, "why": "The stage micrometer's known divisions give the value of each graticule unit at that magnification." }
+        { "q": "An eyepiece graticule must be calibrated using…", "o": ["a ruler", "a stage micrometer", "a hand lens", "the field diameter only"], "a": 1, "why": "The stage micrometer's known divisions give the value of each graticule unit at that magnification." },
+        { "q": "Which structure is found in the cytoplasm of prokaryotic cells?", "o": ["Endoplasmic reticulum", "70S ribosomes", "Mitochondria", "A nuclear envelope"], "a": 1, "why": "Examiners (2023): two thirds of weaker candidates chose endoplasmic reticulum; prokaryotes have no membrane-bound organelles." }
       ],
       "long": [
         { "q": "In an electron micrograph a mitochondrion measures 18 mm. Its actual length is 3 µm. Calculate the magnification of the image.", "marks": 2, "paper": "2", "scheme": ["M1: 18 mm = 18 000 µm", "A1: magnification = 18 000 ÷ 3 = × 6000"], "ans": "× 6000" }
@@ -22,7 +23,9 @@
         { "q": "Which bond joins two α-glucose molecules in maltose?", "o": ["Peptide", "Ester", "α-1,4 glycosidic", "Hydrogen"], "a": 2, "why": "A condensation reaction forms an α-1,4 glycosidic bond." },
         { "q": "What gives cellulose its strength?", "o": ["Branching", "Hydrogen bonds between parallel chains of β-glucose forming microfibrils", "Ionic bonds", "Helical shape"], "a": 1, "why": "Alternate β-glucose units are inverted, giving straight chains that hydrogen-bond together." },
         { "q": "Which level of protein structure is the sequence of amino acids?", "o": ["Primary", "Secondary", "Tertiary", "Quaternary"], "a": 0, "why": "The primary structure determines how the chain folds." },
-        { "q": "Why is water a good solvent?", "o": ["It is non-polar", "It is polar, so ions and polar molecules dissolve", "It has a high density", "It is ionic"], "a": 1, "why": "Its δ+ and δ− regions surround charged and polar particles." }
+        { "q": "Why is water a good solvent?", "o": ["It is non-polar", "It is polar, so ions and polar molecules dissolve", "It has a high density", "It is ionic"], "a": 1, "why": "Its δ+ and δ− regions surround charged and polar particles." },
+        { "q": "Which statement about cellulose is correct?", "o": ["It is a branched chain of α-glucose", "It is an unbranched chain of β-glucose, held in microfibrils by hydrogen bonds", "Its chains coil into a helix", "It is a polymer of fructose"], "a": 1, "why": "Examiners (2023): many thought cellulose is branched or coils into a helix; that describes starch (amylopectin and amylose)." },
+        { "q": "Which statement about triglycerides is correct?", "o": ["They are polar molecules", "They are non-polar and insoluble in water", "They contain peptide bonds", "They are made of nucleotides"], "a": 1, "why": "Examiners (2023): half of weaker candidates believed triglycerides are polar." }
       ],
       "long": [
         { "q": "Describe the structure of cellulose and explain how it suits its role in plant cell walls.", "marks": 3, "paper": "2", "scheme": ["B1: β-glucose monomers joined by 1,4 glycosidic bonds, alternate ones rotated 180°", "B1: long straight chains held together by many hydrogen bonds into microfibrils", "B1: giving high tensile strength, so the wall resists bursting when the cell is turgid"] }
@@ -44,7 +47,8 @@
       "questions": [
         { "q": "In the fluid mosaic model, what makes the membrane fluid?", "o": ["Proteins", "Phospholipids that move within the layer", "Cellulose", "Glycogen"], "a": 1, "why": "Phospholipids move laterally; cholesterol regulates fluidity." },
         { "q": "Facilitated diffusion uses…", "o": ["ATP", "channel or carrier proteins, down a concentration gradient", "vesicles", "a pump against the gradient"], "a": 1, "why": "It is passive, but needs proteins for polar or charged molecules." },
-        { "q": "Water potential of pure water is…", "o": ["positive", "zero", "negative", "infinite"], "a": 1, "why": "Ψ of pure water is 0 kPa; solutes make it negative." }
+        { "q": "Water potential of pure water is…", "o": ["positive", "zero", "negative", "infinite"], "a": 1, "why": "Ψ of pure water is 0 kPa; solutes make it negative." },
+        { "q": "Where is cholesterol found in a cell surface membrane?", "o": ["Only between the phospholipid heads", "Between the phospholipid tails, with its OH group near the heads", "Only on the inside surface", "Attached to carbohydrate chains outside"], "a": 1, "why": "Examiners (2023): three fifths of weaker candidates thought cholesterol only occurs between the heads." }
       ],
       "long": [
         { "q": "A plant cell is placed in pure water. Explain, in terms of water potential, what happens to the cell.", "marks": 3, "paper": "2", "scheme": ["B1: pure water has a higher (less negative) water potential than the cell (0 kPa)", "B1: water moves into the cell by osmosis, down the water potential gradient, through the partially permeable membrane", "B1: the cell becomes turgid; the cell wall stops it bursting"] }
@@ -55,7 +59,8 @@
       "questions": [
         { "q": "In which stage do chromosomes line up on the equator?", "o": ["Prophase", "Metaphase", "Anaphase", "Telophase"], "a": 1, "why": "Spindle fibres attach to centromeres and align chromosomes at metaphase." },
         { "q": "When is DNA replicated?", "o": ["Prophase", "S phase of interphase", "Anaphase", "Cytokinesis"], "a": 1, "why": "DNA synthesis happens in the S phase before mitosis." },
-        { "q": "What is the role of telomeres?", "o": ["Join sister chromatids", "Protect chromosome ends from losing genes during replication", "Start transcription", "Form the spindle"], "a": 1, "why": "Repeated non-coding sequences are lost instead of genes." }
+        { "q": "What is the role of telomeres?", "o": ["Join sister chromatids", "Protect chromosome ends from losing genes during replication", "Start transcription", "Form the spindle"], "a": 1, "why": "Repeated non-coding sequences are lost instead of genes." },
+        { "q": "Which statement about mitosis is correct?", "o": ["Daughter cells are the same size as the parent", "Semi-conservative DNA replication happens during mitosis", "The nuclear envelope breaks down during prophase", "It produces genetically different cells"], "a": 2, "why": "Examiners (2023): candidates thought DNA replication is part of mitosis (it is in interphase) or forgot the nuclear envelope breaks down in prophase." }
       ]
     },
     {
@@ -64,7 +69,8 @@
         { "q": "DNA replication is described as semi-conservative because…", "o": ["half the DNA is copied", "each new molecule has one original strand and one new strand", "it happens in half the cells", "only one gene is copied"], "a": 1, "why": "Shown by the Meselson–Stahl experiment." },
         { "q": "Which enzyme joins Okazaki fragments?", "o": ["DNA polymerase", "DNA ligase", "Helicase", "RNA polymerase"], "a": 1, "why": "Ligase seals the gaps in the lagging strand." },
         { "q": "During translation, tRNA anticodons pair with…", "o": ["DNA bases", "mRNA codons", "amino acids", "ribosomal proteins"], "a": 1, "why": "Complementary base pairing places the right amino acid." },
-        { "q": "A substitution mutation may have no effect because…", "o": ["DNA always repairs it", "the genetic code is degenerate (several codons per amino acid)", "it affects RNA only", "proteins ignore it"], "a": 1, "why": "A different codon can still code for the same amino acid." }
+        { "q": "A substitution mutation may have no effect because…", "o": ["DNA always repairs it", "the genetic code is degenerate (several codons per amino acid)", "it affects RNA only", "proteins ignore it"], "a": 1, "why": "A different codon can still code for the same amino acid." },
+        { "q": "Which sugar is found in ATP?", "o": ["Deoxyribose", "Ribose", "Glucose", "Sucrose"], "a": 1, "why": "Examiners (2023): nearly three fifths of weaker candidates said deoxyribose." }
       ],
       "long": [
         { "q": "Describe how DNA replicates semi-conservatively.", "marks": 4, "paper": "2", "scheme": ["B1: hydrogen bonds between bases break and the double helix unwinds (helicase)", "B1: each strand acts as a template", "B1: free nucleotides pair with complementary bases (A–T, C–G)", "B1: DNA polymerase joins the nucleotides, so each new molecule has one old strand and one new strand"] }
@@ -75,7 +81,8 @@
       "questions": [
         { "q": "What drives water up the xylem?", "o": ["Root pressure only", "Transpiration pull, with cohesion and adhesion", "Active transport in xylem", "Gravity"], "a": 1, "why": "Evaporation from leaves creates tension that pulls a continuous column of water up." },
         { "q": "Sucrose is loaded into phloem sieve tubes by…", "o": ["diffusion", "co-transport with H⁺ via companion cells", "osmosis", "transpiration"], "a": 1, "why": "Companion cells pump H⁺ out; sucrose re-enters with H⁺ through co-transporters." },
-        { "q": "Xerophytes reduce water loss by…", "o": ["having more stomata", "sunken stomata, rolled leaves and thick cuticles", "large thin leaves", "shallow roots only"], "a": 1, "why": "These trap humid air and reduce the surface exposed." }
+        { "q": "Xerophytes reduce water loss by…", "o": ["having more stomata", "sunken stomata, rolled leaves and thick cuticles", "large thin leaves", "shallow roots only"], "a": 1, "why": "These trap humid air and reduce the surface exposed." },
+        { "q": "Water moving through the apoplast pathway in a root:", "o": ["moves by mass flow through cell walls", "moves only by osmosis through membranes", "is pumped by active transport", "passes through plasmodesmata"], "a": 0, "why": "Examiners (2023): over half of candidates said the apoplast pathway does not involve mass flow." }
       ]
     },
     {
@@ -93,7 +100,8 @@
       "id": "9", "stage": "as", "name": "Gas exchange",
       "questions": [
         { "q": "What is the role of cartilage in the trachea?", "o": ["Gas exchange", "Keeps the airway open", "Makes mucus", "Moves mucus"], "a": 1, "why": "C-shaped rings stop the trachea collapsing." },
-        { "q": "Goblet cells…", "o": ["beat to move mucus", "secrete mucus that traps particles", "exchange gases", "contract to narrow airways"], "a": 1, "why": "Cilia then sweep the mucus upwards." }
+        { "q": "Goblet cells…", "o": ["beat to move mucus", "secrete mucus that traps particles", "exchange gases", "contract to narrow airways"], "a": 1, "why": "Cilia then sweep the mucus upwards." },
+        { "q": "Which tissue lines the trachea and bronchi and produces mucus?", "o": ["Ciliated epithelium with goblet cells", "Smooth muscle", "Cartilage", "Squamous endothelium"], "a": 0, "why": "Examiners (2023): 'endothelium' was a wrong choice: that term is only used for blood vessels." }
       ]
     },
     {
@@ -123,6 +131,9 @@
         { "q": "Where does the Krebs cycle take place?", "o": ["Cytoplasm", "Mitochondrial matrix", "Inner membrane", "Chloroplast"], "a": 1, "why": "Glycolysis is in the cytoplasm; link reaction and Krebs cycle in the matrix." },
         { "q": "What is the final electron acceptor in oxidative phosphorylation?", "o": ["NAD", "Oxygen", "FAD", "Pyruvate"], "a": 1, "why": "Oxygen combines with electrons and H⁺ to form water." },
         { "q": "A respiratory quotient (RQ) near 0.7 suggests the substrate is…", "o": ["carbohydrate", "lipid", "protein", "glucose anaerobically"], "a": 1, "why": "Carbohydrate 1.0, protein about 0.9, lipid about 0.7." }
+      ],
+      "long": [
+        { "q": "Explain how ATP is produced by oxidative phosphorylation.", "marks": 5, "paper": "4", "scheme": ["B1: reduced NAD/FAD release electrons to the electron transport chain on the inner mitochondrial membrane", "B1: energy from electron flow pumps H⁺ into the intermembrane space", "B1: H⁺ flows back through ATP synthase (chemiosmosis)", "B1: driving ADP + Pi → ATP", "B1: oxygen is the final electron acceptor, forming water"] }
       ]
     },
     {
@@ -131,6 +142,9 @@
         { "q": "Where does the light-dependent stage happen?", "o": ["Stroma", "Thylakoid membranes", "Cytoplasm", "Cell wall"], "a": 1, "why": "Photosystems and the electron transport chain are in the thylakoids." },
         { "q": "Which enzyme fixes CO₂ in the Calvin cycle?", "o": ["ATP synthase", "Rubisco", "Amylase", "Catalase"], "a": 1, "why": "Rubisco combines CO₂ with RuBP." },
         { "q": "A limiting factor is…", "o": ["the factor in greatest supply", "the factor that controls the rate because it is in shortest supply", "always light", "always temperature"], "a": 1, "why": "Increasing it increases the rate until another factor limits." }
+      ],
+      "long": [
+        { "q": "Describe the light-independent stage of photosynthesis (the Calvin cycle).", "marks": 4, "paper": "4", "scheme": ["B1: CO₂ combines with RuBP, catalysed by rubisco", "B1: forming two molecules of GP", "B1: GP reduced to triose phosphate using ATP and reduced NADP", "B1: most TP regenerates RuBP, using ATP"] }
       ]
     },
     {
@@ -139,6 +153,9 @@
         { "q": "Which hormone increases water reabsorption in the collecting duct?", "o": ["Insulin", "ADH", "Glucagon", "Adrenaline"], "a": 1, "why": "ADH inserts aquaporins, making urine more concentrated." },
         { "q": "Homeostasis mainly works by…", "o": ["positive feedback", "negative feedback", "no feedback", "random change"], "a": 1, "why": "A change triggers a response that reverses it." },
         { "q": "Guard cells open stomata by…", "o": ["losing water", "taking in K⁺, lowering water potential, then water enters and they swell", "using cellulose", "photosynthesising only"], "a": 1, "why": "Turgid guard cells bend apart because of uneven wall thickness." }
+      ],
+      "long": [
+        { "q": "Explain how blood glucose concentration is lowered after a meal.", "marks": 5, "paper": "4", "scheme": ["B1: β cells in the islets of Langerhans detect the rise and secrete insulin", "B1: insulin binds to receptors on liver and muscle cells", "B1: more glucose transporters (GLUT4) in membranes, so more glucose uptake", "B1: glucose converted to glycogen (glycogenesis)", "B1: negative feedback"] }
       ]
     },
     {
@@ -147,6 +164,9 @@
         { "q": "What causes the depolarisation in an action potential?", "o": ["K⁺ moving out", "Na⁺ rushing in through voltage-gated channels", "Cl⁻ moving in", "ATP breaking down"], "a": 1, "why": "Repolarisation then follows as K⁺ leaves." },
         { "q": "Myelination speeds up conduction by…", "o": ["making axons thicker", "saltatory conduction between nodes of Ranvier", "adding synapses", "using hormones"], "a": 1, "why": "Action potentials jump from node to node." },
         { "q": "Which plant hormone stimulates stomatal closure in drought?", "o": ["Auxin", "Gibberellin", "Abscisic acid (ABA)", "Ethene"], "a": 2, "why": "ABA triggers K⁺ loss from guard cells." }
+      ],
+      "long": [
+        { "q": "Explain how a nerve impulse is transmitted across a cholinergic synapse.", "marks": 5, "paper": "4", "scheme": ["B1: action potential arrives; Ca²⁺ channels open and Ca²⁺ enters the presynaptic knob", "B1: vesicles fuse and release acetylcholine by exocytosis", "B1: ACh diffuses across the cleft and binds to receptors on the postsynaptic membrane", "B1: Na⁺ channels open, depolarising the membrane", "B1: acetylcholinesterase breaks down ACh"] }
       ]
     },
     {
@@ -155,6 +175,9 @@
         { "q": "Crossing over happens in…", "o": ["mitosis prophase", "meiosis prophase I", "meiosis anaphase II", "interphase"], "a": 1, "why": "Non-sister chromatids of homologous chromosomes exchange sections." },
         { "q": "A chi-squared test compares…", "o": ["two means", "observed and expected frequencies", "correlation", "variance only"], "a": 1, "why": "It tests whether differences from the expected ratio are due to chance." },
         { "q": "Epistasis is…", "o": ["linked genes", "one gene affecting the expression of another gene", "a mutation", "codominance"], "a": 1, "why": "It changes expected dihybrid ratios." }
+      ],
+      "long": [
+        { "q": "In a dihybrid cross between two plants heterozygous for both genes (AaBb × AaBb), state the expected phenotypic ratio and explain what a significantly different result could suggest.", "marks": 4, "paper": "4", "scheme": ["B1: 9 : 3 : 3 : 1", "B1: genes on different chromosomes assort independently", "B1: a different ratio may suggest linkage (genes on the same chromosome)", "B1: test with chi-squared"], "ans": "9 : 3 : 3 : 1" }
       ]
     },
     {
@@ -176,6 +199,9 @@
       "questions": [
         { "q": "What does PCR do?", "o": ["Cuts DNA", "Makes many copies of a DNA sequence", "Sequences proteins", "Separates DNA by size"], "a": 1, "why": "Cycles of denaturing, annealing primers and extending with Taq polymerase." },
         { "q": "Gel electrophoresis separates DNA fragments by…", "o": ["charge sign", "size (smaller fragments move further)", "colour", "base sequence"], "a": 1, "why": "Negatively charged DNA moves towards the anode; small fragments travel faster." }
+      ],
+      "long": [
+        { "q": "Describe how PCR is used to amplify a sample of DNA.", "marks": 4, "paper": "4", "scheme": ["B1: heated to about 95 °C to separate the strands", "B1: cooled to about 55 °C so primers anneal", "B1: heated to about 72 °C; Taq polymerase extends the strands", "B1: cycle repeated, doubling the DNA each time"] }
       ]
     }
   ]

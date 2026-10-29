@@ -1,0 +1,159 @@
+{
+  "subject": "ict",
+  "name": "ICT",
+  "board": "Cambridge IGCSE",
+  "code": "0417",
+  "topics": [
+    {
+      "id": "1", "name": "Types and components of computer systems",
+      "questions": [
+        { "q": "Which is an example of system software?", "o": ["an operating system", "a word processor", "a spreadsheet", "a web browser"], "a": 0, "why": "System software runs the computer; application software does user tasks." },
+        { "q": "RAM is best described as", "o": ["volatile memory that holds data in use", "permanent storage", "a type of ROM", "an output device"], "a": 0, "why": "Its contents are lost when power is off." },
+        { "q": "Which type of memory holds the start-up instructions and is not lost when power is off?", "o": ["RAM", "ROM", "Cache", "Virtual memory"], "a": 1, "why": "Examiners (2023): some candidates gave RAM rather than ROM; RAM is volatile." }
+      ]
+    },
+    {
+      "id": "2", "name": "Input and output devices",
+      "questions": [
+        { "q": "Which is a direct data entry device?", "o": ["a barcode reader", "a keyboard", "a mouse", "a monitor"], "a": 0, "why": "It captures data without typing." },
+        { "q": "A sensor in a greenhouse is an", "o": ["input device", "output device", "storage device", "processor"], "a": 0, "why": "It sends readings to the computer." }
+      ]
+    },
+    {
+      "id": "3", "name": "Storage devices and media",
+      "questions": [
+        { "q": "Which has no moving parts?", "o": ["a solid-state drive", "a hard disk drive", "a DVD", "magnetic tape"], "a": 0, "why": "SSDs use flash memory." },
+        { "q": "Magnetic tape is best for", "o": ["large backups accessed rarely", "fast random access", "booting a computer", "a phone's storage"], "a": 0, "why": "Serial access suits archives." }
+      ]
+    },
+    {
+      "id": "4", "name": "Networks and the effects of using them",
+      "questions": [
+        { "q": "What does a router do?", "o": ["connects a local network to other networks such as the internet", "stores web pages", "prints documents", "only connects two computers"], "a": 0, "why": "It forwards packets between networks." },
+        { "q": "Which is a benefit of cloud storage?", "o": ["files can be accessed from anywhere with internet", "it never needs internet", "it can't be hacked", "it is always free"], "a": 0, "why": "Access anywhere; relies on connection and the provider." }
+      ]
+    },
+    {
+      "id": "5", "name": "The effects of using IT",
+      "questions": [
+        { "q": "Repetitive strain injury can be reduced by", "o": ["ergonomic keyboards and regular breaks", "brighter screens", "faster processors", "larger hard disks"], "a": 0, "why": "A health issue, not a safety one." }
+      ]
+    },
+    {
+      "id": "6", "name": "ICT applications",
+      "questions": [
+        { "q": "An expert system includes a knowledge base and", "o": ["an inference engine", "a printer driver", "a web server", "a spreadsheet"], "a": 0, "why": "Plus a rules base and user interface." }
+      ]
+    },
+    {
+      "id": "7", "name": "The systems life cycle",
+      "questions": [
+        { "q": "The correct order is", "o": ["analysis, design, development and testing, implementation, documentation, evaluation", "design, analysis, implementation, testing", "testing, design, analysis", "implementation, analysis, design"], "a": 0, "why": "Analyse first, evaluate last." },
+        { "q": "Parallel running means", "o": ["the old and new systems run together for a time", "the new system replaces the old at once", "one department changes first", "the system is changed in stages"], "a": 0, "why": "Safer but more costly." },
+        { "q": "Test data for a field 'Age' that accepts 11 to 18. Which is extreme data?", "o": ["15", "18", "25", "abc"], "a": 1, "why": "Examiners (2023): candidates gave explanations instead of test data. Extreme data is on the boundary of what is accepted." }
+      ],
+      "long": [
+        { "q": "Describe two methods of implementing a new system and give one advantage of each.", "marks": 4, "paper": "1", "scheme": ["B1: direct changeover: the old system is replaced at once", "B1: advantage: fast and cheap, benefits immediately", "B1: parallel running: both systems run together", "B1: advantage: if the new system fails, the old one is still there"] }
+      ]
+    },
+    {
+      "id": "8", "name": "Safety and security",
+      "questions": [
+        { "q": "Phishing is", "o": ["fake emails trying to trick you into giving personal details", "a virus that deletes files", "a firewall", "a type of encryption"], "a": 0, "why": "Check sender and links." },
+        { "q": "Encryption", "o": ["makes data unreadable without the key", "deletes data", "blocks all viruses", "speeds up a network"], "a": 0, "why": "It protects data if intercepted." },
+        { "q": "What is a physical safety risk when using computers?", "o": ["Data being hacked", "Tripping over trailing cables", "A virus deleting files", "The computer crashing"], "a": 1, "why": "Examiners (2023): many thought 'safety' meant damage to the equipment rather than harm to the user." }
+      ],
+      "long": [
+        { "q": "Explain two ways a student could protect their personal data online.", "marks": 4, "paper": "1", "scheme": ["B1: one method, e.g. strong passwords / two-factor authentication", "B1: explained: makes unauthorised access harder", "B1: a second method, e.g. not opening links in unexpected emails (phishing) / privacy settings", "B1: explained"] }
+      ]
+    },
+    {
+      "id": "9", "name": "Audience",
+      "questions": [
+        { "q": "When designing for young children, you should use", "o": ["large text, simple language and images", "dense text", "technical terms", "small fonts"], "a": 0, "why": "Match the product to its audience." }
+      ]
+    },
+    {
+      "id": "10", "name": "Communication",
+      "questions": [
+        { "q": "CC in an email means", "o": ["a copy is sent to another recipient visibly", "a hidden copy", "the email is confidential", "the email is compressed"], "a": 0, "why": "BCC hides recipients." },
+        { "q": "What is the generic name for meeting online with sound and video in real time?", "o": ["Video conferencing", "Emailing", "Blogging", "Web browsing"], "a": 0, "why": "Examiners (2023): candidates knew trade names for these meetings but not the generic term." }
+      ]
+    },
+    {
+      "id": "11", "name": "File management",
+      "questions": [
+        { "q": "Which file type is best for a photograph on a web page?", "o": ["JPEG", "CSV", "RTF", "TXT"], "a": 0, "why": "JPEG compresses photos well." },
+        { "q": "A CSV file stores", "o": ["data as plain text separated by commas", "images", "sound", "formatted documents"], "a": 0, "why": "Easy to import into spreadsheets and databases." }
+      ]
+    },
+    {
+      "id": "12", "name": "Images",
+      "questions": [
+        { "q": "To resize an image without distorting it, you should", "o": ["keep the aspect ratio", "change only the width", "crop it", "rotate it"], "a": 0, "why": "Maintain the proportions." }
+      ]
+    },
+    {
+      "id": "13", "name": "Layout",
+      "questions": [
+        { "q": "A header in a document", "o": ["appears at the top of every page", "is the first paragraph", "is a table title", "is a footnote"], "a": 0, "why": "Footers appear at the bottom." }
+      ]
+    },
+    {
+      "id": "14", "name": "Styles",
+      "questions": [
+        { "q": "Using styles in a document helps", "o": ["keep formatting consistent", "check spelling", "add images", "encrypt the file"], "a": 0, "why": "Change a style once and it updates everywhere." }
+      ]
+    },
+    {
+      "id": "15", "name": "Proofing",
+      "questions": [
+        { "q": "Validation checks that data is", "o": ["reasonable and within rules", "exactly correct", "copied accurately", "spelt correctly"], "a": 0, "why": "Verification checks it was entered accurately." },
+        { "q": "A range check would stop", "o": ["an age of 250 being entered", "a misspelt name", "a typo in a postcode that is still valid", "a duplicate record"], "a": 0, "why": "It checks a value lies between limits." }
+      ],
+      "long": [
+        { "q": "Explain the difference between validation and verification, with an example of each.", "marks": 4, "paper": "2", "scheme": ["B1: validation: the computer checks data is reasonable / follows rules", "B1: e.g. a range check on age", "B1: verification: checks data has been entered or copied accurately", "B1: e.g. double entry of a password / visual check"] }
+      ]
+    },
+    {
+      "id": "16", "name": "Graphs and charts",
+      "questions": [
+        { "q": "Which chart best shows parts of a whole?", "o": ["a pie chart", "a line graph", "a scatter graph", "a table"], "a": 0, "why": "Each sector is a share of the total." }
+      ]
+    },
+    {
+      "id": "17", "name": "Document production",
+      "questions": [
+        { "q": "Mail merge combines", "o": ["a master document with a data source", "two images", "a spreadsheet and a chart", "web pages"], "a": 0, "why": "To personalise letters for many people." }
+      ]
+    },
+    {
+      "id": "18", "name": "Databases",
+      "questions": [
+        { "q": "A primary key", "o": ["uniquely identifies each record", "is always a name", "links to another table only", "is optional"], "a": 0, "why": "No two records share it." },
+        { "q": "Which field type suits a phone number?", "o": ["text", "integer", "Boolean", "date"], "a": 0, "why": "Leading zeros and '+' signs must be kept." }
+      ]
+    },
+    {
+      "id": "19", "name": "Presentations",
+      "questions": [
+        { "q": "A master slide is used to", "o": ["set consistent design across all slides", "add a single animation", "print handouts", "record narration"], "a": 0, "why": "Change it once for every slide." }
+      ]
+    },
+    {
+      "id": "20", "name": "Spreadsheets",
+      "questions": [
+        { "q": "Which formula adds cells A1 to A10?", "o": ["=SUM(A1:A10)", "=ADD(A1-A10)", "=A1+A10", "=TOTAL(A1,A10)"], "a": 0, "why": "SUM with a range." },
+        { "q": "$A$1 in a formula is", "o": ["an absolute reference", "a relative reference", "a range", "a function"], "a": 0, "why": "It doesn't change when copied." },
+        { "q": "=IF(B2>=50,\"Pass\",\"Fail\") returns 'Pass' when B2 is", "o": ["50 or more", "less than 50", "exactly 49", "empty"], "a": 0, "why": ">= means greater than or equal to." }
+      ]
+    },
+    {
+      "id": "21", "name": "Website authoring",
+      "questions": [
+        { "q": "In a web page, the presentation layer is created with", "o": ["CSS", "HTML only", "a database", "a spreadsheet"], "a": 0, "why": "HTML is content, CSS is presentation." },
+        { "q": "A relative file path", "o": ["is relative to the current page's folder", "starts with http://", "is always absolute", "points to a different website"], "a": 0, "why": "Relative paths keep a site portable." }
+      ]
+    }
+  ]
+}

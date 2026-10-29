@@ -1,0 +1,48 @@
+{
+  "subject": "gp",
+  "name": "Global Perspectives",
+  "board": "Cambridge IGCSE",
+  "code": "0457",
+  "topics": [
+    {
+      "id": "1", "name": "Research and information",
+      "questions": [
+        { "q": "A primary source is", "o": ["information you collect first-hand, e.g. a survey you run", "a textbook", "a newspaper report", "an encyclopedia"], "a": 0, "why": "Secondary sources are others' work." },
+        { "q": "The most reliable source on a medical claim is usually", "o": ["a peer-reviewed study", "a social media post", "an advert", "an anonymous blog"], "a": 0, "why": "Peer review checks methods and evidence." }
+      ]
+    },
+    {
+      "id": "2", "name": "Analysis: causes, consequences and perspectives",
+      "questions": [
+        { "q": "A 'perspective' is", "o": ["a point of view shaped by experience and values", "a fact", "a statistic", "a source"], "a": 0, "why": "GP asks you to compare personal, local, national and global perspectives." }
+      ]
+    },
+    {
+      "id": "3", "name": "Evaluation of sources and arguments",
+      "questions": [
+        { "q": "A vested interest means", "o": ["the author gains from persuading you", "the source is old", "the author is an expert", "the source is primary"], "a": 0, "why": "e.g. a company reporting on its own product." }
+      ],
+      "long": [
+        { "q": "A source claims 'Electric cars will solve air pollution in cities'. Evaluate how convincing this claim is.", "marks": 4, "paper": "1", "scheme": ["B1: identifies the claim and any evidence offered", "B1: questions the source: author, purpose, vested interest", "B1: weakness: pollution also from roads, tyres, industry, and electricity generation", "B1: a reasoned judgement on how convincing it is"] }
+      ]
+    },
+    {
+      "id": "4", "name": "Reflection",
+      "questions": [
+        { "q": "Reflection in GP means", "o": ["considering how your views and skills changed", "summarising the topic", "listing sources", "writing a conclusion"], "a": 0, "why": "Reflect on what you learned and how." }
+      ]
+    },
+    {
+      "id": "5", "name": "Collaboration (team project)",
+      "questions": [
+        { "q": "Good teamwork in the project means", "o": ["agreeing roles and contributing to a shared outcome", "one person doing it all", "working separately without meeting", "avoiding disagreement at all costs"], "a": 0, "why": "Collaboration is assessed." }
+      ]
+    },
+    {
+      "id": "6", "name": "Communication",
+      "questions": [
+        { "q": "A good written argument is", "o": ["clear, structured and supported by evidence", "long", "full of jargon", "based only on opinion"], "a": 0, "why": "Structure and evidence persuade." }
+      ]
+    }
+  ]
+}

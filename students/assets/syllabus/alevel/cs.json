@@ -9,7 +9,8 @@
       "questions": [
         { "q": "What is −5 in 8-bit two's complement?", "o": ["10000101", "11111011", "11111010", "00000101"], "a": 1, "why": "5 = 00000101; invert to 11111010; add 1 to get 11111011." },
         { "q": "How many characters can 8-bit extended ASCII represent?", "o": ["128", "256", "1024", "65 536"], "a": 1, "why": "2⁸ = 256; standard ASCII uses 7 bits (128)." },
-        { "q": "Increasing the sampling rate of a sound file…", "o": ["reduces file size", "increases accuracy and file size", "has no effect", "changes the bit depth"], "a": 1, "why": "More samples per second capture the sound more accurately." }
+        { "q": "Increasing the sampling rate of a sound file…", "o": ["reduces file size", "increases accuracy and file size", "has no effect", "changes the bit depth"], "a": 1, "why": "More samples per second capture the sound more accurately." },
+        { "q": "Run-length encoding of a bitmap image compresses:", "o": ["Repeated characters in a text file", "Runs of consecutive pixels of the same colour", "Only the file header", "The colour depth"], "a": 1, "why": "Examiners (2023): some described compressing a text file using characters instead of colours." }
       ],
       "long": [
         { "q": "Convert the denary number −45 into an 8-bit two's complement binary integer. Show your working.", "marks": 3, "paper": "1", "scheme": ["M1: +45 = 00101101", "M1: invert the bits: 11010010", "A1: add 1: 11010011"], "ans": "11010011" },
@@ -20,7 +21,9 @@
       "id": "2", "stage": "as", "name": "Communication",
       "questions": [
         { "q": "Which topology connects every device to a central node?", "o": ["Bus", "Star", "Mesh", "Ring"], "a": 1, "why": "A failure of the central switch stops the network." },
-        { "q": "What does CSMA/CD help with on a shared medium?", "o": ["Encryption", "Detecting and handling collisions", "Routing", "Compression"], "a": 1, "why": "Devices listen before sending and back off after a collision." }
+        { "q": "What does CSMA/CD help with on a shared medium?", "o": ["Encryption", "Detecting and handling collisions", "Routing", "Compression"], "a": 1, "why": "Devices listen before sending and back off after a collision." },
+        { "q": "Which is a characteristic, rather than a benefit, of a LAN?", "o": ["Users can share files and printers", "It covers a small geographical area", "It gives every computer internet access", "It saves money"], "a": 1, "why": "Examiners (2023): there was confusion between benefits and characteristics, and 'a LAN gives internet access' was common." },
+        { "q": "An IPv4 address is split into which two parts?", "o": ["Network IP and Host IP", "Network ID and Host ID", "Public and private", "MAC and port"], "a": 1, "why": "Examiners (2023): 'Network IP and Host IP' instead of 'Network ID and Host ID' was a common error." }
       ]
     },
     {
@@ -37,7 +40,8 @@
       "id": "4", "stage": "as", "name": "Processor fundamentals",
       "questions": [
         { "q": "In the fetch–execute cycle, what happens first?", "o": ["The instruction is decoded", "The address in the PC is copied to the MAR", "The ALU runs", "The result is stored"], "a": 1, "why": "MAR ← [PC]; then MDR ← memory; CIR ← [MDR]; PC incremented." },
-        { "q": "Which addressing mode uses the operand as the actual value?", "o": ["Direct", "Indirect", "Immediate", "Indexed"], "a": 2, "why": "Direct uses it as an address; immediate uses it as the value." }
+        { "q": "Which addressing mode uses the operand as the actual value?", "o": ["Direct", "Indirect", "Immediate", "Indexed"], "a": 2, "why": "Direct uses it as an address; immediate uses it as the value." },
+        { "q": "Which describes the control bus?", "o": ["It carries the data", "It carries the instruction", "It carries control and timing signals between components", "It carries memory addresses"], "a": 2, "why": "Examiners (2023): answers often said the control bus carries data or instructions; both are wrong." }
       ],
       "long": [
         { "q": "Describe the roles of the program counter (PC) and the memory address register (MAR) in the fetch stage of the fetch–execute cycle.", "marks": 4, "paper": "1", "scheme": ["B1: the PC holds the address of the next instruction", "B1: this address is copied to the MAR", "B1: the instruction at the address in the MAR is fetched into the MDR (then CIR)", "B1: the PC is incremented to point to the next instruction"] }
@@ -59,14 +63,16 @@
     {
       "id": "7", "stage": "as", "name": "Ethics and ownership",
       "questions": [
-        { "q": "Open-source software…", "o": ["has no licence", "makes its source code available to view and modify under a licence", "is always free of all conditions", "cannot be sold"], "a": 1, "why": "Licences like GPL set conditions on sharing changes." }
+        { "q": "Open-source software…", "o": ["has no licence", "makes its source code available to view and modify under a licence", "is always free of all conditions", "cannot be sold"], "a": 1, "why": "Licences like GPL set conditions on sharing changes." },
+        { "q": "Which statement about free software is correct?", "o": ["It is always free of charge but you cannot see the source code", "Users may run, study, modify and share it; the source code is available", "It is the same as freeware", "It cannot be sold"], "a": 1, "why": "Examiners (2023): there was confusion between freeware and free software." }
       ]
     },
     {
       "id": "8", "stage": "as", "name": "Databases",
       "questions": [
         { "q": "A table is in 1NF when…", "o": ["it has no repeating groups and every field is atomic", "it has no partial dependencies", "it has no transitive dependencies", "it has a foreign key"], "a": 0, "why": "2NF removes partial dependencies; 3NF removes transitive ones." },
-        { "q": "A foreign key…", "o": ["uniquely identifies records in its own table", "links to the primary key of another table", "is encrypted", "is always a number"], "a": 1, "why": "It creates the relationship between tables." }
+        { "q": "A foreign key…", "o": ["uniquely identifies records in its own table", "links to the primary key of another table", "is encrypted", "is always a number"], "a": 1, "why": "It creates the relationship between tables." },
+        { "q": "In a relational table, a tuple is:", "o": ["A column", "A row (one record)", "The primary key", "The table itself"], "a": 1, "why": "Examiners (2023): there was considerable confusion between rows and columns." }
       ],
       "long": [
         { "q": "Explain what is meant by a foreign key, with an example from a school database with the tables STUDENT and CLASS.", "marks": 3, "paper": "1", "scheme": ["B1: an attribute in one table that is the primary key of another table", "B1: it is used to create a relationship between the two tables", "B1: e.g. ClassID in STUDENT links to ClassID, the primary key of CLASS"] }
@@ -93,19 +99,24 @@
     {
       "id": "11", "stage": "as", "name": "Programming",
       "questions": [
-        { "q": "A function differs from a procedure because it…", "o": ["has parameters", "returns a value", "can loop", "is shorter"], "a": 1, "why": "Both can take parameters; only a function returns a value." }
+        { "q": "A function differs from a procedure because it…", "o": ["has parameters", "returns a value", "can loop", "is shorter"], "a": 1, "why": "Both can take parameters; only a function returns a value." },
+        { "q": "In pseudocode, a function gives back its result with:", "o": ["OUTPUT", "RETURN", "PRINT", "INPUT"], "a": 1, "why": "Examiners (2023): OUTPUT was often used in place of RETURN." }
       ]
     },
     {
       "id": "12", "stage": "as", "name": "Software development",
       "questions": [
-        { "q": "Which testing uses values at the edges of the valid range?", "o": ["Normal", "Boundary", "Erroneous", "Integration"], "a": 1, "why": "Boundary data tests the limits, e.g. 0 and 100 for a percentage." }
+        { "q": "Which testing uses values at the edges of the valid range?", "o": ["Normal", "Boundary", "Erroneous", "Integration"], "a": 1, "why": "Boundary data tests the limits, e.g. 0 and 100 for a percentage." },
+        { "q": "A stub is used in testing to:", "o": ["Check the whole program", "Stand in for a module that is not written yet, returning a simple value", "Combine modules together (integration testing)", "Test the final user interface"], "a": 1, "why": "Examiners (2023): mistakes included calling stub testing integration testing or saying the dummy module 'checks' the program." }
       ]
     },
     {
       "id": "13", "stage": "a2", "name": "Data representation (floating point)",
       "questions": [
         { "q": "Normalising a floating-point number…", "o": ["reduces precision", "gives the maximum precision for the mantissa size", "makes it negative", "removes the exponent"], "a": 1, "why": "The first two mantissa bits differ (01 or 10), so no bits are wasted." }
+      ],
+      "long": [
+        { "q": "Normalise the floating-point number with an 8-bit two's complement mantissa 00010110 and a 4-bit exponent 0011, and state its denary value.", "marks": 4, "paper": "3", "scheme": ["M1: mantissa 0.0010110, exponent 3", "A1: denary value 0.0010110 × 2³ = 1.0110₂ = 1.375", "M1: shift mantissa left 2 places, exponent − 2", "A1: mantissa 01011000, exponent 0001"], "ans": "1.375" }
       ]
     },
     {
@@ -130,12 +141,18 @@
       "id": "17", "stage": "a2", "name": "Security",
       "questions": [
         { "q": "A digital signature is created using…", "o": ["the receiver's public key", "the sender's private key", "a shared password", "a check digit"], "a": 1, "why": "Anyone can verify it with the sender's public key." }
+      ],
+      "long": [
+        { "q": "Explain how asymmetric encryption is used to send a confidential message.", "marks": 4, "paper": "3", "scheme": ["B1: the receiver has a public key and a private key", "B1: the sender encrypts with the receiver's public key", "B1: only the receiver's private key can decrypt it", "B1: the private key is never shared"] }
       ]
     },
     {
       "id": "18", "stage": "a2", "name": "Artificial intelligence",
       "questions": [
         { "q": "Dijkstra's algorithm finds…", "o": ["the minimum spanning tree", "the shortest path from one node to the others", "a sorted list", "a cycle"], "a": 1, "why": "A* extends it with a heuristic." }
+      ],
+      "long": [
+        { "q": "Describe how Dijkstra's algorithm finds the shortest path between two nodes.", "marks": 4, "paper": "3", "scheme": ["B1: set the start node's distance to 0 and all others to infinity", "B1: repeatedly visit the unvisited node with the smallest distance", "B1: update neighbours' distances if a shorter path is found", "B1: stop when the destination is visited; trace back for the path"] }
       ]
     },
     {
@@ -148,6 +165,9 @@
       "id": "20", "stage": "a2", "name": "Further programming",
       "questions": [
         { "q": "In OOP, inheritance allows…", "o": ["a class to gain the attributes and methods of a parent class", "data to be hidden", "one method to have many forms only", "files to be shared"], "a": 0, "why": "Encapsulation hides data; polymorphism allows different behaviour for the same method." }
+      ],
+      "long": [
+        { "q": "Write pseudocode for a recursive function Factorial(N) that returns N!.", "marks": 4, "paper": "4", "scheme": ["M1: function header with parameter and return type", "M1: base case IF N = 0 (or 1) RETURN 1", "M1: ELSE RETURN N * Factorial(N − 1)", "M1: correct ENDIF / ENDFUNCTION"] }
       ]
     }
   ]

@@ -121,8 +121,11 @@ It needs phases 16 and 17, and one more dashboard setting: add your site's
 **Authentication → URL Configuration → Redirect URLs**, so sign-up
 confirmation and password-reset links can land there.
 
-**Pan, the AI (optional).** Two things use it, with the same key and the
-same 30 asks a day: "Other subject" (in the setup) asks
+**Pan, the AI (optional).** Three things use it, with the same key and the
+same 30 asks a day: "Mark a photo of my answer" on exam-style questions
+([`functions/api/mark.js`](functions/api/mark.js), Claude Sonnet reading the
+photo against the mark scheme and the examiner-report advice; the photo is
+never stored), "Other subject" (in the setup) asks
 [`functions/api/pan-subject.js`](functions/api/pan-subject.js) for the
 syllabus of a subject the app doesn't list, and "Tell Pan what to change"
 on the Plan page goes through [`functions/api/pan.js`](functions/api/pan.js), which asks

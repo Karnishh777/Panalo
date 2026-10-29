@@ -1,0 +1,144 @@
+{
+  "subject": "it",
+  "name": "Information Technology",
+  "board": "Cambridge International AS & A Level",
+  "code": "9626",
+  "topics": [
+    {
+      "id": "1", "name": "Data processing and information", "stage": "as",
+      "questions": [
+        { "q": "Information is", "o": ["data that has been processed and given meaning", "raw facts", "a database", "binary code"], "a": 0, "why": "Data + context = information." },
+        { "q": "Batch processing suits", "o": ["payroll run once a month", "airline bookings", "air traffic control", "online games"], "a": 0, "why": "Real-time processing suits bookings and control." }
+      ],
+      "long": [
+        { "q": "Compare batch processing and real-time processing, giving a suitable use for each.", "marks": 4, "paper": "1", "scheme": ["B1: batch: data collected and processed together later, without user interaction", "B1: use: payroll / utility bills", "B1: real-time: data processed immediately as it arrives", "B1: use: booking systems / control systems"] }
+      ]
+    },
+    {
+      "id": "2", "name": "Hardware and software", "stage": "as",
+      "questions": [
+        { "q": "A compiler", "o": ["translates the whole program before it runs", "translates line by line as it runs", "is an operating system", "is a utility for backups"], "a": 0, "why": "An interpreter works line by line." },
+        { "q": "A device driver is:", "o": ["A piece of hardware", "Software that lets the operating system communicate with a hardware device", "A type of cable", "A network card"], "a": 1, "why": "Examiners (2023): the most common mistake was to consider a device driver to be hardware." }
+      ]
+    },
+    {
+      "id": "3", "name": "Monitoring and control", "stage": "as",
+      "questions": [
+        { "q": "In a control system, an actuator", "o": ["carries out a physical action, e.g. opens a window", "measures temperature", "stores data", "displays results"], "a": 0, "why": "Sensors measure; actuators act." }
+      ],
+      "long": [
+        { "q": "A greenhouse uses a computer to control temperature. Describe how the system works.", "marks": 5, "paper": "1", "scheme": ["B1: a temperature sensor measures temperature continuously", "B1: an ADC converts the analogue reading to digital", "B1: the microprocessor compares the reading with a preset value", "B1: if too high, it sends a signal to an actuator to open a window / start a fan", "B1: the process repeats continuously (feedback)"] }
+      ]
+    },
+    {
+      "id": "4", "name": "Algorithms and flowcharts", "stage": "as",
+      "questions": [
+        { "q": "In a flowchart, a decision is shown by", "o": ["a diamond", "a rectangle", "an oval", "a parallelogram"], "a": 0, "why": "Rectangles are processes; parallelograms are input/output." },
+        { "q": "In a flowchart, a decision box must have:", "o": ["One output", "A Yes and a No output", "Text describing the decision only", "Three outputs"], "a": 1, "why": "Examiners (2023): candidates are reminded every decision box needs Yes and No outputs, using mathematical expressions rather than text." }
+      ]
+    },
+    {
+      "id": "5", "name": "eSafety and health and safety", "stage": "as",
+      "questions": [
+        { "q": "Which is a safety risk rather than a health risk?", "o": ["trailing cables", "eye strain", "back pain", "RSI"], "a": 0, "why": "Safety risks cause accidents." }
+      ]
+    },
+    {
+      "id": "6", "name": "The digital divide", "stage": "as",
+      "questions": [
+        { "q": "The digital divide is", "o": ["the gap between those with and without access to technology", "a type of network", "a security threat", "a coding error"], "a": 0, "why": "Caused by income, location, age, education." }
+      ]
+    },
+    {
+      "id": "7", "name": "Using networks", "stage": "as",
+      "questions": [
+        { "q": "What does a VPN do?", "o": ["creates an encrypted connection over a public network", "is a type of router", "speeds up the internet", "stores websites"], "a": 0, "why": "Virtual private network." }
+      ]
+    },
+    {
+      "id": "8", "name": "Expert systems", "stage": "as",
+      "questions": [
+        { "q": "The inference engine of an expert system", "o": ["applies rules to the knowledge base to reach conclusions", "stores facts", "is the user interface", "explains its reasoning only"], "a": 0, "why": "The reasoning part." }
+      ]
+    },
+    {
+      "id": "9", "name": "Spreadsheets", "stage": "as",
+      "questions": [
+        { "q": "VLOOKUP searches", "o": ["the first column of a table for a value and returns one from another column", "every cell for a value", "a database", "a chart"], "a": 0, "why": "Vertical lookup." },
+        { "q": "A spreadsheet formula should refer to:", "o": ["The value typed in", "A cell reference holding the value", "A text label", "Nothing"], "a": 1, "why": "Examiners (2023): the formula had to reference a cell rather than a value." }
+      ]
+    },
+    {
+      "id": "10", "name": "Database and file concepts", "stage": "as",
+      "questions": [
+        { "q": "A foreign key", "o": ["links a record to the primary key of another table", "is unique in its own table", "is encrypted", "is a field type"], "a": 0, "why": "Used to create relationships." },
+        { "q": "Normalisation aims to", "o": ["reduce data redundancy", "add duplicate data", "speed up printing", "encrypt data"], "a": 0, "why": "Removes repeated data and anomalies." }
+      ]
+    },
+    {
+      "id": "11", "name": "Sound and video editing", "stage": "as",
+      "questions": [
+        { "q": "Lossy compression", "o": ["permanently removes some data to reduce file size", "keeps every bit of data", "increases file size", "is used for text files"], "a": 0, "why": "e.g. MP3, MP4." }
+      ]
+    },
+    {
+      "id": "12", "name": "Emerging technologies", "stage": "a2",
+      "questions": [
+        { "q": "Augmented reality", "o": ["overlays digital content on the real world", "replaces the real world entirely", "is a type of database", "is 3D printing"], "a": 0, "why": "VR replaces; AR overlays." }
+      ]
+    },
+    {
+      "id": "13", "name": "Role and impact of IT in society", "stage": "a2",
+      "questions": [
+        { "q": "Which is an impact of online banking on society?", "o": ["fewer bank branches and less face-to-face service", "more paper cheques", "slower payments", "no risk of fraud"], "a": 0, "why": "Convenience with social costs." }
+      ]
+    },
+    {
+      "id": "14", "name": "Networks", "stage": "a2",
+      "questions": [
+        { "q": "TCP/IP is", "o": ["the set of protocols the internet uses", "a type of cable", "a web browser", "an operating system"], "a": 0, "why": "Transmission Control Protocol / Internet Protocol." }
+      ]
+    },
+    {
+      "id": "15", "name": "Project management", "stage": "a2",
+      "questions": [
+        { "q": "A Gantt chart shows", "o": ["tasks against time", "a network's layout", "a database structure", "a program's logic"], "a": 0, "why": "Used to schedule and track a project." },
+        { "q": "The critical path is", "o": ["the longest sequence of dependent tasks", "the cheapest route", "the first task", "any task with slack"], "a": 0, "why": "It sets the shortest possible project duration." },
+        { "q": "In project management, a deliverable is:", "o": ["A resource delivered for a task", "A measurable output produced at the end of a stage", "A delivery van", "The project budget"], "a": 1, "why": "Examiners (2023): many described deliverables as resources that had to be delivered." }
+      ],
+      "long": [
+        { "q": "Explain how a Gantt chart helps a project manager.", "marks": 4, "paper": "3", "scheme": ["B1: shows each task against a timeline", "B1: shows dependencies and the critical path", "B1: helps allocate resources and spot clashes", "B1: progress can be tracked against the plan"] }
+      ]
+    },
+    {
+      "id": "16", "name": "System life cycle", "stage": "a2",
+      "questions": [
+        { "q": "Black-box testing checks", "o": ["inputs and outputs without looking at the code", "each line of code", "the hardware", "user documentation"], "a": 0, "why": "White-box testing looks at internal logic." }
+      ]
+    },
+    {
+      "id": "17", "name": "Graphics creation", "stage": "a2",
+      "questions": [
+        { "q": "Vector graphics", "o": ["scale without losing quality", "are made of pixels", "are always photographs", "cannot be edited"], "a": 0, "why": "Stored as shapes and paths." }
+      ]
+    },
+    {
+      "id": "18", "name": "Animation", "stage": "a2",
+      "questions": [
+        { "q": "In animation, tweening", "o": ["generates frames between key frames", "deletes frames", "adds sound", "compresses video"], "a": 0, "why": "In-betweening." }
+      ]
+    },
+    {
+      "id": "19", "name": "Programming for the web", "stage": "a2",
+      "questions": [
+        { "q": "JavaScript in a web page is mainly used to", "o": ["add interactivity in the browser", "store a database", "style text", "host the website"], "a": 0, "why": "HTML structure, CSS style, JavaScript behaviour." }
+      ]
+    },
+    {
+      "id": "20", "name": "Mail merge", "stage": "a2",
+      "questions": [
+        { "q": "A mail merge field", "o": ["is replaced with data from the source for each record", "is a fixed piece of text", "is a header", "is an image"], "a": 0, "why": "e.g. «FirstName»." }
+      ]
+    }
+  ]
+}

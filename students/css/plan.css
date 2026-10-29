@@ -1492,6 +1492,29 @@ body.in-app[data-view="plan"] .wall {
 .xq-score {
   margin: 0;
 }
+.xq-note {
+  display: block;
+  margin: 2px 0 0 26px;
+}
+.xq-tips summary {
+  cursor: pointer;
+  font-weight: 600;
+}
+.xq-tips ul {
+  margin: 6px 0;
+  padding-left: 20px;
+  display: grid;
+  gap: 4px;
+}
+.xq-verdict {
+  border-left: 3px solid var(--subj, var(--focus));
+  padding: 4px 0 4px 12px;
+  display: grid;
+  gap: 6px;
+}
+.xq-verdict p {
+  margin: 0;
+}
 .xq-score {
   font-weight: 600;
   color: var(--subj, var(--focus));
