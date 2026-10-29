@@ -1,41 +1,29 @@
-// Looks: three complete ways Panalo can look and move.
+// Looks: how Panalo looks and moves.
 //
-//   glass   Cinematic Glass -- frosted, layered panels floating over your
-//           world; serif headlines; light that catches edges. Calm, premium.
-//   signal  Signal -- pure black, dot-matrix numerals, one red, a strict grid
-//           of rounded tiles. Bold, precise, playful.
-//   verse   Verse -- the special one: your day laid out in orbit around your
-//           world, drawn like a comic book torn between universes. Halftone,
-//           offset-print misregistration, ink, caption boxes, glitches,
-//           speed lines, motion on twos.
+//   night   Panalo Night -- near-black, one violet glow, frosted cards,
+//           heavy display type and big pill buttons, over a real photo of a
+//           climber on a mountain at night: every topic is a step up.
 //
+// Glass, Signal and Verse were retired in v0.2 (their CSS goes in a later
+// clean-up); a saved one opens as Night. Day, the light version, follows.
 // The look is a preference (prefs.look), so it follows you to every device.
 // boot.js applies it before the first paint (no flash of the wrong look);
 // this module switches it live, with a transition in the new look's style.
 import { getPrefs, setPrefs, el } from "./ui.js";
 import { reducedMotion, lively } from "./motion.js";
 
+// One type system: Inter Tight for display, Plus Jakarta Sans for reading.
+const NIGHT_FONTS = "family=Inter+Tight:wght@600..900&family=Plus+Jakarta+Sans:wght@400..700&family=Instrument+Serif:ital@0;1";
+
 export const LOOKS = [
   {
-    id: "glass",
-    name: "Glass",
-    line: "Dark glass and ember: poster type, calm by default.",
-    fonts: "family=Instrument+Serif:ital@0;1&family=Geist:wght@300..700&family=Geist+Mono:wght@400;500",
-  },
-  {
-    id: "signal",
-    name: "Signal",
-    line: "Black, dot-matrix, one red.",
-    fonts: "family=Doto:wght@600..900&family=Space+Grotesk:wght@400..700&family=Space+Mono:wght@400;700",
-  },
-  {
-    id: "verse",
-    name: "Verse",
-    line: "Your day in orbit, drawn like a comic between universes.",
-    fonts: "family=Anton&family=Archivo:wdth,wght@62..125,400..900&family=Permanent+Marker&family=Space+Mono:wght@400;700",
+    id: "night",
+    name: "Night",
+    line: "Dark, one violet glow, a mountain to climb.",
+    fonts: NIGHT_FONTS,
   },
 ];
-export const DEFAULT_LOOK = "glass";
+export const DEFAULT_LOOK = "night";
 const EVENT = "panalo:look";
 
 const byId = (id) => LOOKS.find((l) => l.id === id) || LOOKS[0];

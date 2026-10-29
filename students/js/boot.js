@@ -37,14 +37,11 @@
     e.preventDefault();
   }, true);
 
-  // 4. The look (js/looks.js): Glass, Signal or Verse, and its fonts, before
+  // 4. The look (js/looks.js): Night, and its fonts, before
   //    the first paint so the page never flashes the wrong one.
-  var FONTS = {
-    glass: "family=Instrument+Serif:ital@0;1&family=Geist:wght@300..700&family=Geist+Mono:wght@400;500",
-    signal: "family=Doto:wght@600..900&family=Space+Grotesk:wght@400..700&family=Space+Mono:wght@400;700",
-    verse: "family=Anton&family=Archivo:wdth,wght@62..125,400..900&family=Permanent+Marker&family=Space+Mono:wght@400;700"
-  };
-  var look = "glass";
+  var NIGHT = "family=Inter+Tight:wght@600..900&family=Plus+Jakarta+Sans:wght@400..700&family=Instrument+Serif:ital@0;1";
+  var FONTS = { night: NIGHT };
+  var look = "night";
   root.setAttribute("data-effects", "calm");
   try {
     var prefs = JSON.parse(localStorage.getItem("panalo.students.prefs") || "{}") || {};

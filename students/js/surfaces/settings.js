@@ -9,7 +9,7 @@ import { supabaseClient } from "../../../src/client.js";
 import { rewrapPrivateKey } from "../../../src/encryption.js";
 import { validatePassword, describePasswordPolicy, breachedPassword } from "../../../src/password.js";
 import { state } from "../../../src/state.js";
-import { lookPicker } from "../looks.js";
+import { lookPicker, LOOKS } from "../looks.js";
 import { journeyPanel } from "../journey.js";
 
 let root;
@@ -104,9 +104,9 @@ export function mount(section, c) {
 export function show() {
   const p = getPrefs();
   const notifySupported = "Notification" in window;
-  root.replaceChildren(
+  root.replaceChildren(...[
     el("div", { class: "s-head" }, [el("div", {}, [el("p", { class: "kicker toned tone-focus", text: "Settings" }), el("h1", { text: "How Panalo behaves for you" }), el("p", { class: "s-sub", text: `Signed in as @${state.currentUsername}${state.currentUser?.email ? ` · ${state.currentUser.email}` : ""}. Your settings follow you to every device you sign in on.` })])]),
-    el("section", { class: "panel tone-world settings-look" }, [
+    LOOKS.length < 2 ? null : el("section", { class: "panel tone-world settings-look" }, [
       el("div", { class: "panel-head" }, [el("h2", { text: "Look" })]),
       el("p", { class: "muted", text: "How all of Panalo looks and moves. Your choice is the default on every device you sign in on; the Look button in the top bar switches it any time." }),
       lookPicker(),
@@ -145,6 +145,6 @@ export function show() {
         el("p", { class: "muted", text: "Signing out clears your data and files from this device's memory." }),
         el("button", { type: "button", class: "btn btn-ghost btn-sm", text: "Sign out", onClick: () => ctx.signOut() }),
       ]),
-    ])
-  );
+    ]),
+  ].filter(Boolean));
 }

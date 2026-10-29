@@ -109,18 +109,9 @@ try {
     await shot(page, "landing");
 
     check("no 0-to-100 gate holds the landing", !(await page.$(".gate")) && !(await page.evaluate(() => document.documentElement.hasAttribute("data-gate"))));
-    // The opening page has the same Look switch.
-    await page.click("#land-look-open");
-    await page.click("#land-look-menu .look-opt-signal");
-    await page.waitForTimeout(700);
-    check("the landing can switch looks too", (await page.evaluate(() => document.documentElement.dataset.look)) === "signal");
-    // The logo (Ascent) is one shape in three materials: each look shows its own.
-    const markShown = () => page.evaluate(() => [...document.querySelectorAll(".land-bar .mark use")].filter((u) => getComputedStyle(u).display !== "none").map((u) => u.getAttribute("class")).join());
-    check("the logo turns to red LEDs in Signal", (await markShown()) === "mk-signal");
-    await page.click("#land-look-open");
-    await page.click("#land-look-menu .look-opt-glass");
-    await page.waitForTimeout(700);
-    check("…and back to glass in Glass", (await markShown()) === "mk-glass");
+    // One look now: Panalo Night, with no switch to show.
+    check("the landing opens in the Night look", (await page.evaluate(() => document.documentElement.dataset.look)) === "night");
+    check("…with no look switch (there's one look)", !(await page.isVisible("#land-look-open")));
     // The thread: a star per chapter, each a link; reaching a chapter lights it.
     const thread = await page.evaluate(() => {
       const hrefs = [...document.querySelectorAll(".thread-stars a")].map((a) => a.getAttribute("href"));
@@ -574,24 +565,12 @@ try {
   check("Warp jumps anywhere by typing", /Privacy/.test(await page.title()) && /Yours, and only yours/.test(await page.textContent("[data-surface=safety] h1")));
   check("Privacy & data has no blocking or reports: there's nobody to block", !(await page.isVisible("[data-surface=safety] >> text=Blocked")) && !(await page.isVisible("[data-surface=safety] >> text=Reports you've sent")));
 
-  // ---- Looks: Glass (default), Signal, Verse------------------------------------------
-  check("the default look is Glass", (await page.evaluate(() => document.documentElement.dataset.look)) === "glass");
-  await page.click("#look-open");
-  check("the Look button opens a choice of three", (await page.locator("#look-menu .look-opt").count()) === 3);
-  await page.click("#look-menu .look-opt-signal");
-  await page.waitForTimeout(700);
-  check("choosing Signal switches the look", (await page.evaluate(() => document.documentElement.dataset.look)) === "signal");
-  check("the look is saved as a preference (it syncs)", (await page.evaluate(() => JSON.parse(localStorage.getItem("panalo.students.prefs")).look)) === "signal");
-  check("the Look button names the look", /Signal/.test(await page.getAttribute("#look-open", "aria-label")));
-  await page.keyboard.press("Control+k");
-  await page.waitForTimeout(300);
-  await page.fill(".warp-input", "look: verse");
-  await page.keyboard.press("Enter");
-  await page.waitForTimeout(700);
-  check("Warp can change the look", (await page.evaluate(() => document.documentElement.dataset.look)) === "verse");
+  // ---- The look: Panalo Night (Glass, Signal and Verse are retired) ---------------
+  check("the look is Panalo Night", (await page.evaluate(() => document.documentElement.dataset.look)) === "night");
+  check("there's no look switch in the bar (one look)", !(await page.isVisible("#look-open")));
   await page.evaluate(() => (location.hash = "#/settings"));
   await page.waitForTimeout(900);
-  check("Settings offers the three looks, with yours chosen", (await page.locator(".settings-look .look-opt").count()) === 3 && (await page.isChecked(".settings-look .look-opt-verse input")));
+  check("Settings has no look picker while there's one look", (await page.locator(".settings-look").count()) === 0);
   const livelyBox = page.locator("label.setting", { hasText: "Lively effects" }).locator("input");
   check("Lively effects are off until you turn them on", !(await livelyBox.isChecked()));
   // Wait for the effect, not the checkbox. The switch sits low on the page,
@@ -620,23 +599,24 @@ try {
   if (!off) console.log("  lively switch:", await whatsThere());
   await page.evaluate(() => (location.hash = "#/now"));
   await page.waitForTimeout(900);
-  check("Verse lays Now out in orbit (the log's panels around the world)", await page.evaluate(() => getComputedStyle(document.querySelector(".now-log")).display === "contents"));
+  check("Today opens on the climb: the photo, with a ring for today's plan", await page.isVisible(".today-hero .climb-ring") && /Today's\s*climb/.test(await page.textContent(".today-hero h2")));
+  check("…and the ember wallpaper is gone", await page.evaluate(() => [...document.querySelectorAll(".wall")].every((w) => getComputedStyle(w).display === "none")));
 
   // Reload: the session, the world and the data survive.
   await page.reload();
   await page.waitForSelector("#app:not([hidden])", { timeout: 15000 });
   await page.waitForTimeout(800);
   check("the session and data survive a reload", /Kepler QA|alex/.test(await page.textContent("#me-menu")) && (await page.evaluate(() => window.__qa.db.focus_sessions.length)) === 1);
-  check("the look survives a reload, set before the first paint", (await page.evaluate(() => document.documentElement.dataset.look)) === "verse");
-  // Odyssey is gone: a look saved before it went comes back as Glass.
+  check("Night is set before the first paint after a reload", (await page.evaluate(() => document.documentElement.dataset.look)) === "night");
+  // A retired look saved before the redesign opens as Night.
   await page.evaluate(() => {
     const p = JSON.parse(localStorage.getItem("panalo.students.prefs") || "{}");
-    localStorage.setItem("panalo.students.prefs", JSON.stringify({ ...p, look: "odyssey" }));
+    localStorage.setItem("panalo.students.prefs", JSON.stringify({ ...p, look: "verse" }));
   });
   await page.reload();
   await page.waitForSelector("#app:not([hidden])", { timeout: 15000 });
   await page.waitForTimeout(600);
-  check("a saved Odyssey look falls back to Glass", (await page.evaluate(() => document.documentElement.dataset.look)) === "glass");
+  check("a saved Verse look opens as Night", (await page.evaluate(() => document.documentElement.dataset.look)) === "night");
   // Details: the nav's marker sits under the page you're on, and moves with you.
   await page.evaluate(() => (location.hash = "#/calendar"));
   await page.waitForTimeout(900);
