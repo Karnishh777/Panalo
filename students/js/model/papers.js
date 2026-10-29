@@ -277,13 +277,13 @@ export const SYLLABUS_PAPERS = {
     // Design and Technology (Cambridge IGCSE)
     papers: [
       { id: "1", name: "Product Design", kind: "written", minutes: 75, marks: null, level: "any", topics: ["1", "2", "4", "5"] },
-      { id: "2", name: "Resistant Materials", kind: "written", minutes: 75, marks: null, level: "any", topics: ["2", "3", "4"] },
-      { id: "3", name: "Graphic Products", kind: "written", minutes: 75, marks: null, level: "any", topics: ["5", "4"] },
+      { id: "2", name: "School-based Assessment (project)", kind: "coursework", minutes: null, marks: null, level: "any", topics: ["1", "7"] },
+      { id: "3", name: "Resistant Materials", kind: "written", minutes: 75, marks: null, level: "any", topics: ["2", "3", "4"] },
       { id: "4", name: "Systems and Control", kind: "written", minutes: 75, marks: null, level: "any", topics: ["6", "3"] },
-      { id: "5", name: "Project", kind: "coursework", minutes: null, marks: null, level: "any", topics: ["1", "7"] },
+      { id: "5", name: "Graphic Products", kind: "written", minutes: 75, marks: null, level: "any", topics: ["5", "4"] },
     ],
-    routes: { igcse: ["1", "2", "5"] },
-    note: "Paper 1, one of Papers 2, 3 or 4, and the project.",
+    routes: { igcse: ["1", "2", "3"] },
+    note: "Paper 1, the project (component 2), and one of Papers 3, 4 or 5.",
   },
   "9705": {
     // Design and Technology (Cambridge International AS & A Level)

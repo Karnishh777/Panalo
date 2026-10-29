@@ -21,7 +21,8 @@
       "questions": [
         { "q": "f(x) = 2x + 3. What is f⁻¹(x)?", "o": ["(x − 3)/2", "(x + 3)/2", "2x − 3", "1/(2x + 3)"], "a": 0, "why": "Swap and rearrange: x = 2y + 3, so y = (x − 3)/2." },
         { "q": "f(x) = x² and g(x) = x + 1. What is fg(x)?", "o": ["x² + 1", "(x + 1)²", "x² + x", "2x + 1"], "a": 1, "why": "fg(x) = f(g(x)) = (x + 1)²." },
-        { "q": "A function has an inverse only if it is…", "o": ["even", "one-one", "continuous", "quadratic"], "a": 1, "why": "Each output must come from exactly one input." }
+        { "q": "A function has an inverse only if it is…", "o": ["even", "one-one", "continuous", "quadratic"], "a": 1, "why": "Each output must come from exactly one input." },
+        { "q": "f(x) = x² + 1 for x ≥ 0. Which is the range of f?", "o": ["x ≥ 0", "f(x) ≥ 1", "f(x) ≥ 0", "all real numbers"], "a": 1, "why": "Examiners (2023): there was confusion between range and domain. The domain is x ≥ 0; the range is the set of outputs f(x) ≥ 1." }
       ],
       "long": [
         { "q": "f(x) = 3x − 2 and g(x) = x² + 1. Find fg(x) and solve fg(x) = 10.", "marks": 3, "paper": "1", "scheme": ["B1: fg(x) = 3x² + 1", "M1: 3x² + 1 = 10, so x² = 3", "A1: x = ±√3"], "ans": "fg(x) = 3x² + 1; x = ±√3" },
@@ -55,7 +56,8 @@
       "questions": [
         { "q": "Which identity is always true?", "o": ["sin θ + cos θ = 1", "sin²θ + cos²θ = 1", "tan θ = cos θ / sin θ", "sin 2θ = 2 sin θ"], "a": 1, "why": "This is the fundamental Pythagorean identity." },
         { "q": "Solve sin x = 0.5 for 0° ≤ x ≤ 360°.", "o": ["30° only", "30° and 150°", "30° and 330°", "60° and 120°"], "a": 1, "why": "Sine is positive in the first and second quadrants: 30° and 180° − 30°." },
-        { "q": "What is the period of y = cos 2x?", "o": ["90°", "180°", "360°", "720°"], "a": 1, "why": "The period of cos kx is 360°/k." }
+        { "q": "What is the period of y = cos 2x?", "o": ["90°", "180°", "360°", "720°"], "a": 1, "why": "The period of cos kx is 360°/k." },
+        { "q": "Solve sin θ = 0.6 for 0° ≤ θ ≤ 360°. How many solutions are there?", "o": ["One", "Two", "Three", "Four"], "a": 1, "why": "Examiners (2023): candidates often gave too few answers. Sine is positive in the first and second quadrants: 36.9° and 143.1°." }
       ],
       "long": [
         { "q": "Solve the equation 2 sin²θ + 3 cos θ = 3 for 0° ≤ θ ≤ 360°.", "marks": 5, "paper": "1", "scheme": ["M1: use sin²θ = 1 − cos²θ", "A1: 2cos²θ − 3cos θ + 1 = 0", "M1: solve the quadratic in cos θ", "A1: θ = 60°, 300°", "A1: θ = 0°, 360°"], "ans": "θ = 0°, 60°, 300°, 360°" },
@@ -67,7 +69,8 @@
       "questions": [
         { "q": "What is the coefficient of x² in (1 + 2x)⁵?", "o": ["10", "20", "40", "80"], "a": 2, "why": "⁵C₂ × 2² = 10 × 4 = 40." },
         { "q": "A geometric series has a = 8 and r = ½. What is its sum to infinity?", "o": ["4", "8", "16", "∞"], "a": 2, "why": "S∞ = a/(1 − r) = 8 ÷ ½ = 16, valid because |r| < 1." },
-        { "q": "The 10th term of the arithmetic progression 3, 7, 11, … is…", "o": ["39", "40", "43", "36"], "a": 0, "why": "uₙ = a + (n − 1)d = 3 + 9 × 4 = 39." }
+        { "q": "The 10th term of the arithmetic progression 3, 7, 11, … is…", "o": ["39", "40", "43", "36"], "a": 0, "why": "uₙ = a + (n − 1)d = 3 + 9 × 4 = 39." },
+        { "q": "In the expansion of (3 + ax)⁴, what is the coefficient of x²?", "o": ["54a", "54a²", "6a²", "9a²"], "a": 1, "why": "Examiners (2023): the coefficient was often given as 54a rather than 54a². 4C2 × 3² × a² = 6 × 9 × a²." }
       ],
       "long": [
         { "q": "Find the coefficient of x³ in the expansion of (2 − x)⁶.", "marks": 3, "paper": "1", "scheme": ["M1: the term ⁶C₃ × 2³ × (−x)³", "A1: ⁶C₃ = 20 and 2³ = 8 used", "A1: −160"], "ans": "−160" },
@@ -90,7 +93,8 @@
       "id": "P1.8", "stage": "as", "name": "Pure 1: Integration",
       "questions": [
         { "q": "Find ∫ 6x² dx.", "o": ["12x + c", "2x³ + c", "6x³ + c", "3x² + c"], "a": 1, "why": "Raise the power by one and divide: 6x³/3 = 2x³." },
-        { "q": "Evaluate ∫₀² 3x² dx.", "o": ["4", "6", "8", "12"], "a": 2, "why": "[x³]₀² = 8." }
+        { "q": "Evaluate ∫₀² 3x² dx.", "o": ["4", "6", "8", "12"], "a": 2, "why": "[x³]₀² = 8." },
+        { "q": "The region under y = f(x) is rotated 360° about the x-axis. The volume is:", "o": ["∫ π y dx", "∫ π y² dx", "∫ 2π y dx", "∫ y² dx"], "a": 1, "why": "Examiners (2023): some integrated y rather than y²." }
       ],
       "long": [
         { "q": "The diagram shows the curve y = x² − 4x + 3, which crosses the x-axis at x = 1 and x = 3. Find the area of the shaded region between the curve and the x-axis.", "marks": 4, "paper": "1", "scheme": ["M1: integrate: x³/3 − 2x² + 3x", "M1: use the limits 1 and 3", "A1: value −4/3", "A1: area = 4/3"], "ans": "4/3", "fig": "assets/syllabus/fig/9709-p1-curve.svg" },
@@ -128,7 +132,8 @@
       "id": "P3.4", "stage": "a2", "name": "Pure 3: Differentiation",
       "questions": [
         { "q": "Differentiate y = x eˣ.", "o": ["eˣ", "x eˣ", "eˣ(1 + x)", "eˣ − x"], "a": 2, "why": "Product rule: eˣ + x eˣ." },
-        { "q": "Differentiate y = ln(3x).", "o": ["3/x", "1/x", "1/(3x)", "ln 3"], "a": 1, "why": "ln(3x) = ln 3 + ln x, so the derivative is 1/x." }
+        { "q": "Differentiate y = ln(3x).", "o": ["3/x", "1/x", "1/(3x)", "ln 3"], "a": 1, "why": "ln(3x) = ln 3 + ln x, so the derivative is 1/x." },
+        { "q": "y = x² e^(2x). Which method is needed to find dy/dx?", "o": ["Chain rule only", "Product rule (with the chain rule for e^(2x))", "Quotient rule", "Implicit differentiation"], "a": 1, "why": "Examiners (2023): it was essential that y be differentiated as a product; many did not recognise it as one." }
       ],
       "long": [
         { "q": "Find dy/dx when y = x² e^(3x), and the exact x-coordinates of the stationary points.", "marks": 4, "paper": "3", "scheme": ["M1: product rule", "A1: dy/dx = 2x e^(3x) + 3x² e^(3x)", "M1: x e^(3x)(2 + 3x) = 0", "A1: x = 0 and x = −2/3"], "ans": "x = 0, x = −2/3" }
@@ -147,7 +152,8 @@
     {
       "id": "P3.6", "stage": "a2", "name": "Pure 3: Numerical solution of equations",
       "questions": [
-        { "q": "f(1) = −2 and f(2) = 3, with f continuous. What can you conclude?", "o": ["No root between 1 and 2", "A root lies between 1 and 2", "f has a maximum at 1.5", "f(1.5) = 0"], "a": 1, "why": "A change of sign shows a root in the interval." }
+        { "q": "f(1) = −2 and f(2) = 3, with f continuous. What can you conclude?", "o": ["No root between 1 and 2", "A root lies between 1 and 2", "f has a maximum at 1.5", "f(1.5) = 0"], "a": 1, "why": "A change of sign shows a root in the interval." },
+        { "q": "An iteration converges to 0.79495… What is the root correct to 2 decimal places?", "o": ["0.80", "0.79", "0.795", "0.8"], "a": 1, "why": "Examiners (2023): a common error was rounding the final answer to 0.80 rather than 0.79." }
       ]
     },
     {
@@ -185,7 +191,8 @@
         { "q": "Limiting friction is given by F = μR. What is R?", "o": ["The weight always", "The normal contact force", "The resultant force", "The tension"], "a": 1, "why": "R is the normal reaction; it equals the weight only on a horizontal surface with no other vertical forces." },
         { "q": "A particle is in equilibrium under three forces. Their resultant is…", "o": ["zero", "equal to the largest force", "the sum of their magnitudes", "the particle's weight"], "a": 0, "why": "Equilibrium means no resultant force: the forces form a closed triangle." },
         { "q": "A 4 kg block rests on a rough horizontal plane with μ = 0.5 (g = 10 m s⁻²). The greatest friction possible is…", "o": ["2 N", "20 N", "40 N", "80 N"], "a": 1, "why": "R = 4 × 10 = 40 N, and limiting friction is μR = 0.5 × 40 = 20 N." },
-        { "q": "A particle of weight mg rests on a slope at angle θ to the horizontal. The component of its weight down the slope is…", "o": ["mg sin θ", "mg cos θ", "mg tan θ", "mg"], "a": 0, "why": "Resolve parallel to the slope: mg sin θ; perpendicular to it: mg cos θ." }
+        { "q": "A particle of weight mg rests on a slope at angle θ to the horizontal. The component of its weight down the slope is…", "o": ["mg sin θ", "mg cos θ", "mg tan θ", "mg"], "a": 0, "why": "Resolve parallel to the slope: mg sin θ; perpendicular to it: mg cos θ." },
+        { "q": "A force of 10 N acts at 30° to the horizontal. What is its horizontal component?", "o": ["10 sin 30° = 5 N", "10 cos 30° ≈ 8.66 N", "10 tan 30° ≈ 5.77 N", "10 N"], "a": 1, "why": "Examiners (2023): candidates confused sin and cos when resolving; the component adjacent to the angle uses cos." }
       ],
       "long": [
         { "q": "A particle of mass 2 kg rests on a rough plane inclined at 30° to the horizontal. A force of P N acts on it up the plane, parallel to a line of greatest slope. The coefficient of friction is 0.4. Find the least value of P for which the particle does not slide down the plane. (g = 10 m s⁻²)", "marks": 5, "paper": "4", "scheme": ["B1: R = 20 cos 30° (= 17.3 N)", "B1: F = 0.4R", "M1: resolve along the plane with friction acting up the plane", "A1: P + 6.93 = 10", "A1: P = 3.07 (3 s.f.)"], "ans": "P = 3.07", "fig": "assets/syllabus/fig/9709-m1-slope.svg" }

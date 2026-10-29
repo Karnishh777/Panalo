@@ -17,7 +17,8 @@
     {
       "id": "2", "name": "Hardware and software", "stage": "as",
       "questions": [
-        { "q": "A compiler", "o": ["translates the whole program before it runs", "translates line by line as it runs", "is an operating system", "is a utility for backups"], "a": 0, "why": "An interpreter works line by line." }
+        { "q": "A compiler", "o": ["translates the whole program before it runs", "translates line by line as it runs", "is an operating system", "is a utility for backups"], "a": 0, "why": "An interpreter works line by line." },
+        { "q": "A device driver is:", "o": ["A piece of hardware", "Software that lets the operating system communicate with a hardware device", "A type of cable", "A network card"], "a": 1, "why": "Examiners (2023): the most common mistake was to consider a device driver to be hardware." }
       ]
     },
     {
@@ -32,7 +33,8 @@
     {
       "id": "4", "name": "Algorithms and flowcharts", "stage": "as",
       "questions": [
-        { "q": "In a flowchart, a decision is shown by", "o": ["a diamond", "a rectangle", "an oval", "a parallelogram"], "a": 0, "why": "Rectangles are processes; parallelograms are input/output." }
+        { "q": "In a flowchart, a decision is shown by", "o": ["a diamond", "a rectangle", "an oval", "a parallelogram"], "a": 0, "why": "Rectangles are processes; parallelograms are input/output." },
+        { "q": "In a flowchart, a decision box must have:", "o": ["One output", "A Yes and a No output", "Text describing the decision only", "Three outputs"], "a": 1, "why": "Examiners (2023): candidates are reminded every decision box needs Yes and No outputs, using mathematical expressions rather than text." }
       ]
     },
     {
@@ -62,7 +64,8 @@
     {
       "id": "9", "name": "Spreadsheets", "stage": "as",
       "questions": [
-        { "q": "VLOOKUP searches", "o": ["the first column of a table for a value and returns one from another column", "every cell for a value", "a database", "a chart"], "a": 0, "why": "Vertical lookup." }
+        { "q": "VLOOKUP searches", "o": ["the first column of a table for a value and returns one from another column", "every cell for a value", "a database", "a chart"], "a": 0, "why": "Vertical lookup." },
+        { "q": "A spreadsheet formula should refer to:", "o": ["The value typed in", "A cell reference holding the value", "A text label", "Nothing"], "a": 1, "why": "Examiners (2023): the formula had to reference a cell rather than a value." }
       ]
     },
     {
@@ -100,7 +103,8 @@
       "id": "15", "name": "Project management", "stage": "a2",
       "questions": [
         { "q": "A Gantt chart shows", "o": ["tasks against time", "a network's layout", "a database structure", "a program's logic"], "a": 0, "why": "Used to schedule and track a project." },
-        { "q": "The critical path is", "o": ["the longest sequence of dependent tasks", "the cheapest route", "the first task", "any task with slack"], "a": 0, "why": "It sets the shortest possible project duration." }
+        { "q": "The critical path is", "o": ["the longest sequence of dependent tasks", "the cheapest route", "the first task", "any task with slack"], "a": 0, "why": "It sets the shortest possible project duration." },
+        { "q": "In project management, a deliverable is:", "o": ["A resource delivered for a task", "A measurable output produced at the end of a stage", "A delivery van", "The project budget"], "a": 1, "why": "Examiners (2023): many described deliverables as resources that had to be delivered." }
       ],
       "long": [
         { "q": "Explain how a Gantt chart helps a project manager.", "marks": 4, "paper": "3", "scheme": ["B1: shows each task against a timeline", "B1: shows dependencies and the critical path", "B1: helps allocate resources and spot clashes", "B1: progress can be tracked against the plan"] }

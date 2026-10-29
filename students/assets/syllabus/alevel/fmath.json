@@ -36,7 +36,9 @@
       "questions": [
         { "q": "det [[2, 1], [5, 3]] =", "o": ["1", "11", "−1", "6"], "a": 0, "why": "2 × 3 − 1 × 5." },
         { "q": "A matrix has no inverse when", "o": ["its determinant is 0", "it is square", "its determinant is 1", "it is symmetric"], "a": 0, "why": "A singular matrix has determinant zero." },
-        { "q": "For invertible A and B, (AB)⁻¹ =", "o": ["B⁻¹A⁻¹", "A⁻¹B⁻¹", "AB", "BA"], "a": 0, "why": "Inverses reverse the order." }
+        { "q": "For invertible A and B, (AB)⁻¹ =", "o": ["B⁻¹A⁻¹", "A⁻¹B⁻¹", "AB", "BA"], "a": 0, "why": "Inverses reverse the order." },
+        { "q": "Transformation A then transformation B is represented by:", "o": ["AB", "BA", "A + B", "A⁻¹B"], "a": 1, "why": "Examiners (2023): the most common error was getting the order of the matrices wrong. The first transformation is on the right." },
+        { "q": "An invariant point of a transformation M satisfies:", "o": ["M(x, y) = k(x, y)", "M(x, y) = (x, y)", "det M = 1", "M is singular"], "a": 1, "why": "Examiners (2023): most found invariant lines rather than the invariant points required." }
       ],
       "long": [
         { "q": "M = [[3, 1], [2, 4]]. Find M⁻¹ and the image of the point (1, 1) under M.", "marks": 3, "paper": "1", "scheme": ["M1: det M = 12 − 2 = 10", "A1: M⁻¹ = (1/10)[[4, −1], [−2, 3]]", "B1: image (4, 6)"] }
@@ -59,7 +61,8 @@
     {
       "id": "F1.7", "name": "FP1: Proof by induction", "stage": "as",
       "questions": [
-        { "q": "Proof by induction needs a base case and", "o": ["the inductive step from k to k + 1", "a counter-example", "proof by contradiction", "the case n = 0 only"], "a": 0, "why": "Assume true for k, show true for k + 1." }
+        { "q": "Proof by induction needs a base case and", "o": ["the inductive step from k to k + 1", "a counter-example", "proof by contradiction", "the case n = 0 only"], "a": 0, "why": "Assume true for k, show true for k + 1." },
+        { "q": "In proof by induction, the inductive step begins by:", "o": ["Assuming the statement is true for all n", "Assuming it is true for n = k, then showing it is true for n = k + 1", "Checking n = 1 only", "Assuming it is false"], "a": 1, "why": "Examiners (2023): candidates need to assume the statement for some k, not that it is true in general." }
       ],
       "long": [
         { "q": "Prove by induction that Σ r from r = 1 to n = ½n(n + 1) for all positive integers n.", "marks": 4, "paper": "1", "scheme": ["B1: n = 1: both sides equal 1", "M1: assume true for n = k", "M1: add (k + 1): ½k(k + 1) + (k + 1) = ½(k + 1)(k + 2)", "A1: so true for n = k + 1, hence for all n by induction"] }
@@ -145,13 +148,15 @@
     {
       "id": "S4.1", "name": "FS: Continuous random variables", "stage": "as",
       "questions": [
-        { "q": "For a probability density function f, ∫ f(x) dx over all x =", "o": ["1", "0", "the mean", "the median"], "a": 0, "why": "Total probability is 1." }
+        { "q": "For a probability density function f, ∫ f(x) dx over all x =", "o": ["1", "0", "the mean", "the median"], "a": 0, "why": "Total probability is 1." },
+        { "q": "Given a pdf on 0 ≤ x ≤ 27, the CDF must state:", "o": ["F(x) = 0 otherwise", "F(x) = 0 for x < 0 and F(x) = 1 for x > 27", "F(x) = 1 otherwise", "Only the middle part"], "a": 1, "why": "Examiners (2023): these were often wrongly combined as 'F(x) = 0 otherwise'." }
       ]
     },
     {
       "id": "S4.2", "name": "FS: Inferential statistics (t-tests)", "stage": "as",
       "questions": [
-        { "q": "A t-test is used instead of a z-test when", "o": ["σ is unknown and the sample is small", "the data are discrete", "n is very large", "the mean is known"], "a": 0, "why": "With σ estimated from a small sample, the t-distribution applies." }
+        { "q": "A t-test is used instead of a z-test when", "o": ["σ is unknown and the sample is small", "the data are discrete", "n is very large", "the mean is known"], "a": 0, "why": "With σ estimated from a small sample, the t-distribution applies." },
+        { "q": "Which conclusion to a hypothesis test is acceptable?", "o": ["The test proves the claim", "There is insufficient evidence to support the claim", "The claim is definitely false", "The sample is wrong"], "a": 1, "why": "Examiners (2023): conclusions should include uncertainty, not 'the test proves that…'." }
       ]
     },
     {

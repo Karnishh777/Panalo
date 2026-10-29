@@ -33,7 +33,8 @@
       "questions": [
         { "q": "A machine costs $10 000, lasts 5 years and has no residual value. What is straight-line depreciation per year?", "o": ["$1000", "$2000", "$5000", "$500"], "a": 1, "why": "(cost − residual value) ÷ useful life = 10 000 ÷ 5." },
         { "q": "Prepaid expenses are shown as…", "o": ["a current liability", "a current asset", "income", "capital"], "a": 1, "why": "They are paid in advance for a future period." },
-        { "q": "Writing off an irrecoverable debt…", "o": ["increases profit", "reduces profit", "increases cash", "has no effect"], "a": 1, "why": "It is an expense in the income statement." }
+        { "q": "Writing off an irrecoverable debt…", "o": ["increases profit", "reduces profit", "increases cash", "has no effect"], "a": 1, "why": "It is an expense in the income statement." },
+        { "q": "Inventory items: A cost $50, NRV $40; B cost $30, NRV $45. At what value should inventory be shown?", "o": ["$70", "$80", "$85", "$75"], "a": 0, "why": "Examiners (2023): some compared total cost with total NRV. Apply lower of cost and NRV to each item: 40 + 30 = $70." }
       ],
       "long": [
         { "q": "A van cost $12 000 and is expected to last 5 years, with a residual value of $2000. Calculate the annual depreciation using the straight-line method and the net book value after 2 years.", "marks": 3, "paper": "2", "scheme": ["M1: (12 000 − 2000) ÷ 5", "A1: = $2000 a year", "A1: net book value after 2 years = $8000"], "ans": "$2000; $8000" }
@@ -43,7 +44,8 @@
       "id": "5", "name": "Preparation of financial statements",
       "questions": [
         { "q": "Revenue $50 000, cost of sales $30 000. What is gross profit?", "o": ["$80 000", "$20 000", "$30 000", "$50 000"], "a": 1, "why": "Gross profit = revenue − cost of sales." },
-        { "q": "Cost of sales is calculated as…", "o": ["opening inventory + purchases − closing inventory", "purchases − sales", "sales − expenses", "closing inventory − opening inventory"], "a": 0, "why": "It is the cost of the goods actually sold in the period." }
+        { "q": "Cost of sales is calculated as…", "o": ["opening inventory + purchases − closing inventory", "purchases − sales", "sales − expenses", "closing inventory − opening inventory"], "a": 0, "why": "It is the cost of the goods actually sold in the period." },
+        { "q": "A club buys new furniture. Where is this shown?", "o": ["Income and expenditure account", "Statement of financial position as a non-current asset", "Receipts and payments account only", "Accumulated fund as a deduction"], "a": 1, "why": "Examiners (2023): some put the furniture in the income and expenditure account; it is capital expenditure." }
       ],
       "long": [
         { "q": "Revenue was $80 000. Opening inventory was $6000, purchases $50 000 and closing inventory $8000. Calculate the cost of sales and the gross profit.", "marks": 3, "paper": "2", "scheme": ["M1: cost of sales = 6000 + 50 000 − 8000", "A1: = $48 000", "A1: gross profit = 80 000 − 48 000 = $32 000"], "ans": "$48 000; $32 000" }

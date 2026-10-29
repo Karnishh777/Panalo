@@ -9,7 +9,9 @@
       "questions": [
         { "q": "What is the electron configuration of Fe (Z = 26)?", "o": ["1s² 2s² 2p⁶ 3s² 3p⁶ 3d⁸", "1s² 2s² 2p⁶ 3s² 3p⁶ 4s² 3d⁶", "1s² 2s² 2p⁶ 3s² 3p⁶ 4s² 4p⁶", "1s² 2s² 2p⁶ 3s² 3p⁶ 3d⁶ 4p²"], "a": 1, "why": "26 electrons: [Ar] 4s² 3d⁶." },
         { "q": "Why is the first ionisation energy of oxygen lower than that of nitrogen?", "o": ["Oxygen has fewer protons", "The paired electrons in oxygen's 2p orbital repel each other", "Oxygen's electron is in a higher shell", "Nitrogen is a gas"], "a": 1, "why": "Spin-pair repulsion in one 2p orbital makes that electron easier to remove." },
-        { "q": "Which particle has 10 electrons and 11 protons?", "o": ["Ne", "Na", "Na⁺", "F⁻"], "a": 2, "why": "Sodium (Z = 11) that has lost one electron." }
+        { "q": "Which particle has 10 electrons and 11 protons?", "o": ["Ne", "Na", "Na⁺", "F⁻"], "a": 2, "why": "Sodium (Z = 11) that has lost one electron." },
+        { "q": "Why does first ionisation energy generally increase across a period?", "o": ["Shielding stays the same and nuclear charge increases", "Nuclear charge increases, shielding is similar, so the outer electron is attracted more strongly", "Atomic radius increases", "Electrons are added to new shells"], "a": 1, "why": "Examiners (2023): many said shielding 'remains constant'; examiners wanted similar shielding with greater nuclear charge and smaller radius." },
+        { "q": "What is the full electronic configuration of Cu²⁺?", "o": ["1s² 2s² 2p⁶ 3s² 3p⁶ 3d⁹", "1s² 2s² 2p⁶ 3s² 3p⁶ 3d⁷ 4s²", "1s² 2s² 2p⁶ 3s² 3p⁶ 3d¹⁰ 4s¹", "1s² 2s² 2p⁶ 3s² 3p⁶ 3d⁸ 4s¹"], "a": 0, "why": "Examiners (2023): answers often kept the 4s electrons. Transition metal ions lose 4s electrons first." }
       ],
       "long": [
         { "q": "Explain why the first ionisation energy of aluminium is lower than that of magnesium, and why that of sulfur is lower than that of phosphorus.", "marks": 4, "paper": "2", "scheme": ["B1: Al's outer electron is in a 3p orbital, Mg's in 3s", "B1: 3p is higher in energy / further from the nucleus / shielded by the 3s electrons, so easier to remove", "B1: in S the electron removed is from a 3p orbital that holds a pair of electrons", "B1: spin-pair repulsion makes it easier to remove"] }
@@ -32,7 +34,8 @@
         { "q": "What is the shape of an ammonia molecule?", "o": ["Trigonal planar", "Trigonal pyramidal", "Tetrahedral", "Linear"], "a": 1, "why": "Three bonding pairs and one lone pair: pyramidal, bond angle about 107°." },
         { "q": "What is the bond angle in methane?", "o": ["90°", "104.5°", "109.5°", "120°"], "a": 2, "why": "Four bonding pairs repel equally: tetrahedral, 109.5°." },
         { "q": "Why does water have an unusually high boiling point for its size?", "o": ["Strong covalent bonds", "Hydrogen bonding between molecules", "Ionic bonding", "It is dense"], "a": 1, "why": "O–H…O hydrogen bonds are much stronger than other intermolecular forces." },
-        { "q": "Which molecule is non-polar overall even though it has polar bonds?", "o": ["H₂O", "NH₃", "CO₂", "HCl"], "a": 2, "why": "CO₂ is linear; the two bond dipoles cancel." }
+        { "q": "Which molecule is non-polar overall even though it has polar bonds?", "o": ["H₂O", "NH₃", "CO₂", "HCl"], "a": 2, "why": "CO₂ is linear; the two bond dipoles cancel." },
+        { "q": "Why does magnesium have a high melting point?", "o": ["Strong ionic bonds", "Strong metallic bonding: attraction between a lattice of positive ions and delocalised electrons", "Strong covalent bonds", "Hydrogen bonding"], "a": 1, "why": "Examiners (2023): some described the bonding in magnesium as ionic, and many omitted that the lattice is giant." }
       ],
       "long": [
         { "q": "Explain why water (Mr 18) has a much higher boiling point than hydrogen sulfide (Mr 34).", "marks": 3, "paper": "2", "scheme": ["B1: water forms hydrogen bonds between molecules", "B1: because O is much more electronegative than S (O–H strongly polar, lone pairs on O)", "B1: hydrogen bonds need more energy to overcome than the van der Waals forces between H₂S molecules"] }
@@ -50,7 +53,8 @@
       "questions": [
         { "q": "Hess's law is based on conservation of…", "o": ["mass", "energy", "charge", "atoms"], "a": 1, "why": "The enthalpy change is independent of the route taken." },
         { "q": "50.0 g of water rises by 6.0 °C. How much energy was transferred? (c = 4.18 J g⁻¹ K⁻¹)", "o": ["125 J", "1254 J", "209 J", "2508 J"], "a": 1, "why": "q = mcΔT = 50.0 × 4.18 × 6.0 = 1254 J." },
-        { "q": "Standard enthalpy change of combustion is always…", "o": ["positive", "negative", "zero", "either"], "a": 1, "why": "Combustion releases energy, so it is exothermic." }
+        { "q": "Standard enthalpy change of combustion is always…", "o": ["positive", "negative", "zero", "either"], "a": 1, "why": "Combustion releases energy, so it is exothermic." },
+        { "q": "Which is the correct definition of standard enthalpy change of neutralisation?", "o": ["The energy needed to neutralise an acid", "The enthalpy change when one mole of water is formed by an acid reacting with a base under standard conditions", "The enthalpy change when one mole of acid reacts with one mole of base", "The heat released when an acid is diluted"], "a": 1, "why": "Examiners (2023): 'one mole of acid reacting with one mole of base' was a common inadequate answer, and some thought neutralisation needs energy." }
       ],
       "long": [
         { "q": "Use these standard enthalpy changes of combustion (kJ mol⁻¹) to calculate the standard enthalpy change of formation of propane, C₃H₈: C(s) −394, H₂(g) −286, C₃H₈(g) −2219.", "marks": 3, "paper": "2", "scheme": ["M1: a correct Hess cycle or ΔHf = Σ ΔHc(reactants) − ΔHc(propane)", "M1: 3(−394) + 4(−286) = −2326", "A1: ΔHf = −2326 + 2219 = −107 kJ mol⁻¹"], "ans": "−107 kJ mol⁻¹" }
@@ -78,7 +82,8 @@
       "id": "8", "stage": "as", "name": "Reaction kinetics",
       "questions": [
         { "q": "On a Boltzmann distribution, raising the temperature…", "o": ["moves the peak left and up", "moves the peak right and down, with more molecules above Ea", "has no effect", "reduces the area under the curve"], "a": 1, "why": "More molecules have energy at or above the activation energy; the total area stays the same." },
-        { "q": "A catalyst works by…", "o": ["increasing the energy of molecules", "providing an alternative route with a lower activation energy", "increasing ΔH", "shifting equilibrium"], "a": 1, "why": "More particles then have enough energy to react." }
+        { "q": "A catalyst works by…", "o": ["increasing the energy of molecules", "providing an alternative route with a lower activation energy", "increasing ΔH", "shifting equilibrium"], "a": 1, "why": "More particles then have enough energy to react." },
+        { "q": "How does a catalyst increase the rate of reaction?", "o": ["It increases the number of collisions", "It provides an alternative pathway with a lower activation energy, so more collisions are successful", "It increases the kinetic energy of the particles", "It shifts the equilibrium to the right"], "a": 1, "why": "Examiners (2023): many said a catalyst increases the number of collisions rather than the frequency of successful collisions." }
       ],
       "long": [
         { "q": "Use the Boltzmann distribution to explain why a small rise in temperature greatly increases the rate of a reaction.", "marks": 3, "paper": "2", "scheme": ["B1: at higher temperature the curve shifts right / lower peak, area unchanged", "B1: many more molecules have energy ≥ Ea", "B1: so more frequent successful collisions per second (frequency of collisions rises only slightly)"] }
@@ -102,7 +107,8 @@
       "id": "11", "stage": "as", "name": "Group 17",
       "questions": [
         { "q": "Concentrated H₂SO₄ is added to solid NaBr. Which is produced?", "o": ["HBr only", "HBr and some Br₂ and SO₂", "Cl₂", "No reaction"], "a": 1, "why": "Bromide is a strong enough reducing agent to reduce some of the sulfuric acid to SO₂." },
-        { "q": "Silver nitrate gives a cream precipitate soluble in concentrated ammonia. Which halide?", "o": ["Chloride", "Bromide", "Iodide", "Fluoride"], "a": 1, "why": "AgCl is white (dissolves in dilute NH₃), AgBr cream (concentrated), AgI yellow (insoluble)." }
+        { "q": "Silver nitrate gives a cream precipitate soluble in concentrated ammonia. Which halide?", "o": ["Chloride", "Bromide", "Iodide", "Fluoride"], "a": 1, "why": "AgCl is white (dissolves in dilute NH₃), AgBr cream (concentrated), AgI yellow (insoluble)." },
+        { "q": "Which reagent is used to test for halide ions (X⁻), as opposed to a halogen (X₂)?", "o": ["Aqueous iodine", "Silver nitrate solution", "Potassium iodide solution", "Starch"], "a": 1, "why": "Examiners (2023): some used iodine where iodide was meant: be precise about halogens (X₂) and halides (X⁻). Halide ions are tested with aqueous silver nitrate." }
       ]
     },
     {
@@ -134,7 +140,8 @@
       "id": "15", "stage": "as", "name": "Halogen compounds",
       "questions": [
         { "q": "Which halogenoalkane hydrolyses fastest?", "o": ["Chloroethane", "Bromoethane", "Iodoethane", "Fluoroethane"], "a": 2, "why": "The C–I bond is the weakest, so it breaks most easily." },
-        { "q": "Heating a halogenoalkane with ethanolic KOH mainly gives…", "o": ["an alcohol", "an alkene (elimination)", "a nitrile", "an amine"], "a": 1, "why": "In ethanol, OH⁻ acts as a base and removes HX." }
+        { "q": "Heating a halogenoalkane with ethanolic KOH mainly gives…", "o": ["an alcohol", "an alkene (elimination)", "a nitrile", "an amine"], "a": 1, "why": "In ethanol, OH⁻ acts as a base and removes HX." },
+        { "q": "Which reagents and conditions convert a halogenoalkane into a nitrile?", "o": ["HCN with a KCN catalyst", "KCN in ethanol, heat under reflux", "NaOH(aq), heat", "H₂ with a nickel catalyst"], "a": 1, "why": "Examiners (2023): some gave the conditions for carbonyl → hydroxynitrile instead of halogenoalkane → nitrile." }
       ]
     },
     {

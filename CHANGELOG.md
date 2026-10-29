@@ -77,6 +77,21 @@ only where nothing else can).
   or day-long assignments). A Level (A2) exam-style questions for 9709
   (Pure 3, Statistics 2), 9702, 9701, 9700, 9708, 9609, 9706, 9618, 9990
   and 9699.
+- **What the examiners say**: advice from the June 2023 Cambridge
+  Principal Examiner Reports for 34 syllabuses, in our own words, per
+  paper (`students/js/model/examiner.js`), shown beside exam-style
+  questions and on past-paper blocks. 141 new practice questions whose
+  wrong options are the mistakes the reports say candidates made, each
+  explained with the examiners' advice. Design and Technology 0445's
+  papers corrected (1 Product Design, 2 project, 3 Resistant Materials,
+  4 Systems and Control, 5 Graphic Products).
+- **Mark a photo of my answer**: on any exam-style question, take a photo
+  of your written answer and Pan (`functions/api/mark.js`, Claude Sonnet)
+  marks it against the scheme, ticks the points earned with a note on
+  each, and writes an examiner-style comment and what to practise next.
+  You can change any tick before saving. The photo is never stored; it
+  shares the 30 asks a day. Without `ANTHROPIC_API_KEY` you mark
+  yourself as before.
 - **Only studying grows the world (phase 37)**: land is study time (focus
   sessions and exam-style questions); forests spread as chapters are
   covered and stay; the seas glow with the chapters known to your aim;

@@ -18,7 +18,8 @@
         { "q": "Which structure is found in plant cells but not animal cells?", "o": ["Nucleus", "Cell membrane", "Cell wall", "Mitochondria"], "a": 2, "why": "Plant cells have a cellulose cell wall (and often chloroplasts and a large vacuole)." },
         { "q": "Where does aerobic respiration take place in a cell?", "o": ["Ribosomes", "Mitochondria", "Nucleus", "Cell wall"], "a": 1, "why": "Mitochondria release energy by aerobic respiration." },
         { "q": "An image is 50 mm long; magnification is ×500. What is the actual size?", "o": ["0.1 mm", "1 mm", "10 mm", "25 000 mm"], "a": 0, "why": "Actual size = image size ÷ magnification = 50 ÷ 500 = 0.1 mm." },
-        { "q": "A group of similar cells working together is a…", "o": ["tissue", "organ", "organ system", "organism"], "a": 0, "why": "Cells → tissues → organs → organ systems → organism." }
+        { "q": "A group of similar cells working together is a…", "o": ["tissue", "organ", "organ system", "organism"], "a": 0, "why": "Cells → tissues → organs → organ systems → organism." },
+        { "q": "Which of these cells contain chloroplasts?", "o": ["Root hair cells only", "Palisade mesophyll cells only", "Both root hair and palisade mesophyll cells", "Neither"], "a": 1, "why": "Examiners (2023): some believed root hair cells have chloroplasts. They are underground and do not photosynthesise." }
       ]
     },
     {
@@ -26,7 +27,8 @@
       "questions": [
         { "q": "Osmosis is the movement of…", "o": ["any molecules down a concentration gradient", "water through a partially permeable membrane from dilute to concentrated solution", "ions using energy", "glucose into cells"], "a": 1, "why": "Osmosis is the net movement of water from a higher to a lower water potential across a partially permeable membrane." },
         { "q": "Which process needs energy from respiration?", "o": ["Diffusion", "Osmosis", "Active transport", "Evaporation"], "a": 2, "why": "Active transport moves substances against a concentration gradient, using energy." },
-        { "q": "A plant cell is put in concentrated salt solution. What happens?", "o": ["It bursts", "It loses water and becomes plasmolysed", "It gains water and becomes turgid", "Nothing"], "a": 1, "why": "Water leaves by osmosis; the cytoplasm pulls away from the cell wall." }
+        { "q": "A plant cell is put in concentrated salt solution. What happens?", "o": ["It bursts", "It loses water and becomes plasmolysed", "It gains water and becomes turgid", "Nothing"], "a": 1, "why": "Water leaves by osmosis; the cytoplasm pulls away from the cell wall." },
+        { "q": "A dialysis tubing bag of sucrose solution is placed in water. The bag gets heavier. What has happened?", "o": ["Net movement of sucrose out of the bag", "Net movement of water into the bag by osmosis", "Active transport of water", "Diffusion of sucrose into the water"], "a": 1, "why": "Examiners (2023): some thought sucrose moved out. Sucrose molecules are too large to pass through; water moves in by osmosis." }
       ],
       "long": [
         { "q": "Define osmosis and explain why potato strips placed in a concentrated sugar solution lose mass.", "marks": 3, "paper": "4", "scheme": ["B1: the net movement of water molecules from a region of higher water potential to a region of lower water potential through a partially permeable membrane", "B1: the solution has a lower water potential than the potato cells", "B1: so water leaves the cells by osmosis"] }
@@ -45,7 +47,8 @@
       "questions": [
         { "q": "What is an enzyme?", "o": ["A fat that stores energy", "A protein that acts as a biological catalyst", "A hormone", "A carbohydrate"], "a": 1, "why": "Enzymes are proteins that speed up reactions without being used up." },
         { "q": "Why does an enzyme stop working at high temperatures?", "o": ["It runs out", "Its active site changes shape (it is denatured)", "It becomes too fast", "The substrate melts"], "a": 1, "why": "Heat breaks bonds holding its shape, so the substrate no longer fits the active site." },
-        { "q": "What does amylase break down?", "o": ["Protein", "Fat", "Starch", "DNA"], "a": 2, "why": "Amylase digests starch into simple sugars (maltose)." }
+        { "q": "What does amylase break down?", "o": ["Protein", "Fat", "Starch", "DNA"], "a": 2, "why": "Amylase digests starch into simple sugars (maltose)." },
+        { "q": "Which statement about enzymes is correct?", "o": ["All enzymes work best at pH 7", "Different enzymes have different optimum pH values", "Enzymes are used up in reactions", "Enzymes work fastest at 100 °C"], "a": 1, "why": "Examiners (2023): many believed all enzymes are most effective at pH 7; pepsin in the stomach works best near pH 2." }
       ],
       "long": [
         { "q": "Explain why the activity of an enzyme falls when the temperature rises above its optimum.", "marks": 3, "paper": "4", "scheme": ["B1: the enzyme is denatured", "B1: the shape of the active site changes", "B1: so the substrate no longer fits / is no longer complementary, and fewer enzyme–substrate complexes form"] }
@@ -76,7 +79,8 @@
       "questions": [
         { "q": "What does xylem carry?", "o": ["Sugars", "Water and mineral ions", "Oxygen", "Hormones only"], "a": 1, "why": "Xylem transports water and mineral ions up from the roots." },
         { "q": "Which conditions increase the rate of transpiration?", "o": ["Cold, still, humid air", "Warm, windy, dry air", "Darkness", "High humidity"], "a": 1, "why": "Higher temperature and wind speed and lower humidity all speed up water loss." },
-        { "q": "Translocation in phloem moves…", "o": ["water only", "sucrose and amino acids", "carbon dioxide", "mineral ions only"], "a": 1, "why": "Phloem moves sucrose and amino acids from sources to sinks." }
+        { "q": "Translocation in phloem moves…", "o": ["water only", "sucrose and amino acids", "carbon dioxide", "mineral ions only"], "a": 1, "why": "Phloem moves sucrose and amino acids from sources to sinks." },
+        { "q": "Which tissue transports sucrose and amino acids in a plant?", "o": ["Xylem", "Phloem", "Epidermis", "Root hair cells"], "a": 1, "why": "Examiners (2023): many did not understand the functions of xylem (water and ions) and phloem (sucrose and amino acids)." }
       ]
     },
     {
@@ -85,7 +89,8 @@
         { "q": "Which blood vessel carries blood away from the heart at high pressure?", "o": ["Vein", "Artery", "Capillary", "Lymph vessel"], "a": 1, "why": "Arteries have thick, elastic walls to carry high-pressure blood from the heart." },
         { "q": "Which chamber of the heart pumps blood to the body?", "o": ["Right atrium", "Right ventricle", "Left atrium", "Left ventricle"], "a": 3, "why": "The left ventricle has the thickest wall and pumps blood round the whole body." },
         { "q": "What is the job of red blood cells?", "o": ["Fight infection", "Carry oxygen using haemoglobin", "Clot the blood", "Make antibodies"], "a": 1, "why": "Haemoglobin binds oxygen in the lungs and releases it in tissues." },
-        { "q": "Why does the heart rate rise during exercise?", "o": ["To cool the body", "To supply muscles with more oxygen and glucose and remove carbon dioxide", "To digest food", "To make more blood"], "a": 1, "why": "Working muscles respire faster and need faster delivery and removal." }
+        { "q": "Why does the heart rate rise during exercise?", "o": ["To cool the body", "To supply muscles with more oxygen and glucose and remove carbon dioxide", "To digest food", "To make more blood"], "a": 1, "why": "Working muscles respire faster and need faster delivery and removal." },
+        { "q": "Which vessels carry blood away from the heart?", "o": ["Veins", "Arteries", "Capillaries", "Lymph vessels"], "a": 1, "why": "Examiners (2023): some thought veins take blood away from the heart. Arteries carry blood away; veins return it." }
       ],
       "long": [
         { "q": "Explain why the wall of the left ventricle is thicker than the wall of the right ventricle.", "marks": 2, "paper": "4", "scheme": ["B1: the left ventricle pumps blood all around the body (the right only to the lungs)", "B1: so it needs more muscle to create a higher pressure"] }
@@ -112,7 +117,8 @@
       "questions": [
         { "q": "What is the word equation for aerobic respiration?", "o": ["glucose + oxygen → carbon dioxide + water", "glucose → lactic acid", "carbon dioxide + water → glucose + oxygen", "glucose → ethanol + carbon dioxide"], "a": 0, "why": "Aerobic respiration releases energy from glucose using oxygen." },
         { "q": "What is made by anaerobic respiration in human muscles?", "o": ["Ethanol", "Lactic acid", "Carbon dioxide and water", "Oxygen"], "a": 1, "why": "Without enough oxygen, muscles make lactic acid, creating an oxygen debt." },
-        { "q": "Anaerobic respiration in yeast produces…", "o": ["lactic acid", "ethanol and carbon dioxide", "oxygen", "glucose"], "a": 1, "why": "This is used in bread-making and brewing." }
+        { "q": "Anaerobic respiration in yeast produces…", "o": ["lactic acid", "ethanol and carbon dioxide", "oxygen", "glucose"], "a": 1, "why": "This is used in bread-making and brewing." },
+        { "q": "Which is the word equation for aerobic respiration?", "o": ["carbon dioxide + water → glucose + oxygen", "glucose + oxygen → carbon dioxide + water", "glucose → lactic acid", "glucose → alcohol + carbon dioxide"], "a": 1, "why": "Examiners (2023): some chose the photosynthesis equation, which is the reverse." }
       ],
       "long": [
         { "q": "Describe anaerobic respiration in human muscles during vigorous exercise and explain why breathing stays fast after exercise ends.", "marks": 3, "paper": "4", "scheme": ["B1: glucose is broken down to lactic acid without oxygen", "B1: releasing much less energy than aerobic respiration", "B1: afterwards extra oxygen is needed to break down the lactic acid (oxygen debt)"] }

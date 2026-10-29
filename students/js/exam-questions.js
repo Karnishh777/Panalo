@@ -9,6 +9,39 @@ import * as PP from "./model/papers.js";
 import { nameOf, syllabi, scopeOf, stateOf, saveTopic, colourOf, profile } from "./planner.js";
 import { api } from "./store.js";
 import { dayKey } from "./model/time.js";
+import { tipsFor, SOURCE } from "./model/examiner.js";
+import { supabaseClient } from "../../src/client.js";
+
+/** A photo, shrunk to a JPEG the marker can read (longest side 1600 px). */
+export async function photoToJpeg(file, max = 1600) {
+  const bmp = await createImageBitmap(file);
+  const k = Math.min(1, max / Math.max(bmp.width, bmp.height));
+  const c = document.createElement("canvas");
+  c.width = Math.round(bmp.width * k);
+  c.height = Math.round(bmp.height * k);
+  c.getContext("2d").drawImage(bmp, 0, 0, c.width, c.height);
+  bmp.close?.();
+  return c.toDataURL("image/jpeg", 0.82).split(",")[1];
+}
+
+/** Ask Pan to mark a photographed answer. { out } or { error: "off" | "limit" | "failed" }. */
+export async function markPhoto(q, { image, code, subject, fetchImpl = fetch }) {
+  try {
+    const { data } = await supabaseClient.auth.getSession();
+    const res = await fetchImpl("/api/mark", {
+      method: "POST",
+      headers: { "content-type": "application/json", authorization: `Bearer ${data.session?.access_token || ""}` },
+      body: JSON.stringify({ image, q: q.q, scheme: q.scheme, ans: q.ans || "", subject, paper: q.paper, tips: tipsFor(code, q.paper) }),
+    });
+    if (res.status === 501 || res.status === 404) return { error: "off" };
+    if (res.status === 429) return { error: "limit" };
+    if (!res.ok || !/json/.test(res.headers.get("content-type") || "")) return { error: "failed" };
+    const out = await res.json();
+    return Array.isArray(out.points) ? { out } : { error: "failed" };
+  } catch {
+    return { error: "failed" };
+  }
+}
 
 const MARKS = [["all", "All"], ["1", "1–2 marks"], ["3", "3–4 marks"], ["5", "5+ marks"]];
 const inBand = (m, band) => band === "all" || (band === "1" ? m <= 2 : band === "3" ? m >= 3 && m <= 4 : m >= 5);
@@ -88,13 +121,60 @@ export function openExamQuestions(subjectId) {
         q.scheme.map((pt, i) => {
           const box = el("input", { type: "checkbox", id: `xq-pt-${i}` });
           box.addEventListener("change", () => ((ticks[i] = box.checked), showScore()));
-          return el("li", {}, [el("label", {}, [box, el("span", { text: pt })])]);
+          return el("li", {}, [el("label", {}, [box, el("span", { text: pt })]), el("span", { class: "xq-note faint small", hidden: true })]);
         })
       ),
       q.ans ? el("p", { class: "xq-ans" }, [el("b", { text: "Answer: " }), q.ans]) : null,
       score
     );
-    const reveal = el("button", { type: "button", class: "btn btn-ghost", id: "xq-reveal", text: "Show the mark scheme", onClick: () => ((scheme.hidden = false), (reveal.hidden = true), (save.hidden = false), showScore(), scheme.querySelector("input")?.focus()) });
+    const open = () => ((scheme.hidden = false), (reveal.hidden = true), (save.hidden = false), showScore());
+    const reveal = el("button", { type: "button", class: "btn btn-ghost", id: "xq-reveal", text: "Show the mark scheme", onClick: () => (open(), scheme.querySelector("input")?.focus()) });
+    // Photo marking: Pan reads the answer and ticks the scheme; the student can change any tick.
+    const verdict = el("div", { class: "xq-verdict", "aria-live": "polite", hidden: true });
+    const file = el("input", { type: "file", accept: "image/*", capture: "environment", id: "xq-photo", hidden: true });
+    const snap = el("button", { type: "button", class: "btn btn-ghost", id: "xq-snap", text: "Mark a photo of my answer", onClick: () => file.click() });
+    file.addEventListener("change", async () => {
+      const f = file.files?.[0];
+      file.value = "";
+      if (!f) return;
+      snap.disabled = true;
+      snap.textContent = "Pan is marking…";
+      let image = null;
+      try {
+        image = await photoToJpeg(f);
+      } catch {
+        image = null;
+      }
+      const r = image ? await markPhoto(q, { image, code, subject: nameOf(subjectId) }) : { error: "failed" };
+      snap.disabled = false;
+      snap.textContent = "Mark another photo";
+      open();
+      if (r.error) {
+        verdict.hidden = false;
+        verdict.replaceChildren(el("p", { text: r.error === "off" ? "Photo marking isn't switched on yet. Mark yourself with the scheme below." : r.error === "limit" ? "Pan's resting until tomorrow (30 asks a day). Mark yourself with the scheme below." : "Pan couldn't mark that photo. Try a clearer one, or mark yourself below." }));
+        return;
+      }
+      const { out } = r;
+      scheme.querySelectorAll(".xq-points > li").forEach((li, i) => {
+        const box = li.querySelector("input");
+        box.checked = ticks[i] = out.points[i]?.earned === true;
+        const note = li.querySelector(".xq-note");
+        note.textContent = out.points[i]?.note || "";
+        note.hidden = !note.textContent;
+      });
+      showScore();
+      verdict.hidden = false;
+      verdict.replaceChildren(
+        el("p", { class: "pp-h", text: out.legible ? "Examiner's comment" : "Pan couldn't read it" }),
+        el("p", { text: out.examiner }),
+        out.next ? el("p", {}, [el("b", { text: "Next: " }), out.next]) : null,
+        el("p", { class: "faint small", text: "Marked by Pan from your photo, which isn't kept. Change any tick you disagree with, then save." })
+      );
+    });
+    const tips = tipsFor(code, q.paper);
+    const advice = tips.length
+      ? el("details", { class: "xq-tips" }, [el("summary", { text: "What the examiners say" }), el("ul", {}, tips.map((t) => el("li", { text: t }))), el("p", { class: "faint small", text: SOURCE })])
+      : null;
     save.addEventListener("click", async () => {
       save.disabled = true;
       const now = Date.now();
@@ -121,7 +201,9 @@ export function openExamQuestions(subjectId) {
       el("p", { class: "xq-text", text: q.q }),
       fig,
       el("p", { class: "faint small", text: "Write your full working on paper first." }),
-      el("div", { class: "xq-row" }, [reveal, save]),
+      advice,
+      el("div", { class: "xq-row" }, [reveal, snap, save, file]),
+      verdict,
       scheme
     );
     reveal.focus();

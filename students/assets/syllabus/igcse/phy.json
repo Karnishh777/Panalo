@@ -20,7 +20,8 @@
         { "q": "On a speed–time graph, what does the area under the line give?", "o": ["Acceleration", "Distance travelled", "Force", "Time taken"], "a": 1, "why": "Area under a speed–time graph = speed × time = distance travelled." },
         { "q": "A cyclist speeds up from 2 m/s to 8 m/s in 3 s. What is the acceleration?", "o": ["2 m/s²", "3.3 m/s²", "6 m/s²", "18 m/s²"], "a": 0, "why": "a = change in velocity ÷ time = (8 − 2) ÷ 3 = 2 m/s²." },
         { "q": "A distance–time graph is a straight sloping line. What does this show?", "o": ["Acceleration", "Constant speed", "The object is stationary", "Deceleration"], "a": 1, "why": "A constant gradient on a distance–time graph means constant speed." },
-        { "q": "Near the Earth's surface and without air resistance, a falling object accelerates at about…", "o": ["1 m/s²", "5 m/s²", "9.8 m/s²", "98 m/s²"], "a": 2, "why": "The acceleration of free fall, g, is about 9.8 m/s²." }
+        { "q": "Near the Earth's surface and without air resistance, a falling object accelerates at about…", "o": ["1 m/s²", "5 m/s²", "9.8 m/s²", "98 m/s²"], "a": 2, "why": "The acceleration of free fall, g, is about 9.8 m/s²." },
+        { "q": "A space station orbits at 6800 km from the centre of the Earth. How far does it travel in one orbit?", "o": ["6800 km", "About 42 700 km", "About 21 400 km", "About 145 000 km"], "a": 1, "why": "Examiners (2023): candidates used the radius as the distance. One orbit is the circumference 2πr = 2π × 6800 ≈ 42 700 km." }
       ],
       "long": [
         { "q": "A car accelerates uniformly from 5.0 m/s to 25 m/s in 8.0 s. Calculate its acceleration and the distance it travels in this time.", "marks": 4, "paper": "4", "scheme": ["C1: a = (25 − 5.0) ÷ 8.0", "A1: a = 2.5 m/s²", "C1: distance = average speed × time = 15 × 8.0", "A1: = 120 m"], "ans": "2.5 m/s²; 120 m" }
@@ -52,7 +53,8 @@
         { "q": "A spring stretches 2.0 cm with a 4.0 N load. Within its limit of proportionality, what load stretches it 5.0 cm?", "o": ["8.0 N", "10 N", "12 N", "20 N"], "a": 1, "why": "Extension is proportional to load: k = 4.0 ÷ 2.0 = 2.0 N/cm, so 5.0 cm needs 10 N." },
         { "q": "A skydiver falls at terminal velocity. Which is true?", "o": ["Weight is greater than air resistance", "Air resistance is greater than weight", "The resultant force is zero", "The skydiver is accelerating"], "a": 2, "why": "At terminal velocity the forces balance, so there is no resultant force and no acceleration." },
         { "q": "A 4 N force acts 0.5 m from a pivot. What is the moment?", "o": ["0.125 N m", "2 N m", "4.5 N m", "8 N m"], "a": 1, "why": "Moment = force × perpendicular distance from the pivot = 4 × 0.5 = 2 N m." },
-        { "q": "What keeps an object moving in a circle at constant speed?", "o": ["A force along its direction of motion", "A force towards the centre", "No force at all", "A force away from the centre"], "a": 1, "why": "A force perpendicular to the motion, towards the centre, changes the direction but not the speed." }
+        { "q": "What keeps an object moving in a circle at constant speed?", "o": ["A force along its direction of motion", "A force towards the centre", "No force at all", "A force away from the centre"], "a": 1, "why": "A force perpendicular to the motion, towards the centre, changes the direction but not the speed." },
+        { "q": "A cyclist travels at a constant speed along a straight, level road. Which statement is correct?", "o": ["The driving force is greater than the resistive forces", "The driving force equals the resistive forces", "There is no friction at all", "Friction is smaller than the driving force but not zero"], "a": 1, "why": "Examiners (2023): a popular wrong answer said friction must be less than the driving force. Constant velocity means the resultant force is zero." }
       ]
     },
     {
@@ -70,7 +72,8 @@
         { "q": "A 50 kg student climbs 4.0 m. What is the gain in gravitational potential energy? (g = 9.8 N/kg)", "o": ["12.5 J", "200 J", "1960 J", "19 600 J"], "a": 2, "why": "ΔEp = mgΔh = 50 × 9.8 × 4.0 = 1960 J." },
         { "q": "A motor does 600 J of work in 12 s. What is its power?", "o": ["0.02 W", "50 W", "612 W", "7200 W"], "a": 1, "why": "Power = work done ÷ time = 600 ÷ 12 = 50 W." },
         { "q": "A lamp takes in 100 J and gives out 20 J as light. What is its efficiency?", "o": ["20%", "80%", "120%", "500%"], "a": 0, "why": "Efficiency = useful output ÷ total input × 100% = 20 ÷ 100 = 20%." },
-        { "q": "Which energy resource is renewable?", "o": ["Coal", "Natural gas", "Geothermal", "Uranium"], "a": 2, "why": "Geothermal energy comes from heat inside the Earth and is not used up." }
+        { "q": "Which energy resource is renewable?", "o": ["Coal", "Natural gas", "Geothermal", "Uranium"], "a": 2, "why": "Geothermal energy comes from heat inside the Earth and is not used up." },
+        { "q": "Wind passes through a wind turbine and the blades turn. What happens to the air?", "o": ["It speeds up and gains kinetic energy", "It slows down because some of its kinetic energy is transferred to the turbine", "Its speed does not change", "It gains gravitational potential energy"], "a": 1, "why": "Examiners (2023): many thought the air speeds up. Energy taken by the turbine comes from the air's kinetic energy, so the air slows." }
       ],
       "long": [
         { "q": "A student of mass 60 kg climbs a flight of stairs 3.0 m high in 4.0 s. Calculate the useful power developed. (g = 9.8 N/kg)", "marks": 4, "paper": "4", "scheme": ["C1: work done = mgh = 60 × 9.8 × 3.0", "A1: = 1764 J", "C1: power = 1764 ÷ 4.0", "A1: = 440 W (441 W)"], "ans": "440 W" }
@@ -94,7 +97,8 @@
         { "q": "Gas in a sealed container is heated. Why does its pressure rise?", "o": ["The particles get bigger", "The particles move faster and hit the walls harder and more often", "More particles are made", "The container shrinks"], "a": 1, "why": "Higher temperature means faster particles, so more frequent and harder collisions with the walls." },
         { "q": "A gas at constant temperature is squashed to half its volume. Its pressure…", "o": ["halves", "stays the same", "doubles", "quadruples"], "a": 2, "why": "At constant temperature pV is constant, so halving V doubles p." },
         { "q": "What is absolute zero?", "o": ["0 °C", "−100 °C", "−273 °C", "The freezing point of water"], "a": 2, "why": "−273 °C (0 K) is the temperature at which particles have the least possible kinetic energy." },
-        { "q": "Why does evaporation cool the liquid left behind?", "o": ["The fastest particles escape, lowering the average energy of those left", "The slowest particles escape", "Evaporation adds heat", "The liquid's volume increases"], "a": 0, "why": "The most energetic particles leave the surface, so the average kinetic energy, and the temperature, of the rest falls." }
+        { "q": "Why does evaporation cool the liquid left behind?", "o": ["The fastest particles escape, lowering the average energy of those left", "The slowest particles escape", "Evaporation adds heat", "The liquid's volume increases"], "a": 0, "why": "The most energetic particles leave the surface, so the average kinetic energy, and the temperature, of the rest falls." },
+        { "q": "Which describes the particles in a liquid?", "o": ["They vibrate about fixed positions", "They are close together and move randomly", "They are far apart and move at high speed", "They do not move at all"], "a": 1, "why": "Examiners (2023): some said particles in a liquid vibrate about fixed points; that describes a solid." }
       ]
     },
     {
@@ -102,7 +106,8 @@
       "questions": [
         { "q": "Why are gaps left between sections of railway track?", "o": ["To save metal", "To allow for thermal expansion in hot weather", "To drain rain", "To make the ride smoother"], "a": 1, "why": "Steel expands when heated; the gaps stop the rails buckling." },
         { "q": "How much energy raises 2.0 kg of water by 5.0 °C? (c = 4200 J/(kg °C))", "o": ["840 J", "4200 J", "21 000 J", "42 000 J"], "a": 3, "why": "ΔE = mcΔθ = 2.0 × 4200 × 5.0 = 42 000 J." },
-        { "q": "While ice melts at 0 °C, its temperature…", "o": ["rises steadily", "stays constant", "falls", "rises then falls"], "a": 1, "why": "Energy goes into breaking the forces between particles, not raising the temperature." }
+        { "q": "While ice melts at 0 °C, its temperature…", "o": ["rises steadily", "stays constant", "falls", "rises then falls"], "a": 1, "why": "Energy goes into breaking the forces between particles, not raising the temperature." },
+        { "q": "What is true of the particles of a substance at absolute zero?", "o": ["They have the least gravitational potential energy", "They have the least possible kinetic energy", "They have no mass", "They move faster than at any other temperature"], "a": 1, "why": "Examiners (2023): a common misconception linked absolute zero to gravitational potential energy. It is the temperature of least kinetic energy." }
       ],
       "long": [
         { "q": "Calculate the energy needed to heat 0.50 kg of water from 20 °C to 80 °C. (Specific heat capacity of water = 4200 J/(kg °C))", "marks": 2, "paper": "4", "scheme": ["C1: E = mcΔT = 0.50 × 4200 × 60", "A1: = 126 000 J"], "ans": "126 000 J" }
@@ -114,7 +119,8 @@
         { "q": "How does thermal energy reach the Earth from the Sun?", "o": ["Conduction", "Convection", "Infrared radiation", "Evaporation"], "a": 2, "why": "Space is a vacuum, so only radiation can carry energy across it." },
         { "q": "Which surface is the best emitter of infrared radiation?", "o": ["Shiny white", "Shiny silver", "Dull black", "Dull white"], "a": 2, "why": "Dull black surfaces are the best emitters and absorbers of infrared." },
         { "q": "Why is the heating element at the bottom of a kettle?", "o": ["Conduction works downwards", "Hot water rises, setting up convection currents", "Radiation needs it there", "To keep the handle cool"], "a": 1, "why": "Heated water expands, becomes less dense and rises; cooler water sinks to be heated." },
-        { "q": "Why is a metal spoon a better conductor than a plastic one?", "o": ["It is heavier", "It has free electrons that carry energy", "It is shinier", "It has more atoms"], "a": 1, "why": "Metals conduct well because delocalised electrons transfer energy quickly." }
+        { "q": "Why is a metal spoon a better conductor than a plastic one?", "o": ["It is heavier", "It has free electrons that carry energy", "It is shinier", "It has more atoms"], "a": 1, "why": "Metals conduct well because delocalised electrons transfer energy quickly." },
+        { "q": "Which outside surface keeps hot coffee in a cup warm for the longest?", "o": ["Dull black", "Shiny silver", "Matt dark green", "Rough black"], "a": 1, "why": "Examiners (2023): many chose black. Shiny, light surfaces are poor emitters of infrared, so less thermal energy is lost." }
       ]
     },
     {
@@ -123,7 +129,8 @@
         { "q": "A wave has frequency 50 Hz and wavelength 4.0 m. What is its speed?", "o": ["12.5 m/s", "46 m/s", "54 m/s", "200 m/s"], "a": 3, "why": "v = fλ = 50 × 4.0 = 200 m/s." },
         { "q": "Which wave is longitudinal?", "o": ["Light", "Sound", "Water ripples", "Radio"], "a": 1, "why": "In sound the vibrations are parallel to the direction the wave travels." },
         { "q": "Water waves pass from deep to shallow water. What happens?", "o": ["They speed up", "They slow down and their wavelength shortens", "Their frequency changes", "They stop"], "a": 1, "why": "Waves slow in shallow water; frequency stays the same, so wavelength decreases (refraction)." },
-        { "q": "Diffraction through a gap is greatest when the gap is…", "o": ["much wider than the wavelength", "about the same size as the wavelength", "closed", "much smaller than the wave's amplitude"], "a": 1, "why": "Spreading is greatest when the gap width is similar to the wavelength." }
+        { "q": "Diffraction through a gap is greatest when the gap is…", "o": ["much wider than the wavelength", "about the same size as the wavelength", "closed", "much smaller than the wave's amplitude"], "a": 1, "why": "Spreading is greatest when the gap width is similar to the wavelength." },
+        { "q": "Which statement about water waves in a ripple tank is correct?", "o": ["They are longitudinal", "They are transverse", "They carry water from one end of the tank to the other", "They cannot be refracted"], "a": 1, "why": "Examiners (2023): most candidates said water waves are longitudinal. The water moves up and down, at right angles to the direction the wave travels." }
       ]
     },
     {
@@ -144,7 +151,9 @@
         { "q": "Which part of the electromagnetic spectrum has the shortest wavelength?", "o": ["Radio waves", "Visible light", "X-rays", "Gamma rays"], "a": 3, "why": "Gamma rays have the shortest wavelength and highest frequency." },
         { "q": "All electromagnetic waves travel in a vacuum at…", "o": ["340 m/s", "3.0 × 10⁸ m/s", "different speeds depending on frequency", "1500 m/s"], "a": 1, "why": "All EM waves travel at the speed of light, 3.0 × 10⁸ m/s, in a vacuum." },
         { "q": "Which is used in TV remote controls?", "o": ["Ultraviolet", "Infrared", "X-rays", "Gamma rays"], "a": 1, "why": "Remote controls send short-range infrared signals." },
-        { "q": "Which can damage skin cells and cause skin cancer?", "o": ["Radio waves", "Microwaves", "Ultraviolet", "Visible light"], "a": 2, "why": "Ultraviolet radiation can damage cells in the skin." }
+        { "q": "Which can damage skin cells and cause skin cancer?", "o": ["Radio waves", "Microwaves", "Ultraviolet", "Visible light"], "a": 2, "why": "Ultraviolet radiation can damage cells in the skin." },
+        { "q": "Which region of the electromagnetic spectrum is used for satellite television?", "o": ["Infrared", "Microwaves", "Ultraviolet", "Gamma rays"], "a": 1, "why": "Examiners (2023): infrared was a common wrong choice. Microwaves pass through the atmosphere to and from satellites." },
+        { "q": "Which describes a digital signal?", "o": ["A continuous range of values", "A series of pulses with only two values, such as 1 and 0", "A signal that can only travel through optical fibres", "A signal that cannot be regenerated"], "a": 1, "why": "Examiners (2023): weaker candidates described digital signals as continuous. That is an analogue signal." }
       ]
     },
     {
@@ -171,7 +180,10 @@
         { "q": "A resistor has 6.0 V across it and 0.50 A through it. What is its resistance?", "o": ["3.0 Ω", "6.5 Ω", "12 Ω", "30 Ω"], "a": 2, "why": "R = V ÷ I = 6.0 ÷ 0.50 = 12 Ω." },
         { "q": "A 2.0 kW heater runs for 3.0 hours. How much energy does it use?", "o": ["0.67 kW h", "5.0 kW h", "6.0 kW h", "6000 kW h"], "a": 2, "why": "E = Pt = 2.0 kW × 3.0 h = 6.0 kW h." },
         { "q": "How does the resistance of a wire change if its length doubles?", "o": ["It halves", "It stays the same", "It doubles", "It quadruples"], "a": 2, "why": "Resistance is proportional to length." },
-        { "q": "The resistance of a thermistor as it gets hotter…", "o": ["increases", "decreases", "stays the same", "becomes zero"], "a": 1, "why": "An NTC thermistor's resistance falls as temperature rises." }
+        { "q": "The resistance of a thermistor as it gets hotter…", "o": ["increases", "decreases", "stays the same", "becomes zero"], "a": 1, "why": "An NTC thermistor's resistance falls as temperature rises." },
+        { "q": "A current of 0.50 A flows through a lamp for 1 minute. How much charge passes through the lamp?", "o": ["0.50 C", "30 C", "0.0083 C", "120 C"], "a": 1, "why": "Examiners (2023): the most common error was not converting 1 minute to 60 s in Q = It. Q = 0.50 × 60 = 30 C." },
+        { "q": "A wire is replaced by one of the same material and length but twice the diameter. What happens to its resistance?", "o": ["It doubles", "It halves", "It becomes one quarter", "It stays the same"], "a": 2, "why": "Examiners (2023): some thought resistance is inversely proportional to diameter. R ∝ 1/area and area ∝ diameter², so doubling the diameter quarters R." },
+        { "q": "A plastic rod becomes positively charged when rubbed with a cloth. Why?", "o": ["It gained electrons", "It lost electrons", "It gained protons", "It lost neutrons"], "a": 1, "why": "Examiners (2023): some thought gaining electrons makes a rod positive. Only electrons move; losing negative charge leaves the rod positive." }
       ]
     },
     {
@@ -191,7 +203,8 @@
       "questions": [
         { "q": "What does a fuse do?", "o": ["Increases the current", "Melts and breaks the circuit if the current is too large", "Stores charge", "Earths the casing"], "a": 1, "why": "It protects the cable from overheating by breaking the circuit when the current is too high." },
         { "q": "A kettle uses 2300 W on 230 V. Which fuse fits best?", "o": ["3 A", "5 A", "13 A", "30 A"], "a": 2, "why": "I = P ÷ V = 10 A, so use the next fuse rating above: 13 A." },
-        { "q": "Why is a metal-cased appliance earthed?", "o": ["To save energy", "So a fault sends a large current to earth and blows the fuse", "To make it work faster", "To stop it rusting"], "a": 1, "why": "If the live wire touches the case, current flows to earth, the fuse blows and the case can't stay live." }
+        { "q": "Why is a metal-cased appliance earthed?", "o": ["To save energy", "So a fault sends a large current to earth and blows the fuse", "To make it work faster", "To stop it rusting"], "a": 1, "why": "If the live wire touches the case, current flows to earth, the fuse blows and the case can't stay live." },
+        { "q": "In a correctly wired mains plug and appliance, where are the fuse and the switch connected?", "o": ["Both in the live wire", "Both in the neutral wire", "Switch in the neutral wire, fuse in the earth wire", "Switch in the live wire, fuse in the earth wire"], "a": 0, "why": "Examiners (2023): some put them in the neutral or earth wire. Both go in the live wire so the appliance is isolated from the high voltage." }
       ]
     },
     {
@@ -200,7 +213,9 @@
         { "q": "A magnet is pushed into a coil connected to a meter. What happens?", "o": ["Nothing", "An e.m.f. is induced while the magnet moves", "A current flows only when the magnet is still", "The coil becomes a permanent magnet"], "a": 1, "why": "A changing magnetic field through the coil induces an e.m.f.; no movement, no induced e.m.f." },
         { "q": "A transformer has 100 turns on the primary and 500 on the secondary. Input is 12 V a.c. What is the output?", "o": ["2.4 V", "12 V", "60 V", "600 V"], "a": 2, "why": "Vs/Vp = Ns/Np, so Vs = 12 × 500 ÷ 100 = 60 V (a step-up transformer)." },
         { "q": "Why is electricity transmitted at very high voltage?", "o": ["It is safer", "The current is smaller, so less energy is lost as heat in the cables", "It travels faster", "Transformers need it"], "a": 1, "why": "For the same power, higher voltage means lower current, and cable losses depend on I²R." },
-        { "q": "What does the split-ring commutator do in a d.c. motor?", "o": ["Increases the voltage", "Reverses the current in the coil every half turn", "Stops the motor", "Makes the magnetic field"], "a": 1, "why": "Reversing the current each half turn keeps the coil turning the same way." }
+        { "q": "What does the split-ring commutator do in a d.c. motor?", "o": ["Increases the voltage", "Reverses the current in the coil every half turn", "Stops the motor", "Makes the magnetic field"], "a": 1, "why": "Reversing the current each half turn keeps the coil turning the same way." },
+        { "q": "A bar magnet is moved into a coil connected to a voltmeter. Which change gives the largest induced e.m.f.?", "o": ["Moving the magnet in more slowly", "Moving the magnet in faster", "Holding the magnet still inside the coil", "Using a coil with fewer turns"], "a": 1, "why": "Examiners (2023): many thought slow movement induces more. The e.m.f. depends on how fast the magnetic field through the coil changes." },
+        { "q": "Which statement about a step-up transformer is correct?", "o": ["The primary coil has more turns than the secondary", "The secondary coil has more turns than the primary", "An alternating current flows in the iron core", "It works with a steady direct current"], "a": 1, "why": "Examiners (2023): candidates mixed up the coils and thought current flows in the core. Step-up means Ns > Np; the core carries a changing magnetic field." }
       ]
     },
     {
@@ -217,7 +232,8 @@
         { "q": "Which radiation is stopped by a sheet of paper?", "o": ["Alpha", "Beta", "Gamma", "None of them"], "a": 0, "why": "Alpha particles are large and highly ionising, so they are stopped by paper or a few cm of air." },
         { "q": "A sample has a half-life of 3 days. What fraction is left after 9 days?", "o": ["1/2", "1/3", "1/8", "1/9"], "a": 2, "why": "9 days is 3 half-lives: ½ × ½ × ½ = 1/8." },
         { "q": "What is emitted in beta decay?", "o": ["A helium nucleus", "A fast-moving electron from the nucleus", "An electromagnetic wave only", "A proton"], "a": 1, "why": "A neutron changes into a proton and a fast electron (beta particle) leaves the nucleus." },
-        { "q": "Which is the most penetrating radiation?", "o": ["Alpha", "Beta", "Gamma", "They are all equal"], "a": 2, "why": "Gamma is only reduced by thick lead or concrete." }
+        { "q": "Which is the most penetrating radiation?", "o": ["Alpha", "Beta", "Gamma", "They are all equal"], "a": 2, "why": "Gamma is only reduced by thick lead or concrete." },
+        { "q": "A counter reads 260 counts per minute near a source. The background count rate is 20 counts per minute. What is the count rate due to the source?", "o": ["280 counts per minute", "260 counts per minute", "240 counts per minute", "13 counts per minute"], "a": 2, "why": "Examiners (2023): weaker candidates forgot to subtract background, others added it. Source rate = measured − background." }
       ],
       "long": [
         { "q": "A radioactive source has a half-life of 6 hours and an activity of 800 Bq. Calculate its activity after 24 hours.", "marks": 2, "paper": "4", "scheme": ["C1: 24 h = 4 half-lives", "A1: 800 → 400 → 200 → 100 → 50 Bq"], "ans": "50 Bq" }
@@ -228,7 +244,8 @@
       "questions": [
         { "q": "What causes day and night on Earth?", "o": ["The Earth orbiting the Sun", "The Earth spinning on its axis", "The Moon's orbit", "The tilt of the Earth"], "a": 1, "why": "One rotation of the Earth on its axis takes about 24 hours." },
         { "q": "What causes the seasons?", "o": ["The Earth's changing distance from the Sun", "The tilt of the Earth's axis", "The Moon", "Sunspots"], "a": 1, "why": "The tilted axis means each hemisphere gets more direct sunlight for part of the year." },
-        { "q": "Light from the Sun takes about 500 s to reach Earth. Light travels at 3.0 × 10⁸ m/s. How far is the Sun?", "o": ["1.5 × 10⁸ m", "1.5 × 10¹¹ m", "6.0 × 10⁵ m", "6.0 × 10¹⁰ m"], "a": 1, "why": "distance = speed × time = 3.0 × 10⁸ × 500 = 1.5 × 10¹¹ m." }
+        { "q": "Light from the Sun takes about 500 s to reach Earth. Light travels at 3.0 × 10⁸ m/s. How far is the Sun?", "o": ["1.5 × 10⁸ m", "1.5 × 10¹¹ m", "6.0 × 10⁵ m", "6.0 × 10¹⁰ m"], "a": 1, "why": "distance = speed × time = 3.0 × 10⁸ × 500 = 1.5 × 10¹¹ m." },
+        { "q": "How many stars are there in our Solar System?", "o": ["One", "Eight", "Thousands", "Billions"], "a": 0, "why": "Examiners (2023): some weaker candidates thought there are many. The Sun is the only star; the others are in our galaxy, not the Solar System." }
       ]
     },
     {
@@ -237,7 +254,8 @@
         { "q": "What is a light-year?", "o": ["A unit of time", "The distance light travels in one year", "The age of a star", "The time for light to reach the Moon"], "a": 1, "why": "It is a distance: about 9.5 × 10¹⁵ m." },
         { "q": "What is the evidence that the Universe is expanding?", "o": ["Stars twinkle", "Light from distant galaxies is redshifted", "The Sun is getting hotter", "The Moon is moving away"], "a": 1, "why": "Redshift shows galaxies moving away; the further away, the faster (and greater the redshift)." },
         { "q": "What keeps a main-sequence star stable?", "o": ["Its rotation", "A balance between gravity inwards and pressure from fusion outwards", "Magnetic fields", "Its cool outer layers"], "a": 1, "why": "Inward gravitational force is balanced by outward pressure from the energy released by fusion." },
-        { "q": "What will a star like the Sun become at the end of its life?", "o": ["A black hole", "A neutron star", "A white dwarf (after a red giant)", "A supernova"], "a": 2, "why": "A low-mass star swells into a red giant, then its core is left as a white dwarf." }
+        { "q": "What will a star like the Sun become at the end of its life?", "o": ["A black hole", "A neutron star", "A white dwarf (after a red giant)", "A supernova"], "a": 2, "why": "A low-mass star swells into a red giant, then its core is left as a white dwarf." },
+        { "q": "Which sequence is correct for a star with about the same mass as the Sun?", "o": ["Protostar → stable star → red giant → planetary nebula and white dwarf", "Red giant → protostar → stable star → white dwarf", "Protostar → red supergiant → supernova → black hole", "White dwarf → red giant → stable star → protostar"], "a": 0, "why": "Examiners (2023): this recall question (syllabus 6.2.2) was mostly well answered; supernovae and black holes are for much more massive stars." }
       ]
     }
   ]

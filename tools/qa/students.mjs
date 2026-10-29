@@ -334,10 +334,20 @@ try {
     await page.click('.xq-item:has-text("circuit")');
     await page.waitForFunction(() => document.querySelector(".xq-fig img")?.naturalWidth > 0, null, { timeout: 5000 }).catch(() => {});
     check("a question can show its diagram", await page.isVisible(".xq-fig img"));
-    await page.click("#xq-reveal");
+    check("the examiners' advice is beside the question", (await page.locator(".xq-tips li").count()) > 0);
+    // Mark a photo: Pan (stubbed here) ticks the points it saw; the student can change them.
+    let markBody = null;
+    await page.route("**/api/mark", async (route) => {
+      markBody = JSON.parse(route.request().postData() || "{}");
+      await route.fulfill({ status: 200, contentType: "application/json", body: JSON.stringify({ legible: true, points: [{ earned: true, note: "Correct equation" }, { earned: true, note: "Substituted" }, { earned: false, note: "Unit missing" }, { earned: false, note: "" }], examiner: "Clear working; the unit was left off the answer.", next: "Always finish with a unit." }) });
+    });
+    const png = Buffer.from("iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg==", "base64");
+    await page.setInputFiles("#xq-photo", { name: "answer.png", mimeType: "image/png", buffer: png });
+    await page.waitForSelector(".xq-verdict:not([hidden])", { timeout: 5000 }).catch(() => {});
+    check("a photo of the answer is marked against the scheme", markBody?.scheme?.length === 4 && /^[A-Za-z0-9+/]+=*$/.test(markBody.image || "") && markBody.tips?.length > 0, JSON.stringify(markBody)?.slice(0, 200));
+    check("…its marks are ticked, with an examiner's comment", (await page.isChecked("#xq-pt-0")) && (await page.isChecked("#xq-pt-1")) && !(await page.isChecked("#xq-pt-2")) && /unit was left off/.test(await page.textContent(".xq-verdict")));
+    await page.unroute("**/api/mark");
     check("the mark scheme lists each mark", (await page.locator(".xq-points li").count()) === 4);
-    await page.check("#xq-pt-0");
-    await page.check("#xq-pt-1");
     await page.check("#xq-pt-2");
     await page.click("#xq-save");
     await page.waitForTimeout(500);

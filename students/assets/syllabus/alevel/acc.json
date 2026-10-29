@@ -9,7 +9,8 @@
       "questions": [
         { "q": "Which error causes the trial balance not to agree?", "o": ["Error of omission", "Error of original entry", "Transposition in one ledger account only", "Compensating error"], "a": 2, "why": "A one-sided error makes total debits differ from total credits." },
         { "q": "A suspense account is opened when…", "o": ["profit is too high", "the trial balance does not agree", "a supplier is paid", "inventory is valued"], "a": 1, "why": "The difference is held temporarily until errors are found and corrected." },
-        { "q": "A sales ledger control account helps to…", "o": ["calculate depreciation", "check the accuracy of individual customer accounts", "record cash sales", "value inventory"], "a": 1, "why": "Its balance should equal the total of the customer (trade receivables) accounts." }
+        { "q": "A sales ledger control account helps to…", "o": ["calculate depreciation", "check the accuracy of individual customer accounts", "record cash sales", "value inventory"], "a": 1, "why": "Its balance should equal the total of the customer (trade receivables) accounts." },
+        { "q": "75 000 new $1 ordinary shares are issued at $3.50 each. How much is credited to share premium?", "o": ["$112 500", "$187 500", "$262 500", "$75 000"], "a": 1, "why": "Examiners (2023): the popular distractor used only part of the issue price. Separate nominal value (share capital) from premium: 75 000 × ($3.50 − $1.00) = $187 500." }
       ]
     },
     {
@@ -17,7 +18,9 @@
       "questions": [
         { "q": "Inventory should be valued at…", "o": ["selling price", "the lower of cost and net realisable value", "replacement cost", "the higher of cost and NRV"], "a": 1, "why": "IAS 2 and the prudence principle." },
         { "q": "Reducing-balance depreciation charges…", "o": ["the same amount each year", "more in early years, less later", "nothing in the first year", "more in later years"], "a": 1, "why": "A fixed percentage is applied to the falling carrying value." },
-        { "q": "Accrued expenses at year end are shown as…", "o": ["a current asset", "a current liability", "income", "a non-current asset"], "a": 1, "why": "Money is owed for expenses already incurred." }
+        { "q": "Accrued expenses at year end are shown as…", "o": ["a current asset", "a current liability", "income", "a non-current asset"], "a": 1, "why": "Money is owed for expenses already incurred." },
+        { "q": "Which is the book of prime entry for writing off an irrecoverable debt?", "o": ["The sales ledger", "The journal", "The cash book", "The sales journal"], "a": 1, "why": "Examiners (2023): the most common error was to name the sales ledger rather than the journal." },
+        { "q": "Goods taken by the owner for personal use are recorded as:", "o": ["Debit purchases, credit drawings", "Debit drawings, credit purchases", "Debit sales, credit owner", "Debit bank, credit expenses"], "a": 1, "why": "Examiners (2023): some reversed the entries or used the wrong accounts." }
       ],
       "long": [
         { "q": "A machine cost $50 000 and is depreciated at 20% a year using the reducing balance method. Calculate the depreciation for years 1 and 2 and the net book value at the end of year 2.", "marks": 4, "paper": "2", "scheme": ["M1: year 1: 20% × 50 000 = $10 000", "M1: net book value after year 1 = $40 000", "M1: year 2: 20% × 40 000 = $8000", "A1: net book value = $32 000"], "ans": "$10 000, $8000; NBV $32 000" },
@@ -48,7 +51,9 @@
       "id": "5", "stage": "as", "name": "Cost and management accounting",
       "questions": [
         { "q": "Contribution per unit is…", "o": ["selling price − fixed cost per unit", "selling price − variable cost per unit", "profit ÷ units", "fixed costs ÷ units"], "a": 1, "why": "Contribution covers fixed costs, then gives profit." },
-        { "q": "In absorption costing, overheads are absorbed using…", "o": ["a predetermined overhead absorption rate", "the selling price", "contribution", "cash flow"], "a": 0, "why": "For example, per direct labour hour or machine hour." }
+        { "q": "In absorption costing, overheads are absorbed using…", "o": ["a predetermined overhead absorption rate", "the selling price", "contribution", "cash flow"], "a": 0, "why": "For example, per direct labour hour or machine hour." },
+        { "q": "Break-even output is 1 250.4 units. What should be stated?", "o": ["1 250 units", "1 251 units", "1 250.4 units", "1 200 units"], "a": 1, "why": "Examiners (2023): the break-even point was often not rounded up to the nearest whole unit." },
+        { "q": "Marginal cost is:", "o": ["The total cost of production", "The extra cost of producing one more unit", "Fixed costs per unit", "Selling price less profit"], "a": 1, "why": "Examiners (2023): few defined it correctly, often leaving out 'one additional unit'." }
       ],
       "long": [
         { "q": "A firm with spare capacity is offered a one-off order for 500 units at $15 each. The variable cost is $11 a unit and fixed costs are already covered. Advise whether to accept, with one non-financial factor.", "marks": 4, "paper": "2", "scheme": ["M1: contribution per unit = 15 − 11 = $4", "A1: total contribution = 500 × 4 = $2000, so profit rises: accept", "B1: one non-financial factor, e.g. regular customers may ask for the same low price", "B1: or the order may lead to future business / uses idle staff"], "ans": "Accept: +$2000" }

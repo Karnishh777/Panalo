@@ -9,7 +9,8 @@
       "questions": [
         { "q": "A positive statement is one that…", "o": ["contains a value judgement", "can be tested against evidence", "is always true", "is about the future"], "a": 1, "why": "Normative statements contain opinions about what ought to be." },
         { "q": "The ceteris paribus assumption means…", "o": ["all else stays equal", "prices are fixed", "markets are perfect", "governments don't intervene"], "a": 0, "why": "It isolates the effect of one variable." },
-        { "q": "In a mixed economy, resources are allocated by…", "o": ["the market only", "the state only", "both the market and the state", "tradition"], "a": 2, "why": "Most economies combine private markets with public provision." }
+        { "q": "In a mixed economy, resources are allocated by…", "o": ["the market only", "the state only", "both the market and the state", "tradition"], "a": 2, "why": "Most economies combine private markets with public provision." },
+        { "q": "An economy has unemployed workers. How is this shown on a production possibility curve?", "o": ["A shift of the PPC to the left", "A point inside the PPC", "A point outside the PPC", "A shift of the PPC to the right"], "a": 1, "why": "Examiners (2023): the most common error was shifting the PPC left rather than showing a point inside the curve." }
       ],
       "long": [
         { "q": "Use a production possibility curve to explain the meaning of opportunity cost.", "marks": 3, "paper": "2", "scheme": ["B1: opportunity cost is the next best alternative given up", "B1: a PPC shows the combinations of two goods that can be made with all resources fully used", "B1: moving along the curve, making more of one good means making less of the other: that amount is the opportunity cost"] }
@@ -43,7 +44,9 @@
       "questions": [
         { "q": "Aggregate demand is…", "o": ["C + I + G + (X − M)", "C + S + T", "GDP − taxes", "C + I only"], "a": 0, "why": "Consumption, investment, government spending and net exports." },
         { "q": "Cost-push inflation is caused by…", "o": ["rising demand", "rising costs of production, such as wages or oil", "falling interest rates", "a budget surplus"], "a": 1, "why": "Higher costs shift short-run aggregate supply left." },
-        { "q": "Which is counted as unemployed?", "o": ["A retired person", "A student not seeking work", "Someone able and willing to work and actively seeking work", "A homemaker not seeking work"], "a": 2, "why": "The ILO definition requires being without work, available and looking." }
+        { "q": "Which is counted as unemployed?", "o": ["A retired person", "A student not seeking work", "Someone able and willing to work and actively seeking work", "A homemaker not seeking work"], "a": 2, "why": "The ILO definition requires being without work, available and looking." },
+        { "q": "On an AD/AS diagram, what should the axes be labelled?", "o": ["Price and quantity", "Price level and real output (real GDP)", "Price and output", "Demand and supply"], "a": 1, "why": "Examiners (2023): many labelled the axes 'price' and 'quantity' and the curves 'D' and 'S' instead of AD and AS." },
+        { "q": "Demand-pull inflation is best explained as:", "o": ["A rise in costs of production", "An increase in AD not matched by spare capacity in AS", "A fall in the money supply", "Rising unemployment"], "a": 1, "why": "Examiners (2023): many did not refer to AD, or did not say the AD rise is not matched by spare capacity." }
       ],
       "long": [
         { "q": "Distinguish between demand-pull and cost-push inflation.", "marks": 4, "paper": "2", "scheme": ["B1: demand-pull: aggregate demand rises faster than aggregate supply / the economy's capacity", "B1: an example cause: rising consumer spending, lower interest rates, more government spending", "B1: cost-push: rising costs of production push up the price level (AS shifts left)", "B1: an example cause: higher wages, oil or import prices, a weaker exchange rate"] }
@@ -63,7 +66,9 @@
       "id": "6", "stage": "as", "name": "International economic issues",
       "questions": [
         { "q": "Comparative advantage means a country should specialise where it has…", "o": ["the lowest absolute cost", "the lowest opportunity cost", "the most workers", "the highest prices"], "a": 1, "why": "Trade can benefit both countries even if one is better at everything." },
-        { "q": "The Marshall–Lerner condition states a depreciation improves the current account if…", "o": ["PEDx + PEDm > 1", "PEDx + PEDm < 1", "inflation is zero", "imports are elastic only"], "a": 0, "why": "Sum of export and import price elasticities (absolute values) must exceed 1." }
+        { "q": "The Marshall–Lerner condition states a depreciation improves the current account if…", "o": ["PEDx + PEDm > 1", "PEDx + PEDm < 1", "inflation is zero", "imports are elastic only"], "a": 0, "why": "Sum of export and import price elasticities (absolute values) must exceed 1." },
+        { "q": "On a diagram of a currency market, the vertical axis is:", "o": ["Price", "The exchange rate (price of the currency)", "Quantity of currency", "Interest rate"], "a": 1, "why": "Examiners (2023): many labelled the vertical axis 'price' rather than the price of the currency or exchange rate." },
+        { "q": "Where are remittances from workers abroad recorded in the balance of payments?", "o": ["Primary income", "Secondary income", "Capital account", "Trade in goods"], "a": 1, "why": "Examiners (2023): 39% chose the wrong option; remittances are current transfers, recorded in secondary income." }
       ],
       "long": [
         { "q": "A worker in Country A can make 10 units of wheat or 5 units of cloth. A worker in Country B can make 6 units of wheat or 6 units of cloth. Explain which country has a comparative advantage in each good.", "marks": 4, "paper": "2", "scheme": ["M1: opportunity cost of 1 cloth: A gives up 2 wheat, B gives up 1 wheat", "M1: opportunity cost of 1 wheat: A gives up 0.5 cloth, B gives up 1 cloth", "B1: A has the comparative advantage in wheat", "B1: B has the comparative advantage in cloth, so each should specialise and trade"] }
@@ -91,7 +96,8 @@
       "id": "9", "stage": "a2", "name": "The macroeconomy (A Level)",
       "questions": [
         { "q": "The multiplier is larger when the marginal propensity to consume is…", "o": ["smaller", "larger", "zero", "negative"], "a": 1, "why": "In a closed economy without government, k = 1/(1 − MPC)." },
-        { "q": "The natural rate of unemployment is associated with…", "o": ["cyclical unemployment", "frictional and structural unemployment", "zero unemployment", "seasonal unemployment only"], "a": 1, "why": "It exists when the labour market is in equilibrium." }
+        { "q": "The natural rate of unemployment is associated with…", "o": ["cyclical unemployment", "frictional and structural unemployment", "zero unemployment", "seasonal unemployment only"], "a": 1, "why": "It exists when the labour market is in equilibrium." },
+        { "q": "Which best describes long-run economic growth?", "o": ["A rise in AD in the short run", "An increase in the productive capacity of the economy (LRAS shifts right)", "A fall in unemployment", "A rise in the price level"], "a": 1, "why": "Examiners (2023): answers stressed short-run growth from AD rather than potential growth from rising LRAS." }
       ],
       "long": [
         { "q": "Explain how the multiplier works when government spending rises by $10 billion and the marginal propensity to withdraw is 0.25.", "marks": 4, "paper": "4", "scheme": ["B1: multiplier = 1/MPW = 4", "B1: national income rises by $40 billion", "B1: each round of spending becomes someone's income, part of which is spent again", "B1: withdrawals (saving, tax, imports) stop it rising for ever"], "ans": "$40 billion" }
