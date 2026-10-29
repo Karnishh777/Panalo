@@ -447,7 +447,7 @@ export async function enterShell({ firstTime = false } = {}) {
   const target = location.hash.startsWith("#/") ? location.hash : firstTime ? "#/plan" : "#/now";
   if (location.hash !== target) location.hash = target;
   else await route();
-  if (firstTime) showToast("Welcome to your universe. Press Warp (Ctrl K) to go anywhere.", "success");
+  if (firstTime) showToast("Welcome to Panalo. Press Warp (Ctrl K) to go anywhere.", "success");
   // The first open of each day: the dawn (not on the day of the setup;
   // the open is still recorded). A focus block running
   // (started on another device, say) comes first: they wait for the next

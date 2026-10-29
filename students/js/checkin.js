@@ -78,13 +78,14 @@ export function openCheckin({ onSaved } = {}) {
   const mood = scale("How was today?", MOODS, entry?.mood, "tone-drift");
   const energy = scale("Energy", ENERGY, entry?.energy, "tone-focus");
 
-  const learned = el("input", { type: "text", maxlength: "280", value: entry?.learned || "", placeholder: "Something you didn't know this morning", "aria-label": "One thing you learned" });
-  const win = el("input", { type: "text", maxlength: "280", value: entry?.win || "", placeholder: "However small", "aria-label": "One good thing" });
+  const learned = el("input", { type: "text", class: "ink", maxlength: "280", value: entry?.learned || "", placeholder: "Something you didn't know this morning", "aria-label": "One thing you learned" });
+  const win = el("input", { type: "text", class: "ink", maxlength: "280", value: entry?.win || "", placeholder: "However small", "aria-label": "One good thing" });
 
   const block = (label, node, hint) => el("div", { class: "field" }, [el("span", { class: "field-label", text: label }), node, hint ? el("small", { class: "field-hint", text: hint }) : null]);
   openSheet({
     title: entry?.closed_at ? "Today, revisited" : "Close the day",
     lead: "Twenty seconds. Only you will ever see this.",
+    cls: "sheet-journal",
     body: [
       done ? block(`“${entry.intention}”`, done.node, "Your intention this morning.") : null,
       block("How was today?", mood.node),

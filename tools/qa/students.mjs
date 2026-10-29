@@ -91,6 +91,7 @@ try {
     await page.waitForTimeout(600);
     check("the landing page is shown to a visitor", await page.isVisible("#landing"));
     check("the landing explains who it is for", /intensely curious/i.test(await page.textContent(".hero")));
+    check("the welcome is the climb: the photo, one line, one way in", /Every topic is\s*a step up/.test(await page.textContent(".hero-title")) && /climb-night/.test(await page.evaluate(() => getComputedStyle(document.querySelector(".hero"), "::before").backgroundImage)) && !(await page.isVisible("#hero-globe")));
     // The slider is in the page from the start, but the demo only starts
     // listening once its globes are built: keep nudging until it answers.
     const demoAnswers = await page
@@ -220,6 +221,7 @@ try {
     await page.click("#plan-days-all");
     check("…or the whole week", (await page.locator(".pl-day").count()) === 7 && /Only today/.test(await page.textContent("#plan-days-all")));
     check("each subject is a map of its topics, grey until met", (await page.locator(".pl-subject").count()) === 2 && (await page.locator(".pl-topic:not(.met)").count()) > 10);
+    check("the shelf has a spine for each subject, each one a way to it", (await page.locator(".pl-shelf .pl-spine").count()) === 2 && (await page.evaluate(() => [...document.querySelectorAll(".pl-spine")].every((a) => document.querySelector(a.getAttribute("href"))))));
     check("a new student's first block is a quick check", /Quick check/.test(await page.textContent(":is(.pl-stage, .pl-hero)")));
     check("the exam from the setup shows on its subject", /Exam in \d+ days/.test(await page.textContent(".pl-subjects")));
     await shot(page, "plan");
@@ -740,6 +742,7 @@ try {
 
     await d.click("#close-day");
     await d.waitForSelector("#checkin-save");
+    check("closing the day is a page of a journal: your words in ink", (await d.isVisible("dialog.sheet-journal")) && (await d.locator("dialog.sheet-journal input.ink").count()) === 2);
     await d.click("#checkin-save");
     await d.waitForTimeout(300);
     check("closing the day needs only how it felt", await d.isVisible("#checkin-save"));
@@ -1049,7 +1052,7 @@ try {
     await sw.goto(new URL("students/", sw.url()).href);
     await sw.reload();
     await sw.waitForTimeout(1500);
-    const s = await sw.evaluate(() => ({ controlled: !!navigator.serviceWorker.controller, started: document.querySelectorAll(".thread-stars li").length > 0 && !!document.querySelector("#hero-globe")?.dataset.renderer }));
+    const s = await sw.evaluate(() => ({ controlled: !!navigator.serviceWorker.controller, started: document.querySelectorAll(".thread-stars li").length > 0 && !!document.querySelector("#demo-globe")?.dataset.renderer }));
     check("under the service worker, a reload starts Students as normal", s.controlled && s.started);
     await sw.close();
   }

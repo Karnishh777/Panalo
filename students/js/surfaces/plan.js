@@ -322,7 +322,7 @@ function subjectCard(s, now) {
         })
       );
   const ready = v.readiness;
-  return el("article", { class: "pl-subject", style: `--subj:${colour}` }, [
+  return el("article", { class: "pl-subject", id: `pl-subj-${s.id}`, style: `--subj:${colour}` }, [
     el("div", { class: "pl-subject-head" }, [
       el("h3", {}, [v.name, v.code ? el("span", { class: "faint num", text: ` ${v.code}` }) : null]),
       examLine(v, now),
@@ -403,8 +403,28 @@ function subjects(now) {
       el("h2", { id: "pl-subj-h", class: "pl-h", text: "Your subjects" }),
       el("span", { class: "pl-legend faint small" }, [el("i", { class: "pl-topic" }), " not started ", el("i", { class: "pl-topic met", style: "--m:.85" }), " known ", el("i", { class: "pl-topic met due", style: "--m:.6" }), " review due"]),
     ]),
+    shelf(p.subjects, now),
     el("div", { class: "pl-subjects" }, p.subjects.map((s) => subjectCard(s, now))),
   ]);
+}
+
+// The shelf: a spine per subject, filled as far as you're ready. A spine
+// takes you to its subject.
+function shelf(list, now) {
+  if (list.length < 2) return null;
+  return el(
+    "nav",
+    { class: "pl-shelf", "aria-label": "Your shelf" },
+    list.map((s) => {
+      const v = subjectView(s, now);
+      const ready = v.own || !Number.isFinite(v.readiness) ? null : v.readiness;
+      return el(
+        "a",
+        { href: `#pl-subj-${s.id}`, class: "pl-spine", style: `--subj:${colourOf(s.id)};--fill:${ready == null ? 0 : Math.max(0.04, ready).toFixed(2)}`, "aria-label": ready == null ? v.name : `${v.name}: ${pct(ready)} ready`, onClick: (e) => { e.preventDefault(); document.getElementById(`pl-subj-${s.id}`)?.scrollIntoView({ behavior: "smooth", block: "start" }); } },
+        [el("i", { "aria-hidden": "true" }), el("span", { text: v.name })]
+      );
+    })
+  );
 }
 
 function results() {

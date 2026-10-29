@@ -13,6 +13,16 @@ AI, runs as "Pan Lite" (our own planner code does the planning; the AI
 only where nothing else can).
 
 **0.2.0 (in progress)**
+- **Panalo Night, stage 2**: the welcome page is the climber photo and
+  one line, "Every topic is a step up." (on wide screens the words sit
+  beside the whole climb; the hero globe is no longer built, so the page
+  opens faster). The Study Room sits under a dimmed, blurred desk lamp
+  with a thick glowing ring. Close the day is a page of a night journal:
+  the summit photo on top, your two lines in serif ink. Plan opens your
+  subjects with a shelf, one spine per subject filled as far as you're
+  ready; a spine takes you to its subject. World's "What shapes it" is a
+  grid of tiles; Settings has clearer switches. Space words ("universe",
+  "orbit", "Launch") give way to the climb.
 - **Panalo Night, the new look (redesign stage 1)**: near-black with one
   violet glow, frosted rounded cards, heavy display type (Inter Tight)
   over Plus Jakarta Sans, and big pill buttons; the bottom bar floats on

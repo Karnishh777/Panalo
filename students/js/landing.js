@@ -89,7 +89,9 @@ function startGlobes() {
 }
 
 function buildGlobes(g) {
-  {
+  // Panalo Night opens on a photo, not the hero globe: don't build what
+  // isn't shown.
+  if (getComputedStyle(document.querySelector(".hero-stage")).display !== "none") {
     let dock = null;
     try {
       const hero = createGlobe($("hero-globe"), { seed: "panalo-students", interactive: true, maxDisk: 300, maxPixels: 1500, onMotion: (m) => dock?.sync(m) });

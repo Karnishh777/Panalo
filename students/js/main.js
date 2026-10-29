@@ -86,7 +86,7 @@ async function onReady(session, { fresh }) {
     await loadStudentProfile();
   } catch (e) {
     console.error(e);
-    showToast("Couldn't reach your universe. Check your connection.");
+    showToast("Couldn't reach Panalo. Check your connection.");
   }
   const loading = loadAll().catch((e) => console.error(e));
 

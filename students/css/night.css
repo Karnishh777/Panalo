@@ -235,7 +235,8 @@ html[data-look="night"] .now-head > .kicker {
     border-radius: var(--r-3);
   }
   html[data-look="night"] .today-hero::before {
-    background-position: 50% 58%;
+    background-image: url("../assets/photos/climb-wide.webp");
+    background-position: 50% 20%;
   }
 }
 html[data-look="night"] .today-hero .kicker {
@@ -314,4 +315,333 @@ html[data-look="night"][data-motion="reduce"] .climb-ring .ring-fill {
 /* The painted ember wallpaper belongs to the old looks: Night has its photo. */
 html[data-look="night"] .wall {
   display: none;
+}
+
+/* ---- Welcome: the climber, and one line ----------------------------------- */
+
+html[data-look="night"] body:not(.in-app) {
+  background: var(--bg);
+}
+/* The HUD, chapter thread, painted wall and hero globe belong to the old
+   looks. */
+html[data-look="night"] #landing .hud,
+html[data-look="night"] #landing .thread,
+html[data-look="night"] .hero-stage,
+html[data-look="night"] .hero-drift,
+html[data-look="night"] .hero .ignition,
+html[data-look="night"] .hero-copy::before {
+  display: none;
+}
+html[data-look="night"] .land-bar {
+  background: linear-gradient(to bottom, rgba(11, 10, 18, 0.7), transparent);
+  border: 0;
+}
+html[data-look="night"] .hero,
+html[data-look="night"] .hero.painted {
+  display: flex;
+  align-items: flex-end;
+  padding: 120px var(--gutter) 96px;
+  background: var(--bg);
+  isolation: isolate;
+}
+html[data-look="night"] .hero::before,
+html[data-look="night"] .hero::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+html[data-look="night"] .hero::before {
+  z-index: -2;
+  background: url("../assets/photos/climb-night.webp") 50% 30% / cover no-repeat;
+}
+html[data-look="night"] .hero::after {
+  z-index: -1;
+  background:
+    linear-gradient(to bottom, rgba(11, 10, 18, 0.45) 0%, rgba(11, 10, 18, 0) 30%, rgba(11, 10, 18, 0.55) 62%, var(--bg) 100%),
+    radial-gradient(80% 50% at 50% 100%, rgba(106, 88, 242, 0.22), transparent 70%);
+}
+html[data-look="night"] .hero-copy {
+  max-width: 640px;
+}
+html[data-look="night"] .hero-kicker {
+  color: var(--violet-soft);
+  letter-spacing: 0.06em;
+}
+html[data-look="night"] .hero-title {
+  margin: 14px 0 16px;
+  font: 900 clamp(46px, 11vw, 96px) / 0.95 var(--f-display);
+  letter-spacing: -0.035em;
+}
+html[data-look="night"] .hero-sub {
+  max-width: 34ch;
+  font-size: clamp(16px, 2vw, 19px);
+  line-height: 1.5;
+  color: var(--text-2);
+}
+html[data-look="night"] .hero-actions {
+  margin-top: 26px;
+}
+html[data-look="night"] .hero-actions .btn {
+  --h: 56px;
+  border-radius: 28px;
+  padding: 0 28px;
+  font: 800 17px var(--f-display);
+}
+@media (max-width: 599px) {
+  html[data-look="night"] .hero-actions {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  html[data-look="night"] .hero-actions .btn-ghost {
+    background: none;
+    border-color: transparent;
+    color: var(--violet-soft);
+  }
+}
+@media (min-width: 900px) {
+  /* Wide screens: the words on the left, the whole climb on the right. */
+  html[data-look="night"] .hero::before {
+    left: 38%;
+    background-position: 50% 88%;
+  }
+  html[data-look="night"] .hero::after {
+    background:
+      linear-gradient(90deg, var(--bg) 38%, rgba(11, 10, 18, 0.55) 50%, rgba(11, 10, 18, 0) 66%),
+      linear-gradient(to top, var(--bg) 0%, rgba(11, 10, 18, 0) 22%),
+      radial-gradient(50% 60% at 20% 70%, rgba(106, 88, 242, 0.18), transparent 70%);
+  }
+  html[data-look="night"] .hero {
+    align-items: center;
+  }
+}
+
+/* ---- Focus: one lamp, one topic ------------------------------------------- */
+
+html[data-look="night"] body[data-view="study"].in-app {
+  background: var(--bg);
+}
+/* The lamp, blurred and dimmed: the photo sets the mood, never the focus. */
+html[data-look="night"] body[data-view="study"].in-app::before {
+  content: "";
+  position: fixed;
+  inset: -12px;
+  z-index: -1;
+  background:
+    radial-gradient(70% 45% at 50% 30%, rgba(106, 88, 242, 0.2), rgba(11, 10, 18, 0.78) 70%, var(--bg) 100%),
+    url("../assets/photos/lamp-night.webp") 50% 40% / cover no-repeat;
+  filter: blur(4px) brightness(0.7);
+  pointer-events: none;
+}
+html[data-look="night"] .study-dial {
+  width: min(68vw, 300px);
+}
+html[data-look="night"] .ring-track {
+  fill: rgba(11, 10, 18, 0.55);
+  stroke: rgba(255, 255, 255, 0.1);
+  stroke-width: 9;
+}
+html[data-look="night"] .ring-arc {
+  stroke: var(--violet);
+  stroke-width: 9;
+  filter: drop-shadow(0 0 10px rgba(139, 124, 255, 0.85));
+}
+html[data-look="night"] .study[data-phase="rest"] .ring-arc {
+  stroke: var(--mint);
+  filter: drop-shadow(0 0 10px rgba(94, 230, 184, 0.6));
+}
+html[data-look="night"] .ring-body {
+  r: 6;
+}
+html[data-look="night"] .study-readout {
+  font: 800 clamp(52px, 14vw, 72px) / 1 var(--f-display);
+  letter-spacing: -0.03em;
+  font-variant-numeric: tabular-nums;
+}
+html[data-look="night"] .study-phase {
+  letter-spacing: 0.12em;
+  color: var(--text-2);
+}
+html[data-look="night"] .study-center .btn-primary {
+  --h: 56px;
+  min-width: 180px;
+  border-radius: 28px;
+  font: 800 17px var(--f-display);
+}
+html[data-look="night"][data-motion="reduce"] .ring-arc {
+  filter: none;
+}
+
+/* ---- Close the day: a page of a night journal ----------------------------- */
+
+html[data-look="night"] dialog.sheet-journal {
+  overflow: hidden;
+}
+html[data-look="night"] .sheet-journal .sheet-head {
+  position: relative;
+  isolation: isolate;
+  margin: -1px -1px 0;
+  padding-top: 64px;
+}
+html[data-look="night"] .sheet-journal .sheet-head::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background:
+    linear-gradient(to bottom, rgba(23, 20, 38, 0) 0%, var(--surface-2) 92%),
+    url("../assets/photos/summit-night.webp") 50% 40% / cover no-repeat;
+  opacity: 0.9;
+}
+html[data-look="night"] .sheet-journal .sheet-head h2 {
+  font: 900 30px / 1 var(--f-display);
+  letter-spacing: -0.02em;
+}
+/* Your own words, in your own hand. */
+html[data-look="night"] .sheet-journal input.ink {
+  font: italic 21px / 1.3 var(--f-serif);
+  background: transparent;
+  border: 0;
+  border-bottom: 1px solid var(--line-2);
+  border-radius: 0;
+  padding-inline: 2px;
+}
+html[data-look="night"] .sheet-journal input.ink:focus-visible {
+  border-bottom-color: var(--violet);
+  outline: none;
+}
+html[data-look="night"] .sheet-journal input.ink::placeholder {
+  color: var(--text-3);
+}
+
+/* ---- World: what shapes it, as tiles --------------------------------------- */
+
+html[data-look="night"] .legend {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+}
+html[data-look="night"] .legend-row,
+html[data-look="night"] .legend-row:first-child {
+  grid-template-columns: 1fr;
+  grid-template-areas: "val" "name";
+  gap: 4px;
+  padding: 12px 14px;
+  border: 1px solid var(--line);
+  border-radius: var(--r-2);
+  background: rgba(255, 255, 255, 0.04);
+}
+html[data-look="night"] .legend-swatch {
+  display: none;
+}
+html[data-look="night"] .legend-val {
+  grid-area: val;
+  font: 800 20px / 1.1 var(--f-display);
+  white-space: normal;
+}
+html[data-look="night"] .legend-row > div {
+  grid-area: name;
+}
+html[data-look="night"] .legend-row b {
+  font-size: 13px;
+  color: var(--text);
+}
+html[data-look="night"] .legend-row small {
+  display: block;
+  margin-top: 2px;
+  font-size: 11.5px;
+  line-height: 1.4;
+}
+
+/* ---- Settings: quiet rows, a clear switch ----------------------------------- */
+
+html[data-look="night"] .setting input[type="checkbox"] {
+  width: 46px;
+  height: 28px;
+  border-radius: 14px;
+}
+html[data-look="night"] .setting input[type="checkbox"]::after {
+  width: 22px;
+  height: 22px;
+  background: var(--text);
+}
+html[data-look="night"] .setting input[type="checkbox"]:checked {
+  background: var(--go);
+  border-color: var(--go);
+}
+html[data-look="night"] .setting input[type="checkbox"]:checked::after {
+  background: #fff;
+}
+html[data-look="night"] .panel-head h2::after {
+  display: none;
+}
+
+/* ---- Your shelf: a spine per subject --------------------------------------- */
+
+.pl-shelf {
+  display: flex;
+  align-items: flex-end;
+  gap: 8px;
+  height: 168px;
+  margin: 6px 0 18px;
+  padding: 0 4px;
+  overflow-x: auto;
+  border-bottom: 4px solid rgba(155, 140, 255, 0.45);
+  box-shadow: 0 12px 30px -14px rgba(106, 88, 242, 0.6);
+  scrollbar-width: none;
+}
+.pl-spine {
+  position: relative;
+  flex: 0 0 48px;
+  display: grid;
+  place-items: center;
+  height: 150px;
+  overflow: hidden;
+  border: 1px solid var(--line-2);
+  border-radius: 10px 10px 2px 2px;
+  background: rgba(255, 255, 255, 0.05);
+  color: var(--text);
+  text-decoration: none;
+}
+.pl-spine:nth-child(3n + 2) {
+  height: 136px;
+}
+.pl-spine:nth-child(3n) {
+  height: 160px;
+}
+.pl-spine i {
+  position: absolute;
+  inset: auto 0 0;
+  height: calc(var(--fill) * 100%);
+  background: linear-gradient(to top, color-mix(in srgb, var(--subj) 75%, transparent), color-mix(in srgb, var(--subj) 18%, transparent));
+}
+.pl-spine span {
+  position: relative;
+  max-height: 128px;
+  overflow: hidden;
+  writing-mode: vertical-rl;
+  transform: rotate(180deg);
+  font: 800 12.5px var(--f-display);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+.pl-spine:hover,
+.pl-spine:focus-visible {
+  border-color: var(--violet);
+  box-shadow: 0 0 18px rgba(139, 124, 255, 0.5);
+}
+html[data-look="night"] .wn-v {
+  font-weight: 800;
+  letter-spacing: -0.02em;
+}
+/* The climb to each paper: a thicker, glowing line up to your aim. */
+html[data-look="night"] .pl-ready .meter {
+  height: 8px;
+  border-radius: 4px;
+}
+html[data-look="night"] .pl-ready .meter i {
+  border-radius: 4px;
+  box-shadow: 0 0 12px color-mix(in srgb, var(--subj) 60%, transparent);
 }
