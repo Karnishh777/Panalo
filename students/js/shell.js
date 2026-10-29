@@ -31,15 +31,14 @@ const SURFACES = {
   study: () => import("./surfaces/study.js"),
   world: () => import("./surfaces/world.js"),
   calendar: () => import("./surfaces/calendar.js"),
-  archive: () => import("./surfaces/archive.js"),
   safety: () => import("./surfaces/safety.js"),
   settings: () => import("./surfaces/settings.js"),
   moderate: () => import("./surfaces/moderate.js"),
 };
-const TITLES = { now: "Now", plan: "Plan", study: "Study Room", world: "World", calendar: "Calendar", archive: "Archive", safety: "Privacy & data", settings: "Settings", moderate: "Moderation" };
+const TITLES = { now: "Now", plan: "Plan", study: "Study Room", world: "World", calendar: "Calendar", safety: "Privacy & data", settings: "Settings", moderate: "Moderation" };
 
 // Each surface's colour, for the ink that wipes across when you arrive.
-const TONES = { now: "#ffc47a", plan: "#9ad8ff", world: "#7ee2a8", calendar: "#ffc47a", archive: "#e7d19b", safety: "#b59cff", settings: "#9ad8ff" };
+const TONES = { now: "#ffc47a", plan: "#9ad8ff", world: "#7ee2a8", calendar: "#ffc47a", safety: "#b59cff", settings: "#9ad8ff" };
 let ambient = null;
 
 // Where effects belong. The expressive places -- your day and your world --
@@ -210,7 +209,7 @@ export function applyDisplayPrefs() {
 document.addEventListener("panalo:prefs", () => applyDisplayPrefs());
 
 // Keyboard: g then a letter goes to a page; ? lists every shortcut.
-const GO_KEYS = { n: "now", p: "plan", s: "study", w: "world", c: "calendar", a: "archive", y: "safety", ",": "settings" };
+const GO_KEYS = { n: "now", p: "plan", s: "study", w: "world", c: "calendar", y: "safety", ",": "settings" };
 let goArmed = 0;
 export function openShortcuts() {
   const row = (keys, what) => el("li", {}, [el("span", { class: "keys" }, keys.map((k) => el("kbd", { text: k }))), el("span", { text: what })]);
@@ -285,8 +284,6 @@ function warpItems() {
     { label: "World", hint: "your world, goals, discoveries", run: go("world") },
     { label: "Calendar", hint: "timetable and deadlines", run: go("calendar") },
     { label: "Add to calendar", hint: "Calendar", run: () => navigate("calendar/add") },
-    { label: "Archive", hint: "your files", run: go("archive") },
-    { label: "Upload a file", hint: "Archive", run: () => navigate("archive/upload") },
     { label: "Privacy & data", hint: "what's stored, export, delete", run: go("safety") },
     { label: "Settings", hint: "motion, study defaults, account", run: go("settings") },
     { label: "Keyboard shortcuts", hint: "press ? anywhere", run: () => openShortcuts() },
@@ -343,7 +340,6 @@ function openMore() {
     form: false,
     body: [
       el("nav", { class: "more-grid", "aria-label": "More destinations" }, [
-        link("archive", "Archive", "tone-archive", "Your files"),
         link("safety", "Privacy & data", "tone-signal", "What's stored, export, delete"),
         link("settings", "Settings", "tone-focus", "Motion, study, account"),
       ]),

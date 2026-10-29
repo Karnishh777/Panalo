@@ -86,7 +86,7 @@ function requestCard(r) {
       el("ul", {}, [
         el("li", { text: "Their email (never shown to anyone), username, and month and year of birth." }),
         el("li", { text: "Messages and chat files — encrypted on their device; the server can't read them." }),
-        el("li", { text: "Study tasks, focus sessions, calendar, goals and files they keep in their archive — visible only to them." }),
+        el("li", { text: "Study tasks, focus sessions, calendar and goals — visible only to them." }),
         el("li", { text: "No ads, no tracking, no selling data, no feed. Nothing is sent to an AI service." }),
         el("li", { text: "They, or you, can delete everything at any time." }),
       ]),
