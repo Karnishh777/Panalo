@@ -104,7 +104,7 @@ export function mount(section, c) {
 export function show() {
   const p = getPrefs();
   const notifySupported = "Notification" in window;
-  root.replaceChildren(
+  root.replaceChildren(...[
     el("div", { class: "s-head" }, [el("div", {}, [el("p", { class: "kicker toned tone-focus", text: "Settings" }), el("h1", { text: "How Panalo behaves for you" }), el("p", { class: "s-sub", text: `Signed in as @${state.currentUsername}${state.currentUser?.email ? ` · ${state.currentUser.email}` : ""}. Your settings follow you to every device you sign in on.` })])]),
     LOOKS.length < 2 ? null : el("section", { class: "panel tone-world settings-look" }, [
       el("div", { class: "panel-head" }, [el("h2", { text: "Look" })]),
@@ -145,6 +145,6 @@ export function show() {
         el("p", { class: "muted", text: "Signing out clears your data and files from this device's memory." }),
         el("button", { type: "button", class: "btn btn-ghost btn-sm", text: "Sign out", onClick: () => ctx.signOut() }),
       ]),
-    ])
-  );
+    ]),
+  ].filter(Boolean));
 }
