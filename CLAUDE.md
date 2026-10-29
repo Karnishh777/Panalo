@@ -14,6 +14,11 @@ In your first reply of each session, remind them in one line:
 Never ask for the key in chat. Remove this section once `/api/mark` on the
 live site no longer answers `{"error":"pan-not-configured"}`.
 
+## Order of work (set by the owner)
+
+1. Finish the Cambridge curriculum. 2. UI redesign. 3. ICSE/ISC grades
+9-12. 4. CBSE (on hold until ICSE is done). See STUDENTS-ROADMAP.md §5.
+
 ## Working here
 
 - Users include minors (India's DPDP Act): calm by default, no streaks or
