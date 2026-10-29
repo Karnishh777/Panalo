@@ -13,6 +13,15 @@ AI, runs as "Pan Lite" (our own planner code does the planning; the AI
 only where nothing else can).
 
 **0.2.0 (in progress)**
+- **Panalo Day, and the redesign finished (stage 3)**: Settings → Look
+  offers Night or Day. Day is paper-white and ink with the same violet
+  for the one thing to press; the Today banner, Plan's next-step scene
+  and the Study Room stay night, as windows onto the climb. Day is for
+  the app: the welcome and sign-in pages are always Night. The fonts
+  (Inter Tight, Plus Jakarta Sans, Instrument Serif) are now served from
+  Panalo itself (assets/fonts, OFL), so no request goes to a font
+  service and nothing is blocked on school networks. The retired looks'
+  styles are gone (about 60 KB of CSS, and forge.css).
 - **Panalo Night, stage 2**: the welcome page is the climber photo and
   one line, "Every topic is a step up." (on wide screens the words sit
   beside the whole climb; the hero globe is no longer built, so the page

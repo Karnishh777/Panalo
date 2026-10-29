@@ -37,25 +37,23 @@
     e.preventDefault();
   }, true);
 
-  // 4. The look (js/looks.js): Night, and its fonts, before
-  //    the first paint so the page never flashes the wrong one.
-  var NIGHT = "family=Inter+Tight:wght@600..900&family=Plus+Jakarta+Sans:wght@400..700&family=Instrument+Serif:ital@0;1";
-  var FONTS = { night: NIGHT };
+  // 4. The look (js/looks.js): Night or Day, before the first paint so the
+  //    page never flashes the wrong one. The fonts are the site's own
+  //    (css/fonts.css).
+  var LOOKS = { night: 1, day: 1 };
   var look = "night";
   root.setAttribute("data-effects", "calm");
   try {
     var prefs = JSON.parse(localStorage.getItem("panalo.students.prefs") || "{}") || {};
     if (prefs.reduceMotion) root.setAttribute("data-motion", "reduce");
     if (prefs.textSize && prefs.textSize !== "normal") root.setAttribute("data-text", prefs.textSize);
-    if (FONTS[prefs.look]) look = prefs.look;
+    // Day is for the app: the welcome and sign-in pages are always Night.
+    if (LOOKS[prefs.look] && (signedIn || prefs.look === "night")) look = prefs.look;
     if (prefs.effects === "lively") root.setAttribute("data-effects", "lively");
   } catch (e) {}
   root.setAttribute("data-look", look);
-  var fonts = document.createElement("link");
-  fonts.rel = "stylesheet";
-  fonts.href = "https://fonts.googleapis.com/css2?" + FONTS[look] + "&display=swap";
-  fonts.setAttribute("data-look-fonts", look);
-  document.head.appendChild(fonts);
+  var theme = document.querySelector('meta[name="theme-color"]');
+  if (theme && look === "day") theme.setAttribute("content", "#f6f4fb");
 
   // Never leave the splash up forever (offline with nothing cached, a CDN
   // outage): after a while, fall back to the landing page.

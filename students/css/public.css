@@ -57,9 +57,7 @@ html[data-boot="app"] body:not(.ready) .landing {
 .mark use {
   display: none;
 }
-html:not([data-look="signal"]):not([data-look="verse"]) .mark .mk-glass,
-html[data-look="signal"] .mark .mk-signal,
-html[data-look="verse"] .mark .mk-verse {
+.mark .mk-glass {
   display: inline;
 }
 /* With Lively effects on, the mark in the bar glows softly, like a world
@@ -72,16 +70,10 @@ html[data-effects="lively"] .brand .mark {
     filter: drop-shadow(0 0 6px rgba(181, 156, 255, 0.55));
   }
 }
-html[data-effects="lively"][data-look="signal"] .brand .mark {
-  animation-name: mark-glow-led;
-}
 @keyframes mark-glow-led {
   50% {
     filter: drop-shadow(0 0 5px rgba(255, 69, 58, 0.6));
   }
-}
-html[data-effects="lively"][data-look="verse"] .brand .mark {
-  animation: none;
 }
 :root[data-motion="reduce"] .brand .mark {
   animation: none;
@@ -1896,7 +1888,6 @@ input[type="range"].range {
 @keyframes breathe { from { scale: 1; } to { scale: 1.012; } }
 @keyframes const-draw { to { stroke-dashoffset: 0; } }
 @keyframes const-star { to { opacity: 1; } }
-
 
 /* ===== The painted art on the landing (landing-art.js) ==================== */
 /* The hero over the wallpaper's ember river, darkened where the words sit. */

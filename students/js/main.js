@@ -10,7 +10,7 @@ import { runSetup } from "./setup.js";
 import { needsSetup } from "./model/profile.js";
 import { store, loadStudentProfile, loadAll, resetStore } from "./store.js";
 import { initShell, enterShell, leaveShell } from "./shell.js";
-import { initLooks } from "./looks.js";
+import { initLooks, setInside } from "./looks.js";
 import { reducedMotion } from "./motion.js";
 import { showToast, wireRadioGroups } from "./ui.js";
 import { state } from "../../src/state.js";
@@ -75,6 +75,7 @@ async function crossOver() {
 async function onReady(session, { fresh }) {
   if (entering || inside) return;
   entering = true;
+  setInside(true);
   document.body.classList.add("ready");
   await crossOver();
   $("auth").hidden = true;
@@ -128,6 +129,7 @@ function enter({ firstTime = false } = {}) {
 
 function onSignedOut() {
   inside = false;
+  setInside(false);
   entering = false;
   resetStore();
   leaveShell();

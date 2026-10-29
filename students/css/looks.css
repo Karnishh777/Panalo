@@ -110,43 +110,28 @@
 .look-swatch i {
   position: absolute;
 }
-.look-opt-glass .look-swatch,
-.look-btn[data-now="glass"] .look-swatch {
-  background: radial-gradient(circle at 70% 25%, #5b7fbf, #1a2547 60%, #070a14);
+.look-opt-night .look-swatch {
+  background: radial-gradient(70% 60% at 50% 0%, rgba(106, 88, 242, 0.7), transparent 70%), #0b0a12;
 }
-.look-opt-glass .look-swatch i:nth-child(1),
-.look-btn[data-now="glass"] .look-swatch i:nth-child(1) {
-  inset: 34% 12% 14% 12%;
-  border-radius: 6px;
-  background: rgba(255, 255, 255, 0.22);
-  border: 1px solid rgba(255, 255, 255, 0.4);
+.look-opt-night .look-swatch i:nth-child(1) {
+  inset: 40% 0 0;
+  background: linear-gradient(to bottom, #e6e8f4, #7f86a8);
+  clip-path: polygon(0 100%, 38% 12%, 54% 44%, 66% 28%, 100% 100%);
 }
-.look-opt-signal .look-swatch,
-.look-btn[data-now="signal"] .look-swatch {
-  background: #000 radial-gradient(circle, #fff 1px, transparent 1.4px) 0 0 / 5px 5px;
+.look-opt-day .look-swatch {
+  background: radial-gradient(70% 60% at 50% 0%, rgba(106, 88, 242, 0.28), transparent 70%), #f6f4fb;
+  box-shadow: inset 0 0 0 1px rgba(23, 20, 42, 0.14);
 }
-.look-opt-signal .look-swatch i:nth-child(1),
-.look-btn[data-now="signal"] .look-swatch i:nth-child(1) {
+.look-opt-day .look-swatch i:nth-child(1) {
+  left: 18%;
   right: 18%;
-  top: 18%;
-  width: 26%;
-  height: 26%;
-  border-radius: 50%;
-  background: #ff3b30;
-}
-.look-opt-verse .look-swatch,
-.look-btn[data-now="verse"] .look-swatch {
-  background: #07060b radial-gradient(circle, #ff2e63 1.4px, transparent 1.8px) 0 0 / 5px 5px;
-}
-.look-opt-verse .look-swatch i:nth-child(1),
-.look-btn[data-now="verse"] .look-swatch i:nth-child(1) {
-  inset: 22% 22% 22% 22%;
-  border-radius: 50%;
-  background: #f7f4ff;
-  box-shadow: -2px 0 0 #29f0ff, 2px 0 0 #ff2e63;
+  bottom: 22%;
+  height: 22%;
+  border-radius: 6px;
+  background: #6a58f2;
 }
 
-/* Switching looks: a cut in the new look's style covers the swap. */
+/* Switching looks: a short fade covers the swap. */
 .look-cut {
   position: fixed;
   inset: 0;
@@ -157,186 +142,19 @@
   position: absolute;
   inset: 0;
 }
-.look-cut-glass i:nth-child(1) {
-  background: radial-gradient(circle at 50% 40%, rgba(200, 220, 255, 0.5), rgba(5, 7, 14, 0.96) 70%);
-  -webkit-backdrop-filter: blur(30px);
-  backdrop-filter: blur(30px);
-  animation: cut-glass 900ms cubic-bezier(0.16, 1, 0.3, 1) both;
+.look-cut i:nth-child(1) {
+  animation: cut-fade 900ms cubic-bezier(0.16, 1, 0.3, 1) both;
 }
-@keyframes cut-glass {
+.look-cut-night i:nth-child(1) {
+  background: #0b0a12;
+}
+.look-cut-day i:nth-child(1) {
+  background: #f6f4fb;
+}
+@keyframes cut-fade {
   0% { opacity: 0; }
   30% { opacity: 1; }
   100% { opacity: 0; }
-}
-.look-cut-signal i:nth-child(1) {
-  background: #000;
-  -webkit-mask-image: radial-gradient(circle, #000 var(--dot), transparent calc(var(--dot) + 0.5px));
-  mask-image: radial-gradient(circle, #000 var(--dot), transparent calc(var(--dot) + 0.5px));
-  -webkit-mask-size: 12px 12px;
-  mask-size: 12px 12px;
-  animation: cut-signal 900ms steps(9) both;
-}
-@keyframes cut-signal {
-  0% { --dot: 0px; }
-  35% { --dot: 9px; }
-  65% { --dot: 9px; }
-  100% { --dot: 0px; }
-}
-.look-cut-verse i {
-  transform-origin: left;
-  animation: cut-verse 900ms steps(9) both;
-}
-.look-cut-verse i:nth-child(1) {
-  background: #ff2e63 radial-gradient(circle, rgba(0, 0, 0, 0.35) 2px, transparent 2.6px) 0 0 / 10px 10px;
-  clip-path: polygon(0 0, 100% 0, 100% 38%, 0 52%);
-}
-.look-cut-verse i:nth-child(2) {
-  background: #29f0ff radial-gradient(circle, rgba(0, 0, 0, 0.3) 2px, transparent 2.6px) 0 0 / 10px 10px;
-  clip-path: polygon(0 52%, 100% 38%, 100% 72%, 0 86%);
-  animation-delay: 60ms;
-}
-.look-cut-verse i:nth-child(3) {
-  background: #f7f4ff;
-  clip-path: polygon(0 86%, 100% 72%, 100% 100%, 0 100%);
-  animation-delay: 120ms;
-}
-@keyframes cut-verse {
-  0% { transform: scaleX(0); }
-  35% { transform: scaleX(1); }
-  65% { transform: scaleX(1); transform-origin: right; }
-  100% { transform: scaleX(0); transform-origin: right; }
-}
-
-/* ===== Glass ============================================================= */
-
-html[data-look="glass"] {
-  --f-display: "Instrument Serif", "Iowan Old Style", Georgia, serif;
-  --f-serif: "Instrument Serif", Georgia, serif;
-  --f-body: "Geist", "Segoe UI", system-ui, sans-serif;
-  --f-mono: "Geist Mono", ui-monospace, monospace;
-  --bg: #05070e;
-  --surface: rgba(255, 255, 255, 0.05);
-  --surface-2: rgba(22, 28, 48, 0.82);
-  --surface-3: rgba(255, 255, 255, 0.11);
-  --line: rgba(255, 255, 255, 0.09);
-  --line-2: rgba(255, 255, 255, 0.16);
-  --line-3: rgba(255, 255, 255, 0.28);
-  --text: #f1f4fb;
-  --text-2: #b9c1d8;
-  --text-3: #8b94b0;
-  --r-2: 16px;
-  --r-3: 24px;
-  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
-  --glass: linear-gradient(180deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.03));
-  --glass-edge: inset 0 1px 0 rgba(255, 255, 255, 0.14), inset 0 0 0 1px rgba(255, 255, 255, 0.07);
-}
-html[data-look="glass"] body.in-app {
-  background:
-    radial-gradient(60% 45% at 85% -5%, rgba(92, 120, 210, 0.22), transparent 70%),
-    radial-gradient(50% 40% at -5% 95%, rgba(150, 80, 170, 0.14), transparent 70%),
-    radial-gradient(40% 30% at 50% 110%, rgba(60, 150, 200, 0.1), transparent 70%),
-    var(--bg);
-  background-attachment: fixed;
-}
-html[data-look="glass"] .bar {
-  background: rgba(8, 11, 22, 0.5);
-  backdrop-filter: blur(26px) saturate(160%);
-  -webkit-backdrop-filter: blur(26px) saturate(160%);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.07);
-}
-html[data-look="glass"] .wm-name {
-  font-family: var(--f-display);
-  font-size: 24px;
-  letter-spacing: 0;
-}
-html[data-look="glass"] .bar-nav a[aria-current="page"] {
-  background: rgba(255, 255, 255, 0.1);
-  box-shadow: var(--glass-edge);
-}
-html[data-look="glass"] .s-head h1 {
-  font: 400 clamp(34px, 4.4vw, 58px) / 1.02 var(--f-display);
-  letter-spacing: -0.01em;
-}
-html[data-look="glass"] .panel {
-  position: relative;
-  padding: 20px 22px;
-  border: 0;
-  border-radius: var(--r-3);
-  background: var(--glass);
-  box-shadow: var(--glass-edge), 0 30px 60px -32px rgba(0, 0, 0, 0.85);
-  backdrop-filter: blur(22px) saturate(150%);
-  -webkit-backdrop-filter: blur(22px) saturate(150%);
-}
-/* Light catching the glass where the pointer is (js/looks.js sets it). */
-html[data-look="glass"] .panel::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  border-radius: inherit;
-  pointer-events: none;
-  background: radial-gradient(420px circle at var(--mx, -999px) var(--my, -999px), rgba(255, 255, 255, 0.07), transparent 45%);
-}
-html[data-look="glass"] .panel + .panel {
-  margin-top: 16px;
-}
-html[data-look="glass"] .now-log .panel {
-  margin-bottom: 16px;
-}
-html[data-look="glass"] .panel-head h2 {
-  font: 500 12px var(--f-body);
-  letter-spacing: 0.16em;
-}
-html[data-look="glass"] .btn-primary {
-  background: linear-gradient(180deg, #ffffff, #dfe6f7);
-  color: #05070e;
-  box-shadow: 0 10px 30px -10px rgba(170, 200, 255, 0.55), inset 0 1px 0 #fff;
-}
-html[data-look="glass"] .btn-ghost,
-html[data-look="glass"] .btn-toned,
-html[data-look="glass"] .chip {
-  background: rgba(255, 255, 255, 0.06);
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.1);
-  backdrop-filter: blur(14px);
-  -webkit-backdrop-filter: blur(14px);
-}
-html[data-look="glass"] .field input,
-html[data-look="glass"] .field select,
-html[data-look="glass"] .field textarea {
-  background: rgba(255, 255, 255, 0.05);
-  border-color: rgba(255, 255, 255, 0.12);
-  border-radius: 14px;
-}
-html[data-look="glass"] dialog.sheet,
-html[data-look="glass"] .menu,
-html[data-look="glass"] .look-menu,
-html[data-look="glass"] .toast {
-  background: rgba(16, 21, 38, 0.72);
-  backdrop-filter: blur(30px) saturate(160%);
-  -webkit-backdrop-filter: blur(30px) saturate(160%);
-  box-shadow: var(--glass-edge), 0 40px 80px -30px rgba(0, 0, 0, 0.9);
-  border-color: transparent;
-}
-@media (max-width: 899px) {
-  html[data-look="glass"] .dock {
-    inset: auto 12px calc(10px + env(safe-area-inset-bottom));
-    height: var(--dock-h);
-    padding-bottom: 0;
-    border: 0;
-    border-radius: 28px;
-    background: rgba(14, 19, 36, 0.62);
-    backdrop-filter: blur(26px) saturate(170%);
-    -webkit-backdrop-filter: blur(26px) saturate(170%);
-    box-shadow: var(--glass-edge), 0 20px 50px -20px rgba(0, 0, 0, 0.9);
-  }
-}
-/* Arriving: out of a soft focus, parts rising one after another. */
-html[data-look="glass"] .surface.look-enter {
-  animation: glass-in 900ms var(--ease-out) both;
-}
-html[data-look="glass"] .surface.look-enter .panel,
-html[data-look="glass"] .surface.look-enter .s-head {
-  animation: glass-rise 900ms var(--ease-out) both;
-  animation-delay: calc(var(--i, 0) * 70ms + 80ms);
 }
 @keyframes glass-in {
   from { opacity: 0; filter: blur(14px); transform: scale(0.985); }
@@ -344,408 +162,12 @@ html[data-look="glass"] .surface.look-enter .s-head {
 @keyframes glass-rise {
   from { opacity: 0; transform: translateY(18px); filter: blur(6px); }
 }
-
-/* ===== Signal ============================================================ */
-
-html[data-look="signal"] {
-  --f-display: "Doto", ui-monospace, monospace;
-  --f-serif: "Space Grotesk", system-ui, sans-serif;
-  --f-body: "Space Grotesk", system-ui, sans-serif;
-  --f-mono: "Space Mono", ui-monospace, monospace;
-  --void: #000;
-  --bg: #000;
-  --bg-2: #050505;
-  --surface: #0e0e0e;
-  --surface-2: #141414;
-  --surface-3: #1c1c1c;
-  --line: #1c1c1c;
-  --line-2: #2a2a2a;
-  --line-3: #444;
-  --text: #f4f4f4;
-  --text-2: #a8a8a8;
-  --text-3: #7d7d7d;
-  --accent: #f4f4f4;
-  --on-accent: #000;
-  --red: #ff3b30;
-  --alert: #ff3b30;
-  /* Black, white, grey -- and red for what's live, now or waiting. */
-  --time: #ff3b30;
-  --focus: #f4f4f4;
-  --signal: #ff3b30;
-  --world: #d6d6d6;
-  --archive: #a8a8a8;
-  --drift: #bdbdbd;
-  --r-2: 16px;
-  --r-3: 22px;
-  --ease-out: cubic-bezier(0.2, 0, 0, 1);
-}
-/* The clock in dot-matrix. */
-html[data-look="signal"] .bar-clock {
-  font: 900 18px var(--f-display);
-  color: var(--text);
-  letter-spacing: 0.06em;
-}
-/* Counts are white pills; only the unread dot glows red. */
-html[data-look="signal"] .pulse-count {
-  background: var(--red);
-  color: #fff;
-  font-family: var(--f-mono);
-}
-/* Each tile carries a glyph strip: a row of LEDs along its top that light
-   up, one by one, when you come near. */
-html[data-look="signal"] .panel {
-  position: relative;
-}
-html[data-look="signal"] .panel::before {
-  content: "";
-  position: absolute;
-  left: 20px;
-  right: 20px;
-  top: 8px;
-  height: 4px;
-  pointer-events: none;
-  background: radial-gradient(circle, #2c2c2c 1.4px, transparent 1.8px) 0 50% / 8px 4px repeat-x;
-}
-html[data-look="signal"] .panel::after {
-  content: "";
-  position: absolute;
-  left: 20px;
-  top: 8px;
-  height: 4px;
-  width: 0;
-  pointer-events: none;
-  background: radial-gradient(circle, #f4f4f4 1.4px, transparent 1.8px) 0 50% / 8px 4px repeat-x;
-  transition: width 600ms steps(12);
-}
-html[data-look="signal"] .panel:hover::after,
-html[data-look="signal"] .panel:focus-within::after {
-  width: calc(100% - 40px);
-}
-html[data-look="signal"] .panel.tone-time::after,
-html[data-look="signal"] .panel.tone-signal::after {
-  background-image: radial-gradient(circle, #ff3b30 1.4px, transparent 1.8px);
-}
-/* Switches, the Nothing way: a black pill, a white knob, red when on. */
-html[data-look="signal"] input[role="switch"] {
-  appearance: none;
-  -webkit-appearance: none;
-  position: relative;
-  flex: none;
-  width: 46px;
-  height: 26px;
-  border-radius: 13px;
-  background: #222;
-  cursor: pointer;
-  transition: background 160ms steps(3);
-}
-html[data-look="signal"] input[role="switch"]::after {
-  content: "";
-  position: absolute;
-  top: 4px;
-  left: 4px;
-  width: 18px;
-  height: 18px;
-  border-radius: 50%;
-  background: #f4f4f4;
-  transition: transform 160ms steps(3);
-}
-html[data-look="signal"] input[role="switch"]:checked {
-  background: var(--red);
-}
-html[data-look="signal"] input[role="switch"]:checked::after {
-  transform: translateX(20px);
-}
-/* The landing, in Signal: monochrome, one red. */
-html[data-look="signal"] .ht-serif {
-  font: 900 1em/1.05 var(--f-display);
-  background: none;
-  -webkit-text-fill-color: var(--red);
-  color: var(--red);
-}
-html[data-look="signal"] .hero-sub span {
-  color: var(--red);
-}
-html[data-look="signal"] .hero-kicker {
-  color: var(--text-3);
-}
-html[data-look="signal"] canvas[data-renderer="2d"] {
-  filter: grayscale(1) contrast(1.2);
-}
-html[data-look="signal"] body.in-app {
-  background: #000 radial-gradient(circle, rgba(255, 255, 255, 0.07) 1px, transparent 1.3px) 0 0 / 22px 22px;
-  background-attachment: fixed;
-}
-html[data-look="signal"] .bar {
-  background: rgba(0, 0, 0, 0.92);
-  -webkit-backdrop-filter: none;
-  backdrop-filter: none;
-  border-bottom: 1px solid #1c1c1c;
-}
-html[data-look="signal"] .wm-name {
-  font: 900 24px var(--f-display);
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
-}
-html[data-look="signal"] .bar-nav a,
-html[data-look="signal"] .dock a,
-html[data-look="signal"] .dock button {
-  font: 400 12px var(--f-mono);
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-}
-html[data-look="signal"] .bar-nav a[aria-current="page"]::after {
-  background: var(--red);
-  box-shadow: none;
-}
-html[data-look="signal"] .s-head h1 {
-  font: 900 clamp(30px, 4.2vw, 54px) / 1.05 var(--f-display);
-  letter-spacing: 0.01em;
-}
-html[data-look="signal"] .kicker {
-  font: 400 11px var(--f-mono);
-  letter-spacing: 0.14em;
-}
-html[data-look="signal"] .panel {
-  padding: 18px 20px;
-  border: 0;
-  border-radius: var(--r-3);
-  background: var(--surface);
-}
-html[data-look="signal"] .panel + .panel {
-  margin-top: 10px;
-}
-html[data-look="signal"] .now-log .panel {
-  margin-bottom: 10px;
-}
-html[data-look="signal"] .panel-head h2 {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  font: 400 11px var(--f-mono);
-  letter-spacing: 0.14em;
-  color: var(--text-3);
-}
-html[data-look="signal"] .panel-head h2::before {
-  content: "";
-  width: 7px;
-  height: 7px;
-  border-radius: 50%;
-  background: var(--tone, var(--text-3));
-}
-html[data-look="signal"] .now-big b {
-  font: 900 34px/1.05 var(--f-display);
-  letter-spacing: 0.02em;
-}
-html[data-look="signal"] .btn {
-  font: 700 12px var(--f-mono);
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-}
-html[data-look="signal"] .btn-ghost,
-html[data-look="signal"] .btn-toned {
-  background: var(--surface-2);
-  border-color: transparent;
-}
-html[data-look="signal"] .chip {
-  background: var(--surface-2);
-  border-color: transparent;
-  font-family: var(--f-mono);
-  font-size: 12px;
-}
-html[data-look="signal"] .chip[aria-pressed="true"],
-html[data-look="signal"] .chip[aria-selected="true"] {
-  background: var(--text);
-  color: #000;
-}
-html[data-look="signal"] .field input,
-html[data-look="signal"] .field select,
-html[data-look="signal"] .field textarea {
-  background: var(--surface);
-  border-color: var(--line-2);
-  border-radius: 14px;
-}
-html[data-look="signal"] dialog.sheet,
-html[data-look="signal"] .menu,
-html[data-look="signal"] .look-menu,
-html[data-look="signal"] .toast {
-  background: var(--surface-2);
-  border-color: var(--line-2);
-  box-shadow: none;
-}
-html[data-look="signal"] .serif,
-html[data-look="signal"] .intention-text {
-  font-family: var(--f-body);
-  font-style: normal;
-  font-weight: 600;
-}
-@media (max-width: 899px) {
-  html[data-look="signal"] .dock {
-    inset: auto 10px calc(10px + env(safe-area-inset-bottom));
-    height: var(--dock-h);
-    padding-bottom: 0;
-    border: 0;
-    border-radius: 22px;
-    background: var(--surface);
-    -webkit-backdrop-filter: none;
-    backdrop-filter: none;
-  }
-  html[data-look="signal"] .dock a[aria-current="page"] {
-    color: var(--text);
-  }
-  html[data-look="signal"] .dock a[aria-current="page"] .dock-glyph {
-    background: var(--red);
-    border-color: var(--red);
-    box-shadow: none;
-  }
-}
-/* Arriving: the page resolves dot by dot, then the tiles snap in. */
-html[data-look="signal"] .surface.look-enter {
-  -webkit-mask-image: radial-gradient(circle, #000 var(--dot), transparent calc(var(--dot) + 0.5px));
-  mask-image: radial-gradient(circle, #000 var(--dot), transparent calc(var(--dot) + 0.5px));
-  -webkit-mask-size: 10px 10px;
-  mask-size: 10px 10px;
-  animation: signal-in 520ms steps(8) both;
-}
 @keyframes signal-in {
   from { --dot: 0px; }
   to { --dot: 8px; }
 }
-html[data-look="signal"] .surface.look-enter .panel {
-  animation: signal-tile 420ms steps(4) both;
-  animation-delay: calc(var(--i, 0) * 60ms + 200ms);
-}
 @keyframes signal-tile {
   from { opacity: 0; transform: translateY(10px); }
-}
-
-/* ===== Verse ============================================================= */
-/* A modern comic torn between universes: ink black, hot pink, electric
-   cyan and paper white -- nothing else. Poster type that twitches on twos,
-   tape labels, white ink frames with offset shadows that glitch when you
-   touch them, spray paint where your pointer goes, rifts in the dark, and a
-   world that now and then slips into another universe's style. */
-
-html[data-look="verse"] {
-  --f-display: "Anton", "Impact", sans-serif;
-  --f-serif: "Permanent Marker", "Comic Sans MS", cursive;
-  --f-body: "Archivo", "Arial Narrow", system-ui, sans-serif;
-  --f-mono: "Space Mono", ui-monospace, monospace;
-  --void: #050408;
-  --bg: #0a0810;
-  --bg-2: #0f0c17;
-  --surface: #13101c;
-  --surface-2: #1c1728;
-  --surface-3: #2a2238;
-  --line: rgba(247, 244, 255, 0.14);
-  --line-2: rgba(247, 244, 255, 0.26);
-  --line-3: rgba(247, 244, 255, 0.45);
-  --text: #f7f4ff;
-  --text-2: #d3cce6;
-  --text-3: #a39bbd;
-  --ink: #07060b;
-  --hot: #ff2e63;
-  --cyan: #29f0ff;
-  --paper: #f7f4ff;
-  --magenta: var(--hot);
-  --yellow: var(--paper);
-  --time: var(--hot);
-  --focus: var(--cyan);
-  --signal: var(--hot);
-  --world: var(--cyan);
-  --archive: var(--paper);
-  --drift: var(--hot);
-  --alert: #ff4d4d;
-  --accent: var(--hot);
-  --on-accent: var(--ink);
-  --r-1: 2px;
-  --r-2: 3px;
-  --r-3: 4px;
-  --ease-out: steps(4, end);
-  --misreg: -2px 0 0 var(--cyan), 2px 0 0 var(--hot);
-  --tear: polygon(0 8%, 4% 0, 12% 6%, 22% 0, 31% 7%, 42% 1%, 53% 6%, 63% 0, 74% 5%, 85% 0, 93% 7%, 100% 2%, 100% 92%, 95% 100%, 86% 93%, 76% 100%, 66% 94%, 55% 100%, 45% 93%, 34% 100%, 24% 94%, 13% 100%, 4% 94%, 0 100%);
-}
-html[data-look="verse"] body {
-  font-stretch: 92%;
-}
-html[data-look="verse"] body.in-app {
-  background: radial-gradient(70% 55% at 85% 0%, #1d0f2e 0%, transparent 60%), radial-gradient(60% 50% at 0% 100%, #2a0a1c 0%, transparent 60%), var(--bg);
-  background-attachment: fixed;
-}
-/* Printed shade: hot dots rising from one corner, cyan from the other. */
-html[data-look="verse"] .app::before,
-html[data-look="verse"] .stage::before {
-  content: "";
-  position: fixed;
-  inset: 0;
-  z-index: 0;
-  pointer-events: none;
-}
-html[data-look="verse"] .app::before {
-  background: radial-gradient(circle, rgba(255, 46, 99, 0.6) 1.4px, transparent 1.9px) 0 0 / 10px 10px;
-  -webkit-mask-image: radial-gradient(75% 65% at 0% 100%, #000 0%, transparent 70%);
-  mask-image: radial-gradient(75% 65% at 0% 100%, #000 0%, transparent 70%);
-}
-html[data-look="verse"] .stage::before {
-  background: radial-gradient(circle, rgba(41, 240, 255, 0.45) 1.2px, transparent 1.7px) 0 0 / 10px 10px;
-  -webkit-mask-image: radial-gradient(60% 55% at 100% 0%, #000 0%, transparent 70%);
-  mask-image: radial-gradient(60% 55% at 100% 0%, #000 0%, transparent 70%);
-}
-/* And a print's grain. */
-html[data-look="verse"] .app::after {
-  content: "";
-  position: fixed;
-  inset: 0;
-  z-index: 0;
-  pointer-events: none;
-  opacity: 0.1;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 0.6 0'/%3E%3C/filter%3E%3Crect width='220' height='220' filter='url(%23n)'/%3E%3C/svg%3E");
-  mix-blend-mode: overlay;
-}
-html[data-look="verse"] .stage {
-  position: relative;
-  z-index: 1;
-}
-html[data-look="verse"] .bar {
-  background: var(--ink);
-  -webkit-backdrop-filter: none;
-  backdrop-filter: none;
-  border-bottom: 2px solid var(--hot);
-  box-shadow: 0 4px 0 -1px var(--cyan);
-}
-html[data-look="verse"] .wm-name {
-  font: 400 28px var(--f-display);
-  letter-spacing: 0.02em;
-  text-transform: uppercase;
-  text-shadow: var(--misreg);
-}
-html[data-look="verse"] .bar-nav a {
-  font: 800 15px var(--f-body);
-  font-stretch: 75%;
-  letter-spacing: 0.05em;
-  text-transform: uppercase;
-  border-radius: 0;
-}
-html[data-look="verse"] .bar-nav a[aria-current="page"] {
-  background: var(--paper);
-  color: var(--ink);
-  clip-path: var(--tear);
-  transform: rotate(-3deg);
-}
-html[data-look="verse"] .bar-nav a[aria-current="page"]::after {
-  display: none;
-}
-html[data-look="verse"] .bar-clock {
-  font: 700 13px var(--f-mono);
-  color: var(--cyan);
-}
-/* Headlines: poster type, printed out of register, twitching on twos. */
-html[data-look="verse"] .s-head h1 {
-  position: relative;
-  font: 400 clamp(46px, 6.6vw, 100px) / 0.9 var(--f-display);
-  letter-spacing: 0.005em;
-  text-transform: uppercase;
-  text-shadow: -3px 0 0 var(--cyan), 3px 0 0 var(--hot);
-  animation: verse-twitch 2.4s steps(1) infinite;
 }
 @keyframes verse-twitch {
   0%, 100% { text-shadow: -3px 0 0 var(--cyan), 3px 0 0 var(--hot); translate: none; }
@@ -754,262 +176,12 @@ html[data-look="verse"] .s-head h1 {
   52% { text-shadow: -4px -1px 0 var(--cyan), 2px 1px 0 var(--hot); translate: -1px 0; }
   60% { text-shadow: -3px 0 0 var(--cyan), 3px 0 0 var(--hot); translate: none; }
 }
-/* A spray-painted scribble under it. */
-html[data-look="verse"] .s-head h1::after {
-  content: "";
-  display: block;
-  width: min(420px, 70%);
-  height: 18px;
-  margin-top: 6px;
-  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 18' preserveAspectRatio='none'%3E%3Cpath d='M3 12 C 60 2, 120 16, 180 8 S 300 4, 397 9' fill='none' stroke='%23ff2e63' stroke-width='5' stroke-linecap='round'/%3E%3Cpath d='M40 15 C 120 9, 220 15, 330 11' fill='none' stroke='%2329f0ff' stroke-width='2' stroke-linecap='round' opacity='.8'/%3E%3C/svg%3E") no-repeat 0 0 / 100% 100%;
-}
-/* Kickers: a strip of white tape. */
-html[data-look="verse"] .kicker,
-html[data-look="verse"] .kicker.toned {
-  display: inline-block;
-  width: fit-content;
-  justify-self: start;
-  align-self: flex-start;
-  padding: 5px 12px;
-  background: var(--paper);
-  color: var(--ink);
-  font: 700 11px var(--f-mono);
-  letter-spacing: 0.1em;
-  clip-path: var(--tear);
-  transform: rotate(-2deg);
-}
-html[data-look="verse"] .s-sub,
-html[data-look="verse"] .s-head p.s-sub {
-  font: 400 18px var(--f-serif);
-  color: var(--text);
-  transform: rotate(-1deg);
-}
-/* Panels: white ink frames, a shadow in their own colour, halftone in a
-   corner, hung a hair off true; touched, they glitch. */
-html[data-look="verse"] .panel {
-  position: relative;
-  padding: 20px 18px 16px;
-  border: 2px solid var(--paper);
-  border-radius: 2px;
-  background: radial-gradient(circle, color-mix(in srgb, var(--tone, var(--hot)) 55%, transparent) 1.3px, transparent 1.8px) 0 0 / 8px 8px, var(--surface);
-  box-shadow: 6px 6px 0 var(--tone, var(--hot));
-}
-/* Only Now's satellites hang off true: a tilted wide frame steps its ink
-   line, and a transform would re-anchor anything fixed inside a panel. */
-html[data-look="verse"] .now-grid .panel {
-  transform: rotate(var(--tilt, -0.4deg));
-}
-html[data-look="verse"] .panel::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-  background: var(--surface);
-  -webkit-mask-image: radial-gradient(140% 120% at 100% 0%, transparent 16%, #000 48%);
-  mask-image: radial-gradient(140% 120% at 100% 0%, transparent 16%, #000 48%);
-}
-html[data-look="verse"] .panel > * {
-  position: relative;
-}
-html[data-look="verse"] .panel:nth-child(even) {
-  --tilt: 0.45deg;
-}
-html[data-look="verse"] .panel:nth-child(3n) {
-  --tilt: -0.7deg;
-}
-html[data-look="verse"] .panel:hover {
-  animation: verse-touch 360ms steps(1);
-}
 @keyframes verse-touch {
   0% { box-shadow: 6px 6px 0 var(--tone, var(--hot)); translate: none; clip-path: none; }
   20% { box-shadow: -6px 4px 0 var(--cyan), 8px -2px 0 var(--hot); translate: 3px 0; clip-path: inset(0 0 46% 0); }
   40% { box-shadow: 8px 6px 0 var(--cyan), -4px 2px 0 var(--hot); translate: -4px 1px; clip-path: inset(40% 0 0 0); }
   60% { box-shadow: 6px 6px 0 var(--tone, var(--hot)); translate: 1px 0; clip-path: none; }
   100% { translate: none; }
-}
-html[data-look="verse"] .panel + .panel {
-  margin-top: 28px;
-}
-html[data-look="verse"] .now-log .panel {
-  margin-bottom: 28px;
-}
-/* The panel's title: a torn tape label stuck across its top edge. */
-html[data-look="verse"] .panel-head h2 {
-  display: inline-block;
-  padding: 6px 14px 4px;
-  background: var(--paper);
-  color: var(--ink);
-  font: 400 19px/1 var(--f-display);
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
-  clip-path: var(--tear);
-  transform: rotate(-2deg) translateY(-34px);
-  margin-bottom: -30px;
-}
-html[data-look="verse"] .panel-head a,
-html[data-look="verse"] .panel-head button.link-btn {
-  font: 400 15px var(--f-serif);
-  color: var(--tone, var(--hot));
-}
-/* The panel's link rides the top edge level with its tape label, like a
-   sticker, instead of floating a line below it. */
-html[data-look="verse"] .panel-head > a,
-html[data-look="verse"] .panel-head > button.link-btn {
-  margin-bottom: -26px;
-  padding: 3px 9px;
-  background: var(--ink, #0b0a12);
-  transform: translateY(-31px) rotate(1.5deg);
-}
-html[data-look="verse"] .serif,
-html[data-look="verse"] .intention-text {
-  font-family: var(--f-serif);
-  font-style: normal;
-}
-html[data-look="verse"] .now-big b {
-  font: 400 46px/1 var(--f-display);
-  letter-spacing: 0.01em;
-  text-shadow: var(--misreg);
-}
-html[data-look="verse"] .btn {
-  border: 2px solid var(--paper);
-  border-radius: 2px;
-  font: 900 14px var(--f-body);
-  font-stretch: 75%;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  box-shadow: 4px 4px 0 var(--hot);
-  transition: translate 120ms steps(2), box-shadow 120ms steps(2), background 120ms steps(2);
-}
-html[data-look="verse"] .btn:hover:not(:disabled) {
-  translate: -2px -2px;
-  box-shadow: 6px 6px 0 var(--hot), -2px -2px 0 var(--cyan);
-}
-html[data-look="verse"] .btn:active:not(:disabled) {
-  transform: none;
-  translate: 3px 3px;
-  box-shadow: 0 0 0 var(--hot);
-}
-html[data-look="verse"] .btn-primary {
-  background: var(--hot);
-  color: var(--ink);
-  border-color: var(--ink);
-  box-shadow: 4px 4px 0 var(--cyan);
-}
-html[data-look="verse"] .btn-primary:hover:not(:disabled) {
-  background: #ff5482;
-  box-shadow: 6px 6px 0 var(--cyan), -2px -2px 0 var(--paper);
-}
-html[data-look="verse"] .btn-ghost,
-html[data-look="verse"] .btn-toned,
-html[data-look="verse"] .btn-quiet {
-  background: var(--surface-2);
-  color: var(--text);
-}
-html[data-look="verse"] .btn-toned {
-  box-shadow: 4px 4px 0 var(--tone, var(--hot));
-}
-html[data-look="verse"] .chip {
-  border: 2px solid var(--line-3);
-  border-radius: 2px;
-  background: var(--surface-2);
-  font: 800 13px var(--f-body);
-  font-stretch: 80%;
-  text-transform: uppercase;
-}
-html[data-look="verse"] .chip[aria-pressed="true"],
-html[data-look="verse"] .chip[aria-selected="true"] {
-  background: var(--paper);
-  color: var(--ink);
-  box-shadow: 3px 3px 0 var(--hot);
-}
-html[data-look="verse"] .field input,
-html[data-look="verse"] .field select,
-html[data-look="verse"] .field textarea {
-  background: var(--bg-2);
-  border: 2px solid var(--line-3);
-  border-radius: 2px;
-}
-html[data-look="verse"] .field input:focus,
-html[data-look="verse"] .field textarea:focus {
-  border-color: var(--paper);
-  box-shadow: 4px 4px 0 var(--cyan);
-}
-html[data-look="verse"] dialog.sheet,
-html[data-look="verse"] .menu,
-html[data-look="verse"] .look-menu {
-  border: 2px solid var(--paper);
-  border-radius: 2px;
-  background: var(--surface);
-  box-shadow: 8px 8px 0 var(--hot), 14px 14px 0 -2px var(--cyan);
-}
-html[data-look="verse"] .toast {
-  border: 2px solid var(--ink);
-  border-radius: 2px;
-  background: var(--paper);
-  color: var(--ink);
-  font-weight: 800;
-  box-shadow: 5px 5px 0 var(--hot);
-}
-@media (max-width: 899px) {
-  html[data-look="verse"] .dock {
-    background: var(--ink);
-    -webkit-backdrop-filter: none;
-    backdrop-filter: none;
-    border-top: 2px solid var(--hot);
-    box-shadow: 0 -4px 0 -1px var(--cyan);
-  }
-  html[data-look="verse"] .dock a,
-  html[data-look="verse"] .dock button {
-    font: 800 12px var(--f-body);
-    font-stretch: 75%;
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
-  }
-  html[data-look="verse"] .dock a[aria-current="page"] {
-    color: var(--paper);
-  }
-  html[data-look="verse"] .dock a[aria-current="page"] .dock-glyph {
-    background: var(--hot);
-    border-color: var(--paper);
-    box-shadow: -2px 0 0 var(--cyan), 2px 0 0 var(--hot);
-  }
-}
-
-/* Now, in Verse: your day in orbit. On a wide screen the instrument takes
-   the middle of the page and the log's panels hang around it like
-   satellites, frames on either side. */
-@media (min-width: 1100px) {
-  html[data-look="verse"] .now-grid {
-    grid-template-columns: minmax(0, 1fr) minmax(400px, 1.15fr) minmax(0, 1fr);
-    grid-auto-flow: dense;
-    gap: 40px 30px;
-  }
-  html[data-look="verse"] .now-log {
-    display: contents;
-  }
-  html[data-look="verse"] .now-instrument {
-    grid-column: 2;
-    grid-row: 1 / span 4;
-    position: sticky;
-  }
-  html[data-look="verse"] .now-log > * {
-    margin: 0;
-  }
-  html[data-look="verse"] .now-log > *:nth-child(odd) {
-    grid-column: 1;
-  }
-  html[data-look="verse"] .now-log > *:nth-child(even) {
-    grid-column: 3;
-  }
-}
-html[data-look="verse"] .orbit-svg text {
-  font-family: var(--f-mono);
-  font-weight: 700;
-  fill: var(--paper);
-}
-/* The world, slipping into another universe for a moment (js/looks.js). */
-html[data-look="verse"] .slipping {
-  animation: verse-slip 450ms steps(1);
 }
 @keyframes verse-slip {
   0% { translate: -8px 0; filter: drop-shadow(8px 0 0 var(--cyan)) drop-shadow(-8px 0 0 var(--hot)); clip-path: inset(0 0 58% 0); }
@@ -1040,13 +212,6 @@ html[data-look="verse"] .slipping {
 .verse-rifts {
   display: none;
 }
-html[data-look="verse"] body.in-app .verse-rifts {
-  display: block;
-  position: fixed;
-  inset: 0;
-  z-index: 0;
-  pointer-events: none;
-}
 .verse-rifts i {
   position: absolute;
   height: 3px;
@@ -1073,11 +238,6 @@ html[data-look="verse"] body.in-app .verse-rifts {
   z-index: 150;
   pointer-events: none;
 }
-
-/* Arriving: a glitch between universes, then the panels slam down on twos. */
-html[data-look="verse"] .surface.look-enter {
-  animation: verse-in 420ms steps(1) both;
-}
 @keyframes verse-in {
   0% { opacity: 0; }
   15% { opacity: 1; transform: translateX(-14px); clip-path: inset(0 0 62% 0); filter: drop-shadow(8px 0 0 #29f0ff) drop-shadow(-8px 0 0 #ff2e63); }
@@ -1086,20 +246,10 @@ html[data-look="verse"] .surface.look-enter {
   60% { transform: none; clip-path: none; filter: none; }
   100% { opacity: 1; }
 }
-html[data-look="verse"] .surface.look-enter .panel {
-  animation: verse-slam 400ms steps(5) both;
-  animation-delay: calc(var(--i, 0) * 90ms + 240ms);
-}
 @keyframes verse-slam {
   0% { opacity: 0; transform: scale(1.25) rotate(-6deg); }
   40% { opacity: 1; transform: scale(0.96) rotate(1deg); }
   100% { transform: var(--rest, none); }
-}
-html[data-look="verse"] .now-grid .panel {
-  --rest: rotate(var(--tilt, -0.4deg));
-}
-html[data-look="verse"] .surface.look-enter .s-head h1 {
-  animation: verse-title 520ms steps(6) both, verse-twitch 2.4s steps(1) 520ms infinite;
 }
 @keyframes verse-title {
   0% { opacity: 0; translate: -40px 0; text-shadow: -14px 0 0 var(--cyan), 14px 0 0 var(--hot); }
@@ -1140,8 +290,7 @@ html[data-look="verse"] .surface.look-enter .s-head h1 {
   .surface.look-enter,
   .surface.look-enter *,
   .look-cut,
-  .verse-sfx,
-  html[data-look="verse"] .orbit-world {
+  .verse-sfx{
     animation: none !important;
     -webkit-mask-image: none !important;
     mask-image: none !important;
@@ -1152,8 +301,7 @@ html[data-look="verse"] .surface.look-enter .s-head h1 {
   }
 }
 html[data-motion="reduce"] .surface.look-enter,
-html[data-motion="reduce"] .surface.look-enter *,
-html[data-motion="reduce"][data-look="verse"] .orbit-world {
+html[data-motion="reduce"] .surface.look-enter *{
   animation: none !important;
   -webkit-mask-image: none !important;
   mask-image: none !important;
@@ -1165,8 +313,7 @@ html[data-motion="reduce"] .verse-spray,
 html[data-motion="reduce"] .universe-tag {
   display: none !important;
 }
-html[data-motion="reduce"][data-look="verse"] .s-head h1,
-html[data-motion="reduce"][data-look="verse"] .panel:hover,
+
 html[data-motion="reduce"] .slipping {
   animation: none !important;
 }
@@ -1176,8 +323,7 @@ html[data-motion="reduce"] .slipping {
   .universe-tag {
     display: none !important;
   }
-  html[data-look="verse"] .s-head h1,
-  html[data-look="verse"] .panel:hover,
+  
   .slipping {
     animation: none !important;
   }
@@ -1198,13 +344,6 @@ html[data-motion="reduce"] .slipping {
   background: linear-gradient(105deg, transparent 30%, rgba(255, 255, 255, 0.55) 48%, rgba(255, 255, 255, 0.1) 54%, transparent 70%);
   transform: translateX(-120%);
   animation: glint 800ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
-}
-html[data-look="signal"] .fx-glint::before {
-  /* Signal's glint is a scanline of dots. */
-  background: radial-gradient(circle, rgba(255, 255, 255, 0.8) 1px, transparent 1.4px) 0 0 / 5px 5px;
-  -webkit-mask-image: linear-gradient(90deg, transparent 35%, #000 50%, transparent 65%);
-  mask-image: linear-gradient(90deg, transparent 35%, #000 50%, transparent 65%);
-  animation-timing-function: steps(10);
 }
 @keyframes glint {
   to { transform: translateX(120%); }
@@ -1250,15 +389,6 @@ html[data-motion="reduce"] .fx-bloom {
   opacity: 0;
   animation: flare 12s cubic-bezier(0.45, 0, 0.2, 1) 3s infinite;
 }
-html[data-look="signal"] .hero-flare {
-  height: 2px;
-  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.9) 50%, transparent);
-  box-shadow: none;
-  animation-timing-function: steps(12);
-}
-html[data-look="verse"] .hero-flare {
-  display: none;
-}
 @keyframes flare {
   0%, 78% { opacity: 0; transform: translateX(-35%) scaleX(0.6); }
   84% { opacity: 1; }
@@ -1293,21 +423,4 @@ html[data-motion="reduce"] .hero-flare {
     padding: 0;
     justify-content: center;
   }
-}
-
-/* Verse, 2D worlds: printed with CSS (the GPU world inks itself). */
-html[data-look="verse"] canvas[data-renderer="2d"] {
-  filter: contrast(1.35) saturate(1.5) drop-shadow(-3px 0 0 rgba(41, 240, 255, 0.7)) drop-shadow(3px 0 0 rgba(255, 46, 99, 0.7));
-}
-
-/* The landing, in Verse: the second line sprayed in Verse's own inks. */
-html[data-look="verse"] .ht-serif {
-  background: linear-gradient(100deg, #f7f4ff 0%, #ff2e63 45%, #f7f4ff 70%, #29f0ff 100%);
-  background-size: 200% 100%;
-  -webkit-background-clip: text;
-  background-clip: text;
-  filter: drop-shadow(-3px 0 0 rgba(41, 240, 255, 0.7)) drop-shadow(3px 0 0 rgba(255, 46, 99, 0.6));
-}
-html[data-look="verse"] .hero-kicker {
-  color: var(--ink);
 }

@@ -1,0 +1,147 @@
+/* Panalo Day — the light version of Panalo Night.
+ *
+ * Paper-white and ink, the same violet for the one thing to press, the
+ * same type and shapes (night.css draws both; this file only re-colours).
+ * The photos stay night: the Today banner and the Study Room are windows
+ * onto the climb, so they keep Night's colours inside them. Day is for the
+ * app; the welcome and sign-in pages are always Night.
+ */
+
+html[data-look="day"] {
+  color-scheme: light;
+  --void: #e9e6f2;
+  --bg: #f6f4fb;
+  --bg-2: #efecf7;
+  --surface: #ffffff;
+  --surface-2: #ffffff;
+  --surface-3: #ebe8f4;
+  --line: rgba(23, 20, 42, 0.09);
+  --line-2: rgba(23, 20, 42, 0.16);
+  --line-3: rgba(23, 20, 42, 0.3);
+  --text: #17142a;
+  --text-2: #4a4560;
+  --text-3: #66617c;
+
+  --violet: #6a58f2;
+  --violet-soft: #5646d6;
+  --go: #6a58f2;
+  --go-hover: #5a48e4;
+  --mint: #12946a;
+
+  --time: #a65f00;
+  --focus: #5646d6;
+  --signal: #5646d6;
+  --world: #12855e;
+  --archive: #826519;
+  --drift: #b8366f;
+  --alert: #c0392b;
+  --accent: #17142a;
+  --on-accent: #ffffff;
+
+  --glass-card: #ffffff;
+  --glow: 0 10px 28px -10px rgba(106, 88, 242, 0.55);
+  --shadow-1: 0 1px 2px rgba(23, 20, 42, 0.05), 0 10px 30px -14px rgba(23, 20, 42, 0.18);
+  --shadow-2: 0 1px 2px rgba(23, 20, 42, 0.06), 0 24px 60px -24px rgba(23, 20, 42, 0.3);
+}
+
+/* Night's colours, kept inside the photo windows. */
+html[data-look="day"] .today-hero,
+html[data-look="day"] .pl-stage,
+html[data-look="day"] .pl-hero:not(.quiet),
+html[data-look="day"] body[data-view="study"] {
+  color-scheme: dark;
+  --bg: #0b0a12;
+  --surface: rgba(255, 255, 255, 0.05);
+  --surface-2: rgba(23, 20, 38, 0.94);
+  --surface-3: rgba(255, 255, 255, 0.1);
+  --line: rgba(255, 255, 255, 0.08);
+  --line-2: rgba(255, 255, 255, 0.14);
+  --line-3: rgba(255, 255, 255, 0.26);
+  --text: #f4f2fb;
+  --text-2: #b4afc8;
+  --text-3: #8e89a3;
+  --violet: #9b8cff;
+  --violet-soft: #c7bdff;
+  --mint: #5ee6b8;
+  --focus: #9b8cff;
+  --world: #5ee6b8;
+  --time: #f5b55e;
+  --glass-card: rgba(255, 255, 255, 0.05);
+  color: var(--text);
+}
+/* On a phone the banner is a rounded window, not a dark band. */
+html[data-look="day"] .today-hero {
+  margin: 0 0 18px;
+  border-radius: var(--r-3);
+  padding-inline: 20px;
+  padding-bottom: 14px;
+}
+
+html[data-look="day"] body.in-app,
+html[data-look="day"] body.in-setup {
+  background:
+    radial-gradient(90% 40% at 50% -8%, rgba(106, 88, 242, 0.1), transparent 65%),
+    var(--bg);
+  background-attachment: fixed;
+}
+html[data-look="day"] .sky {
+  display: none;
+}
+html[data-look="day"] .bar {
+  background: rgba(246, 244, 251, 0.82);
+}
+@media (max-width: 899px) {
+  html[data-look="day"] .dock {
+    background: rgba(255, 255, 255, 0.92);
+    box-shadow: 0 16px 40px -18px rgba(23, 20, 42, 0.35);
+  }
+}
+html[data-look="day"] .panel {
+  box-shadow: var(--shadow-1);
+}
+html[data-look="day"] .btn-ghost,
+html[data-look="day"] .chip,
+html[data-look="day"] .legend-row,
+html[data-look="day"] .legend-row:first-child {
+  background: rgba(23, 20, 42, 0.035);
+}
+html[data-look="day"] body:not([data-view="study"]) :is(.input, .field input, .field select, .field textarea) {
+  background: #ffffff;
+}
+html[data-look="day"] .sheet-journal input.ink {
+  background: transparent;
+}
+html[data-look="day"] dialog.sheet::backdrop {
+  background: rgba(23, 20, 42, 0.35);
+}
+html[data-look="day"] .now-step {
+  background: linear-gradient(140deg, rgba(106, 88, 242, 0.12), #ffffff);
+  border-color: rgba(106, 88, 242, 0.32);
+}
+html[data-look="day"] .pl-shelf {
+  border-bottom-color: rgba(106, 88, 242, 0.35);
+  box-shadow: 0 12px 24px -16px rgba(106, 88, 242, 0.45);
+}
+html[data-look="day"] .pl-spine {
+  background: #ffffff;
+}
+html[data-look="day"] .setting input[type="checkbox"]::after {
+  background: #ffffff;
+  box-shadow: 0 1px 3px rgba(23, 20, 42, 0.3);
+}
+html[data-look="day"] .setting input[type="checkbox"]:not(:checked) {
+  background: var(--surface-3);
+}
+/* Lite mode (no blur) and browsers without blur: solid, light bars. */
+html[data-look="day"][data-lite] :is(.bar, .dock, .land-bar.scrolled, .globe-dock, .gd-panel) {
+  background: rgba(250, 249, 253, 0.97) !important;
+}
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  html[data-look="day"] :is(.bar, .dock, .land-bar.scrolled, .globe-dock, .gd-panel) {
+    background: rgba(250, 249, 253, 0.97) !important;
+  }
+}
+/* The Study Room keeps Night's bar and dock, like the room itself. */
+html[data-look="day"][data-lite] body[data-view="study"] :is(.bar, .dock) {
+  background: rgba(11, 10, 18, 0.96) !important;
+}

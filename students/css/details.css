@@ -41,77 +41,12 @@
   content: "";
   position: absolute;
 }
-
-/* Glass: a pane of glass slides under the words, a sheen crossing it. */
-html.has-ink[data-look="glass"] .bar-nav a[aria-current="page"] {
-  background: none;
-  box-shadow: none;
-}
-html.has-ink[data-look="glass"] .bar-nav a[aria-current="page"]::after {
-  display: none;
-}
-html[data-look="glass"] .bar-nav .nav-ink {
-  top: calc(50% - 18px);
-  bottom: auto;
-  height: 36px;
-  overflow: hidden;
-  border-radius: 999px;
-  background: rgba(255, 255, 255, 0.1);
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.16), inset 0 0 0 1px rgba(255, 255, 255, 0.07);
-  transition-timing-function: var(--spring), var(--spring), ease;
-}
-html[data-look="glass"] .nav-ink::after {
-  inset: 0 auto 0 -60%;
-  width: 60%;
-  background: linear-gradient(100deg, transparent, rgba(255, 255, 255, 0.28), transparent);
-  opacity: 0;
-}
-html[data-look="glass"] .nav-ink.go::after {
-  animation: ink-sheen 0.75s ease-out both;
-}
 @keyframes ink-sheen {
   from { transform: translateX(0); opacity: 1; }
   to { transform: translateX(280%); opacity: 0; }
 }
-html[data-look="glass"] .dock .nav-ink {
-  top: 7px;
-  bottom: 7px;
-  border-radius: 20px;
-  background: rgba(255, 255, 255, 0.07);
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.12);
-  transition-timing-function: var(--spring), var(--spring), ease;
-}
-
-/* Signal: one red dot that stretches into a dash on its way. */
-html.has-ink[data-look="signal"] .bar-nav a[aria-current="page"]::after {
-  display: none;
-}
-html[data-look="signal"] .nav-ink::before {
-  left: 50%;
-  bottom: -2px;
-  width: 6px;
-  height: 6px;
-  margin-left: -3px;
-  border-radius: 50%;
-  background: var(--red);
-  box-shadow: 0 0 8px rgba(255, 59, 48, 0.7);
-}
-html[data-look="signal"] .nav-ink.go::before {
-  animation: ink-dash 0.55s var(--glide) both;
-}
 @keyframes ink-dash {
   45% { transform: scaleX(5); border-radius: 3px; }
-}
-html[data-look="signal"] .dock .nav-ink::before {
-  bottom: 6px;
-}
-
-/* Verse keeps its torn paper tab -- it slams onto the page it names. */
-html[data-look="verse"] .nav-ink {
-  display: none;
-}
-html[data-look="verse"] .bar-nav a[aria-current="page"] {
-  animation: verse-slam 0.4s steps(4) both;
 }
 @keyframes verse-slam {
   0% { transform: rotate(-9deg) scale(1.45); }
@@ -183,13 +118,6 @@ html[data-look="verse"] .bar-nav a[aria-current="page"] {
   from { transform: scale(0.2) rotate(-20deg); opacity: 1; }
   70% { opacity: 1; }
   to { transform: scale(1.15) rotate(8deg); opacity: 0; }
-}
-/* Something to hold, too: a press dips the button a little. */
-html[data-look="glass"] :is(.btn, .chip, .icon-btn):active {
-  transform: scale(0.965);
-}
-html[data-look="glass"] :is(.btn, .chip, .icon-btn) {
-  transition: transform 0.25s var(--spring), background 0.2s, box-shadow 0.2s, color 0.2s;
 }
 
 /* ===== A task, done ========================================================= */
@@ -303,53 +231,8 @@ html[data-look="glass"] :is(.btn, .chip, .icon-btn) {
 .num-rolling {
   font-variant-numeric: tabular-nums;
 }
-html[data-look="glass"] .num-rolling {
-  text-shadow: 0 0 14px rgba(170, 210, 255, 0.55);
-}
-html[data-look="signal"] .num-rolling {
-  color: var(--red);
-}
-html[data-look="verse"] .num-landed {
-  display: inline-block;
-  animation: num-pop 0.36s steps(3);
-}
 @keyframes num-pop {
   from { transform: scale(1.35) rotate(-4deg); }
-}
-
-/* ===== Cards lean towards the pointer ======================================= */
-
-@media (hover: hover) and (pointer: fine) {
-  html[data-look="glass"] :is(.look-opt, .systems li) {
-    transition: transform 0.45s var(--glide);
-  }
-  html[data-look="glass"] .leaning {
-    transform: perspective(900px) rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg)) translateY(-2px);
-    transition-duration: 0.12s;
-  }
-}
-
-/* ===== Panels arrive as you scroll ========================================== */
-/* Only panels that start below the fold (js/details.js marks them), so
-   nothing on screen ever fades back.
-   Not in the Study Room. */
-
-@supports (animation-timeline: view()) {
-  html:is([data-look="glass"], [data-look="signal"], [data-look="verse"]) .surface:not([data-surface="study"]) .panel.below {
-    animation-timeline: view();
-    animation-range: entry 0% entry 70%;
-    animation-fill-mode: both;
-    animation-timing-function: linear;
-  }
-  html[data-look="glass"] .surface:not([data-surface="study"]) .panel.below {
-    animation-name: scroll-glass;
-  }
-  html[data-look="signal"] .surface:not([data-surface="study"]) .panel.below {
-    animation-name: scroll-signal;
-  }
-  html[data-look="verse"] .surface:not([data-surface="study"]) .panel.below {
-    animation-name: scroll-verse;
-  }
 }
 @keyframes scroll-glass {
   from { opacity: 0.15; transform: translate3d(0, 40px, 0) scale(0.97); }
@@ -360,32 +243,8 @@ html[data-look="verse"] .num-landed {
 @keyframes scroll-verse {
   from { opacity: 0.2; transform: translate3d(-18px, 36px, 0) rotate(-2.5deg) scale(0.95); }
 }
-
-/* ===== Notices ============================================================== */
-
-html[data-look="glass"] .toast {
-  animation: toast-glass 0.6s var(--spring) both;
-}
 @keyframes toast-glass {
   from { opacity: 0; transform: translateY(24px) scale(0.94); }
-}
-/* Signal: a strip of LEDs fills along the top edge as it arrives. */
-html[data-look="signal"] .toast {
-  position: relative;
-  overflow: hidden;
-  font-family: var(--f-mono);
-  animation: toast-signal 0.4s steps(4) both;
-}
-html[data-look="signal"] .toast::before {
-  content: "";
-  position: absolute;
-  left: 0;
-  top: 0;
-  height: 3px;
-  width: 100%;
-  background: radial-gradient(circle, var(--red) 1.3px, transparent 1.6px) 0 0 / 6px 3px repeat-x;
-  transform-origin: 0 50%;
-  animation: toast-leds 0.9s steps(10) both;
 }
 @keyframes toast-signal {
   from { opacity: 0; transform: translateY(14px); }
@@ -393,61 +252,10 @@ html[data-look="signal"] .toast::before {
 @keyframes toast-leds {
   from { transform: scaleX(0); }
 }
-/* Verse: a speech balloon, slapped on. */
-html[data-look="verse"] .toast {
-  position: relative;
-  background: var(--paper);
-  color: var(--ink);
-  border: 3px solid var(--ink);
-  border-radius: 18px;
-  box-shadow: 4px 4px 0 var(--hot);
-  font-weight: 600;
-  animation: toast-verse 0.45s steps(4) both;
-}
-html[data-look="verse"] .toast::after {
-  content: "";
-  position: absolute;
-  left: 28px;
-  bottom: -14px;
-  width: 18px;
-  height: 14px;
-  background: var(--paper);
-  clip-path: polygon(0 0, 100% 0, 10% 100%);
-}
 @keyframes toast-verse {
   0% { opacity: 0; transform: scale(0.5) rotate(-6deg); }
   50% { opacity: 1; transform: scale(1.08) rotate(1deg); }
   100% { transform: scale(1) rotate(-1deg); }
-}
-
-/* ===== Waiting for a page =================================================== */
-
-html[data-look="glass"] .loading-line {
-  height: 3px;
-  background: rgba(255, 255, 255, 0.06);
-}
-html[data-look="glass"] .loading-line::after {
-  width: 45%;
-  background: linear-gradient(90deg, transparent, rgba(220, 235, 255, 0.85), transparent);
-}
-html[data-look="signal"] .loading-line {
-  height: 4px;
-  background: radial-gradient(circle, rgba(255, 255, 255, 0.18) 1.4px, transparent 1.7px) 0 0 / 8px 4px repeat-x;
-}
-html[data-look="signal"] .loading-line::after {
-  width: 24%;
-  background: radial-gradient(circle, var(--red) 1.4px, transparent 1.7px) 0 0 / 8px 4px repeat-x;
-  animation-timing-function: steps(12);
-}
-html[data-look="verse"] .loading-line {
-  height: 8px;
-  background: var(--ink);
-  border: 2px solid var(--paper);
-  border-radius: 0;
-}
-html[data-look="verse"] .loading-line::after {
-  background: repeating-linear-gradient(-45deg, var(--hot) 0 6px, var(--cyan) 6px 12px);
-  animation-timing-function: steps(8);
 }
 
 /* ===== How far down the page you are ====================================== */
@@ -455,48 +263,13 @@ html[data-look="verse"] .loading-line::after {
 .read-line {
   display: none;
 }
-@supports (animation-timeline: scroll()) {
-  html:is([data-look="glass"], [data-look="signal"], [data-look="verse"]) body.in-app .read-line {
-    display: block;
-    position: fixed;
-    left: 0;
-    right: 0;
-    top: var(--bar-h);
-    z-index: 41;
-    height: 2px;
-    transform: scaleX(0);
-    transform-origin: 0 50%;
-    pointer-events: none;
-    animation: read-fill linear both;
-    animation-timeline: scroll(root);
-  }
-}
 @keyframes read-fill {
   from { transform: scaleX(0); }
   to { transform: scaleX(1); }
 }
-html[data-look="glass"] .read-line {
-  background: linear-gradient(90deg, rgba(150, 190, 255, 0), rgba(200, 225, 255, 0.85));
-  box-shadow: 0 0 10px rgba(170, 210, 255, 0.6);
-}
-html[data-look="signal"] .read-line {
-  height: 3px;
-  background: radial-gradient(circle, var(--red) 1.2px, transparent 1.5px) 0 0 / 6px 3px repeat-x;
-}
-html[data-look="verse"] .read-line {
-  height: 4px;
-  background: linear-gradient(90deg, var(--hot), var(--cyan));
-  box-shadow: 0 2px 0 var(--ink);
-}
 /* The Study Room is quiet. */
 body[data-view="study"] .read-line {
   display: none !important;
-}
-
-/* ===== Signal: the clock's colon blinks, like a bedside clock ============== */
-
-html[data-look="signal"] .clock-colon {
-  animation: colon-blink 1s steps(1) infinite;
 }
 @keyframes colon-blink {
   50% { opacity: 0.15; }
@@ -543,9 +316,6 @@ html:not([data-effects="lively"]) :is(.fx-ambient, .verse-rifts, .verse-spray, .
   display: none !important;
 }
 html:not([data-effects="lively"]) :is(.clock-colon, .slipping, .sky-star.lit circle:first-child) {
-  animation: none !important;
-}
-html:not([data-effects="lively"])[data-look="verse"] :is(.bar-clock, .s-head h1, .panel:hover) {
   animation: none !important;
 }
 
