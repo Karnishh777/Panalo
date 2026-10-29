@@ -1322,15 +1322,19 @@ try {
     const importOn = async (text) => {
       await b.evaluate(() => import("/students/js/journey.js").then((m) => m.openImport()));
       await b.setInputFiles("#journey-file", { name: "journey.json", mimeType: "application/json", buffer: Buffer.from(text) });
-      await b.waitForTimeout(200);
+      // The file is read before it can be brought back: wait for its verdict.
+      await b.waitForFunction(() => document.querySelector("dialog.sheet[open] p[aria-live]")?.textContent.trim(), null, { timeout: 5000 }).catch(() => {});
       await b.click("#journey-import-go");
       await b.waitForTimeout(400);
     };
     await importOn(changed);
     check("a changed journey is refused", /changed after it was downloaded/.test(await b.textContent(".sheet .sheet-body")));
     await b.keyboard.press("Escape");
+    // Bringing it back reloads the page: wait for that reload to finish.
+    const reloaded = b.waitForEvent("load", { timeout: 10000 }).catch(() => {});
     await importOn(JSON.stringify(sealed));
-    await b.waitForFunction(() => window.__qa.db.student_profiles.find((r) => r.setup_at)?.prep_slots?.length === 2, null, { timeout: 10000 }).catch(() => {});
+    await reloaded;
+    await b.waitForSelector("#app:not([hidden])", { timeout: 15000 }).catch(() => {});
     await b.evaluate(() => window.__qa.ready).catch(() => {});
     const back = await b.evaluate(() => window.__qa.db.student_profiles.find((r) => r.setup_at));
     check("the same account brings its journey back", back?.prep_slots?.length === 2 && back?.weekend_plan === "ask", JSON.stringify(back?.prep_slots));
