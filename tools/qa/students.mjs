@@ -298,8 +298,11 @@ try {
     for (let i = 0; i < 3 && (await page.isVisible(".ci-chapter >> nth=0 >> .bc-option")); i++) await page.click(".ci-chapter >> nth=0 >> .bc-option[data-correct]");
     check("…with an optional quick check that corrects the rating", /3 of 3 right/.test(await page.textContent(".ci-chapter >> nth=0 >> .ci-verdict")) && (await page.getAttribute('.ci-chapter >> nth=0 >> .chip[aria-checked="true"]', "data-value")) === "strong");
     await page.click("#ci-next");
-    await page.waitForSelector(".check-in h2:has-text('Chemistry')", { timeout: 15000 }).catch(() => {});
-    check("checking in on all goes on to the next subject", /Chemistry/.test(await page.textContent(".check-in h2")));
+    // The next subject's sheet opens as this one closes: for a moment both
+    // are in the page, so wait for the new one rather than read the first.
+    const nextSubject = await page.waitForSelector(".check-in h2:has-text('Chemistry')", { timeout: 15000 }).then(() => true, () => false);
+    check("checking in on all goes on to the next subject", nextSubject);
+    await page.waitForFunction(() => document.querySelectorAll(".check-in").length === 1, null, { timeout: 5000 }).catch(() => {});
     await page.click("#ci-next");
     await page.click('.ci-taught .chip[data-value="1"]');
     await page.click('.ci-feel .chip[data-value="strong"]');
