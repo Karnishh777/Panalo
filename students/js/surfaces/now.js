@@ -405,7 +405,6 @@ export function mount(section, ctx) {
     console.error(e);
   }
   unsubs.push(redrawOn(root, render), onTimer(renderLog));
-  if (store.resources === null) import("../archive-data.js").then((m) => m.loadResources()).catch(() => {});
   if (store.schemaMissing) logEl.before(emptyState("Your study data can't be saved here yet.", "See the note at the top of the page."));
 }
 

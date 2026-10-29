@@ -4,7 +4,7 @@
 //   QA_SHOTS=/tmp/shots node tools/qa/students.mjs
 //
 // Covers the real flows end to end: sign-up and the setup, tasks and a
-// focus session reaching the world, the calendar, the private archive,
+// focus session reaching the world, the calendar,
 // privacy and data, and the phone layout. Panalo Students is
 // private: nothing in it is shown to anyone else, and the checks say so. Nothing here can reach a real Supabase project
 // (see tools/qa/README.md).
@@ -530,42 +530,9 @@ try {
   await go(page, "#/signals/join", 900);
   check("an old link to Signals or a room opens Now instead", (await page.evaluate(() => document.body.dataset.view)) === "now" && !(await page.isVisible("dialog[open]")));
 
-  // ---- Archive ------------------------------------------------------------------------
-  await go(page, "#/archive", 1000);
-  check("the empty archive says what it is for", await page.isVisible("text=Your shelves are waiting."));
-  await page.click(".s-actions button >> text=Upload");
-  await page.setInputFiles("dialog input[type=file]", { name: "optics-notes.md", mimeType: "text/markdown", buffer: Buffer.from("# Optics\nSnell's law: n1 sin θ1 = n2 sin θ2") });
-  await page.fill("dialog input[list]", "Physics");
-  await page.click("dialog .btn-primary");
-  await page.waitForTimeout(900);
-  const res = await page.evaluate(() => window.__qa.db.resources[0]);
-  check("a file is uploaded privately", res?.object_path.startsWith("u/") && !res.conversation_id && res.shelf === "Physics");
-  check("it is catalogued with its type, size and date", /optics-notes\.md/.test(await page.textContent(".artifacts")) && /Added /.test(await page.textContent(".artifacts")));
-  await page.click(".artifact button >> text=Preview");
-  await page.waitForTimeout(700);
-  check("a text file previews", /Snell's law/.test(await page.textContent("dialog .preview-text").catch(() => "")));
-  await shot(page, "archive");
-  await page.keyboard.press("Escape");
-
-  // A PDF: the upload shows progress, and the preview opens the browser's
-  // viewer from a signed Storage link (a blob: tab is blank under the CSP).
-  await page.click(".s-actions button >> text=Upload");
-  await page.setInputFiles("dialog input[type=file]", { name: "past-paper.pdf", mimeType: "application/pdf", buffer: Buffer.from("%PDF-1.4\n%qa\n") });
-  await page.evaluate(() => {
-    window.__sawMeter = false;
-    const m = document.querySelector("dialog .upload-meter");
-    new MutationObserver(() => !m.hidden && (window.__sawMeter = true)).observe(m, { attributes: true });
-  });
-  await page.click("dialog .btn-primary");
-  await page.waitForTimeout(1100);
-  const meter = await page.evaluate(() => window.__sawMeter);
-  check("an upload shows its progress", meter);
-  check("the PDF is catalogued", await page.evaluate(() => window.__qa.db.resources.some((r) => r.file_name === "past-paper.pdf")));
-  await page.click(".artifact:has-text('past-paper') button >> text=Preview");
-  await page.waitForTimeout(700);
-  const pdfHref = await page.getAttribute("dialog a.btn-primary", "href").catch(() => "");
-  check("a PDF opens from a signed link, not a blob", /\/object\/sign\/student-resources\//.test(pdfHref || ""));
-  await page.keyboard.press("Escape");
+  // ---- Archive: removed. An old link opens Now; nothing offers it. ------------------------
+  await go(page, "#/archive", 900);
+  check("Archive is gone: an old link to it opens Now", (await page.evaluate(() => document.body.dataset.view)) === "now" && !(await page.$('[data-route="archive"]')));
 
   // ---- Warp and privacy -----------------------------------------------------------------
   await page.keyboard.press("Control+k");
@@ -668,7 +635,7 @@ try {
   await page.click('[data-view-btn="day"]');
   // Nothing anywhere prints a stray null, undefined or NaN.
   const stray = [];
-  for (const r of ["now", "plan", "study", "world", "calendar", "archive", "safety", "settings"]) {
+  for (const r of ["now", "plan", "study", "world", "calendar", "safety", "settings"]) {
     await page.evaluate((r) => (location.hash = `#/${r}`), r);
     await page.waitForTimeout(700);
     const t = await page.evaluate((r) => document.querySelector(`.surface[data-surface="${r}"]`)?.innerText || "", r);
@@ -904,10 +871,6 @@ try {
     // End the rest early to leave the timer idle for what follows.
     await u.click(".study-controls .btn-quiet").catch(() => {});
 
-    // Archive: "/" jumps to search.
-    await go(u, "#/archive", 1200);
-    await u.keyboard.press("/");
-    check("/ jumps to the archive search", await u.evaluate(() => document.activeElement?.classList.contains("arch-search")));
     check("no console errors (batch 3)", u.errors.length === 0);
     if (u.errors.length) console.log(u.errors.join("\n"));
     await u.close();
@@ -1084,11 +1047,14 @@ try {
     await d.click("#signup-submit");
     await finishSetup(d);
     const uid = await d.evaluate(() => window.__qa.db.profiles.find((p) => p.username === "leaving_q").id);
-    await go(d, "#/archive", 900);
-    await d.click(".s-actions button >> text=Upload");
-    await d.setInputFiles("dialog input[type=file]", { name: "mine.txt", mimeType: "text/plain", buffer: Buffer.from("mine") });
-    await d.click("dialog .btn-primary");
-    await d.waitForTimeout(900);
+    // A file kept in the old Archive (before it was removed) still goes
+    // when the account does.
+    await d.evaluate(async (id) => {
+      const { supabaseClient } = await import("/src/client.js");
+      const path = `u/${id}/${crypto.randomUUID()}`;
+      await supabaseClient.storage.from("student-resources").upload(path, new Blob(["mine"], { type: "text/plain" }));
+      await supabaseClient.from("resources").insert([{ title: "mine", file_name: "mine.txt", mime_type: "text/plain", size_bytes: 4, object_path: path }]);
+    }, uid);
     const before = await d.evaluate((id) => window.__qa.storageKeys().filter((o) => o.owner === id).length, uid);
     await go(d, "#/safety", 900);
     await d.click("text=Delete my account");
@@ -1101,7 +1067,7 @@ try {
       profile: window.__qa.db.profiles.some((p) => p.id === id),
       student: (window.__qa.db.student_profiles || []).some((p) => p.user_id === id),
     }), uid);
-    check("deleting an account removes its files, archive, world and profile", before === 1 && after.files === 0 && after.rows === 0 && !after.profile && !after.student);
+    check("deleting an account removes its old archive files, world and profile", before === 1 && after.files === 0 && after.rows === 0 && !after.profile && !after.student);
     check("no console errors (account deletion)", d.errors.length === 0);
     if (d.errors.length) console.log(d.errors.join("\n"));
     await d.close();

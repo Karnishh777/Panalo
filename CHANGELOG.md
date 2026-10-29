@@ -13,6 +13,10 @@ AI, runs as "Pan Lite" (our own planner code does the planning; the AI
 only where nothing else can).
 
 **0.2.0 (in progress)**
+- **Archive removed**: Panalo is a study planner, so the file archive is
+  gone (its page, menu entries, Warp commands and the landing card). Old
+  links to it open Now. Files kept there before still appear in Export
+  my data and are deleted with the account.
 - **Panalo Day, and the redesign finished (stage 3)**: Settings → Look
   offers Night or Day. Day is paper-white and ink with the same violet
   for the one thing to press; the Today banner, Plan's next-step scene
