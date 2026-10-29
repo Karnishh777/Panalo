@@ -11,7 +11,7 @@
         { "q": "Which feature is found in prokaryotic cells?", "o": ["A nucleus", "Mitochondria", "70S ribosomes and circular DNA", "Endoplasmic reticulum"], "a": 2, "why": "Prokaryotes have no membrane-bound organelles; their ribosomes are 70S." },
         { "q": "The resolution of a light microscope is limited by…", "o": ["the magnification", "the wavelength of light", "the size of the slide", "the stain"], "a": 1, "why": "Resolution is about half the wavelength used; electrons have much shorter wavelengths." },
         { "q": "An eyepiece graticule must be calibrated using…", "o": ["a ruler", "a stage micrometer", "a hand lens", "the field diameter only"], "a": 1, "why": "The stage micrometer's known divisions give the value of each graticule unit at that magnification." },
-        { "q": "Which structure is found in the cytoplasm of prokaryotic cells?", "o": ["Endoplasmic reticulum", "70S ribosomes", "Mitochondria", "A nuclear envelope"], "a": 1, "why": "Examiners (2023): two thirds of weaker candidates chose endoplasmic reticulum; prokaryotes have no membrane-bound organelles." }
+        { "q": "Which structure is found in the cytoplasm of prokaryotic cells?", "o": ["70S ribosomes", "Endoplasmic reticulum", "Mitochondria", "A nuclear envelope"], "a": 0, "why": "Examiners (2023): two thirds of weaker candidates chose endoplasmic reticulum; prokaryotes have no membrane-bound organelles." }
       ],
       "long": [
         { "q": "In an electron micrograph a mitochondrion measures 18 mm. Its actual length is 3 µm. Calculate the magnification of the image.", "marks": 2, "paper": "2", "scheme": ["M1: 18 mm = 18 000 µm", "A1: magnification = 18 000 ÷ 3 = × 6000"], "ans": "× 6000" }
@@ -24,8 +24,8 @@
         { "q": "What gives cellulose its strength?", "o": ["Branching", "Hydrogen bonds between parallel chains of β-glucose forming microfibrils", "Ionic bonds", "Helical shape"], "a": 1, "why": "Alternate β-glucose units are inverted, giving straight chains that hydrogen-bond together." },
         { "q": "Which level of protein structure is the sequence of amino acids?", "o": ["Primary", "Secondary", "Tertiary", "Quaternary"], "a": 0, "why": "The primary structure determines how the chain folds." },
         { "q": "Why is water a good solvent?", "o": ["It is non-polar", "It is polar, so ions and polar molecules dissolve", "It has a high density", "It is ionic"], "a": 1, "why": "Its δ+ and δ− regions surround charged and polar particles." },
-        { "q": "Which statement about cellulose is correct?", "o": ["It is a branched chain of α-glucose", "It is an unbranched chain of β-glucose, held in microfibrils by hydrogen bonds", "Its chains coil into a helix", "It is a polymer of fructose"], "a": 1, "why": "Examiners (2023): many thought cellulose is branched or coils into a helix; that describes starch (amylopectin and amylose)." },
-        { "q": "Which statement about triglycerides is correct?", "o": ["They are polar molecules", "They are non-polar and insoluble in water", "They contain peptide bonds", "They are made of nucleotides"], "a": 1, "why": "Examiners (2023): half of weaker candidates believed triglycerides are polar." }
+        { "q": "Which statement about cellulose is correct?", "o": ["It is an unbranched chain of β-glucose, held in microfibrils by hydrogen bonds", "It is a branched chain of α-glucose", "Its chains coil into a helix", "It is a polymer of fructose"], "a": 0, "why": "Examiners (2023): many thought cellulose is branched or coils into a helix; that describes starch (amylopectin and amylose)." },
+        { "q": "Which statement about triglycerides is correct?", "o": ["They are polar molecules", "They contain peptide bonds", "They are non-polar and insoluble in water", "They are made of nucleotides"], "a": 2, "why": "Examiners (2023): half of weaker candidates believed triglycerides are polar." }
       ],
       "long": [
         { "q": "Describe the structure of cellulose and explain how it suits its role in plant cell walls.", "marks": 3, "paper": "2", "scheme": ["B1: β-glucose monomers joined by 1,4 glycosidic bonds, alternate ones rotated 180°", "B1: long straight chains held together by many hydrogen bonds into microfibrils", "B1: giving high tensile strength, so the wall resists bursting when the cell is turgid"] }
@@ -48,7 +48,7 @@
         { "q": "In the fluid mosaic model, what makes the membrane fluid?", "o": ["Proteins", "Phospholipids that move within the layer", "Cellulose", "Glycogen"], "a": 1, "why": "Phospholipids move laterally; cholesterol regulates fluidity." },
         { "q": "Facilitated diffusion uses…", "o": ["ATP", "channel or carrier proteins, down a concentration gradient", "vesicles", "a pump against the gradient"], "a": 1, "why": "It is passive, but needs proteins for polar or charged molecules." },
         { "q": "Water potential of pure water is…", "o": ["positive", "zero", "negative", "infinite"], "a": 1, "why": "Ψ of pure water is 0 kPa; solutes make it negative." },
-        { "q": "Where is cholesterol found in a cell surface membrane?", "o": ["Only between the phospholipid heads", "Between the phospholipid tails, with its OH group near the heads", "Only on the inside surface", "Attached to carbohydrate chains outside"], "a": 1, "why": "Examiners (2023): three fifths of weaker candidates thought cholesterol only occurs between the heads." }
+        { "q": "Where is cholesterol found in a cell surface membrane?", "o": ["Only between the phospholipid heads", "Only on the inside surface", "Attached to carbohydrate chains outside", "Between the phospholipid tails, with its OH group near the heads"], "a": 3, "why": "Examiners (2023): three fifths of weaker candidates thought cholesterol only occurs between the heads." }
       ],
       "long": [
         { "q": "A plant cell is placed in pure water. Explain, in terms of water potential, what happens to the cell.", "marks": 3, "paper": "2", "scheme": ["B1: pure water has a higher (less negative) water potential than the cell (0 kPa)", "B1: water moves into the cell by osmosis, down the water potential gradient, through the partially permeable membrane", "B1: the cell becomes turgid; the cell wall stops it bursting"] }
@@ -70,7 +70,7 @@
         { "q": "Which enzyme joins Okazaki fragments?", "o": ["DNA polymerase", "DNA ligase", "Helicase", "RNA polymerase"], "a": 1, "why": "Ligase seals the gaps in the lagging strand." },
         { "q": "During translation, tRNA anticodons pair with…", "o": ["DNA bases", "mRNA codons", "amino acids", "ribosomal proteins"], "a": 1, "why": "Complementary base pairing places the right amino acid." },
         { "q": "A substitution mutation may have no effect because…", "o": ["DNA always repairs it", "the genetic code is degenerate (several codons per amino acid)", "it affects RNA only", "proteins ignore it"], "a": 1, "why": "A different codon can still code for the same amino acid." },
-        { "q": "Which sugar is found in ATP?", "o": ["Deoxyribose", "Ribose", "Glucose", "Sucrose"], "a": 1, "why": "Examiners (2023): nearly three fifths of weaker candidates said deoxyribose." }
+        { "q": "Which sugar is found in ATP?", "o": ["Deoxyribose", "Glucose", "Ribose", "Sucrose"], "a": 2, "why": "Examiners (2023): nearly three fifths of weaker candidates said deoxyribose." }
       ],
       "long": [
         { "q": "Describe how DNA replicates semi-conservatively.", "marks": 4, "paper": "2", "scheme": ["B1: hydrogen bonds between bases break and the double helix unwinds (helicase)", "B1: each strand acts as a template", "B1: free nucleotides pair with complementary bases (A–T, C–G)", "B1: DNA polymerase joins the nucleotides, so each new molecule has one old strand and one new strand"] }
@@ -82,7 +82,7 @@
         { "q": "What drives water up the xylem?", "o": ["Root pressure only", "Transpiration pull, with cohesion and adhesion", "Active transport in xylem", "Gravity"], "a": 1, "why": "Evaporation from leaves creates tension that pulls a continuous column of water up." },
         { "q": "Sucrose is loaded into phloem sieve tubes by…", "o": ["diffusion", "co-transport with H⁺ via companion cells", "osmosis", "transpiration"], "a": 1, "why": "Companion cells pump H⁺ out; sucrose re-enters with H⁺ through co-transporters." },
         { "q": "Xerophytes reduce water loss by…", "o": ["having more stomata", "sunken stomata, rolled leaves and thick cuticles", "large thin leaves", "shallow roots only"], "a": 1, "why": "These trap humid air and reduce the surface exposed." },
-        { "q": "Water moving through the apoplast pathway in a root:", "o": ["moves by mass flow through cell walls", "moves only by osmosis through membranes", "is pumped by active transport", "passes through plasmodesmata"], "a": 0, "why": "Examiners (2023): over half of candidates said the apoplast pathway does not involve mass flow." }
+        { "q": "Water moving through the apoplast pathway in a root:", "o": ["moves only by osmosis through membranes", "moves by mass flow through cell walls", "is pumped by active transport", "passes through plasmodesmata"], "a": 1, "why": "Examiners (2023): over half of candidates said the apoplast pathway does not involve mass flow." }
       ]
     },
     {
@@ -101,14 +101,15 @@
       "questions": [
         { "q": "What is the role of cartilage in the trachea?", "o": ["Gas exchange", "Keeps the airway open", "Makes mucus", "Moves mucus"], "a": 1, "why": "C-shaped rings stop the trachea collapsing." },
         { "q": "Goblet cells…", "o": ["beat to move mucus", "secrete mucus that traps particles", "exchange gases", "contract to narrow airways"], "a": 1, "why": "Cilia then sweep the mucus upwards." },
-        { "q": "Which tissue lines the trachea and bronchi and produces mucus?", "o": ["Ciliated epithelium with goblet cells", "Smooth muscle", "Cartilage", "Squamous endothelium"], "a": 0, "why": "Examiners (2023): 'endothelium' was a wrong choice: that term is only used for blood vessels." }
+        { "q": "Which tissue lines the trachea and bronchi and produces mucus?", "o": ["Smooth muscle", "Ciliated epithelium with goblet cells", "Cartilage", "Squamous endothelium"], "a": 1, "why": "Examiners (2023): 'endothelium' was a wrong choice: that term is only used for blood vessels." }
       ]
     },
     {
       "id": "10", "stage": "as", "name": "Infectious diseases",
       "questions": [
         { "q": "Which organism causes malaria?", "o": ["A bacterium", "A virus", "Plasmodium (a protoctist)", "A fungus"], "a": 2, "why": "Plasmodium is transmitted by female Anopheles mosquitoes." },
-        { "q": "How does penicillin kill bacteria?", "o": ["It destroys DNA", "It stops cell wall synthesis, so cells burst", "It blocks ribosomes in human cells", "It dissolves membranes"], "a": 1, "why": "Without strong walls, bacteria burst by osmosis as they grow." }
+        { "q": "How does penicillin kill bacteria?", "o": ["It destroys DNA", "It stops cell wall synthesis, so cells burst", "It blocks ribosomes in human cells", "It dissolves membranes"], "a": 1, "why": "Without strong walls, bacteria burst by osmosis as they grow." },
+        { "q": "How is cholera transmitted?", "o": ["By mosquito bites", "Through the air", "Through water or food contaminated with faeces containing Vibrio cholerae", "By sexual contact"], "a": 2, "why": "Treatment of sewage and clean drinking water prevent it." }
       ],
       "long": [
         { "q": "Explain how a population of bacteria becomes resistant to an antibiotic.", "marks": 3, "paper": "2", "scheme": ["B1: a random mutation gives a bacterium resistance (e.g. a gene for an enzyme that breaks down the antibiotic)", "B1: when the antibiotic is used, resistant bacteria survive and non-resistant ones die (selection pressure)", "B1: resistant bacteria reproduce and pass on the allele, also by horizontal gene transfer on plasmids"] }
@@ -184,21 +185,24 @@
       "id": "17", "stage": "a2", "name": "Selection and evolution",
       "questions": [
         { "q": "The Hardy–Weinberg equation is p² + 2pq + q² = 1. What is 2pq?", "o": ["Frequency of homozygous dominants", "Frequency of heterozygotes", "Frequency of the recessive allele", "Frequency of homozygous recessives"], "a": 1, "why": "p² = AA, 2pq = Aa, q² = aa." },
-        { "q": "Genetic drift has the largest effect in…", "o": ["large populations", "small populations", "all populations equally", "plants only"], "a": 1, "why": "Chance changes in allele frequency matter more when numbers are small." }
+        { "q": "Genetic drift has the largest effect in…", "o": ["large populations", "small populations", "all populations equally", "plants only"], "a": 1, "why": "Chance changes in allele frequency matter more when numbers are small." },
+        { "q": "What is genetic drift?", "o": ["Natural selection of the fittest", "Mutation", "Migration between populations", "Random changes in allele frequency, strongest in small populations"], "a": 3, "why": "The founder effect and bottlenecks are examples." }
       ]
     },
     {
       "id": "18", "stage": "a2", "name": "Classification, biodiversity and conservation",
       "questions": [
         { "q": "Simpson's index of diversity is higher when…", "o": ["one species dominates", "there are many species with similar numbers", "there are few individuals", "species are large"], "a": 1, "why": "Diversity includes both richness and evenness." },
-        { "q": "Which are the three domains?", "o": ["Plants, animals, fungi", "Archaea, Bacteria, Eukarya", "Prokaryotes, eukaryotes, viruses", "Vertebrates, invertebrates, plants"], "a": 1, "why": "Domains are the highest rank in classification." }
+        { "q": "Which are the three domains?", "o": ["Plants, animals, fungi", "Archaea, Bacteria, Eukarya", "Prokaryotes, eukaryotes, viruses", "Vertebrates, invertebrates, plants"], "a": 1, "why": "Domains are the highest rank in classification." },
+        { "q": "Which is the correct order of taxonomic ranks, largest first?", "o": ["Kingdom, domain, class, phylum, order, genus, family, species", "Domain, kingdom, phylum, class, order, family, genus, species", "Species, genus, family, order, class, phylum, kingdom, domain", "Domain, phylum, kingdom, class, family, order, genus, species"], "a": 1, "why": "There are three domains: Bacteria, Archaea, Eukarya." }
       ]
     },
     {
       "id": "19", "stage": "a2", "name": "Genetic technology",
       "questions": [
         { "q": "What does PCR do?", "o": ["Cuts DNA", "Makes many copies of a DNA sequence", "Sequences proteins", "Separates DNA by size"], "a": 1, "why": "Cycles of denaturing, annealing primers and extending with Taq polymerase." },
-        { "q": "Gel electrophoresis separates DNA fragments by…", "o": ["charge sign", "size (smaller fragments move further)", "colour", "base sequence"], "a": 1, "why": "Negatively charged DNA moves towards the anode; small fragments travel faster." }
+        { "q": "Gel electrophoresis separates DNA fragments by…", "o": ["charge sign", "size (smaller fragments move further)", "colour", "base sequence"], "a": 1, "why": "Negatively charged DNA moves towards the anode; small fragments travel faster." },
+        { "q": "What do restriction enzymes do?", "o": ["Cut DNA at specific base sequences", "Join DNA fragments", "Copy DNA", "Translate mRNA"], "a": 0, "why": "DNA ligase joins fragments; sticky ends help them pair." }
       ],
       "long": [
         { "q": "Describe how PCR is used to amplify a sample of DNA.", "marks": 4, "paper": "4", "scheme": ["B1: heated to about 95 °C to separate the strands", "B1: cooled to about 55 °C so primers anneal", "B1: heated to about 72 °C; Taq polymerase extends the strands", "B1: cycle repeated, doubling the DNA each time"] }

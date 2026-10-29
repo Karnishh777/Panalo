@@ -11,7 +11,7 @@
         { "q": "A length is measured as 2.50 ± 0.05 m. What is the percentage uncertainty?", "o": ["0.05%", "1%", "2%", "5%"], "a": 2, "why": "0.05 ÷ 2.50 × 100 = 2%." },
         { "q": "Which pair contains one scalar and one vector?", "o": ["Speed and mass", "Velocity and acceleration", "Work and momentum", "Force and displacement"], "a": 2, "why": "Work is a scalar; momentum is a vector." },
         { "q": "When two quantities are multiplied, their percentage uncertainties are…", "o": ["multiplied", "added", "subtracted", "averaged"], "a": 1, "why": "For products and quotients, add the percentage uncertainties." },
-        { "q": "Which is the SI base unit of intensity?", "o": ["A", "W m⁻²", "kg s⁻³", "J s⁻¹"], "a": 2, "why": "Examiners (2023): some used the ampere because the symbol I is used for both. Intensity is W m⁻² = kg s⁻³ in base units." }
+        { "q": "Which is the SI base unit of intensity?", "o": ["A", "kg s⁻³", "W m⁻²", "J s⁻¹"], "a": 1, "why": "Examiners (2023): some used the ampere because the symbol I is used for both. Intensity is W m⁻² = kg s⁻³ in base units." }
       ],
       "long": [
         { "q": "A student measures the length of a pendulum as 0.800 ± 0.002 m and its period as 1.80 ± 0.02 s. The acceleration of free fall is given by g = 4π²l/T². Calculate g and its absolute uncertainty.", "marks": 4, "paper": "2", "scheme": ["C1: g = 4π² × 0.800 ÷ 1.80² = 9.75 m s⁻²", "C1: percentage uncertainties 0.25% and 2 × 1.1% = 2.2%", "C1: total about 2.5%, so Δg ≈ 0.24", "A1: g = (9.7 ± 0.2) m s⁻²"], "ans": "(9.7 ± 0.2) m s⁻²" }
@@ -37,7 +37,7 @@
         { "q": "In a perfectly elastic collision, what is conserved besides momentum?", "o": ["Velocity", "Kinetic energy", "Force", "Nothing else"], "a": 1, "why": "Elastic means total kinetic energy is conserved; the relative speed of approach equals that of separation." },
         { "q": "Newton's second law states that resultant force equals…", "o": ["mass × velocity", "the rate of change of momentum", "weight × height", "impulse × time"], "a": 1, "why": "F = Δp/Δt, which becomes F = ma for constant mass." },
         { "q": "The pairs in Newton's third law act on…", "o": ["the same object", "different objects", "only stationary objects", "only in collisions"], "a": 1, "why": "Third-law pairs are equal and opposite and act on different bodies." },
-        { "q": "Which is a correct statement of Newton's second law?", "o": ["Force equals mass times acceleration", "The resultant force is proportional to the rate of change of momentum", "Every force has an equal and opposite force", "An object stays at rest unless acted on"], "a": 1, "why": "Examiners (2023): a common mistake was 'force = mass × acceleration', which is not the law in full." }
+        { "q": "Which is a correct statement of Newton's second law?", "o": ["The resultant force is proportional to the rate of change of momentum", "Force equals mass times acceleration", "Every force has an equal and opposite force", "An object stays at rest unless acted on"], "a": 0, "why": "Examiners (2023): a common mistake was 'force = mass × acceleration', which is not the law in full." }
       ],
       "long": [
         { "q": "A ball of mass 0.15 kg hits a wall at 20 m s⁻¹ and rebounds along the same line at 15 m s⁻¹. It is in contact with the wall for 0.050 s. Calculate the change in momentum of the ball and the average force on it.", "marks": 3, "paper": "2", "scheme": ["C1: change in momentum = 0.15 × (15 − (−20))", "A1: 5.25 N s", "A1: average force = 5.25 ÷ 0.050 = 105 N"], "ans": "5.25 N s; 105 N" }
@@ -49,7 +49,7 @@
         { "q": "For an object in equilibrium, which is true?", "o": ["The resultant force is zero only", "The resultant moment is zero only", "Both the resultant force and the resultant moment are zero", "It must be at rest"], "a": 2, "why": "Equilibrium needs no resultant force and no resultant torque." },
         { "q": "What is upthrust on a submerged object equal to?", "o": ["Its weight", "The weight of fluid displaced", "Its mass × g", "Pressure × its height"], "a": 1, "why": "Archimedes' principle; it comes from the pressure difference across the object (ρgV)." },
         { "q": "The torque of a couple equals…", "o": ["one force × the perpendicular distance between the forces", "the sum of the forces", "force × time", "zero"], "a": 0, "why": "Two equal, opposite, parallel forces produce a torque F × d." },
-        { "q": "The centre of gravity of an object is the point where:", "o": ["all the weight actually acts", "all the weight may be taken to act", "the mass is greatest", "the object balances only when it is symmetrical"], "a": 1, "why": "Examiners (2023): a common misconception was that all the weight actually acts there; it is where the weight is taken to act." }
+        { "q": "The centre of gravity of an object is the point where:", "o": ["all the weight actually acts", "the mass is greatest", "all the weight may be taken to act", "the object balances only when it is symmetrical"], "a": 2, "why": "Examiners (2023): a common misconception was that all the weight actually acts there; it is where the weight is taken to act." }
       ],
       "long": [
         { "q": "Calculate the pressure due to the water 3.0 m below the surface of a lake. The density of water is 1000 kg m⁻³. (g = 9.81 m s⁻²)", "marks": 2, "paper": "2", "scheme": ["C1: p = ρgh", "A1: 2.9 × 10⁴ Pa"], "ans": "2.9 × 10⁴ Pa" }
@@ -72,7 +72,7 @@
         { "q": "Young modulus is defined as…", "o": ["force ÷ extension", "stress ÷ strain", "strain ÷ stress", "force × area"], "a": 1, "why": "E = stress/strain, in Pa." },
         { "q": "What does the area under a force–extension graph (within the limit of proportionality) represent?", "o": ["Stiffness", "Elastic potential energy stored", "Young modulus", "Stress"], "a": 1, "why": "Work done stretching it = ½Fx." },
         { "q": "Plastic deformation means the material…", "o": ["returns to its original shape", "does not return to its original shape when the load is removed", "snaps immediately", "becomes stiffer"], "a": 1, "why": "Beyond the elastic limit, the deformation is permanent." },
-        { "q": "A wire is stretched so that its length increases. Ignoring temperature, what happens to its resistance?", "o": ["It decreases because the area increases", "It increases because the length increases and the area decreases", "It increases only because the length increases", "It is unchanged"], "a": 1, "why": "Examiners (2023): many ignored the change in cross-sectional area when the wire is stretched." }
+        { "q": "A wire is stretched so that its length increases. Ignoring temperature, what happens to its resistance?", "o": ["It decreases because the area increases", "It increases only because the length increases", "It increases because the length increases and the area decreases", "It is unchanged"], "a": 2, "why": "Examiners (2023): many ignored the change in cross-sectional area when the wire is stretched." }
       ],
       "long": [
         { "q": "A wire of length 2.0 m and cross-sectional area 0.40 mm² extends by 1.2 mm when a load of 50 N hangs from it. Calculate the Young modulus of the wire.", "marks": 4, "paper": "2", "scheme": ["C1: stress = 50 ÷ (0.40 × 10⁻⁶) = 1.25 × 10⁸ Pa", "C1: strain = 1.2 × 10⁻³ ÷ 2.0 = 6.0 × 10⁻⁴", "C1: E = stress ÷ strain", "A1: 2.1 × 10¹¹ Pa"], "ans": "2.1 × 10¹¹ Pa" }
@@ -85,7 +85,7 @@
         { "q": "A source moves towards a stationary observer. The observed frequency is…", "o": ["lower", "higher", "unchanged", "zero"], "a": 1, "why": "Doppler effect: wavefronts bunch up, so the frequency observed is higher." },
         { "q": "Which waves can be polarised?", "o": ["Only longitudinal waves", "Only transverse waves", "All waves", "Only sound"], "a": 1, "why": "Polarisation restricts oscillation to one plane, which needs transverse oscillations." },
         { "q": "Unpolarised light passes through a polariser, then an analyser at 60°. What fraction of the light after the polariser gets through? (Malus's law)", "o": ["0.25", "0.5", "0.75", "0.87"], "a": 0, "why": "I = I₀ cos²60° = 0.25 I₀." },
-        { "q": "A wave has wavelength 2.1 cm. In which region of the electromagnetic spectrum is it?", "o": ["Radio waves", "Microwaves", "Infrared", "Visible light"], "a": 1, "why": "Examiners (2023): some thought 2.1 cm was a radio wave. Microwaves run from about 1 mm to 30 cm." }
+        { "q": "A wave has wavelength 2.1 cm. In which region of the electromagnetic spectrum is it?", "o": ["Radio waves", "Infrared", "Microwaves", "Visible light"], "a": 2, "why": "Examiners (2023): some thought 2.1 cm was a radio wave. Microwaves run from about 1 mm to 30 cm." }
       ],
       "long": [
         { "q": "The graph shows the displacement of the particles of a wave against distance at one instant. The frequency of the wave is 50 Hz. Use the graph to find the amplitude and the wavelength, and calculate the speed of the wave.", "marks": 3, "paper": "2", "scheme": ["B1: amplitude = 3.0 mm", "B1: wavelength = 0.40 m", "A1: v = fλ = 20 m s⁻¹"], "ans": "3.0 mm; 0.40 m; 20 m s⁻¹", "fig": "assets/syllabus/fig/9702-wave.svg" }
@@ -98,7 +98,7 @@
         { "q": "In Young's double-slit experiment, fringe spacing x = λD/a. What happens if the slit separation a is halved?", "o": ["x halves", "x doubles", "x is unchanged", "x quadruples"], "a": 1, "why": "x is inversely proportional to a." },
         { "q": "A diffraction grating has 500 lines per mm. What is the line spacing d?", "o": ["2.0 × 10⁻⁶ m", "5.0 × 10⁻⁷ m", "2.0 × 10⁻³ m", "5.0 × 10⁵ m"], "a": 0, "why": "d = 1/(500 × 10³) m = 2.0 × 10⁻⁶ m." },
         { "q": "For a stable interference pattern, the sources must be…", "o": ["of different frequencies", "coherent", "at different amplitudes", "very bright"], "a": 1, "why": "Coherent sources have a constant phase difference." },
-        { "q": "Two waves meet. What is needed for them to superpose?", "o": ["They must be coherent", "They must have the same frequency", "They must be of the same type and meet at a point", "They must travel in opposite directions"], "a": 2, "why": "Examiners (2023): many confused the condition for superposition with those for stationary waves or a stable interference pattern." }
+        { "q": "Two waves meet. What is needed for them to superpose?", "o": ["They must be of the same type and meet at a point", "They must be coherent", "They must have the same frequency", "They must travel in opposite directions"], "a": 0, "why": "Examiners (2023): many confused the condition for superposition with those for stationary waves or a stable interference pattern." }
       ],
       "long": [
         { "q": "In a double-slit experiment the slits are 0.50 mm apart and the screen is 2.0 m away. Light of wavelength 600 nm is used. Calculate the fringe separation.", "marks": 2, "paper": "2", "scheme": ["C1: x = λD ÷ a", "A1: 2.4 mm"], "ans": "2.4 mm" }
@@ -133,7 +133,7 @@
         { "q": "What is the quark composition of a proton?", "o": ["uud", "udd", "uuu", "ud̄"], "a": 0, "why": "Two up (+2/3 each) and one down (−1/3): total charge +1." },
         { "q": "In β⁻ decay, a down quark changes into…", "o": ["a strange quark", "an up quark", "a top quark", "an electron"], "a": 1, "why": "d → u + e⁻ + ν̄ₑ." },
         { "q": "Which are leptons?", "o": ["Protons and neutrons", "Electrons and neutrinos", "Pions", "Quarks"], "a": 1, "why": "Leptons are fundamental particles that don't feel the strong force." },
-        { "q": "Which particles are found in the nucleus?", "o": ["Protons, neutrons and electrons", "Protons and neutrons", "Electrons and neutrons", "Protons only"], "a": 1, "why": "Examiners (2023): some weaker candidates thought there are electrons in the nucleus." }
+        { "q": "Which particles are found in the nucleus?", "o": ["Protons and neutrons", "Protons, neutrons and electrons", "Electrons and neutrons", "Protons only"], "a": 0, "why": "Examiners (2023): some weaker candidates thought there are electrons in the nucleus." }
       ],
       "long": [
         { "q": "A proton is made of up (u) and down (d) quarks. State its quark composition and show that its charge is +e.", "marks": 2, "paper": "2", "scheme": ["B1: uud", "B1: (+⅔ e) + (+⅔ e) + (−⅓ e) = +e"], "ans": "uud" }
@@ -143,7 +143,8 @@
       "id": "12", "stage": "a2", "name": "Motion in a circle",
       "questions": [
         { "q": "An object moves in a circle of radius 2.0 m at 4.0 m s⁻¹. What is its centripetal acceleration?", "o": ["2.0 m s⁻²", "4.0 m s⁻²", "8.0 m s⁻²", "32 m s⁻²"], "a": 2, "why": "a = v²/r = 16 ÷ 2.0 = 8.0 m s⁻²." },
-        { "q": "Angular speed ω is related to period T by…", "o": ["ω = 2πT", "ω = 2π/T", "ω = T/2π", "ω = πT²"], "a": 1, "why": "One revolution is 2π radians in time T." }
+        { "q": "Angular speed ω is related to period T by…", "o": ["ω = 2πT", "ω = 2π/T", "ω = T/2π", "ω = πT²"], "a": 1, "why": "One revolution is 2π radians in time T." },
+        { "q": "A body moves at constant speed in a circle. Its acceleration is:", "o": ["Zero", "Along the direction of motion", "Towards the centre, with constant magnitude", "Away from the centre"], "a": 2, "why": "The direction of velocity changes, so there is a centripetal acceleration v²/r." }
       ],
       "long": [
         { "q": "A car of mass 900 kg travels at a constant speed of 15 m s⁻¹ round a horizontal bend of radius 50 m. Calculate the centripetal force required.", "marks": 2, "paper": "4", "scheme": ["C1: F = mv²/r", "A1: = 900 × 15² ÷ 50 = 4050 N"], "ans": "4.1 × 10³ N" }
@@ -164,7 +165,8 @@
       "id": "14", "stage": "a2", "name": "Temperature",
       "questions": [
         { "q": "What is 27 °C in kelvin?", "o": ["246 K", "273 K", "300 K", "327 K"], "a": 2, "why": "T(K) = θ(°C) + 273.15 ≈ 300 K." },
-        { "q": "How much energy melts 0.20 kg of ice at 0 °C? (specific latent heat of fusion 3.3 × 10⁵ J kg⁻¹)", "o": ["6.6 × 10³ J", "6.6 × 10⁴ J", "1.65 × 10⁶ J", "3.3 × 10⁵ J"], "a": 1, "why": "E = mL = 0.20 × 3.3 × 10⁵ = 6.6 × 10⁴ J." }
+        { "q": "How much energy melts 0.20 kg of ice at 0 °C? (specific latent heat of fusion 3.3 × 10⁵ J kg⁻¹)", "o": ["6.6 × 10³ J", "6.6 × 10⁴ J", "1.65 × 10⁶ J", "3.3 × 10⁵ J"], "a": 1, "why": "E = mL = 0.20 × 3.3 × 10⁵ = 6.6 × 10⁴ J." },
+        { "q": "Specific latent heat of fusion is the energy needed to:", "o": ["Raise unit mass by 1 K", "Boil unit mass", "Change unit mass from solid to liquid with no change in temperature", "Melt any mass"], "a": 2, "why": "Learn definitions exactly: 'unit mass' and 'no change in temperature' both matter." }
       ],
       "long": [
         { "q": "Calculate the energy needed to melt 0.25 kg of ice at 0 °C. (Specific latent heat of fusion = 3.3 × 10⁵ J kg⁻¹)", "marks": 2, "paper": "4", "scheme": ["C1: E = mL", "A1: = 0.25 × 3.3 × 10⁵ = 8.3 × 10⁴ J"], "ans": "8.3 × 10⁴ J" }
@@ -174,7 +176,8 @@
       "id": "15", "stage": "a2", "name": "Ideal gases",
       "questions": [
         { "q": "The mean kinetic energy of a molecule in an ideal gas is proportional to…", "o": ["pressure", "volume", "thermodynamic temperature", "the number of molecules"], "a": 2, "why": "½m⟨c²⟩ = (3/2)kT." },
-        { "q": "For an ideal gas, pV = …", "o": ["nRT", "nR/T", "RT/n", "nT/R"], "a": 0, "why": "The ideal gas equation, with n in moles." }
+        { "q": "For an ideal gas, pV = …", "o": ["nRT", "nR/T", "RT/n", "nT/R"], "a": 0, "why": "The ideal gas equation, with n in moles." },
+        { "q": "The mean kinetic energy of the molecules of an ideal gas is proportional to:", "o": ["The Celsius temperature", "The thermodynamic (kelvin) temperature", "The pressure only", "The volume"], "a": 1, "why": "Mean E_k = (3/2)kT." }
       ],
       "long": [
         { "q": "A gas cylinder of volume 0.020 m³ contains an ideal gas at 2.0 × 10⁵ Pa and 300 K. Calculate the number of moles of gas. (R = 8.31 J mol⁻¹ K⁻¹)", "marks": 3, "paper": "4", "scheme": ["C1: n = pV/(RT)", "C1: = 2.0 × 10⁵ × 0.020 ÷ (8.31 × 300)", "A1: = 1.6 mol"], "ans": "1.6 mol" }
@@ -184,7 +187,8 @@
       "id": "16", "stage": "a2", "name": "Thermodynamics",
       "questions": [
         { "q": "The first law of thermodynamics is ΔU = q + W. W is…", "o": ["work done by the gas", "work done on the system", "heat out", "internal energy"], "a": 1, "why": "In the Cambridge convention, W is work done on the system." },
-        { "q": "For an ideal gas, internal energy depends only on…", "o": ["pressure", "volume", "temperature", "density"], "a": 2, "why": "There are no intermolecular forces, so internal energy is all kinetic, set by temperature." }
+        { "q": "For an ideal gas, internal energy depends only on…", "o": ["pressure", "volume", "temperature", "density"], "a": 2, "why": "There are no intermolecular forces, so internal energy is all kinetic, set by temperature." },
+        { "q": "In the first law, ΔU = q + W. What is W?", "o": ["The work done on the system", "The work done by the system", "The heat lost", "The internal energy"], "a": 0, "why": "Compressing a gas does work on it, so W is positive." }
       ]
     },
     {
@@ -202,7 +206,8 @@
       "id": "18", "stage": "a2", "name": "Electric fields",
       "questions": [
         { "q": "The electric field between parallel plates 0.020 m apart with 400 V across them is…", "o": ["8 V m⁻¹", "800 V m⁻¹", "2.0 × 10⁴ V m⁻¹", "8000 V m⁻¹"], "a": 2, "why": "E = V/d = 400 ÷ 0.020 = 2.0 × 10⁴ V m⁻¹." },
-        { "q": "Coulomb's law: halving the distance between two charges makes the force…", "o": ["half", "double", "four times bigger", "a quarter"], "a": 2, "why": "Coulomb's law is an inverse-square law: F ∝ 1/r²." }
+        { "q": "Coulomb's law: halving the distance between two charges makes the force…", "o": ["half", "double", "four times bigger", "a quarter"], "a": 2, "why": "Coulomb's law is an inverse-square law: F ∝ 1/r²." },
+        { "q": "Electric field strength is:", "o": ["The charge per unit area", "The work per unit charge", "The force on any charge", "The force per unit positive charge"], "a": 3, "why": "Units N C⁻¹ (= V m⁻¹)." }
       ]
     },
     {
@@ -231,7 +236,8 @@
       "id": "21", "stage": "a2", "name": "Alternating currents",
       "questions": [
         { "q": "A sinusoidal a.c. has a peak voltage of 325 V. What is its r.m.s. value?", "o": ["162 V", "230 V", "325 V", "460 V"], "a": 1, "why": "Vrms = V₀/√2 = 325 ÷ 1.414 ≈ 230 V." },
-        { "q": "What does a single diode do to a.c.?", "o": ["Full-wave rectification", "Half-wave rectification", "Smooths it", "Doubles it"], "a": 1, "why": "It lets current through in one direction only, removing half of each cycle." }
+        { "q": "What does a single diode do to a.c.?", "o": ["Full-wave rectification", "Half-wave rectification", "Smooths it", "Doubles it"], "a": 1, "why": "It lets current through in one direction only, removing half of each cycle." },
+        { "q": "A sinusoidal alternating voltage has peak value 10 V. What is its r.m.s. value?", "o": ["5.0 V", "10 V", "14 V", "7.1 V"], "a": 3, "why": "V_rms = V₀ ÷ √2." }
       ]
     },
     {
@@ -249,7 +255,8 @@
       "id": "23", "stage": "a2", "name": "Nuclear physics",
       "questions": [
         { "q": "Binding energy per nucleon is greatest for nuclei around…", "o": ["hydrogen", "iron", "uranium", "helium"], "a": 1, "why": "Iron-56 is near the peak; fusion of lighter and fission of heavier nuclei both release energy." },
-        { "q": "A source has decay constant λ. Its half-life is…", "o": ["λ/ln 2", "ln 2/λ", "1/λ", "2λ"], "a": 1, "why": "t½ = ln 2 / λ ≈ 0.693/λ." }
+        { "q": "A source has decay constant λ. Its half-life is…", "o": ["λ/ln 2", "ln 2/λ", "1/λ", "2λ"], "a": 1, "why": "t½ = ln 2 / λ ≈ 0.693/λ." },
+        { "q": "What is the mass defect of a nucleus?", "o": ["The mass of its electrons", "The mass lost in alpha decay", "The mass of one proton", "The difference between the mass of its separate nucleons and the mass of the nucleus"], "a": 3, "why": "It corresponds to the binding energy, E = Δm c²." }
       ],
       "long": [
         { "q": "A radioactive isotope has a half-life of 8.0 days. Calculate its decay constant and the fraction remaining after 20 days.", "marks": 3, "paper": "4", "scheme": ["C1: λ = ln 2 / 8.0 = 0.0866 day⁻¹", "C1: N/N₀ = e^(−0.0866 × 20)", "A1: = 0.18"], "ans": "0.087 day⁻¹; 0.18" }
@@ -259,7 +266,8 @@
       "id": "24", "stage": "a2", "name": "Medical physics",
       "questions": [
         { "q": "In ultrasound imaging, a gel is used between the probe and skin to…", "o": ["cool the skin", "reduce reflection at the air boundary (match acoustic impedance)", "kill bacteria", "absorb X-rays"], "a": 1, "why": "Air causes almost total reflection; gel matches impedances so ultrasound enters the body." },
-        { "q": "PET scanning detects…", "o": ["X-rays from a tube", "pairs of gamma photons from positron–electron annihilation", "ultrasound echoes", "alpha particles"], "a": 1, "why": "A positron annihilates with an electron, emitting two gamma photons in opposite directions." }
+        { "q": "PET scanning detects…", "o": ["X-rays from a tube", "pairs of gamma photons from positron–electron annihilation", "ultrasound echoes", "alpha particles"], "a": 1, "why": "A positron annihilates with an electron, emitting two gamma photons in opposite directions." },
+        { "q": "Why is gel used between an ultrasound probe and the skin?", "o": ["It cools the skin", "It matches acoustic impedance, so little ultrasound is reflected at the skin", "It amplifies the signal", "It absorbs X-rays"], "a": 1, "why": "Air has a very different impedance from skin, so without gel most of the wave reflects." }
       ]
     },
     {

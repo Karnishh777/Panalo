@@ -10,7 +10,7 @@
         { "q": "What is −5 in 8-bit two's complement?", "o": ["10000101", "11111011", "11111010", "00000101"], "a": 1, "why": "5 = 00000101; invert to 11111010; add 1 to get 11111011." },
         { "q": "How many characters can 8-bit extended ASCII represent?", "o": ["128", "256", "1024", "65 536"], "a": 1, "why": "2⁸ = 256; standard ASCII uses 7 bits (128)." },
         { "q": "Increasing the sampling rate of a sound file…", "o": ["reduces file size", "increases accuracy and file size", "has no effect", "changes the bit depth"], "a": 1, "why": "More samples per second capture the sound more accurately." },
-        { "q": "Run-length encoding of a bitmap image compresses:", "o": ["Repeated characters in a text file", "Runs of consecutive pixels of the same colour", "Only the file header", "The colour depth"], "a": 1, "why": "Examiners (2023): some described compressing a text file using characters instead of colours." }
+        { "q": "Run-length encoding of a bitmap image compresses:", "o": ["Repeated characters in a text file", "Only the file header", "Runs of consecutive pixels of the same colour", "The colour depth"], "a": 2, "why": "Examiners (2023): some described compressing a text file using characters instead of colours." }
       ],
       "long": [
         { "q": "Convert the denary number −45 into an 8-bit two's complement binary integer. Show your working.", "marks": 3, "paper": "1", "scheme": ["M1: +45 = 00101101", "M1: invert the bits: 11010010", "A1: add 1: 11010011"], "ans": "11010011" },
@@ -22,15 +22,16 @@
       "questions": [
         { "q": "Which topology connects every device to a central node?", "o": ["Bus", "Star", "Mesh", "Ring"], "a": 1, "why": "A failure of the central switch stops the network." },
         { "q": "What does CSMA/CD help with on a shared medium?", "o": ["Encryption", "Detecting and handling collisions", "Routing", "Compression"], "a": 1, "why": "Devices listen before sending and back off after a collision." },
-        { "q": "Which is a characteristic, rather than a benefit, of a LAN?", "o": ["Users can share files and printers", "It covers a small geographical area", "It gives every computer internet access", "It saves money"], "a": 1, "why": "Examiners (2023): there was confusion between benefits and characteristics, and 'a LAN gives internet access' was common." },
-        { "q": "An IPv4 address is split into which two parts?", "o": ["Network IP and Host IP", "Network ID and Host ID", "Public and private", "MAC and port"], "a": 1, "why": "Examiners (2023): 'Network IP and Host IP' instead of 'Network ID and Host ID' was a common error." }
+        { "q": "Which is a characteristic, rather than a benefit, of a LAN?", "o": ["It covers a small geographical area", "Users can share files and printers", "It gives every computer internet access", "It saves money"], "a": 0, "why": "Examiners (2023): there was confusion between benefits and characteristics, and 'a LAN gives internet access' was common." },
+        { "q": "An IPv4 address is split into which two parts?", "o": ["Network IP and Host IP", "Public and private", "MAC and port", "Network ID and Host ID"], "a": 3, "why": "Examiners (2023): 'Network IP and Host IP' instead of 'Network ID and Host ID' was a common error." }
       ]
     },
     {
       "id": "3", "stage": "as", "name": "Hardware",
       "questions": [
         { "q": "Which memory must be refreshed constantly?", "o": ["SRAM", "DRAM", "ROM", "Flash"], "a": 1, "why": "DRAM stores bits as charge in capacitors, which leaks." },
-        { "q": "A logic circuit outputs 1 when exactly one input is 1. It is…", "o": ["AND", "OR", "XOR", "NOR"], "a": 2, "why": "XOR is exclusive OR." }
+        { "q": "A logic circuit outputs 1 when exactly one input is 1. It is…", "o": ["AND", "OR", "XOR", "NOR"], "a": 2, "why": "XOR is exclusive OR." },
+        { "q": "Which type of memory must be refreshed constantly?", "o": ["SRAM", "ROM", "DRAM", "Flash memory"], "a": 2, "why": "DRAM stores bits as charge in capacitors, which leaks away." }
       ],
       "long": [
         { "q": "Describe two differences between static RAM (SRAM) and dynamic RAM (DRAM).", "marks": 4, "paper": "1", "scheme": ["B1: SRAM uses flip-flops; DRAM stores bits as charge in capacitors", "B1: DRAM must be refreshed regularly; SRAM does not", "B1: SRAM is faster to access, so it is used for cache", "B1: DRAM is cheaper per bit and denser, so it is used for main memory"] }
@@ -50,21 +51,25 @@
     {
       "id": "5", "stage": "as", "name": "System software",
       "questions": [
-        { "q": "Which is a benefit of an interpreter while developing code?", "o": ["Faster final program", "Errors are reported as each line runs, making debugging easier", "Produces an executable", "Hides source code"], "a": 1, "why": "Compilers produce faster executables but report errors after compiling." }
+        { "q": "Which is a benefit of an interpreter while developing code?", "o": ["Faster final program", "Errors are reported as each line runs, making debugging easier", "Produces an executable", "Hides source code"], "a": 1, "why": "Compilers produce faster executables but report errors after compiling." },
+        { "q": "Which is a utility program?", "o": ["Word processor", "Web browser", "Compiler", "Disk defragmenter"], "a": 3, "why": "Utilities help maintain the computer; others are applications or translators." },
+        { "q": "What does a linker do?", "o": ["Combines object code and library routines into one executable", "Translates source code line by line", "Loads programs into RAM", "Checks syntax"], "a": 0, "why": "A loader then copies the executable into memory." }
       ]
     },
     {
       "id": "6", "stage": "as", "name": "Security, privacy and data integrity",
       "questions": [
         { "q": "A firewall…", "o": ["removes viruses from files", "filters network traffic based on rules", "encrypts disks", "backs up data"], "a": 1, "why": "It allows or blocks traffic between networks." },
-        { "q": "A check digit is used for…", "o": ["encryption", "detecting data entry errors", "compression", "authentication"], "a": 1, "why": "It is calculated from the other digits, e.g. ISBN." }
+        { "q": "A check digit is used for…", "o": ["encryption", "detecting data entry errors", "compression", "authentication"], "a": 1, "why": "It is calculated from the other digits, e.g. ISBN." },
+        { "q": "What does a firewall do?", "o": ["Encrypts all data on a disk", "Checks incoming and outgoing traffic against rules and blocks what is not allowed", "Removes viruses from files", "Backs up data"], "a": 1, "why": "It sits between a network and the outside world." }
       ]
     },
     {
       "id": "7", "stage": "as", "name": "Ethics and ownership",
       "questions": [
         { "q": "Open-source software…", "o": ["has no licence", "makes its source code available to view and modify under a licence", "is always free of all conditions", "cannot be sold"], "a": 1, "why": "Licences like GPL set conditions on sharing changes." },
-        { "q": "Which statement about free software is correct?", "o": ["It is always free of charge but you cannot see the source code", "Users may run, study, modify and share it; the source code is available", "It is the same as freeware", "It cannot be sold"], "a": 1, "why": "Examiners (2023): there was confusion between freeware and free software." }
+        { "q": "Which statement about free software is correct?", "o": ["Users may run, study, modify and share it; the source code is available", "It is always free of charge but you cannot see the source code", "It is the same as freeware", "It cannot be sold"], "a": 0, "why": "Examiners (2023): there was confusion between freeware and free software." },
+        { "q": "Which licence lets users study, modify and redistribute source code?", "o": ["Shareware", "Commercial", "Freeware", "Open source"], "a": 3, "why": "Freeware is free to use but usually without the source code." }
       ]
     },
     {
@@ -72,7 +77,7 @@
       "questions": [
         { "q": "A table is in 1NF when…", "o": ["it has no repeating groups and every field is atomic", "it has no partial dependencies", "it has no transitive dependencies", "it has a foreign key"], "a": 0, "why": "2NF removes partial dependencies; 3NF removes transitive ones." },
         { "q": "A foreign key…", "o": ["uniquely identifies records in its own table", "links to the primary key of another table", "is encrypted", "is always a number"], "a": 1, "why": "It creates the relationship between tables." },
-        { "q": "In a relational table, a tuple is:", "o": ["A column", "A row (one record)", "The primary key", "The table itself"], "a": 1, "why": "Examiners (2023): there was considerable confusion between rows and columns." }
+        { "q": "In a relational table, a tuple is:", "o": ["A column", "The primary key", "The table itself", "A row (one record)"], "a": 3, "why": "Examiners (2023): there was considerable confusion between rows and columns." }
       ],
       "long": [
         { "q": "Explain what is meant by a foreign key, with an example from a school database with the tables STUDENT and CLASS.", "marks": 3, "paper": "1", "scheme": ["B1: an attribute in one table that is the primary key of another table", "B1: it is used to create a relationship between the two tables", "B1: e.g. ClassID in STUDENT links to ClassID, the primary key of CLASS"] }
@@ -81,7 +86,9 @@
     {
       "id": "9", "stage": "as", "name": "Algorithm design and problem-solving",
       "questions": [
-        { "q": "Abstraction means…", "o": ["adding detail", "removing unnecessary detail to focus on what matters", "writing comments", "testing code"], "a": 1, "why": "Decomposition, by contrast, breaks a problem into parts." }
+        { "q": "Abstraction means…", "o": ["adding detail", "removing unnecessary detail to focus on what matters", "writing comments", "testing code"], "a": 1, "why": "Decomposition, by contrast, breaks a problem into parts." },
+        { "q": "FOR Count ← 1 TO 10 … NEXT Count. Which statement should not be inside the loop?", "o": ["OUTPUT Count", "Total ← Total + Count", "Count ← Count + 1", "IF Count = 5 THEN …"], "a": 2, "why": "Examiners (2023): FOR loops sometimes added an extra increment, so the loop ran the wrong number of times." },
+        { "q": "What does a structure chart show?", "o": ["The modules of a program, their hierarchy and the parameters passed", "The order of instructions", "The data stored in a table", "Network connections"], "a": 0, "why": "Arrows show data and flags passed between modules." }
       ],
       "long": [
         { "q": "Write pseudocode for a function LinearSearch(Items, Target) that returns the index of Target in the 1D array Items[1:100], or −1 if it is not found.", "marks": 5, "paper": "2", "scheme": ["M1: function header with parameters and RETURNS INTEGER", "M1: a loop over indices 1 to 100", "M1: compares Items[Index] with Target", "M1: returns Index as soon as it is found", "M1: returns −1 after the loop if not found"] }
@@ -90,7 +97,9 @@
     {
       "id": "10", "stage": "as", "name": "Data types and structures",
       "questions": [
-        { "q": "A stack works on which principle?", "o": ["FIFO", "LIFO", "Random access", "Sorted order"], "a": 1, "why": "Last in, first out; a queue is first in, first out." }
+        { "q": "A stack works on which principle?", "o": ["FIFO", "LIFO", "Random access", "Sorted order"], "a": 1, "why": "Last in, first out; a queue is first in, first out." },
+        { "q": "Which abstract data type is first in, first out?", "o": ["Stack", "Binary tree", "Queue", "Linked list"], "a": 2, "why": "A stack is last in, first out." },
+        { "q": "An item is added to a circular queue that is not full. What changes?", "o": ["All items move down one place", "The front pointer resets to 0", "The queue is emptied first", "Only the rear pointer moves on (wrapping to the start if needed)"], "a": 3, "why": "Examiners (2023): many wrongly said existing contents must be moved." }
       ],
       "long": [
         { "q": "A stack is held in a 1D array Stack[1:50] with a variable TopPointer (0 when empty). Describe how an item is pushed onto the stack.", "marks": 4, "paper": "2", "scheme": ["B1: check whether the stack is full (TopPointer = 50)", "B1: if full, report an error / do not add", "B1: otherwise increment TopPointer by 1", "B1: store the item at Stack[TopPointer]"] }
@@ -100,20 +109,24 @@
       "id": "11", "stage": "as", "name": "Programming",
       "questions": [
         { "q": "A function differs from a procedure because it…", "o": ["has parameters", "returns a value", "can loop", "is shorter"], "a": 1, "why": "Both can take parameters; only a function returns a value." },
-        { "q": "In pseudocode, a function gives back its result with:", "o": ["OUTPUT", "RETURN", "PRINT", "INPUT"], "a": 1, "why": "Examiners (2023): OUTPUT was often used in place of RETURN." }
+        { "q": "In pseudocode, a function gives back its result with:", "o": ["OUTPUT", "PRINT", "RETURN", "INPUT"], "a": 2, "why": "Examiners (2023): OUTPUT was often used in place of RETURN." },
+        { "q": "Which pseudocode extracts 3 characters starting at position 2 of Name?", "o": ["MID(Name, 2, 3)", "LEFT(Name, 3)", "RIGHT(Name, 2)", "Name[2 TO 3]"], "a": 0, "why": "Examiners (2023): LEFT() was used where MID() was needed." }
       ]
     },
     {
       "id": "12", "stage": "as", "name": "Software development",
       "questions": [
         { "q": "Which testing uses values at the edges of the valid range?", "o": ["Normal", "Boundary", "Erroneous", "Integration"], "a": 1, "why": "Boundary data tests the limits, e.g. 0 and 100 for a percentage." },
-        { "q": "A stub is used in testing to:", "o": ["Check the whole program", "Stand in for a module that is not written yet, returning a simple value", "Combine modules together (integration testing)", "Test the final user interface"], "a": 1, "why": "Examiners (2023): mistakes included calling stub testing integration testing or saying the dummy module 'checks' the program." }
+        { "q": "A stub is used in testing to:", "o": ["Check the whole program", "Stand in for a module that is not written yet, returning a simple value", "Combine modules together (integration testing)", "Test the final user interface"], "a": 1, "why": "Examiners (2023): mistakes included calling stub testing integration testing or saying the dummy module 'checks' the program." },
+        { "q": "Why is the waterfall model unsuitable when requirements may change?", "o": ["Each stage is finished before the next, so going back is slow and costly", "It has no testing stage", "It needs no documentation", "It is only for small programs"], "a": 0, "why": "Iterative and RAD models suit changing requirements." }
       ]
     },
     {
       "id": "13", "stage": "a2", "name": "Data representation (floating point)",
       "questions": [
-        { "q": "Normalising a floating-point number…", "o": ["reduces precision", "gives the maximum precision for the mantissa size", "makes it negative", "removes the exponent"], "a": 1, "why": "The first two mantissa bits differ (01 or 10), so no bits are wasted." }
+        { "q": "Normalising a floating-point number…", "o": ["reduces precision", "gives the maximum precision for the mantissa size", "makes it negative", "removes the exponent"], "a": 1, "why": "The first two mantissa bits differ (01 or 10), so no bits are wasted." },
+        { "q": "Why are floating-point numbers normalised?", "o": ["To make them negative", "To give maximum precision and a unique representation", "To use fewer bits for the exponent", "To avoid rounding errors completely"], "a": 1, "why": "A normalised mantissa starts 01 (positive) or 10 (negative)." },
+        { "q": "More bits are given to the mantissa and fewer to the exponent. What happens?", "o": ["Range increases and precision decreases", "Both increase", "Precision increases and range decreases", "Nothing changes"], "a": 2, "why": "The mantissa sets precision; the exponent sets range." }
       ],
       "long": [
         { "q": "Normalise the floating-point number with an 8-bit two's complement mantissa 00010110 and a 4-bit exponent 0011, and state its denary value.", "marks": 4, "paper": "3", "scheme": ["M1: mantissa 0.0010110, exponent 3", "A1: denary value 0.0010110 × 2³ = 1.0110₂ = 1.375", "M1: shift mantissa left 2 places, exponent − 2", "A1: mantissa 01011000, exponent 0001"], "ans": "1.375" }
@@ -122,25 +135,33 @@
     {
       "id": "14", "stage": "a2", "name": "Communication and internet technologies",
       "questions": [
-        { "q": "Which layer of TCP/IP routes packets between networks?", "o": ["Application", "Transport", "Internet", "Link"], "a": 2, "why": "IP at the Internet layer addresses and routes packets." }
+        { "q": "Which layer of TCP/IP routes packets between networks?", "o": ["Application", "Transport", "Internet", "Link"], "a": 2, "why": "IP at the Internet layer addresses and routes packets." },
+        { "q": "Which protocol sends email from a client to a mail server?", "o": ["POP3", "HTTP", "FTP", "SMTP"], "a": 3, "why": "POP3 and IMAP retrieve email." },
+        { "q": "What is true of packet switching?", "o": ["A dedicated path is reserved", "All packets must take the same route", "Packets may take different routes and are reassembled in order", "No headers are needed"], "a": 2, "why": "Circuit switching reserves a path for the whole communication." }
       ]
     },
     {
       "id": "15", "stage": "a2", "name": "Hardware and virtual machines",
       "questions": [
-        { "q": "RISC processors typically have…", "o": ["many complex instructions", "a small set of simple instructions, often executed in one clock cycle", "no registers", "no pipelining"], "a": 1, "why": "This suits pipelining; CISC has many complex instructions." }
+        { "q": "RISC processors typically have…", "o": ["many complex instructions", "a small set of simple instructions, often executed in one clock cycle", "no registers", "no pipelining"], "a": 1, "why": "This suits pipelining; CISC has many complex instructions." },
+        { "q": "Which is a feature of RISC processors?", "o": ["Many complex multi-cycle instructions", "Simple instructions of fixed length, suited to pipelining", "Few registers", "Variable-length instructions only"], "a": 1, "why": "CISC has complex instructions that may take several cycles." },
+        { "q": "What is a virtual machine?", "o": ["A computer with no hardware", "A faster processor", "Software that emulates a computer, running on a host system", "A type of network"], "a": 2, "why": "It lets one machine run another OS, at a cost in performance." }
       ]
     },
     {
       "id": "16", "stage": "a2", "name": "System software (A Level)",
       "questions": [
-        { "q": "Paging is a memory management technique that…", "o": ["divides memory into equal-sized blocks", "deletes files", "compiles code", "schedules printers"], "a": 0, "why": "Processes are split into pages that map to physical frames." }
+        { "q": "Paging is a memory management technique that…", "o": ["divides memory into equal-sized blocks", "deletes files", "compiles code", "schedules printers"], "a": 0, "why": "Processes are split into pages that map to physical frames." },
+        { "q": "What does the lexical analysis stage of compilation do?", "o": ["Removes comments and white space and turns the source into tokens", "Optimises the code", "Checks grammar against the language rules", "Produces machine code"], "a": 0, "why": "Syntax analysis comes next." },
+        { "q": "In paging, memory is divided into:", "o": ["Blocks of varying size", "Fixed-size blocks called pages and frames", "Files", "Registers"], "a": 1, "why": "Segmentation uses variable-size blocks." }
       ]
     },
     {
       "id": "17", "stage": "a2", "name": "Security",
       "questions": [
-        { "q": "A digital signature is created using…", "o": ["the receiver's public key", "the sender's private key", "a shared password", "a check digit"], "a": 1, "why": "Anyone can verify it with the sender's public key." }
+        { "q": "A digital signature is created using…", "o": ["the receiver's public key", "the sender's private key", "a shared password", "a check digit"], "a": 1, "why": "Anyone can verify it with the sender's public key." },
+        { "q": "Data sent to Asha is encrypted with which key?", "o": ["Asha's private key", "Asha's public key", "The sender's private key", "The sender's public key"], "a": 1, "why": "Examiners (2023): candidates confused public and private keys. Only Asha's private key can decrypt it." },
+        { "q": "How is a digital signature produced?", "o": ["The message is encrypted with the receiver's public key", "The message is hashed and the hash is encrypted with the sender's private key", "A password is attached", "The message is compressed"], "a": 1, "why": "Anyone can check it with the sender's public key." }
       ],
       "long": [
         { "q": "Explain how asymmetric encryption is used to send a confidential message.", "marks": 4, "paper": "3", "scheme": ["B1: the receiver has a public key and a private key", "B1: the sender encrypts with the receiver's public key", "B1: only the receiver's private key can decrypt it", "B1: the private key is never shared"] }
@@ -149,7 +170,9 @@
     {
       "id": "18", "stage": "a2", "name": "Artificial intelligence",
       "questions": [
-        { "q": "Dijkstra's algorithm finds…", "o": ["the minimum spanning tree", "the shortest path from one node to the others", "a sorted list", "a cycle"], "a": 1, "why": "A* extends it with a heuristic." }
+        { "q": "Dijkstra's algorithm finds…", "o": ["the minimum spanning tree", "the shortest path from one node to the others", "a sorted list", "a cycle"], "a": 1, "why": "A* extends it with a heuristic." },
+        { "q": "What does Dijkstra's algorithm find?", "o": ["The shortest path from one node to the others in a weighted graph", "Whether a list is sorted", "The largest number in a list", "A spanning tree of equal weights"], "a": 0, "why": "A* adds a heuristic to guide the search." },
+        { "q": "In supervised learning, the training data are:", "o": ["Unlabelled", "Random", "Always images", "Labelled with the correct outputs"], "a": 3, "why": "Unsupervised learning finds patterns in unlabelled data." }
       ],
       "long": [
         { "q": "Describe how Dijkstra's algorithm finds the shortest path between two nodes.", "marks": 4, "paper": "3", "scheme": ["B1: set the start node's distance to 0 and all others to infinity", "B1: repeatedly visit the unvisited node with the smallest distance", "B1: update neighbours' distances if a shorter path is found", "B1: stop when the destination is visited; trace back for the path"] }
@@ -158,13 +181,17 @@
     {
       "id": "19", "stage": "a2", "name": "Computational thinking and problem-solving",
       "questions": [
-        { "q": "What is the time complexity of binary search?", "o": ["O(1)", "O(log n)", "O(n)", "O(n²)"], "a": 1, "why": "Each comparison halves the remaining items." }
+        { "q": "What is the time complexity of binary search?", "o": ["O(1)", "O(log n)", "O(n)", "O(n²)"], "a": 1, "why": "Each comparison halves the remaining items." },
+        { "q": "Binary search needs the data to be:", "o": ["Unsorted", "Stored in a stack", "Numeric only", "Sorted"], "a": 3, "why": "Each comparison halves the remaining data." },
+        { "q": "What is the time complexity of a linear search?", "o": ["O(1)", "O(n)", "O(log n)", "O(n²)"], "a": 1, "why": "In the worst case every item is checked." }
       ]
     },
     {
       "id": "20", "stage": "a2", "name": "Further programming",
       "questions": [
-        { "q": "In OOP, inheritance allows…", "o": ["a class to gain the attributes and methods of a parent class", "data to be hidden", "one method to have many forms only", "files to be shared"], "a": 0, "why": "Encapsulation hides data; polymorphism allows different behaviour for the same method." }
+        { "q": "In OOP, inheritance allows…", "o": ["a class to gain the attributes and methods of a parent class", "data to be hidden", "one method to have many forms only", "files to be shared"], "a": 0, "why": "Encapsulation hides data; polymorphism allows different behaviour for the same method." },
+        { "q": "A subclass uses the attributes and methods of its superclass. This is:", "o": ["Encapsulation", "Inheritance", "Polymorphism", "Recursion"], "a": 1, "why": "Polymorphism is redefining methods in subclasses." },
+        { "q": "Why use exception handling?", "o": ["To deal with run-time errors without the program crashing", "To speed up the program", "To find syntax errors", "To encrypt data"], "a": 0, "why": "For example, a file that cannot be opened." }
       ],
       "long": [
         { "q": "Write pseudocode for a recursive function Factorial(N) that returns N!.", "marks": 4, "paper": "4", "scheme": ["M1: function header with parameter and return type", "M1: base case IF N = 0 (or 1) RETURN 1", "M1: ELSE RETURN N * Factorial(N − 1)", "M1: correct ENDIF / ENDFUNCTION"] }

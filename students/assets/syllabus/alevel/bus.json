@@ -19,7 +19,8 @@
       "id": "2", "stage": "as", "name": "Human resource management",
       "questions": [
         { "q": "Herzberg's hygiene factors…", "o": ["motivate when present", "cause dissatisfaction if absent but don't motivate", "are about achievement", "are financial only"], "a": 1, "why": "Motivators include recognition, responsibility and achievement." },
-        { "q": "Labour turnover is…", "o": ["the number of workers", "the percentage of staff leaving in a period", "output per worker", "wages ÷ hours"], "a": 1, "why": "(Number leaving ÷ average number employed) × 100." }
+        { "q": "Labour turnover is…", "o": ["the number of workers", "the percentage of staff leaving in a period", "output per worker", "wages ÷ hours"], "a": 1, "why": "(Number leaving ÷ average number employed) × 100." },
+        { "q": "Which motivation theory separates hygiene factors from motivators?", "o": ["Herzberg", "Maslow", "Taylor", "Mayo"], "a": 0, "why": "Hygiene factors prevent dissatisfaction but don't motivate." }
       ],
       "long": [
         { "q": "Explain two non-financial methods a manager could use to motivate employees.", "marks": 4, "paper": "1", "scheme": ["B1: one method, e.g. job enrichment / job rotation / empowerment / team working", "B1: explained, e.g. more responsible, varied work meets higher-level needs (Maslow, Herzberg's motivators)", "B1: a second method, e.g. recognition / training / delegation", "B1: explained, e.g. employees feel valued, so effort and retention rise"] }
@@ -29,7 +30,8 @@
       "id": "3", "stage": "as", "name": "Marketing",
       "questions": [
         { "q": "In the product life cycle, sales grow fastest during…", "o": ["introduction", "growth", "maturity", "decline"], "a": 1, "why": "Sales rise rapidly as the product gains acceptance." },
-        { "q": "Market segmentation means…", "o": ["selling everywhere", "dividing a market into groups of customers with similar needs", "cutting prices", "merging with a rival"], "a": 1, "why": "Segments can be based on age, income, location or lifestyle." }
+        { "q": "Market segmentation means…", "o": ["selling everywhere", "dividing a market into groups of customers with similar needs", "cutting prices", "merging with a rival"], "a": 1, "why": "Segments can be based on age, income, location or lifestyle." },
+        { "q": "What does a price elasticity of demand of −0.4 mean?", "o": ["Demand is elastic", "Demand is price inelastic, so raising price raises revenue", "Revenue falls if price rises", "Price has no effect"], "a": 1, "why": "Apply it: say what it means for this business's revenue." }
       ],
       "long": [
         { "q": "Explain two elements of the marketing mix a business could use to launch a new smartphone.", "marks": 4, "paper": "1", "scheme": ["B1: one element identified, e.g. price (penetration or skimming)", "B1: explained in context, e.g. skimming earns high profit from early adopters", "B1: a second element, e.g. promotion (social media, influencers) or place (online and retail)", "B1: explained in context, e.g. reaching young buyers where they shop"] }
@@ -51,10 +53,10 @@
       "questions": [
         { "q": "Working capital is…", "o": ["current assets − current liabilities", "total assets", "profit after tax", "share capital"], "a": 0, "why": "It funds day-to-day operations." },
         { "q": "Profit and cash differ because…", "o": ["they are always equal", "sales on credit count as revenue before cash is received", "cash includes loans only", "profit is measured in cash"], "a": 1, "why": "Timing differences mean a profitable business can run out of cash." },
-        { "q": "Which is a full definition of fixed costs?", "o": ["Costs that do not change", "Costs that do not change with the level of output in the short run", "Costs that are paid once", "Costs of raw materials"], "a": 1, "why": "Examiners (2023): many gave only a partial definition such as 'costs that do not change'." },
-        { "q": "What is a cash-flow forecast used for?", "o": ["Calculating profit", "Predicting future cash inflows and outflows to spot shortfalls", "Valuing assets", "Setting prices"], "a": 1, "why": "Examiners (2023): candidates continue to believe cash-flow forecasts calculate profit." },
-        { "q": "Net cash flow is calculated as:", "o": ["Cash outflows − cash inflows", "Cash inflows − cash outflows", "Revenue − costs", "Opening balance + inflows"], "a": 1, "why": "Examiners (2023): errors often came from subtracting inflows from outflows rather than the other way round." },
-        { "q": "ARR uses which figure for investment?", "o": ["The total initial investment", "The average investment", "The final year's profit", "The payback period"], "a": 1, "why": "Examiners (2023): many did not calculate the average investment and so got the ARR wrong." }
+        { "q": "Which is a full definition of fixed costs?", "o": ["Costs that do not change", "Costs that are paid once", "Costs that do not change with the level of output in the short run", "Costs of raw materials"], "a": 2, "why": "Examiners (2023): many gave only a partial definition such as 'costs that do not change'." },
+        { "q": "What is a cash-flow forecast used for?", "o": ["Calculating profit", "Valuing assets", "Predicting future cash inflows and outflows to spot shortfalls", "Setting prices"], "a": 2, "why": "Examiners (2023): candidates continue to believe cash-flow forecasts calculate profit." },
+        { "q": "Net cash flow is calculated as:", "o": ["Cash inflows − cash outflows", "Cash outflows − cash inflows", "Revenue − costs", "Opening balance + inflows"], "a": 0, "why": "Examiners (2023): errors often came from subtracting inflows from outflows rather than the other way round." },
+        { "q": "ARR uses which figure for investment?", "o": ["The average investment", "The total initial investment", "The final year's profit", "The payback period"], "a": 0, "why": "Examiners (2023): many did not calculate the average investment and so got the ARR wrong." }
       ],
       "long": [
         { "q": "A business has fixed costs of $24 000 a month. It sells its product for $20 and the variable cost is $12 a unit. Calculate the break-even output and the margin of safety when it sells 4000 units.", "marks": 4, "paper": "2", "scheme": ["M1: contribution per unit = $20 − $12 = $8", "A1: break-even = 24 000 ÷ 8 = 3000 units", "M1: margin of safety = 4000 − 3000", "A1: = 1000 units"], "ans": "3000 units; margin of safety 1000 units" },

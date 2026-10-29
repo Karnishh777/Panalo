@@ -22,7 +22,7 @@
         { "q": "f(x) = 2x + 3. What is f⁻¹(x)?", "o": ["(x − 3)/2", "(x + 3)/2", "2x − 3", "1/(2x + 3)"], "a": 0, "why": "Swap and rearrange: x = 2y + 3, so y = (x − 3)/2." },
         { "q": "f(x) = x² and g(x) = x + 1. What is fg(x)?", "o": ["x² + 1", "(x + 1)²", "x² + x", "2x + 1"], "a": 1, "why": "fg(x) = f(g(x)) = (x + 1)²." },
         { "q": "A function has an inverse only if it is…", "o": ["even", "one-one", "continuous", "quadratic"], "a": 1, "why": "Each output must come from exactly one input." },
-        { "q": "f(x) = x² + 1 for x ≥ 0. Which is the range of f?", "o": ["x ≥ 0", "f(x) ≥ 1", "f(x) ≥ 0", "all real numbers"], "a": 1, "why": "Examiners (2023): there was confusion between range and domain. The domain is x ≥ 0; the range is the set of outputs f(x) ≥ 1." }
+        { "q": "f(x) = x² + 1 for x ≥ 0. Which is the range of f?", "o": ["x ≥ 0", "f(x) ≥ 0", "f(x) ≥ 1", "all real numbers"], "a": 2, "why": "Examiners (2023): there was confusion between range and domain. The domain is x ≥ 0; the range is the set of outputs f(x) ≥ 1." }
       ],
       "long": [
         { "q": "f(x) = 3x − 2 and g(x) = x² + 1. Find fg(x) and solve fg(x) = 10.", "marks": 3, "paper": "1", "scheme": ["B1: fg(x) = 3x² + 1", "M1: 3x² + 1 = 10, so x² = 3", "A1: x = ±√3"], "ans": "fg(x) = 3x² + 1; x = ±√3" },
@@ -33,7 +33,8 @@
       "id": "P1.3", "stage": "as", "name": "Pure 1: Coordinate geometry",
       "questions": [
         { "q": "What is the centre and radius of (x − 2)² + (y + 1)² = 25?", "o": ["(2, −1), 5", "(−2, 1), 5", "(2, −1), 25", "(2, 1), 5"], "a": 0, "why": "(x − a)² + (y − b)² = r² has centre (a, b) and radius r." },
-        { "q": "What is the length of the line from (1, 2) to (4, 6)?", "o": ["5", "7", "25", "√7"], "a": 0, "why": "√(3² + 4²) = 5." }
+        { "q": "What is the length of the line from (1, 2) to (4, 6)?", "o": ["5", "7", "25", "√7"], "a": 0, "why": "√(3² + 4²) = 5." },
+        { "q": "What is the gradient of the line through (1, 2) and (3, 8)?", "o": ["3", "1/3", "−3", "5"], "a": 0, "why": "(8 − 2) ÷ (3 − 1) = 3." }
       ],
       "long": [
         { "q": "A is the point (1, 2) and B is the point (7, 10). Find the equation of the perpendicular bisector of AB.", "marks": 4, "paper": "1", "scheme": ["B1: midpoint (4, 6)", "B1: gradient of AB = 4/3", "M1: perpendicular gradient −3/4 through the midpoint", "A1: 3x + 4y = 36 (or equivalent)"], "ans": "3x + 4y = 36" },
@@ -44,7 +45,8 @@
       "id": "P1.4", "stage": "as", "name": "Pure 1: Circular measure",
       "questions": [
         { "q": "An arc of a circle of radius 6 cm subtends 0.5 radians. How long is the arc?", "o": ["3 cm", "6 cm", "9 cm", "12 cm"], "a": 0, "why": "s = rθ = 6 × 0.5 = 3 cm." },
-        { "q": "The area of a sector of radius 4 and angle 1.2 rad is…", "o": ["4.8", "9.6", "19.2", "2.4"], "a": 1, "why": "A = ½r²θ = ½ × 16 × 1.2 = 9.6." }
+        { "q": "The area of a sector of radius 4 and angle 1.2 rad is…", "o": ["4.8", "9.6", "19.2", "2.4"], "a": 1, "why": "A = ½r²θ = ½ × 16 × 1.2 = 9.6." },
+        { "q": "A sector has radius 5 cm and angle 0.8 radians. What is its perimeter?", "o": ["4 cm", "10 cm", "20 cm", "14 cm"], "a": 3, "why": "Examiners (2023): some found an area instead of a perimeter. Arc = 5 × 0.8 = 4, plus two radii." }
       ],
       "long": [
         { "q": "The diagram shows a sector OAB of a circle with centre O and radius 8 cm. Angle AOB = 1.2 radians. Find (a) the length of the arc AB, (b) the area of the segment between the arc AB and the chord AB.", "marks": 5, "paper": "1", "scheme": ["B1: arc AB = 8 × 1.2 = 9.6 cm", "B1: sector area = ½ × 8² × 1.2 = 38.4 cm²", "M1: triangle area = ½ × 8² × sin 1.2", "M1: segment = sector − triangle", "A1: 8.58 cm² (3 s.f.)"], "ans": "(a) 9.6 cm (b) 8.58 cm²", "fig": "assets/syllabus/fig/9709-p1-sector.svg" },
@@ -57,7 +59,7 @@
         { "q": "Which identity is always true?", "o": ["sin θ + cos θ = 1", "sin²θ + cos²θ = 1", "tan θ = cos θ / sin θ", "sin 2θ = 2 sin θ"], "a": 1, "why": "This is the fundamental Pythagorean identity." },
         { "q": "Solve sin x = 0.5 for 0° ≤ x ≤ 360°.", "o": ["30° only", "30° and 150°", "30° and 330°", "60° and 120°"], "a": 1, "why": "Sine is positive in the first and second quadrants: 30° and 180° − 30°." },
         { "q": "What is the period of y = cos 2x?", "o": ["90°", "180°", "360°", "720°"], "a": 1, "why": "The period of cos kx is 360°/k." },
-        { "q": "Solve sin θ = 0.6 for 0° ≤ θ ≤ 360°. How many solutions are there?", "o": ["One", "Two", "Three", "Four"], "a": 1, "why": "Examiners (2023): candidates often gave too few answers. Sine is positive in the first and second quadrants: 36.9° and 143.1°." }
+        { "q": "Solve sin θ = 0.6 for 0° ≤ θ ≤ 360°. How many solutions are there?", "o": ["Two", "One", "Three", "Four"], "a": 0, "why": "Examiners (2023): candidates often gave too few answers. Sine is positive in the first and second quadrants: 36.9° and 143.1°." }
       ],
       "long": [
         { "q": "Solve the equation 2 sin²θ + 3 cos θ = 3 for 0° ≤ θ ≤ 360°.", "marks": 5, "paper": "1", "scheme": ["M1: use sin²θ = 1 − cos²θ", "A1: 2cos²θ − 3cos θ + 1 = 0", "M1: solve the quadratic in cos θ", "A1: θ = 60°, 300°", "A1: θ = 0°, 360°"], "ans": "θ = 0°, 60°, 300°, 360°" },
@@ -70,7 +72,7 @@
         { "q": "What is the coefficient of x² in (1 + 2x)⁵?", "o": ["10", "20", "40", "80"], "a": 2, "why": "⁵C₂ × 2² = 10 × 4 = 40." },
         { "q": "A geometric series has a = 8 and r = ½. What is its sum to infinity?", "o": ["4", "8", "16", "∞"], "a": 2, "why": "S∞ = a/(1 − r) = 8 ÷ ½ = 16, valid because |r| < 1." },
         { "q": "The 10th term of the arithmetic progression 3, 7, 11, … is…", "o": ["39", "40", "43", "36"], "a": 0, "why": "uₙ = a + (n − 1)d = 3 + 9 × 4 = 39." },
-        { "q": "In the expansion of (3 + ax)⁴, what is the coefficient of x²?", "o": ["54a", "54a²", "6a²", "9a²"], "a": 1, "why": "Examiners (2023): the coefficient was often given as 54a rather than 54a². 4C2 × 3² × a² = 6 × 9 × a²." }
+        { "q": "In the expansion of (3 + ax)⁴, what is the coefficient of x²?", "o": ["54a", "6a²", "54a²", "9a²"], "a": 2, "why": "Examiners (2023): the coefficient was often given as 54a rather than 54a². 4C2 × 3² × a² = 6 × 9 × a²." }
       ],
       "long": [
         { "q": "Find the coefficient of x³ in the expansion of (2 − x)⁶.", "marks": 3, "paper": "1", "scheme": ["M1: the term ⁶C₃ × 2³ × (−x)³", "A1: ⁶C₃ = 20 and 2³ = 8 used", "A1: −160"], "ans": "−160" },
@@ -105,7 +107,8 @@
       "id": "P3.1", "stage": "a2", "name": "Pure 3: Algebra",
       "questions": [
         { "q": "Solve |x − 3| < 2.", "o": ["x < 5", "1 < x < 5", "x > 1", "−5 < x < 5"], "a": 1, "why": "−2 < x − 3 < 2, so 1 < x < 5." },
-        { "q": "What is the remainder when x³ − 2x + 1 is divided by (x − 2)?", "o": ["1", "3", "5", "−3"], "a": 2, "why": "Remainder theorem: f(2) = 8 − 4 + 1 = 5." }
+        { "q": "What is the remainder when x³ − 2x + 1 is divided by (x − 2)?", "o": ["1", "3", "5", "−3"], "a": 2, "why": "Remainder theorem: f(2) = 8 − 4 + 1 = 5." },
+        { "q": "Solve |2x − 3| < 5.", "o": ["x < 4", "x < −1 or x > 4", "−4 < x < 1", "−1 < x < 4"], "a": 3, "why": "−5 < 2x − 3 < 5, so −2 < 2x < 8." }
       ],
       "long": [
         { "q": "Expand (1 + 2x)^(−1/2) in ascending powers of x, up to and including the term in x², and state the set of values of x for which the expansion is valid.", "marks": 4, "paper": "3", "scheme": ["M1: 1 + (−½)(2x) + (−½)(−3/2)/2 × (2x)²", "A1: 1 − x", "A1: + (3/2)x²", "B1: |x| < ½"], "ans": "1 − x + (3/2)x², |x| < ½" }
@@ -115,14 +118,16 @@
       "id": "P3.2", "stage": "a2", "name": "Pure 3: Logarithmic and exponential functions",
       "questions": [
         { "q": "Solve eˣ = 5.", "o": ["x = 5/e", "x = ln 5", "x = log₁₀ 5", "x = 5e"], "a": 1, "why": "Take natural logs of both sides." },
-        { "q": "log 8 + log 2 equals…", "o": ["log 10", "log 16", "log 4", "log 6"], "a": 1, "why": "log a + log b = log(ab) = log 16." }
+        { "q": "log 8 + log 2 equals…", "o": ["log 10", "log 16", "log 4", "log 6"], "a": 1, "why": "log a + log b = log(ab) = log 16." },
+        { "q": "Solve 3ˣ = 20, giving x to 3 significant figures.", "o": ["6.67", "2.73", "1.30", "0.367"], "a": 1, "why": "x = ln 20 ÷ ln 3. Examiners (2023): keep brackets when taking logarithms." }
       ]
     },
     {
       "id": "P3.3", "stage": "a2", "name": "Pure 3: Trigonometry",
       "questions": [
         { "q": "cos 2A can be written as…", "o": ["2 sin A cos A", "1 − 2sin²A", "2cos A", "sin²A − cos²A"], "a": 1, "why": "cos 2A = cos²A − sin²A = 1 − 2sin²A = 2cos²A − 1." },
-        { "q": "sec θ is…", "o": ["1/sin θ", "1/cos θ", "1/tan θ", "sin θ/cos θ"], "a": 1, "why": "sec = 1/cos, cosec = 1/sin, cot = 1/tan." }
+        { "q": "sec θ is…", "o": ["1/sin θ", "1/cos θ", "1/tan θ", "sin θ/cos θ"], "a": 1, "why": "sec = 1/cos, cosec = 1/sin, cot = 1/tan." },
+        { "q": "sec²θ − tan²θ is equal to:", "o": ["0", "1", "cos²θ", "−1"], "a": 1, "why": "From 1 + tan²θ = sec²θ." }
       ],
       "long": [
         { "q": "Express 3 sin θ + 4 cos θ in the form R sin(θ + α), where R > 0 and 0° < α < 90°. Hence solve 3 sin θ + 4 cos θ = 2 for 0° < θ < 360°.", "marks": 5, "paper": "3", "scheme": ["B1: R = 5", "M1: tan α = 4/3", "A1: α = 53.13°", "M1: sin(θ + 53.13°) = 0.4", "A1: θ = 103.3°, 330.4°"], "ans": "5 sin(θ + 53.1°); θ = 103.3°, 330.4°" }
@@ -133,7 +138,7 @@
       "questions": [
         { "q": "Differentiate y = x eˣ.", "o": ["eˣ", "x eˣ", "eˣ(1 + x)", "eˣ − x"], "a": 2, "why": "Product rule: eˣ + x eˣ." },
         { "q": "Differentiate y = ln(3x).", "o": ["3/x", "1/x", "1/(3x)", "ln 3"], "a": 1, "why": "ln(3x) = ln 3 + ln x, so the derivative is 1/x." },
-        { "q": "y = x² e^(2x). Which method is needed to find dy/dx?", "o": ["Chain rule only", "Product rule (with the chain rule for e^(2x))", "Quotient rule", "Implicit differentiation"], "a": 1, "why": "Examiners (2023): it was essential that y be differentiated as a product; many did not recognise it as one." }
+        { "q": "y = x² e^(2x). Which method is needed to find dy/dx?", "o": ["Chain rule only", "Quotient rule", "Implicit differentiation", "Product rule (with the chain rule for e^(2x))"], "a": 3, "why": "Examiners (2023): it was essential that y be differentiated as a product; many did not recognise it as one." }
       ],
       "long": [
         { "q": "Find dy/dx when y = x² e^(3x), and the exact x-coordinates of the stationary points.", "marks": 4, "paper": "3", "scheme": ["M1: product rule", "A1: dy/dx = 2x e^(3x) + 3x² e^(3x)", "M1: x e^(3x)(2 + 3x) = 0", "A1: x = 0 and x = −2/3"], "ans": "x = 0, x = −2/3" }
@@ -143,7 +148,8 @@
       "id": "P3.5", "stage": "a2", "name": "Pure 3: Integration",
       "questions": [
         { "q": "Find ∫ 1/x dx (x > 0).", "o": ["x⁰ + c", "ln x + c", "−1/x² + c", "eˣ + c"], "a": 1, "why": "The derivative of ln x is 1/x." },
-        { "q": "Which method suits ∫ x cos x dx?", "o": ["Substitution u = cos x", "Integration by parts", "Partial fractions", "It can't be integrated"], "a": 1, "why": "u = x, dv = cos x dx gives x sin x + cos x + c." }
+        { "q": "Which method suits ∫ x cos x dx?", "o": ["Substitution u = cos x", "Integration by parts", "Partial fractions", "It can't be integrated"], "a": 1, "why": "u = x, dv = cos x dx gives x sin x + cos x + c." },
+        { "q": "∫ 1/(2x + 1) dx =", "o": ["ln|2x + 1| + c", "2 ln|2x + 1| + c", "½ ln|2x + 1| + c", "−1/(2x + 1)² + c"], "a": 2, "why": "Divide by the derivative of the inside, 2." }
       ],
       "long": [
         { "q": "Use integration by parts to find ∫ x ln x dx.", "marks": 3, "paper": "3", "scheme": ["M1: u = ln x, dv/dx = x", "A1: (x²/2) ln x − ∫ (x²/2)(1/x) dx", "A1: (x²/2) ln x − x²/4 + c"], "ans": "(x²/2) ln x − x²/4 + c" }
@@ -153,14 +159,16 @@
       "id": "P3.6", "stage": "a2", "name": "Pure 3: Numerical solution of equations",
       "questions": [
         { "q": "f(1) = −2 and f(2) = 3, with f continuous. What can you conclude?", "o": ["No root between 1 and 2", "A root lies between 1 and 2", "f has a maximum at 1.5", "f(1.5) = 0"], "a": 1, "why": "A change of sign shows a root in the interval." },
-        { "q": "An iteration converges to 0.79495… What is the root correct to 2 decimal places?", "o": ["0.80", "0.79", "0.795", "0.8"], "a": 1, "why": "Examiners (2023): a common error was rounding the final answer to 0.80 rather than 0.79." }
+        { "q": "An iteration converges to 0.79495… What is the root correct to 2 decimal places?", "o": ["0.79", "0.80", "0.795", "0.8"], "a": 0, "why": "Examiners (2023): a common error was rounding the final answer to 0.80 rather than 0.79." },
+        { "q": "A sign change of f(x) between a and b shows a root only if f is:", "o": ["Increasing", "Continuous on the interval", "A polynomial", "Positive at a"], "a": 1, "why": "A function like 1/x changes sign at an asymptote, with no root." }
       ]
     },
     {
       "id": "P3.7", "stage": "a2", "name": "Pure 3: Vectors",
       "questions": [
         { "q": "What is the scalar product of (1, 2, 3) and (4, −1, 0)?", "o": ["2", "4", "6", "0"], "a": 0, "why": "1×4 + 2×(−1) + 3×0 = 2." },
-        { "q": "Two non-zero vectors are perpendicular when their scalar product is…", "o": ["1", "0", "−1", "their lengths multiplied"], "a": 1, "why": "a·b = |a||b|cos 90° = 0." }
+        { "q": "Two non-zero vectors are perpendicular when their scalar product is…", "o": ["1", "0", "−1", "their lengths multiplied"], "a": 1, "why": "a·b = |a||b|cos 90° = 0." },
+        { "q": "a = (1, 2, 2) and b = (2, −1, 0). What is the angle between them?", "o": ["0°", "45°", "90°", "60°"], "a": 2, "why": "a · b = 2 − 2 + 0 = 0, so they are perpendicular." }
       ],
       "long": [
         { "q": "The lines l₁: r = (1, 2, 3) + s(1, 0, −1) and l₂: r = (2, 1, 0) + t(0, 1, 1). Show that they do not intersect.", "marks": 3, "paper": "3", "scheme": ["M1: equate components: 1 + s = 2, 2 = 1 + t, 3 − s = t", "M1: s = 1, t = 1", "A1: third equation: 3 − 1 = 2 ≠ 1, so no intersection (and not parallel, so skew)"] }
@@ -169,7 +177,9 @@
     {
       "id": "P3.8", "stage": "a2", "name": "Pure 3: Differential equations",
       "questions": [
-        { "q": "The general solution of dy/dx = ky is…", "o": ["y = kx + c", "y = A eᵏˣ", "y = kx²", "y = ln(kx)"], "a": 1, "why": "Separate variables: ∫dy/y = ∫k dx, ln y = kx + c." }
+        { "q": "The general solution of dy/dx = ky is…", "o": ["y = kx + c", "y = A eᵏˣ", "y = kx²", "y = ln(kx)"], "a": 1, "why": "Separate variables: ∫dy/y = ∫k dx, ln y = kx + c." },
+        { "q": "What is the general solution of dy/dx = 2y?", "o": ["y = 2x + c", "y = Ae^(2x)", "y = e^(2x) + c", "y = x² + c"], "a": 1, "why": "Separate: ∫ dy/y = ∫ 2 dx, ln y = 2x + c." },
+        { "q": "Separating the variables in dy/dx = x/y gives:", "o": ["∫ x dy = ∫ y dx", "∫ 1/y dy = ∫ x dx", "y = x + c", "∫ y dy = ∫ x dx"], "a": 3, "why": "Examiners (2023): incorrect separation of variables was a common error." }
       ],
       "long": [
         { "q": "Solve the differential equation dy/dx = xy² given that y = 1 when x = 0.", "marks": 4, "paper": "3", "scheme": ["M1: separate: ∫ y⁻² dy = ∫ x dx", "A1: −1/y = x²/2 + c", "M1: c = −1", "A1: y = 2/(2 − x²)"], "ans": "y = 2/(2 − x²)" }
@@ -179,7 +189,8 @@
       "id": "P3.9", "stage": "a2", "name": "Pure 3: Complex numbers",
       "questions": [
         { "q": "What is (2 + 3i)(1 − i)?", "o": ["5 + i", "−1 + i", "2 − 3i", "5 − i"], "a": 0, "why": "2 − 2i + 3i − 3i² = 2 + i + 3 = 5 + i." },
-        { "q": "What is the modulus of 3 − 4i?", "o": ["1", "5", "7", "25"], "a": 1, "why": "√(3² + 4²) = 5." }
+        { "q": "What is the modulus of 3 − 4i?", "o": ["1", "5", "7", "25"], "a": 1, "why": "√(3² + 4²) = 5." },
+        { "q": "(2 + 3i)(2 − 3i) =", "o": ["−5", "4 − 9i", "4 + 9i", "13"], "a": 3, "why": "A number times its conjugate is the modulus squared: 4 + 9." }
       ],
       "long": [
         { "q": "The complex number z = 1 + i√3. Find the modulus and argument of z, and hence find z³.", "marks": 4, "paper": "3", "scheme": ["B1: |z| = 2", "B1: arg z = π/3", "M1: z³ has modulus 8, argument π", "A1: z³ = −8"], "ans": "|z| = 2, arg z = π/3, z³ = −8" }
@@ -192,7 +203,7 @@
         { "q": "A particle is in equilibrium under three forces. Their resultant is…", "o": ["zero", "equal to the largest force", "the sum of their magnitudes", "the particle's weight"], "a": 0, "why": "Equilibrium means no resultant force: the forces form a closed triangle." },
         { "q": "A 4 kg block rests on a rough horizontal plane with μ = 0.5 (g = 10 m s⁻²). The greatest friction possible is…", "o": ["2 N", "20 N", "40 N", "80 N"], "a": 1, "why": "R = 4 × 10 = 40 N, and limiting friction is μR = 0.5 × 40 = 20 N." },
         { "q": "A particle of weight mg rests on a slope at angle θ to the horizontal. The component of its weight down the slope is…", "o": ["mg sin θ", "mg cos θ", "mg tan θ", "mg"], "a": 0, "why": "Resolve parallel to the slope: mg sin θ; perpendicular to it: mg cos θ." },
-        { "q": "A force of 10 N acts at 30° to the horizontal. What is its horizontal component?", "o": ["10 sin 30° = 5 N", "10 cos 30° ≈ 8.66 N", "10 tan 30° ≈ 5.77 N", "10 N"], "a": 1, "why": "Examiners (2023): candidates confused sin and cos when resolving; the component adjacent to the angle uses cos." }
+        { "q": "A force of 10 N acts at 30° to the horizontal. What is its horizontal component?", "o": ["10 cos 30° ≈ 8.66 N", "10 sin 30° = 5 N", "10 tan 30° ≈ 5.77 N", "10 N"], "a": 0, "why": "Examiners (2023): candidates confused sin and cos when resolving; the component adjacent to the angle uses cos." }
       ],
       "long": [
         { "q": "A particle of mass 2 kg rests on a rough plane inclined at 30° to the horizontal. A force of P N acts on it up the plane, parallel to a line of greatest slope. The coefficient of friction is 0.4. Find the least value of P for which the particle does not slide down the plane. (g = 10 m s⁻²)", "marks": 5, "paper": "4", "scheme": ["B1: R = 20 cos 30° (= 17.3 N)", "B1: F = 0.4R", "M1: resolve along the plane with friction acting up the plane", "A1: P + 6.93 = 10", "A1: P = 3.07 (3 s.f.)"], "ans": "P = 3.07", "fig": "assets/syllabus/fig/9709-m1-slope.svg" }
@@ -312,7 +323,8 @@
       "id": "S2", "stage": "a2", "name": "Probability and Statistics 2",
       "questions": [
         { "q": "X ~ Po(4). What is Var(X)?", "o": ["2", "4", "16", "0.25"], "a": 1, "why": "For a Poisson distribution, mean = variance = λ." },
-        { "q": "A Type I error is…", "o": ["accepting a false H₀", "rejecting a true H₀", "a calculation mistake", "using the wrong distribution"], "a": 1, "why": "Its probability equals the significance level (for continuous tests)." }
+        { "q": "A Type I error is…", "o": ["accepting a false H₀", "rejecting a true H₀", "a calculation mistake", "using the wrong distribution"], "a": 1, "why": "Its probability equals the significance level (for continuous tests)." },
+        { "q": "X ~ Po(2) and Y ~ Po(3) are independent. What is the distribution of X + Y?", "o": ["Po(6)", "Po(2.5)", "B(5, 0.5)", "Po(5)"], "a": 3, "why": "The sum of independent Poisson variables is Poisson with the means added." }
       ],
       "long": [
         { "q": "The number of emails a shop receives per hour has a Poisson distribution with mean 3.2. Find the probability that it receives exactly 2 emails in a given hour, and at least 1 email in a 30-minute period.", "marks": 4, "paper": "6", "scheme": ["M1: P(X = 2) = e^(−3.2) × 3.2²/2", "A1: = 0.209", "M1: half-hour mean 1.6; P(Y ≥ 1) = 1 − e^(−1.6)", "A1: = 0.798"], "ans": "0.209; 0.798" },

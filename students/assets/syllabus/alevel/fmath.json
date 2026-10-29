@@ -8,7 +8,8 @@
       "id": "F1.1", "name": "FP1: Roots of polynomial equations", "stage": "as",
       "questions": [
         { "q": "If α, β, γ are the roots of x³ − 4x² + 2x − 7 = 0, then α + β + γ =", "o": ["4", "−4", "7", "2"], "a": 0, "why": "Sum of roots = −b/a." },
-        { "q": "For the same cubic, αβγ =", "o": ["7", "−7", "2", "4"], "a": 0, "why": "Product of roots of ax³ + bx² + cx + d is −d/a." }
+        { "q": "For the same cubic, αβγ =", "o": ["7", "−7", "2", "4"], "a": 0, "why": "Product of roots of ax³ + bx² + cx + d is −d/a." },
+        { "q": "α, β, γ are the roots of x³ − 4x² + 2x − 7 = 0. What is α + β + γ?", "o": ["−4", "2", "7", "4"], "a": 3, "why": "Sum of roots = −b/a." }
       ],
       "long": [
         { "q": "The roots of x³ + 2x² − 3x + 5 = 0 are α, β and γ. Find the value of α² + β² + γ².", "marks": 3, "paper": "1", "scheme": ["M1: α + β + γ = −2, αβ + βγ + γα = −3", "M1: α² + β² + γ² = (α + β + γ)² − 2(αβ + βγ + γα)", "A1: = 4 + 6 = 10"], "ans": "10" }
@@ -18,14 +19,16 @@
       "id": "F1.2", "name": "FP1: Rational functions and graphs", "stage": "as",
       "questions": [
         { "q": "The vertical asymptote of y = (2x + 1)/(x − 3) is", "o": ["x = 3", "x = −3", "y = 2", "x = −½"], "a": 0, "why": "The denominator is zero at x = 3." },
-        { "q": "The horizontal asymptote of y = (2x + 1)/(x − 3) is", "o": ["y = 2", "y = 0", "y = 3", "y = −1/3"], "a": 0, "why": "As x → ±∞, y → 2x/x = 2." }
+        { "q": "The horizontal asymptote of y = (2x + 1)/(x − 3) is", "o": ["y = 2", "y = 0", "y = 3", "y = −1/3"], "a": 0, "why": "As x → ±∞, y → 2x/x = 2." },
+        { "q": "What is the oblique asymptote of y = (x² + 1)/(x − 2)?", "o": ["y = x", "y = x + 2", "y = x − 2", "x = 2"], "a": 1, "why": "x² + 1 = (x − 2)(x + 2) + 5; x = 2 is the vertical asymptote." }
       ]
     },
     {
       "id": "F1.3", "name": "FP1: Summation of series", "stage": "as",
       "questions": [
         { "q": "Σ r from r = 1 to n =", "o": ["½n(n + 1)", "n(n + 1)", "n²", "⅙n(n + 1)(2n + 1)"], "a": 0, "why": "The standard result." },
-        { "q": "The method of differences works when each term can be written as", "o": ["f(r) − f(r + 1)", "f(r) × f(r + 1)", "f(r)²", "1/f(r)"], "a": 0, "why": "Then most terms cancel in pairs." }
+        { "q": "The method of differences works when each term can be written as", "o": ["f(r) − f(r + 1)", "f(r) × f(r + 1)", "f(r)²", "1/f(r)"], "a": 0, "why": "Then most terms cancel in pairs." },
+        { "q": "Σ r³ for r = 1 to n equals:", "o": ["½n(n + 1)", "¼n²(n + 1)²", "⅙n(n + 1)(2n + 1)", "n³"], "a": 1, "why": "It is the square of Σ r. Writing out the first few terms helps check which sum you have." }
       ],
       "long": [
         { "q": "Use the method of differences to find Σ 1/(r(r + 1)) from r = 1 to n.", "marks": 3, "paper": "1", "scheme": ["M1: 1/(r(r + 1)) = 1/r − 1/(r + 1)", "M1: terms cancel in pairs", "A1: = 1 − 1/(n + 1)"], "ans": "1 − 1/(n + 1)" }
@@ -37,7 +40,7 @@
         { "q": "det [[2, 1], [5, 3]] =", "o": ["1", "11", "−1", "6"], "a": 0, "why": "2 × 3 − 1 × 5." },
         { "q": "A matrix has no inverse when", "o": ["its determinant is 0", "it is square", "its determinant is 1", "it is symmetric"], "a": 0, "why": "A singular matrix has determinant zero." },
         { "q": "For invertible A and B, (AB)⁻¹ =", "o": ["B⁻¹A⁻¹", "A⁻¹B⁻¹", "AB", "BA"], "a": 0, "why": "Inverses reverse the order." },
-        { "q": "Transformation A then transformation B is represented by:", "o": ["AB", "BA", "A + B", "A⁻¹B"], "a": 1, "why": "Examiners (2023): the most common error was getting the order of the matrices wrong. The first transformation is on the right." },
+        { "q": "Transformation A then transformation B is represented by:", "o": ["AB", "A + B", "A⁻¹B", "BA"], "a": 3, "why": "Examiners (2023): the most common error was getting the order of the matrices wrong. The first transformation is on the right." },
         { "q": "An invariant point of a transformation M satisfies:", "o": ["M(x, y) = k(x, y)", "M(x, y) = (x, y)", "det M = 1", "M is singular"], "a": 1, "why": "Examiners (2023): most found invariant lines rather than the invariant points required." }
       ],
       "long": [
@@ -48,21 +51,24 @@
       "id": "F1.5", "name": "FP1: Polar coordinates", "stage": "as",
       "questions": [
         { "q": "The area enclosed by r = f(θ) between θ = α and θ = β is", "o": ["½∫ r² dθ", "∫ r dθ", "∫ r² dθ", "½∫ r dθ"], "a": 0, "why": "Each thin sector has area ½r² δθ." },
-        { "q": "The point with Cartesian coordinates (0, 2) has polar coordinates", "o": ["(2, π/2)", "(2, 0)", "(0, 2)", "(2, π)"], "a": 0, "why": "r = 2 along the positive y-axis, θ = π/2." }
+        { "q": "The point with Cartesian coordinates (0, 2) has polar coordinates", "o": ["(2, π/2)", "(2, 0)", "(0, 2)", "(2, π)"], "a": 0, "why": "r = 2 along the positive y-axis, θ = π/2." },
+        { "q": "The area enclosed by a polar curve between θ = α and θ = β is:", "o": ["∫ r dθ", "∫ r² dθ", "π ∫ r² dθ", "½ ∫ r² dθ"], "a": 3, "why": "Examiners (2023): forgetting the factor ½ was the most common error." }
       ]
     },
     {
       "id": "F1.6", "name": "FP1: Vectors", "stage": "as",
       "questions": [
         { "q": "The vector product a × b is", "o": ["perpendicular to a and b", "parallel to a", "a scalar", "always zero"], "a": 0, "why": "a × b is normal to the plane of a and b." },
-        { "q": "Two planes are perpendicular when their normals have scalar product", "o": ["0", "1", "−1", "equal to their lengths"], "a": 0, "why": "Perpendicular normals mean perpendicular planes." }
+        { "q": "Two planes are perpendicular when their normals have scalar product", "o": ["0", "1", "−1", "equal to their lengths"], "a": 0, "why": "Perpendicular normals mean perpendicular planes." },
+        { "q": "How is a vector perpendicular to two lines found?", "o": ["Add the direction vectors", "Take the scalar product", "Subtract the position vectors", "Take the vector product of their direction vectors"], "a": 3, "why": "It is used for the normal to a plane and for the shortest distance between skew lines." }
       ]
     },
     {
       "id": "F1.7", "name": "FP1: Proof by induction", "stage": "as",
       "questions": [
         { "q": "Proof by induction needs a base case and", "o": ["the inductive step from k to k + 1", "a counter-example", "proof by contradiction", "the case n = 0 only"], "a": 0, "why": "Assume true for k, show true for k + 1." },
-        { "q": "In proof by induction, the inductive step begins by:", "o": ["Assuming the statement is true for all n", "Assuming it is true for n = k, then showing it is true for n = k + 1", "Checking n = 1 only", "Assuming it is false"], "a": 1, "why": "Examiners (2023): candidates need to assume the statement for some k, not that it is true in general." }
+        { "q": "In proof by induction, the inductive step begins by:", "o": ["Assuming it is true for n = k, then showing it is true for n = k + 1", "Assuming the statement is true for all n", "Checking n = 1 only", "Assuming it is false"], "a": 0, "why": "Examiners (2023): candidates need to assume the statement for some k, not that it is true in general." },
+        { "q": "What is the first step of a proof by induction?", "o": ["Show the statement is true for the first value, e.g. n = 1", "Assume it is true for all n", "Show it is false for n = 0", "Differentiate both sides"], "a": 0, "why": "Then assume true for n = k and prove for n = k + 1, and conclude." }
       ],
       "long": [
         { "q": "Prove by induction that Σ r from r = 1 to n = ½n(n + 1) for all positive integers n.", "marks": 4, "paper": "1", "scheme": ["B1: n = 1: both sides equal 1", "M1: assume true for n = k", "M1: add (k + 1): ½k(k + 1) + (k + 1) = ½(k + 1)(k + 2)", "A1: so true for n = k + 1, hence for all n by induction"] }
@@ -72,56 +78,72 @@
       "id": "F2.1", "name": "FP2: Hyperbolic functions", "stage": "a2",
       "questions": [
         { "q": "By definition, cosh x =", "o": ["½(eˣ + e⁻ˣ)", "½(eˣ − e⁻ˣ)", "eˣ − e⁻ˣ", "1/sinh x"], "a": 0, "why": "The definition of cosh." },
-        { "q": "cosh²x − sinh²x =", "o": ["1", "0", "−1", "cosh 2x"], "a": 0, "why": "The hyperbolic identity (compare cos² + sin² = 1)." }
+        { "q": "cosh²x − sinh²x =", "o": ["1", "0", "−1", "cosh 2x"], "a": 0, "why": "The hyperbolic identity (compare cos² + sin² = 1)." },
+        { "q": "sinh x is defined as:", "o": ["(eˣ + e⁻ˣ)/2", "eˣ − e⁻ˣ", "1/cosh x", "(eˣ − e⁻ˣ)/2"], "a": 3, "why": "cosh x = (eˣ + e⁻ˣ)/2." }
       ]
     },
     {
       "id": "F2.2", "name": "FP2: Matrices (eigenvalues)", "stage": "a2",
       "questions": [
-        { "q": "The eigenvalues of a matrix A satisfy", "o": ["det(A − λI) = 0", "A − λ = 0", "det A = λ", "Ax = 0"], "a": 0, "why": "The characteristic equation." }
+        { "q": "The eigenvalues of a matrix A satisfy", "o": ["det(A − λI) = 0", "A − λ = 0", "det A = λ", "Ax = 0"], "a": 0, "why": "The characteristic equation." },
+        { "q": "The eigenvalues λ of a matrix M satisfy:", "o": ["M − λI = 0", "det M = λ", "Mλ = I", "det(M − λI) = 0"], "a": 3, "why": "This is the characteristic equation." },
+        { "q": "If M = PDP⁻¹ with D diagonal, then Mⁿ =", "o": ["PⁿDⁿP⁻ⁿ", "DⁿPP⁻¹", "PDⁿP⁻¹", "nPDP⁻¹"], "a": 2, "why": "The P⁻¹P pairs in the middle cancel." }
       ]
     },
     {
       "id": "F2.3", "name": "FP2: Differentiation", "stage": "a2",
       "questions": [
-        { "q": "d/dx (tan⁻¹ x) =", "o": ["1/(1 + x²)", "1/√(1 − x²)", "sec²x", "−1/(1 + x²)"], "a": 0, "why": "A standard result." }
+        { "q": "d/dx (tan⁻¹ x) =", "o": ["1/(1 + x²)", "1/√(1 − x²)", "sec²x", "−1/(1 + x²)"], "a": 0, "why": "A standard result." },
+        { "q": "d/dx (tanh x) =", "o": ["sec²x", "sech²x", "−sech²x", "cosh²x"], "a": 1, "why": "tanh x = sinh x / cosh x; use the quotient rule." },
+        { "q": "d/dx (sin⁻¹ x) =", "o": ["1/√(1 − x²)", "−1/√(1 − x²)", "1/(1 + x²)", "cos⁻¹ x"], "a": 0, "why": "Not to be confused with 1/sin x." }
       ]
     },
     {
       "id": "F2.4", "name": "FP2: Integration", "stage": "a2",
       "questions": [
-        { "q": "A reduction formula expresses Iₙ in terms of", "o": ["Iₙ₋₁ or Iₙ₋₂", "Iₙ₊₁", "n only", "a constant"], "a": 0, "why": "Usually found by integrating by parts." }
+        { "q": "A reduction formula expresses Iₙ in terms of", "o": ["Iₙ₋₁ or Iₙ₋₂", "Iₙ₊₁", "n only", "a constant"], "a": 0, "why": "Usually found by integrating by parts." },
+        { "q": "∫ 1/√(x² + 1) dx =", "o": ["cosh⁻¹ x + c", "tan⁻¹ x + c", "ln x + c", "sinh⁻¹ x + c"], "a": 3, "why": "Equivalently ln(x + √(x² + 1)) + c." },
+        { "q": "Reduction formulae for ∫ sinⁿx dx are usually found using:", "o": ["Partial fractions", "Integration by parts", "Substitution x = sin θ only", "The chain rule"], "a": 1, "why": "Write sinⁿx = sinⁿ⁻¹x · sin x first." }
       ]
     },
     {
       "id": "F2.5", "name": "FP2: Complex numbers", "stage": "a2",
       "questions": [
         { "q": "By de Moivre's theorem, (cos θ + i sin θ)ⁿ =", "o": ["cos nθ + i sin nθ", "cosⁿθ + i sinⁿθ", "n cos θ + i n sin θ", "cos θⁿ + i sin θⁿ"], "a": 0, "why": "de Moivre's theorem." },
-        { "q": "The cube roots of unity sum to", "o": ["0", "1", "3", "−1"], "a": 0, "why": "1 + ω + ω² = 0." }
+        { "q": "The cube roots of unity sum to", "o": ["0", "1", "3", "−1"], "a": 0, "why": "1 + ω + ω² = 0." },
+        { "q": "What are the nth roots of unity?", "o": ["1 and −1 only", "n, 2n, 3n", "k/n for k = 1 to n", "e^(2πik/n) for k = 0, 1, …, n − 1"], "a": 3, "why": "They are equally spaced on the unit circle and sum to 0." }
       ]
     },
     {
       "id": "F2.6", "name": "FP2: Differential equations", "stage": "a2",
       "questions": [
-        { "q": "The auxiliary equation of y″ − 5y′ + 6y = 0 has roots", "o": ["2 and 3", "−2 and −3", "1 and 6", "5 and 6"], "a": 0, "why": "m² − 5m + 6 = 0." }
+        { "q": "The auxiliary equation of y″ − 5y′ + 6y = 0 has roots", "o": ["2 and 3", "−2 and −3", "1 and 6", "5 and 6"], "a": 0, "why": "m² − 5m + 6 = 0." },
+        { "q": "The integrating factor for dy/dx + P(x)y = Q(x) is:", "o": ["∫P dx", "e^(∫Q dx)", "e^(∫P dx)", "P(x)Q(x)"], "a": 2, "why": "Examiners (2023): errors in the coefficient of the logarithm were common; integrate P carefully." },
+        { "q": "What is the complementary function of y'' − 5y' + 6y = 0?", "o": ["y = Ae^(−2x) + Be^(−3x)", "y = A cos 2x + B sin 3x", "y = Ae^(2x) + Be^(3x)", "y = (A + Bx)e^(5x)"], "a": 2, "why": "Auxiliary equation m² − 5m + 6 = 0 gives m = 2, 3." }
       ]
     },
     {
       "id": "M3.1", "name": "FM: Motion of a projectile", "stage": "as",
       "questions": [
-        { "q": "A projectile's horizontal velocity (no air resistance) is", "o": ["constant", "zero at the top", "increasing", "equal to g"], "a": 0, "why": "No horizontal force acts." }
+        { "q": "A projectile's horizontal velocity (no air resistance) is", "o": ["constant", "zero at the top", "increasing", "equal to g"], "a": 0, "why": "No horizontal force acts." },
+        { "q": "Ignoring air resistance, what is the path of a projectile?", "o": ["A parabola", "A circle", "A straight line", "A hyperbola"], "a": 0, "why": "Horizontal motion is uniform; vertical motion has constant acceleration g." },
+        { "q": "At the highest point of its path, a projectile's velocity is:", "o": ["Zero", "Vertical", "Equal to u", "Horizontal, equal to u cos θ"], "a": 3, "why": "Only the vertical component is zero there." }
       ]
     },
     {
       "id": "M3.2", "name": "FM: Equilibrium of a rigid body", "stage": "as",
       "questions": [
-        { "q": "A rigid body is in equilibrium when the resultant force is zero and", "o": ["the total moment about any point is zero", "it is at rest", "its weight is zero", "friction is limiting"], "a": 0, "why": "Both conditions are needed." }
+        { "q": "A rigid body is in equilibrium when the resultant force is zero and", "o": ["the total moment about any point is zero", "it is at rest", "its weight is zero", "friction is limiting"], "a": 0, "why": "Both conditions are needed." },
+        { "q": "A rigid body is in equilibrium when:", "o": ["The resultant force is zero and the total moment about any point is zero", "Only the resultant force is zero", "It is not moving", "Its centre of mass is at its centre"], "a": 0, "why": "Take moments about a point that removes unknown forces." },
+        { "q": "A solid on a slope is about to topple when:", "o": ["Friction is zero", "The slope is 45°", "Its weight is greatest", "Its centre of mass is vertically above the lowest edge"], "a": 3, "why": "Compare this with the angle at which it would slide." }
       ]
     },
     {
       "id": "M3.3", "name": "FM: Circular motion", "stage": "as",
       "questions": [
-        { "q": "The acceleration of a particle moving in a circle at constant speed v, radius r, is", "o": ["v²/r towards the centre", "zero", "v/r along the tangent", "rω outward"], "a": 0, "why": "Centripetal acceleration." }
+        { "q": "The acceleration of a particle moving in a circle at constant speed v, radius r, is", "o": ["v²/r towards the centre", "zero", "v/r along the tangent", "rω outward"], "a": 0, "why": "Centripetal acceleration." },
+        { "q": "A car rounds a smooth banked track at the design speed. The friction needed is:", "o": ["Equal to its weight", "Zero", "Equal to mv²/r", "Directed outwards"], "a": 1, "why": "The horizontal component of the normal reaction gives all the centripetal force." },
+        { "q": "A particle on a string moves in a vertical circle. It just completes the circle when, at the top:", "o": ["Its speed is zero", "The tension is zero, so mg = mv²/r", "The tension equals mg", "Its acceleration is zero"], "a": 1, "why": "Examiners (2023): don't assume a particle is at rest when the string goes slack." }
       ],
       "long": [
         { "q": "A particle of mass 0.5 kg moves in a horizontal circle of radius 0.8 m at a constant speed of 4 m s⁻¹. Find the magnitude of the resultant force on it.", "marks": 2, "paper": "3", "scheme": ["M1: F = mv²/r", "A1: = 0.5 × 16 ÷ 0.8 = 10 N"], "ans": "10 N" }
@@ -130,39 +152,49 @@
     {
       "id": "M3.4", "name": "FM: Hooke's law", "stage": "as",
       "questions": [
-        { "q": "The elastic potential energy stored in a string of modulus λ, natural length l, extension x is", "o": ["λx²/(2l)", "λx/l", "½λx", "λl/x"], "a": 0, "why": "The standard result." }
+        { "q": "The elastic potential energy stored in a string of modulus λ, natural length l, extension x is", "o": ["λx²/(2l)", "λx/l", "½λx", "λl/x"], "a": 0, "why": "The standard result." },
+        { "q": "An elastic string has natural length l and modulus λ. Its tension at extension x is:", "o": ["λx", "λx/l", "λ(l + x)/l", "λl/x"], "a": 1, "why": "Examiners (2023): use the modulus as given (e.g. λ = mg) and the extension, not the extended length." },
+        { "q": "The elastic potential energy stored in the string is:", "o": ["λx/l", "λx²/(2l)", "½λx²", "λl²/(2x)"], "a": 1, "why": "x is the extension, not the total length." }
       ]
     },
     {
       "id": "M3.5", "name": "FM: Linear motion under a variable force", "stage": "as",
       "questions": [
-        { "q": "Acceleration can be written as", "o": ["v dv/dx", "dx/dt", "v/x", "x dv/dt"], "a": 0, "why": "a = dv/dt = (dv/dx)(dx/dt) = v dv/dx." }
+        { "q": "Acceleration can be written as", "o": ["v dv/dx", "dx/dt", "v/x", "x dv/dt"], "a": 0, "why": "a = dv/dt = (dv/dx)(dx/dt) = v dv/dx." },
+        { "q": "The force on a particle depends on its displacement x. Which form of acceleration is used?", "o": ["dv/dt only", "dx/dt", "v²/x", "v dv/dx"], "a": 3, "why": "Then separate variables in v and x." },
+        { "q": "The force depends on time t. Which form of acceleration is used?", "o": ["v dv/dx", "dv/dt", "d²t/dx²", "x/t²"], "a": 1, "why": "Integrate with respect to t; remember the constant of integration." }
       ]
     },
     {
       "id": "M3.6", "name": "FM: Momentum (oblique impact)", "stage": "as",
       "questions": [
-        { "q": "In an oblique impact of a sphere with a smooth wall, the velocity component parallel to the wall", "o": ["is unchanged", "reverses", "is multiplied by e", "becomes zero"], "a": 0, "why": "A smooth wall exerts no force parallel to itself." }
+        { "q": "In an oblique impact of a sphere with a smooth wall, the velocity component parallel to the wall", "o": ["is unchanged", "reverses", "is multiplied by e", "becomes zero"], "a": 0, "why": "A smooth wall exerts no force parallel to itself." },
+        { "q": "A smooth sphere strikes a smooth fixed wall obliquely. Which velocity component is unchanged?", "o": ["The component parallel to the wall", "The component perpendicular to the wall", "Both components", "Neither component"], "a": 0, "why": "There is no friction, so no impulse along the wall." },
+        { "q": "For two smooth spheres colliding obliquely, Newton's experimental law applies:", "o": ["Perpendicular to the line of centres", "Along the line of centres", "Along the original velocity", "In every direction"], "a": 1, "why": "Components perpendicular to the line of centres are unchanged." }
       ]
     },
     {
       "id": "S4.1", "name": "FS: Continuous random variables", "stage": "as",
       "questions": [
         { "q": "For a probability density function f, ∫ f(x) dx over all x =", "o": ["1", "0", "the mean", "the median"], "a": 0, "why": "Total probability is 1." },
-        { "q": "Given a pdf on 0 ≤ x ≤ 27, the CDF must state:", "o": ["F(x) = 0 otherwise", "F(x) = 0 for x < 0 and F(x) = 1 for x > 27", "F(x) = 1 otherwise", "Only the middle part"], "a": 1, "why": "Examiners (2023): these were often wrongly combined as 'F(x) = 0 otherwise'." }
+        { "q": "Given a pdf on 0 ≤ x ≤ 27, the CDF must state:", "o": ["F(x) = 0 otherwise", "F(x) = 1 otherwise", "F(x) = 0 for x < 0 and F(x) = 1 for x > 27", "Only the middle part"], "a": 2, "why": "Examiners (2023): these were often wrongly combined as 'F(x) = 0 otherwise'." },
+        { "q": "The median m of a continuous random variable satisfies:", "o": ["f(m) = 0.5", "F(m) = 0.5", "f'(m) = 0", "E(X) = m"], "a": 1, "why": "Examiners (2023): some set the pdf, not the cdf, equal to 0.5." }
       ]
     },
     {
       "id": "S4.2", "name": "FS: Inferential statistics (t-tests)", "stage": "as",
       "questions": [
         { "q": "A t-test is used instead of a z-test when", "o": ["σ is unknown and the sample is small", "the data are discrete", "n is very large", "the mean is known"], "a": 0, "why": "With σ estimated from a small sample, the t-distribution applies." },
-        { "q": "Which conclusion to a hypothesis test is acceptable?", "o": ["The test proves the claim", "There is insufficient evidence to support the claim", "The claim is definitely false", "The sample is wrong"], "a": 1, "why": "Examiners (2023): conclusions should include uncertainty, not 'the test proves that…'." }
+        { "q": "Which conclusion to a hypothesis test is acceptable?", "o": ["The test proves the claim", "The claim is definitely false", "There is insufficient evidence to support the claim", "The sample is wrong"], "a": 2, "why": "Examiners (2023): conclusions should include uncertainty, not 'the test proves that…'." },
+        { "q": "A small sample comes from a normal population with unknown variance. Which distribution is used for the mean?", "o": ["Normal with variance 1", "t with n − 1 degrees of freedom", "Chi-squared with n degrees of freedom", "Poisson"], "a": 1, "why": "Examiners (2023): an incorrect t-value was the most common error." }
       ]
     },
     {
       "id": "S4.3", "name": "FS: Chi-squared tests", "stage": "as",
       "questions": [
-        { "q": "In a χ² test, expected frequencies should be at least", "o": ["5", "1", "10", "0"], "a": 0, "why": "Combine classes if not." }
+        { "q": "In a χ² test, expected frequencies should be at least", "o": ["5", "1", "10", "0"], "a": 0, "why": "Combine classes if not." },
+        { "q": "In a chi-squared test, what is done with cells whose expected frequency is below 5?", "o": ["Delete them", "Double them", "Ignore the test", "Combine them with neighbouring cells"], "a": 3, "why": "Then recalculate the degrees of freedom." },
+        { "q": "How many degrees of freedom has a 3 × 4 contingency table?", "o": ["6", "12", "7", "11"], "a": 0, "why": "(3 − 1)(4 − 1) = 6." }
       ],
       "long": [
         { "q": "In a χ² goodness-of-fit test with 5 classes, the expected frequencies come from a distribution whose mean was estimated from the data. State the number of degrees of freedom and why.", "marks": 2, "paper": "4", "scheme": ["B1: 5 − 1 − 1 = 3", "B1: one is lost because totals agree, one because a parameter (the mean) was estimated"], "ans": "3" }
@@ -171,13 +203,17 @@
     {
       "id": "S4.4", "name": "FS: Non-parametric tests", "stage": "as",
       "questions": [
-        { "q": "A sign test or Wilcoxon test is used when", "o": ["no distribution can be assumed", "the population is normal", "σ is known", "n > 100"], "a": 0, "why": "Non-parametric tests make no distributional assumption." }
+        { "q": "A sign test or Wilcoxon test is used when", "o": ["no distribution can be assumed", "the population is normal", "σ is known", "n > 100"], "a": 0, "why": "Non-parametric tests make no distributional assumption." },
+        { "q": "When is a Wilcoxon signed-rank test used instead of a t-test?", "o": ["When the sample is very large", "When data are categorical", "When the population cannot be assumed normal", "When the variance is known"], "a": 2, "why": "It tests a median using ranks of differences." },
+        { "q": "The sign test uses:", "o": ["The size of the differences", "The ranks of the data", "The sample mean", "Only whether each difference is positive or negative"], "a": 3, "why": "Under H₀ the number of + signs is B(n, 0.5)." }
       ]
     },
     {
       "id": "S4.5", "name": "FS: Probability generating functions", "stage": "as",
       "questions": [
-        { "q": "For a PGF G(t), the mean is", "o": ["G′(1)", "G(1)", "G″(1)", "G(0)"], "a": 0, "why": "Differentiate and set t = 1." }
+        { "q": "For a PGF G(t), the mean is", "o": ["G′(1)", "G(1)", "G″(1)", "G(0)"], "a": 0, "why": "Differentiate and set t = 1." },
+        { "q": "For a probability generating function G(t), E(X) =", "o": ["G(1)", "G'(0)", "G''(1)", "G'(1)"], "a": 3, "why": "G(1) = 1 for any PGF." },
+        { "q": "X and Y are independent with PGFs G_X(t) and G_Y(t). The PGF of X + Y is:", "o": ["G_X(t) + G_Y(t)", "G_X(t) × G_Y(t)", "G_X(G_Y(t))", "G_X(t) − G_Y(t)"], "a": 1, "why": "Examiners (2023): the probability of X = k is the coefficient of tᵏ: read the power, not the largest coefficient." }
       ]
     }
   ]

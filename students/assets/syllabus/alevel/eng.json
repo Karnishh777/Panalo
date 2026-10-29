@@ -18,33 +18,41 @@
     {
       "id": "2", "name": "Directed response", "stage": "as",
       "questions": [
-        { "q": "A directed response asks you to", "o": ["write a new text for a given audience and purpose, using a source", "analyse a poem", "summarise a novel", "write a story of your choice"], "a": 0, "why": "You transform the source for a new context." }
+        { "q": "A directed response asks you to", "o": ["write a new text for a given audience and purpose, using a source", "analyse a poem", "summarise a novel", "write a story of your choice"], "a": 0, "why": "You transform the source for a new context." },
+        { "q": "In a directed response, what matters most?", "o": ["Retelling the original text", "Writing for the given audience, purpose and form", "Using as many long words as possible", "Writing a story"], "a": 1, "why": "Examiners (2023): some used a warning tone when the task asked for advice or persuasion." },
+        { "q": "What should the comparison with the original text do?", "o": ["Summarise both texts", "Describe your feelings", "Analyse how language choices differ and why, with examples", "Repeat your own text"], "a": 2, "why": "Examiners (2023): weaker comparisons summarised content with few examples." }
       ]
     },
     {
       "id": "3", "name": "Shorter writing and reflective commentary", "stage": "as",
       "questions": [
-        { "q": "A reflective commentary should explain", "o": ["the language choices you made and why", "the plot of your piece", "what you would write next", "grammar rules"], "a": 0, "why": "It links your choices to audience and purpose." }
+        { "q": "A reflective commentary should explain", "o": ["the language choices you made and why", "the plot of your piece", "what you would write next", "grammar rules"], "a": 0, "why": "It links your choices to audience and purpose." },
+        { "q": "A review task asks about a trip. What is a weakness?", "o": ["Giving a judgement", "Mentioning specific activities", "Writing a recount with no evaluation", "Using a suitable register"], "a": 2, "why": "Examiners (2023): many reviews read like holiday accounts." },
+        { "q": "A story opening is set. What should you avoid?", "o": ["Creating atmosphere", "Introducing a character", "Hinting at conflict", "Writing a whole story"], "a": 3, "why": "Examiners (2023): some wrote a complete story instead of an opening." }
       ]
     },
     {
       "id": "4", "name": "Extended writing", "stage": "as",
       "questions": [
-        { "q": "Writing for a specified audience means", "o": ["adapting vocabulary, tone and structure to that audience", "using as many long words as possible", "ignoring the audience", "writing in note form"], "a": 0, "why": "Audience shapes every choice." }
+        { "q": "Writing for a specified audience means", "o": ["adapting vocabulary, tone and structure to that audience", "using as many long words as possible", "ignoring the audience", "writing in note form"], "a": 0, "why": "Audience shapes every choice." },
+        { "q": "Which is a common sentence error to avoid in extended writing?", "o": ["Joining sentences with commas (comma splicing)", "Using paragraphs", "Varying sentence length", "Using a full stop"], "a": 0, "why": "Examiners (2023): comma splicing and fragments recurred." },
+        { "q": "Which helps an extended piece of writing most?", "o": ["Writing without a plan", "Many unrelated ideas", "One very long paragraph", "A clear structure planned around the purpose and audience"], "a": 3, "why": "Examiners (2023): stronger responses were structured deliberately, not just chronologically." }
       ]
     },
     {
       "id": "5", "name": "Language change", "stage": "a2",
       "questions": [
         { "q": "Borrowing (as in 'bungalow' from Hindi) is an example of", "o": ["lexical change through contact", "semantic narrowing", "grammatical change", "phonological change"], "a": 0, "why": "Words enter English from other languages." },
-        { "q": "When a word's meaning becomes more negative over time, this is", "o": ["pejoration", "amelioration", "broadening", "narrowing"], "a": 0, "why": "e.g. 'silly' once meant blessed." }
+        { "q": "When a word's meaning becomes more negative over time, this is", "o": ["pejoration", "amelioration", "broadening", "narrowing"], "a": 0, "why": "e.g. 'silly' once meant blessed." },
+        { "q": "Which is a theory of language change?", "o": ["Chomsky's LAD", "Halliday's functions", "Skinner's operant conditioning", "Aitchison's damp spoon (and crumbling castle)"], "a": 3, "why": "Others: S-curve, wave model, random fluctuation." }
       ]
     },
     {
       "id": "6", "name": "Child language acquisition", "stage": "a2",
       "questions": [
         { "q": "'Holophrastic' speech is", "o": ["one word used to express a whole idea", "two-word combinations", "full sentences", "babbling"], "a": 0, "why": "e.g. 'juice' meaning 'I want juice'." },
-        { "q": "Overgeneralisation, as in 'goed', shows that children", "o": ["are learning grammatical rules", "are copying adults exactly", "cannot hear correctly", "know irregular verbs"], "a": 0, "why": "Applying a rule where it doesn't fit shows rule-learning." }
+        { "q": "Overgeneralisation, as in 'goed', shows that children", "o": ["are learning grammatical rules", "are copying adults exactly", "cannot hear correctly", "know irregular verbs"], "a": 0, "why": "Applying a rule where it doesn't fit shows rule-learning." },
+        { "q": "Which theorist argued children are born with a language acquisition device?", "o": ["Skinner", "Chomsky", "Halliday", "Crystal"], "a": 1, "why": "Use child-language data to support or challenge theories." }
       ],
       "long": [
         { "q": "A child of 2 years says 'daddy car go'. Comment on what this shows about the child's language development.", "marks": 4, "paper": "3", "scheme": ["B1: telegraphic stage (about 2;0–2;6)", "B1: content words kept; function words (determiners, auxiliaries) omitted", "B1: correct subject–object–verb meaning order", "B1: links to a theory, e.g. Brown's stages or Chomsky's LAD"] }
@@ -53,13 +61,17 @@
     {
       "id": "7", "name": "English in the world", "stage": "a2",
       "questions": [
-        { "q": "A pidgin is", "o": ["a simplified contact language with no native speakers", "a regional accent", "a dialect of English", "an extinct language"], "a": 0, "why": "When it gains native speakers it becomes a creole." }
+        { "q": "A pidgin is", "o": ["a simplified contact language with no native speakers", "a regional accent", "a dialect of English", "an extinct language"], "a": 0, "why": "When it gains native speakers it becomes a creole." },
+        { "q": "What is Schneider's dynamic model about?", "o": ["Child language", "Pronunciation of RP", "Stages in how new varieties of English develop in former colonies", "Gender and talk"], "a": 2, "why": "Examiners (2023): RP was often wrongly described as the British standard." },
+        { "q": "What does 'acrolect' mean?", "o": ["A dialect spoken by children", "The most prestigious variety, closest to the standard", "A creole only", "Slang"], "a": 1, "why": "Basilect is furthest from it; mesolect is between." }
       ]
     },
     {
       "id": "8", "name": "Language and the self", "stage": "a2",
       "questions": [
-        { "q": "Code-switching is", "o": ["moving between languages or varieties within a conversation", "speaking in code", "an accent change over years", "learning a second language"], "a": 0, "why": "Speakers switch for identity, audience or topic." }
+        { "q": "Code-switching is", "o": ["moving between languages or varieties within a conversation", "speaking in code", "an accent change over years", "learning a second language"], "a": 0, "why": "Speakers switch for identity, audience or topic." },
+        { "q": "In data analysis, what should be checked against the IPA reference table?", "o": ["The spelling only", "The phonemic transcription before commenting on pronunciation", "The speaker's age", "The punctuation"], "a": 1, "why": "Examiners (2023): candidates misread phonemic symbols instead of checking the table." },
+        { "q": "What is meant by a sociolect?", "o": ["A variety of language used by a social group", "A regional accent", "One person's speech", "A dead language"], "a": 0, "why": "An idiolect is one person's language." }
       ]
     }
   ]

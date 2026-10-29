@@ -8,14 +8,16 @@
       "id": "1", "name": "Reading: explicit and implicit meaning",
       "questions": [
         { "q": "An implicit meaning is one that is", "o": ["suggested rather than stated", "stated directly", "in the title", "a spelling error"], "a": 0, "why": "You infer it from clues in the text." },
-        { "q": "When asked to answer 'using your own words', you should", "o": ["rephrase the idea without copying key words", "quote the whole sentence", "write a summary of the passage", "give your opinion"], "a": 0, "why": "Lifting the text's words shows no understanding." }
+        { "q": "When asked to answer 'using your own words', you should", "o": ["rephrase the idea without copying key words", "quote the whole sentence", "write a summary of the passage", "give your opinion"], "a": 0, "why": "Lifting the text's words shows no understanding." },
+        { "q": "What does an 'implicit' meaning question ask for?", "o": ["A word copied from the text", "A summary", "Your opinion of the writer", "What is suggested but not stated directly"], "a": 3, "why": "Support inferences with evidence from the text." }
       ]
     },
     {
       "id": "2", "name": "Summary writing",
       "questions": [
         { "q": "A good summary", "o": ["selects the relevant points and writes them concisely in your own words", "copies sentences in order", "adds your opinion", "includes every example"], "a": 0, "why": "Selection and concision are what's rewarded." },
-        { "q": "Before writing a summary, you should first", "o": ["identify the points that answer the question", "write the conclusion", "count words in the passage", "find quotations"], "a": 0, "why": "Plan the content, then write it fluently." }
+        { "q": "Before writing a summary, you should first", "o": ["identify the points that answer the question", "write the conclusion", "count words in the passage", "find quotations"], "a": 0, "why": "Plan the content, then write it fluently." },
+        { "q": "In a summary, which approach works best?", "o": ["Select the relevant points and write them concisely in your own words", "Copy whole sentences", "Add examples of your own", "Comment on the language"], "a": 0, "why": "Keep to the length set." }
       ],
       "long": [
         { "q": "Summarise, in no more than 120 words, the reasons a writer gives for a change they describe (use a passage of your choice). Use this scheme to mark yourself.", "marks": 4, "paper": "1", "scheme": ["B1: 8 or more relevant points selected", "B1: points written in your own words", "B1: concise: no examples, repetition or opinion", "B1: organised and fluent, within the word limit"] }
@@ -35,14 +37,17 @@
     {
       "id": "4", "name": "Extended response to reading",
       "questions": [
-        { "q": "In an extended response (e.g. a letter or speech based on a text), you should", "o": ["use and develop ideas from the text in the required form", "copy the text's structure", "ignore the text", "write a story"], "a": 0, "why": "Reading marks come from using the text's ideas, writing marks from form and audience." }
+        { "q": "In an extended response (e.g. a letter or speech based on a text), you should", "o": ["use and develop ideas from the text in the required form", "copy the text's structure", "ignore the text", "write a story"], "a": 0, "why": "Reading marks come from using the text's ideas, writing marks from form and audience." },
+        { "q": "In the extended response to reading, what matters?", "o": ["Using and developing ideas from the text in the form asked", "Ignoring the text", "Copying long extracts", "Writing a story"], "a": 0, "why": "Write in the voice and form the task gives." },
+        { "q": "What tone should an extended response written as a character have?", "o": ["Your own normal voice", "One that fits the character and situation in the text", "A formal report", "Slang throughout"], "a": 1, "why": "Use details from the text to make the voice convincing." }
       ]
     },
     {
       "id": "5", "name": "Directed writing",
       "questions": [
         { "q": "Directed writing tests your ability to", "o": ["evaluate ideas from texts and write for a purpose and audience", "write a story", "describe a picture", "correct grammar"], "a": 0, "why": "You must select, evaluate and argue from the source material." },
-        { "q": "A discursive piece should", "o": ["consider different viewpoints before reaching a view", "argue only one side", "be informal", "avoid paragraphs"], "a": 0, "why": "Balance is the key feature." }
+        { "q": "A discursive piece should", "o": ["consider different viewpoints before reaching a view", "argue only one side", "be informal", "avoid paragraphs"], "a": 0, "why": "Balance is the key feature." },
+        { "q": "In directed writing, what gains marks for reading?", "o": ["Listing the ideas", "Writing your own unrelated views", "Quoting at length", "Evaluating and developing the ideas from the texts"], "a": 3, "why": "Writing marks reward audience, structure and accuracy." }
       ],
       "long": [
         { "q": "Write a speech to your school's parents arguing whether homework should be banned for students under 16. Mark yourself with this scheme.", "marks": 5, "paper": "2", "scheme": ["B1: a clear view, developed and sustained", "B1: counter-arguments considered and answered", "B1: register suited to the audience (parents) and the form (a speech)", "B1: well-structured paragraphs with linking", "B1: accurate spelling, punctuation and grammar"] }
@@ -51,7 +56,9 @@
     {
       "id": "6", "name": "Descriptive writing",
       "questions": [
-        { "q": "The best descriptive writing usually", "o": ["focuses on sensory detail and atmosphere rather than plot", "tells a long story", "uses lists of adjectives", "is written in the second person"], "a": 0, "why": "Description creates a scene, not a sequence of events." }
+        { "q": "The best descriptive writing usually", "o": ["focuses on sensory detail and atmosphere rather than plot", "tells a long story", "uses lists of adjectives", "is written in the second person"], "a": 0, "why": "Description creates a scene, not a sequence of events." },
+        { "q": "What makes descriptive writing effective?", "o": ["A fast-moving plot", "Precise detail and imagery that build an atmosphere", "Lots of dialogue", "A list of events"], "a": 1, "why": "Description focuses on senses and impressions, not events." },
+        { "q": "Which sentence is the strongest description?", "o": ["It was cold and nobody was there.", "The park was very, very cold.", "Frost silvered the empty benches, and our breath hung in the still air.", "I went to the park and then went home."], "a": 2, "why": "Precise verbs and sensory detail create atmosphere." }
       ],
       "long": [
         { "q": "Describe a market at the moment it opens in the morning. Mark yourself with this scheme.", "marks": 5, "paper": "2", "scheme": ["B1: a vivid, sustained atmosphere rather than a story", "B1: precise sensory detail (sounds, smells, light)", "B1: varied sentence structures for effect", "B1: ambitious, well-chosen vocabulary", "B1: accurate spelling, punctuation and grammar"] }
@@ -60,14 +67,18 @@
     {
       "id": "7", "name": "Narrative writing",
       "questions": [
-        { "q": "A strong narrative usually has", "o": ["a clear structure with a developed climax and resolution", "as many characters as possible", "no dialogue", "a dream ending"], "a": 0, "why": "Control of structure is what's rewarded." }
+        { "q": "A strong narrative usually has", "o": ["a clear structure with a developed climax and resolution", "as many characters as possible", "no dialogue", "a dream ending"], "a": 0, "why": "Control of structure is what's rewarded." },
+        { "q": "What helps a narrative most?", "o": ["Many characters", "A clear structure with a developed ending", "Long descriptions with no events", "An unfinished ending"], "a": 1, "why": "Control pace and choose a focused plot." },
+        { "q": "Why plan a narrative before writing?", "o": ["To use more time", "Plans earn marks on their own", "To make it longer", "So the plot is controlled and the ending is reached"], "a": 3, "why": "A short, well-shaped story beats a long, unfinished one." }
       ]
     },
     {
       "id": "8", "name": "Spelling, punctuation and grammar",
       "questions": [
         { "q": "Which sentence is punctuated correctly?", "o": ["It's raining, so we stayed in.", "Its raining so, we stayed in.", "It's raining so we stayed, in.", "Its' raining, so we stayed in."], "a": 0, "why": "It's = it is; the comma comes before 'so'." },
-        { "q": "A comma splice is", "o": ["two main clauses joined only by a comma", "a list with commas", "a comma before 'and'", "a missing apostrophe"], "a": 0, "why": "Use a full stop, semicolon or conjunction instead." }
+        { "q": "A comma splice is", "o": ["two main clauses joined only by a comma", "a list with commas", "a comma before 'and'", "a missing apostrophe"], "a": 0, "why": "Use a full stop, semicolon or conjunction instead." },
+        { "q": "Which is correct?", "o": ["Its raining, so the dog stays in it's kennel.", "It's raining, so the dog stays in it's kennel.", "Its raining, so the dog stays in its kennel.", "It's raining, so the dog stays in its kennel."], "a": 3, "why": "It's = it is; its shows possession." },
+        { "q": "Which sentence is correctly punctuated?", "o": ["I was tired, I went to bed.", "I was tired; I went to bed.", "I was tired I went to bed.", "I was tired: and I went to bed."], "a": 1, "why": "A comma cannot join two complete sentences (comma splice)." }
       ]
     }
   ]

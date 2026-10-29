@@ -30,7 +30,7 @@
         { "q": "What volume does 0.5 mol of any gas occupy at room temperature and pressure? (molar volume 24 dm³)", "o": ["6 dm³", "12 dm³", "24 dm³", "48 dm³"], "a": 1, "why": "0.5 × 24 = 12 dm³." },
         { "q": "25.0 cm³ of 0.100 mol/dm³ NaOH is neutralised. How many moles of NaOH are there?", "o": ["0.00250", "0.0250", "0.250", "2.50"], "a": 0, "why": "moles = concentration × volume in dm³ = 0.100 × 0.0250 = 0.00250." },
         { "q": "Which is the balanced equation for magnesium burning?", "o": ["Mg + O₂ → MgO", "2Mg + O₂ → 2MgO", "Mg + O → MgO₂", "2Mg + 2O₂ → 2MgO"], "a": 1, "why": "Two Mg and two O on each side." },
-        { "q": "What is the relative formula mass of magnesium hydroxide, Mg(OH)₂? (Ar: Mg = 24, O = 16, H = 1)", "o": ["41", "58", "42", "57"], "a": 1, "why": "Examiners (2023): some ignored the brackets and worked out 'MgOH₂'. 24 + 2 × (16 + 1) = 58." }
+        { "q": "What is the relative formula mass of magnesium hydroxide, Mg(OH)₂? (Ar: Mg = 24, O = 16, H = 1)", "o": ["58", "41", "42", "57"], "a": 0, "why": "Examiners (2023): some ignored the brackets and worked out 'MgOH₂'. 24 + 2 × (16 + 1) = 58." }
       ],
       "long": [
         { "q": "Calcium carbonate decomposes on heating: CaCO₃ → CaO + CO₂. Calculate the mass of calcium oxide made from 25 g of calcium carbonate. (Ar: Ca = 40, C = 12, O = 16)", "marks": 3, "paper": "4", "scheme": ["M1: Mr(CaCO₃) = 100, so moles = 25 ÷ 100 = 0.25", "M1: moles of CaO = 0.25 (1 : 1)", "A1: mass = 0.25 × 56 = 14 g"], "ans": "14 g" }
@@ -43,8 +43,8 @@
         { "q": "Why must ionic compounds be molten or dissolved to be electrolysed?", "o": ["So they get hot", "So the ions are free to move", "So electrons can move through them", "So they react with water"], "a": 1, "why": "In a solid the ions are fixed; they must be free to move to carry the current." },
         { "q": "In the electrolysis of concentrated aqueous sodium chloride, what forms at the anode?", "o": ["Sodium", "Oxygen", "Chlorine", "Hydrogen"], "a": 2, "why": "With concentrated chloride, chloride ions are discharged at the anode as chlorine." },
         { "q": "In a hydrogen–oxygen fuel cell, what is the only product?", "o": ["Carbon dioxide", "Water", "Hydrogen peroxide", "Methane"], "a": 1, "why": "Hydrogen and oxygen combine to form water, releasing electrical energy." },
-        { "q": "Which are the inputs to a hydrogen–oxygen fuel cell?", "o": ["Water only", "Hydrogen and oxygen", "Hydrogen and water", "Oxygen and electricity"], "a": 1, "why": "Examiners (2023): most candidates thought hydrogen and oxygen were outputs. They are the fuels; water and electrical energy come out." },
-        { "q": "What forms at the cathode when concentrated aqueous sodium chloride is electrolysed?", "o": ["2H", "H₂", "Na", "Cl₂"], "a": 1, "why": "Examiners (2023): a common error was 2H instead of H₂. Hydrogen is diatomic; sodium is too reactive to be discharged from water." }
+        { "q": "Which are the inputs to a hydrogen–oxygen fuel cell?", "o": ["Water only", "Hydrogen and water", "Hydrogen and oxygen", "Oxygen and electricity"], "a": 2, "why": "Examiners (2023): most candidates thought hydrogen and oxygen were outputs. They are the fuels; water and electrical energy come out." },
+        { "q": "What forms at the cathode when concentrated aqueous sodium chloride is electrolysed?", "o": ["2H", "Na", "H₂", "Cl₂"], "a": 2, "why": "Examiners (2023): a common error was 2H instead of H₂. Hydrogen is diatomic; sodium is too reactive to be discharged from water." }
       ],
       "long": [
         { "q": "Concentrated aqueous sodium chloride is electrolysed using inert electrodes. Name the products at each electrode and write the ionic half-equation at the cathode.", "marks": 4, "paper": "4", "scheme": ["B1: anode (positive): chlorine", "B1: cathode (negative): hydrogen", "B1: 2H⁺ + 2e⁻ → H₂", "B1: the solution left contains sodium hydroxide"] }
@@ -66,7 +66,7 @@
         { "q": "In the Haber process, what is made?", "o": ["Sulfuric acid", "Ammonia", "Nitric acid", "Methanol"], "a": 1, "why": "N₂ + 3H₂ ⇌ 2NH₃, using an iron catalyst." },
         { "q": "Oxidation is…", "o": ["gain of electrons", "loss of electrons", "gain of hydrogen", "loss of oxygen"], "a": 1, "why": "OIL RIG: oxidation is loss of electrons, reduction is gain." },
         { "q": "For an equilibrium, increasing the pressure shifts the position towards…", "o": ["the side with more moles of gas", "the side with fewer moles of gas", "neither side", "the reactants always"], "a": 1, "why": "The equilibrium shifts to reduce the pressure, towards fewer gas molecules." },
-        { "q": "In the Contact process, which conditions are used?", "o": ["450 °C, 20 000 kPa, iron catalyst", "450 °C, 200 kPa, vanadium(V) oxide catalyst", "25 °C, 100 kPa, no catalyst", "1000 °C, 20 000 kPa, platinum catalyst"], "a": 1, "why": "Examiners (2023): many confused the Contact process with the Haber process (iron catalyst, 20 000 kPa)." }
+        { "q": "In the Contact process, which conditions are used?", "o": ["450 °C, 20 000 kPa, iron catalyst", "25 °C, 100 kPa, no catalyst", "450 °C, 200 kPa, vanadium(V) oxide catalyst", "1000 °C, 20 000 kPa, platinum catalyst"], "a": 2, "why": "Examiners (2023): many confused the Contact process with the Haber process (iron catalyst, 20 000 kPa)." }
       ],
       "long": [
         { "q": "Use collision theory to explain why increasing the concentration of an acid increases the rate of its reaction with magnesium.", "marks": 3, "paper": "4", "scheme": ["B1: more acid particles in the same volume", "B1: so more frequent collisions between particles", "B1: more successful collisions per second"] }
@@ -94,7 +94,7 @@
         { "q": "Chlorine is bubbled into potassium bromide solution. What happens?", "o": ["Nothing", "Bromine is displaced and the solution turns orange", "Chlorine is displaced", "A white precipitate forms"], "a": 1, "why": "A more reactive halogen displaces a less reactive one from its salts." },
         { "q": "Why are the noble gases unreactive?", "o": ["They are gases", "They have full outer shells of electrons", "They are very dense", "They have no electrons"], "a": 1, "why": "A full outer shell is stable, so they don't need to gain, lose or share electrons." },
         { "q": "Elements in the same group have the same number of…", "o": ["shells", "outer-shell electrons", "neutrons", "protons"], "a": 1, "why": "The group number (for groups 1 to 7) is the number of outer electrons." },
-        { "q": "What is the state of bromine at room temperature and pressure?", "o": ["Solid", "Liquid", "Gas", "Aqueous"], "a": 1, "why": "Examiners (2023): a common misconception is that bromine is a gas. It is a red-brown liquid that gives off a vapour." }
+        { "q": "What is the state of bromine at room temperature and pressure?", "o": ["Solid", "Gas", "Aqueous", "Liquid"], "a": 3, "why": "Examiners (2023): a common misconception is that bromine is a gas. It is a red-brown liquid that gives off a vapour." }
       ],
       "long": [
         { "q": "Explain why the Group I metals become more reactive down the group.", "marks": 3, "paper": "4", "scheme": ["B1: the atoms get larger, with more electron shells", "B1: so the outer electron is further from the nucleus / more shielded, less strongly attracted", "B1: so it is lost more easily"] }
@@ -117,7 +117,7 @@
         { "q": "What is the main gas in clean dry air?", "o": ["Oxygen", "Carbon dioxide", "Nitrogen", "Argon"], "a": 2, "why": "Air is about 78% nitrogen and 21% oxygen." },
         { "q": "Which two gases are greenhouse gases?", "o": ["Oxygen and nitrogen", "Carbon dioxide and methane", "Argon and helium", "Hydrogen and oxygen"], "a": 1, "why": "Carbon dioxide and methane absorb and re-emit infrared radiation." },
         { "q": "Why is chlorine added to drinking water?", "o": ["To improve taste", "To kill microbes", "To remove salt", "To make it softer"], "a": 1, "why": "Chlorine kills bacteria in water treatment." },
-        { "q": "How does methane add to the enhanced greenhouse effect?", "o": ["It destroys the ozone layer", "It absorbs thermal energy emitted by the Earth and re-emits some back towards the Earth", "It reflects sunlight back to space", "It causes acid rain"], "a": 1, "why": "Examiners (2023): answers often confused the greenhouse effect with ozone or acid rain." }
+        { "q": "How does methane add to the enhanced greenhouse effect?", "o": ["It destroys the ozone layer", "It reflects sunlight back to space", "It absorbs thermal energy emitted by the Earth and re-emits some back towards the Earth", "It causes acid rain"], "a": 2, "why": "Examiners (2023): answers often confused the greenhouse effect with ozone or acid rain." }
       ]
     },
     {
@@ -142,7 +142,7 @@
         { "q": "Which gas turns limewater milky?", "o": ["Oxygen", "Hydrogen", "Carbon dioxide", "Ammonia"], "a": 2, "why": "CO₂ forms insoluble calcium carbonate with limewater." },
         { "q": "A flame test gives a lilac flame. Which ion is present?", "o": ["Na⁺", "K⁺", "Li⁺", "Ca²⁺"], "a": 1, "why": "Potassium gives lilac; sodium yellow, lithium red, calcium orange-red." },
         { "q": "Adding aqueous sodium hydroxide gives a light blue precipitate. Which ion?", "o": ["Fe²⁺", "Fe³⁺", "Cu²⁺", "Zn²⁺"], "a": 2, "why": "Copper(II) hydroxide is light blue; iron(II) is green and iron(III) red-brown." },
-        { "q": "Which test identifies chlorine gas?", "o": ["Add acidified silver nitrate: white precipitate", "Damp blue litmus paper turns red then is bleached", "A lighted splint gives a squeaky pop", "It turns limewater milky"], "a": 1, "why": "Examiners (2023): the test for chlorine gas was often confused with the test for chloride ions (silver nitrate)." }
+        { "q": "Which test identifies chlorine gas?", "o": ["Add acidified silver nitrate: white precipitate", "A lighted splint gives a squeaky pop", "It turns limewater milky", "Damp blue litmus paper turns red then is bleached"], "a": 3, "why": "Examiners (2023): the test for chlorine gas was often confused with the test for chloride ions (silver nitrate)." }
       ]
     }
   ]

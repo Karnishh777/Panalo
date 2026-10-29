@@ -10,8 +10,8 @@
         { "q": "What is the electron configuration of Fe (Z = 26)?", "o": ["1s² 2s² 2p⁶ 3s² 3p⁶ 3d⁸", "1s² 2s² 2p⁶ 3s² 3p⁶ 4s² 3d⁶", "1s² 2s² 2p⁶ 3s² 3p⁶ 4s² 4p⁶", "1s² 2s² 2p⁶ 3s² 3p⁶ 3d⁶ 4p²"], "a": 1, "why": "26 electrons: [Ar] 4s² 3d⁶." },
         { "q": "Why is the first ionisation energy of oxygen lower than that of nitrogen?", "o": ["Oxygen has fewer protons", "The paired electrons in oxygen's 2p orbital repel each other", "Oxygen's electron is in a higher shell", "Nitrogen is a gas"], "a": 1, "why": "Spin-pair repulsion in one 2p orbital makes that electron easier to remove." },
         { "q": "Which particle has 10 electrons and 11 protons?", "o": ["Ne", "Na", "Na⁺", "F⁻"], "a": 2, "why": "Sodium (Z = 11) that has lost one electron." },
-        { "q": "Why does first ionisation energy generally increase across a period?", "o": ["Shielding stays the same and nuclear charge increases", "Nuclear charge increases, shielding is similar, so the outer electron is attracted more strongly", "Atomic radius increases", "Electrons are added to new shells"], "a": 1, "why": "Examiners (2023): many said shielding 'remains constant'; examiners wanted similar shielding with greater nuclear charge and smaller radius." },
-        { "q": "What is the full electronic configuration of Cu²⁺?", "o": ["1s² 2s² 2p⁶ 3s² 3p⁶ 3d⁹", "1s² 2s² 2p⁶ 3s² 3p⁶ 3d⁷ 4s²", "1s² 2s² 2p⁶ 3s² 3p⁶ 3d¹⁰ 4s¹", "1s² 2s² 2p⁶ 3s² 3p⁶ 3d⁸ 4s¹"], "a": 0, "why": "Examiners (2023): answers often kept the 4s electrons. Transition metal ions lose 4s electrons first." }
+        { "q": "Why does first ionisation energy generally increase across a period?", "o": ["Shielding stays the same and nuclear charge increases", "Atomic radius increases", "Nuclear charge increases, shielding is similar, so the outer electron is attracted more strongly", "Electrons are added to new shells"], "a": 2, "why": "Examiners (2023): many said shielding 'remains constant'; examiners wanted similar shielding with greater nuclear charge and smaller radius." },
+        { "q": "What is the full electronic configuration of Cu²⁺?", "o": ["1s² 2s² 2p⁶ 3s² 3p⁶ 3d⁷ 4s²", "1s² 2s² 2p⁶ 3s² 3p⁶ 3d⁹", "1s² 2s² 2p⁶ 3s² 3p⁶ 3d¹⁰ 4s¹", "1s² 2s² 2p⁶ 3s² 3p⁶ 3d⁸ 4s¹"], "a": 1, "why": "Examiners (2023): answers often kept the 4s electrons. Transition metal ions lose 4s electrons first." }
       ],
       "long": [
         { "q": "Explain why the first ionisation energy of aluminium is lower than that of magnesium, and why that of sulfur is lower than that of phosphorus.", "marks": 4, "paper": "2", "scheme": ["B1: Al's outer electron is in a 3p orbital, Mg's in 3s", "B1: 3p is higher in energy / further from the nucleus / shielded by the 3s electrons, so easier to remove", "B1: in S the electron removed is from a 3p orbital that holds a pair of electrons", "B1: spin-pair repulsion makes it easier to remove"] }
@@ -35,7 +35,7 @@
         { "q": "What is the bond angle in methane?", "o": ["90°", "104.5°", "109.5°", "120°"], "a": 2, "why": "Four bonding pairs repel equally: tetrahedral, 109.5°." },
         { "q": "Why does water have an unusually high boiling point for its size?", "o": ["Strong covalent bonds", "Hydrogen bonding between molecules", "Ionic bonding", "It is dense"], "a": 1, "why": "O–H…O hydrogen bonds are much stronger than other intermolecular forces." },
         { "q": "Which molecule is non-polar overall even though it has polar bonds?", "o": ["H₂O", "NH₃", "CO₂", "HCl"], "a": 2, "why": "CO₂ is linear; the two bond dipoles cancel." },
-        { "q": "Why does magnesium have a high melting point?", "o": ["Strong ionic bonds", "Strong metallic bonding: attraction between a lattice of positive ions and delocalised electrons", "Strong covalent bonds", "Hydrogen bonding"], "a": 1, "why": "Examiners (2023): some described the bonding in magnesium as ionic, and many omitted that the lattice is giant." }
+        { "q": "Why does magnesium have a high melting point?", "o": ["Strong ionic bonds", "Strong covalent bonds", "Strong metallic bonding: attraction between a lattice of positive ions and delocalised electrons", "Hydrogen bonding"], "a": 2, "why": "Examiners (2023): some described the bonding in magnesium as ionic, and many omitted that the lattice is giant." }
       ],
       "long": [
         { "q": "Explain why water (Mr 18) has a much higher boiling point than hydrogen sulfide (Mr 34).", "marks": 3, "paper": "2", "scheme": ["B1: water forms hydrogen bonds between molecules", "B1: because O is much more electronegative than S (O–H strongly polar, lone pairs on O)", "B1: hydrogen bonds need more energy to overcome than the van der Waals forces between H₂S molecules"] }
@@ -45,7 +45,8 @@
       "id": "4", "stage": "as", "name": "States of matter",
       "questions": [
         { "q": "Real gases behave most like ideal gases at…", "o": ["high pressure and low temperature", "low pressure and high temperature", "high pressure and high temperature", "low temperature only"], "a": 1, "why": "Molecules are far apart and fast, so their volume and attractions matter less." },
-        { "q": "Using pV = nRT, what are the units of V?", "o": ["dm³", "cm³", "m³", "litres"], "a": 2, "why": "With p in Pa and R = 8.31 J K⁻¹ mol⁻¹, V must be in m³." }
+        { "q": "Using pV = nRT, what are the units of V?", "o": ["dm³", "cm³", "m³", "litres"], "a": 2, "why": "With p in Pa and R = 8.31 J K⁻¹ mol⁻¹, V must be in m³." },
+        { "q": "Which assumption is made in the kinetic theory of an ideal gas?", "o": ["The molecules take up a significant volume", "Collisions between molecules are inelastic", "There are no intermolecular forces between the molecules", "The molecules are stationary between collisions"], "a": 2, "why": "Real gases behave least ideally at high pressure and low temperature, when these assumptions fail." }
       ]
     },
     {
@@ -54,7 +55,7 @@
         { "q": "Hess's law is based on conservation of…", "o": ["mass", "energy", "charge", "atoms"], "a": 1, "why": "The enthalpy change is independent of the route taken." },
         { "q": "50.0 g of water rises by 6.0 °C. How much energy was transferred? (c = 4.18 J g⁻¹ K⁻¹)", "o": ["125 J", "1254 J", "209 J", "2508 J"], "a": 1, "why": "q = mcΔT = 50.0 × 4.18 × 6.0 = 1254 J." },
         { "q": "Standard enthalpy change of combustion is always…", "o": ["positive", "negative", "zero", "either"], "a": 1, "why": "Combustion releases energy, so it is exothermic." },
-        { "q": "Which is the correct definition of standard enthalpy change of neutralisation?", "o": ["The energy needed to neutralise an acid", "The enthalpy change when one mole of water is formed by an acid reacting with a base under standard conditions", "The enthalpy change when one mole of acid reacts with one mole of base", "The heat released when an acid is diluted"], "a": 1, "why": "Examiners (2023): 'one mole of acid reacting with one mole of base' was a common inadequate answer, and some thought neutralisation needs energy." }
+        { "q": "Which is the correct definition of standard enthalpy change of neutralisation?", "o": ["The energy needed to neutralise an acid", "The enthalpy change when one mole of acid reacts with one mole of base", "The heat released when an acid is diluted", "The enthalpy change when one mole of water is formed by an acid reacting with a base under standard conditions"], "a": 3, "why": "Examiners (2023): 'one mole of acid reacting with one mole of base' was a common inadequate answer, and some thought neutralisation needs energy." }
       ],
       "long": [
         { "q": "Use these standard enthalpy changes of combustion (kJ mol⁻¹) to calculate the standard enthalpy change of formation of propane, C₃H₈: C(s) −394, H₂(g) −286, C₃H₈(g) −2219.", "marks": 3, "paper": "2", "scheme": ["M1: a correct Hess cycle or ΔHf = Σ ΔHc(reactants) − ΔHc(propane)", "M1: 3(−394) + 4(−286) = −2326", "A1: ΔHf = −2326 + 2219 = −107 kJ mol⁻¹"], "ans": "−107 kJ mol⁻¹" }
@@ -64,7 +65,8 @@
       "id": "6", "stage": "as", "name": "Electrochemistry (redox)",
       "questions": [
         { "q": "What is the oxidation number of Mn in KMnO₄?", "o": ["+2", "+4", "+6", "+7"], "a": 3, "why": "K +1, four O −2 each: Mn = +7." },
-        { "q": "In Cl₂ + 2Br⁻ → 2Cl⁻ + Br₂, what is oxidised?", "o": ["Cl₂", "Br⁻", "Cl⁻", "Nothing"], "a": 1, "why": "Br⁻ loses electrons (oxidation number −1 → 0)." }
+        { "q": "In Cl₂ + 2Br⁻ → 2Cl⁻ + Br₂, what is oxidised?", "o": ["Cl₂", "Br⁻", "Cl⁻", "Nothing"], "a": 1, "why": "Br⁻ loses electrons (oxidation number −1 → 0)." },
+        { "q": "What is the oxidation number of chromium in Cr₂O₇²⁻?", "o": ["+3", "+7", "+12", "+6"], "a": 3, "why": "2x + 7(−2) = −2, so x = +6." }
       ]
     },
     {
@@ -83,7 +85,7 @@
       "questions": [
         { "q": "On a Boltzmann distribution, raising the temperature…", "o": ["moves the peak left and up", "moves the peak right and down, with more molecules above Ea", "has no effect", "reduces the area under the curve"], "a": 1, "why": "More molecules have energy at or above the activation energy; the total area stays the same." },
         { "q": "A catalyst works by…", "o": ["increasing the energy of molecules", "providing an alternative route with a lower activation energy", "increasing ΔH", "shifting equilibrium"], "a": 1, "why": "More particles then have enough energy to react." },
-        { "q": "How does a catalyst increase the rate of reaction?", "o": ["It increases the number of collisions", "It provides an alternative pathway with a lower activation energy, so more collisions are successful", "It increases the kinetic energy of the particles", "It shifts the equilibrium to the right"], "a": 1, "why": "Examiners (2023): many said a catalyst increases the number of collisions rather than the frequency of successful collisions." }
+        { "q": "How does a catalyst increase the rate of reaction?", "o": ["It increases the number of collisions", "It increases the kinetic energy of the particles", "It provides an alternative pathway with a lower activation energy, so more collisions are successful", "It shifts the equilibrium to the right"], "a": 2, "why": "Examiners (2023): many said a catalyst increases the number of collisions rather than the frequency of successful collisions." }
       ],
       "long": [
         { "q": "Use the Boltzmann distribution to explain why a small rise in temperature greatly increases the rate of a reaction.", "marks": 3, "paper": "2", "scheme": ["B1: at higher temperature the curve shifts right / lower peak, area unchanged", "B1: many more molecules have energy ≥ Ea", "B1: so more frequent successful collisions per second (frequency of collisions rises only slightly)"] }
@@ -93,14 +95,16 @@
       "id": "9", "stage": "as", "name": "The Periodic Table: chemical periodicity",
       "questions": [
         { "q": "Across Period 3, atomic radius…", "o": ["increases", "decreases", "stays constant", "increases then decreases"], "a": 1, "why": "Nuclear charge rises with similar shielding, pulling the electrons closer." },
-        { "q": "Which Period 3 oxide is amphoteric?", "o": ["Na₂O", "MgO", "Al₂O₃", "SO₂"], "a": 2, "why": "Al₂O₃ reacts with both acids and bases." }
+        { "q": "Which Period 3 oxide is amphoteric?", "o": ["Na₂O", "MgO", "Al₂O₃", "SO₂"], "a": 2, "why": "Al₂O₃ reacts with both acids and bases." },
+        { "q": "Why does atomic radius decrease across Period 3?", "o": ["Electrons are added to new shells", "Nuclear charge increases while shielding stays similar", "Shielding increases sharply", "Neutrons repel electrons"], "a": 1, "why": "Examiners (2023): say 'similar shielding', and link more protons to stronger attraction." }
       ]
     },
     {
       "id": "10", "stage": "as", "name": "Group 2",
       "questions": [
         { "q": "Down Group 2, the solubility of the hydroxides…", "o": ["increases", "decreases", "stays the same", "varies randomly"], "a": 0, "why": "Mg(OH)₂ is sparingly soluble; Ba(OH)₂ is much more soluble." },
-        { "q": "Down Group 2, the thermal stability of the carbonates…", "o": ["increases", "decreases", "stays the same", "drops to zero"], "a": 0, "why": "Larger cations polarise the carbonate ion less, so it is harder to decompose." }
+        { "q": "Down Group 2, the thermal stability of the carbonates…", "o": ["increases", "decreases", "stays the same", "drops to zero"], "a": 0, "why": "Larger cations polarise the carbonate ion less, so it is harder to decompose." },
+        { "q": "How does the solubility of the Group 2 hydroxides change down the group?", "o": ["It decreases", "It stays the same", "It increases", "It increases then decreases"], "a": 2, "why": "Mg(OH)₂ is sparingly soluble; Ba(OH)₂ is much more soluble. (Group 2 sulfates show the opposite trend.)" }
       ]
     },
     {
@@ -108,14 +112,15 @@
       "questions": [
         { "q": "Concentrated H₂SO₄ is added to solid NaBr. Which is produced?", "o": ["HBr only", "HBr and some Br₂ and SO₂", "Cl₂", "No reaction"], "a": 1, "why": "Bromide is a strong enough reducing agent to reduce some of the sulfuric acid to SO₂." },
         { "q": "Silver nitrate gives a cream precipitate soluble in concentrated ammonia. Which halide?", "o": ["Chloride", "Bromide", "Iodide", "Fluoride"], "a": 1, "why": "AgCl is white (dissolves in dilute NH₃), AgBr cream (concentrated), AgI yellow (insoluble)." },
-        { "q": "Which reagent is used to test for halide ions (X⁻), as opposed to a halogen (X₂)?", "o": ["Aqueous iodine", "Silver nitrate solution", "Potassium iodide solution", "Starch"], "a": 1, "why": "Examiners (2023): some used iodine where iodide was meant: be precise about halogens (X₂) and halides (X⁻). Halide ions are tested with aqueous silver nitrate." }
+        { "q": "Which reagent is used to test for halide ions (X⁻), as opposed to a halogen (X₂)?", "o": ["Silver nitrate solution", "Aqueous iodine", "Potassium iodide solution", "Starch"], "a": 0, "why": "Examiners (2023): some used iodine where iodide was meant: be precise about halogens (X₂) and halides (X⁻). Halide ions are tested with aqueous silver nitrate." }
       ]
     },
     {
       "id": "12", "stage": "as", "name": "Nitrogen and sulfur",
       "questions": [
         { "q": "Why is N₂ unreactive?", "o": ["It is a noble gas", "Its triple bond is very strong", "It is non-polar", "It is ionic"], "a": 1, "why": "N≡N has a high bond energy." },
-        { "q": "Which pollutant forms when nitrogen and oxygen react in a hot engine?", "o": ["SO₂", "NO", "CO₂", "CH₄"], "a": 1, "why": "High temperatures let N₂ and O₂ combine to form nitrogen oxides." }
+        { "q": "Which pollutant forms when nitrogen and oxygen react in a hot engine?", "o": ["SO₂", "NO", "CO₂", "CH₄"], "a": 1, "why": "High temperatures let N₂ and O₂ combine to form nitrogen oxides." },
+        { "q": "Why is nitrogen gas very unreactive?", "o": ["Nitrogen has no lone pairs", "The N≡N triple bond has a very high bond energy", "Nitrogen molecules are ionic", "Nitrogen is a noble gas"], "a": 1, "why": "A lot of energy is needed to break the triple bond, and the molecule is non-polar." }
       ]
     },
     {
@@ -130,7 +135,8 @@
       "id": "14", "stage": "as", "name": "Hydrocarbons",
       "questions": [
         { "q": "Alkanes react with chlorine in UV light by…", "o": ["electrophilic addition", "free-radical substitution", "nucleophilic substitution", "elimination"], "a": 1, "why": "UV splits Cl₂ into radicals: initiation, propagation, termination." },
-        { "q": "Ethene reacts with bromine by…", "o": ["free-radical substitution", "electrophilic addition", "nucleophilic addition", "hydrolysis"], "a": 1, "why": "The electron-rich C=C attacks the polarised Br₂." }
+        { "q": "Ethene reacts with bromine by…", "o": ["free-radical substitution", "electrophilic addition", "nucleophilic addition", "hydrolysis"], "a": 1, "why": "The electron-rich C=C attacks the polarised Br₂." },
+        { "q": "What is the mechanism when ethene reacts with hydrogen bromide?", "o": ["Free-radical substitution", "Nucleophilic substitution", "Nucleophilic addition", "Electrophilic addition"], "a": 3, "why": "The electron-rich C=C attracts the δ+ hydrogen of HBr: an electrophile adds across the double bond." }
       ],
       "long": [
         { "q": "But-1-ene reacts with hydrogen bromide to give two products. Name the major product and explain why it is formed in the larger amount.", "marks": 3, "paper": "2", "scheme": ["B1: 2-bromobutane", "B1: via the secondary carbocation (CH₃CH⁺CH₂CH₃)", "B1: which is more stable than the primary one, because alkyl groups push electrons towards (are electron-donating to) the positive carbon"], "ans": "2-bromobutane" }
@@ -141,14 +147,15 @@
       "questions": [
         { "q": "Which halogenoalkane hydrolyses fastest?", "o": ["Chloroethane", "Bromoethane", "Iodoethane", "Fluoroethane"], "a": 2, "why": "The C–I bond is the weakest, so it breaks most easily." },
         { "q": "Heating a halogenoalkane with ethanolic KOH mainly gives…", "o": ["an alcohol", "an alkene (elimination)", "a nitrile", "an amine"], "a": 1, "why": "In ethanol, OH⁻ acts as a base and removes HX." },
-        { "q": "Which reagents and conditions convert a halogenoalkane into a nitrile?", "o": ["HCN with a KCN catalyst", "KCN in ethanol, heat under reflux", "NaOH(aq), heat", "H₂ with a nickel catalyst"], "a": 1, "why": "Examiners (2023): some gave the conditions for carbonyl → hydroxynitrile instead of halogenoalkane → nitrile." }
+        { "q": "Which reagents and conditions convert a halogenoalkane into a nitrile?", "o": ["KCN in ethanol, heat under reflux", "HCN with a KCN catalyst", "NaOH(aq), heat", "H₂ with a nickel catalyst"], "a": 0, "why": "Examiners (2023): some gave the conditions for carbonyl → hydroxynitrile instead of halogenoalkane → nitrile." }
       ]
     },
     {
       "id": "16", "stage": "as", "name": "Hydroxy compounds",
       "questions": [
         { "q": "Which alcohol is NOT oxidised by acidified dichromate(VI)?", "o": ["Ethanol", "Propan-2-ol", "2-methylpropan-2-ol", "Methanol"], "a": 2, "why": "Tertiary alcohols have no H on the carbon bearing the OH." },
-        { "q": "Distilling a primary alcohol with acidified dichromate as it forms gives…", "o": ["a ketone", "an aldehyde", "a carboxylic acid", "an ester"], "a": 1, "why": "Distilling removes the aldehyde before it oxidises further; heating under reflux gives the acid." }
+        { "q": "Distilling a primary alcohol with acidified dichromate as it forms gives…", "o": ["a ketone", "an aldehyde", "a carboxylic acid", "an ester"], "a": 1, "why": "Distilling removes the aldehyde before it oxidises further; heating under reflux gives the acid." },
+        { "q": "Which alcohol is not oxidised by acidified potassium dichromate(VI)?", "o": ["Propan-1-ol", "Propan-2-ol", "2-methylpropan-2-ol", "Ethanol"], "a": 2, "why": "Tertiary alcohols have no H on the C–OH carbon, so the orange dichromate stays orange." }
       ],
       "long": [
         { "q": "Describe how you could use acidified potassium dichromate(VI) and one other reagent to distinguish between propan-1-ol, propan-2-ol and 2-methylpropan-2-ol.", "marks": 4, "paper": "2", "scheme": ["B1: warm each with acidified K₂Cr₂O₇: propan-1-ol and propan-2-ol turn it orange to green", "B1: 2-methylpropan-2-ol (tertiary) leaves it orange", "B1: distil off the product: propan-1-ol gives an aldehyde, propan-2-ol a ketone", "B1: Tollens' reagent gives a silver mirror with the aldehyde only (or Fehling's: red precipitate)"] }
@@ -158,41 +165,48 @@
       "id": "17", "stage": "as", "name": "Carbonyl compounds",
       "questions": [
         { "q": "Which reagent distinguishes an aldehyde from a ketone?", "o": ["2,4-DNPH", "Tollens' reagent", "Bromine water", "Sodium carbonate"], "a": 1, "why": "Aldehydes give a silver mirror; ketones don't. 2,4-DNPH reacts with both." },
-        { "q": "NaBH₄ reduces a ketone to…", "o": ["a primary alcohol", "a secondary alcohol", "a carboxylic acid", "an alkane"], "a": 1, "why": "Ketones are reduced to secondary alcohols." }
+        { "q": "NaBH₄ reduces a ketone to…", "o": ["a primary alcohol", "a secondary alcohol", "a carboxylic acid", "an alkane"], "a": 1, "why": "Ketones are reduced to secondary alcohols." },
+        { "q": "What is the product when propanone is reduced with NaBH₄?", "o": ["Propan-1-ol", "Propanal", "Propan-2-ol", "Propanoic acid"], "a": 2, "why": "Ketones are reduced to secondary alcohols." }
       ]
     },
     {
       "id": "18", "stage": "as", "name": "Carboxylic acids and derivatives",
       "questions": [
         { "q": "An alcohol and a carboxylic acid with a concentrated H₂SO₄ catalyst form…", "o": ["an ether", "an ester and water", "an aldehyde", "an amide"], "a": 1, "why": "Esterification (a condensation reaction)." },
-        { "q": "Carboxylic acids react with sodium carbonate to give…", "o": ["hydrogen", "carbon dioxide (effervescence)", "oxygen", "no reaction"], "a": 1, "why": "They are acidic enough to release CO₂ from carbonates." }
+        { "q": "Carboxylic acids react with sodium carbonate to give…", "o": ["hydrogen", "carbon dioxide (effervescence)", "oxygen", "no reaction"], "a": 1, "why": "They are acidic enough to release CO₂ from carbonates." },
+        { "q": "Ethanoic acid is warmed with ethanol and a little concentrated sulfuric acid. What forms?", "o": ["Ethanal and water", "Ethyl ethanoate and water", "Ethyl ethanoate and hydrogen", "Ethanoyl chloride"], "a": 1, "why": "This is esterification; the acid is a catalyst and the reaction is reversible." }
       ]
     },
     {
       "id": "19", "stage": "as", "name": "Nitrogen compounds",
       "questions": [
         { "q": "A nitrile is hydrolysed by heating with dilute acid. It forms…", "o": ["an amine", "a carboxylic acid", "an alcohol", "an ester"], "a": 1, "why": "R–C≡N + 2H₂O + H⁺ → RCOOH + NH₄⁺." },
-        { "q": "Reacting a halogenoalkane with KCN in ethanol…", "o": ["shortens the carbon chain", "lengthens the carbon chain by one", "forms an alkene", "forms an alcohol"], "a": 1, "why": "CN⁻ substitutes for the halogen, adding a carbon." }
+        { "q": "Reacting a halogenoalkane with KCN in ethanol…", "o": ["shortens the carbon chain", "lengthens the carbon chain by one", "forms an alkene", "forms an alcohol"], "a": 1, "why": "CN⁻ substitutes for the halogen, adding a carbon." },
+        { "q": "How is a primary amine made from a halogenoalkane?", "o": ["Warm with aqueous sodium hydroxide", "Heat with excess ethanolic ammonia in a sealed tube", "Heat with KCN in ethanol", "React with hydrogen and a nickel catalyst"], "a": 1, "why": "Excess ammonia reduces further substitution to secondary and tertiary amines." }
       ]
     },
     {
       "id": "20", "stage": "as", "name": "Polymerisation",
       "questions": [
         { "q": "What is the repeat unit of poly(propene)?", "o": ["–CH₂–CH₂–", "–CH₂–CH(CH₃)–", "–CH(CH₃)–CH(CH₃)–", "–CH=CH–"], "a": 1, "why": "Opening propene's C=C gives –CH₂–CH(CH₃)–." },
-        { "q": "Why are poly(alkenes) hard to dispose of?", "o": ["They are toxic", "They are unreactive and non-biodegradable", "They dissolve in water", "They melt easily"], "a": 1, "why": "Strong, non-polar C–C and C–H bonds; burning them can release toxic gases." }
+        { "q": "Why are poly(alkenes) hard to dispose of?", "o": ["They are toxic", "They are unreactive and non-biodegradable", "They dissolve in water", "They melt easily"], "a": 1, "why": "Strong, non-polar C–C and C–H bonds; burning them can release toxic gases." },
+        { "q": "Why are addition polymers like poly(ethene) hard to dispose of?", "o": ["They dissolve in water", "They are non-biodegradable because of strong non-polar C–C and C–H bonds", "They decompose quickly", "They are ionic"], "a": 1, "why": "Burning them can release toxic gases." }
       ]
     },
     {
       "id": "21", "stage": "as", "name": "Organic synthesis",
       "questions": [
-        { "q": "To go from ethanol to ethanoic acid, use…", "o": ["NaBH₄", "acidified K₂Cr₂O₇ heated under reflux", "UV light and Cl₂", "concentrated NaOH"], "a": 1, "why": "Full oxidation of a primary alcohol under reflux." }
+        { "q": "To go from ethanol to ethanoic acid, use…", "o": ["NaBH₄", "acidified K₂Cr₂O₇ heated under reflux", "UV light and Cl₂", "concentrated NaOH"], "a": 1, "why": "Full oxidation of a primary alcohol under reflux." },
+        { "q": "Which reaction adds one carbon atom to a carbon chain?", "o": ["Alcohol with acidified dichromate", "Alkene with steam", "Halogenoalkane with aqueous NaOH", "Halogenoalkane with KCN in ethanol"], "a": 3, "why": "The nitrile formed can then be hydrolysed or reduced." },
+        { "q": "Which conditions convert a nitrile into a carboxylic acid?", "o": ["Room temperature with water", "Hydrogen with a nickel catalyst", "LiAlH₄ in dry ether", "Heat under reflux with dilute acid"], "a": 3, "why": "Acid hydrolysis turns –C≡N into –COOH; reduction would give an amine." }
       ]
     },
     {
       "id": "22", "stage": "as", "name": "Analytical techniques",
       "questions": [
         { "q": "A broad IR absorption at 2500–3000 cm⁻¹ with a peak near 1700 cm⁻¹ suggests…", "o": ["an alcohol", "a carboxylic acid", "an alkene", "an alkane"], "a": 1, "why": "Broad O–H (acid) plus C=O." },
-        { "q": "In a mass spectrum, the M⁺ peak gives the…", "o": ["empirical formula", "relative molecular mass", "number of carbons only", "functional group"], "a": 1, "why": "The molecular ion peak is at the Mr (the M+1 peak hints at the carbon count)." }
+        { "q": "In a mass spectrum, the M⁺ peak gives the…", "o": ["empirical formula", "relative molecular mass", "number of carbons only", "functional group"], "a": 1, "why": "The molecular ion peak is at the Mr (the M+1 peak hints at the carbon count)." },
+        { "q": "What causes the small M+1 peak in a mass spectrum?", "o": ["Molecules that gained an electron", "Doubly charged ions", "Molecules containing one ¹³C atom", "Fragments that lost a hydrogen"], "a": 2, "why": "About 1.1% of carbon is ¹³C, so the M+1 height helps count the carbon atoms." }
       ]
     },
     {
@@ -210,7 +224,8 @@
       "id": "24", "stage": "a2", "name": "Electrochemistry",
       "questions": [
         { "q": "Cu²⁺/Cu E° = +0.34 V and Zn²⁺/Zn E° = −0.76 V. What is the cell e.m.f.?", "o": ["0.42 V", "1.10 V", "−1.10 V", "0.34 V"], "a": 1, "why": "E°cell = E°(positive) − E°(negative) = 0.34 − (−0.76) = 1.10 V." },
-        { "q": "How much charge passes when 0.20 A flows for 965 s? (F = 96 500 C mol⁻¹)", "o": ["0.0020 mol of electrons", "193 C", "Both: 193 C, which is 0.0020 mol of electrons", "96 500 C"], "a": 2, "why": "Q = It = 193 C; 193 ÷ 96 500 = 0.0020 mol of electrons." }
+        { "q": "How much charge passes when 0.20 A flows for 965 s? (F = 96 500 C mol⁻¹)", "o": ["0.0020 mol of electrons", "193 C", "Both: 193 C, which is 0.0020 mol of electrons", "96 500 C"], "a": 2, "why": "Q = It = 193 C; 193 ÷ 96 500 = 0.0020 mol of electrons." },
+        { "q": "Standard electrode potentials are measured against which reference?", "o": ["A copper/copper(II) half-cell", "A zinc/zinc ion half-cell", "The standard hydrogen electrode", "Pure water"], "a": 2, "why": "Standard conditions: 298 K, 100 kPa, 1.00 mol dm⁻³ solutions; the hydrogen electrode is defined as 0.00 V." }
       ],
       "long": [
         { "q": "Use E° values (Fe³⁺/Fe²⁺ +0.77 V; Cu²⁺/Cu +0.34 V) to calculate E°cell and predict whether Fe³⁺ ions oxidise copper.", "marks": 3, "paper": "4", "scheme": ["M1: E°cell = 0.77 − 0.34", "A1: = +0.43 V", "B1: positive, so the reaction 2Fe³⁺ + Cu → 2Fe²⁺ + Cu²⁺ is feasible"], "ans": "+0.43 V; yes" }
@@ -231,7 +246,8 @@
       "id": "26", "stage": "a2", "name": "Reaction kinetics (orders, rate equations)",
       "questions": [
         { "q": "Doubling [A] quadruples the rate. The order with respect to A is…", "o": ["0", "1", "2", "4"], "a": 2, "why": "rate ∝ [A]ⁿ and 2ⁿ = 4, so n = 2." },
-        { "q": "The half-life of a first-order reaction…", "o": ["doubles each time", "is constant", "halves each time", "depends on concentration"], "a": 1, "why": "First-order half-lives are independent of concentration." }
+        { "q": "The half-life of a first-order reaction…", "o": ["doubles each time", "is constant", "halves each time", "depends on concentration"], "a": 1, "why": "First-order half-lives are independent of concentration." },
+        { "q": "Rate = k[A]²[B], with concentrations in mol dm⁻³ and time in s. What are the units of k?", "o": ["s⁻¹", "mol dm⁻³ s⁻¹", "dm³ mol⁻¹ s⁻¹", "dm⁶ mol⁻² s⁻¹"], "a": 3, "why": "Overall order 3: k = rate ÷ (mol dm⁻³)³." }
       ],
       "long": [
         { "q": "For the reaction A + B → C, doubling [A] doubles the rate and doubling [B] quadruples the rate. Write the rate equation and give the units of k when concentrations are in mol dm⁻³ and the rate in mol dm⁻³ s⁻¹.", "marks": 3, "paper": "4", "scheme": ["B1: first order in A, second order in B", "B1: rate = k[A][B]²", "A1: units dm⁶ mol⁻² s⁻¹"], "ans": "rate = k[A][B]²" }
@@ -240,7 +256,9 @@
     {
       "id": "27", "stage": "a2", "name": "Group 2 (A Level)",
       "questions": [
-        { "q": "Down Group 2, the solubility of the sulfates…", "o": ["increases", "decreases", "stays the same", "varies randomly"], "a": 1, "why": "Hydration enthalpy falls faster than lattice energy as the cation gets bigger." }
+        { "q": "Down Group 2, the solubility of the sulfates…", "o": ["increases", "decreases", "stays the same", "varies randomly"], "a": 1, "why": "Hydration enthalpy falls faster than lattice energy as the cation gets bigger." },
+        { "q": "How does the thermal stability of the Group 2 carbonates change down the group?", "o": ["It decreases", "It stays the same", "It increases", "Only MgCO₃ decomposes"], "a": 2, "why": "Higher temperatures are needed to decompose carbonates further down the group." },
+        { "q": "Why do Group 2 carbonates become more thermally stable down the group?", "o": ["Larger cations have lower charge density and polarise the carbonate ion less", "The cations become more charged", "Lattice energy increases down the group", "The carbonate ion gets smaller"], "a": 0, "why": "Less distortion of the carbonate's electron cloud means it breaks up less easily." }
       ]
     },
     {
@@ -257,14 +275,17 @@
     {
       "id": "29", "stage": "a2", "name": "Introduction to A Level organic chemistry",
       "questions": [
-        { "q": "Benzene's bond lengths are all equal because…", "o": ["it has three double bonds", "its π electrons are delocalised over the ring", "it is saturated", "it is ionic"], "a": 1, "why": "Delocalisation gives six identical C–C bonds between single and double." }
+        { "q": "Benzene's bond lengths are all equal because…", "o": ["it has three double bonds", "its π electrons are delocalised over the ring", "it is saturated", "it is ionic"], "a": 1, "why": "Delocalisation gives six identical C–C bonds between single and double." },
+        { "q": "Molecules that are non-superimposable mirror images show which isomerism?", "o": ["Cis–trans isomerism", "Structural isomerism", "Optical isomerism", "Chain isomerism"], "a": 2, "why": "They rotate plane-polarised light in opposite directions." },
+        { "q": "A chiral centre is a carbon atom that is:", "o": ["bonded to four different atoms or groups", "part of a C=C double bond", "bonded to two identical groups", "in a benzene ring"], "a": 0, "why": "Four different groups make two mirror-image arrangements possible." }
       ]
     },
     {
       "id": "30", "stage": "a2", "name": "Hydrocarbons (arenes)",
       "questions": [
         { "q": "Benzene reacts with bromine in the presence of FeBr₃ by…", "o": ["electrophilic addition", "electrophilic substitution", "nucleophilic substitution", "free-radical addition"], "a": 1, "why": "Substitution keeps the stable delocalised ring." },
-        { "q": "What is the electrophile in the nitration of benzene?", "o": ["NO₂⁻", "NO₂⁺", "HNO₃", "H⁺"], "a": 1, "why": "Concentrated HNO₃ and H₂SO₄ form the nitronium ion NO₂⁺." }
+        { "q": "What is the electrophile in the nitration of benzene?", "o": ["NO₂⁻", "NO₂⁺", "HNO₃", "H⁺"], "a": 1, "why": "Concentrated HNO₃ and H₂SO₄ form the nitronium ion NO₂⁺." },
+        { "q": "How does benzene react with bromine in the presence of FeBr₃?", "o": ["Electrophilic addition", "Nucleophilic substitution", "Free-radical addition", "Electrophilic substitution"], "a": 3, "why": "Substitution keeps the stable delocalised ring; FeBr₃ makes the Br⁺ electrophile." }
       ],
       "long": [
         { "q": "Explain why benzene undergoes substitution rather than addition with bromine, and name the catalyst used.", "marks": 3, "paper": "4", "scheme": ["B1: delocalised π electrons give extra stability", "B1: substitution keeps the delocalised ring; addition would destroy it", "B1: catalyst FeBr₃ (or AlBr₃ / iron)"] }
@@ -273,46 +294,57 @@
     {
       "id": "31", "stage": "a2", "name": "Halogen compounds (A Level)",
       "questions": [
-        { "q": "Why is chlorobenzene much less reactive to nucleophiles than chloroalkanes?", "o": ["Cl is bigger", "The C–Cl bond is strengthened by overlap with the ring's π system", "Benzene is ionic", "It has no Cl"], "a": 1, "why": "Partial double-bond character makes the C–Cl bond harder to break." }
+        { "q": "Why is chlorobenzene much less reactive to nucleophiles than chloroalkanes?", "o": ["Cl is bigger", "The C–Cl bond is strengthened by overlap with the ring's π system", "Benzene is ionic", "It has no Cl"], "a": 1, "why": "Partial double-bond character makes the C–Cl bond harder to break." },
+        { "q": "Why is chlorobenzene much less reactive towards nucleophiles than chloroethane?", "o": ["Chlorine is more electronegative in benzene", "Benzene has no electrons", "The C–Cl bond is ionic", "A chlorine lone pair overlaps with the ring's π system, strengthening the C–Cl bond"], "a": 3, "why": "The partial double-bond character makes the C–Cl bond harder to break." },
+        { "q": "Which halogenoalkane is hydrolysed fastest?", "o": ["1-chlorobutane", "1-bromobutane", "1-fluorobutane", "1-iodobutane"], "a": 3, "why": "The C–I bond is the weakest, so it breaks most easily." }
       ]
     },
     {
       "id": "32", "stage": "a2", "name": "Hydroxy compounds (phenol)",
       "questions": [
         { "q": "Phenol reacts with bromine water to give…", "o": ["no reaction", "a white precipitate of 2,4,6-tribromophenol", "an orange solution", "a gas"], "a": 1, "why": "The OH group activates the ring, so substitution happens readily without a catalyst." },
-        { "q": "Which is the strongest acid?", "o": ["Ethanol", "Water", "Phenol", "Ethanoic acid"], "a": 3, "why": "Order: ethanoic acid > phenol > water > ethanol." }
+        { "q": "Which is the strongest acid?", "o": ["Ethanol", "Water", "Phenol", "Ethanoic acid"], "a": 3, "why": "Order: ethanoic acid > phenol > water > ethanol." },
+        { "q": "Why is phenol more acidic than ethanol?", "o": ["Phenol has more hydrogen atoms", "Ethanol is a stronger acid", "Phenol forms hydrogen bonds", "The phenoxide ion's negative charge is delocalised into the ring"], "a": 3, "why": "A more stable anion means the O–H proton is lost more readily." }
       ]
     },
     {
       "id": "33", "stage": "a2", "name": "Carboxylic acids and derivatives (A Level)",
       "questions": [
-        { "q": "Acyl chlorides react with water to give…", "o": ["an ester", "a carboxylic acid and HCl", "an alcohol", "an amide"], "a": 1, "why": "Vigorous hydrolysis with steamy HCl fumes." }
+        { "q": "Acyl chlorides react with water to give…", "o": ["an ester", "a carboxylic acid and HCl", "an alcohol", "an amide"], "a": 1, "why": "Vigorous hydrolysis with steamy HCl fumes." },
+        { "q": "What forms when ethanoyl chloride reacts with water?", "o": ["Ethanol and chlorine", "Ethanal and HCl", "Ethanoic acid and hydrogen chloride", "Ethyl ethanoate"], "a": 2, "why": "Acyl chlorides hydrolyse rapidly at room temperature, giving steamy HCl fumes." },
+        { "q": "Which is the strongest acid?", "o": ["Ethanoic acid", "Chloroethanoic acid", "Ethanol", "Dichloroethanoic acid"], "a": 3, "why": "Electron-withdrawing chlorine atoms stabilise the carboxylate ion." }
       ]
     },
     {
       "id": "34", "stage": "a2", "name": "Nitrogen compounds (A Level)",
       "questions": [
         { "q": "Why is phenylamine a weaker base than ethylamine?", "o": ["It has more carbons", "The lone pair on N is delocalised into the ring, so it's less available", "It is a gas", "It has no lone pair"], "a": 1, "why": "Delocalisation reduces the lone pair's ability to accept a proton." },
-        { "q": "Amino acids exist in solution near neutral pH as…", "o": ["neutral molecules only", "zwitterions", "cations only", "anions only"], "a": 1, "why": "The –COOH loses H⁺ and the –NH₂ gains it." }
+        { "q": "Amino acids exist in solution near neutral pH as…", "o": ["neutral molecules only", "zwitterions", "cations only", "anions only"], "a": 1, "why": "The –COOH loses H⁺ and the –NH₂ gains it." },
+        { "q": "Why is phenylamine a weaker base than ammonia?", "o": ["Phenylamine has no lone pair", "The ring donates electrons to nitrogen", "Phenylamine is ionic", "The nitrogen lone pair is partly delocalised into the benzene ring"], "a": 3, "why": "The lone pair is less available to accept a proton." }
       ]
     },
     {
       "id": "35", "stage": "a2", "name": "Polymerisation (condensation)",
       "questions": [
-        { "q": "A polyester is formed from…", "o": ["an alkene", "a diol and a dicarboxylic acid", "an amino acid only", "a diamine and a diol"], "a": 1, "why": "Ester links form, eliminating water each time (condensation polymerisation)." }
+        { "q": "A polyester is formed from…", "o": ["an alkene", "a diol and a dicarboxylic acid", "an amino acid only", "a diamine and a diol"], "a": 1, "why": "Ester links form, eliminating water each time (condensation polymerisation)." },
+        { "q": "Which pair of monomers forms a polyester?", "o": ["A diol and a dicarboxylic acid", "A diamine and a dicarboxylic acid", "Two alkenes", "An amino acid and an alkene"], "a": 0, "why": "Each ester link forms with loss of water; a diamine and a diacid would make a polyamide." },
+        { "q": "Which linkage is found in a polyamide?", "o": ["–COO–", "–C=C–", "–O–", "–CONH–"], "a": 3, "why": "Nylon and proteins both contain the amide (peptide) link." }
       ]
     },
     {
       "id": "36", "stage": "a2", "name": "Organic synthesis (A Level)",
       "questions": [
-        { "q": "Which reagent converts a carboxylic acid to an acyl chloride?", "o": ["NaBH₄", "SOCl₂", "NaOH", "KMnO₄"], "a": 1, "why": "SOCl₂ (or PCl₅) replaces OH with Cl." }
+        { "q": "Which reagent converts a carboxylic acid to an acyl chloride?", "o": ["NaBH₄", "SOCl₂", "NaOH", "KMnO₄"], "a": 1, "why": "SOCl₂ (or PCl₅) replaces OH with Cl." },
+        { "q": "How is phenylamine made from benzene?", "o": ["Nitrate with conc. HNO₃ and H₂SO₄, then reduce with Sn and conc. HCl", "React with ammonia directly", "Add NH₄Cl and heat", "Reduce benzene, then add HCN"], "a": 0, "why": "Nitration gives nitrobenzene; reduction gives phenylamine (freed with NaOH)." },
+        { "q": "Which reagent converts a carboxylic acid into an acyl chloride?", "o": ["HCl(aq)", "Cl₂ in UV light", "SOCl₂", "NaCl"], "a": 2, "why": "PCl₅ or PCl₃ also work; aqueous HCl does not." }
       ]
     },
     {
       "id": "37", "stage": "a2", "name": "Analytical techniques (A Level)",
       "questions": [
         { "q": "In proton NMR, a peak split into a triplet has how many H on adjacent carbons?", "o": ["1", "2", "3", "4"], "a": 1, "why": "The n + 1 rule: n = 2 gives a triplet." },
-        { "q": "Why is D₂O added in proton NMR?", "o": ["To dissolve the sample", "To identify O–H and N–H protons, whose peaks disappear", "As a standard", "To split peaks"], "a": 1, "why": "Deuterium exchanges with labile protons, removing their peaks." }
+        { "q": "Why is D₂O added in proton NMR?", "o": ["To dissolve the sample", "To identify O–H and N–H protons, whose peaks disappear", "As a standard", "To split peaks"], "a": 1, "why": "Deuterium exchanges with labile protons, removing their peaks." },
+        { "q": "Why is D₂O added to a sample in proton NMR?", "o": ["It is the reference at 0 ppm", "O–H and N–H protons exchange with D, so their peaks disappear", "It increases splitting", "It removes C–H peaks"], "a": 1, "why": "Comparing spectra with and without D₂O identifies the O–H or N–H peak." }
       ],
       "long": [
         { "q": "A compound has an ¹H NMR spectrum showing a triplet (3H) at δ 1.2 and a quartet (2H) at δ 3.6, and a broad peak that disappears with D₂O. Identify the compound and explain the splitting.", "marks": 4, "paper": "4", "scheme": ["B1: ethanol, CH₃CH₂OH", "B1: the CH₃ triplet is next to a CH₂ (n + 1 = 3)", "B1: the CH₂ quartet is next to a CH₃", "B1: the O–H peak disappears as H exchanges with D"], "ans": "ethanol" }

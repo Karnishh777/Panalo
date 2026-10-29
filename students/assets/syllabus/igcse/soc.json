@@ -19,33 +19,41 @@
       "id": "2", "name": "Culture, identity and socialisation",
       "questions": [
         { "q": "Norms are", "o": ["unwritten rules of behaviour", "laws passed by government", "beliefs about God", "biological instincts"], "a": 0, "why": "Norms guide everyday behaviour." },
-        { "q": "Primary socialisation mainly takes place in", "o": ["the family", "school", "the workplace", "the media"], "a": 0, "why": "In early childhood, within the family." }
+        { "q": "Primary socialisation mainly takes place in", "o": ["the family", "school", "the workplace", "the media"], "a": 0, "why": "In early childhood, within the family." },
+        { "q": "What are norms?", "o": ["Unwritten rules of expected behaviour", "Laws passed by government", "Beliefs about God", "Personal choices"], "a": 0, "why": "Values are beliefs about what is important." }
       ]
     },
     {
       "id": "3", "name": "Social inequality",
       "questions": [
         { "q": "Social mobility means", "o": ["movement between social classes", "moving house", "migration", "changing jobs within a class"], "a": 0, "why": "Upward or downward mobility." },
-        { "q": "A meritocracy is a system where rewards are based on", "o": ["ability and effort", "inheritance", "gender", "ethnicity"], "a": 0, "why": "Functionalists claim modern societies are meritocratic." }
+        { "q": "A meritocracy is a system where rewards are based on", "o": ["ability and effort", "inheritance", "gender", "ethnicity"], "a": 0, "why": "Functionalists claim modern societies are meritocratic." },
+        { "q": "What is social mobility?", "o": ["Movement of people between social classes", "Moving house", "Travelling abroad", "Changing jobs at the same level"], "a": 0, "why": "It can be upward or downward, within or between generations." }
       ]
     },
     {
       "id": "4", "name": "Family",
       "questions": [
-        { "q": "A nuclear family consists of", "o": ["parents and their dependent children", "grandparents, parents and children", "a single parent", "relatives living nearby"], "a": 0, "why": "The extended family includes wider kin." }
+        { "q": "A nuclear family consists of", "o": ["parents and their dependent children", "grandparents, parents and children", "a single parent", "relatives living nearby"], "a": 0, "why": "The extended family includes wider kin." },
+        { "q": "What is a nuclear family?", "o": ["Grandparents, parents and children", "One parent and children", "Two parents and their dependent children", "A couple with no children"], "a": 2, "why": "The extended family includes other relatives." },
+        { "q": "Which is evidence of family diversity?", "o": ["Growth of single-parent and same-sex families", "Every family being nuclear", "Falling divorce", "More arranged marriages only"], "a": 0, "why": "Explain why the change has happened." }
       ]
     },
     {
       "id": "5", "name": "Education",
       "questions": [
-        { "q": "The 'hidden curriculum' is", "o": ["the values and attitudes learned informally at school", "the exam syllabus", "homework", "private tuition"], "a": 0, "why": "e.g. punctuality, obedience." }
+        { "q": "The 'hidden curriculum' is", "o": ["the values and attitudes learned informally at school", "the exam syllabus", "homework", "private tuition"], "a": 0, "why": "e.g. punctuality, obedience." },
+        { "q": "What is the hidden curriculum?", "o": ["The exam syllabus", "Secret lessons", "Values and attitudes taught informally through school life", "Homework"], "a": 2, "why": "For example punctuality and obedience." },
+        { "q": "How might material deprivation affect educational achievement?", "o": ["Lack of resources such as books, space or food can lower attainment", "It always raises attainment", "It has no effect", "It only affects teachers"], "a": 0, "why": "Cultural factors and labelling in school also matter." }
       ]
     },
     {
       "id": "6", "name": "Crime, deviance and social control",
       "questions": [
         { "q": "Deviance is", "o": ["behaviour that goes against social norms", "always illegal", "only violent crime", "behaviour approved of by society"], "a": 0, "why": "Deviance need not be criminal." },
-        { "q": "Formal social control includes", "o": ["the police and courts", "peer pressure", "gossip", "family disapproval"], "a": 0, "why": "Informal control comes from family, peers and community." }
+        { "q": "Formal social control includes", "o": ["the police and courts", "peer pressure", "gossip", "family disapproval"], "a": 0, "why": "Informal control comes from family, peers and community." },
+        { "q": "What is deviance?", "o": ["Any crime", "Normal behaviour", "Legal behaviour only", "Behaviour that goes against a society's norms"], "a": 3, "why": "Not all deviance is criminal." },
+        { "q": "What is the dark figure of crime?", "o": ["Crime at night", "Violent crime", "Crime solved by police", "Crime that is not reported or recorded"], "a": 3, "why": "So official statistics are incomplete." }
       ],
       "long": [
         { "q": "Explain why some social groups appear more often in official crime statistics.", "marks": 4, "paper": "2", "scheme": ["B1: one reason, e.g. police target certain groups (labelling, stereotyping)", "B1: developed with how this raises recorded crime", "B1: a second reason, e.g. material deprivation or subcultures", "B1: developed with a link to evidence or a theorist"] }
@@ -54,7 +62,9 @@
     {
       "id": "7", "name": "Media",
       "questions": [
-        { "q": "A 'moral panic' is", "o": ["an exaggerated public reaction to a group seen as a threat", "a financial crash", "a news report", "a type of censorship"], "a": 0, "why": "Cohen's study of Mods and Rockers." }
+        { "q": "A 'moral panic' is", "o": ["an exaggerated public reaction to a group seen as a threat", "a financial crash", "a news report", "a type of censorship"], "a": 0, "why": "Cohen's study of Mods and Rockers." },
+        { "q": "What is a moral panic?", "o": ["A real crime wave", "A news report", "Exaggerated media reaction to a group seen as a threat", "A protest"], "a": 2, "why": "Cohen's folk devils." },
+        { "q": "What is agenda-setting by the media?", "o": ["Choosing which issues the public thinks about", "Printing the news", "Selling advertising", "Writing laws"], "a": 0, "why": "Gatekeepers decide what is reported." }
       ]
     }
   ]

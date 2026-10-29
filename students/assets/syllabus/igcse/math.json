@@ -41,7 +41,7 @@
         { "q": "What is the y-intercept of y = 4x − 5?", "o": ["4", "−5", "5", "−4"], "a": 1, "why": "In y = mx + c, c is the y-intercept." },
         { "q": "A line is perpendicular to y = 2x + 1. What is its gradient?", "o": ["2", "−2", "1/2", "−1/2"], "a": 3, "why": "Perpendicular gradients multiply to −1." },
         { "q": "What is the midpoint of (2, 3) and (8, 7)?", "o": ["(5, 5)", "(6, 4)", "(10, 10)", "(3, 2)"], "a": 0, "why": "Average the coordinates: ((2 + 8)/2, (3 + 7)/2) = (5, 5)." },
-        { "q": "A line has gradient 2/3. What is the gradient of a line perpendicular to it?", "o": ["2/3", "−3/2", "3/2", "−2/3"], "a": 1, "why": "Examiners (2023): many drew a parallel line instead of a perpendicular one. Perpendicular gradients multiply to −1." }
+        { "q": "A line has gradient 2/3. What is the gradient of a line perpendicular to it?", "o": ["2/3", "3/2", "−2/3", "−3/2"], "a": 3, "why": "Examiners (2023): many drew a parallel line instead of a perpendicular one. Perpendicular gradients multiply to −1." }
       ],
       "long": [
         { "q": "Find the gradient and the y-intercept of the line 2y − 6x = 8.", "marks": 2, "paper": "2", "scheme": ["B1: gradient 3", "B1: y-intercept 4"], "ans": "gradient 3, y-intercept 4" }
@@ -54,7 +54,7 @@
         { "q": "The angle in a semicircle is…", "o": ["45°", "90°", "180°", "60°"], "a": 1, "why": "An angle subtended by a diameter at the circumference is a right angle." },
         { "q": "Alternate angles on parallel lines are…", "o": ["equal", "add to 180°", "add to 90°", "always 60°"], "a": 0, "why": "Alternate (Z) angles are equal; co-interior angles add to 180°." },
         { "q": "A tangent meets a radius at the point of contact at…", "o": ["45°", "60°", "90°", "180°"], "a": 2, "why": "A tangent is perpendicular to the radius at that point." },
-        { "q": "A bearing is measured from north in which direction?", "o": ["Anticlockwise", "Clockwise", "Either, whichever is smaller", "From east"], "a": 1, "why": "Examiners (2023): a common error was measuring anticlockwise. Bearings go clockwise from north, written with three figures." }
+        { "q": "A bearing is measured from north in which direction?", "o": ["Anticlockwise", "Either, whichever is smaller", "Clockwise", "From east"], "a": 2, "why": "Examiners (2023): a common error was measuring anticlockwise. Bearings go clockwise from north, written with three figures." }
       ],
       "long": [
         { "q": "Each interior angle of a regular polygon is 156°. How many sides does the polygon have?", "marks": 2, "paper": "2", "scheme": ["M1: exterior angle = 180 − 156 = 24°", "A1: 360 ÷ 24 = 15 sides"], "ans": "15" }

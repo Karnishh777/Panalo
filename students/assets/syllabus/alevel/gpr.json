@@ -8,7 +8,8 @@
       "id": "1", "name": "Analysing arguments and evidence", "stage": "as",
       "questions": [
         { "q": "An argument's conclusion is", "o": ["what the author wants you to accept", "the last sentence", "a piece of evidence", "a counter-argument"], "a": 0, "why": "Find it first, then judge the support." },
-        { "q": "An assumption is", "o": ["an unstated idea the argument depends on", "a fact with a source", "a statistic", "a conclusion"], "a": 0, "why": "Unstated but needed for the argument to work." }
+        { "q": "An assumption is", "o": ["an unstated idea the argument depends on", "a fact with a source", "a statistic", "a conclusion"], "a": 0, "why": "Unstated but needed for the argument to work." },
+        { "q": "What does evaluating evidence involve?", "o": ["Judging its reliability, relevance and sufficiency", "Counting the sources", "Agreeing with it", "Rewriting it"], "a": 0, "why": "Examiners (2023): explain why something is a strength or weakness, don't just state it." }
       ],
       "long": [
         { "q": "Read an opinion article on any global issue. Identify its conclusion, two reasons, and one assumption, then evaluate its strength. (Mark yourself with this scheme.)", "marks": 5, "paper": "1", "scheme": ["B1: conclusion identified accurately", "B1: two reasons identified", "B1: an unstated assumption identified", "B1: a weakness in reasoning or evidence explained", "B1: a supported overall judgement"] }
@@ -17,31 +18,41 @@
     {
       "id": "2", "name": "Evaluating perspectives", "stage": "as",
       "questions": [
-        { "q": "Evaluating a perspective means judging", "o": ["the quality of its reasoning and evidence", "whether you like it", "its length", "how popular it is"], "a": 0, "why": "Assess strength, not agreement." }
+        { "q": "Evaluating a perspective means judging", "o": ["the quality of its reasoning and evidence", "whether you like it", "its length", "how popular it is"], "a": 0, "why": "Assess strength, not agreement." },
+        { "q": "How should two perspectives be compared?", "o": ["One after the other with no link", "Directly, on the same criteria, with a judgement", "Only describing them", "Choosing the longer one"], "a": 1, "why": "Examiners (2023): answers without comparison were limited to half marks." },
+        { "q": "Why develop one line of evaluation fully?", "o": ["It is shorter", "It avoids judgement", "Depth on one criterion earns more than several undeveloped ones", "It hides weaknesses"], "a": 2, "why": "Examiners (2023): this advice recurs for this skills-based syllabus." }
       ]
     },
     {
       "id": "3", "name": "Research skills", "stage": "as",
       "questions": [
-        { "q": "A research question should be", "o": ["focused, debatable and researchable", "very broad", "answerable with yes or no", "already settled"], "a": 0, "why": "It guides the whole essay or report." }
+        { "q": "A research question should be", "o": ["focused, debatable and researchable", "very broad", "answerable with yes or no", "already settled"], "a": 0, "why": "It guides the whole essay or report." },
+        { "q": "Which source is usually most credible for a scientific claim?", "o": ["An anonymous social media post", "A peer-reviewed study", "An advert", "A personal blog"], "a": 1, "why": "Check the author, expertise, purpose and date." },
+        { "q": "Why suggest further research in an essay?", "o": ["To show awareness of the limits of the evidence used", "To make it longer", "To avoid a conclusion", "It is never credited"], "a": 0, "why": "Examiners (2023): more candidates now consider further research." }
       ]
     },
     {
       "id": "4", "name": "Essay (individual)", "stage": "as",
       "questions": [
-        { "q": "The individual essay must consider", "o": ["different perspectives on a global issue", "only your own view", "a single source", "local issues only"], "a": 0, "why": "Perspectives are central to the course." }
+        { "q": "The individual essay must consider", "o": ["different perspectives on a global issue", "only your own view", "a single source", "local issues only"], "a": 0, "why": "Perspectives are central to the course." },
+        { "q": "How should an essay be written for Questions 2 and 3?", "o": ["As bullet points", "As a table", "In full paragraphs, not bullet points", "As a single sentence"], "a": 2, "why": "Concise answers are fine only in Question 1." },
+        { "q": "What makes a strong conclusion?", "o": ["A new argument", "A summary with no judgement", "A quotation", "A judgement that follows from the evaluation"], "a": 3, "why": "Examiners (2023): judgements were often asserted rather than based on evidence." }
       ]
     },
     {
       "id": "5", "name": "Team project and reflection", "stage": "as",
       "questions": [
-        { "q": "In the team project, each member", "o": ["researches a different perspective and proposes a solution", "writes the same essay", "does a presentation alone without research", "only reflects"], "a": 0, "why": "Plus an individual reflective paper." }
+        { "q": "In the team project, each member", "o": ["researches a different perspective and proposes a solution", "writes the same essay", "does a presentation alone without research", "only reflects"], "a": 0, "why": "Plus an individual reflective paper." },
+        { "q": "What should the reflection in a team project focus on?", "o": ["A list of meetings", "Blaming team members", "What was learned, how your view changed and how you'll act differently", "Only what went well"], "a": 2, "why": "Examiners (2023): reflections were often descriptive rather than evaluative." },
+        { "q": "In a presentation, what makes slides support the argument?", "o": ["Decorative images only", "Data and evidence rather than only pictures", "Long paragraphs of text", "No slides at all"], "a": 1, "why": "Examiners (2023): many slides had pictures that offered no support." }
       ]
     },
     {
       "id": "6", "name": "Cambridge Research Report", "stage": "a2",
       "questions": [
-        { "q": "A research report should include", "o": ["a methodology, analysis of sources and a reflective log", "only a literature list", "a story", "no conclusion"], "a": 0, "why": "Method, evidence, judgement and reflection." }
+        { "q": "A research report should include", "o": ["a methodology, analysis of sources and a reflective log", "only a literature list", "a story", "no conclusion"], "a": 0, "why": "Method, evidence, judgement and reflection." },
+        { "q": "A research report should be:", "o": ["A list of everything known", "A story", "An argument that answers a question, not a narrative of facts", "A summary of one source"], "a": 2, "why": "Examiners (2023): reports often lacked argument." },
+        { "q": "Why choose an unusual question for the research report?", "o": ["Familiar topics score zero", "It is shorter", "It allows a fresh argument and avoids over-familiar ground", "It needs no sources"], "a": 2, "why": "Examiners (2023): many chose very familiar topics." }
       ]
     }
   ]

@@ -8,26 +8,32 @@
       "id": "1", "name": "Record ideas, observations and insights (AO1)",
       "questions": [
         { "q": "Recording from first-hand observation means", "o": ["drawing or photographing real objects in front of you", "copying images from the internet", "writing an essay", "tracing a photograph"], "a": 0, "why": "First-hand work is valued over second-hand sources." },
-        { "q": "Annotation in a sketchbook should", "o": ["explain your thinking, choices and next steps", "describe the weather", "list materials only", "be avoided"], "a": 0, "why": "It shows your reflection and intentions." }
+        { "q": "Annotation in a sketchbook should", "o": ["explain your thinking, choices and next steps", "describe the weather", "list materials only", "be avoided"], "a": 0, "why": "It shows your reflection and intentions." },
+        { "q": "Which is first-hand (primary) recording?", "o": ["Drawing a plant you are looking at", "Copying a photo from the internet", "Tracing a magazine picture", "Printing an artist's work"], "a": 0, "why": "Examiners (2023): many portfolios had little recording from primary sources, and second-hand sources were often not credited." }
       ]
     },
     {
       "id": "2", "name": "Explore and select materials and techniques (AO2)",
       "questions": [
         { "q": "Exploring media means", "o": ["experimenting with different materials and techniques", "using only pencil", "finishing the final piece first", "copying an artist exactly"], "a": 0, "why": "Experiments show how ideas develop." },
-        { "q": "Studying another artist's work helps you", "o": ["understand techniques and ideas to develop your own", "copy their final piece", "avoid making choices", "skip research"], "a": 0, "why": "Contextual study informs your own direction." }
+        { "q": "Studying another artist's work helps you", "o": ["understand techniques and ideas to develop your own", "copy their final piece", "avoid making choices", "skip research"], "a": 0, "why": "Contextual study informs your own direction." },
+        { "q": "Why try several media before choosing one?", "o": ["To fill more pages", "To find which best expresses your idea and develop it further", "Because the syllabus bans one medium", "To copy an artist exactly"], "a": 1, "why": "Examiners (2023): candidates often didn't use what they discovered to move the work forward." }
       ]
     },
     {
       "id": "3", "name": "Develop ideas through investigation (AO3)",
       "questions": [
-        { "q": "Developing ideas means", "o": ["refining compositions and solutions through a series of studies", "starting a new topic each week", "making one drawing", "choosing at random"], "a": 0, "why": "Show how each step leads to the next." }
+        { "q": "Developing ideas means", "o": ["refining compositions and solutions through a series of studies", "starting a new topic each week", "making one drawing", "choosing at random"], "a": 0, "why": "Show how each step leads to the next." },
+        { "q": "How should an artist you research be used?", "o": ["Write their biography", "Analyse how their work is made and use what you learn in your own ideas", "Copy one painting as your final piece", "Paste in their photo"], "a": 1, "why": "Examiners (2023): some gave a biography instead of researching the artwork." },
+        { "q": "What makes annotation useful?", "o": ["It analyses decisions and explains how the work will develop", "It describes what is on the page", "It lists materials only", "It repeats the title"], "a": 0, "why": "Examiners (2023): annotations were mostly descriptive rather than analytical." }
       ]
     },
     {
       "id": "4", "name": "Present a personal, coherent response (AO4)",
       "questions": [
-        { "q": "A final outcome should", "o": ["realise your intentions and connect to your preparatory work", "be unrelated to your research", "be as large as possible", "copy a famous work"], "a": 0, "why": "The journey to it is assessed too." }
+        { "q": "A final outcome should", "o": ["realise your intentions and connect to your preparatory work", "be unrelated to your research", "be as large as possible", "copy a famous work"], "a": 0, "why": "The journey to it is assessed too." },
+        { "q": "What should a final piece show?", "o": ["A new idea unrelated to the studies", "A copy of an artist's work", "Only technical skill", "A personal response that grows clearly out of the supporting studies"], "a": 3, "why": "The journey from studies to outcome is assessed." },
+        { "q": "How should a 3D piece be submitted in a portfolio?", "o": ["Posted as the object", "As a written description only", "It cannot be submitted", "As photographs"], "a": 3, "why": "Examiners (2023): photograph 3D objects and organic matter rather than sending them." }
       ]
     },
     {

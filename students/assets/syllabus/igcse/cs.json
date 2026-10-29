@@ -13,7 +13,7 @@
         { "q": "Why does lossy compression make files smaller than lossless?", "o": ["It removes data permanently that is less noticeable", "It encrypts the file", "It stores data twice", "It uses hexadecimal"], "a": 0, "why": "Lossy discards some data (e.g. detail in an image); lossless can rebuild the original exactly." },
         { "q": "An image is 100 × 100 pixels with a colour depth of 8 bits. What is its file size?", "o": ["10 000 bits", "10 000 bytes", "80 000 bytes", "800 bytes"], "a": 1, "why": "100 × 100 × 8 bits = 80 000 bits = 10 000 bytes." },
         { "q": "How many bits are needed to store the denary number 200 as an unsigned binary integer?", "o": ["8", "11001000", "3", "200"], "a": 0, "why": "Examiners (2023): some gave the binary number rather than the number of bits. 200 needs 8 bits (2⁷ = 128 ≤ 200 < 256)." },
-        { "q": "Which is a type of compression, rather than an example?", "o": ["Zipping a file", "Lossless", "MP3", "Making a photo smaller"], "a": 1, "why": "Examiners (2023): some gave an example of compression rather than a type. The types are lossy and lossless." }
+        { "q": "Which is a type of compression, rather than an example?", "o": ["Zipping a file", "MP3", "Making a photo smaller", "Lossless"], "a": 3, "why": "Examiners (2023): some gave an example of compression rather than a type. The types are lossy and lossless." }
       ],
       "long": [
         { "q": "Convert the hexadecimal number 3F into 8-bit binary and into denary.", "marks": 2, "paper": "1", "scheme": ["B1: 00111111", "B1: 63"], "ans": "00111111; 63" },
@@ -46,7 +46,7 @@
         { "q": "Which translator converts a whole program to machine code before it runs?", "o": ["Interpreter", "Compiler", "Assembler only", "Linker"], "a": 1, "why": "A compiler produces an executable; an interpreter translates line by line as it runs." },
         { "q": "Which is a function of an operating system?", "o": ["Writing essays", "Managing memory and peripherals", "Editing photos", "Browsing the web"], "a": 1, "why": "Applications do tasks for users; the OS manages hardware, files, memory and security." },
         { "q": "What is an interrupt?", "o": ["A program crash", "A signal to the processor that something needs attention", "A type of memory", "A loop"], "a": 1, "why": "The CPU pauses, services the interrupt, then resumes." },
-        { "q": "What does a compiler do?", "o": ["Translates and runs one line at a time", "Translates the whole program into machine code before it is run", "Checks the computer for viruses", "Stores the program in RAM"], "a": 1, "why": "Examiners (2023): candidates described the benefits of a compiler rather than how it operates. It translates all the source code and reports errors at the end." }
+        { "q": "What does a compiler do?", "o": ["Translates and runs one line at a time", "Checks the computer for viruses", "Translates the whole program into machine code before it is run", "Stores the program in RAM"], "a": 2, "why": "Examiners (2023): candidates described the benefits of a compiler rather than how it operates. It translates all the source code and reports errors at the end." }
       ]
     },
     {
@@ -61,7 +61,8 @@
       "id": "6", "name": "Automated and emerging technologies",
       "questions": [
         { "q": "In an automated system, what does an actuator do?", "o": ["Measures temperature", "Carries out a physical action such as opening a valve", "Stores data", "Displays results"], "a": 1, "why": "Sensors measure; the microprocessor decides; actuators act." },
-        { "q": "Machine learning is a type of AI where the system…", "o": ["follows only fixed rules", "improves its performance from data", "has no data", "is always a robot"], "a": 1, "why": "It learns patterns from training data." }
+        { "q": "Machine learning is a type of AI where the system…", "o": ["follows only fixed rules", "improves its performance from data", "has no data", "is always a robot"], "a": 1, "why": "It learns patterns from training data." },
+        { "q": "Which is part of a robot's characteristics?", "o": ["It must look human", "It cannot be programmed", "It always uses AI", "It has sensors, a microprocessor and actuators"], "a": 3, "why": "Examiners (2023): many gave advantages to the owner when asked about the employee." }
       ]
     },
     {
@@ -87,7 +88,8 @@
       "id": "9", "name": "Databases",
       "questions": [
         { "q": "What is a primary key?", "o": ["The first field", "A field that uniquely identifies each record", "A password", "The largest value"], "a": 1, "why": "No two records share the same primary key value." },
-        { "q": "Which SQL keyword chooses which fields to show?", "o": ["FROM", "WHERE", "SELECT", "ORDER BY"], "a": 2, "why": "SELECT fields FROM table WHERE condition ORDER BY field." }
+        { "q": "Which SQL keyword chooses which fields to show?", "o": ["FROM", "WHERE", "SELECT", "ORDER BY"], "a": 2, "why": "SELECT fields FROM table WHERE condition ORDER BY field." },
+        { "q": "Which SQL keyword chooses which fields to display?", "o": ["WHERE", "ORDER BY", "SELECT", "FROM"], "a": 2, "why": "WHERE chooses which records." }
       ],
       "long": [
         { "q": "A table PRODUCT has fields ProductID, Name and Price. Write an SQL query to show the Name and Price of products costing more than 20, cheapest first.", "marks": 4, "paper": "2", "scheme": ["B1: SELECT Name, Price", "B1: FROM PRODUCT", "B1: WHERE Price > 20", "B1: ORDER BY Price ASC"] }
@@ -97,7 +99,8 @@
       "id": "10", "name": "Boolean logic",
       "questions": [
         { "q": "What is the output of an XOR gate with inputs 1 and 1?", "o": ["0", "1", "2", "Undefined"], "a": 0, "why": "XOR outputs 1 only when the inputs differ." },
-        { "q": "A NAND gate outputs 0 only when…", "o": ["both inputs are 0", "both inputs are 1", "one input is 1", "never"], "a": 1, "why": "NAND is NOT AND: AND gives 1 only for 1,1, so NAND gives 0 only for 1,1." }
+        { "q": "A NAND gate outputs 0 only when…", "o": ["both inputs are 0", "both inputs are 1", "one input is 1", "never"], "a": 1, "why": "NAND is NOT AND: AND gives 1 only for 1,1, so NAND gives 0 only for 1,1." },
+        { "q": "What is the output of A AND (NOT B) when A = 1 and B = 1?", "o": ["1", "2", "0", "It depends on C"], "a": 2, "why": "NOT B = 0, and 1 AND 0 = 0." }
       ],
       "long": [
         { "q": "An alarm (X) sounds when a door is open (D = 1) AND either the system is armed (A = 1) OR a window is open (W = 1). Write the logic expression.", "marks": 2, "paper": "2", "scheme": ["B1: X = D AND (A OR W)", "B1: correct use of brackets so OR is evaluated first"], "ans": "X = D AND (A OR W)" }

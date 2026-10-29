@@ -8,19 +8,24 @@
       "id": "1", "name": "Research and information",
       "questions": [
         { "q": "A primary source is", "o": ["information you collect first-hand, e.g. a survey you run", "a textbook", "a newspaper report", "an encyclopedia"], "a": 0, "why": "Secondary sources are others' work." },
-        { "q": "The most reliable source on a medical claim is usually", "o": ["a peer-reviewed study", "a social media post", "an advert", "an anonymous blog"], "a": 0, "why": "Peer review checks methods and evidence." }
+        { "q": "The most reliable source on a medical claim is usually", "o": ["a peer-reviewed study", "a social media post", "an advert", "an anonymous blog"], "a": 0, "why": "Peer review checks methods and evidence." },
+        { "q": "Which is the best first step in research?", "o": ["Make a poster", "Choose a conclusion", "Write a clear question to investigate", "Collect any images"], "a": 2, "why": "A focused question guides your sources." }
       ]
     },
     {
       "id": "2", "name": "Analysis: causes, consequences and perspectives",
       "questions": [
-        { "q": "A 'perspective' is", "o": ["a point of view shaped by experience and values", "a fact", "a statistic", "a source"], "a": 0, "why": "GP asks you to compare personal, local, national and global perspectives." }
+        { "q": "A 'perspective' is", "o": ["a point of view shaped by experience and values", "a fact", "a statistic", "a source"], "a": 0, "why": "GP asks you to compare personal, local, national and global perspectives." },
+        { "q": "What is a consequence?", "o": ["A cause", "A source", "A solution", "A result or effect of an issue"], "a": 3, "why": "Explain links between causes, consequences and possible courses of action." },
+        { "q": "Why consider different perspectives (personal, local/national, global)?", "o": ["To make the answer longer", "Issues affect people at different scales in different ways", "Only global views count", "Perspectives don't matter"], "a": 1, "why": "Compare them to reach a judgement." }
       ]
     },
     {
       "id": "3", "name": "Evaluation of sources and arguments",
       "questions": [
-        { "q": "A vested interest means", "o": ["the author gains from persuading you", "the source is old", "the author is an expert", "the source is primary"], "a": 0, "why": "e.g. a company reporting on its own product." }
+        { "q": "A vested interest means", "o": ["the author gains from persuading you", "the source is old", "the author is an expert", "the source is primary"], "a": 0, "why": "e.g. a company reporting on its own product." },
+        { "q": "How do you judge a source's reliability?", "o": ["Count its pages", "Check the author's expertise, purpose, evidence and date", "See if you agree", "Check its colour"], "a": 1, "why": "Bias and vested interest weaken reliability." },
+        { "q": "What is a vested interest?", "o": ["A personal stake that may bias a source", "A detailed source", "A recent source", "A primary source"], "a": 0, "why": "For example a company writing about its own product." }
       ],
       "long": [
         { "q": "A source claims 'Electric cars will solve air pollution in cities'. Evaluate how convincing this claim is.", "marks": 4, "paper": "1", "scheme": ["B1: identifies the claim and any evidence offered", "B1: questions the source: author, purpose, vested interest", "B1: weakness: pollution also from roads, tyres, industry, and electricity generation", "B1: a reasoned judgement on how convincing it is"] }
@@ -29,19 +34,25 @@
     {
       "id": "4", "name": "Reflection",
       "questions": [
-        { "q": "Reflection in GP means", "o": ["considering how your views and skills changed", "summarising the topic", "listing sources", "writing a conclusion"], "a": 0, "why": "Reflect on what you learned and how." }
+        { "q": "Reflection in GP means", "o": ["considering how your views and skills changed", "summarising the topic", "listing sources", "writing a conclusion"], "a": 0, "why": "Reflect on what you learned and how." },
+        { "q": "What should a personal reflection show?", "o": ["A list of tasks", "How your thinking changed and what you learned", "Only your opinion at the start", "Praise for the team"], "a": 1, "why": "Be specific about evidence that changed your mind." },
+        { "q": "Which is reflective writing?", "o": ["'We met on Monday.'", "'The topic is pollution.'", "'Our poster was blue.'", "'I first thought…, but the evidence on… made me reconsider because…'"], "a": 3, "why": "Reflection explains, not just describes." }
       ]
     },
     {
       "id": "5", "name": "Collaboration (team project)",
       "questions": [
-        { "q": "Good teamwork in the project means", "o": ["agreeing roles and contributing to a shared outcome", "one person doing it all", "working separately without meeting", "avoiding disagreement at all costs"], "a": 0, "why": "Collaboration is assessed." }
+        { "q": "Good teamwork in the project means", "o": ["agreeing roles and contributing to a shared outcome", "one person doing it all", "working separately without meeting", "avoiding disagreement at all costs"], "a": 0, "why": "Collaboration is assessed." },
+        { "q": "Why set roles in a team project?", "o": ["So one person does everything", "To avoid discussion", "It isn't needed", "So tasks are shared fairly and work is coordinated"], "a": 3, "why": "Evaluate how well the team worked." },
+        { "q": "What is a good way to resolve disagreement in a team?", "o": ["Discuss the evidence and agree a way forward", "Ignore it", "Let one person decide always", "Leave the team"], "a": 0, "why": "Explain this in your reflection." }
       ]
     },
     {
       "id": "6", "name": "Communication",
       "questions": [
-        { "q": "A good written argument is", "o": ["clear, structured and supported by evidence", "long", "full of jargon", "based only on opinion"], "a": 0, "why": "Structure and evidence persuade." }
+        { "q": "A good written argument is", "o": ["clear, structured and supported by evidence", "long", "full of jargon", "based only on opinion"], "a": 0, "why": "Structure and evidence persuade." },
+        { "q": "What makes communication of an argument clear?", "o": ["A logical structure with evidence for each point", "Lots of decoration", "Many unrelated facts", "No conclusion"], "a": 0, "why": "Know your audience." },
+        { "q": "Why reference sources?", "o": ["To show where evidence came from and let others check it", "To make the work longer", "Because it looks nice", "It isn't needed"], "a": 0, "why": "Include author, title, date and link." }
       ]
     }
   ]

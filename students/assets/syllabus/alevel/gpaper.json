@@ -18,13 +18,17 @@
     {
       "id": "2", "name": "Economic, historical, moral, political and social topics", "stage": "as",
       "questions": [
-        { "q": "Which is the best evidence to support a claim in a GP essay?", "o": ["a specific, relevant example with context", "'everyone knows that…'", "a personal feeling", "a dictionary definition"], "a": 0, "why": "Precise examples make arguments convincing." }
+        { "q": "Which is the best evidence to support a claim in a GP essay?", "o": ["a specific, relevant example with context", "'everyone knows that…'", "a personal feeling", "a dictionary definition"], "a": 0, "why": "Precise examples make arguments convincing." },
+        { "q": "An essay asks if a country should help poorer nations. What keeps it relevant?", "o": ["Discussing the country-level argument the question asks about", "Writing about rich individuals giving to charity", "Telling a personal story", "Listing facts with no argument"], "a": 0, "why": "Examiners (2023): some focused on rich individuals instead of the country context." },
+        { "q": "How should you choose an essay question?", "o": ["Pick the topic you know most facts about", "By how well you can answer that question, not just how much you know about the topic", "Pick the shortest question", "Pick randomly"], "a": 1, "why": "Examiners (2023): many chose familiar topics they couldn't answer well." }
       ]
     },
     {
       "id": "3", "name": "Science, the environment and technology", "stage": "as",
       "questions": [
-        { "q": "An essay on whether technology isolates people should", "o": ["weigh different kinds of technology and contexts", "describe how phones work", "argue only that it does", "list apps"], "a": 0, "why": "Qualified, nuanced judgements score well." }
+        { "q": "An essay on whether technology isolates people should", "o": ["weigh different kinds of technology and contexts", "describe how phones work", "argue only that it does", "list apps"], "a": 0, "why": "Qualified, nuanced judgements score well." },
+        { "q": "Which shows a balanced argument?", "o": ["Weighing evidence on both sides and reaching a reasoned judgement", "Only giving one side", "Listing facts", "Using emotional language only"], "a": 0, "why": "Measured, supported points do better than sweeping claims." },
+        { "q": "Why avoid sweeping generalisations like 'everyone has a mobile'?", "o": ["They are too short", "They are informal", "They are inaccurate and weaken the argument", "They are always true"], "a": 2, "why": "Examiners (2023): unsupported generalisations were common." }
       ],
       "long": [
         { "q": "Evaluate the claim that governments, not individuals, should take the lead in tackling climate change. (Mark yourself with this scheme.)", "marks": 5, "paper": "1", "scheme": ["B1: defines the scope (which governments, which individuals)", "B1: argues the case for government action with examples", "B1: argues the case for individual action with examples", "B1: weighs the two and reaches a judgement", "B1: clear structure and accurate expression"] }
@@ -33,20 +37,25 @@
     {
       "id": "4", "name": "Literature, language, the arts and media", "stage": "as",
       "questions": [
-        { "q": "'To what extent' questions require", "o": ["a judgement on how far you agree", "a yes or no", "a narrative", "a definition only"], "a": 0, "why": "They ask for degree, not just a side." }
+        { "q": "'To what extent' questions require", "o": ["a judgement on how far you agree", "a yes or no", "a narrative", "a definition only"], "a": 0, "why": "They ask for degree, not just a side." },
+        { "q": "Which is more suitable in a formal essay?", "o": ["Don't", "Wanna", "Do not", "Kids"], "a": 2, "why": "Examiners (2023): avoid contractions and informal words." },
+        { "q": "What is the best way to use advanced vocabulary?", "o": ["As often as possible", "Only where it is precise and correctly used", "Never", "In every sentence"], "a": 1, "why": "Examiners (2023): complex words were sometimes used wrongly." }
       ]
     },
     {
       "id": "5", "name": "Comprehension: reading for meaning", "stage": "as",
       "questions": [
-        { "q": "'Explain in your own words' means", "o": ["paraphrase the meaning without lifting key words", "quote the passage", "give your opinion", "summarise the whole passage"], "a": 0, "why": "Lifting shows no understanding." }
+        { "q": "'Explain in your own words' means", "o": ["paraphrase the meaning without lifting key words", "quote the passage", "give your opinion", "summarise the whole passage"], "a": 0, "why": "Lifting shows no understanding." },
+        { "q": "When asked to answer in your own words, you should:", "o": ["Copy the sentence", "Quote the whole paragraph", "Rephrase without reusing the key words of the text", "Add your opinion"], "a": 2, "why": "Examiners (2023): reusing the original words lost credit." },
+        { "q": "A question asks about disadvantages for one person. What loses marks?", "o": ["Using evidence from the text", "Being concise", "Writing about advantages or about other people", "Explaining each point"], "a": 2, "why": "Answer exactly the angle the question sets." }
       ]
     },
     {
       "id": "6", "name": "Comprehension: evaluating arguments and data", "stage": "as",
       "questions": [
         { "q": "When evaluating a source's reliability, consider", "o": ["its author, purpose, evidence and date", "its length", "its font", "how many people read it"], "a": 0, "why": "These affect how far it can be trusted." },
-        { "q": "A correlation in data shows", "o": ["that two things vary together, not necessarily cause and effect", "proof that one causes the other", "an error in the data", "the average"], "a": 0, "why": "Correlation is not causation." }
+        { "q": "A correlation in data shows", "o": ["that two things vary together, not necessarily cause and effect", "proof that one causes the other", "an error in the data", "the average"], "a": 0, "why": "Correlation is not causation." },
+        { "q": "What turns a point into a developed point?", "o": ["Repeating the evidence", "Explaining its likely impact or consequence", "Adding a quotation only", "Making it longer"], "a": 1, "why": "Examiners (2023): some developments just restated the evidence." }
       ],
       "long": [
         { "q": "A passage claims a new school timetable 'improved results' because exam averages rose the following year. Identify two weaknesses in this reasoning.", "marks": 4, "paper": "2", "scheme": ["B1: correlation is not causation: other factors may have changed", "B1: one year's data is too little to show a trend", "B1: a different cohort sat the exams, so results aren't directly comparable", "B1: no information on how big the rise was or whether it is significant"] }
@@ -55,7 +64,9 @@
     {
       "id": "7", "name": "Language use: summary and accuracy", "stage": "as",
       "questions": [
-        { "q": "Which is grammatically correct?", "o": ["Neither the teacher nor the students were late.", "Neither the teacher or the students was late.", "Neither the teacher nor the students was late, and.", "Neither of the teacher nor students were late."], "a": 0, "why": "Neither…nor; the verb agrees with the nearer subject (students → were)." }
+        { "q": "Which is grammatically correct?", "o": ["Neither the teacher nor the students were late.", "Neither the teacher or the students was late.", "Neither the teacher nor the students was late, and.", "Neither of the teacher nor students were late."], "a": 0, "why": "Neither…nor; the verb agrees with the nearer subject (students → were)." },
+        { "q": "In a summary, what should you avoid?", "o": ["Using your own words", "Keeping to the word limit", "Copying long phrases and adding your own opinions", "Including key points"], "a": 2, "why": "Precision matters: choose words that keep the original meaning." },
+        { "q": "Why must synonyms be chosen carefully?", "o": ["They must always be longer", "They are not allowed", "They earn no marks", "A near-synonym can change the meaning"], "a": 3, "why": "Examiners (2023): 'easily' was a poor substitute for 'contactlessly'." }
       ]
     }
   ]
