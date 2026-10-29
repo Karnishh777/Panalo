@@ -1,0 +1,48 @@
+{
+  "subject": "gpr",
+  "name": "Global Perspectives and Research",
+  "board": "Cambridge International AS & A Level",
+  "code": "9239",
+  "topics": [
+    {
+      "id": "1", "name": "Analysing arguments and evidence", "stage": "as",
+      "questions": [
+        { "q": "An argument's conclusion is", "o": ["what the author wants you to accept", "the last sentence", "a piece of evidence", "a counter-argument"], "a": 0, "why": "Find it first, then judge the support." },
+        { "q": "An assumption is", "o": ["an unstated idea the argument depends on", "a fact with a source", "a statistic", "a conclusion"], "a": 0, "why": "Unstated but needed for the argument to work." }
+      ],
+      "long": [
+        { "q": "Read an opinion article on any global issue. Identify its conclusion, two reasons, and one assumption, then evaluate its strength. (Mark yourself with this scheme.)", "marks": 5, "paper": "1", "scheme": ["B1: conclusion identified accurately", "B1: two reasons identified", "B1: an unstated assumption identified", "B1: a weakness in reasoning or evidence explained", "B1: a supported overall judgement"] }
+      ]
+    },
+    {
+      "id": "2", "name": "Evaluating perspectives", "stage": "as",
+      "questions": [
+        { "q": "Evaluating a perspective means judging", "o": ["the quality of its reasoning and evidence", "whether you like it", "its length", "how popular it is"], "a": 0, "why": "Assess strength, not agreement." }
+      ]
+    },
+    {
+      "id": "3", "name": "Research skills", "stage": "as",
+      "questions": [
+        { "q": "A research question should be", "o": ["focused, debatable and researchable", "very broad", "answerable with yes or no", "already settled"], "a": 0, "why": "It guides the whole essay or report." }
+      ]
+    },
+    {
+      "id": "4", "name": "Essay (individual)", "stage": "as",
+      "questions": [
+        { "q": "The individual essay must consider", "o": ["different perspectives on a global issue", "only your own view", "a single source", "local issues only"], "a": 0, "why": "Perspectives are central to the course." }
+      ]
+    },
+    {
+      "id": "5", "name": "Team project and reflection", "stage": "as",
+      "questions": [
+        { "q": "In the team project, each member", "o": ["researches a different perspective and proposes a solution", "writes the same essay", "does a presentation alone without research", "only reflects"], "a": 0, "why": "Plus an individual reflective paper." }
+      ]
+    },
+    {
+      "id": "6", "name": "Cambridge Research Report", "stage": "a2",
+      "questions": [
+        { "q": "A research report should include", "o": ["a methodology, analysis of sources and a reflective log", "only a literature list", "a story", "no conclusion"], "a": 0, "why": "Method, evidence, judgement and reflection." }
+      ]
+    }
+  ]
+}

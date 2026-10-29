@@ -1,0 +1,42 @@
+{
+  "subject": "art",
+  "name": "Art and Design",
+  "board": "Cambridge IGCSE",
+  "code": "0400",
+  "topics": [
+    {
+      "id": "1", "name": "Record ideas, observations and insights (AO1)",
+      "questions": [
+        { "q": "Recording from first-hand observation means", "o": ["drawing or photographing real objects in front of you", "copying images from the internet", "writing an essay", "tracing a photograph"], "a": 0, "why": "First-hand work is valued over second-hand sources." },
+        { "q": "Annotation in a sketchbook should", "o": ["explain your thinking, choices and next steps", "describe the weather", "list materials only", "be avoided"], "a": 0, "why": "It shows your reflection and intentions." }
+      ]
+    },
+    {
+      "id": "2", "name": "Explore and select materials and techniques (AO2)",
+      "questions": [
+        { "q": "Exploring media means", "o": ["experimenting with different materials and techniques", "using only pencil", "finishing the final piece first", "copying an artist exactly"], "a": 0, "why": "Experiments show how ideas develop." },
+        { "q": "Studying another artist's work helps you", "o": ["understand techniques and ideas to develop your own", "copy their final piece", "avoid making choices", "skip research"], "a": 0, "why": "Contextual study informs your own direction." }
+      ]
+    },
+    {
+      "id": "3", "name": "Develop ideas through investigation (AO3)",
+      "questions": [
+        { "q": "Developing ideas means", "o": ["refining compositions and solutions through a series of studies", "starting a new topic each week", "making one drawing", "choosing at random"], "a": 0, "why": "Show how each step leads to the next." }
+      ]
+    },
+    {
+      "id": "4", "name": "Present a personal, coherent response (AO4)",
+      "questions": [
+        { "q": "A final outcome should", "o": ["realise your intentions and connect to your preparatory work", "be unrelated to your research", "be as large as possible", "copy a famous work"], "a": 0, "why": "The journey to it is assessed too." }
+      ]
+    },
+    {
+      "id": "5", "name": "Visual elements and art history",
+      "questions": [
+        { "q": "Complementary colours", "o": ["sit opposite each other on the colour wheel", "are next to each other", "are shades of grey", "are only primary colours"], "a": 0, "why": "e.g. red and green." },
+        { "q": "Negative space is", "o": ["the space around and between objects", "a dark colour", "a mistake", "the background colour only"], "a": 0, "why": "Using it strengthens composition." },
+        { "q": "Linear perspective uses", "o": ["a horizon line and vanishing points", "only colour", "random lines", "flat shapes"], "a": 0, "why": "To create the illusion of depth." }
+      ]
+    }
+  ]
+}

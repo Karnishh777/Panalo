@@ -102,6 +102,9 @@
       "questions": [
         { "q": "Solve |x − 3| < 2.", "o": ["x < 5", "1 < x < 5", "x > 1", "−5 < x < 5"], "a": 1, "why": "−2 < x − 3 < 2, so 1 < x < 5." },
         { "q": "What is the remainder when x³ − 2x + 1 is divided by (x − 2)?", "o": ["1", "3", "5", "−3"], "a": 2, "why": "Remainder theorem: f(2) = 8 − 4 + 1 = 5." }
+      ],
+      "long": [
+        { "q": "Expand (1 + 2x)^(−1/2) in ascending powers of x, up to and including the term in x², and state the set of values of x for which the expansion is valid.", "marks": 4, "paper": "3", "scheme": ["M1: 1 + (−½)(2x) + (−½)(−3/2)/2 × (2x)²", "A1: 1 − x", "A1: + (3/2)x²", "B1: |x| < ½"], "ans": "1 − x + (3/2)x², |x| < ½" }
       ]
     },
     {
@@ -116,6 +119,9 @@
       "questions": [
         { "q": "cos 2A can be written as…", "o": ["2 sin A cos A", "1 − 2sin²A", "2cos A", "sin²A − cos²A"], "a": 1, "why": "cos 2A = cos²A − sin²A = 1 − 2sin²A = 2cos²A − 1." },
         { "q": "sec θ is…", "o": ["1/sin θ", "1/cos θ", "1/tan θ", "sin θ/cos θ"], "a": 1, "why": "sec = 1/cos, cosec = 1/sin, cot = 1/tan." }
+      ],
+      "long": [
+        { "q": "Express 3 sin θ + 4 cos θ in the form R sin(θ + α), where R > 0 and 0° < α < 90°. Hence solve 3 sin θ + 4 cos θ = 2 for 0° < θ < 360°.", "marks": 5, "paper": "3", "scheme": ["B1: R = 5", "M1: tan α = 4/3", "A1: α = 53.13°", "M1: sin(θ + 53.13°) = 0.4", "A1: θ = 103.3°, 330.4°"], "ans": "5 sin(θ + 53.1°); θ = 103.3°, 330.4°" }
       ]
     },
     {
@@ -123,6 +129,9 @@
       "questions": [
         { "q": "Differentiate y = x eˣ.", "o": ["eˣ", "x eˣ", "eˣ(1 + x)", "eˣ − x"], "a": 2, "why": "Product rule: eˣ + x eˣ." },
         { "q": "Differentiate y = ln(3x).", "o": ["3/x", "1/x", "1/(3x)", "ln 3"], "a": 1, "why": "ln(3x) = ln 3 + ln x, so the derivative is 1/x." }
+      ],
+      "long": [
+        { "q": "Find dy/dx when y = x² e^(3x), and the exact x-coordinates of the stationary points.", "marks": 4, "paper": "3", "scheme": ["M1: product rule", "A1: dy/dx = 2x e^(3x) + 3x² e^(3x)", "M1: x e^(3x)(2 + 3x) = 0", "A1: x = 0 and x = −2/3"], "ans": "x = 0, x = −2/3" }
       ]
     },
     {
@@ -130,6 +139,9 @@
       "questions": [
         { "q": "Find ∫ 1/x dx (x > 0).", "o": ["x⁰ + c", "ln x + c", "−1/x² + c", "eˣ + c"], "a": 1, "why": "The derivative of ln x is 1/x." },
         { "q": "Which method suits ∫ x cos x dx?", "o": ["Substitution u = cos x", "Integration by parts", "Partial fractions", "It can't be integrated"], "a": 1, "why": "u = x, dv = cos x dx gives x sin x + cos x + c." }
+      ],
+      "long": [
+        { "q": "Use integration by parts to find ∫ x ln x dx.", "marks": 3, "paper": "3", "scheme": ["M1: u = ln x, dv/dx = x", "A1: (x²/2) ln x − ∫ (x²/2)(1/x) dx", "A1: (x²/2) ln x − x²/4 + c"], "ans": "(x²/2) ln x − x²/4 + c" }
       ]
     },
     {
@@ -143,12 +155,18 @@
       "questions": [
         { "q": "What is the scalar product of (1, 2, 3) and (4, −1, 0)?", "o": ["2", "4", "6", "0"], "a": 0, "why": "1×4 + 2×(−1) + 3×0 = 2." },
         { "q": "Two non-zero vectors are perpendicular when their scalar product is…", "o": ["1", "0", "−1", "their lengths multiplied"], "a": 1, "why": "a·b = |a||b|cos 90° = 0." }
+      ],
+      "long": [
+        { "q": "The lines l₁: r = (1, 2, 3) + s(1, 0, −1) and l₂: r = (2, 1, 0) + t(0, 1, 1). Show that they do not intersect.", "marks": 3, "paper": "3", "scheme": ["M1: equate components: 1 + s = 2, 2 = 1 + t, 3 − s = t", "M1: s = 1, t = 1", "A1: third equation: 3 − 1 = 2 ≠ 1, so no intersection (and not parallel, so skew)"] }
       ]
     },
     {
       "id": "P3.8", "stage": "a2", "name": "Pure 3: Differential equations",
       "questions": [
         { "q": "The general solution of dy/dx = ky is…", "o": ["y = kx + c", "y = A eᵏˣ", "y = kx²", "y = ln(kx)"], "a": 1, "why": "Separate variables: ∫dy/y = ∫k dx, ln y = kx + c." }
+      ],
+      "long": [
+        { "q": "Solve the differential equation dy/dx = xy² given that y = 1 when x = 0.", "marks": 4, "paper": "3", "scheme": ["M1: separate: ∫ y⁻² dy = ∫ x dx", "A1: −1/y = x²/2 + c", "M1: c = −1", "A1: y = 2/(2 − x²)"], "ans": "y = 2/(2 − x²)" }
       ]
     },
     {
@@ -156,6 +174,9 @@
       "questions": [
         { "q": "What is (2 + 3i)(1 − i)?", "o": ["5 + i", "−1 + i", "2 − 3i", "5 − i"], "a": 0, "why": "2 − 2i + 3i − 3i² = 2 + i + 3 = 5 + i." },
         { "q": "What is the modulus of 3 − 4i?", "o": ["1", "5", "7", "25"], "a": 1, "why": "√(3² + 4²) = 5." }
+      ],
+      "long": [
+        { "q": "The complex number z = 1 + i√3. Find the modulus and argument of z, and hence find z³.", "marks": 4, "paper": "3", "scheme": ["B1: |z| = 2", "B1: arg z = π/3", "M1: z³ has modulus 8, argument π", "A1: z³ = −8"], "ans": "|z| = 2, arg z = π/3, z³ = −8" }
       ]
     },
     {
@@ -285,6 +306,10 @@
       "questions": [
         { "q": "X ~ Po(4). What is Var(X)?", "o": ["2", "4", "16", "0.25"], "a": 1, "why": "For a Poisson distribution, mean = variance = λ." },
         { "q": "A Type I error is…", "o": ["accepting a false H₀", "rejecting a true H₀", "a calculation mistake", "using the wrong distribution"], "a": 1, "why": "Its probability equals the significance level (for continuous tests)." }
+      ],
+      "long": [
+        { "q": "The number of emails a shop receives per hour has a Poisson distribution with mean 3.2. Find the probability that it receives exactly 2 emails in a given hour, and at least 1 email in a 30-minute period.", "marks": 4, "paper": "6", "scheme": ["M1: P(X = 2) = e^(−3.2) × 3.2²/2", "A1: = 0.209", "M1: half-hour mean 1.6; P(Y ≥ 1) = 1 − e^(−1.6)", "A1: = 0.798"], "ans": "0.209; 0.798" },
+        { "q": "A machine fills bags whose masses are normally distributed with standard deviation 4 g. A random sample of 25 bags has mean 498.2 g. Test at the 5% level whether the mean mass is less than 500 g.", "marks": 4, "paper": "6", "scheme": ["B1: H₀: μ = 500, H₁: μ < 500", "M1: z = (498.2 − 500)/(4/√25) = −2.25", "B1: critical value −1.645 (or p = 0.0122 < 0.05)", "A1: reject H₀: evidence the mean is less than 500 g"], "ans": "z = −2.25, reject H₀" }
       ]
     }
   ]

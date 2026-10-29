@@ -54,6 +54,9 @@
       "id": "6", "stage": "a2", "name": "Clinical psychology",
       "questions": [
         { "q": "Cognitive behavioural therapy (CBT) works by…", "o": ["changing unhelpful thoughts and behaviours", "medication only", "free association", "brain surgery"], "a": 0, "why": "It targets the link between thinking, feeling and behaviour." }
+      ],
+      "long": [
+        { "q": "Describe one biological explanation of depression.", "marks": 4, "paper": "3", "scheme": ["B1: names the explanation, e.g. the monoamine (serotonin) hypothesis", "B1: low levels of serotonin / noradrenaline linked to low mood", "B1: evidence, e.g. antidepressants (SSRIs) raise serotonin and reduce symptoms", "B1: or a genetic explanation with twin-study evidence"] }
       ]
     },
     {
@@ -66,6 +69,9 @@
       "id": "8", "stage": "a2", "name": "Health psychology",
       "questions": [
         { "q": "Adherence to medical advice means…", "o": ["the doctor's diagnosis", "the patient following the treatment as advised", "side effects", "a placebo"], "a": 1, "why": "Non-adherence is a major health problem." }
+      ],
+      "long": [
+        { "q": "Evaluate the use of fear appeals in health promotion.", "marks": 4, "paper": "3", "scheme": ["B1: strength: can motivate change when people feel able to act (efficacy)", "B1: evidence from a study", "B1: weakness: very high fear can cause denial or avoidance", "B1: a judgement"] }
       ]
     },
     {

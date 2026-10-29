@@ -1,0 +1,135 @@
+{
+  "subject": "amath",
+  "name": "Additional Mathematics",
+  "board": "Cambridge IGCSE",
+  "code": "0606",
+  "topics": [
+    {
+      "id": "1", "name": "Functions",
+      "questions": [
+        { "q": "If f(x) = 2x + 3, what is f⁻¹(x)?", "o": ["(x − 3)/2", "2x − 3", "(x + 3)/2", "1/(2x + 3)"], "a": 0, "why": "Swap x and y in y = 2x + 3 and solve: x = (y − 3)/2." },
+        { "q": "If f(x) = x² and g(x) = x + 1, what is fg(x)?", "o": ["(x + 1)²", "x² + 1", "x² + x", "2x + 1"], "a": 0, "why": "fg(x) means f(g(x)): square the whole of x + 1." },
+        { "q": "Which function has an inverse over all real x?", "o": ["f(x) = x³", "f(x) = x²", "f(x) = |x|", "f(x) = cos x"], "a": 0, "why": "Only a one-one function has an inverse; x³ is one-one, the others are not." }
+      ]
+    },
+    {
+      "id": "2", "name": "Quadratic functions",
+      "questions": [
+        { "q": "For what values of k does x² + kx + 9 = 0 have equal roots?", "o": ["k = ±6", "k = ±3", "k = 9", "k = 0"], "a": 0, "why": "Equal roots when b² − 4ac = 0: k² − 36 = 0." },
+        { "q": "The minimum point of y = (x − 2)² + 5 is", "o": ["(2, 5)", "(−2, 5)", "(2, −5)", "(5, 2)"], "a": 0, "why": "Completed-square form a(x − p)² + q has its vertex at (p, q)." },
+        { "q": "x² − 5x + 6 < 0 is true for", "o": ["2 < x < 3", "x < 2 or x > 3", "x > 6", "−3 < x < −2"], "a": 0, "why": "The roots are 2 and 3; a positive quadratic is negative between its roots." }
+      ],
+      "long": [
+        { "q": "Find the set of values of k for which the line y = kx − 1 does not meet the curve y = x² + 3.", "marks": 4, "paper": "1", "scheme": ["M1: x² − kx + 4 = 0", "M1: no real roots: k² − 16 < 0", "A1: critical values k = ±4", "A1: −4 < k < 4"], "ans": "−4 < k < 4" }
+      ]
+    },
+    {
+      "id": "3", "name": "Factors of polynomials",
+      "questions": [
+        { "q": "The remainder when x³ − 2x + 5 is divided by (x − 1) is", "o": ["4", "6", "2", "0"], "a": 0, "why": "Remainder theorem: p(1) = 1 − 2 + 5 = 4." },
+        { "q": "(x + 2) is a factor of p(x) if", "o": ["p(−2) = 0", "p(2) = 0", "p(0) = 2", "p(−2) = 2"], "a": 0, "why": "Factor theorem: (x − a) is a factor when p(a) = 0; here a = −2." }
+      ],
+      "long": [
+        { "q": "p(x) = 2x³ + ax² − 7x + 6. Given that (x − 1) is a factor of p(x), find a and hence factorise p(x) completely.", "marks": 4, "paper": "1", "scheme": ["M1: p(1) = 2 + a − 7 + 6 = 0", "A1: a = −1", "M1: divide by (x − 1): 2x² + x − 6", "A1: p(x) = (x − 1)(2x − 3)(x + 2)"], "ans": "a = −1; (x − 1)(2x − 3)(x + 2)" }
+      ]
+    },
+    {
+      "id": "4", "name": "Equations, inequalities and graphs",
+      "questions": [
+        { "q": "Solve |x − 3| = 5.", "o": ["x = 8 or x = −2", "x = 8 only", "x = 2 or x = −8", "x = ±5"], "a": 0, "why": "x − 3 = 5 or x − 3 = −5." },
+        { "q": "The graph of y = |2x − 4| meets the x-axis at", "o": ["x = 2", "x = −2", "x = 4", "x = 0 and x = 4"], "a": 0, "why": "The modulus is zero only where 2x − 4 = 0." }
+      ]
+    },
+    {
+      "id": "5", "name": "Simultaneous equations",
+      "questions": [
+        { "q": "Solving y = x + 1 and y = x² − 1 gives x =", "o": ["2 or −1", "1 or −2", "0 or 1", "2 only"], "a": 0, "why": "x² − 1 = x + 1 so x² − x − 2 = 0, (x − 2)(x + 1) = 0." },
+        { "q": "A line meets a curve where", "o": ["their equations are satisfied together", "their gradients are equal", "their y-intercepts are equal", "x = 0"], "a": 0, "why": "Intersections are the common solutions of the two equations." }
+      ]
+    },
+    {
+      "id": "6", "name": "Logarithmic and exponential functions",
+      "questions": [
+        { "q": "log₂ 32 =", "o": ["5", "16", "6", "4"], "a": 0, "why": "Because 2⁵ = 32." },
+        { "q": "log a + log b =", "o": ["log ab", "log (a + b)", "log a · log b", "log (a/b)"], "a": 0, "why": "The product rule for logarithms." },
+        { "q": "Solve 3ˣ = 20 (to 3 s.f.).", "o": ["2.73", "6.67", "1.30", "2.99"], "a": 0, "why": "x = ln 20 ÷ ln 3 ≈ 2.73." }
+      ],
+      "long": [
+        { "q": "Solve log₃(x + 6) − log₃ x = 2.", "marks": 3, "paper": "2", "scheme": ["M1: log₃((x + 6)/x) = 2", "M1: (x + 6)/x = 9", "A1: x = 3/4"], "ans": "x = 0.75" }
+      ]
+    },
+    {
+      "id": "7", "name": "Straight-line graphs",
+      "questions": [
+        { "q": "To turn y = axⁿ into a straight line, plot", "o": ["lg y against lg x", "y against x", "y against lg x", "lg y against x"], "a": 0, "why": "lg y = lg a + n lg x: gradient n, intercept lg a." },
+        { "q": "The line through (1, 2) with gradient 3 is", "o": ["y = 3x − 1", "y = 3x + 2", "y = 2x + 3", "y = 3x + 1"], "a": 0, "why": "y − 2 = 3(x − 1)." }
+      ]
+    },
+    {
+      "id": "8", "name": "Coordinate geometry of the circle",
+      "questions": [
+        { "q": "The circle (x − 2)² + (y + 1)² = 16 has centre and radius", "o": ["(2, −1), 4", "(−2, 1), 4", "(2, −1), 16", "(2, 1), 4"], "a": 0, "why": "(x − a)² + (y − b)² = r²." },
+        { "q": "A tangent to a circle is ___ to the radius at the point of contact.", "o": ["perpendicular", "parallel", "equal", "at 45°"], "a": 0, "why": "So its gradient is the negative reciprocal of the radius's." }
+      ]
+    },
+    {
+      "id": "9", "name": "Circular measure",
+      "questions": [
+        { "q": "The arc length of a sector of radius 5 cm and angle 1.2 rad is", "o": ["6 cm", "15 cm", "4.17 cm", "30 cm"], "a": 0, "why": "s = rθ = 5 × 1.2." },
+        { "q": "The area of a sector of radius r and angle θ radians is", "o": ["½r²θ", "rθ", "r²θ", "πr²θ"], "a": 0, "why": "A fraction θ/2π of πr²." }
+      ],
+      "long": [
+        { "q": "A sector OAB has radius 8 cm and angle AOB = 0.9 radians. Find the perimeter and the area of the sector.", "marks": 4, "paper": "2", "scheme": ["M1: arc AB = 8 × 0.9 = 7.2 cm", "A1: perimeter = 7.2 + 16 = 23.2 cm", "M1: area = ½ × 8² × 0.9", "A1: = 28.8 cm²"], "ans": "23.2 cm; 28.8 cm²" }
+      ]
+    },
+    {
+      "id": "10", "name": "Trigonometry",
+      "questions": [
+        { "q": "sin²x + cos²x =", "o": ["1", "0", "tan x", "2"], "a": 0, "why": "The Pythagorean identity." },
+        { "q": "By definition, sec x =", "o": ["1/cos x", "1/sin x", "1/tan x", "cos x/sin x"], "a": 0, "why": "secant is the reciprocal of cosine." },
+        { "q": "The period of y = sin 2x is", "o": ["180°", "360°", "90°", "720°"], "a": 0, "why": "y = sin bx has period 360°/b." }
+      ],
+      "long": [
+        { "q": "Solve 2 sin²x = 3 cos x for 0° ≤ x ≤ 360°.", "marks": 4, "paper": "1", "scheme": ["M1: 2(1 − cos²x) = 3 cos x", "M1: 2cos²x + 3 cos x − 2 = 0, (2cos x − 1)(cos x + 2) = 0", "A1: cos x = ½ (cos x = −2 has no solution)", "A1: x = 60°, 300°"], "ans": "60°, 300°" }
+      ]
+    },
+    {
+      "id": "11", "name": "Permutations and combinations",
+      "questions": [
+        { "q": "How many ways can 5 different books be arranged in a row?", "o": ["120", "25", "60", "5"], "a": 0, "why": "5! = 5 × 4 × 3 × 2 × 1 = 120." },
+        { "q": "The value of ⁶C₂ is", "o": ["15", "30", "12", "36"], "a": 0, "why": "6!/(2!4!) = 15." }
+      ]
+    },
+    {
+      "id": "12", "name": "Series",
+      "questions": [
+        { "q": "The 10th term of the arithmetic progression 3, 7, 11, … is", "o": ["39", "43", "40", "36"], "a": 0, "why": "a + 9d = 3 + 36." },
+        { "q": "The sum to infinity of 8 + 4 + 2 + … is", "o": ["16", "14", "∞", "12"], "a": 0, "why": "a/(1 − r) = 8/0.5." },
+        { "q": "The coefficient of x² in (1 + 2x)⁵ is", "o": ["40", "10", "20", "80"], "a": 0, "why": "⁵C₂ × 2² = 10 × 4." }
+      ],
+      "long": [
+        { "q": "Find the first three terms in the expansion of (2 − x/4)⁶ in ascending powers of x, and hence the coefficient of x² in (1 + 2x)(2 − x/4)⁶.", "marks": 5, "paper": "2", "scheme": ["B1: 64", "B1: − 48x", "B1: + 15x²", "M1: x² terms: 15 + 2 × (−48)", "A1: −81"], "ans": "64 − 48x + 15x²; −81" }
+      ]
+    },
+    {
+      "id": "13", "name": "Vectors in two dimensions",
+      "questions": [
+        { "q": "The magnitude of 3i + 4j is", "o": ["5", "7", "1", "25"], "a": 0, "why": "√(3² + 4²)." },
+        { "q": "If OA = a and OB = b, then AB =", "o": ["b − a", "a − b", "a + b", "½(a + b)"], "a": 0, "why": "AB = AO + OB = −a + b." }
+      ]
+    },
+    {
+      "id": "14", "name": "Differentiation and integration",
+      "questions": [
+        { "q": "d/dx (x³) =", "o": ["3x²", "x²", "3x³", "x⁴/4"], "a": 0, "why": "Bring the power down and subtract one." },
+        { "q": "d/dx (sin 3x) =", "o": ["3 cos 3x", "cos 3x", "−3 cos 3x", "3 sin 3x"], "a": 0, "why": "Chain rule: derivative of the inside is 3." },
+        { "q": "∫ eˣ dx =", "o": ["eˣ + c", "x eˣ + c", "eˣ⁺¹/(x + 1) + c", "ln x + c"], "a": 0, "why": "eˣ is its own derivative." },
+        { "q": "At a stationary point, dy/dx is", "o": ["0", "1", "undefined", "negative"], "a": 0, "why": "The tangent is horizontal there." }
+      ],
+      "long": [
+        { "q": "A curve has equation y = x³ − 6x² + 9x + 2. Find the coordinates of its stationary points and determine their nature.", "marks": 5, "paper": "1", "scheme": ["M1: dy/dx = 3x² − 12x + 9", "M1: = 0 gives x = 1, x = 3", "A1: (1, 6) and (3, 2)", "M1: d²y/dx² = 6x − 12", "A1: (1, 6) maximum, (3, 2) minimum"], "ans": "(1, 6) max; (3, 2) min" },
+        { "q": "Find the area enclosed by the curve y = 4x − x² and the x-axis.", "marks": 3, "paper": "2", "scheme": ["M1: limits x = 0 and x = 4", "M1: ∫(4x − x²) dx = 2x² − x³/3", "A1: area = 32 − 64/3 = 32/3"], "ans": "32/3" }
+      ]
+    }
+  ]
+}

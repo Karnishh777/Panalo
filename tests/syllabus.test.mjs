@@ -49,6 +49,10 @@ for (const [dir, stage] of Object.entries(LEVELS)) {
   }
 }
 ok("there is a question bank", files > 0 && questions > 0);
+for (const [dir, stage] of Object.entries(LEVELS)) {
+  const missing = subjectsFor(stage).filter((x) => !fs.existsSync(path.join(ROOT, dir, `${x.id}.json`))).map((x) => x.code);
+  ok(`every Cambridge subject at ${dir} has a bank`, !missing.length, missing.join());
+}
 
 console.log(`\n${files} files, ${questions} questions`);
 console.log(`${passed} passed, ${failures.length} failed`);

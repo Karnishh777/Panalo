@@ -135,6 +135,9 @@
       "questions": [
         { "q": "An object moves in a circle of radius 2.0 m at 4.0 m s⁻¹. What is its centripetal acceleration?", "o": ["2.0 m s⁻²", "4.0 m s⁻²", "8.0 m s⁻²", "32 m s⁻²"], "a": 2, "why": "a = v²/r = 16 ÷ 2.0 = 8.0 m s⁻²." },
         { "q": "Angular speed ω is related to period T by…", "o": ["ω = 2πT", "ω = 2π/T", "ω = T/2π", "ω = πT²"], "a": 1, "why": "One revolution is 2π radians in time T." }
+      ],
+      "long": [
+        { "q": "A car of mass 900 kg travels at a constant speed of 15 m s⁻¹ round a horizontal bend of radius 50 m. Calculate the centripetal force required.", "marks": 2, "paper": "4", "scheme": ["C1: F = mv²/r", "A1: = 900 × 15² ÷ 50 = 4050 N"], "ans": "4.1 × 10³ N" }
       ]
     },
     {
@@ -143,6 +146,9 @@
         { "q": "If the distance between two masses doubles, the gravitational force becomes…", "o": ["double", "half", "a quarter", "four times"], "a": 2, "why": "F = GMm/r², an inverse-square law." },
         { "q": "A geostationary satellite has an orbital period of…", "o": ["1 hour", "12 hours", "24 hours", "27 days"], "a": 2, "why": "It orbits above the equator, in the same direction as Earth's rotation, once every 24 hours." },
         { "q": "Gravitational potential at a point is…", "o": ["always positive", "always negative (zero at infinity)", "zero at the surface", "equal to g"], "a": 1, "why": "φ = −GM/r: work must be done to move a mass to infinity." }
+      ],
+      "long": [
+        { "q": "Show that the orbital period T of a satellite in a circular orbit of radius r about a planet of mass M satisfies T² = 4π²r³/(GM).", "marks": 3, "paper": "4", "scheme": ["M1: GMm/r² = mv²/r (gravity provides centripetal force)", "M1: v = 2πr/T", "A1: substitution and rearrangement to T² = 4π²r³/(GM)"] }
       ]
     },
     {
@@ -150,6 +156,9 @@
       "questions": [
         { "q": "What is 27 °C in kelvin?", "o": ["246 K", "273 K", "300 K", "327 K"], "a": 2, "why": "T(K) = θ(°C) + 273.15 ≈ 300 K." },
         { "q": "How much energy melts 0.20 kg of ice at 0 °C? (specific latent heat of fusion 3.3 × 10⁵ J kg⁻¹)", "o": ["6.6 × 10³ J", "6.6 × 10⁴ J", "1.65 × 10⁶ J", "3.3 × 10⁵ J"], "a": 1, "why": "E = mL = 0.20 × 3.3 × 10⁵ = 6.6 × 10⁴ J." }
+      ],
+      "long": [
+        { "q": "Calculate the energy needed to melt 0.25 kg of ice at 0 °C. (Specific latent heat of fusion = 3.3 × 10⁵ J kg⁻¹)", "marks": 2, "paper": "4", "scheme": ["C1: E = mL", "A1: = 0.25 × 3.3 × 10⁵ = 8.3 × 10⁴ J"], "ans": "8.3 × 10⁴ J" }
       ]
     },
     {
@@ -157,6 +166,9 @@
       "questions": [
         { "q": "The mean kinetic energy of a molecule in an ideal gas is proportional to…", "o": ["pressure", "volume", "thermodynamic temperature", "the number of molecules"], "a": 2, "why": "½m⟨c²⟩ = (3/2)kT." },
         { "q": "For an ideal gas, pV = …", "o": ["nRT", "nR/T", "RT/n", "nT/R"], "a": 0, "why": "The ideal gas equation, with n in moles." }
+      ],
+      "long": [
+        { "q": "A gas cylinder of volume 0.020 m³ contains an ideal gas at 2.0 × 10⁵ Pa and 300 K. Calculate the number of moles of gas. (R = 8.31 J mol⁻¹ K⁻¹)", "marks": 3, "paper": "4", "scheme": ["C1: n = pV/(RT)", "C1: = 2.0 × 10⁵ × 0.020 ÷ (8.31 × 300)", "A1: = 1.6 mol"], "ans": "1.6 mol" }
       ]
     },
     {
@@ -172,6 +184,9 @@
         { "q": "In simple harmonic motion, acceleration is…", "o": ["constant", "proportional to displacement and opposite in direction", "proportional to velocity", "zero at the extremes"], "a": 1, "why": "Defining equation of SHM: a = −ω²x." },
         { "q": "At what point of an SHM is the speed greatest?", "o": ["At maximum displacement", "At the equilibrium position", "Halfway out", "It is constant"], "a": 1, "why": "All the energy is kinetic at x = 0." },
         { "q": "What is resonance?", "o": ["Damping that stops oscillation", "A large amplitude when the driving frequency equals the natural frequency", "Oscillation at any frequency", "A sound effect only"], "a": 1, "why": "Maximum energy transfer happens when the frequencies match." }
+      ],
+      "long": [
+        { "q": "A mass on a spring oscillates with simple harmonic motion of amplitude 3.0 cm and frequency 2.0 Hz. Calculate its maximum speed and maximum acceleration.", "marks": 3, "paper": "4", "scheme": ["C1: ω = 2πf = 4π rad s⁻¹ (12.6)", "A1: v_max = ωx₀ = 0.38 m s⁻¹", "A1: a_max = ω²x₀ = 4.7 m s⁻²"], "ans": "0.38 m s⁻¹; 4.7 m s⁻²" }
       ]
     },
     {
@@ -187,6 +202,9 @@
         { "q": "A 100 µF capacitor is charged to 12 V. How much energy is stored?", "o": ["1.2 mJ", "7.2 mJ", "14.4 mJ", "0.6 mJ"], "a": 1, "why": "W = ½CV² = ½ × 100 × 10⁻⁶ × 144 = 7.2 × 10⁻³ J." },
         { "q": "What is the time constant of a 2.0 kΩ resistor and 50 µF capacitor?", "o": ["0.010 s", "0.10 s", "1.0 s", "100 s"], "a": 1, "why": "τ = RC = 2000 × 50 × 10⁻⁶ = 0.10 s." },
         { "q": "Capacitors in parallel…", "o": ["add like resistors in parallel", "add directly: C = C₁ + C₂", "always halve", "cancel out"], "a": 1, "why": "In parallel, capacitances add." }
+      ],
+      "long": [
+        { "q": "A 470 µF capacitor is charged to 12 V and then discharged through a 2.0 kΩ resistor. Calculate the time constant and the potential difference after 1.0 s.", "marks": 4, "paper": "4", "scheme": ["C1: τ = RC = 2000 × 470 × 10⁻⁶", "A1: = 0.94 s", "C1: V = 12 e^(−1.0/0.94)", "A1: = 4.1 V"], "ans": "0.94 s; 4.1 V" }
       ]
     },
     {
@@ -195,6 +213,9 @@
         { "q": "What is the force on a 0.50 m wire carrying 3.0 A at right angles to a 0.20 T field?", "o": ["0.03 N", "0.30 N", "0.60 N", "3.0 N"], "a": 1, "why": "F = BIL = 0.20 × 3.0 × 0.50 = 0.30 N." },
         { "q": "A charged particle enters a uniform magnetic field at right angles. Its path is…", "o": ["a straight line", "a parabola", "a circle", "a spiral outward"], "a": 2, "why": "The force Bqv is always perpendicular to the velocity, giving circular motion." },
         { "q": "Lenz's law is a consequence of conservation of…", "o": ["charge", "energy", "momentum", "mass"], "a": 1, "why": "The induced current opposes the change that caused it; otherwise energy would be created." }
+      ],
+      "long": [
+        { "q": "An electron travels at 3.0 × 10⁶ m s⁻¹ perpendicular to a uniform magnetic field of 2.0 mT. Calculate the radius of its circular path. (e = 1.60 × 10⁻¹⁹ C, mₑ = 9.11 × 10⁻³¹ kg)", "marks": 3, "paper": "4", "scheme": ["M1: Bqv = mv²/r so r = mv/(Bq)", "C1: = 9.11 × 10⁻³¹ × 3.0 × 10⁶ ÷ (2.0 × 10⁻³ × 1.60 × 10⁻¹⁹)", "A1: = 8.5 × 10⁻³ m"], "ans": "8.5 mm" }
       ]
     },
     {
@@ -210,6 +231,9 @@
         { "q": "The energy of a photon is E = hf. Doubling the frequency…", "o": ["halves E", "doubles E", "leaves E unchanged", "quadruples E"], "a": 1, "why": "E is proportional to f." },
         { "q": "In the photoelectric effect, increasing the intensity of light above the threshold frequency…", "o": ["increases the maximum kinetic energy of electrons", "increases the number of electrons emitted per second", "decreases the work function", "has no effect"], "a": 1, "why": "More photons per second release more electrons; each photon still has the same energy." },
         { "q": "Electron diffraction is evidence that electrons…", "o": ["have charge", "behave as waves", "have mass", "orbit the nucleus"], "a": 1, "why": "Diffraction is a wave property; λ = h/p." }
+      ],
+      "long": [
+        { "q": "Light of wavelength 400 nm falls on a metal of work function 2.3 eV. Calculate the maximum kinetic energy of the emitted electrons in eV. (h = 6.63 × 10⁻³⁴ J s, c = 3.00 × 10⁸ m s⁻¹)", "marks": 3, "paper": "4", "scheme": ["C1: photon energy = hc/λ = 4.97 × 10⁻¹⁹ J", "C1: = 3.1 eV", "A1: KE_max = 3.1 − 2.3 = 0.8 eV"], "ans": "0.8 eV" }
       ]
     },
     {
@@ -217,6 +241,9 @@
       "questions": [
         { "q": "Binding energy per nucleon is greatest for nuclei around…", "o": ["hydrogen", "iron", "uranium", "helium"], "a": 1, "why": "Iron-56 is near the peak; fusion of lighter and fission of heavier nuclei both release energy." },
         { "q": "A source has decay constant λ. Its half-life is…", "o": ["λ/ln 2", "ln 2/λ", "1/λ", "2λ"], "a": 1, "why": "t½ = ln 2 / λ ≈ 0.693/λ." }
+      ],
+      "long": [
+        { "q": "A radioactive isotope has a half-life of 8.0 days. Calculate its decay constant and the fraction remaining after 20 days.", "marks": 3, "paper": "4", "scheme": ["C1: λ = ln 2 / 8.0 = 0.0866 day⁻¹", "C1: N/N₀ = e^(−0.0866 × 20)", "A1: = 0.18"], "ans": "0.087 day⁻¹; 0.18" }
       ]
     },
     {

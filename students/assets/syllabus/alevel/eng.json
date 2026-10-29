@@ -1,0 +1,66 @@
+{
+  "subject": "eng",
+  "name": "English Language",
+  "board": "Cambridge International AS & A Level",
+  "code": "9093",
+  "topics": [
+    {
+      "id": "1", "name": "Reading: analysing texts", "stage": "as",
+      "questions": [
+        { "q": "In text analysis, 'register' refers to", "o": ["the level of formality and the language suited to a context", "the length of the text", "the number of paragraphs", "spelling"], "a": 0, "why": "Field, tenor and mode shape register." },
+        { "q": "Lexis means", "o": ["the vocabulary of a text", "its sentence structure", "its sound patterns", "its layout"], "a": 0, "why": "Lexis = word choice." },
+        { "q": "A declarative sentence", "o": ["makes a statement", "asks a question", "gives an order", "expresses strong feeling"], "a": 0, "why": "The four sentence functions: declarative, interrogative, imperative, exclamative." }
+      ],
+      "long": [
+        { "q": "Analyse the language of an advertisement of your choice, focusing on how it persuades its audience. (Mark yourself with this scheme.)", "marks": 5, "paper": "1", "scheme": ["B1: identifies audience, purpose and context", "B1: analyses lexis with precise terminology", "B1: analyses grammar or sentence structure for effect", "B1: comments on structure and layout", "B1: links every feature to its effect on the audience"] }
+      ]
+    },
+    {
+      "id": "2", "name": "Directed response", "stage": "as",
+      "questions": [
+        { "q": "A directed response asks you to", "o": ["write a new text for a given audience and purpose, using a source", "analyse a poem", "summarise a novel", "write a story of your choice"], "a": 0, "why": "You transform the source for a new context." }
+      ]
+    },
+    {
+      "id": "3", "name": "Shorter writing and reflective commentary", "stage": "as",
+      "questions": [
+        { "q": "A reflective commentary should explain", "o": ["the language choices you made and why", "the plot of your piece", "what you would write next", "grammar rules"], "a": 0, "why": "It links your choices to audience and purpose." }
+      ]
+    },
+    {
+      "id": "4", "name": "Extended writing", "stage": "as",
+      "questions": [
+        { "q": "Writing for a specified audience means", "o": ["adapting vocabulary, tone and structure to that audience", "using as many long words as possible", "ignoring the audience", "writing in note form"], "a": 0, "why": "Audience shapes every choice." }
+      ]
+    },
+    {
+      "id": "5", "name": "Language change", "stage": "a2",
+      "questions": [
+        { "q": "Borrowing (as in 'bungalow' from Hindi) is an example of", "o": ["lexical change through contact", "semantic narrowing", "grammatical change", "phonological change"], "a": 0, "why": "Words enter English from other languages." },
+        { "q": "When a word's meaning becomes more negative over time, this is", "o": ["pejoration", "amelioration", "broadening", "narrowing"], "a": 0, "why": "e.g. 'silly' once meant blessed." }
+      ]
+    },
+    {
+      "id": "6", "name": "Child language acquisition", "stage": "a2",
+      "questions": [
+        { "q": "'Holophrastic' speech is", "o": ["one word used to express a whole idea", "two-word combinations", "full sentences", "babbling"], "a": 0, "why": "e.g. 'juice' meaning 'I want juice'." },
+        { "q": "Overgeneralisation, as in 'goed', shows that children", "o": ["are learning grammatical rules", "are copying adults exactly", "cannot hear correctly", "know irregular verbs"], "a": 0, "why": "Applying a rule where it doesn't fit shows rule-learning." }
+      ],
+      "long": [
+        { "q": "A child of 2 years says 'daddy car go'. Comment on what this shows about the child's language development.", "marks": 4, "paper": "3", "scheme": ["B1: telegraphic stage (about 2;0–2;6)", "B1: content words kept; function words (determiners, auxiliaries) omitted", "B1: correct subject–object–verb meaning order", "B1: links to a theory, e.g. Brown's stages or Chomsky's LAD"] }
+      ]
+    },
+    {
+      "id": "7", "name": "English in the world", "stage": "a2",
+      "questions": [
+        { "q": "A pidgin is", "o": ["a simplified contact language with no native speakers", "a regional accent", "a dialect of English", "an extinct language"], "a": 0, "why": "When it gains native speakers it becomes a creole." }
+      ]
+    },
+    {
+      "id": "8", "name": "Language and the self", "stage": "a2",
+      "questions": [
+        { "q": "Code-switching is", "o": ["moving between languages or varieties within a conversation", "speaking in code", "an accent change over years", "learning a second language"], "a": 0, "why": "Speakers switch for identity, audience or topic." }
+      ]
+    }
+  ]
+}

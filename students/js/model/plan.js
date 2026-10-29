@@ -285,7 +285,7 @@ export function buildPlan({ profile, syllabi = {}, topics = {}, pace = {}, event
         // A timed past paper of each chosen paper, as its date nears.
         const papersToday = day.blocks.filter((b) => b.kind === "paper").length;
         for (const p of s.papers) {
-          if (p.at == null || papersToday >= (own.crash ? 2 : 1) || skipped.has(`${s.id}|paper-${p.id}`)) continue;
+          if (p.at == null || !PP.timedPaper(p) || papersToday >= (own.crash ? 2 : 1) || skipped.has(`${s.id}|paper-${p.id}`)) continue;
           const left = (p.at - date.getTime()) / DAY;
           if (left < 1 || left > PAPER_WINDOW) continue;
           const last = s.lastPaper[p.id];

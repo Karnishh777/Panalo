@@ -355,7 +355,7 @@ function customRow(s) {
 function paperRow(id, v, now) {
   if (!PP.papersOf(v.code).length) return null;
   const line = papersLine(v, now);
-  const first = v.papers?.[0]?.id;
+  const first = v.papers?.find((p) => PP.timedPaper(p))?.id;
   return el("div", { class: "pl-papers" }, [
     el("p", { class: "small pl-papers-line", text: line || "Which papers are you sitting, and when? Add them and the plan counts down to each one." }),
     el("div", { class: "pl-papers-acts" }, [

@@ -123,6 +123,9 @@
         { "q": "Where does the Krebs cycle take place?", "o": ["Cytoplasm", "Mitochondrial matrix", "Inner membrane", "Chloroplast"], "a": 1, "why": "Glycolysis is in the cytoplasm; link reaction and Krebs cycle in the matrix." },
         { "q": "What is the final electron acceptor in oxidative phosphorylation?", "o": ["NAD", "Oxygen", "FAD", "Pyruvate"], "a": 1, "why": "Oxygen combines with electrons and H⁺ to form water." },
         { "q": "A respiratory quotient (RQ) near 0.7 suggests the substrate is…", "o": ["carbohydrate", "lipid", "protein", "glucose anaerobically"], "a": 1, "why": "Carbohydrate 1.0, protein about 0.9, lipid about 0.7." }
+      ],
+      "long": [
+        { "q": "Explain how ATP is produced by oxidative phosphorylation.", "marks": 5, "paper": "4", "scheme": ["B1: reduced NAD/FAD release electrons to the electron transport chain on the inner mitochondrial membrane", "B1: energy from electron flow pumps H⁺ into the intermembrane space", "B1: H⁺ flows back through ATP synthase (chemiosmosis)", "B1: driving ADP + Pi → ATP", "B1: oxygen is the final electron acceptor, forming water"] }
       ]
     },
     {
@@ -131,6 +134,9 @@
         { "q": "Where does the light-dependent stage happen?", "o": ["Stroma", "Thylakoid membranes", "Cytoplasm", "Cell wall"], "a": 1, "why": "Photosystems and the electron transport chain are in the thylakoids." },
         { "q": "Which enzyme fixes CO₂ in the Calvin cycle?", "o": ["ATP synthase", "Rubisco", "Amylase", "Catalase"], "a": 1, "why": "Rubisco combines CO₂ with RuBP." },
         { "q": "A limiting factor is…", "o": ["the factor in greatest supply", "the factor that controls the rate because it is in shortest supply", "always light", "always temperature"], "a": 1, "why": "Increasing it increases the rate until another factor limits." }
+      ],
+      "long": [
+        { "q": "Describe the light-independent stage of photosynthesis (the Calvin cycle).", "marks": 4, "paper": "4", "scheme": ["B1: CO₂ combines with RuBP, catalysed by rubisco", "B1: forming two molecules of GP", "B1: GP reduced to triose phosphate using ATP and reduced NADP", "B1: most TP regenerates RuBP, using ATP"] }
       ]
     },
     {
@@ -139,6 +145,9 @@
         { "q": "Which hormone increases water reabsorption in the collecting duct?", "o": ["Insulin", "ADH", "Glucagon", "Adrenaline"], "a": 1, "why": "ADH inserts aquaporins, making urine more concentrated." },
         { "q": "Homeostasis mainly works by…", "o": ["positive feedback", "negative feedback", "no feedback", "random change"], "a": 1, "why": "A change triggers a response that reverses it." },
         { "q": "Guard cells open stomata by…", "o": ["losing water", "taking in K⁺, lowering water potential, then water enters and they swell", "using cellulose", "photosynthesising only"], "a": 1, "why": "Turgid guard cells bend apart because of uneven wall thickness." }
+      ],
+      "long": [
+        { "q": "Explain how blood glucose concentration is lowered after a meal.", "marks": 5, "paper": "4", "scheme": ["B1: β cells in the islets of Langerhans detect the rise and secrete insulin", "B1: insulin binds to receptors on liver and muscle cells", "B1: more glucose transporters (GLUT4) in membranes, so more glucose uptake", "B1: glucose converted to glycogen (glycogenesis)", "B1: negative feedback"] }
       ]
     },
     {
@@ -147,6 +156,9 @@
         { "q": "What causes the depolarisation in an action potential?", "o": ["K⁺ moving out", "Na⁺ rushing in through voltage-gated channels", "Cl⁻ moving in", "ATP breaking down"], "a": 1, "why": "Repolarisation then follows as K⁺ leaves." },
         { "q": "Myelination speeds up conduction by…", "o": ["making axons thicker", "saltatory conduction between nodes of Ranvier", "adding synapses", "using hormones"], "a": 1, "why": "Action potentials jump from node to node." },
         { "q": "Which plant hormone stimulates stomatal closure in drought?", "o": ["Auxin", "Gibberellin", "Abscisic acid (ABA)", "Ethene"], "a": 2, "why": "ABA triggers K⁺ loss from guard cells." }
+      ],
+      "long": [
+        { "q": "Explain how a nerve impulse is transmitted across a cholinergic synapse.", "marks": 5, "paper": "4", "scheme": ["B1: action potential arrives; Ca²⁺ channels open and Ca²⁺ enters the presynaptic knob", "B1: vesicles fuse and release acetylcholine by exocytosis", "B1: ACh diffuses across the cleft and binds to receptors on the postsynaptic membrane", "B1: Na⁺ channels open, depolarising the membrane", "B1: acetylcholinesterase breaks down ACh"] }
       ]
     },
     {
@@ -155,6 +167,9 @@
         { "q": "Crossing over happens in…", "o": ["mitosis prophase", "meiosis prophase I", "meiosis anaphase II", "interphase"], "a": 1, "why": "Non-sister chromatids of homologous chromosomes exchange sections." },
         { "q": "A chi-squared test compares…", "o": ["two means", "observed and expected frequencies", "correlation", "variance only"], "a": 1, "why": "It tests whether differences from the expected ratio are due to chance." },
         { "q": "Epistasis is…", "o": ["linked genes", "one gene affecting the expression of another gene", "a mutation", "codominance"], "a": 1, "why": "It changes expected dihybrid ratios." }
+      ],
+      "long": [
+        { "q": "In a dihybrid cross between two plants heterozygous for both genes (AaBb × AaBb), state the expected phenotypic ratio and explain what a significantly different result could suggest.", "marks": 4, "paper": "4", "scheme": ["B1: 9 : 3 : 3 : 1", "B1: genes on different chromosomes assort independently", "B1: a different ratio may suggest linkage (genes on the same chromosome)", "B1: test with chi-squared"], "ans": "9 : 3 : 3 : 1" }
       ]
     },
     {
@@ -176,6 +191,9 @@
       "questions": [
         { "q": "What does PCR do?", "o": ["Cuts DNA", "Makes many copies of a DNA sequence", "Sequences proteins", "Separates DNA by size"], "a": 1, "why": "Cycles of denaturing, annealing primers and extending with Taq polymerase." },
         { "q": "Gel electrophoresis separates DNA fragments by…", "o": ["charge sign", "size (smaller fragments move further)", "colour", "base sequence"], "a": 1, "why": "Negatively charged DNA moves towards the anode; small fragments travel faster." }
+      ],
+      "long": [
+        { "q": "Describe how PCR is used to amplify a sample of DNA.", "marks": 4, "paper": "4", "scheme": ["B1: heated to about 95 °C to separate the strands", "B1: cooled to about 55 °C so primers anneal", "B1: heated to about 72 °C; Taq polymerase extends the strands", "B1: cycle repeated, doubling the DNA each time"] }
       ]
     }
   ]

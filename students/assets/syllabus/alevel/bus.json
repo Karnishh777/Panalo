@@ -62,6 +62,10 @@
         { "q": "A SWOT analysis looks at…", "o": ["strengths, weaknesses, opportunities, threats", "sales, wages, output, tax", "only external factors", "only finance"], "a": 0, "why": "Strengths and weaknesses are internal; opportunities and threats external." },
         { "q": "Ansoff's matrix: selling new products in new markets is…", "o": ["market penetration", "product development", "market development", "diversification"], "a": 3, "why": "It is the riskiest strategy." },
         { "q": "Investment appraisal: net present value accounts for…", "o": ["the time value of money", "only the payback period", "only accounting profit", "inflation alone"], "a": 0, "why": "Future cash flows are discounted to present values." }
+      ],
+      "long": [
+        { "q": "Evaluate whether a business should use Porter's generic strategies to compete in a new overseas market.", "marks": 4, "paper": "3", "scheme": ["B1: cost leadership, differentiation or focus explained", "B1: applied to the business's strengths and the market", "B1: limits: hybrid strategies, local conditions", "B1: a supported judgement"] },
+        { "q": "A project costs $50 000 and returns $15 000 a year for five years. Calculate the payback period and the average rate of return (ARR).", "marks": 4, "paper": "3", "scheme": ["M1: payback = 50 000 ÷ 15 000", "A1: = 3.33 years (3 years 4 months)", "M1: average annual profit = (75 000 − 50 000) ÷ 5 = 5000", "A1: ARR = 5000 ÷ 50 000 × 100 = 10%"], "ans": "3.33 years; 10%" }
       ]
     }
   ]

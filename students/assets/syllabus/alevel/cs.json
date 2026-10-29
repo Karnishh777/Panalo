@@ -106,6 +106,9 @@
       "id": "13", "stage": "a2", "name": "Data representation (floating point)",
       "questions": [
         { "q": "Normalising a floating-point number…", "o": ["reduces precision", "gives the maximum precision for the mantissa size", "makes it negative", "removes the exponent"], "a": 1, "why": "The first two mantissa bits differ (01 or 10), so no bits are wasted." }
+      ],
+      "long": [
+        { "q": "Normalise the floating-point number with an 8-bit two's complement mantissa 00010110 and a 4-bit exponent 0011, and state its denary value.", "marks": 4, "paper": "3", "scheme": ["M1: mantissa 0.0010110, exponent 3", "A1: denary value 0.0010110 × 2³ = 1.0110₂ = 1.375", "M1: shift mantissa left 2 places, exponent − 2", "A1: mantissa 01011000, exponent 0001"], "ans": "1.375" }
       ]
     },
     {
@@ -130,12 +133,18 @@
       "id": "17", "stage": "a2", "name": "Security",
       "questions": [
         { "q": "A digital signature is created using…", "o": ["the receiver's public key", "the sender's private key", "a shared password", "a check digit"], "a": 1, "why": "Anyone can verify it with the sender's public key." }
+      ],
+      "long": [
+        { "q": "Explain how asymmetric encryption is used to send a confidential message.", "marks": 4, "paper": "3", "scheme": ["B1: the receiver has a public key and a private key", "B1: the sender encrypts with the receiver's public key", "B1: only the receiver's private key can decrypt it", "B1: the private key is never shared"] }
       ]
     },
     {
       "id": "18", "stage": "a2", "name": "Artificial intelligence",
       "questions": [
         { "q": "Dijkstra's algorithm finds…", "o": ["the minimum spanning tree", "the shortest path from one node to the others", "a sorted list", "a cycle"], "a": 1, "why": "A* extends it with a heuristic." }
+      ],
+      "long": [
+        { "q": "Describe how Dijkstra's algorithm finds the shortest path between two nodes.", "marks": 4, "paper": "3", "scheme": ["B1: set the start node's distance to 0 and all others to infinity", "B1: repeatedly visit the unvisited node with the smallest distance", "B1: update neighbours' distances if a shorter path is found", "B1: stop when the destination is visited; trace back for the path"] }
       ]
     },
     {
@@ -148,6 +157,9 @@
       "id": "20", "stage": "a2", "name": "Further programming",
       "questions": [
         { "q": "In OOP, inheritance allows…", "o": ["a class to gain the attributes and methods of a parent class", "data to be hidden", "one method to have many forms only", "files to be shared"], "a": 0, "why": "Encapsulation hides data; polymorphism allows different behaviour for the same method." }
+      ],
+      "long": [
+        { "q": "Write pseudocode for a recursive function Factorial(N) that returns N!.", "marks": 4, "paper": "4", "scheme": ["M1: function header with parameter and return type", "M1: base case IF N = 0 (or 1) RETURN 1", "M1: ELSE RETURN N * Factorial(N − 1)", "M1: correct ENDIF / ENDFUNCTION"] }
       ]
     }
   ]

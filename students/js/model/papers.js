@@ -13,8 +13,10 @@
 // or a list of topic ids, where an id ending in "." means every topic
 // whose id starts with it ("P1." is P1.1, P1.2, ...).
 //
-// kind: "mcq" (multiple choice), "written" (structured / essay), or
-// "practical" (a practical test, or its written alternative).
+// kind: "mcq" (multiple choice), "written" (structured / essay),
+// "practical" (a practical test, or its written alternative, or a
+// supervised assignment), or "coursework" (done over the course; no
+// timed past papers).
 
 const sci = (practical) => [
   { id: "1", name: "Multiple Choice", kind: "mcq", minutes: 75, marks: 40, level: "as", topics: "as" },
@@ -147,9 +149,177 @@ export const SYLLABUS_PAPERS = {
     ],
     routes: { igcse: ["1", "2"] },
   },
+  // ---- Added: the rest of the Cambridge subjects ----
+  "0606": {
+    // Additional Mathematics (Cambridge IGCSE)
+    papers: [
+      { id: "1", name: "Paper 1", kind: "written", minutes: 120, marks: 80, level: "any", topics: "all" },
+      { id: "2", name: "Paper 2", kind: "written", minutes: 120, marks: 80, level: "any", topics: "all" },
+    ],
+    routes: { igcse: ["1", "2"] },
+  },
+  "9231": {
+    // Further Mathematics (Cambridge International AS & A Level)
+    papers: [
+      { id: "1", name: "Further Pure Mathematics 1", kind: "written", minutes: 120, marks: 75, level: "as", topics: ["F1."] },
+      { id: "2", name: "Further Pure Mathematics 2", kind: "written", minutes: 120, marks: 75, level: "a2", topics: ["F2."] },
+      { id: "3", name: "Further Mechanics", kind: "written", minutes: 90, marks: 50, level: "as", topics: ["M3."] },
+      { id: "4", name: "Further Probability & Statistics", kind: "written", minutes: 90, marks: 50, level: "as", topics: ["S4."] },
+    ],
+    routes: { as: ["1", "3"], a2: ["1", "2", "3", "4"] },
+    note: "AS Further Mathematics is Paper 1 with Paper 3 or Paper 4; check your school's route.",
+  },
+  "0500": {
+    // English First Language (Cambridge IGCSE)
+    papers: [
+      { id: "1", name: "Reading", kind: "written", minutes: 120, marks: 80, level: "any", topics: ["1", "2", "3", "4"] },
+      { id: "2", name: "Directed Writing and Composition", kind: "written", minutes: 120, marks: 80, level: "any", topics: ["5", "6", "7", "8"] },
+    ],
+    routes: { igcse: ["1", "2"] },
+    note: "Some schools take Component 3 (coursework) instead of Paper 2.",
+  },
+  "0510": {
+    // English as a Second Language (Cambridge IGCSE)
+    papers: [
+      { id: "1", name: "Reading and Writing (Core)", kind: "written", minutes: 90, marks: null, level: "core", topics: ["1", "2", "3", "4", "5", "8"] },
+      { id: "2", name: "Reading and Writing (Extended)", kind: "written", minutes: 120, marks: null, level: "extended", topics: ["1", "2", "3", "4", "5", "8"] },
+      { id: "3", name: "Listening (Core)", kind: "written", minutes: 40, marks: null, level: "core", topics: ["6", "8"] },
+      { id: "4", name: "Listening (Extended)", kind: "written", minutes: 50, marks: null, level: "extended", topics: ["6", "8"] },
+      { id: "5", name: "Speaking", kind: "practical", minutes: 15, marks: null, level: "any", topics: ["7", "8"] },
+    ],
+    routes: { igcse: ["2", "4", "5"] },
+    note: "Core or Extended: choose your tier's papers; Speaking may be endorsed separately.",
+  },
+  "8021": {
+    // English General Paper (Cambridge International AS Level)
+    papers: [
+      { id: "1", name: "Essay", kind: "written", minutes: 75, marks: 30, level: "as", topics: ["1", "2", "3", "4", "7"] },
+      { id: "2", name: "Comprehension", kind: "written", minutes: 105, marks: 50, level: "as", topics: ["5", "6", "7"] },
+    ],
+    routes: { as: ["1", "2"], a2: ["1", "2"] },
+  },
+  "9093": {
+    // English Language (Cambridge International AS & A Level)
+    papers: [
+      { id: "1", name: "Reading", kind: "written", minutes: 135, marks: 50, level: "as", topics: ["1", "2"] },
+      { id: "2", name: "Writing", kind: "written", minutes: 120, marks: 50, level: "as", topics: ["3", "4"] },
+      { id: "3", name: "Language Analysis", kind: "written", minutes: 135, marks: 50, level: "a2", topics: ["5", "6"] },
+      { id: "4", name: "Language Topics", kind: "written", minutes: 135, marks: 50, level: "a2", topics: ["7", "8"] },
+    ],
+    routes: { as: ["1", "2"], a2: ["1", "2", "3", "4"] },
+  },
+  "0495": {
+    // Sociology (Cambridge IGCSE)
+    papers: [
+      { id: "1", name: "Paper 1", kind: "written", minutes: 120, marks: null, level: "any", topics: ["1", "2", "3"] },
+      { id: "2", name: "Paper 2", kind: "written", minutes: 105, marks: null, level: "any", topics: ["4", "5", "6", "7"] },
+    ],
+    routes: { igcse: ["1", "2"] },
+  },
+  "0457": {
+    // Global Perspectives (Cambridge IGCSE)
+    papers: [
+      { id: "1", name: "Written Examination", kind: "written", minutes: 90, marks: null, level: "any", topics: ["1", "2", "3", "6"] },
+      { id: "2", name: "Individual Report", kind: "practical", minutes: null, marks: null, level: "any", topics: ["1", "2", "3", "4", "6"] },
+      { id: "3", name: "Team Project", kind: "practical", minutes: null, marks: null, level: "any", topics: ["4", "5", "6"] },
+    ],
+    routes: { igcse: ["1", "2", "3"] },
+  },
+  "9239": {
+    // Global Perspectives and Research (Cambridge International AS & A Level)
+    papers: [
+      { id: "1", name: "Written Examination", kind: "written", minutes: 90, marks: 30, level: "as", topics: ["1", "2"] },
+      { id: "2", name: "Essay", kind: "practical", minutes: null, marks: null, level: "as", topics: ["2", "3", "4"] },
+      { id: "3", name: "Team Project", kind: "practical", minutes: null, marks: null, level: "as", topics: ["3", "5"] },
+      { id: "4", name: "Cambridge Research Report", kind: "practical", minutes: null, marks: null, level: "a2", topics: ["3", "6"] },
+    ],
+    routes: { as: ["1", "2", "3"], a2: ["1", "2", "3", "4"] },
+  },
+  "0417": {
+    // ICT (Cambridge IGCSE)
+    papers: [
+      { id: "1", name: "Theory", kind: "written", minutes: 90, marks: 80, level: "any", topics: ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10"] },
+      { id: "2", name: "Document Production, Databases and Presentations", kind: "practical", minutes: 135, marks: 70, level: "any", topics: ["11", "12", "13", "14", "15", "17", "18", "19"] },
+      { id: "3", name: "Spreadsheets and Website Authoring", kind: "practical", minutes: 135, marks: 70, level: "any", topics: ["11", "12", "15", "16", "20", "21"] },
+    ],
+    routes: { igcse: ["1", "2", "3"] },
+  },
+  "9626": {
+    // Information Technology (Cambridge International AS & A Level)
+    papers: [
+      { id: "1", name: "Theory", kind: "written", minutes: 105, marks: 75, level: "as", topics: ["1", "2", "3", "4", "5", "6", "7", "8"] },
+      { id: "2", name: "Practical", kind: "practical", minutes: 150, marks: 90, level: "as", topics: ["9", "10", "11"] },
+      { id: "3", name: "Advanced Theory", kind: "written", minutes: 105, marks: 75, level: "a2", topics: ["12", "13", "14", "15", "16"] },
+      { id: "4", name: "Advanced Practical", kind: "practical", minutes: 150, marks: 90, level: "a2", topics: ["17", "18", "19", "20"] },
+    ],
+    routes: { as: ["1", "2"], a2: ["1", "2", "3", "4"] },
+  },
+  "0400": {
+    // Art and Design (Cambridge IGCSE)
+    papers: [
+      { id: "1", name: "Coursework", kind: "coursework", minutes: null, marks: null, level: "any", topics: ["1", "2", "3", "4", "5"] },
+      { id: "2", name: "Externally Set Assignment", kind: "practical", minutes: 480, marks: null, level: "any", topics: ["1", "2", "3", "4", "5"] },
+    ],
+    routes: { igcse: ["1", "2"] },
+    note: "The Externally Set Assignment is 8 hours of supervised work after a preparation period.",
+  },
+  "9479": {
+    // Art and Design (Cambridge International AS & A Level)
+    papers: [
+      { id: "1", name: "Coursework", kind: "coursework", minutes: null, marks: null, level: "as", topics: ["1", "2", "3", "4", "5"] },
+      { id: "2", name: "Externally Set Assignment", kind: "practical", minutes: 900, marks: null, level: "as", topics: ["1", "2", "3", "4", "5"] },
+      { id: "3", name: "Personal Investigation", kind: "coursework", minutes: null, marks: null, level: "a2", topics: ["1", "2", "3", "4", "6"] },
+    ],
+    routes: { as: ["1", "2"], a2: ["1", "2", "3"] },
+    note: "The AS Externally Set Assignment is 15 hours of supervised work.",
+  },
+  "0445": {
+    // Design and Technology (Cambridge IGCSE)
+    papers: [
+      { id: "1", name: "Product Design", kind: "written", minutes: 75, marks: null, level: "any", topics: ["1", "2", "4", "5"] },
+      { id: "2", name: "Resistant Materials", kind: "written", minutes: 75, marks: null, level: "any", topics: ["2", "3", "4"] },
+      { id: "3", name: "Graphic Products", kind: "written", minutes: 75, marks: null, level: "any", topics: ["5", "4"] },
+      { id: "4", name: "Systems and Control", kind: "written", minutes: 75, marks: null, level: "any", topics: ["6", "3"] },
+      { id: "5", name: "Project", kind: "coursework", minutes: null, marks: null, level: "any", topics: ["1", "7"] },
+    ],
+    routes: { igcse: ["1", "2", "5"] },
+    note: "Paper 1, one of Papers 2, 3 or 4, and the project.",
+  },
+  "9705": {
+    // Design and Technology (Cambridge International AS & A Level)
+    papers: [
+      { id: "1", name: "Design and Technology", kind: "written", minutes: 180, marks: null, level: "as", topics: ["1", "2", "3", "4", "5", "6"] },
+      { id: "2", name: "Design and Make Project", kind: "coursework", minutes: null, marks: null, level: "as", topics: ["1", "7"] },
+      { id: "3", name: "Product Design", kind: "written", minutes: 180, marks: null, level: "a2", topics: ["1", "2", "3", "4", "8"] },
+      { id: "4", name: "Design and Make Project", kind: "coursework", minutes: null, marks: null, level: "a2", topics: ["1", "9"] },
+    ],
+    routes: { as: ["1", "2"], a2: ["1", "2", "3", "4"] },
+  },
+  "0549": {
+    // Hindi as a Second Language (Cambridge IGCSE)
+    papers: [
+      { id: "1", name: "Reading and Writing", kind: "written", minutes: 120, marks: null, level: "any", topics: ["1", "2", "3", "4"] },
+      { id: "2", name: "Listening", kind: "written", minutes: 50, marks: null, level: "any", topics: ["4", "5"] },
+      { id: "3", name: "Speaking", kind: "practical", minutes: 15, marks: null, level: "any", topics: ["3", "4", "6"] },
+    ],
+    routes: { igcse: ["1", "2", "3"] },
+  },
+  "0520": {
+    // French (Cambridge IGCSE)
+    papers: [
+      { id: "1", name: "Listening", kind: "written", minutes: 50, marks: null, level: "any", topics: ["1", "2", "3", "4", "5", "6"] },
+      { id: "2", name: "Reading", kind: "written", minutes: 60, marks: null, level: "any", topics: ["1", "2", "3", "4", "5", "6"] },
+      { id: "3", name: "Speaking", kind: "practical", minutes: 15, marks: null, level: "any", topics: ["1", "2", "3", "4", "5", "6"] },
+      { id: "4", name: "Writing", kind: "written", minutes: 60, marks: null, level: "any", topics: ["1", "2", "3", "4", "5", "6"] },
+    ],
+    routes: { igcse: ["1", "2", "3", "4"] },
+  },
 };
 
-export const KIND_LABEL = { mcq: "Multiple choice", written: "Written", practical: "Practical" };
+export const KIND_LABEL = { mcq: "Multiple choice", written: "Written", practical: "Practical", coursework: "Coursework" };
+
+/** Whether a timed past paper of it makes sense (not coursework, not a day-long assignment). */
+export const timedPaper = (p) => p.kind !== "coursework" && !(p.minutes > 240);
 
 /** The papers of a syllabus (by its code), or []. */
 export function papersOf(code) {

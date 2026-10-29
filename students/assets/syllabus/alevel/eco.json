@@ -75,6 +75,9 @@
         { "q": "A firm maximises profit where…", "o": ["MR = MC", "AR = AC", "TR is highest", "MC is lowest"], "a": 0, "why": "Producing one more unit would add more to cost than to revenue beyond that point." },
         { "q": "In perfect competition in the long run, firms earn…", "o": ["supernormal profit", "normal profit", "losses", "monopoly profit"], "a": 1, "why": "Free entry and exit remove supernormal profit." },
         { "q": "A natural monopoly arises because of…", "o": ["government licences only", "economies of scale so large that one firm has the lowest cost", "advertising", "price discrimination"], "a": 1, "why": "Examples include water and electricity grids." }
+      ],
+      "long": [
+        { "q": "Explain why a profit-maximising monopolist produces where marginal cost equals marginal revenue, and why this may be allocatively inefficient.", "marks": 4, "paper": "4", "scheme": ["B1: below MC = MR, extra units add more to revenue than cost", "B1: beyond it, extra units add more to cost than revenue", "B1: allocative efficiency needs P = MC", "B1: the monopolist's price is above MC, so output is restricted"] }
       ]
     },
     {
@@ -89,18 +92,27 @@
       "questions": [
         { "q": "The multiplier is larger when the marginal propensity to consume is…", "o": ["smaller", "larger", "zero", "negative"], "a": 1, "why": "In a closed economy without government, k = 1/(1 − MPC)." },
         { "q": "The natural rate of unemployment is associated with…", "o": ["cyclical unemployment", "frictional and structural unemployment", "zero unemployment", "seasonal unemployment only"], "a": 1, "why": "It exists when the labour market is in equilibrium." }
+      ],
+      "long": [
+        { "q": "Explain how the multiplier works when government spending rises by $10 billion and the marginal propensity to withdraw is 0.25.", "marks": 4, "paper": "4", "scheme": ["B1: multiplier = 1/MPW = 4", "B1: national income rises by $40 billion", "B1: each round of spending becomes someone's income, part of which is spent again", "B1: withdrawals (saving, tax, imports) stop it rising for ever"], "ans": "$40 billion" }
       ]
     },
     {
       "id": "10", "stage": "a2", "name": "Government macroeconomic intervention (A Level)",
       "questions": [
         { "q": "Quantitative easing means the central bank…", "o": ["raises interest rates", "buys financial assets to increase the money supply", "cuts government spending", "prints coins only"], "a": 1, "why": "It aims to lower long-term interest rates and boost spending." }
+      ],
+      "long": [
+        { "q": "Assess whether supply-side policies are better than demand-side policies at reducing unemployment.", "marks": 5, "paper": "4", "scheme": ["B1: supply-side: training, labour-market flexibility reduce structural unemployment", "B1: but they take time and may be costly", "B1: demand-side: fiscal or monetary expansion reduces cyclical unemployment quickly", "B1: but risk inflation and do not fix structural problems", "B1: a judgement depending on the cause of unemployment"] }
       ]
     },
     {
       "id": "11", "stage": "a2", "name": "International economic issues (A Level)",
       "questions": [
         { "q": "Which measure of development adjusts income for differences in prices between countries?", "o": ["Nominal GDP", "GDP at purchasing power parity", "Exports", "CPI"], "a": 1, "why": "PPP compares how much a unit of income buys in each country." }
+      ],
+      "long": [
+        { "q": "Explain the possible effects of a depreciation of a country's currency on its current account.", "marks": 4, "paper": "4", "scheme": ["B1: exports become cheaper abroad, imports dearer at home", "B1: export volumes rise, import volumes fall", "B1: the current account improves if PED for exports and imports is elastic (Marshall–Lerner)", "B1: J-curve: it may worsen first"] }
       ]
     }
   ]

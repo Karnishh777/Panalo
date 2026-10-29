@@ -1,0 +1,62 @@
+{
+  "subject": "gpaper",
+  "name": "English General Paper",
+  "board": "Cambridge International AS Level",
+  "code": "8021",
+  "topics": [
+    {
+      "id": "1", "name": "Essay: argument and structure", "stage": "as",
+      "questions": [
+        { "q": "A strong discursive essay", "o": ["answers the exact question with a clear, sustained line of argument", "lists everything known about the topic", "is mostly description", "avoids taking a view"], "a": 0, "why": "Relevance and a sustained argument earn the top marks." },
+        { "q": "Counter-arguments should be", "o": ["raised and then evaluated or rebutted", "ignored", "placed only in the conclusion", "given as much support as your own view without judgement"], "a": 0, "why": "Evaluation shows balance and judgement." },
+        { "q": "A good conclusion", "o": ["reaches a justified judgement on the question", "introduces a new argument", "repeats the introduction word for word", "apologises for the length"], "a": 0, "why": "It should follow from the argument." }
+      ],
+      "long": [
+        { "q": "'Social media does more harm than good to young people.' How far do you agree? (Plan and write in 75 minutes; mark yourself with this scheme.)", "marks": 6, "paper": "1", "scheme": ["B1: a clear position that answers 'how far', stated early", "B1: at least three developed arguments, each with specific evidence", "B1: counter-arguments raised and evaluated", "B1: a logical structure with linked paragraphs", "B1: a reasoned conclusion that follows from the argument", "B1: accurate, fluent and varied language"] }
+      ]
+    },
+    {
+      "id": "2", "name": "Economic, historical, moral, political and social topics", "stage": "as",
+      "questions": [
+        { "q": "Which is the best evidence to support a claim in a GP essay?", "o": ["a specific, relevant example with context", "'everyone knows that…'", "a personal feeling", "a dictionary definition"], "a": 0, "why": "Precise examples make arguments convincing." }
+      ]
+    },
+    {
+      "id": "3", "name": "Science, the environment and technology", "stage": "as",
+      "questions": [
+        { "q": "An essay on whether technology isolates people should", "o": ["weigh different kinds of technology and contexts", "describe how phones work", "argue only that it does", "list apps"], "a": 0, "why": "Qualified, nuanced judgements score well." }
+      ],
+      "long": [
+        { "q": "Evaluate the claim that governments, not individuals, should take the lead in tackling climate change. (Mark yourself with this scheme.)", "marks": 5, "paper": "1", "scheme": ["B1: defines the scope (which governments, which individuals)", "B1: argues the case for government action with examples", "B1: argues the case for individual action with examples", "B1: weighs the two and reaches a judgement", "B1: clear structure and accurate expression"] }
+      ]
+    },
+    {
+      "id": "4", "name": "Literature, language, the arts and media", "stage": "as",
+      "questions": [
+        { "q": "'To what extent' questions require", "o": ["a judgement on how far you agree", "a yes or no", "a narrative", "a definition only"], "a": 0, "why": "They ask for degree, not just a side." }
+      ]
+    },
+    {
+      "id": "5", "name": "Comprehension: reading for meaning", "stage": "as",
+      "questions": [
+        { "q": "'Explain in your own words' means", "o": ["paraphrase the meaning without lifting key words", "quote the passage", "give your opinion", "summarise the whole passage"], "a": 0, "why": "Lifting shows no understanding." }
+      ]
+    },
+    {
+      "id": "6", "name": "Comprehension: evaluating arguments and data", "stage": "as",
+      "questions": [
+        { "q": "When evaluating a source's reliability, consider", "o": ["its author, purpose, evidence and date", "its length", "its font", "how many people read it"], "a": 0, "why": "These affect how far it can be trusted." },
+        { "q": "A correlation in data shows", "o": ["that two things vary together, not necessarily cause and effect", "proof that one causes the other", "an error in the data", "the average"], "a": 0, "why": "Correlation is not causation." }
+      ],
+      "long": [
+        { "q": "A passage claims a new school timetable 'improved results' because exam averages rose the following year. Identify two weaknesses in this reasoning.", "marks": 4, "paper": "2", "scheme": ["B1: correlation is not causation: other factors may have changed", "B1: one year's data is too little to show a trend", "B1: a different cohort sat the exams, so results aren't directly comparable", "B1: no information on how big the rise was or whether it is significant"] }
+      ]
+    },
+    {
+      "id": "7", "name": "Language use: summary and accuracy", "stage": "as",
+      "questions": [
+        { "q": "Which is grammatically correct?", "o": ["Neither the teacher nor the students were late.", "Neither the teacher or the students was late.", "Neither the teacher nor the students was late, and.", "Neither of the teacher nor students were late."], "a": 0, "why": "Neither…nor; the verb agrees with the nearer subject (students → were)." }
+      ]
+    }
+  ]
+}

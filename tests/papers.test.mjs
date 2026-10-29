@@ -3,6 +3,7 @@ import { readFileSync } from "node:fs";
 import { DEFAULTS, toRow, cleanPapers } from "../students/js/model/profile.js";
 import * as P from "../students/js/model/plan.js";
 import * as PP from "../students/js/model/papers.js";
+import { subjectsFor } from "../students/js/model/subjects.js";
 
 let passed = 0;
 const failures = [];
@@ -23,7 +24,9 @@ const DAY = 86400000;
   ok("9702 Papers 1, 2 and 3 examine every AS topic", P.topicsInScope(phy, "as", ["1", "2", "3"]).length === phy.topics.filter((t) => t.stage !== "a2").length);
   ok("the usual AS route for 9709 is Papers 1 and 5", PP.defaultPapers("9709", "as").join() === "1,5");
   ok("AS students are offered only AS papers", PP.papersForLevel("9709", "as").map((p) => p.id).join() === "1,2,4,5");
-  ok("every paper names a kind and examines at least one topic", Object.entries(PP.SYLLABUS_PAPERS).every(([code, s]) => s.papers.every((p) => ["mcq", "written", "practical"].includes(p.kind))));
+  ok("every paper names a kind and examines at least one topic", Object.entries(PP.SYLLABUS_PAPERS).every(([code, s]) => s.papers.every((p) => ["mcq", "written", "practical", "coursework"].includes(p.kind))));
+  ok("coursework and day-long assignments get no timed past papers", !PP.timedPaper(PP.paperOf("0400", "1")) && !PP.timedPaper(PP.paperOf("0400", "2")) && PP.timedPaper(PP.paperOf("0606", "1")));
+  ok("every Cambridge subject in the setup has its papers", ["igcse1", "as"].every((st) => subjectsFor(st).every((x) => PP.papersOf(x.code).length > 0)), ["igcse1", "as"].flatMap((st) => subjectsFor(st).filter((x) => !PP.papersOf(x.code).length).map((x) => x.code)).join());
   ok("a paper's label", PP.paperLabel(PP.paperOf("9709", "5")) === "Paper 5 · Probability & Statistics 1");
   // every paper of every bank examines something
   const banks = { 9709: math, 9702: phy };

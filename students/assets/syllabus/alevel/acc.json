@@ -59,6 +59,9 @@
       "questions": [
         { "q": "A statement of cash flows classifies cash flows under…", "o": ["operating, investing and financing activities", "revenue and capital", "assets and liabilities", "fixed and variable"], "a": 0, "why": "IAS 7 uses these three headings." },
         { "q": "Goodwill arises when…", "o": ["a business is bought for more than the fair value of its net assets", "profits rise", "shares are issued", "assets are revalued"], "a": 0, "why": "It reflects reputation, customers and other unrecorded value." }
+      ],
+      "long": [
+        { "q": "Explain two limitations of using ratio analysis to compare two companies.", "marks": 4, "paper": "4", "scheme": ["B1: different accounting policies (e.g. depreciation) distort comparisons", "B1: explained", "B1: historical data may not reflect the future / window dressing", "B1: explained"] }
       ]
     },
     {
@@ -66,6 +69,9 @@
       "questions": [
         { "q": "A favourable materials price variance means…", "o": ["materials cost more than standard", "materials cost less than standard", "more materials were used", "sales rose"], "a": 1, "why": "Actual price below standard price saves money." },
         { "q": "A project's NPV is positive. This means…", "o": ["it should be rejected", "it earns more than the cost of capital", "it pays back in one year", "its IRR is zero"], "a": 1, "why": "Discounted inflows exceed outflows at the chosen rate." }
+      ],
+      "long": [
+        { "q": "A product has a standard of 2 kg of material at $5 per kg. 1000 units used 2100 kg costing $10 080. Calculate the material price and usage variances.", "marks": 4, "paper": "4", "scheme": ["M1: price variance = (5 − 10 080/2100) × 2100", "A1: = $420 favourable", "M1: usage variance = (2000 − 2100) × 5", "A1: = $500 adverse"], "ans": "$420 F; $500 A" }
       ]
     }
   ]

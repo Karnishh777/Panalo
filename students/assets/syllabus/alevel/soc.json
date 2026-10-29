@@ -41,6 +41,9 @@
       "questions": [
         { "q": "The hidden curriculum is…", "o": ["the timetable", "norms and values taught informally through school life", "secret exams", "the official syllabus"], "a": 1, "why": "For example, punctuality and obedience." },
         { "q": "Labelling theory in education suggests…", "o": ["teachers' expectations can affect pupils' achievement", "intelligence is fixed", "exams are fair", "only class matters"], "a": 0, "why": "It can create a self-fulfilling prophecy." }
+      ],
+      "long": [
+        { "q": "Explain how material deprivation may affect working-class students' achievement.", "marks": 4, "paper": "3", "scheme": ["B1: lack of resources, e.g. books, devices, quiet space", "B1: poor diet and housing affect health and attendance", "B1: may need to work part-time / leave education early", "B1: evidence or a sociologist, e.g. Douglas"] }
       ]
     },
     {
@@ -53,6 +56,9 @@
       "id": "6", "stage": "a2", "name": "Media",
       "questions": [
         { "q": "Agenda setting means the media…", "o": ["tells people what to think", "influences which issues people think about", "has no effect", "only reports facts"], "a": 1, "why": "Choosing what to cover shapes public priorities." }
+      ],
+      "long": [
+        { "q": "Assess the view that the media set the agenda for public debate.", "marks": 4, "paper": "4", "scheme": ["B1: agenda-setting: the media choose what is newsworthy (gatekeeping)", "B1: evidence, e.g. news values (Galtung and Ruge)", "B1: counter: audiences are active; social media lets the public set agendas", "B1: a supported judgement"] }
       ]
     },
     {
