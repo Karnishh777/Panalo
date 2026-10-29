@@ -1319,7 +1319,7 @@ try {
     check("a changed journey is refused", /changed after it was downloaded/.test(await b.textContent(".sheet .sheet-body")));
     await b.keyboard.press("Escape");
     await importOn(JSON.stringify(sealed));
-    await b.waitForTimeout(900);
+    await b.waitForFunction(() => window.__qa.db.student_profiles.find((r) => r.setup_at)?.prep_slots?.length === 2, null, { timeout: 10000 }).catch(() => {});
     await b.evaluate(() => window.__qa.ready).catch(() => {});
     const back = await b.evaluate(() => window.__qa.db.student_profiles.find((r) => r.setup_at));
     check("the same account brings its journey back", back?.prep_slots?.length === 2 && back?.weekend_plan === "ask", JSON.stringify(back?.prep_slots));
