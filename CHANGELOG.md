@@ -13,6 +13,16 @@ AI, runs as "Pan Lite" (our own planner code does the planning; the AI
 only where nothing else can).
 
 **0.2.0 (in progress)**
+- **Panalo Night, the new look (redesign stage 1)**: near-black with one
+  violet glow, frosted rounded cards, heavy display type (Inter Tight)
+  over Plus Jakarta Sans, and big pill buttons; the bottom bar floats on
+  phones. Today opens on "Today's climb": a real photo of a climber on a
+  mountain at night (Unsplash, credited in assets/photos/README.md) with a
+  ring for how much of today's plan is done and the next exam, and the
+  next step as the one card that glows. Night is the only look for now:
+  Glass, Signal and Verse are retired (a saved one opens as Night) and
+  the ember wallpaper is gone; Day, the light version, comes next. The
+  version before the redesign stays at students-old.panalo-5dk.pages.dev.
 - **Removed**: the intro film (with its score, voice-over and finale),
   the 0-to-100 gate on the landing, Drift, the weekly chronicle film,
   seasons, the time-lapse, and the link to Panalo Chat.

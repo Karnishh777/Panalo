@@ -1,0 +1,317 @@
+/* Panalo Night — the look (v0.2 redesign, "Night × Sport").
+ *
+ * Near-black with one violet glow; frosted cards; heavy display type and
+ * big pill buttons; mint for "done" and "known". The hero is a real photo of
+ * a climber on a mountain at night (assets/photos): every topic is a step up.
+ * Loaded last, so it wins over the older stylesheets. Glow marks the one
+ * thing to press, never decoration.
+ */
+
+html[data-look="night"] {
+  color-scheme: dark;
+  --bg: #0b0a12;
+  --bg-2: #100e1a;
+  --surface: rgba(255, 255, 255, 0.05);
+  --surface-2: rgba(23, 20, 38, 0.94);
+  --surface-3: rgba(255, 255, 255, 0.1);
+  --line: rgba(255, 255, 255, 0.08);
+  --line-2: rgba(255, 255, 255, 0.14);
+  --line-3: rgba(255, 255, 255, 0.26);
+  --text: #f4f2fb;
+  --text-2: #b4afc8;
+  --text-3: #8e89a3;
+
+  --violet: #9b8cff;
+  --violet-soft: #c7bdff;
+  --go: #6a58f2;
+  --go-hover: #7b6af7;
+  --mint: #5ee6b8;
+
+  --time: #f5b55e;
+  --focus: #9b8cff;
+  --signal: #9b8cff;
+  --world: #5ee6b8;
+  --archive: #e7d19b;
+  --drift: #ff9fc6;
+  --alert: #ff8f80;
+  --accent: #f4f2fb;
+  --on-accent: #0b0a12;
+
+  --f-display: "Inter Tight", "Segoe UI", system-ui, sans-serif;
+  --f-body: "Plus Jakarta Sans", "Segoe UI", system-ui, -apple-system, sans-serif;
+  --f-serif: "Instrument Serif", Georgia, serif;
+
+  --r-1: 10px;
+  --r-2: 18px;
+  --r-3: 26px;
+  --glass-card: rgba(255, 255, 255, 0.05);
+  --glow: 0 10px 34px -8px rgba(106, 88, 242, 0.65);
+}
+
+html[data-look="night"] body {
+  font-family: var(--f-body);
+}
+html[data-look="night"] body.in-app {
+  background:
+    radial-gradient(90% 45% at 50% -8%, rgba(106, 88, 242, 0.2), transparent 65%),
+    radial-gradient(60% 40% at 100% 100%, rgba(94, 230, 184, 0.05), transparent 70%),
+    var(--bg);
+  background-attachment: fixed;
+}
+
+/* ---- Bar and dock --------------------------------------------------------- */
+
+html[data-look="night"] .bar {
+  background: rgba(11, 10, 18, 0.72);
+  -webkit-backdrop-filter: blur(20px) saturate(150%);
+  backdrop-filter: blur(20px) saturate(150%);
+  border-bottom: 1px solid var(--line);
+}
+html[data-look="night"] .wm-name {
+  font-family: var(--f-display);
+  font-weight: 900;
+  letter-spacing: 0.01em;
+}
+html[data-look="night"] .bar-nav a {
+  font-weight: 600;
+}
+html[data-look="night"] .bar-nav a[aria-current="page"] {
+  background: var(--text);
+  color: var(--bg);
+}
+html[data-look="night"] .bar-nav a[aria-current="page"]::after {
+  display: none;
+}
+/* One look: no look switcher. */
+html[data-look="night"] .look-btn,
+html[data-look="night"] .look-menu {
+  display: none !important;
+}
+
+@media (max-width: 899px) {
+  html[data-look="night"] .dock {
+    inset: auto 12px calc(12px + env(safe-area-inset-bottom));
+    height: var(--dock-h);
+    padding: 0 6px;
+    border: 1px solid var(--line-2);
+    border-radius: 34px;
+    background: rgba(26, 22, 44, 0.9);
+    -webkit-backdrop-filter: blur(22px) saturate(160%);
+    backdrop-filter: blur(22px) saturate(160%);
+    box-shadow: 0 20px 50px -20px rgba(0, 0, 0, 0.9);
+  }
+  html[data-look="night"] .dock a,
+  html[data-look="night"] .dock button {
+    color: var(--text-2);
+    font-weight: 600;
+  }
+  html[data-look="night"] .dock a[aria-current="page"] {
+    color: var(--text);
+  }
+  html[data-look="night"] .dock a[aria-current="page"] .dock-glyph {
+    background: var(--text);
+    border-color: var(--text);
+    box-shadow: none;
+  }
+}
+
+/* ---- Headings and panels -------------------------------------------------- */
+
+html[data-look="night"] .s-head h1 {
+  font: 900 clamp(32px, 6vw, 52px) / 1 var(--f-display);
+  letter-spacing: -0.03em;
+}
+html[data-look="night"] .kicker {
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  color: var(--text-2);
+}
+html[data-look="night"] .panel {
+  padding: 18px 20px;
+  border: 1px solid var(--line);
+  border-radius: var(--r-3);
+  background: var(--glass-card);
+}
+html[data-look="night"] .panel + .panel {
+  margin-top: 14px;
+}
+html[data-look="night"] .panel-head h2 {
+  font: 700 12px var(--f-body);
+  letter-spacing: 0.1em;
+  color: var(--text-2);
+}
+
+/* ---- Buttons, chips, fields ----------------------------------------------- */
+
+html[data-look="night"] .btn {
+  font-weight: 700;
+}
+html[data-look="night"] .btn-primary {
+  background: var(--go);
+  color: #fff;
+  box-shadow: var(--glow);
+}
+html[data-look="night"] .btn-primary:hover:not(:disabled) {
+  background: var(--go-hover);
+}
+html[data-look="night"] .btn-ghost,
+html[data-look="night"] .chip {
+  background: rgba(255, 255, 255, 0.05);
+  border-color: var(--line-2);
+}
+html[data-look="night"] .chip[aria-checked="true"],
+html[data-look="night"] .chip[aria-pressed="true"],
+html[data-look="night"] .chip.on {
+  background: var(--text);
+  border-color: var(--text);
+  color: var(--bg);
+}
+html[data-look="night"] .input,
+html[data-look="night"] .field input,
+html[data-look="night"] .field select,
+html[data-look="night"] .field textarea {
+  background: rgba(255, 255, 255, 0.05);
+  border-color: var(--line-2);
+  border-radius: 14px;
+}
+html[data-look="night"] dialog.sheet,
+html[data-look="night"] .menu,
+html[data-look="night"] .toast {
+  background: var(--surface-2);
+  border-color: var(--line-2);
+  border-radius: var(--r-3);
+  -webkit-backdrop-filter: blur(24px) saturate(150%);
+  backdrop-filter: blur(24px) saturate(150%);
+}
+html[data-look="night"] :focus-visible {
+  outline-color: var(--violet);
+}
+
+/* ---- Today: the climb ----------------------------------------------------- */
+
+.today-hero {
+  display: none;
+}
+html[data-look="night"] .today-hero {
+  position: relative;
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 16px;
+  min-height: 300px;
+  margin: 0 calc(-1 * var(--gutter)) 18px;
+  padding: 0 var(--gutter) 6px;
+  overflow: hidden;
+  isolation: isolate;
+}
+html[data-look="night"] .today-hero::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -2;
+  background: url("../assets/photos/climb-night.webp") 50% 64% / cover no-repeat;
+}
+html[data-look="night"] .today-hero::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: linear-gradient(to bottom, rgba(11, 10, 18, 0.35) 0%, rgba(11, 10, 18, 0.05) 40%, var(--bg) 100%);
+}
+html[data-look="night"] .today-hero h2 {
+  margin: 0;
+  font: 900 clamp(38px, 9vw, 64px) / 0.96 var(--f-display);
+  letter-spacing: -0.03em;
+}
+/* The hero carries the date (or the next exam): no second date below. */
+html[data-look="night"] .now-head > .kicker {
+  display: none;
+}
+@media (min-width: 900px) {
+  html[data-look="night"] .today-hero {
+    min-height: 340px;
+    margin: 0 0 22px;
+    padding: 0 32px 18px;
+    border-radius: var(--r-3);
+  }
+  html[data-look="night"] .today-hero::before {
+    background-position: 50% 58%;
+  }
+}
+html[data-look="night"] .today-hero .kicker {
+  color: #dad6ea;
+}
+.climb-ring {
+  position: relative;
+  flex: none;
+  width: 92px;
+  height: 92px;
+}
+.climb-ring svg {
+  display: block;
+}
+.climb-ring .ring-track {
+  fill: rgba(11, 10, 18, 0.55);
+  stroke: rgba(255, 255, 255, 0.14);
+}
+.climb-ring .ring-fill {
+  fill: none;
+  stroke: var(--violet, #9b8cff);
+  stroke-linecap: round;
+  filter: drop-shadow(0 0 6px rgba(139, 124, 255, 0.85));
+  transition: stroke-dasharray var(--dur-3) var(--ease-out);
+}
+.climb-ring span {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-content: center;
+  text-align: center;
+  line-height: 1.1;
+}
+.climb-ring b {
+  font: 800 20px var(--f-display);
+}
+.climb-ring small {
+  font-size: 10px;
+  color: var(--text-2);
+}
+/* The next step: the one card that glows. */
+html[data-look="night"] .now-step {
+  padding: 18px;
+  border-radius: var(--r-3);
+  background: linear-gradient(140deg, rgba(139, 124, 255, 0.24), rgba(255, 255, 255, 0.04));
+  border: 1px solid rgba(155, 140, 255, 0.38);
+}
+html[data-look="night"] .now-step .step-label {
+  color: var(--violet-soft);
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  font-size: 12px;
+}
+html[data-look="night"] .now-step b {
+  font: 800 clamp(20px, 4.6vw, 26px) / 1.1 var(--f-display);
+  letter-spacing: -0.01em;
+}
+html[data-look="night"] .now-step .btn-primary {
+  --h: 52px;
+  padding: 0 26px;
+  font: 800 17px var(--f-display);
+}
+/* Calm-by-default still holds: no glow when motion is reduced. */
+html[data-look="night"][data-motion="reduce"] .btn-primary,
+html[data-look="night"][data-motion="reduce"] .climb-ring .ring-fill {
+  box-shadow: none;
+  filter: none;
+}
+@media (prefers-reduced-motion: reduce) {
+  .climb-ring .ring-fill {
+    transition: none;
+  }
+}
+
+/* The painted ember wallpaper belongs to the old looks: Night has its photo. */
+html[data-look="night"] .wall {
+  display: none;
+}

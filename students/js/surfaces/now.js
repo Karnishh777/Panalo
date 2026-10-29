@@ -28,6 +28,7 @@ let root;
 let orbitSlot;
 let logEl;
 let greetEl;
+let heroEl;
 let subEl;
 let stepEl;
 let globe = null;
@@ -332,7 +333,47 @@ let greetPan = null;
 function panFor(name, pose, cls, size) {
   return artImg(name, { cls: `pan ${cls}` }) || Object.assign(createPan({ size, pose }).canvas, { className: `pan pan-live ${cls}` });
 }
+// Today's climb (the Night look): how much of today's plan is done, as a
+// ring over the photo. Done = minutes studied today; the rest = the plan's
+// blocks still to come.
+function renderHero() {
+  if (!heroEl) return;
+  const now = Date.now();
+  const done = focusedToday(now);
+  const left = (currentPlan({ now, days: 1 })[0]?.blocks || []).reduce((n, b) => n + b.minutes, 0);
+  const total = done + left;
+  const pct = total ? Math.min(100, Math.round((done / total) * 100)) : 0;
+  const C = 2 * Math.PI * 38;
+  const exam = countdowns(store.events, now).find((c) => c.days >= 0);
+  heroEl.replaceChildren(
+    el("div", {}, [el("p", { class: "kicker", text: exam ? `${exam.title} ${exam.days === 0 ? "today" : exam.days === 1 ? "tomorrow" : `in ${exam.days} days`}` : longDate(new Date()) }), el("h2", {}, ["Today's", el("br"), "climb"])]),
+    el("div", { class: "climb-ring", role: "img", "aria-label": total ? `${pct}% of today's plan done: ${done} of ${total} minutes` : "Nothing planned today" }, [
+      el("span", {}, [el("b", { text: total ? `${pct}%` : "—" }), el("small", { text: total ? `${done} of ${total} min` : "no plan yet" })]),
+    ])
+  );
+  // SVG needs its own namespace (el() makes HTML elements).
+  const NS = "http://www.w3.org/2000/svg";
+  const svg = document.createElementNS(NS, "svg");
+  for (const [k, v] of [["width", "92"], ["height", "92"], ["viewBox", "0 0 92 92"], ["aria-hidden", "true"]]) svg.setAttribute(k, v);
+  const ring = (cls, dash) => {
+    const c = document.createElementNS(NS, "circle");
+    c.setAttribute("cx", "46");
+    c.setAttribute("cy", "46");
+    c.setAttribute("r", "38");
+    c.setAttribute("stroke-width", "7");
+    c.setAttribute("class", cls);
+    if (dash != null) {
+      c.setAttribute("stroke-dasharray", `${dash} ${C}`);
+      c.setAttribute("transform", "rotate(-90 46 46)");
+    }
+    return c;
+  };
+  svg.append(ring("ring-track"), ring("ring-fill", ((C * pct) / 100).toFixed(1)));
+  heroEl.querySelector(".climb-ring").prepend(svg);
+}
+
 function render() {
+  renderHero();
   if (!greetPan || (art("pan-idle") && greetPan.tagName === "CANVAS")) greetPan = panFor("pan-idle", "idle", "greet-pan", 64);
   greetEl.replaceChildren(greeting(), greetPan);
   renderOrbit();
@@ -343,6 +384,7 @@ export function mount(section, ctx) {
   navigate = ctx.navigate;
   root = el("div", { class: "now" });
   greetEl = el("h1");
+  heroEl = el("section", { class: "today-hero", "aria-label": "Today's climb" });
   subEl = el("p", { class: "s-sub" });
   stepEl = el("p", { class: "now-step", "aria-live": "polite" });
   const globeCanvas = el("canvas", { class: "orbit-world", role: "img", "aria-label": "Your world. Open World for what shapes it." });
@@ -352,6 +394,7 @@ export function mount(section, ctx) {
   const sleeper = el("div", { class: "now-sleeper", "aria-hidden": "true" });
   onArt(() => sleeper.replaceChildren(panFor("pan-sleep", "sleep", "", 140)));
   root.append(
+    heroEl,
     el("div", { class: "s-head" }, [el("div", { class: "now-head" }, [el("p", { class: "kicker toned tone-time", text: longDate(new Date()) }), greetEl, subEl, stepEl, captureForm()])]),
     el("div", { class: "now-grid" }, [el("div", { class: "now-instrument" }, [sleeper, orbitSlot, el("p", { class: "orbit-legend faint" }, [legend("time", "classes & events"), legend("focus", "focus done"), legend("alert", "deadlines"), legend("hand", "now")])]), logEl])
   );
