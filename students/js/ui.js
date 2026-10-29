@@ -44,10 +44,10 @@ let sheetCount = 0;
  * focus returned to whatever opened it, a bottom sheet on phones.
  * @param {{title: string, lead?: string, body?: Node|Node[], actions?: Array<{label: string, kind?: string, onClick?: Function, close?: boolean, id?: string}>, wide?: boolean, onClose?: Function, form?: boolean}} opts
  */
-export function openSheet({ title, lead, body = [], actions = [], wide = false, onClose, form = true } = {}) {
+export function openSheet({ title, lead, body = [], actions = [], wide = false, onClose, form = true, cls = "" } = {}) {
   const id = `sheet-${++sheetCount}`;
   const opener = document.activeElement;
-  const dialog = el("dialog", { class: `sheet${wide ? " wide" : ""}`, "aria-labelledby": `${id}-t` });
+  const dialog = el("dialog", { class: `sheet${wide ? " wide" : ""}${cls ? ` ${cls}` : ""}`, "aria-labelledby": `${id}-t` });
   const content = el(form ? "form" : "div", { class: "sheet-inner", novalidate: form ? "" : null, method: form ? "dialog" : null });
   const closeBtn = el("button", { class: "icon-btn sm", type: "button", "aria-label": "Close", text: "✕", onClick: () => close() });
   const head = el("div", { class: "sheet-head" }, [

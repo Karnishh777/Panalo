@@ -293,8 +293,7 @@ function examLine(v, now) {
 }
 
 // A subject: how ready, and its topics as dots, grey until met.
-function subjectCard(s, now) {
-  const v = subjectView(s, now);
+function subjectCard(s, now, v = subjectView(s, now)) {
   const colour = colourOf(s.id);
   const dots = v.own
     ? el("p", { class: "faint small", text: "No question bank for this subject yet: your plan gives it blocks of your own work." })
@@ -322,7 +321,7 @@ function subjectCard(s, now) {
         })
       );
   const ready = v.readiness;
-  return el("article", { class: "pl-subject", style: `--subj:${colour}` }, [
+  return el("article", { class: "pl-subject", id: `pl-subj-${s.id}`, style: `--subj:${colour}` }, [
     el("div", { class: "pl-subject-head" }, [
       el("h3", {}, [v.name, v.code ? el("span", { class: "faint num", text: ` ${v.code}` }) : null]),
       examLine(v, now),
@@ -398,13 +397,33 @@ function checkInCard() {
 
 function subjects(now) {
   const p = profile();
+  const views = p.subjects.map((s) => [s, subjectView(s, now)]);
   return el("section", { class: "pl-subjects-wrap", "aria-labelledby": "pl-subj-h" }, [
     el("div", { class: "pl-row-head" }, [
       el("h2", { id: "pl-subj-h", class: "pl-h", text: "Your subjects" }),
       el("span", { class: "pl-legend faint small" }, [el("i", { class: "pl-topic" }), " not started ", el("i", { class: "pl-topic met", style: "--m:.85" }), " known ", el("i", { class: "pl-topic met due", style: "--m:.6" }), " review due"]),
     ]),
-    el("div", { class: "pl-subjects" }, p.subjects.map((s) => subjectCard(s, now))),
+    shelf(views),
+    el("div", { class: "pl-subjects" }, views.map(([s, v]) => subjectCard(s, now, v))),
   ]);
+}
+
+// The shelf: a spine per subject, filled as far as you're ready. A spine
+// takes you to its subject.
+function shelf(views) {
+  if (views.length < 2) return null;
+  return el(
+    "nav",
+    { class: "pl-shelf", "aria-label": "Your shelf" },
+    views.map(([s, v]) => {
+      const ready = v.own || !Number.isFinite(v.readiness) ? null : v.readiness;
+      return el(
+        "a",
+        { href: `#pl-subj-${s.id}`, class: "pl-spine", style: `--subj:${colourOf(s.id)};--fill:${ready == null ? 0 : Math.max(0.04, ready).toFixed(2)}`, "aria-label": ready == null ? v.name : `${v.name}: ${pct(ready)} ready`, onClick: (e) => { e.preventDefault(); document.getElementById(`pl-subj-${s.id}`)?.scrollIntoView({ behavior: "smooth", block: "start" }); } },
+        [el("i", { "aria-hidden": "true" }), el("span", { text: v.name })]
+      );
+    })
+  );
 }
 
 function results() {

@@ -253,7 +253,7 @@ function numbers(w) {
   let best = null;
   for (const [k, m] of byDay) if (!best || m > best.m) best = { k, m };
   return [
-    { v: String(s.ageDays + 1), u: s.ageDays === 0 ? "day old" : "days old", hint: "Since your universe began" },
+    { v: String(s.ageDays + 1), u: s.ageDays === 0 ? "day old" : "days old", hint: "Since your world began" },
     { v: formatMinutes(s.studyMinutesTotal), u: "of study", hint: "All time" },
     { v: best ? formatMinutes(best.m) : "—", u: "best day", hint: best ? parseDayKey(best.k).toLocaleDateString(undefined, { day: "numeric", month: "short" }) : "Not yet" },
     { v: longest ? formatMinutes(longest) : "—", u: "longest session", hint: "One sitting" },
