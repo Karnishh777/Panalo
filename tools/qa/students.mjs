@@ -112,7 +112,13 @@ try {
     check("no 0-to-100 gate holds the landing", !(await page.$(".gate")) && !(await page.evaluate(() => document.documentElement.hasAttribute("data-gate"))));
     // One look now: Panalo Night, with no switch to show.
     check("the landing opens in the Night look", (await page.evaluate(() => document.documentElement.dataset.look)) === "night");
-    check("…with no look switch (there's one look)", !(await page.isVisible("#land-look-open")));
+    check("…with no look switch on it", !(await page.isVisible("#land-look-open")));
+    {
+      const dayVisitor = await qa.open({ viewport: "mobile", path: "students/", storage: { "panalo.students.prefs": JSON.stringify({ look: "day" }) } });
+      await dayVisitor.waitForTimeout(600);
+      check("the welcome stays Night even where Day was chosen", (await dayVisitor.evaluate(() => document.documentElement.dataset.look)) === "night");
+      await dayVisitor.close();
+    }
     // The thread: a star per chapter, each a link; reaching a chapter lights it.
     const thread = await page.evaluate(() => {
       const hrefs = [...document.querySelectorAll(".thread-stars a")].map((a) => a.getAttribute("href"));
@@ -292,8 +298,11 @@ try {
     for (let i = 0; i < 3 && (await page.isVisible(".ci-chapter >> nth=0 >> .bc-option")); i++) await page.click(".ci-chapter >> nth=0 >> .bc-option[data-correct]");
     check("…with an optional quick check that corrects the rating", /3 of 3 right/.test(await page.textContent(".ci-chapter >> nth=0 >> .ci-verdict")) && (await page.getAttribute('.ci-chapter >> nth=0 >> .chip[aria-checked="true"]', "data-value")) === "strong");
     await page.click("#ci-next");
-    await page.waitForSelector(".check-in h2:has-text('Chemistry')", { timeout: 15000 }).catch(() => {});
-    check("checking in on all goes on to the next subject", /Chemistry/.test(await page.textContent(".check-in h2")));
+    // The next subject's sheet opens as this one closes: for a moment both
+    // are in the page, so wait for the new one rather than read the first.
+    const nextSubject = await page.waitForSelector(".check-in h2:has-text('Chemistry')", { timeout: 15000 }).then(() => true, () => false);
+    check("checking in on all goes on to the next subject", nextSubject);
+    await page.waitForFunction(() => document.querySelectorAll(".check-in").length === 1, null, { timeout: 5000 }).catch(() => {});
     await page.click("#ci-next");
     await page.click('.ci-taught .chip[data-value="1"]');
     await page.click('.ci-feel .chip[data-value="strong"]');
@@ -569,10 +578,14 @@ try {
 
   // ---- The look: Panalo Night (Glass, Signal and Verse are retired) ---------------
   check("the look is Panalo Night", (await page.evaluate(() => document.documentElement.dataset.look)) === "night");
-  check("there's no look switch in the bar (one look)", !(await page.isVisible("#look-open")));
+  check("there's no look switch in the bar (it's in Settings)", !(await page.isVisible("#look-open")));
   await page.evaluate(() => (location.hash = "#/settings"));
   await page.waitForTimeout(900);
-  check("Settings has no look picker while there's one look", (await page.locator(".settings-look").count()) === 0);
+  check("Settings offers two looks: Night and Day", (await page.locator(".settings-look .look-opt").count()) === 2 && (await page.locator(".settings-look .look-opt-day").count()) === 1);
+  await page.locator(".settings-look .look-opt-day").click();
+  const isDay = await page.waitForFunction(() => document.documentElement.dataset.look === "day", null, { timeout: 3000 }).then(() => true, () => false);
+  const dayBg = await page.evaluate(() => getComputedStyle(document.documentElement).getPropertyValue("--bg").trim());
+  check("choosing Day turns Panalo paper-white at once", isDay && dayBg === "#f6f4fb");
   const livelyBox = page.locator("label.setting", { hasText: "Lively effects" }).locator("input");
   check("Lively effects are off until you turn them on", !(await livelyBox.isChecked()));
   // Wait for the effect, not the checkbox. The switch sits low on the page,
@@ -602,6 +615,7 @@ try {
   await page.evaluate(() => (location.hash = "#/now"));
   await page.waitForTimeout(900);
   check("Today opens on the climb: the photo, with a ring for today's plan", await page.isVisible(".today-hero .climb-ring") && /Today's\s*climb/.test(await page.textContent(".today-hero h2")));
+  check("…and in Day the banner stays a night window, light words on the photo", (await page.evaluate(() => getComputedStyle(document.querySelector(".today-hero h2")).color)) === "rgb(244, 242, 251)");
   check("…and the ember wallpaper is gone", await page.evaluate(() => [...document.querySelectorAll(".wall")].every((w) => getComputedStyle(w).display === "none")));
 
   // Reload: the session, the world and the data survive.
@@ -609,7 +623,7 @@ try {
   await page.waitForSelector("#app:not([hidden])", { timeout: 15000 });
   await page.waitForTimeout(800);
   check("the session and data survive a reload", /Kepler QA|alex/.test(await page.textContent("#me-menu")) && (await page.evaluate(() => window.__qa.db.focus_sessions.length)) === 1);
-  check("Night is set before the first paint after a reload", (await page.evaluate(() => document.documentElement.dataset.look)) === "night");
+  check("Day is set before the first paint after a reload", (await page.evaluate(() => document.documentElement.dataset.look)) === "day");
   // A retired look saved before the redesign opens as Night.
   await page.evaluate(() => {
     const p = JSON.parse(localStorage.getItem("panalo.students.prefs") || "{}");
@@ -1311,15 +1325,19 @@ try {
     const importOn = async (text) => {
       await b.evaluate(() => import("/students/js/journey.js").then((m) => m.openImport()));
       await b.setInputFiles("#journey-file", { name: "journey.json", mimeType: "application/json", buffer: Buffer.from(text) });
-      await b.waitForTimeout(200);
+      // The file is read before it can be brought back: wait for its verdict.
+      await b.waitForFunction(() => document.querySelector("dialog.sheet[open] p[aria-live]")?.textContent.trim(), null, { timeout: 5000 }).catch(() => {});
       await b.click("#journey-import-go");
       await b.waitForTimeout(400);
     };
     await importOn(changed);
     check("a changed journey is refused", /changed after it was downloaded/.test(await b.textContent(".sheet .sheet-body")));
     await b.keyboard.press("Escape");
+    // Bringing it back reloads the page: wait for that reload to finish.
+    const reloaded = b.waitForEvent("load", { timeout: 10000 }).catch(() => {});
     await importOn(JSON.stringify(sealed));
-    await b.waitForFunction(() => window.__qa.db.student_profiles.find((r) => r.setup_at)?.prep_slots?.length === 2, null, { timeout: 10000 }).catch(() => {});
+    await reloaded;
+    await b.waitForSelector("#app:not([hidden])", { timeout: 15000 }).catch(() => {});
     await b.evaluate(() => window.__qa.ready).catch(() => {});
     const back = await b.evaluate(() => window.__qa.db.student_profiles.find((r) => r.setup_at));
     check("the same account brings its journey back", back?.prep_slots?.length === 2 && back?.weekend_plan === "ask", JSON.stringify(back?.prep_slots));

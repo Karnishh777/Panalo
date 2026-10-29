@@ -229,22 +229,6 @@
   min-width: 0;
 }
 
-/* Signal draws its squares as LEDs; Verse prints them. */
-html[data-look="signal"] .fm-cell {
-  border-radius: 50%;
-}
-html[data-look="signal"] .fm-cell.l1,
-html[data-look="signal"] .fm-cell.l2 { background: rgba(255, 255, 255, 0.35); }
-html[data-look="signal"] .fm-cell.l3 { background: rgba(255, 255, 255, 0.75); }
-html[data-look="signal"] .fm-cell.l4 { background: var(--red); box-shadow: 0 0 6px var(--red); }
-html[data-look="verse"] .fm-cell {
-  border-radius: 0;
-}
-html[data-look="verse"] .fm-cell.l4 {
-  background: var(--hot);
-  box-shadow: 2px 2px 0 var(--cyan);
-}
-
 /* ===== Calendar: the month ================================================== */
 
 .month {

@@ -3,25 +3,21 @@
 //   night   Panalo Night -- near-black, one violet glow, frosted cards,
 //           heavy display type and big pill buttons, over a real photo of a
 //           climber on a mountain at night: every topic is a step up.
+//   day     The same Panalo in daylight: paper-white, ink type, the same
+//           violet for the one thing to press. The photos stay night:
+//           windows onto the climb.
 //
-// Glass, Signal and Verse were retired in v0.2 (their CSS goes in a later
-// clean-up); a saved one opens as Night. Day, the light version, follows.
+// Glass, Signal and Verse were retired in v0.2; a saved one opens as Night.
+// The fonts are the site's own (css/fonts.css), the same for both.
 // The look is a preference (prefs.look), so it follows you to every device.
 // boot.js applies it before the first paint (no flash of the wrong look);
-// this module switches it live, with a transition in the new look's style.
+// this module switches it live, with a short fade.
 import { getPrefs, setPrefs, el } from "./ui.js";
 import { reducedMotion, lively } from "./motion.js";
 
-// One type system: Inter Tight for display, Plus Jakarta Sans for reading.
-const NIGHT_FONTS = "family=Inter+Tight:wght@600..900&family=Plus+Jakarta+Sans:wght@400..700&family=Instrument+Serif:ital@0;1";
-
 export const LOOKS = [
-  {
-    id: "night",
-    name: "Night",
-    line: "Dark, one violet glow, a mountain to climb.",
-    fonts: NIGHT_FONTS,
-  },
+  { id: "night", name: "Night", line: "Dark, one violet glow, a mountain to climb." },
+  { id: "day", name: "Day", line: "Paper-white and ink, for bright rooms and daytime." },
 ];
 export const DEFAULT_LOOK = "night";
 const EVENT = "panalo:look";
@@ -33,23 +29,19 @@ export function getLook() {
   return LOOKS.some((l) => l.id === id) ? id : DEFAULT_LOOK;
 }
 
-/** The fonts a look needs, loaded once each (boot.js loads the first). */
-export function loadFonts(id) {
-  const look = byId(id);
-  if (document.querySelector(`link[data-look-fonts="${look.id}"]`)) return;
-  const link = document.createElement("link");
-  link.rel = "stylesheet";
-  link.href = `https://fonts.googleapis.com/css2?${look.fonts}&display=swap`;
-  link.dataset.lookFonts = look.id;
-  document.head.append(link);
+// Day is for the app: signed out (the welcome, signing in) is always Night.
+let inside = document.documentElement.dataset.boot === "app";
+export function setInside(on) {
+  inside = !!on;
+  applyLook();
 }
 
 /** Put a look on the page now (no saving, no transition). */
 export function applyLook(id = getLook()) {
-  const look = byId(id);
-  loadFonts(look.id);
+  const look = byId(id === "day" && !inside ? "night" : id);
   if (document.documentElement.dataset.look !== look.id) {
     document.documentElement.dataset.look = look.id;
+    document.querySelector('meta[name="theme-color"]')?.setAttribute("content", look.id === "day" ? "#f6f4fb" : "#0b0a12");
     window.dispatchEvent(new CustomEvent(EVENT, { detail: look.id }));
   }
 }
@@ -65,7 +57,6 @@ export function setLook(id) {
   const look = byId(id);
   if (look.id === getLook() && document.documentElement.dataset.look === look.id) return;
   setPrefs({ look: look.id });
-  loadFonts(look.id);
   if (reducedMotion()) return applyLook(look.id);
   // The cut: each look arrives in its own way, covering the swap.
   const veil = el("div", { class: `look-cut look-cut-${look.id}`, "aria-hidden": "true" }, [el("i"), el("i"), el("i")]);

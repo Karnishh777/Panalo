@@ -7,7 +7,7 @@
  * thing to press, never decoration.
  */
 
-html[data-look="night"] {
+html[data-look] {
   color-scheme: dark;
   --bg: #0b0a12;
   --bg-2: #100e1a;
@@ -48,10 +48,10 @@ html[data-look="night"] {
   --glow: 0 10px 34px -8px rgba(106, 88, 242, 0.65);
 }
 
-html[data-look="night"] body {
+html[data-look] body {
   font-family: var(--f-body);
 }
-html[data-look="night"] body.in-app {
+html[data-look] body.in-app {
   background:
     radial-gradient(90% 45% at 50% -8%, rgba(106, 88, 242, 0.2), transparent 65%),
     radial-gradient(60% 40% at 100% 100%, rgba(94, 230, 184, 0.05), transparent 70%),
@@ -61,35 +61,35 @@ html[data-look="night"] body.in-app {
 
 /* ---- Bar and dock --------------------------------------------------------- */
 
-html[data-look="night"] .bar {
+html[data-look] .bar {
   background: rgba(11, 10, 18, 0.72);
   -webkit-backdrop-filter: blur(20px) saturate(150%);
   backdrop-filter: blur(20px) saturate(150%);
   border-bottom: 1px solid var(--line);
 }
-html[data-look="night"] .wm-name {
+html[data-look] .wm-name {
   font-family: var(--f-display);
   font-weight: 900;
   letter-spacing: 0.01em;
 }
-html[data-look="night"] .bar-nav a {
+html[data-look] .bar-nav a {
   font-weight: 600;
 }
-html[data-look="night"] .bar-nav a[aria-current="page"] {
+html[data-look] .bar-nav a[aria-current="page"] {
   background: var(--text);
   color: var(--bg);
 }
-html[data-look="night"] .bar-nav a[aria-current="page"]::after {
+html[data-look] .bar-nav a[aria-current="page"]::after {
   display: none;
 }
 /* One look: no look switcher. */
-html[data-look="night"] .look-btn,
-html[data-look="night"] .look-menu {
+html[data-look] .look-btn,
+html[data-look] .look-menu {
   display: none !important;
 }
 
 @media (max-width: 899px) {
-  html[data-look="night"] .dock {
+  html[data-look] .dock {
     inset: auto 12px calc(12px + env(safe-area-inset-bottom));
     height: var(--dock-h);
     padding: 0 6px;
@@ -100,15 +100,15 @@ html[data-look="night"] .look-menu {
     backdrop-filter: blur(22px) saturate(160%);
     box-shadow: 0 20px 50px -20px rgba(0, 0, 0, 0.9);
   }
-  html[data-look="night"] .dock a,
-  html[data-look="night"] .dock button {
+  html[data-look] .dock a,
+  html[data-look] .dock button {
     color: var(--text-2);
     font-weight: 600;
   }
-  html[data-look="night"] .dock a[aria-current="page"] {
+  html[data-look] .dock a[aria-current="page"] {
     color: var(--text);
   }
-  html[data-look="night"] .dock a[aria-current="page"] .dock-glyph {
+  html[data-look] .dock a[aria-current="page"] .dock-glyph {
     background: var(--text);
     border-color: var(--text);
     box-shadow: none;
@@ -117,25 +117,25 @@ html[data-look="night"] .look-menu {
 
 /* ---- Headings and panels -------------------------------------------------- */
 
-html[data-look="night"] .s-head h1 {
+html[data-look] .s-head h1 {
   font: 900 clamp(32px, 6vw, 52px) / 1 var(--f-display);
   letter-spacing: -0.03em;
 }
-html[data-look="night"] .kicker {
+html[data-look] .kicker {
   font-weight: 700;
   letter-spacing: 0.1em;
   color: var(--text-2);
 }
-html[data-look="night"] .panel {
+html[data-look] .panel {
   padding: 18px 20px;
   border: 1px solid var(--line);
   border-radius: var(--r-3);
   background: var(--glass-card);
 }
-html[data-look="night"] .panel + .panel {
+html[data-look] .panel + .panel {
   margin-top: 14px;
 }
-html[data-look="night"] .panel-head h2 {
+html[data-look] .panel-head h2 {
   font: 700 12px var(--f-body);
   letter-spacing: 0.1em;
   color: var(--text-2);
@@ -143,47 +143,47 @@ html[data-look="night"] .panel-head h2 {
 
 /* ---- Buttons, chips, fields ----------------------------------------------- */
 
-html[data-look="night"] .btn {
+html[data-look] .btn {
   font-weight: 700;
 }
-html[data-look="night"] .btn-primary {
+html[data-look] .btn-primary {
   background: var(--go);
   color: #fff;
   box-shadow: var(--glow);
 }
-html[data-look="night"] .btn-primary:hover:not(:disabled) {
+html[data-look] .btn-primary:hover:not(:disabled) {
   background: var(--go-hover);
 }
-html[data-look="night"] .btn-ghost,
-html[data-look="night"] .chip {
+html[data-look] .btn-ghost,
+html[data-look] .chip {
   background: rgba(255, 255, 255, 0.05);
   border-color: var(--line-2);
 }
-html[data-look="night"] .chip[aria-checked="true"],
-html[data-look="night"] .chip[aria-pressed="true"],
-html[data-look="night"] .chip.on {
+html[data-look] .chip[aria-checked="true"],
+html[data-look] .chip[aria-pressed="true"],
+html[data-look] .chip.on {
   background: var(--text);
   border-color: var(--text);
   color: var(--bg);
 }
-html[data-look="night"] .input,
-html[data-look="night"] .field input,
-html[data-look="night"] .field select,
-html[data-look="night"] .field textarea {
+html[data-look] .input,
+html[data-look] .field input,
+html[data-look] .field select,
+html[data-look] .field textarea {
   background: rgba(255, 255, 255, 0.05);
   border-color: var(--line-2);
   border-radius: 14px;
 }
-html[data-look="night"] dialog.sheet,
-html[data-look="night"] .menu,
-html[data-look="night"] .toast {
+html[data-look] dialog.sheet,
+html[data-look] .menu,
+html[data-look] .toast {
   background: var(--surface-2);
   border-color: var(--line-2);
   border-radius: var(--r-3);
   -webkit-backdrop-filter: blur(24px) saturate(150%);
   backdrop-filter: blur(24px) saturate(150%);
 }
-html[data-look="night"] :focus-visible {
+html[data-look] :focus-visible {
   outline-color: var(--violet);
 }
 
@@ -192,7 +192,7 @@ html[data-look="night"] :focus-visible {
 .today-hero {
   display: none;
 }
-html[data-look="night"] .today-hero {
+html[data-look] .today-hero {
   position: relative;
   display: flex;
   align-items: flex-end;
@@ -204,42 +204,42 @@ html[data-look="night"] .today-hero {
   overflow: hidden;
   isolation: isolate;
 }
-html[data-look="night"] .today-hero::before {
+html[data-look] .today-hero::before {
   content: "";
   position: absolute;
   inset: 0;
   z-index: -2;
   background: url("../assets/photos/climb-night.webp") 50% 64% / cover no-repeat;
 }
-html[data-look="night"] .today-hero::after {
+html[data-look] .today-hero::after {
   content: "";
   position: absolute;
   inset: 0;
   z-index: -1;
   background: linear-gradient(to bottom, rgba(11, 10, 18, 0.35) 0%, rgba(11, 10, 18, 0.05) 40%, var(--bg) 100%);
 }
-html[data-look="night"] .today-hero h2 {
+html[data-look] .today-hero h2 {
   margin: 0;
   font: 900 clamp(38px, 9vw, 64px) / 0.96 var(--f-display);
   letter-spacing: -0.03em;
 }
 /* The hero carries the date (or the next exam): no second date below. */
-html[data-look="night"] .now-head > .kicker {
+html[data-look] .now-head > .kicker {
   display: none;
 }
 @media (min-width: 900px) {
-  html[data-look="night"] .today-hero {
+  html[data-look] .today-hero {
     min-height: 340px;
     margin: 0 0 22px;
     padding: 0 32px 18px;
     border-radius: var(--r-3);
   }
-  html[data-look="night"] .today-hero::before {
+  html[data-look] .today-hero::before {
     background-image: url("../assets/photos/climb-wide.webp");
     background-position: 50% 20%;
   }
 }
-html[data-look="night"] .today-hero .kicker {
+html[data-look] .today-hero .kicker {
   color: #dad6ea;
 }
 .climb-ring {
@@ -278,31 +278,31 @@ html[data-look="night"] .today-hero .kicker {
   color: var(--text-2);
 }
 /* The next step: the one card that glows. */
-html[data-look="night"] .now-step {
+html[data-look] .now-step {
   padding: 18px;
   border-radius: var(--r-3);
   background: linear-gradient(140deg, rgba(139, 124, 255, 0.24), rgba(255, 255, 255, 0.04));
   border: 1px solid rgba(155, 140, 255, 0.38);
 }
-html[data-look="night"] .now-step .step-label {
+html[data-look] .now-step .step-label {
   color: var(--violet-soft);
   font-weight: 700;
   letter-spacing: 0.08em;
   text-transform: uppercase;
   font-size: 12px;
 }
-html[data-look="night"] .now-step b {
+html[data-look] .now-step b {
   font: 800 clamp(20px, 4.6vw, 26px) / 1.1 var(--f-display);
   letter-spacing: -0.01em;
 }
-html[data-look="night"] .now-step .btn-primary {
+html[data-look] .now-step .btn-primary {
   --h: 52px;
   padding: 0 26px;
   font: 800 17px var(--f-display);
 }
 /* Calm-by-default still holds: no glow when motion is reduced. */
-html[data-look="night"][data-motion="reduce"] .btn-primary,
-html[data-look="night"][data-motion="reduce"] .climb-ring .ring-fill {
+html[data-look][data-motion="reduce"] .btn-primary,
+html[data-look][data-motion="reduce"] .climb-ring .ring-fill {
   box-shadow: none;
   filter: none;
 }
@@ -313,87 +313,87 @@ html[data-look="night"][data-motion="reduce"] .climb-ring .ring-fill {
 }
 
 /* The painted ember wallpaper belongs to the old looks: Night has its photo. */
-html[data-look="night"] .wall {
+html[data-look] .wall {
   display: none;
 }
 
 /* ---- Welcome: the climber, and one line ----------------------------------- */
 
-html[data-look="night"] body:not(.in-app) {
+html[data-look] body:not(.in-app) {
   background: var(--bg);
 }
 /* The HUD, chapter thread, painted wall and hero globe belong to the old
    looks. */
-html[data-look="night"] #landing .hud,
-html[data-look="night"] #landing .thread,
-html[data-look="night"] .hero-stage,
-html[data-look="night"] .hero-drift,
-html[data-look="night"] .hero .ignition,
-html[data-look="night"] .hero-copy::before {
+html[data-look] #landing .hud,
+html[data-look] #landing .thread,
+html[data-look] .hero-stage,
+html[data-look] .hero-drift,
+html[data-look] .hero .ignition,
+html[data-look] .hero-copy::before {
   display: none;
 }
-html[data-look="night"] .land-bar {
+html[data-look] .land-bar {
   background: linear-gradient(to bottom, rgba(11, 10, 18, 0.7), transparent);
   border: 0;
 }
-html[data-look="night"] .hero,
-html[data-look="night"] .hero.painted {
+html[data-look] .hero,
+html[data-look] .hero.painted {
   display: flex;
   align-items: flex-end;
   padding: 120px var(--gutter) 96px;
   background: var(--bg);
   isolation: isolate;
 }
-html[data-look="night"] .hero::before,
-html[data-look="night"] .hero::after {
+html[data-look] .hero::before,
+html[data-look] .hero::after {
   content: "";
   position: absolute;
   inset: 0;
   pointer-events: none;
 }
-html[data-look="night"] .hero::before {
+html[data-look] .hero::before {
   z-index: -2;
   background: url("../assets/photos/climb-night.webp") 50% 30% / cover no-repeat;
 }
-html[data-look="night"] .hero::after {
+html[data-look] .hero::after {
   z-index: -1;
   background:
     linear-gradient(to bottom, rgba(11, 10, 18, 0.45) 0%, rgba(11, 10, 18, 0) 30%, rgba(11, 10, 18, 0.55) 62%, var(--bg) 100%),
     radial-gradient(80% 50% at 50% 100%, rgba(106, 88, 242, 0.22), transparent 70%);
 }
-html[data-look="night"] .hero-copy {
+html[data-look] .hero-copy {
   max-width: 640px;
 }
-html[data-look="night"] .hero-kicker {
+html[data-look] .hero-kicker {
   color: var(--violet-soft);
   letter-spacing: 0.06em;
 }
-html[data-look="night"] .hero-title {
+html[data-look] .hero-title {
   margin: 14px 0 16px;
   font: 900 clamp(46px, 11vw, 96px) / 0.95 var(--f-display);
   letter-spacing: -0.035em;
 }
-html[data-look="night"] .hero-sub {
+html[data-look] .hero-sub {
   max-width: 34ch;
   font-size: clamp(16px, 2vw, 19px);
   line-height: 1.5;
   color: var(--text-2);
 }
-html[data-look="night"] .hero-actions {
+html[data-look] .hero-actions {
   margin-top: 26px;
 }
-html[data-look="night"] .hero-actions .btn {
+html[data-look] .hero-actions .btn {
   --h: 56px;
   border-radius: 28px;
   padding: 0 28px;
   font: 800 17px var(--f-display);
 }
 @media (max-width: 599px) {
-  html[data-look="night"] .hero-actions {
+  html[data-look] .hero-actions {
     flex-direction: column;
     align-items: stretch;
   }
-  html[data-look="night"] .hero-actions .btn-ghost {
+  html[data-look] .hero-actions .btn-ghost {
     background: none;
     border-color: transparent;
     color: var(--violet-soft);
@@ -401,28 +401,28 @@ html[data-look="night"] .hero-actions .btn {
 }
 @media (min-width: 900px) {
   /* Wide screens: the words on the left, the whole climb on the right. */
-  html[data-look="night"] .hero::before {
+  html[data-look] .hero::before {
     left: 38%;
     background-position: 50% 88%;
   }
-  html[data-look="night"] .hero::after {
+  html[data-look] .hero::after {
     background:
       linear-gradient(90deg, var(--bg) 38%, rgba(11, 10, 18, 0.55) 50%, rgba(11, 10, 18, 0) 66%),
       linear-gradient(to top, var(--bg) 0%, rgba(11, 10, 18, 0) 22%),
       radial-gradient(50% 60% at 20% 70%, rgba(106, 88, 242, 0.18), transparent 70%);
   }
-  html[data-look="night"] .hero {
+  html[data-look] .hero {
     align-items: center;
   }
 }
 
 /* ---- Focus: one lamp, one topic ------------------------------------------- */
 
-html[data-look="night"] body[data-view="study"].in-app {
+html[data-look] body[data-view="study"].in-app {
   background: var(--bg);
 }
 /* The lamp, blurred and dimmed: the photo sets the mood, never the focus. */
-html[data-look="night"] body[data-view="study"].in-app::before {
+html[data-look] body[data-view="study"].in-app::before {
   content: "";
   position: fixed;
   inset: -12px;
@@ -433,57 +433,57 @@ html[data-look="night"] body[data-view="study"].in-app::before {
   filter: blur(4px) brightness(0.7);
   pointer-events: none;
 }
-html[data-look="night"] .study-dial {
+html[data-look] .study-dial {
   width: min(68vw, 300px);
 }
-html[data-look="night"] .ring-track {
+html[data-look] .ring-track {
   fill: rgba(11, 10, 18, 0.55);
   stroke: rgba(255, 255, 255, 0.1);
   stroke-width: 9;
 }
-html[data-look="night"] .ring-arc {
+html[data-look] .ring-arc {
   stroke: var(--violet);
   stroke-width: 9;
   filter: drop-shadow(0 0 10px rgba(139, 124, 255, 0.85));
 }
-html[data-look="night"] .study[data-phase="rest"] .ring-arc {
+html[data-look] .study[data-phase="rest"] .ring-arc {
   stroke: var(--mint);
   filter: drop-shadow(0 0 10px rgba(94, 230, 184, 0.6));
 }
-html[data-look="night"] .ring-body {
+html[data-look] .ring-body {
   r: 6;
 }
-html[data-look="night"] .study-readout {
+html[data-look] .study-readout {
   font: 800 clamp(52px, 14vw, 72px) / 1 var(--f-display);
   letter-spacing: -0.03em;
   font-variant-numeric: tabular-nums;
 }
-html[data-look="night"] .study-phase {
+html[data-look] .study-phase {
   letter-spacing: 0.12em;
   color: var(--text-2);
 }
-html[data-look="night"] .study-center .btn-primary {
+html[data-look] .study-center .btn-primary {
   --h: 56px;
   min-width: 180px;
   border-radius: 28px;
   font: 800 17px var(--f-display);
 }
-html[data-look="night"][data-motion="reduce"] .ring-arc {
+html[data-look][data-motion="reduce"] .ring-arc {
   filter: none;
 }
 
 /* ---- Close the day: a page of a night journal ----------------------------- */
 
-html[data-look="night"] dialog.sheet-journal {
+html[data-look] dialog.sheet-journal {
   overflow: hidden;
 }
-html[data-look="night"] .sheet-journal .sheet-head {
+html[data-look] .sheet-journal .sheet-head {
   position: relative;
   isolation: isolate;
   margin: -1px -1px 0;
   padding-top: 64px;
 }
-html[data-look="night"] .sheet-journal .sheet-head::before {
+html[data-look] .sheet-journal .sheet-head::before {
   content: "";
   position: absolute;
   inset: 0;
@@ -493,12 +493,12 @@ html[data-look="night"] .sheet-journal .sheet-head::before {
     url("../assets/photos/summit-night.webp") 50% 40% / cover no-repeat;
   opacity: 0.9;
 }
-html[data-look="night"] .sheet-journal .sheet-head h2 {
+html[data-look] .sheet-journal .sheet-head h2 {
   font: 900 30px / 1 var(--f-display);
   letter-spacing: -0.02em;
 }
 /* Your own words, in your own hand. */
-html[data-look="night"] .sheet-journal input.ink {
+html[data-look] .sheet-journal input.ink {
   font: italic 21px / 1.3 var(--f-serif);
   background: transparent;
   border: 0;
@@ -506,23 +506,23 @@ html[data-look="night"] .sheet-journal input.ink {
   border-radius: 0;
   padding-inline: 2px;
 }
-html[data-look="night"] .sheet-journal input.ink:focus-visible {
+html[data-look] .sheet-journal input.ink:focus-visible {
   border-bottom-color: var(--violet);
   outline: none;
 }
-html[data-look="night"] .sheet-journal input.ink::placeholder {
+html[data-look] .sheet-journal input.ink::placeholder {
   color: var(--text-3);
 }
 
 /* ---- World: what shapes it, as tiles --------------------------------------- */
 
-html[data-look="night"] .legend {
+html[data-look] .legend {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 8px;
 }
-html[data-look="night"] .legend-row,
-html[data-look="night"] .legend-row:first-child {
+html[data-look] .legend-row,
+html[data-look] .legend-row:first-child {
   grid-template-columns: 1fr;
   grid-template-areas: "val" "name";
   gap: 4px;
@@ -531,22 +531,22 @@ html[data-look="night"] .legend-row:first-child {
   border-radius: var(--r-2);
   background: rgba(255, 255, 255, 0.04);
 }
-html[data-look="night"] .legend-swatch {
+html[data-look] .legend-swatch {
   display: none;
 }
-html[data-look="night"] .legend-val {
+html[data-look] .legend-val {
   grid-area: val;
   font: 800 20px / 1.1 var(--f-display);
   white-space: normal;
 }
-html[data-look="night"] .legend-row > div {
+html[data-look] .legend-row > div {
   grid-area: name;
 }
-html[data-look="night"] .legend-row b {
+html[data-look] .legend-row b {
   font-size: 13px;
   color: var(--text);
 }
-html[data-look="night"] .legend-row small {
+html[data-look] .legend-row small {
   display: block;
   margin-top: 2px;
   font-size: 11.5px;
@@ -555,24 +555,24 @@ html[data-look="night"] .legend-row small {
 
 /* ---- Settings: quiet rows, a clear switch ----------------------------------- */
 
-html[data-look="night"] .setting input[type="checkbox"] {
+html[data-look] .setting input[type="checkbox"] {
   width: 46px;
   height: 28px;
   border-radius: 14px;
 }
-html[data-look="night"] .setting input[type="checkbox"]::after {
+html[data-look] .setting input[type="checkbox"]::after {
   width: 22px;
   height: 22px;
   background: var(--text);
 }
-html[data-look="night"] .setting input[type="checkbox"]:checked {
+html[data-look] .setting input[type="checkbox"]:checked {
   background: var(--go);
   border-color: var(--go);
 }
-html[data-look="night"] .setting input[type="checkbox"]:checked::after {
+html[data-look] .setting input[type="checkbox"]:checked::after {
   background: #fff;
 }
-html[data-look="night"] .panel-head h2::after {
+html[data-look] .panel-head h2::after {
   display: none;
 }
 
@@ -632,16 +632,16 @@ html[data-look="night"] .panel-head h2::after {
   border-color: var(--violet);
   box-shadow: 0 0 18px rgba(139, 124, 255, 0.5);
 }
-html[data-look="night"] .wn-v {
+html[data-look] .wn-v {
   font-weight: 800;
   letter-spacing: -0.02em;
 }
 /* The climb to each paper: a thicker, glowing line up to your aim. */
-html[data-look="night"] .pl-ready .meter {
+html[data-look] .pl-ready .meter {
   height: 8px;
   border-radius: 4px;
 }
-html[data-look="night"] .pl-ready .meter i {
+html[data-look] .pl-ready .meter i {
   border-radius: 4px;
   box-shadow: 0 0 12px color-mix(in srgb, var(--subj) 60%, transparent);
 }

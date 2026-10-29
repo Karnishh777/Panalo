@@ -108,7 +108,7 @@ export function show() {
     el("div", { class: "s-head" }, [el("div", {}, [el("p", { class: "kicker toned tone-focus", text: "Settings" }), el("h1", { text: "How Panalo behaves for you" }), el("p", { class: "s-sub", text: `Signed in as @${state.currentUsername}${state.currentUser?.email ? ` · ${state.currentUser.email}` : ""}. Your settings follow you to every device you sign in on.` })])]),
     LOOKS.length < 2 ? null : el("section", { class: "panel tone-world settings-look" }, [
       el("div", { class: "panel-head" }, [el("h2", { text: "Look" })]),
-      el("p", { class: "muted", text: "How all of Panalo looks and moves. Your choice is the default on every device you sign in on; the Look button in the top bar switches it any time." }),
+      el("p", { class: "muted", text: "Night or Day. Your choice follows you to every device you sign in on. The welcome and sign-in pages stay Night." }),
       lookPicker(),
     ]),
     el("div", { class: "settings-cols" }, [
