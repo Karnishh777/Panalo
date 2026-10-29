@@ -259,6 +259,16 @@ An honest look at the process, by the agent that did most of the work.
 
 ## 5. Planned next (the committed backlog)
 
+**Order set by the owner (29 October 2026), ahead of everything below:**
+
+1. **Finish the Cambridge curriculum** (IGCSE, AS and A Level): every
+   subject has papers, a question bank with at least three questions a
+   topic, exam-style questions, examiner-report advice and photo marking.
+2. **UI redesign** of Panalo Students.
+3. **ICSE and ISC, grades 9 to 12** (CISCE): syllabuses, papers, question
+   banks and exam-style questions, as for Cambridge.
+4. **CBSE, classes 9 to 12**: on hold until ICSE/ISC is done.
+
 Done: CI, migrations 22–26 recorded, LIMITATIONS refreshed, calm by
 default and the focus shield, Students made private (phase 28), and **the
 logo** — Ascent, adaptive to each look, as favicon, home-screen icons, in

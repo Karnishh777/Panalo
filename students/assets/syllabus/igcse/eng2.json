@@ -8,25 +8,32 @@
       "id": "1", "name": "Reading for detail",
       "questions": [
         { "q": "When a question asks for 'two' details, you should", "o": ["give exactly two separate points", "give as many as possible", "copy a whole paragraph", "give one point twice"], "a": 0, "why": "Extra points can be ignored or count against you." },
-        { "q": "Skimming a text means", "o": ["reading quickly for the general idea", "reading every word carefully", "looking for one fact", "reading the last line only"], "a": 0, "why": "Scanning is looking for specific information." }
+        { "q": "Skimming a text means", "o": ["reading quickly for the general idea", "reading every word carefully", "looking for one fact", "reading the last line only"], "a": 0, "why": "Scanning is looking for specific information." },
+        { "q": "A question asks for one detail. What is best?", "o": ["Copying the whole paragraph", "Giving three details", "Guessing from general knowledge", "A short, precise answer taken from the text"], "a": 3, "why": "Read the question carefully: extra wrong details can cancel a right one." }
       ]
     },
     {
       "id": "2", "name": "Note-making",
       "questions": [
-        { "q": "Good notes are", "o": ["brief points under the given headings", "full sentences copied from the text", "your opinions", "a summary paragraph"], "a": 0, "why": "Notes should be short and relevant to each heading." }
+        { "q": "Good notes are", "o": ["brief points under the given headings", "full sentences copied from the text", "your opinions", "a summary paragraph"], "a": 0, "why": "Notes should be short and relevant to each heading." },
+        { "q": "In note-making, what should notes be?", "o": ["Full sentences copied from the text", "Your own opinions", "Repeated points", "Brief points under the headings given"], "a": 3, "why": "Each note should be a separate, relevant point." },
+        { "q": "What is lost if two notes say the same thing?", "o": ["Nothing", "The second note earns no extra mark", "Both marks are lost", "The whole question"], "a": 1, "why": "Make every note a different point." }
       ]
     },
     {
       "id": "3", "name": "Summary writing",
       "questions": [
-        { "q": "A summary should be written", "o": ["in your own words, as one paragraph within the word limit", "as bullet points", "as a list of quotations", "with an introduction and conclusion"], "a": 0, "why": "Continuous, concise prose is expected." }
+        { "q": "A summary should be written", "o": ["in your own words, as one paragraph within the word limit", "as bullet points", "as a list of quotations", "with an introduction and conclusion"], "a": 0, "why": "Continuous, concise prose is expected." },
+        { "q": "What should a summary include?", "o": ["The relevant points, in your own words and in the word limit", "Your opinion", "Quotations from the text", "Every detail"], "a": 0, "why": "Organise points logically." },
+        { "q": "Why keep to the word limit?", "o": ["It doesn't matter", "Long summaries are penalised and lose focus", "Shorter always means more marks", "Examiners count every letter"], "a": 1, "why": "Plan the points first." }
       ]
     },
     {
       "id": "4", "name": "Informal writing (emails and letters)",
       "questions": [
-        { "q": "Which is the most suitable opening for an email to a friend?", "o": ["Hi Sam, how are you?", "Dear Sir or Madam,", "To whom it may concern,", "Respected friend,"], "a": 0, "why": "Informal register for a friend." }
+        { "q": "Which is the most suitable opening for an email to a friend?", "o": ["Hi Sam, how are you?", "Dear Sir or Madam,", "To whom it may concern,", "Respected friend,"], "a": 0, "why": "Informal register for a friend." },
+        { "q": "Which tone suits an email to a friend?", "o": ["Formal and impersonal", "Rude", "Like a report", "Friendly and informal"], "a": 3, "why": "Match register to the reader." },
+        { "q": "What must an informal email cover?", "o": ["Only the first bullet point", "Anything you like", "A list of facts", "All three bullet points in the task"], "a": 3, "why": "Develop each point." }
       ],
       "long": [
         { "q": "Write an email (120–160 words) to a friend about a school event you helped to organise: what it was, what you did, and what you would do differently. Mark yourself with this scheme.", "marks": 4, "paper": "2", "scheme": ["B1: all three points covered and developed", "B1: friendly, informal register throughout", "B1: well organised, with an opening and closing", "B1: a range of accurate grammar and vocabulary"] }
@@ -36,7 +43,8 @@
       "id": "5", "name": "Formal writing (reports, reviews, articles)",
       "questions": [
         { "q": "A report usually has", "o": ["a title and clear sections or paragraphs with a recommendation", "a greeting and signature", "dialogue", "rhyme"], "a": 0, "why": "Reports are organised for a reader to act on." },
-        { "q": "Which phrase fits a formal register?", "o": ["In my view, this proposal would benefit students.", "This idea is totally awesome!", "Gonna be great!", "Loads of kids like it."], "a": 0, "why": "Formal writing avoids slang and contractions." }
+        { "q": "Which phrase fits a formal register?", "o": ["In my view, this proposal would benefit students.", "This idea is totally awesome!", "Gonna be great!", "Loads of kids like it."], "a": 0, "why": "Formal writing avoids slang and contractions." },
+        { "q": "Which is suitable for a report to a head teacher?", "o": ["Slang and abbreviations", "Formal language with clear headings or paragraphs", "A story", "A text message style"], "a": 1, "why": "Give recommendations where asked." }
       ],
       "long": [
         { "q": "Your school wants to reduce plastic waste. Write a report for your headteacher (150–200 words) suggesting two ideas and recommending one. Mark yourself with this scheme.", "marks": 5, "paper": "2", "scheme": ["B1: a clear title and purpose", "B1: two ideas, each explained with a benefit", "B1: a reasoned recommendation", "B1: formal register, no slang", "B1: accurate, varied language"] }
@@ -45,13 +53,17 @@
     {
       "id": "6", "name": "Listening",
       "questions": [
-        { "q": "In a gap-fill listening task, your answer should usually be", "o": ["one or two words heard in the recording", "a full sentence", "a synonym of your choice", "a number only"], "a": 0, "why": "Write the words you hear, spelled correctly." }
+        { "q": "In a gap-fill listening task, your answer should usually be", "o": ["one or two words heard in the recording", "a full sentence", "a synonym of your choice", "a number only"], "a": 0, "why": "Write the words you hear, spelled correctly." },
+        { "q": "In the listening exam, what should you do before the recording starts?", "o": ["Read the questions and note what information is needed", "Write a summary", "Close your eyes", "Answer from memory"], "a": 0, "why": "Spelling of key words still matters." },
+        { "q": "Answers in the listening exam should be:", "o": ["Brief, as instructed, with key words spelled recognisably", "Long full sentences", "In a different language", "Copied from the question"], "a": 0, "why": "Listen for the specific detail asked for." }
       ]
     },
     {
       "id": "7", "name": "Speaking",
       "questions": [
-        { "q": "In the speaking test it helps to", "o": ["develop answers with reasons and examples", "give one-word answers", "memorise a speech", "speak as fast as possible"], "a": 0, "why": "Extended, relevant answers score best." }
+        { "q": "In the speaking test it helps to", "o": ["develop answers with reasons and examples", "give one-word answers", "memorise a speech", "speak as fast as possible"], "a": 0, "why": "Extended, relevant answers score best." },
+        { "q": "In the speaking test, what helps most?", "o": ["Extending answers with reasons and examples", "Giving one-word answers", "Reciting a memorised speech", "Speaking very fast"], "a": 0, "why": "Respond naturally to the examiner's prompts." },
+        { "q": "If you don't understand a question in the speaking test, you should:", "o": ["Stay silent", "Change the topic", "Ask politely for it to be repeated", "Answer a different question"], "a": 2, "why": "Asking for clarification is natural communication." }
       ]
     },
     {

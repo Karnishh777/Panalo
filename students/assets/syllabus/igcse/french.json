@@ -8,13 +8,16 @@
       "id": "1", "name": "A: Everyday activities",
       "questions": [
         { "q": "'Le petit-déjeuner' is", "o": ["breakfast", "lunch", "dinner", "a snack"], "a": 0, "why": "Le déjeuner is lunch; le dîner is dinner." },
-        { "q": "'Je me lève à sept heures' means", "o": ["I get up at seven o'clock", "I go to bed at seven", "I leave at seven", "I eat at seven"], "a": 0, "why": "Se lever = to get up." }
+        { "q": "'Je me lève à sept heures' means", "o": ["I get up at seven o'clock", "I go to bed at seven", "I leave at seven", "I eat at seven"], "a": 0, "why": "Se lever = to get up." },
+        { "q": "Complete: « Le matin, je ___ le bus pour aller au collège. »", "o": ["prend", "prendre", "pris", "prends"], "a": 3, "why": "Prendre: je prends, tu prends, il prend." }
       ]
     },
     {
       "id": "2", "name": "B: Personal and social life",
       "questions": [
-        { "q": "'Mon frère aîné' is my", "o": ["older brother", "younger brother", "cousin", "uncle"], "a": 0, "why": "Aîné = older; cadet = younger." }
+        { "q": "'Mon frère aîné' is my", "o": ["older brother", "younger brother", "cousin", "uncle"], "a": 0, "why": "Aîné = older; cadet = younger." },
+        { "q": "Which means 'I get on well with my sister'?", "o": ["Je m'appelle ma sœur.", "J'entends ma sœur.", "Je m'entends bien avec ma sœur.", "Je suis bien ma sœur."], "a": 2, "why": "S'entendre avec quelqu'un = to get on with someone." },
+        { "q": "Choose the correct past tense: « Hier, nous ___ au cinéma. »", "o": ["sommes allés", "avons allé", "allons", "irons"], "a": 0, "why": "Aller takes être in the passé composé, and the participle agrees." }
       ],
       "long": [
         { "q": "Écrivez un e-mail (130–150 mots) à un(e) ami(e) sur vos dernières vacances : où vous êtes allé(e), ce que vous avez fait, et vos projets pour l'année prochaine. (Mark yourself with this scheme.)", "marks": 5, "paper": "4", "scheme": ["B1: all three points covered and developed", "B1: past tense (passé composé / imparfait) used accurately", "B1: a future form for next year's plans", "B1: opinions with reasons (parce que, car)", "B1: varied vocabulary and accurate agreement"] }
@@ -24,19 +27,24 @@
       "id": "3", "name": "C: The world around us",
       "questions": [
         { "q": "'Il fait beau' means", "o": ["the weather is nice", "it is cold", "it is raining", "it is windy"], "a": 0, "why": "Il pleut = it's raining." },
-        { "q": "'La gare' is", "o": ["the railway station", "the car park", "the bus stop", "the shop"], "a": 0, "why": "Le commissariat is the police station." }
+        { "q": "'La gare' is", "o": ["the railway station", "the car park", "the bus stop", "the shop"], "a": 0, "why": "Le commissariat is the police station." },
+        { "q": "« Il faut protéger l'environnement. » What does il faut mean?", "o": ["It is raining", "He is going", "There is", "It is necessary / we must"], "a": 3, "why": "Il faut + infinitive." }
       ]
     },
     {
       "id": "4", "name": "D: The world of work",
       "questions": [
-        { "q": "'Un stage' in a work context is", "o": ["a work placement", "a stage show", "a salary", "a factory"], "a": 0, "why": "Faire un stage = do work experience." }
+        { "q": "'Un stage' in a work context is", "o": ["a work placement", "a stage show", "a salary", "a factory"], "a": 0, "why": "Faire un stage = do work experience." },
+        { "q": "Which means 'I would like to work abroad'?", "o": ["J'aime travaillé étranger.", "Je travaille à l'étranger hier.", "J'aimerai travailler en l'étranger.", "J'aimerais travailler à l'étranger."], "a": 3, "why": "Conditional j'aimerais + infinitive." },
+        { "q": "« un stage » means:", "o": ["a stage in a theatre", "a salary", "a work placement / internship", "a manager"], "a": 2, "why": "Faire un stage = do work experience." }
       ]
     },
     {
       "id": "5", "name": "E: The international world",
       "questions": [
-        { "q": "'L'environnement' and 'le recyclage' belong to the topic of", "o": ["global issues", "school", "family", "food"], "a": 0, "why": "Topic area E." }
+        { "q": "'L'environnement' and 'le recyclage' belong to the topic of", "o": ["global issues", "school", "family", "food"], "a": 0, "why": "Topic area E." },
+        { "q": "Complete: « L'année prochaine, je ___ en Espagne. »", "o": ["voyageais", "voyagerai", "ai voyagé", "voyage hier"], "a": 1, "why": "Future tense: infinitive + -ai." },
+        { "q": "« les pays francophones » are:", "o": ["countries near France", "foreign countries", "countries where French is spoken", "European countries only"], "a": 2, "why": "For example Sénégal, le Québec (Canada), la Belgique." }
       ]
     },
     {

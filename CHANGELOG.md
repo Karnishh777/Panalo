@@ -85,6 +85,13 @@ only where nothing else can).
   explained with the examiners' advice. Design and Technology 0445's
   papers corrected (1 Product Design, 2 project, 3 Resistant Materials,
   4 Systems and Control, 5 Graphic Products).
+- **At least three practice questions in every topic** of every
+  Cambridge bank: 358 new questions (A Level Chemistry, Computer
+  Science, Further Mathematics, IT, Psychology, Sociology, English
+  Language, General Paper, Global Perspectives, Art, Design and
+  Technology; IGCSE ICT, Additional Mathematics, English, French, Hindi
+  and more), many built on the examiner reports' common errors. Correct
+  answers are now spread evenly across A to D.
 - **Mark a photo of my answer**: on any exam-style question, take a photo
   of your written answer and Pan (`functions/api/mark.js`, Claude Sonnet)
   marks it against the scheme, ticks the points earned with a note on

@@ -9,40 +9,47 @@
       "questions": [
         { "q": "Which is an example of system software?", "o": ["an operating system", "a word processor", "a spreadsheet", "a web browser"], "a": 0, "why": "System software runs the computer; application software does user tasks." },
         { "q": "RAM is best described as", "o": ["volatile memory that holds data in use", "permanent storage", "a type of ROM", "an output device"], "a": 0, "why": "Its contents are lost when power is off." },
-        { "q": "Which type of memory holds the start-up instructions and is not lost when power is off?", "o": ["RAM", "ROM", "Cache", "Virtual memory"], "a": 1, "why": "Examiners (2023): some candidates gave RAM rather than ROM; RAM is volatile." }
+        { "q": "Which type of memory holds the start-up instructions and is not lost when power is off?", "o": ["ROM", "RAM", "Cache", "Virtual memory"], "a": 0, "why": "Examiners (2023): some candidates gave RAM rather than ROM; RAM is volatile." }
       ]
     },
     {
       "id": "2", "name": "Input and output devices",
       "questions": [
         { "q": "Which is a direct data entry device?", "o": ["a barcode reader", "a keyboard", "a mouse", "a monitor"], "a": 0, "why": "It captures data without typing." },
-        { "q": "A sensor in a greenhouse is an", "o": ["input device", "output device", "storage device", "processor"], "a": 0, "why": "It sends readings to the computer." }
+        { "q": "A sensor in a greenhouse is an", "o": ["input device", "output device", "storage device", "processor"], "a": 0, "why": "It sends readings to the computer." },
+        { "q": "Which is an input device?", "o": ["Speaker", "Printer", "Actuator", "Microphone"], "a": 3, "why": "Actuators and speakers are output devices." }
       ]
     },
     {
       "id": "3", "name": "Storage devices and media",
       "questions": [
         { "q": "Which has no moving parts?", "o": ["a solid-state drive", "a hard disk drive", "a DVD", "magnetic tape"], "a": 0, "why": "SSDs use flash memory." },
-        { "q": "Magnetic tape is best for", "o": ["large backups accessed rarely", "fast random access", "booting a computer", "a phone's storage"], "a": 0, "why": "Serial access suits archives." }
+        { "q": "Magnetic tape is best for", "o": ["large backups accessed rarely", "fast random access", "booting a computer", "a phone's storage"], "a": 0, "why": "Serial access suits archives." },
+        { "q": "Why is a solid-state drive faster than a hard disk drive?", "o": ["It has no moving parts, so data is accessed electronically", "It spins faster", "It uses magnetic tape", "It is larger"], "a": 0, "why": "SSDs also use less power and are more robust." }
       ]
     },
     {
       "id": "4", "name": "Networks and the effects of using them",
       "questions": [
         { "q": "What does a router do?", "o": ["connects a local network to other networks such as the internet", "stores web pages", "prints documents", "only connects two computers"], "a": 0, "why": "It forwards packets between networks." },
-        { "q": "Which is a benefit of cloud storage?", "o": ["files can be accessed from anywhere with internet", "it never needs internet", "it can't be hacked", "it is always free"], "a": 0, "why": "Access anywhere; relies on connection and the provider." }
+        { "q": "Which is a benefit of cloud storage?", "o": ["files can be accessed from anywhere with internet", "it never needs internet", "it can't be hacked", "it is always free"], "a": 0, "why": "Access anywhere; relies on connection and the provider." },
+        { "q": "What does a router do on a home network?", "o": ["Connects the home network to the internet and forwards packets", "Stores the files", "Prints documents", "Displays web pages"], "a": 0, "why": "Many routers include a wireless access point." }
       ]
     },
     {
       "id": "5", "name": "The effects of using IT",
       "questions": [
-        { "q": "Repetitive strain injury can be reduced by", "o": ["ergonomic keyboards and regular breaks", "brighter screens", "faster processors", "larger hard disks"], "a": 0, "why": "A health issue, not a safety one." }
+        { "q": "Repetitive strain injury can be reduced by", "o": ["ergonomic keyboards and regular breaks", "brighter screens", "faster processors", "larger hard disks"], "a": 0, "why": "A health issue, not a safety one." },
+        { "q": "Which is a health risk from using a computer for a long time?", "o": ["Data loss", "Hacking", "Eye strain", "A virus"], "a": 2, "why": "Examiners (2023): safety and health refer to the user, not damage to the equipment." },
+        { "q": "Which is an effect of microprocessor-controlled devices in the home?", "o": ["Less electricity is always used", "No need for any skills", "Devices can never fail", "More leisure time because chores are automated"], "a": 3, "why": "Consider both positive and negative effects." }
       ]
     },
     {
       "id": "6", "name": "ICT applications",
       "questions": [
-        { "q": "An expert system includes a knowledge base and", "o": ["an inference engine", "a printer driver", "a web server", "a spreadsheet"], "a": 0, "why": "Plus a rules base and user interface." }
+        { "q": "An expert system includes a knowledge base and", "o": ["an inference engine", "a printer driver", "a web server", "a spreadsheet"], "a": 0, "why": "Plus a rules base and user interface." },
+        { "q": "Which is an example of a computer-controlled system?", "o": ["A spreadsheet of marks", "A word-processed letter", "An email", "Automatic traffic lights"], "a": 3, "why": "Sensors feed readings to a microprocessor that controls outputs." },
+        { "q": "Which is a use of a computer in a school?", "o": ["Recording attendance with a management system", "Growing crops", "Driving buses", "Cooking meals"], "a": 0, "why": "Others: timetables, learning platforms, reports." }
       ]
     },
     {
@@ -50,7 +57,7 @@
       "questions": [
         { "q": "The correct order is", "o": ["analysis, design, development and testing, implementation, documentation, evaluation", "design, analysis, implementation, testing", "testing, design, analysis", "implementation, analysis, design"], "a": 0, "why": "Analyse first, evaluate last." },
         { "q": "Parallel running means", "o": ["the old and new systems run together for a time", "the new system replaces the old at once", "one department changes first", "the system is changed in stages"], "a": 0, "why": "Safer but more costly." },
-        { "q": "Test data for a field 'Age' that accepts 11 to 18. Which is extreme data?", "o": ["15", "18", "25", "abc"], "a": 1, "why": "Examiners (2023): candidates gave explanations instead of test data. Extreme data is on the boundary of what is accepted." }
+        { "q": "Test data for a field 'Age' that accepts 11 to 18. Which is extreme data?", "o": ["15", "25", "abc", "18"], "a": 3, "why": "Examiners (2023): candidates gave explanations instead of test data. Extreme data is on the boundary of what is accepted." }
       ],
       "long": [
         { "q": "Describe two methods of implementing a new system and give one advantage of each.", "marks": 4, "paper": "1", "scheme": ["B1: direct changeover: the old system is replaced at once", "B1: advantage: fast and cheap, benefits immediately", "B1: parallel running: both systems run together", "B1: advantage: if the new system fails, the old one is still there"] }
@@ -61,7 +68,7 @@
       "questions": [
         { "q": "Phishing is", "o": ["fake emails trying to trick you into giving personal details", "a virus that deletes files", "a firewall", "a type of encryption"], "a": 0, "why": "Check sender and links." },
         { "q": "Encryption", "o": ["makes data unreadable without the key", "deletes data", "blocks all viruses", "speeds up a network"], "a": 0, "why": "It protects data if intercepted." },
-        { "q": "What is a physical safety risk when using computers?", "o": ["Data being hacked", "Tripping over trailing cables", "A virus deleting files", "The computer crashing"], "a": 1, "why": "Examiners (2023): many thought 'safety' meant damage to the equipment rather than harm to the user." }
+        { "q": "What is a physical safety risk when using computers?", "o": ["Data being hacked", "A virus deleting files", "Tripping over trailing cables", "The computer crashing"], "a": 2, "why": "Examiners (2023): many thought 'safety' meant damage to the equipment rather than harm to the user." }
       ],
       "long": [
         { "q": "Explain two ways a student could protect their personal data online.", "marks": 4, "paper": "1", "scheme": ["B1: one method, e.g. strong passwords / two-factor authentication", "B1: explained: makes unauthorised access harder", "B1: a second method, e.g. not opening links in unexpected emails (phishing) / privacy settings", "B1: explained"] }
@@ -70,46 +77,57 @@
     {
       "id": "9", "name": "Audience",
       "questions": [
-        { "q": "When designing for young children, you should use", "o": ["large text, simple language and images", "dense text", "technical terms", "small fonts"], "a": 0, "why": "Match the product to its audience." }
+        { "q": "When designing for young children, you should use", "o": ["large text, simple language and images", "dense text", "technical terms", "small fonts"], "a": 0, "why": "Match the product to its audience." },
+        { "q": "A website is for young children. Which design choice suits the audience?", "o": ["Large text, simple words and bright images", "Long technical paragraphs", "Small fonts", "No images"], "a": 0, "why": "Always consider the audience's age and needs." },
+        { "q": "Why find out the audience's needs before designing?", "o": ["To make the file smaller", "So the content, language and design suit them", "To save paper", "It isn't needed"], "a": 1, "why": "Consider age, experience and accessibility." }
       ]
     },
     {
       "id": "10", "name": "Communication",
       "questions": [
         { "q": "CC in an email means", "o": ["a copy is sent to another recipient visibly", "a hidden copy", "the email is confidential", "the email is compressed"], "a": 0, "why": "BCC hides recipients." },
-        { "q": "What is the generic name for meeting online with sound and video in real time?", "o": ["Video conferencing", "Emailing", "Blogging", "Web browsing"], "a": 0, "why": "Examiners (2023): candidates knew trade names for these meetings but not the generic term." }
+        { "q": "What is the generic name for meeting online with sound and video in real time?", "o": ["Video conferencing", "Emailing", "Blogging", "Web browsing"], "a": 0, "why": "Examiners (2023): candidates knew trade names for these meetings but not the generic term." },
+        { "q": "Which is a feature of email that saves time when writing to the same group again?", "o": ["A contact group (distribution list)", "Cc", "Attachment", "Spam filter"], "a": 0, "why": "Bcc hides the other recipients' addresses." }
       ]
     },
     {
       "id": "11", "name": "File management",
       "questions": [
         { "q": "Which file type is best for a photograph on a web page?", "o": ["JPEG", "CSV", "RTF", "TXT"], "a": 0, "why": "JPEG compresses photos well." },
-        { "q": "A CSV file stores", "o": ["data as plain text separated by commas", "images", "sound", "formatted documents"], "a": 0, "why": "Easy to import into spreadsheets and databases." }
+        { "q": "A CSV file stores", "o": ["data as plain text separated by commas", "images", "sound", "formatted documents"], "a": 0, "why": "Easy to import into spreadsheets and databases." },
+        { "q": "Which file type is best for a photo on a web page?", "o": [".txt", ".csv", ".rtf", ".jpg"], "a": 3, "why": "JPEG uses lossy compression to keep photos small." }
       ]
     },
     {
       "id": "12", "name": "Images",
       "questions": [
-        { "q": "To resize an image without distorting it, you should", "o": ["keep the aspect ratio", "change only the width", "crop it", "rotate it"], "a": 0, "why": "Maintain the proportions." }
+        { "q": "To resize an image without distorting it, you should", "o": ["keep the aspect ratio", "change only the width", "crop it", "rotate it"], "a": 0, "why": "Maintain the proportions." },
+        { "q": "An image is resized without distortion. What has been kept?", "o": ["The file name", "The aspect ratio", "The resolution only", "The colour depth"], "a": 1, "why": "Lock the aspect ratio before resizing." },
+        { "q": "What does cropping an image do?", "o": ["Changes its colours", "Removes unwanted outer parts of it", "Makes it larger without loss", "Rotates it"], "a": 1, "why": "Resizing changes its dimensions." }
       ]
     },
     {
       "id": "13", "name": "Layout",
       "questions": [
-        { "q": "A header in a document", "o": ["appears at the top of every page", "is the first paragraph", "is a table title", "is a footnote"], "a": 0, "why": "Footers appear at the bottom." }
+        { "q": "A header in a document", "o": ["appears at the top of every page", "is the first paragraph", "is a table title", "is a footnote"], "a": 0, "why": "Footers appear at the bottom." },
+        { "q": "What is a widow in document layout?", "o": ["A blank page", "The last line of a paragraph left alone at the top of a page", "A heading with no text", "A footnote"], "a": 1, "why": "An orphan is the first line left at the bottom of a page." },
+        { "q": "What are margins in a document?", "o": ["Lines between columns", "The header text", "The blank space between the text and the edge of the page", "Page numbers"], "a": 2, "why": "Gutter margins allow for binding." }
       ]
     },
     {
       "id": "14", "name": "Styles",
       "questions": [
-        { "q": "Using styles in a document helps", "o": ["keep formatting consistent", "check spelling", "add images", "encrypt the file"], "a": 0, "why": "Change a style once and it updates everywhere." }
+        { "q": "Using styles in a document helps", "o": ["keep formatting consistent", "check spelling", "add images", "encrypt the file"], "a": 0, "why": "Change a style once and it updates everywhere." },
+        { "q": "Why use a corporate house style?", "o": ["It makes files smaller", "It checks spelling", "It is required by law", "Documents look consistent and the organisation is recognised"], "a": 3, "why": "It sets fonts, colours, logos and layout." },
+        { "q": "Why use styles in a long document?", "o": ["To check spelling", "To apply consistent formatting quickly and build a contents page", "To insert images", "To print faster"], "a": 1, "why": "Change a style once and every heading updates." }
       ]
     },
     {
       "id": "15", "name": "Proofing",
       "questions": [
         { "q": "Validation checks that data is", "o": ["reasonable and within rules", "exactly correct", "copied accurately", "spelt correctly"], "a": 0, "why": "Verification checks it was entered accurately." },
-        { "q": "A range check would stop", "o": ["an age of 250 being entered", "a misspelt name", "a typo in a postcode that is still valid", "a duplicate record"], "a": 0, "why": "It checks a value lies between limits." }
+        { "q": "A range check would stop", "o": ["an age of 250 being entered", "a misspelt name", "a typo in a postcode that is still valid", "a duplicate record"], "a": 0, "why": "It checks a value lies between limits." },
+        { "q": "Which validation check makes sure a date of birth is not in the future?", "o": ["Range check", "Presence check", "Length check", "Type check"], "a": 0, "why": "Verification (proof-reading, double entry) checks the data was copied correctly." }
       ],
       "long": [
         { "q": "Explain the difference between validation and verification, with an example of each.", "marks": 4, "paper": "2", "scheme": ["B1: validation: the computer checks data is reasonable / follows rules", "B1: e.g. a range check on age", "B1: verification: checks data has been entered or copied accurately", "B1: e.g. double entry of a password / visual check"] }
@@ -118,26 +136,33 @@
     {
       "id": "16", "name": "Graphs and charts",
       "questions": [
-        { "q": "Which chart best shows parts of a whole?", "o": ["a pie chart", "a line graph", "a scatter graph", "a table"], "a": 0, "why": "Each sector is a share of the total." }
+        { "q": "Which chart best shows parts of a whole?", "o": ["a pie chart", "a line graph", "a scatter graph", "a table"], "a": 0, "why": "Each sector is a share of the total." },
+        { "q": "What should every chart include?", "o": ["Only colours", "A title and labelled axes or a legend", "No labels", "3D effects"], "a": 1, "why": "Choose the chart type that fits the data." },
+        { "q": "Which chart shows change over time?", "o": ["Pie chart", "Venn diagram", "Table", "Line graph"], "a": 3, "why": "Pie charts show parts of a whole." }
       ]
     },
     {
       "id": "17", "name": "Document production",
       "questions": [
-        { "q": "Mail merge combines", "o": ["a master document with a data source", "two images", "a spreadsheet and a chart", "web pages"], "a": 0, "why": "To personalise letters for many people." }
+        { "q": "Mail merge combines", "o": ["a master document with a data source", "two images", "a spreadsheet and a chart", "web pages"], "a": 0, "why": "To personalise letters for many people." },
+        { "q": "What does a page break do?", "o": ["Deletes a page", "Adds a header", "Starts the following text on a new page", "Changes the margins"], "a": 2, "why": "A section break can also change layout from that point." },
+        { "q": "What is a header?", "o": ["The first paragraph", "A title in bold", "Text that appears at the top of every page", "A footnote"], "a": 2, "why": "Footers appear at the bottom; both often hold page numbers." }
       ]
     },
     {
       "id": "18", "name": "Databases",
       "questions": [
         { "q": "A primary key", "o": ["uniquely identifies each record", "is always a name", "links to another table only", "is optional"], "a": 0, "why": "No two records share it." },
-        { "q": "Which field type suits a phone number?", "o": ["text", "integer", "Boolean", "date"], "a": 0, "why": "Leading zeros and '+' signs must be kept." }
+        { "q": "Which field type suits a phone number?", "o": ["text", "integer", "Boolean", "date"], "a": 0, "why": "Leading zeros and '+' signs must be kept." },
+        { "q": "Which field type should store a phone number such as 09876543210?", "o": ["Number", "Text", "Boolean", "Date/time"], "a": 1, "why": "Leading zeros would be lost in a number field, and no arithmetic is done on it." }
       ]
     },
     {
       "id": "19", "name": "Presentations",
       "questions": [
-        { "q": "A master slide is used to", "o": ["set consistent design across all slides", "add a single animation", "print handouts", "record narration"], "a": 0, "why": "Change it once for every slide." }
+        { "q": "A master slide is used to", "o": ["set consistent design across all slides", "add a single animation", "print handouts", "record narration"], "a": 0, "why": "Change it once for every slide." },
+        { "q": "What is a transition in a presentation?", "o": ["Movement of an object on a slide", "The slide master", "Speaker notes", "An effect between slides"], "a": 3, "why": "An animation moves an object on a slide." },
+        { "q": "What is a master slide used for?", "o": ["Adding sound", "Printing notes", "Setting the same layout and style on every slide", "Timing slides"], "a": 2, "why": "It keeps a presentation consistent." }
       ]
     },
     {
@@ -152,7 +177,9 @@
       "id": "21", "name": "Website authoring",
       "questions": [
         { "q": "In a web page, the presentation layer is created with", "o": ["CSS", "HTML only", "a database", "a spreadsheet"], "a": 0, "why": "HTML is content, CSS is presentation." },
-        { "q": "A relative file path", "o": ["is relative to the current page's folder", "starts with http://", "is always absolute", "points to a different website"], "a": 0, "why": "Relative paths keep a site portable." }
+        { "q": "A relative file path", "o": ["is relative to the current page's folder", "starts with http://", "is always absolute", "points to a different website"], "a": 0, "why": "Relative paths keep a site portable." },
+        { "q": "Which part of a web page sets fonts and colours for every page?", "o": ["The <title> tag", "An external CSS stylesheet", "A hyperlink", "An image"], "a": 1, "why": "One stylesheet keeps the whole site consistent." },
+        { "q": "What is a relative file path?", "o": ["A full path from the drive's root", "A path from the current file's location", "A web address with https://", "A path that never changes"], "a": 1, "why": "Relative paths keep links working when the site is moved." }
       ]
     }
   ]

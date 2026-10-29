@@ -8,7 +8,8 @@
       "id": "1", "name": "Data processing and information", "stage": "as",
       "questions": [
         { "q": "Information is", "o": ["data that has been processed and given meaning", "raw facts", "a database", "binary code"], "a": 0, "why": "Data + context = information." },
-        { "q": "Batch processing suits", "o": ["payroll run once a month", "airline bookings", "air traffic control", "online games"], "a": 0, "why": "Real-time processing suits bookings and control." }
+        { "q": "Batch processing suits", "o": ["payroll run once a month", "airline bookings", "air traffic control", "online games"], "a": 0, "why": "Real-time processing suits bookings and control." },
+        { "q": "Which is an example of information rather than data?", "o": ["The average temperature this week was 31 °C", "31, 29, 33, 30", "Temp", "A list of numbers with no labels"], "a": 0, "why": "Information is data given context and meaning." }
       ],
       "long": [
         { "q": "Compare batch processing and real-time processing, giving a suitable use for each.", "marks": 4, "paper": "1", "scheme": ["B1: batch: data collected and processed together later, without user interaction", "B1: use: payroll / utility bills", "B1: real-time: data processed immediately as it arrives", "B1: use: booking systems / control systems"] }
@@ -18,13 +19,16 @@
       "id": "2", "name": "Hardware and software", "stage": "as",
       "questions": [
         { "q": "A compiler", "o": ["translates the whole program before it runs", "translates line by line as it runs", "is an operating system", "is a utility for backups"], "a": 0, "why": "An interpreter works line by line." },
-        { "q": "A device driver is:", "o": ["A piece of hardware", "Software that lets the operating system communicate with a hardware device", "A type of cable", "A network card"], "a": 1, "why": "Examiners (2023): the most common mistake was to consider a device driver to be hardware." }
+        { "q": "A device driver is:", "o": ["A piece of hardware", "Software that lets the operating system communicate with a hardware device", "A type of cable", "A network card"], "a": 1, "why": "Examiners (2023): the most common mistake was to consider a device driver to be hardware." },
+        { "q": "Which software controls the hardware and provides a user interface?", "o": ["The operating system", "A spreadsheet", "A device driver only", "A web browser"], "a": 0, "why": "Device drivers let the operating system talk to particular hardware." }
       ]
     },
     {
       "id": "3", "name": "Monitoring and control", "stage": "as",
       "questions": [
-        { "q": "In a control system, an actuator", "o": ["carries out a physical action, e.g. opens a window", "measures temperature", "stores data", "displays results"], "a": 0, "why": "Sensors measure; actuators act." }
+        { "q": "In a control system, an actuator", "o": ["carries out a physical action, e.g. opens a window", "measures temperature", "stores data", "displays results"], "a": 0, "why": "Sensors measure; actuators act." },
+        { "q": "In a computer-controlled greenhouse, what does the microprocessor do with a sensor reading?", "o": ["Stores it and does nothing", "Compares it with a preset value and switches an actuator if needed", "Changes the sensor", "Sends it to a printer"], "a": 1, "why": "Monitoring only records; control acts on the readings in a feedback loop." },
+        { "q": "Why is an ADC needed in many monitoring systems?", "o": ["Computers produce analogue signals", "It makes sensors more accurate", "Sensors give analogue signals that the computer must receive in digital form", "It stores the data"], "a": 2, "why": "A DAC is used when the computer drives an analogue device." }
       ],
       "long": [
         { "q": "A greenhouse uses a computer to control temperature. Describe how the system works.", "marks": 5, "paper": "1", "scheme": ["B1: a temperature sensor measures temperature continuously", "B1: an ADC converts the analogue reading to digital", "B1: the microprocessor compares the reading with a preset value", "B1: if too high, it sends a signal to an actuator to open a window / start a fan", "B1: the process repeats continuously (feedback)"] }
@@ -34,69 +38,88 @@
       "id": "4", "name": "Algorithms and flowcharts", "stage": "as",
       "questions": [
         { "q": "In a flowchart, a decision is shown by", "o": ["a diamond", "a rectangle", "an oval", "a parallelogram"], "a": 0, "why": "Rectangles are processes; parallelograms are input/output." },
-        { "q": "In a flowchart, a decision box must have:", "o": ["One output", "A Yes and a No output", "Text describing the decision only", "Three outputs"], "a": 1, "why": "Examiners (2023): candidates are reminded every decision box needs Yes and No outputs, using mathematical expressions rather than text." }
+        { "q": "In a flowchart, a decision box must have:", "o": ["One output", "A Yes and a No output", "Text describing the decision only", "Three outputs"], "a": 1, "why": "Examiners (2023): candidates are reminded every decision box needs Yes and No outputs, using mathematical expressions rather than text." },
+        { "q": "Which flowchart symbol shows a decision?", "o": ["A rectangle", "A parallelogram", "An oval", "A diamond with Yes and No exits"], "a": 3, "why": "Examiners (2023): every decision box needs a Yes and a No output." }
       ]
     },
     {
       "id": "5", "name": "eSafety and health and safety", "stage": "as",
       "questions": [
-        { "q": "Which is a safety risk rather than a health risk?", "o": ["trailing cables", "eye strain", "back pain", "RSI"], "a": 0, "why": "Safety risks cause accidents." }
+        { "q": "Which is a safety risk rather than a health risk?", "o": ["trailing cables", "eye strain", "back pain", "RSI"], "a": 0, "why": "Safety risks cause accidents." },
+        { "q": "Which is a way to reduce the risk of repetitive strain injury?", "o": ["Use a brighter screen", "Sit closer to the monitor", "Use a wrist rest and take regular breaks", "Install anti-virus software"], "a": 2, "why": "Health risks need health measures, not security measures." },
+        { "q": "What is phishing?", "o": ["A virus that deletes files", "Overheating of a computer", "Hacking a Wi-Fi password by guessing", "Fake messages that try to trick people into giving personal details"], "a": 3, "why": "Check the sender and never follow links asking for passwords." }
       ]
     },
     {
       "id": "6", "name": "The digital divide", "stage": "as",
       "questions": [
-        { "q": "The digital divide is", "o": ["the gap between those with and without access to technology", "a type of network", "a security threat", "a coding error"], "a": 0, "why": "Caused by income, location, age, education." }
+        { "q": "The digital divide is", "o": ["the gap between those with and without access to technology", "a type of network", "a security threat", "a coding error"], "a": 0, "why": "Caused by income, location, age, education." },
+        { "q": "What is the digital divide?", "o": ["The split between hardware and software", "Dividing a hard disk", "Binary and denary numbers", "The gap between people who have access to IT and the internet and those who don't"], "a": 3, "why": "Causes include income, location, age and education." },
+        { "q": "Which would most help to reduce the digital divide in a rural area?", "o": ["Making phones more expensive", "Providing affordable broadband and community IT access", "Closing libraries", "Moving services online only"], "a": 1, "why": "Access and skills both matter." }
       ]
     },
     {
       "id": "7", "name": "Using networks", "stage": "as",
       "questions": [
-        { "q": "What does a VPN do?", "o": ["creates an encrypted connection over a public network", "is a type of router", "speeds up the internet", "stores websites"], "a": 0, "why": "Virtual private network." }
+        { "q": "What does a VPN do?", "o": ["creates an encrypted connection over a public network", "is a type of router", "speeds up the internet", "stores websites"], "a": 0, "why": "Virtual private network." },
+        { "q": "What does a router do?", "o": ["Connects devices in a LAN by broadcasting to all", "Stores web pages", "Converts analogue to digital only", "Forwards data packets between different networks using IP addresses"], "a": 3, "why": "Examiners (2023): there was confusion between switches, routers and hubs." },
+        { "q": "What does a switch do in a LAN?", "o": ["Sends data to every device", "Sends data only to the device it is addressed to, using MAC addresses", "Connects the LAN to the internet", "Assigns IP addresses"], "a": 1, "why": "A hub sends to every device." }
       ]
     },
     {
       "id": "8", "name": "Expert systems", "stage": "as",
       "questions": [
-        { "q": "The inference engine of an expert system", "o": ["applies rules to the knowledge base to reach conclusions", "stores facts", "is the user interface", "explains its reasoning only"], "a": 0, "why": "The reasoning part." }
+        { "q": "The inference engine of an expert system", "o": ["applies rules to the knowledge base to reach conclusions", "stores facts", "is the user interface", "explains its reasoning only"], "a": 0, "why": "The reasoning part." },
+        { "q": "Which part of an expert system applies rules to the facts to reach a conclusion?", "o": ["The knowledge base", "The inference engine", "The user interface", "The explanation system"], "a": 1, "why": "The knowledge base holds the facts and the rule base the IF…THEN rules." },
+        { "q": "Which is a use of an expert system?", "o": ["Medical diagnosis", "Word processing", "Video editing", "Sending email"], "a": 0, "why": "Others: mineral prospecting, car fault diagnosis, financial planning." }
       ]
     },
     {
       "id": "9", "name": "Spreadsheets", "stage": "as",
       "questions": [
         { "q": "VLOOKUP searches", "o": ["the first column of a table for a value and returns one from another column", "every cell for a value", "a database", "a chart"], "a": 0, "why": "Vertical lookup." },
-        { "q": "A spreadsheet formula should refer to:", "o": ["The value typed in", "A cell reference holding the value", "A text label", "Nothing"], "a": 1, "why": "Examiners (2023): the formula had to reference a cell rather than a value." }
+        { "q": "A spreadsheet formula should refer to:", "o": ["A cell reference holding the value", "The value typed in", "A text label", "Nothing"], "a": 0, "why": "Examiners (2023): the formula had to reference a cell rather than a value." },
+        { "q": "A formula is copied down a column but must keep using cell B1. Which reference is used?", "o": ["B1", "$B$1", "B$", "#B1"], "a": 1, "why": "Absolute references don't change when copied." }
       ]
     },
     {
       "id": "10", "name": "Database and file concepts", "stage": "as",
       "questions": [
         { "q": "A foreign key", "o": ["links a record to the primary key of another table", "is unique in its own table", "is encrypted", "is a field type"], "a": 0, "why": "Used to create relationships." },
-        { "q": "Normalisation aims to", "o": ["reduce data redundancy", "add duplicate data", "speed up printing", "encrypt data"], "a": 0, "why": "Removes repeated data and anomalies." }
+        { "q": "Normalisation aims to", "o": ["reduce data redundancy", "add duplicate data", "speed up printing", "encrypt data"], "a": 0, "why": "Removes repeated data and anomalies." },
+        { "q": "In normalisation to third normal form, a table must have:", "o": ["No non-key field that depends on another non-key field", "No primary key", "Repeating groups", "Only one field"], "a": 0, "why": "Examiners (2023): descriptions of normalisation often lacked detail." }
       ]
     },
     {
       "id": "11", "name": "Sound and video editing", "stage": "as",
       "questions": [
-        { "q": "Lossy compression", "o": ["permanently removes some data to reduce file size", "keeps every bit of data", "increases file size", "is used for text files"], "a": 0, "why": "e.g. MP3, MP4." }
+        { "q": "Lossy compression", "o": ["permanently removes some data to reduce file size", "keeps every bit of data", "increases file size", "is used for text files"], "a": 0, "why": "e.g. MP3, MP4." },
+        { "q": "Why is a sound file normalised (amplified to just below the maximum)?", "o": ["To shorten it", "To make it as loud as possible without clipping", "To remove all noise", "To change its format"], "a": 1, "why": "Examiners (2023): many amplified past the maximum, clipping the waveform." },
+        { "q": "What is a transition in video editing?", "o": ["A sound filter", "The file format", "An effect used to move from one clip to the next", "The video resolution"], "a": 2, "why": "Examples: fade, wipe, dissolve." }
       ]
     },
     {
       "id": "12", "name": "Emerging technologies", "stage": "a2",
       "questions": [
-        { "q": "Augmented reality", "o": ["overlays digital content on the real world", "replaces the real world entirely", "is a type of database", "is 3D printing"], "a": 0, "why": "VR replaces; AR overlays." }
+        { "q": "Augmented reality", "o": ["overlays digital content on the real world", "replaces the real world entirely", "is a type of database", "is 3D printing"], "a": 0, "why": "VR replaces; AR overlays." },
+        { "q": "Which is an emerging technology?", "o": ["The floppy disk", "Quantum computing", "Dial-up internet", "CRT monitors"], "a": 1, "why": "Others include 3D printing, virtual reality and AI." },
+        { "q": "What is augmented reality?", "o": ["A fully computer-generated world", "A faster processor", "A type of printer", "Computer images laid over a live view of the real world"], "a": 3, "why": "Virtual reality replaces the real view completely." }
       ]
     },
     {
       "id": "13", "name": "Role and impact of IT in society", "stage": "a2",
       "questions": [
-        { "q": "Which is an impact of online banking on society?", "o": ["fewer bank branches and less face-to-face service", "more paper cheques", "slower payments", "no risk of fraud"], "a": 0, "why": "Convenience with social costs." }
+        { "q": "Which is an impact of online banking on society?", "o": ["fewer bank branches and less face-to-face service", "more paper cheques", "slower payments", "no risk of fraud"], "a": 0, "why": "Convenience with social costs." },
+        { "q": "Which is a negative impact of IT on employment?", "o": ["New jobs in IT support", "Remote working", "Faster communication", "Some jobs are replaced by automation"], "a": 3, "why": "Discuss both sides when asked about impact." },
+        { "q": "Which is an advantage of online banking for customers?", "o": ["Higher risk of fraud", "Needs internet access", "Less personal contact", "Banking at any time without travelling"], "a": 3, "why": "Answer from the viewpoint the question asks for." }
       ]
     },
     {
       "id": "14", "name": "Networks", "stage": "a2",
       "questions": [
-        { "q": "TCP/IP is", "o": ["the set of protocols the internet uses", "a type of cable", "a web browser", "an operating system"], "a": 0, "why": "Transmission Control Protocol / Internet Protocol." }
+        { "q": "TCP/IP is", "o": ["the set of protocols the internet uses", "a type of cable", "a web browser", "an operating system"], "a": 0, "why": "Transmission Control Protocol / Internet Protocol." },
+        { "q": "What is a WAN?", "o": ["A network in one building", "A network covering a large geographical area", "A wireless mouse", "A web address"], "a": 1, "why": "The internet is the largest WAN." },
+        { "q": "Which transmission medium is least affected by electrical interference?", "o": ["Twisted pair cable", "Coaxial cable", "Radio waves", "Fibre optic cable"], "a": 3, "why": "It carries light rather than electrical signals." }
       ]
     },
     {
@@ -104,7 +127,7 @@
       "questions": [
         { "q": "A Gantt chart shows", "o": ["tasks against time", "a network's layout", "a database structure", "a program's logic"], "a": 0, "why": "Used to schedule and track a project." },
         { "q": "The critical path is", "o": ["the longest sequence of dependent tasks", "the cheapest route", "the first task", "any task with slack"], "a": 0, "why": "It sets the shortest possible project duration." },
-        { "q": "In project management, a deliverable is:", "o": ["A resource delivered for a task", "A measurable output produced at the end of a stage", "A delivery van", "The project budget"], "a": 1, "why": "Examiners (2023): many described deliverables as resources that had to be delivered." }
+        { "q": "In project management, a deliverable is:", "o": ["A resource delivered for a task", "A delivery van", "A measurable output produced at the end of a stage", "The project budget"], "a": 2, "why": "Examiners (2023): many described deliverables as resources that had to be delivered." }
       ],
       "long": [
         { "q": "Explain how a Gantt chart helps a project manager.", "marks": 4, "paper": "3", "scheme": ["B1: shows each task against a timeline", "B1: shows dependencies and the critical path", "B1: helps allocate resources and spot clashes", "B1: progress can be tracked against the plan"] }
@@ -113,31 +136,41 @@
     {
       "id": "16", "name": "System life cycle", "stage": "a2",
       "questions": [
-        { "q": "Black-box testing checks", "o": ["inputs and outputs without looking at the code", "each line of code", "the hardware", "user documentation"], "a": 0, "why": "White-box testing looks at internal logic." }
+        { "q": "Black-box testing checks", "o": ["inputs and outputs without looking at the code", "each line of code", "the hardware", "user documentation"], "a": 0, "why": "White-box testing looks at internal logic." },
+        { "q": "In the system life cycle, what happens during analysis?", "o": ["The current system is studied and requirements are identified", "The new system is installed", "The code is written", "Users are trained"], "a": 0, "why": "Methods include interviews, questionnaires and observation." },
+        { "q": "Which changeover method runs the old and new systems together?", "o": ["Direct changeover", "Parallel running", "Phased implementation", "Pilot running"], "a": 1, "why": "It is safe but costly in time and staff." }
       ]
     },
     {
       "id": "17", "name": "Graphics creation", "stage": "a2",
       "questions": [
-        { "q": "Vector graphics", "o": ["scale without losing quality", "are made of pixels", "are always photographs", "cannot be edited"], "a": 0, "why": "Stored as shapes and paths." }
+        { "q": "Vector graphics", "o": ["scale without losing quality", "are made of pixels", "are always photographs", "cannot be edited"], "a": 0, "why": "Stored as shapes and paths." },
+        { "q": "Why are vector graphics better than bitmaps for a logo?", "o": ["They store each pixel", "They are always photographs", "They can be resized without losing quality", "They cannot be edited"], "a": 2, "why": "Vectors are stored as shapes and coordinates." },
+        { "q": "What does increasing an image's resolution do?", "o": ["Reduces the file size", "Changes it to vector", "Increases the number of pixels and the file size", "Removes colour"], "a": 2, "why": "Higher resolution means more detail." }
       ]
     },
     {
       "id": "18", "name": "Animation", "stage": "a2",
       "questions": [
-        { "q": "In animation, tweening", "o": ["generates frames between key frames", "deletes frames", "adds sound", "compresses video"], "a": 0, "why": "In-betweening." }
+        { "q": "In animation, tweening", "o": ["generates frames between key frames", "deletes frames", "adds sound", "compresses video"], "a": 0, "why": "In-betweening." },
+        { "q": "What is tweening in animation?", "o": ["Drawing every frame by hand", "Adding sound", "Compressing video", "Generating the frames between two key frames"], "a": 3, "why": "It saves time and makes motion smooth." },
+        { "q": "Frame rate is measured in:", "o": ["Frames per second", "Pixels per inch", "Bits per second", "Frames per minute"], "a": 0, "why": "A higher frame rate gives smoother motion." }
       ]
     },
     {
       "id": "19", "name": "Programming for the web", "stage": "a2",
       "questions": [
-        { "q": "JavaScript in a web page is mainly used to", "o": ["add interactivity in the browser", "store a database", "style text", "host the website"], "a": 0, "why": "HTML structure, CSS style, JavaScript behaviour." }
+        { "q": "JavaScript in a web page is mainly used to", "o": ["add interactivity in the browser", "store a database", "style text", "host the website"], "a": 0, "why": "HTML structure, CSS style, JavaScript behaviour." },
+        { "q": "Which language adds interactivity to a web page in the browser?", "o": ["HTML", "CSS", "SQL", "JavaScript"], "a": 3, "why": "HTML is structure; CSS is presentation." },
+        { "q": "In JavaScript, setInterval(f, 1000) runs f:", "o": ["Every 1000 milliseconds (1 second)", "Once after 1000 seconds", "1000 times at once", "Every 1000 seconds"], "a": 0, "why": "Examiners (2023): candidates left a timer at the default 1000 ms instead of the value required." }
       ]
     },
     {
       "id": "20", "name": "Mail merge", "stage": "a2",
       "questions": [
-        { "q": "A mail merge field", "o": ["is replaced with data from the source for each record", "is a fixed piece of text", "is a header", "is an image"], "a": 0, "why": "e.g. «FirstName»." }
+        { "q": "A mail merge field", "o": ["is replaced with data from the source for each record", "is a fixed piece of text", "is a header", "is an image"], "a": 0, "why": "e.g. «FirstName»." },
+        { "q": "What is a mail merge?", "o": ["Combining a standard document with a data source to make personalised copies", "Merging two email accounts", "Sending one email to one person", "Compressing attachments"], "a": 0, "why": "Merge fields are replaced by data from each record." },
+        { "q": "How can a mail merge send letters only to customers in one city?", "o": ["Delete the other records permanently", "Type each letter by hand", "Sort by name", "Filter the data source on the City field"], "a": 3, "why": "Filters select records without changing the data." }
       ]
     }
   ]

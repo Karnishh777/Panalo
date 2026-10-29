@@ -11,11 +11,11 @@
         { "q": "An independent measures design…", "o": ["uses the same participants in every condition", "uses different participants in each condition", "matches pairs", "has no conditions"], "a": 1, "why": "It avoids order effects but participant variables may differ." },
         { "q": "Ecological validity is about…", "o": ["whether findings apply to real-life settings", "the sample size", "ethics", "inter-rater reliability"], "a": 0, "why": "Lab settings can be artificial, reducing ecological validity." },
         { "q": "Which ethical guideline lets participants leave a study at any time?", "o": ["Debriefing", "Right to withdraw", "Confidentiality", "Deception"], "a": 1, "why": "Participants must be told they can withdraw themselves and their data." },
-        { "q": "In a repeated measures design, participants:", "o": ["Repeat the same condition several times", "Take part in all the conditions of the IV", "Are matched on key variables", "Are different in each condition"], "a": 1, "why": "Examiners (2023): a common error: repeating the same condition is replication, not repeated measures." },
-        { "q": "Inter-rater reliability means:", "o": ["Having more than one observer", "The level of agreement between two or more observers", "Repeating a study to get the same results", "Using a standardised procedure"], "a": 1, "why": "Examiners (2023): candidates still think it simply means having more than one observer." },
-        { "q": "Reliability refers to:", "o": ["Repeating a study (replication)", "The consistency of a test, task or measure", "Whether a study measures what it claims", "Ethics"], "a": 1, "why": "Examiners (2023): many confused reliability with replication." },
-        { "q": "A semi-structured interview:", "o": ["Uses a mix of open and closed questions", "Has prepared questions plus follow-ups asked in response to answers", "Has no prepared questions", "Is a questionnaire read aloud"], "a": 1, "why": "Examiners (2023): some thought it means a mix of open and closed questions." },
-        { "q": "Which is a conclusion rather than a result?", "o": ["Group A scored a mean of 12, group B 8", "Watching aggression may increase children's aggressive behaviour", "The bar chart shows group A higher", "The median was 10"], "a": 1, "why": "Examiners (2023): some candidates gave a result or description of data rather than a conclusion." }
+        { "q": "In a repeated measures design, participants:", "o": ["Repeat the same condition several times", "Are matched on key variables", "Take part in all the conditions of the IV", "Are different in each condition"], "a": 2, "why": "Examiners (2023): a common error: repeating the same condition is replication, not repeated measures." },
+        { "q": "Inter-rater reliability means:", "o": ["Having more than one observer", "Repeating a study to get the same results", "Using a standardised procedure", "The level of agreement between two or more observers"], "a": 3, "why": "Examiners (2023): candidates still think it simply means having more than one observer." },
+        { "q": "Reliability refers to:", "o": ["Repeating a study (replication)", "Whether a study measures what it claims", "Ethics", "The consistency of a test, task or measure"], "a": 3, "why": "Examiners (2023): many confused reliability with replication." },
+        { "q": "A semi-structured interview:", "o": ["Uses a mix of open and closed questions", "Has no prepared questions", "Has prepared questions plus follow-ups asked in response to answers", "Is a questionnaire read aloud"], "a": 2, "why": "Examiners (2023): some thought it means a mix of open and closed questions." },
+        { "q": "Which is a conclusion rather than a result?", "o": ["Watching aggression may increase children's aggressive behaviour", "Group A scored a mean of 12, group B 8", "The bar chart shows group A higher", "The median was 10"], "a": 0, "why": "Examiners (2023): some candidates gave a result or description of data rather than a conclusion." }
       ],
       "long": [
         { "q": "Explain one difference between an independent measures design and a repeated measures design, and give one advantage of each.", "marks": 4, "paper": "2", "scheme": ["B1: independent measures: different participants in each condition; repeated: the same participants do every condition", "B1: advantage of independent measures: no order effects (practice, fatigue)", "B1: advantage of repeated measures: no participant variables between conditions", "B1: or fewer participants are needed for repeated measures"] },
@@ -28,20 +28,23 @@
       "questions": [
         { "q": "The biological approach explains behaviour mainly through…", "o": ["childhood experiences", "genes, hormones and the brain", "rewards and punishments", "social roles"], "a": 1, "why": "Its core studies examine brain activity, hormones and physiology." },
         { "q": "A strength of brain scanning studies is that they…", "o": ["are cheap", "give objective, quantitative data", "always have high ecological validity", "have no ethical issues"], "a": 1, "why": "Scans measure activity directly, though tasks may be artificial." },
-        { "q": "Which statement about sleep is correct?", "o": ["REM sleep is deeper than NREM sleep", "Stage 3 NREM (slow-wave) is the deepest sleep", "Dreams never occur in REM", "REM only occurs once a night"], "a": 1, "why": "Examiners (2023): many incorrectly stated that REM sleep is deeper than NREM." }
+        { "q": "Which statement about sleep is correct?", "o": ["Stage 3 NREM (slow-wave) is the deepest sleep", "REM sleep is deeper than NREM sleep", "Dreams never occur in REM", "REM only occurs once a night"], "a": 0, "why": "Examiners (2023): many incorrectly stated that REM sleep is deeper than NREM." }
       ]
     },
     {
       "id": "3", "stage": "as", "name": "Cognitive approach",
       "questions": [
-        { "q": "The cognitive approach studies…", "o": ["unconscious drives", "internal mental processes such as memory and perception", "only observable behaviour", "hormones"], "a": 1, "why": "It often uses lab experiments to infer mental processes." }
+        { "q": "The cognitive approach studies…", "o": ["unconscious drives", "internal mental processes such as memory and perception", "only observable behaviour", "hormones"], "a": 1, "why": "It often uses lab experiments to infer mental processes." },
+        { "q": "What does the cognitive approach study?", "o": ["Only observable behaviour", "Internal mental processes such as memory, attention and perception", "Only genes", "Unconscious conflicts"], "a": 1, "why": "It often uses lab experiments." },
+        { "q": "What does the working memory model propose?", "o": ["Memory is one single store", "Memory only stores pictures", "Long-term memory has no limit and no parts", "Short-term memory has several parts, such as the phonological loop and visuo-spatial sketchpad"], "a": 3, "why": "The central executive controls attention." }
       ]
     },
     {
       "id": "4", "stage": "as", "name": "Learning approach",
       "questions": [
         { "q": "In operant conditioning, behaviour followed by a reward is…", "o": ["less likely to recur", "more likely to recur", "forgotten", "punished"], "a": 1, "why": "Positive reinforcement strengthens behaviour." },
-        { "q": "Learning by watching others is called…", "o": ["classical conditioning", "social learning (observational learning)", "habituation", "insight"], "a": 1, "why": "Bandura's work showed children imitate modelled behaviour." }
+        { "q": "Learning by watching others is called…", "o": ["classical conditioning", "social learning (observational learning)", "habituation", "insight"], "a": 1, "why": "Bandura's work showed children imitate modelled behaviour." },
+        { "q": "What is the difference between classical and operant conditioning?", "o": ["They are the same", "Classical links two stimuli; operant links behaviour to its consequences", "Classical uses rewards; operant uses reflexes", "Operant only works on animals"], "a": 1, "why": "Pavlov for classical; Skinner for operant." }
       ],
       "long": [
         { "q": "Bandura et al. (1961) studied the imitation of aggression. Describe two findings of the study.", "marks": 4, "paper": "1", "scheme": ["B1: children who saw an aggressive model imitated more physical and verbal aggression than those who saw a non-aggressive model or no model", "B1: elaborated, e.g. hitting the Bobo doll with the mallet in the same way", "B1: boys showed more imitative physical aggression than girls", "B1: children (especially boys) imitated a same-sex model more"] }
@@ -50,7 +53,9 @@
     {
       "id": "5", "stage": "as", "name": "Social approach",
       "questions": [
-        { "q": "Obedience research studies how people respond to…", "o": ["peers", "orders from an authority figure", "their own thoughts", "rewards"], "a": 1, "why": "Milgram-type studies tested obedience to authority." }
+        { "q": "Obedience research studies how people respond to…", "o": ["peers", "orders from an authority figure", "their own thoughts", "rewards"], "a": 1, "why": "Milgram-type studies tested obedience to authority." },
+        { "q": "In obedience studies, what increases obedience?", "o": ["Seeing others disobey", "The victim being close by", "An authority figure who is present and seen as legitimate", "No uniform"], "a": 2, "why": "Situational variables are features of the setting, not the person." },
+        { "q": "Which is a situational variable rather than a personal one?", "o": ["Personality", "Age", "Self-esteem", "The presence of a uniform"], "a": 3, "why": "Examiners (2023): many gave personal variables when situational ones were asked for." }
       ],
       "long": [
         { "q": "Describe the results of Milgram's (1963) study of obedience.", "marks": 3, "paper": "1", "scheme": ["B1: 26 of the 40 participants (65%) went to the maximum 450 V", "B1: all participants went to at least 300 V", "B1: many showed signs of extreme stress, e.g. sweating, trembling, nervous laughter"] }
@@ -59,7 +64,9 @@
     {
       "id": "6", "stage": "a2", "name": "Clinical psychology",
       "questions": [
-        { "q": "Cognitive behavioural therapy (CBT) works by…", "o": ["changing unhelpful thoughts and behaviours", "medication only", "free association", "brain surgery"], "a": 0, "why": "It targets the link between thinking, feeling and behaviour." }
+        { "q": "Cognitive behavioural therapy (CBT) works by…", "o": ["changing unhelpful thoughts and behaviours", "medication only", "free association", "brain surgery"], "a": 0, "why": "It targets the link between thinking, feeling and behaviour." },
+        { "q": "Which describes a phobia?", "o": ["Any fear of an object", "A mild dislike", "Sadness after loss", "An extreme, irrational fear that causes avoidance"], "a": 3, "why": "Examiners (2023): 'a fear' alone was not creditworthy: it must be extreme." },
+        { "q": "Systematic desensitisation treats phobias by:", "o": ["Sudden full exposure", "Medication only", "Gradual exposure while staying relaxed", "Talking about childhood"], "a": 2, "why": "Flooding is sudden, full exposure." }
       ],
       "long": [
         { "q": "Describe one biological explanation of depression.", "marks": 4, "paper": "3", "scheme": ["B1: names the explanation, e.g. the monoamine (serotonin) hypothesis", "B1: low levels of serotonin / noradrenaline linked to low mood", "B1: evidence, e.g. antidepressants (SSRIs) raise serotonin and reduce symptoms", "B1: or a genetic explanation with twin-study evidence"] }
@@ -68,13 +75,17 @@
     {
       "id": "7", "stage": "a2", "name": "Consumer psychology",
       "questions": [
-        { "q": "Choice overload suggests that too many options…", "o": ["always increase sales", "can make people less likely to choose at all", "have no effect", "improve satisfaction always"], "a": 1, "why": "Studies of jam displays found fewer purchases with more options." }
+        { "q": "Choice overload suggests that too many options…", "o": ["always increase sales", "can make people less likely to choose at all", "have no effect", "improve satisfaction always"], "a": 1, "why": "Studies of jam displays found fewer purchases with more options." },
+        { "q": "Which is a consumer psychology topic?", "o": ["How neurons fire", "Childhood attachment", "Sleep stages", "How store layout affects buying"], "a": 3, "why": "Also: advertising, product choice and the physical environment." },
+        { "q": "Why might music played in a shop affect sales?", "o": ["It has no effect", "It can change mood and the pace of shopping", "It only affects staff", "It always reduces sales"], "a": 1, "why": "Apply studies to the scenario given." }
       ]
     },
     {
       "id": "8", "stage": "a2", "name": "Health psychology",
       "questions": [
-        { "q": "Adherence to medical advice means…", "o": ["the doctor's diagnosis", "the patient following the treatment as advised", "side effects", "a placebo"], "a": 1, "why": "Non-adherence is a major health problem." }
+        { "q": "Adherence to medical advice means…", "o": ["the doctor's diagnosis", "the patient following the treatment as advised", "side effects", "a placebo"], "a": 1, "why": "Non-adherence is a major health problem." },
+        { "q": "What is adherence in health psychology?", "o": ["Being diagnosed", "Getting ill", "A type of placebo", "Following medical advice or treatment as prescribed"], "a": 3, "why": "Measured by self-report, pill counts or biological tests." },
+        { "q": "Which is a technique for managing stress?", "o": ["Ignoring symptoms", "Working more hours", "Biofeedback", "Avoiding sleep"], "a": 2, "why": "Explain how it reduces stress, not just anxiety." }
       ],
       "long": [
         { "q": "Evaluate the use of fear appeals in health promotion.", "marks": 4, "paper": "3", "scheme": ["B1: strength: can motivate change when people feel able to act (efficacy)", "B1: evidence from a study", "B1: weakness: very high fear can cause denial or avoidance", "B1: a judgement"] }
@@ -83,7 +94,9 @@
     {
       "id": "9", "stage": "a2", "name": "Organisational psychology",
       "questions": [
-        { "q": "Which theory says workers are motivated by the expected value of rewards?", "o": ["Expectancy theory", "Maslow's hierarchy", "Classical conditioning", "Social identity theory"], "a": 0, "why": "Motivation = expectancy × instrumentality × valence (Vroom)." }
+        { "q": "Which theory says workers are motivated by the expected value of rewards?", "o": ["Expectancy theory", "Maslow's hierarchy", "Classical conditioning", "Social identity theory"], "a": 0, "why": "Motivation = expectancy × instrumentality × valence (Vroom)." },
+        { "q": "What is a theory of motivation at work?", "o": ["Classical conditioning only", "Psychodynamic theory of dreams", "Need theories such as Maslow's hierarchy", "The multi-store model"], "a": 2, "why": "Others: goal-setting, expectancy theory." },
+        { "q": "Which leadership style involves staff in decisions?", "o": ["Democratic", "Autocratic", "Laissez-faire", "Transactional only"], "a": 0, "why": "Structure longer answers by issue rather than by study." }
       ]
     }
   ]

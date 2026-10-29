@@ -8,7 +8,8 @@
       "id": "1", "name": "The design process",
       "questions": [
         { "q": "A design specification", "o": ["lists the requirements a product must meet", "is the final product", "is a sketch", "is the evaluation"], "a": 0, "why": "It's written after research and used to evaluate." },
-        { "q": "Anthropometrics is", "o": ["the study of human body measurements for design", "the study of materials", "a type of joint", "the cost of production"], "a": 0, "why": "Ergonomics uses this data." }
+        { "q": "Anthropometrics is", "o": ["the study of human body measurements for design", "the study of materials", "a type of joint", "the cost of production"], "a": 0, "why": "Ergonomics uses this data." },
+        { "q": "Why is a design brief written?", "o": ["To list tools", "To evaluate the product", "To show the final drawing", "To state the problem, the user and the context clearly"], "a": 3, "why": "The specification then turns it into measurable points." }
       ],
       "long": [
         { "q": "Explain why a designer would write a specification before producing ideas.", "marks": 3, "paper": "1", "scheme": ["B1: it sets measurable requirements (function, size, cost, users)", "B1: ideas can be judged against it", "B1: the final product is evaluated against it"] }
@@ -29,33 +30,40 @@
       "id": "3", "name": "Manufacturing processes",
       "questions": [
         { "q": "Injection moulding is best suited to", "o": ["mass production of identical plastic parts", "one-off wooden furniture", "casting bronze", "hand-sewing"], "a": 0, "why": "High setup cost, very low unit cost." },
-        { "q": "A jig is used to", "o": ["guide a tool so parts are made accurately and repeatably", "hold a drink", "measure temperature", "join wood"], "a": 0, "why": "Useful in batch production." }
+        { "q": "A jig is used to", "o": ["guide a tool so parts are made accurately and repeatably", "hold a drink", "measure temperature", "join wood"], "a": 0, "why": "Useful in batch production." },
+        { "q": "Which process is used to shape thin thermoplastic sheet over a mould?", "o": ["Sand casting", "Turning on a lathe", "Forging", "Vacuum forming"], "a": 3, "why": "Heat the sheet, then the vacuum pulls it over the mould." }
       ]
     },
     {
       "id": "4", "name": "Product analysis and sustainability",
       "questions": [
-        { "q": "Designing for disassembly helps", "o": ["recycling and repair at the end of a product's life", "make products cheaper to sell", "hide fixings", "speed up delivery"], "a": 0, "why": "Part of the circular economy." }
+        { "q": "Designing for disassembly helps", "o": ["recycling and repair at the end of a product's life", "make products cheaper to sell", "hide fixings", "speed up delivery"], "a": 0, "why": "Part of the circular economy." },
+        { "q": "Which material is most sustainable for a disposable product?", "o": ["Mixed plastics glued together", "Chrome-plated steel", "A biodegradable or recyclable material", "Non-recyclable composite"], "a": 2, "why": "Consider the whole life cycle." },
+        { "q": "What is the main purpose of product analysis?", "o": ["To copy it exactly", "To sell it", "To repair it", "To find out how and why an existing product was designed and made"], "a": 3, "why": "Consider function, materials, manufacture, user and sustainability." }
       ]
     },
     {
       "id": "5", "name": "Graphic communication",
       "questions": [
         { "q": "An exploded drawing shows", "o": ["how parts fit together", "a product in use", "a cross-section", "colour schemes"], "a": 0, "why": "Parts are drawn spaced along their assembly lines." },
-        { "q": "Orthographic projection shows", "o": ["front, side and plan views to scale", "a 3D view in perspective", "an exploded view", "a free sketch"], "a": 0, "why": "Used for manufacturing drawings." }
+        { "q": "Orthographic projection shows", "o": ["front, side and plan views to scale", "a 3D view in perspective", "an exploded view", "a free sketch"], "a": 0, "why": "Used for manufacturing drawings." },
+        { "q": "What is an exploded drawing used for?", "o": ["To show the price", "To show the colour scheme only", "To replace the specification", "To show how parts fit together"], "a": 3, "why": "Parts are drawn apart along assembly lines." }
       ]
     },
     {
       "id": "6", "name": "Systems and control",
       "questions": [
         { "q": "A potential divider with an LDR can be used to", "o": ["switch on a light when it gets dark", "measure temperature", "store energy", "increase voltage"], "a": 0, "why": "The LDR's resistance rises in the dark." },
-        { "q": "A cam converts", "o": ["rotary motion into reciprocating motion", "linear into rotary", "electrical into light", "heat into motion"], "a": 0, "why": "The follower rises and falls." }
+        { "q": "A cam converts", "o": ["rotary motion into reciprocating motion", "linear into rotary", "electrical into light", "heat into motion"], "a": 0, "why": "The follower rises and falls." },
+        { "q": "In a circuit, what does an LDR do?", "o": ["It produces light", "It stores charge", "It switches at a set temperature", "Its resistance changes with light level"], "a": 3, "why": "Used as a light sensor in a potential divider." }
       ]
     },
     {
       "id": "7", "name": "Coursework: design and make project",
       "questions": [
-        { "q": "The project folio should show", "o": ["research, ideas, development, making and evaluation", "only the final product", "only sketches", "only an evaluation"], "a": 0, "why": "Every stage of the design process is marked." }
+        { "q": "The project folio should show", "o": ["research, ideas, development, making and evaluation", "only the final product", "only sketches", "only an evaluation"], "a": 0, "why": "Every stage of the design process is marked." },
+        { "q": "In coursework, what does good development show?", "o": ["One idea drawn neatly", "Ideas improved through models, tests and feedback", "Photos with no notes", "Copied products"], "a": 1, "why": "Explain each decision." },
+        { "q": "What should testing the final product check?", "o": ["Only its appearance", "How long it took", "The cost of tools", "Each point of the specification"], "a": 3, "why": "Use users and measurements as evidence." }
       ]
     }
   ]

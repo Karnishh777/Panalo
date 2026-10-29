@@ -52,7 +52,7 @@
       "questions": [
         { "q": "Which indicator combines income, education and life expectancy?", "o": ["GDP", "HDI", "CPI", "Gini"], "a": 1, "why": "The Human Development Index measures more than income." },
         { "q": "Absolute poverty means…", "o": ["being poorer than average", "not having enough for basic needs", "low inflation", "no savings"], "a": 1, "why": "Relative poverty compares income with others in the country." },
-        { "q": "Why does the size of a country's population not change its death rate directly?", "o": ["Death rate is measured per 1000 of the population", "Death rate only counts children", "Death rate is a total number", "Population does not affect deaths"], "a": 0, "why": "Examiners (2023): a common error was to cite population size; death rate is per 1000 people, so size cancels out." }
+        { "q": "Why does the size of a country's population not change its death rate directly?", "o": ["Death rate only counts children", "Death rate is measured per 1000 of the population", "Death rate is a total number", "Population does not affect deaths"], "a": 1, "why": "Examiners (2023): a common error was to cite population size; death rate is per 1000 people, so size cancels out." }
       ]
     },
     {
@@ -61,7 +61,7 @@
         { "q": "A tariff is…", "o": ["a limit on quantity", "a tax on imports", "a subsidy to exporters", "an exchange rate"], "a": 1, "why": "Quotas limit quantity; tariffs raise import prices." },
         { "q": "If a country's currency depreciates, its exports become…", "o": ["more expensive abroad", "cheaper abroad", "illegal", "unchanged"], "a": 1, "why": "Foreign buyers need less of their currency to buy the same goods." },
         { "q": "A current account deficit means…", "o": ["exports of goods and services exceed imports", "imports of goods and services exceed exports", "the government has a deficit", "inflation is high"], "a": 1, "why": "The current account mainly records trade in goods and services plus income flows." },
-        { "q": "What is the opportunity cost of a firm exporting its goods?", "o": ["Importing goods", "Selling those goods on the home market", "Paying tariffs", "Exchange rate changes"], "a": 1, "why": "Examiners (2023): a number thought the opportunity cost of exporting is importing. It is the next best alternative: selling at home." }
+        { "q": "What is the opportunity cost of a firm exporting its goods?", "o": ["Selling those goods on the home market", "Importing goods", "Paying tariffs", "Exchange rate changes"], "a": 0, "why": "Examiners (2023): a number thought the opportunity cost of exporting is importing. It is the next best alternative: selling at home." }
       ],
       "long": [
         { "q": "Explain two benefits of free trade for a country.", "marks": 4, "paper": "2", "scheme": ["B1: one benefit, e.g. countries specialise where they have a comparative advantage", "B1: explained: more output overall, lower costs and prices", "B1: a second benefit, e.g. more choice for consumers / bigger markets for firms / competition raising efficiency", "B1: explained"] }

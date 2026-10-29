@@ -8,7 +8,8 @@
       "id": "1", "stage": "as", "name": "Socialisation and the creation of social identity",
       "questions": [
         { "q": "Primary socialisation happens mainly through…", "o": ["the media", "the family", "the workplace", "religion"], "a": 1, "why": "It is the first stage of learning norms and values, in early childhood." },
-        { "q": "Norms are…", "o": ["laws only", "shared expectations about how to behave in a situation", "beliefs about God", "statistics"], "a": 1, "why": "Values are broader beliefs about what is important." }
+        { "q": "Norms are…", "o": ["laws only", "shared expectations about how to behave in a situation", "beliefs about God", "statistics"], "a": 1, "why": "Values are broader beliefs about what is important." },
+        { "q": "What is primary socialisation?", "o": ["Learning at school", "Learning from the media as an adult", "Learning the basic norms and values of society in early childhood, mainly from the family", "Learning a job"], "a": 2, "why": "Examiners (2023): many answers did not focus on primary socialisation." }
       ],
       "long": [
         { "q": "Explain what is meant by socialisation, referring to two agencies of socialisation.", "marks": 4, "paper": "1", "scheme": ["B1: the process of learning the norms and values of a culture", "B1: primary socialisation, e.g. the family, in early childhood", "B1: secondary socialisation, e.g. school, peers, the media, religion", "B1: explained how one agency transmits norms, e.g. sanctions, role models"] }
@@ -32,8 +33,8 @@
       "questions": [
         { "q": "A nuclear family consists of…", "o": ["three generations", "two parents and their dependent children", "one parent and children", "unrelated adults"], "a": 1, "why": "Extended families include other relatives." },
         { "q": "Functionalists see the family as…", "o": ["a source of conflict", "performing essential functions for society", "oppressing women", "irrelevant"], "a": 1, "why": "Marxists and feminists offer critical views." },
-        { "q": "Why is a reconstituted (step) family not automatically evidence of family diversity?", "o": ["It is always single-parent", "It can still be a nuclear family structure", "It is illegal in many countries", "It has no children"], "a": 1, "why": "Examiners (2023): a common misconception was that reconstituted families are an example of diversity, when they can still be nuclear." },
-        { "q": "A question asks for the main reason for the increase in divorce. Which answer addresses it?", "o": ["Domestic violence causes divorce", "Changes in law and attitudes made divorce easier and more acceptable", "Women prefer cohabitation", "Couples marry later"], "a": 1, "why": "Examiners (2023): weak answers gave a reason why people divorce rather than why divorce has increased." }
+        { "q": "Why is a reconstituted (step) family not automatically evidence of family diversity?", "o": ["It is always single-parent", "It is illegal in many countries", "It has no children", "It can still be a nuclear family structure"], "a": 3, "why": "Examiners (2023): a common misconception was that reconstituted families are an example of diversity, when they can still be nuclear." },
+        { "q": "A question asks for the main reason for the increase in divorce. Which answer addresses it?", "o": ["Domestic violence causes divorce", "Women prefer cohabitation", "Couples marry later", "Changes in law and attitudes made divorce easier and more acceptable"], "a": 3, "why": "Examiners (2023): weak answers gave a reason why people divorce rather than why divorce has increased." }
       ],
       "long": [
         { "q": "Explain two ways in which family roles may have changed in modern industrial societies.", "marks": 4, "paper": "2", "scheme": ["B1: one change, e.g. more symmetrical / joint conjugal roles", "B1: explained, e.g. more women in paid work, men sharing domestic tasks (Young and Willmott)", "B1: a second change, e.g. the 'dual burden' / changing children's roles / more lone-parent households", "B1: explained with a reason or evidence"] }
@@ -53,13 +54,17 @@
     {
       "id": "5", "stage": "a2", "name": "Globalisation",
       "questions": [
-        { "q": "Cultural globalisation refers to…", "o": ["trade only", "the spread of ideas, values and media across the world", "migration only", "military alliances"], "a": 1, "why": "Critics link it to cultural homogenisation." }
+        { "q": "Cultural globalisation refers to…", "o": ["trade only", "the spread of ideas, values and media across the world", "migration only", "military alliances"], "a": 1, "why": "Critics link it to cultural homogenisation." },
+        { "q": "What is meant by globalisation?", "o": ["One country controlling the world", "The growing interconnection of societies through trade, communication and culture", "Only the spread of the internet", "Migration within a country"], "a": 1, "why": "Consider economic, political and cultural globalisation." },
+        { "q": "Which is a criticism of the view that globalisation creates one global culture?", "o": ["Everyone watches the same films", "Trade has increased", "The internet is worldwide", "Local cultures adapt global products (glocalisation)"], "a": 3, "why": "Hybrid cultures challenge the idea of a single culture." }
       ]
     },
     {
       "id": "6", "stage": "a2", "name": "Media",
       "questions": [
-        { "q": "Agenda setting means the media…", "o": ["tells people what to think", "influences which issues people think about", "has no effect", "only reports facts"], "a": 1, "why": "Choosing what to cover shapes public priorities." }
+        { "q": "Agenda setting means the media…", "o": ["tells people what to think", "influences which issues people think about", "has no effect", "only reports facts"], "a": 1, "why": "Choosing what to cover shapes public priorities." },
+        { "q": "What does the pluralist view say about media content?", "o": ["It is controlled by the ruling class", "It reflects audience demand and a variety of views", "It is controlled by the state", "It has no effect"], "a": 1, "why": "Marxists argue owners control content." },
+        { "q": "What is the hypodermic syringe model?", "o": ["Audiences choose and interpret media actively", "Audiences passively absorb media messages", "Opinion leaders filter messages", "Media has no effect"], "a": 1, "why": "Uses and gratifications and two-step flow see audiences as more active." }
       ],
       "long": [
         { "q": "Assess the view that the media set the agenda for public debate.", "marks": 4, "paper": "4", "scheme": ["B1: agenda-setting: the media choose what is newsworthy (gatekeeping)", "B1: evidence, e.g. news values (Galtung and Ruge)", "B1: counter: audiences are active; social media lets the public set agendas", "B1: a supported judgement"] }
@@ -68,7 +73,9 @@
     {
       "id": "7", "stage": "a2", "name": "Religion",
       "questions": [
-        { "q": "Secularisation is…", "o": ["the growth of religion", "the decline in the social significance of religion", "a religious festival", "a type of church"], "a": 1, "why": "Debates focus on how to measure it." }
+        { "q": "Secularisation is…", "o": ["the growth of religion", "the decline in the social significance of religion", "a religious festival", "a type of church"], "a": 1, "why": "Debates focus on how to measure it." },
+        { "q": "What is secularisation?", "o": ["The process by which religion loses social significance", "The growth of new religions", "Religious conversion", "Separation of families"], "a": 0, "why": "Evidence: falling attendance, but beliefs may continue privately." },
+        { "q": "Which view sees religion as promoting social solidarity?", "o": ["Marxism", "Functionalism (Durkheim)", "Feminism", "Postmodernism"], "a": 1, "why": "Marxists see religion as ideology that keeps the poor passive." }
       ]
     }
   ]

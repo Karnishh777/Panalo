@@ -8,7 +8,8 @@
       "id": "1", "name": "The design process", "stage": "as",
       "questions": [
         { "q": "A design specification", "o": ["lists the requirements a product must meet", "is the final product", "is a sketch", "is the evaluation"], "a": 0, "why": "It's written after research and used to evaluate." },
-        { "q": "Anthropometrics is", "o": ["the study of human body measurements for design", "the study of materials", "a type of joint", "the cost of production"], "a": 0, "why": "Ergonomics uses this data." }
+        { "q": "Anthropometrics is", "o": ["the study of human body measurements for design", "the study of materials", "a type of joint", "the cost of production"], "a": 0, "why": "Ergonomics uses this data." },
+        { "q": "What is a design specification?", "o": ["A sketch of the final idea", "The list of tools used", "A list of measurable requirements the product must meet", "A review of the product"], "a": 2, "why": "Each point should be testable in evaluation." }
       ]
     },
     {
@@ -23,7 +24,8 @@
       "id": "3", "name": "Manufacturing processes", "stage": "as",
       "questions": [
         { "q": "Injection moulding is best suited to", "o": ["mass production of identical plastic parts", "one-off wooden furniture", "casting bronze", "hand-sewing"], "a": 0, "why": "High setup cost, very low unit cost." },
-        { "q": "A jig is used to", "o": ["guide a tool so parts are made accurately and repeatably", "hold a drink", "measure temperature", "join wood"], "a": 0, "why": "Useful in batch production." }
+        { "q": "A jig is used to", "o": ["guide a tool so parts are made accurately and repeatably", "hold a drink", "measure temperature", "join wood"], "a": 0, "why": "Useful in batch production." },
+        { "q": "Which process makes many identical hollow plastic bottles?", "o": ["Vacuum forming", "Sand casting", "Laser cutting", "Blow moulding"], "a": 3, "why": "Injection moulding makes solid parts; vacuum forming makes thin shells." }
       ],
       "long": [
         { "q": "Compare injection moulding and vacuum forming for making 10 000 plastic phone cases.", "marks": 4, "paper": "1", "scheme": ["B1: injection moulding: high mould cost but very low unit cost at volume", "B1: produces precise, detailed, varied wall thickness", "B1: vacuum forming: cheap moulds, but thin sheets and less detail", "B1: judgement: injection moulding suits 10 000 units"] }
@@ -32,39 +34,49 @@
     {
       "id": "4", "name": "Product analysis and sustainability", "stage": "as",
       "questions": [
-        { "q": "Designing for disassembly helps", "o": ["recycling and repair at the end of a product's life", "make products cheaper to sell", "hide fixings", "speed up delivery"], "a": 0, "why": "Part of the circular economy." }
+        { "q": "Designing for disassembly helps", "o": ["recycling and repair at the end of a product's life", "make products cheaper to sell", "hide fixings", "speed up delivery"], "a": 0, "why": "Part of the circular economy." },
+        { "q": "What does a life cycle assessment consider?", "o": ["The environmental impact from raw materials to disposal", "Only the price", "Only how it looks", "Only the factory's profit"], "a": 0, "why": "Includes manufacture, transport, use and end of life." },
+        { "q": "Which design choice makes a product easier to recycle?", "o": ["Using a single material that is easy to separate", "Gluing several plastics together", "Adding mixed coatings", "Using more fixings"], "a": 0, "why": "Design for disassembly helps reuse and recycling." }
       ]
     },
     {
       "id": "5", "name": "Graphic communication", "stage": "as",
       "questions": [
         { "q": "An exploded drawing shows", "o": ["how parts fit together", "a product in use", "a cross-section", "colour schemes"], "a": 0, "why": "Parts are drawn spaced along their assembly lines." },
-        { "q": "Orthographic projection shows", "o": ["front, side and plan views to scale", "a 3D view in perspective", "an exploded view", "a free sketch"], "a": 0, "why": "Used for manufacturing drawings." }
+        { "q": "Orthographic projection shows", "o": ["front, side and plan views to scale", "a 3D view in perspective", "an exploded view", "a free sketch"], "a": 0, "why": "Used for manufacturing drawings." },
+        { "q": "What does third-angle orthographic projection show?", "o": ["One 3D view", "A perspective drawing", "Only the cross-section", "Front, plan and side views laid out with standard positions"], "a": 3, "why": "The plan goes above the front view in third angle." }
       ]
     },
     {
       "id": "6", "name": "Systems and control", "stage": "as",
       "questions": [
         { "q": "A potential divider with an LDR can be used to", "o": ["switch on a light when it gets dark", "measure temperature", "store energy", "increase voltage"], "a": 0, "why": "The LDR's resistance rises in the dark." },
-        { "q": "A cam converts", "o": ["rotary motion into reciprocating motion", "linear into rotary", "electrical into light", "heat into motion"], "a": 0, "why": "The follower rises and falls." }
+        { "q": "A cam converts", "o": ["rotary motion into reciprocating motion", "linear into rotary", "electrical into light", "heat into motion"], "a": 0, "why": "The follower rises and falls." },
+        { "q": "In a control system, what is an input transducer?", "o": ["A motor", "A buzzer", "A battery", "A sensor that turns a physical change into an electrical signal"], "a": 3, "why": "For example a thermistor or light-dependent resistor." }
       ]
     },
     {
       "id": "7", "name": "AS design and make project", "stage": "as",
       "questions": [
-        { "q": "A design brief", "o": ["is a short statement of the problem to be solved", "is the final evaluation", "is a materials list", "is a test report"], "a": 0, "why": "The specification comes after research." }
+        { "q": "A design brief", "o": ["is a short statement of the problem to be solved", "is the final evaluation", "is a materials list", "is a test report"], "a": 0, "why": "The specification comes after research." },
+        { "q": "What should the evaluation of a design project do?", "o": ["Repeat the design brief", "Describe the making only", "Say it is perfect", "Test the product against the specification and suggest justified improvements"], "a": 3, "why": "Use evidence from tests and users." },
+        { "q": "Why build and test models during development?", "o": ["To save writing", "Because the brief says so", "To check function, size and appearance before the final product", "To decorate the folder"], "a": 2, "why": "Record what each model taught you." }
       ]
     },
     {
       "id": "8", "name": "Product design (A Level)", "stage": "a2",
       "questions": [
-        { "q": "Which is an advantage of CAD/CAM?", "o": ["accurate, repeatable manufacture from digital designs", "no need for designers", "always cheaper for one-offs", "no need for materials"], "a": 0, "why": "Accuracy, speed and repeatability." }
+        { "q": "Which is an advantage of CAD/CAM?", "o": ["accurate, repeatable manufacture from digital designs", "no need for designers", "always cheaper for one-offs", "no need for materials"], "a": 0, "why": "Accuracy, speed and repeatability." },
+        { "q": "What is meant by ergonomics?", "o": ["Designing products to fit the people who use them", "Designing only for appearance", "Reducing material cost", "Making products heavier"], "a": 0, "why": "Uses anthropometric data, such as hand sizes." },
+        { "q": "What is planned obsolescence?", "o": ["Making a product last for ever", "Designing a product to have a limited useful life", "Recycling a product", "Testing a prototype"], "a": 1, "why": "It raises sustainability concerns." }
       ]
     },
     {
       "id": "9", "name": "A Level design and make project", "stage": "a2",
       "questions": [
-        { "q": "An A Level project evaluation should", "o": ["test the product against the specification, with users", "describe how you felt", "only list the materials", "skip testing"], "a": 0, "why": "Objective testing and user feedback." }
+        { "q": "An A Level project evaluation should", "o": ["test the product against the specification, with users", "describe how you felt", "only list the materials", "skip testing"], "a": 0, "why": "Objective testing and user feedback." },
+        { "q": "Why is a Gantt chart useful in a project?", "o": ["It shows the circuit", "It plans tasks against time so progress can be checked", "It lists materials", "It replaces the specification"], "a": 1, "why": "Update it as the project changes." },
+        { "q": "What makes a client's feedback useful?", "o": ["It is ignored", "It praises the product only", "It is recorded and used to change the design", "It is collected after the exam"], "a": 2, "why": "Show how each change came from evidence." }
       ]
     }
   ]

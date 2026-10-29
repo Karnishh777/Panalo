@@ -10,7 +10,7 @@
         { "q": "A positive statement is one that…", "o": ["contains a value judgement", "can be tested against evidence", "is always true", "is about the future"], "a": 1, "why": "Normative statements contain opinions about what ought to be." },
         { "q": "The ceteris paribus assumption means…", "o": ["all else stays equal", "prices are fixed", "markets are perfect", "governments don't intervene"], "a": 0, "why": "It isolates the effect of one variable." },
         { "q": "In a mixed economy, resources are allocated by…", "o": ["the market only", "the state only", "both the market and the state", "tradition"], "a": 2, "why": "Most economies combine private markets with public provision." },
-        { "q": "An economy has unemployed workers. How is this shown on a production possibility curve?", "o": ["A shift of the PPC to the left", "A point inside the PPC", "A point outside the PPC", "A shift of the PPC to the right"], "a": 1, "why": "Examiners (2023): the most common error was shifting the PPC left rather than showing a point inside the curve." }
+        { "q": "An economy has unemployed workers. How is this shown on a production possibility curve?", "o": ["A shift of the PPC to the left", "A point outside the PPC", "A point inside the PPC", "A shift of the PPC to the right"], "a": 2, "why": "Examiners (2023): the most common error was shifting the PPC left rather than showing a point inside the curve." }
       ],
       "long": [
         { "q": "Use a production possibility curve to explain the meaning of opportunity cost.", "marks": 3, "paper": "2", "scheme": ["B1: opportunity cost is the next best alternative given up", "B1: a PPC shows the combinations of two goods that can be made with all resources fully used", "B1: moving along the curve, making more of one good means making less of the other: that amount is the opportunity cost"] }
@@ -45,8 +45,8 @@
         { "q": "Aggregate demand is…", "o": ["C + I + G + (X − M)", "C + S + T", "GDP − taxes", "C + I only"], "a": 0, "why": "Consumption, investment, government spending and net exports." },
         { "q": "Cost-push inflation is caused by…", "o": ["rising demand", "rising costs of production, such as wages or oil", "falling interest rates", "a budget surplus"], "a": 1, "why": "Higher costs shift short-run aggregate supply left." },
         { "q": "Which is counted as unemployed?", "o": ["A retired person", "A student not seeking work", "Someone able and willing to work and actively seeking work", "A homemaker not seeking work"], "a": 2, "why": "The ILO definition requires being without work, available and looking." },
-        { "q": "On an AD/AS diagram, what should the axes be labelled?", "o": ["Price and quantity", "Price level and real output (real GDP)", "Price and output", "Demand and supply"], "a": 1, "why": "Examiners (2023): many labelled the axes 'price' and 'quantity' and the curves 'D' and 'S' instead of AD and AS." },
-        { "q": "Demand-pull inflation is best explained as:", "o": ["A rise in costs of production", "An increase in AD not matched by spare capacity in AS", "A fall in the money supply", "Rising unemployment"], "a": 1, "why": "Examiners (2023): many did not refer to AD, or did not say the AD rise is not matched by spare capacity." }
+        { "q": "On an AD/AS diagram, what should the axes be labelled?", "o": ["Price level and real output (real GDP)", "Price and quantity", "Price and output", "Demand and supply"], "a": 0, "why": "Examiners (2023): many labelled the axes 'price' and 'quantity' and the curves 'D' and 'S' instead of AD and AS." },
+        { "q": "Demand-pull inflation is best explained as:", "o": ["A rise in costs of production", "A fall in the money supply", "An increase in AD not matched by spare capacity in AS", "Rising unemployment"], "a": 2, "why": "Examiners (2023): many did not refer to AD, or did not say the AD rise is not matched by spare capacity." }
       ],
       "long": [
         { "q": "Distinguish between demand-pull and cost-push inflation.", "marks": 4, "paper": "2", "scheme": ["B1: demand-pull: aggregate demand rises faster than aggregate supply / the economy's capacity", "B1: an example cause: rising consumer spending, lower interest rates, more government spending", "B1: cost-push: rising costs of production push up the price level (AS shifts left)", "B1: an example cause: higher wages, oil or import prices, a weaker exchange rate"] }
@@ -56,7 +56,8 @@
       "id": "5", "stage": "as", "name": "Government macroeconomic intervention",
       "questions": [
         { "q": "Expansionary fiscal policy involves…", "o": ["raising taxes", "raising government spending or cutting taxes", "raising interest rates", "selling bonds"], "a": 1, "why": "It boosts aggregate demand." },
-        { "q": "Supply-side policies aim to…", "o": ["raise aggregate demand quickly", "increase the productive capacity of the economy", "cause inflation", "cut exports"], "a": 1, "why": "Examples: education, training, deregulation, infrastructure." }
+        { "q": "Supply-side policies aim to…", "o": ["raise aggregate demand quickly", "increase the productive capacity of the economy", "cause inflation", "cut exports"], "a": 1, "why": "Examples: education, training, deregulation, infrastructure." },
+        { "q": "Which is an example of expansionary fiscal policy?", "o": ["Raising interest rates", "Cutting income tax", "Cutting government spending", "Selling government bonds"], "a": 1, "why": "Fiscal policy uses tax and spending; monetary policy uses interest rates and money supply." }
       ],
       "long": [
         { "q": "Explain how a rise in the central bank's rate of interest might reduce inflation.", "marks": 4, "paper": "2", "scheme": ["B1: borrowing becomes more expensive and saving more rewarding", "B1: so consumption and investment fall", "B1: aggregate demand falls (also via a stronger exchange rate cutting net exports)", "B1: so demand-pull pressure on the price level eases"] }
@@ -89,7 +90,8 @@
       "id": "8", "stage": "a2", "name": "Government microeconomic intervention (A Level)",
       "questions": [
         { "q": "The Gini coefficient measures…", "o": ["inflation", "income inequality", "unemployment", "growth"], "a": 1, "why": "0 means perfect equality; 1 means maximum inequality." },
-        { "q": "Government failure occurs when…", "o": ["markets fail", "intervention leads to a less efficient allocation of resources", "taxes are cut", "a public good is provided"], "a": 1, "why": "Causes include poor information and unintended consequences." }
+        { "q": "Government failure occurs when…", "o": ["markets fail", "intervention leads to a less efficient allocation of resources", "taxes are cut", "a public good is provided"], "a": 1, "why": "Causes include poor information and unintended consequences." },
+        { "q": "Why might a government provide education even though it is excludable?", "o": ["It is a public good", "It is non-rival", "Markets always over-supply it", "It is a merit good with positive externalities that would be under-consumed"], "a": 3, "why": "Examiners (2023): link merit goods, positive externalities and allocative efficiency." }
       ]
     },
     {
@@ -97,7 +99,7 @@
       "questions": [
         { "q": "The multiplier is larger when the marginal propensity to consume is…", "o": ["smaller", "larger", "zero", "negative"], "a": 1, "why": "In a closed economy without government, k = 1/(1 − MPC)." },
         { "q": "The natural rate of unemployment is associated with…", "o": ["cyclical unemployment", "frictional and structural unemployment", "zero unemployment", "seasonal unemployment only"], "a": 1, "why": "It exists when the labour market is in equilibrium." },
-        { "q": "Which best describes long-run economic growth?", "o": ["A rise in AD in the short run", "An increase in the productive capacity of the economy (LRAS shifts right)", "A fall in unemployment", "A rise in the price level"], "a": 1, "why": "Examiners (2023): answers stressed short-run growth from AD rather than potential growth from rising LRAS." }
+        { "q": "Which best describes long-run economic growth?", "o": ["A rise in AD in the short run", "A fall in unemployment", "A rise in the price level", "An increase in the productive capacity of the economy (LRAS shifts right)"], "a": 3, "why": "Examiners (2023): answers stressed short-run growth from AD rather than potential growth from rising LRAS." }
       ],
       "long": [
         { "q": "Explain how the multiplier works when government spending rises by $10 billion and the marginal propensity to withdraw is 0.25.", "marks": 4, "paper": "4", "scheme": ["B1: multiplier = 1/MPW = 4", "B1: national income rises by $40 billion", "B1: each round of spending becomes someone's income, part of which is spent again", "B1: withdrawals (saving, tax, imports) stop it rising for ever"], "ans": "$40 billion" }
@@ -106,7 +108,9 @@
     {
       "id": "10", "stage": "a2", "name": "Government macroeconomic intervention (A Level)",
       "questions": [
-        { "q": "Quantitative easing means the central bank…", "o": ["raises interest rates", "buys financial assets to increase the money supply", "cuts government spending", "prints coins only"], "a": 1, "why": "It aims to lower long-term interest rates and boost spending." }
+        { "q": "Quantitative easing means the central bank…", "o": ["raises interest rates", "buys financial assets to increase the money supply", "cuts government spending", "prints coins only"], "a": 1, "why": "It aims to lower long-term interest rates and boost spending." },
+        { "q": "What does the Phillips curve show in the short run?", "o": ["A direct link between GDP and exports", "That inflation never changes", "An inverse relationship between unemployment and inflation", "A rise in both unemployment and inflation always"], "a": 2, "why": "In the long run it may be vertical at the natural rate." },
+        { "q": "Which policy is supply-side?", "o": ["Spending on training to raise labour productivity", "Cutting interest rates", "Raising government spending on benefits", "Devaluing the currency"], "a": 0, "why": "Supply-side policies aim to shift LRAS to the right." }
       ],
       "long": [
         { "q": "Assess whether supply-side policies are better than demand-side policies at reducing unemployment.", "marks": 5, "paper": "4", "scheme": ["B1: supply-side: training, labour-market flexibility reduce structural unemployment", "B1: but they take time and may be costly", "B1: demand-side: fiscal or monetary expansion reduces cyclical unemployment quickly", "B1: but risk inflation and do not fix structural problems", "B1: a judgement depending on the cause of unemployment"] }
@@ -115,7 +119,9 @@
     {
       "id": "11", "stage": "a2", "name": "International economic issues (A Level)",
       "questions": [
-        { "q": "Which measure of development adjusts income for differences in prices between countries?", "o": ["Nominal GDP", "GDP at purchasing power parity", "Exports", "CPI"], "a": 1, "why": "PPP compares how much a unit of income buys in each country." }
+        { "q": "Which measure of development adjusts income for differences in prices between countries?", "o": ["Nominal GDP", "GDP at purchasing power parity", "Exports", "CPI"], "a": 1, "why": "PPP compares how much a unit of income buys in each country." },
+        { "q": "What does the Marshall–Lerner condition state?", "o": ["Depreciation improves the current account if the sum of export and import demand elasticities exceeds 1", "Exports always rise after depreciation", "Imports are always inelastic", "The current account always balances"], "a": 0, "why": "The J-curve shows it may worsen first." },
+        { "q": "Which indicator measures development beyond income?", "o": ["GDP", "The Human Development Index", "The inflation rate", "The exchange rate"], "a": 1, "why": "HDI combines income, education and life expectancy." }
       ],
       "long": [
         { "q": "Explain the possible effects of a depreciation of a country's currency on its current account.", "marks": 4, "paper": "4", "scheme": ["B1: exports become cheaper abroad, imports dearer at home", "B1: export volumes rise, import volumes fall", "B1: the current account improves if PED for exports and imports is elastic (Marshall–Lerner)", "B1: J-curve: it may worsen first"] }
