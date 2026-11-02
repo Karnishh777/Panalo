@@ -91,7 +91,7 @@ try {
     await page.waitForTimeout(600);
     check("the landing page is shown to a visitor", await page.isVisible("#landing"));
     check("the landing explains who it is for", /intensely curious/i.test(await page.textContent(".hero")));
-    check("the welcome is the climb: the photo, one line, one way in", /Every topic is\s*a step up/.test(await page.textContent(".hero-title")) && /climb-night/.test(await page.evaluate(() => getComputedStyle(document.querySelector(".hero"), "::before").backgroundImage)) && !(await page.isVisible("#hero-globe")));
+    check("the welcome is Pan on the edge of your world: the art, one line, two ways in", /A world made of\s*what you actually do/.test(await page.textContent(".hero-title")) && /pan\/hero/.test(await page.evaluate(() => getComputedStyle(document.querySelector(".hero"), "::before").backgroundImage)) && (await page.$$(".hero-actions a")).length === 2);
     // The slider is in the page from the start, but the demo only starts
     // listening once its globes are built: keep nudging until it answers.
     const demoAnswers = await page
@@ -125,16 +125,36 @@ try {
       return { ok: hrefs.every((h) => document.querySelector(h)), stars: hrefs.length, chapters: document.querySelectorAll("#landing section[data-chapter]").length };
     });
     check("the thread has a star for every chapter", thread.ok && thread.stars === thread.chapters && thread.stars > 5);
-    await page.evaluate(() => document.getElementById("numbers").scrollIntoView());
+    await page.evaluate(() => document.getElementById("autopilot").scrollIntoView());
     await page.waitForTimeout(1800);
     const hudState = await page.evaluate(() => ({
       name: document.querySelector(".hud-name").textContent,
       here: [...document.querySelectorAll(".thread-stars li")].findIndex((li) => li.classList.contains("here")),
-      counts: [...document.querySelectorAll("[data-count]")].map((n) => n.textContent),
-      want: [...document.querySelectorAll("#landing section[data-chapter]")].findIndex((x) => x.id === "numbers"),
+      want: [...document.querySelectorAll("#landing section[data-chapter]")].findIndex((x) => x.id === "autopilot"),
     }));
-    check("the HUD names the chapter you're in and its star is lit", hudState.name === "In numbers" && hudState.here === hudState.want && hudState.want > 2);
-    check("the numbers count to their real values", hudState.counts.join() === "06,90,00,00");
+    check("the HUD names the chapter you're in and its star is lit", hudState.name === "Autopilot" && hudState.here === hudState.want && hudState.want > 1);
+    // Try it: three taps, and the real planner builds a week, with no account.
+    await page.evaluate(() => document.getElementById("try").scrollIntoView());
+    await page.click("#try-plan .try-chip:not(:disabled)");
+    check("try it: the first tap picks the exams and offers subjects", (await page.$$("#try-plan .try-chip.on")).length > 0 && /Your subjects/.test(await page.textContent("#try-plan")));
+    await page.click("#try-plan .btn-primary");
+    await page.click("#try-plan .try-chip");
+    const week = await page.waitForFunction(() => document.querySelectorAll("#try-plan .try-day").length === 7, null, { timeout: 10000 }).then(() => true, () => false);
+    check("…the third tap builds a seven-day week on the real planner, with study in it", week && /\d+ (h|min)/.test(await page.textContent("#try-plan .try-week")));
+    const tryTails = (await page.$$("#try-plan .pan-tail")).length;
+    check("…and Pan has a tail for each subject chosen", tryTails >= 1 && tryTails <= 9);
+    check("…and keeping it goes on to sign-up", (await page.getAttribute("#try-plan a.btn-primary", "href")) === "#signup");
+    // Meet Pan: a tail per subject, lit as subjects get ready.
+    await page.evaluate(() => {
+      const r = document.getElementById("pan-ready");
+      r.value = "9";
+      r.dispatchEvent(new Event("input"));
+    });
+    check("Meet Pan: nine subjects ready lights all nine tails", (await page.$$(".pan-live .pan-tail[src$='tail-lit.webp']")).length === 9 && (await page.$$(".pan-live .pan-tail[src$='tail-dim.webp']")).length === 0);
+    const foot = await page.evaluate(() => [...document.querySelectorAll(".land-foot a")].map((a) => a.getAttribute("href")));
+    check("the footer links privacy, the rules, contact and the grievance officer", ["privacy.html", "rules.html", "contact.html", "contact.html#grievance"].every((h) => foot.includes(h)));
+    const contact = await page.evaluate(() => fetch("contact.html").then((r) => r.text()));
+    check("the contact page names the Grievance Officer and the 24-hour and 15-day promises", /K\.V\.Karnishh/.test(contact) && /24 hours/.test(contact) && /15 days/.test(contact) && /id="accessibility"/.test(contact));
     await page.evaluate(() => document.getElementById("faq").scrollIntoView());
     await page.waitForTimeout(900);
     await page.click("#faq details:first-of-type summary");
@@ -1395,7 +1415,7 @@ try {
     await r.waitForTimeout(500);
     const anim = await r.evaluate(() => getComputedStyle(document.querySelector(".ht-line")).animationName);
     check("reduced motion turns the landing animation off", anim === "none");
-    check("reduced motion shows the numbers at once", (await r.$$eval("[data-count]", (n) => n.map((x) => x.textContent))).join() === "06,90,00,00");
+    check("reduced motion still draws Pan with his tails", (await r.$$("#pan-stage .pan-tail")).length >= 2);
     check("no console errors (reduced motion)", r.errors.length === 0);
   }
 } finally {

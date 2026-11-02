@@ -1,17 +1,13 @@
-// The landing page's live parts: the hero world (yours to spin, tip, speed
-// up, slow down, reverse and zoom), the water and flame that wind around it,
-// petals and embers, sections that slash open as they arrive, and the world
-// demo whose sliders drive the real world model.
+// The front page's live parts (v0.3): the try-it (three taps, a real first
+// week), Pan with a tail per subject, sections that open as they arrive,
+// and the world demo whose sliders drive the real world model.
 import { createGlobe } from "./world-render.js";
 import { buildWorld } from "./model/world-model.js";
 import { DAY, dayKey } from "./model/time.js";
-import { ribbons, drift, reveal, speedLines, burstOn, impactFrame, comic } from "./fx.js";
-import { onLook } from "./looks.js";
-import { el } from "./ui.js";
-import { reducedMotion, lively } from "./motion.js";
-import { globeDock, dockToggle } from "./globe-dock.js";
+import { reveal, speedLines, burstOn, impactFrame } from "./fx.js";
 import { initLandingHud } from "./landing-hud.js";
-import { initLandingArt } from "./landing-art.js";
+import { initTryPlan } from "./try-plan.js";
+import { panFox } from "./pan.js";
 
 let started = false;
 
@@ -38,9 +34,10 @@ export function initLanding() {
   const onScroll = () => bar.classList.toggle("scrolled", window.scrollY > 20);
   window.addEventListener("scroll", onScroll, { passive: true });
   onScroll();
-  reveal(document.getElementById("landing"));
-  initLandingArt();
+  reveal($("landing"));
   initLandingHud();
+  initTryPlan($("try-plan"));
+  drawPan();
 
   // The calls to action land with a hit.
   document.querySelectorAll("#landing .fx-cta").forEach((a) => {
@@ -55,10 +52,39 @@ export function initLanding() {
   startGlobes();
 }
 
-// The two worlds on the landing are WebGL, each with its own textures and
-// buffers. They exist only while the landing is on screen: sign-up, the
-// setup and the app stop them and give the GPU memory back (low-memory
-// laptops ran out of it while an account was being made).
+// Meet Pan: the first week (two dim tails) beside the week before exams
+// (nine, all lit), and a slider to try the idea.
+function drawPan() {
+  const stage = $("pan-stage");
+  if (!stage || stage.dataset.ready) return;
+  stage.dataset.ready = "1";
+  stage.append(panFox({ pose: "early", tails: 2, lit: 0, size: 150, label: "Pan in the first week: two dim tails" }));
+  const live = livePan();
+  stage.append(live.box);
+  const range = $("pan-ready");
+  const out = $("pan-ready-out");
+  const draw = () => {
+    const k = Number(range.value);
+    out.textContent = `${k} of 9`;
+    live.set(k);
+  };
+  range?.addEventListener("input", draw);
+  if (range) draw();
+}
+
+function livePan() {
+  const box = document.createElement("div");
+  box.className = "pan-live";
+  return {
+    box,
+    set: (k) => box.replaceChildren(panFox({ pose: k >= 9 ? "cheer" : "idle", tails: 9, lit: k, size: 290 })),
+  };
+}
+
+// The demo world is WebGL, with its own textures and buffers. It exists
+// only while the landing is on screen: sign-up, the setup and the app stop
+// it and give the GPU memory back (low-memory laptops ran out of it while
+// an account was being made).
 let globes = null;
 
 export function stopGlobes() {
@@ -83,107 +109,41 @@ function startGlobes() {
     if (globes !== g) return;
     buildGlobes(g);
   };
-  // Defer the globes until the browser is idle: the words matter first.
+  // Defer the world until the browser is idle: the words matter first.
   if (window.requestIdleCallback) g.idle = window.requestIdleCallback(go, { timeout: 1500 });
   else g.timer = setTimeout(go, 300);
 }
 
 function buildGlobes(g) {
-  // Panalo Night opens on a photo, not the hero globe: don't build what
-  // isn't shown.
-  if (getComputedStyle(document.querySelector(".hero-stage")).display !== "none") {
-    let dock = null;
-    try {
-      const hero = createGlobe($("hero-globe"), { seed: "panalo-students", interactive: true, maxDisk: 300, maxPixels: 1500, onMotion: (m) => dock?.sync(m) });
-      hero.setLayers({ earth: 1, cities: 0.85, land: 0.34, lights: 180, forest: 0.6, aurora: 0.7, glow: 0.35, atmosphere: 0.75, clouds: 0.22, ring: 0.9 }, [
-        { value: 1, done: true },
-        { value: 0.6, done: false },
-      ]);
-      const extra = [];
-      if (!reducedMotion()) {
-        // In the comic look (Verse), ink water and flame wind round the
-        // world, following its speed and direction. In Glass and Signal the
-        // world is filmed, not drawn: an anamorphic flare crosses it now and
-        // then instead (css/looks.css).
-        const back = document.querySelector(".rib-back"), front = document.querySelector(".rib-front");
-        const world = document.querySelector(".hero-world");
-        world.append(el("i", { class: "hero-flare", "aria-hidden": "true" }));
-        let fx = null;
-        // Calm by default: the ribbons wind only with lively effects on,
-        // or when you turn them on here.
-        let wanted = lively();
-        const sync = () => {
-          const on = wanted && comic();
-          world.classList.toggle("no-ribbons", !on);
-          if (on && !fx) fx = ribbons(back, front, { getMotion: () => hero.getMotion() });
-          if (!on && fx) {
-            fx.destroy();
-            fx = null;
-          }
-        };
-        sync();
-        const offLook = onLook(sync);
-        g.stops.push(() => {
-          offLook();
-          fx?.destroy();
-          fx = null;
-        });
-        extra.push(
-          dockToggle("≋", "Ink water and flame (Verse)", wanted, (on) => {
-            wanted = on;
-            sync();
-          })
-        );
-        if (lively()) {
-          const d = drift(document.querySelector(".hero-drift"), { count: 26 });
-          g.stops.push(() => d.destroy());
-        }
-      }
-      dock = globeDock(hero, { extra });
-      dock.node.id = "hero-dock";
-      document.querySelector(".hero-stage").append(dock.node);
-      g.stops.push(() => {
-        dock?.destroy?.();
-        dock?.node.remove();
-        document.querySelector(".hero-world .hero-flare")?.remove();
-        hero.destroy?.();
-      });
-    } catch (e) {
-      console.error("hero globe", e);
-    }
+  const canvas = $("demo-globe");
+  let demo;
+  try {
+    demo = createGlobe(canvas, { seed: "your-world", interactive: true, maxDisk: 260 });
+    g.stops.push(() => demo.destroy?.());
+  } catch (e) {
+    console.error("demo globe", e);
+    return;
   }
-  {
-    const canvas = $("demo-globe");
-    let demo;
-    try {
-      demo = createGlobe(canvas, { seed: "your-world", interactive: true, maxDisk: 260 });
-      g.stops.push(() => demo.destroy?.());
-    } catch (e) {
-      console.error("demo globe", e);
-      return;
-    }
-    const inputs = {
-      focus: $("wd-focus"),
-      tasks: $("wd-tasks"),
-      create: $("wd-create"),
-      away: $("wd-away"),
+  const inputs = {
+    focus: $("wd-focus"),
+    tasks: $("wd-tasks"),
+    create: $("wd-create"),
+    away: $("wd-away"),
+  };
+  const update = () => {
+    const v = {
+      focusHours: Number(inputs.focus.value),
+      tasks: Number(inputs.tasks.value),
+      createHours: Number(inputs.create.value),
+      away: Number(inputs.away.value),
     };
-    const update = () => {
-      const v = {
-        focusHours: Number(inputs.focus.value),
-        tasks: Number(inputs.tasks.value),
-        createHours: Number(inputs.create.value),
-        away: Number(inputs.away.value),
-      };
-      $("wd-focus-out").textContent = `${v.focusHours} h`;
-      $("wd-tasks-out").textContent = String(v.tasks);
-      $("wd-create-out").textContent = `${v.createHours} h`;
-      $("wd-away-out").textContent = v.away === 1 ? "1 day" : `${v.away} days`;
-      demo.setLayers(demoLayers(v));
-    };
-    Object.values(inputs).forEach((i) => i.addEventListener("input", update));
-    g.stops.push(() => Object.values(inputs).forEach((i) => i.removeEventListener("input", update)));
-    update();
-  }
+    $("wd-focus-out").textContent = `${v.focusHours} h`;
+    $("wd-tasks-out").textContent = String(v.tasks);
+    $("wd-create-out").textContent = `${v.createHours} h`;
+    $("wd-away-out").textContent = v.away === 1 ? "1 day" : `${v.away} days`;
+    demo.setLayers(demoLayers(v));
+  };
+  Object.values(inputs).forEach((i) => i.addEventListener("input", update));
+  g.stops.push(() => Object.values(inputs).forEach((i) => i.removeEventListener("input", update)));
+  update();
 }
-
