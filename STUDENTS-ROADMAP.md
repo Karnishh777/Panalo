@@ -307,8 +307,8 @@ picks, then it is built, tested and merged before the next part starts.
 - E3. In numbers says "06 spaces"; there are five (Now, Plan, Study,
   Calendar, World).
 - E4. Footer shows v0.1; read it from version.js.
-- E5. The hero globe: show the real, detailed Earth (relief, clouds)
-  rather than a seeded world.
+- E5. The hero globe is the real Earth but wears a ring and moons; drop
+  them so it reads as Earth, and show it larger with the new detail.
 - E6. One image, not three: the copy mixes a climb ("Start the climb",
   "the mountain will wait"), a world and space. Pick one.
 - E7. FAQ: add "Which exams?", "What does Pan (the AI) do, and is it
