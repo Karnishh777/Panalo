@@ -273,6 +273,106 @@ An honest look at the process, by the agent that did most of the work.
    banks and exam-style questions, as for Cambridge.
 4. **CBSE, classes 9 to 12**: on hold until ICSE/ISC is done.
 
+### The idea, updated (the owner, 2 November 2026): all of life grows the world
+
+Panalo is not only for academics. The world grows from every area of a
+student's life: study, and also sport, reading, rest, time with people,
+making things and more. This fuses the current world (study only, since
+phase 37) with the earlier one (reading, making, moving, resting and
+people), and adds new things to the globe. **Proposed mapping, for the
+owner to approve or change:**
+
+| Area | What you log | What it does to the globe |
+| --- | --- | --- |
+| Study | focus sessions, questions, papers (as now) | land rises (all time); forests = chapters covered; seas glow = chapters known; aurora = marks |
+| Time with people | minutes with family and friends | **city lights** spread on the night side, and thin arcs of light join cities |
+| Sport and movement | minutes of sport, walking, dance, yoga | rivers and green valleys brighten; the sea's waves come alive |
+| Reading (not for school) | minutes or books | the **sky**: stars and constellations brighten around the world |
+| Rest and sleep | a good night's sleep, a calm break | **moonlight** on the night side, and a calm, clear night sky |
+| Making things | art, music, writing, code | the **atmosphere** glows with colour at the edge of the world |
+| Outdoors and nature | time outside | clouds part over the land; a brighter, bluer day side |
+| Helping | chores, volunteering, helping at home | towns appear between the cities |
+| Showing up | any of the above on 5 days of 7 | the **ring** (as now) |
+| Time away | days with nothing logged | clouds gather, and clear when you're back (as now) |
+
+How it is logged, kept calm: one sheet when closing the day ("What else
+did you do today?"), one tap per area with a rough time, all optional,
+nothing counted against you, never a streak. Private, like everything
+else. More areas can be added from Settings later (music practice,
+faith, a club, a part-time job).
+
+Also on the globe (from the owner's notes): the city lights and the night
+side are being improved (done in part: real cities now show at night, a
+faint earthshine shows the continents), and the GPU globe should work on
+more laptops (a blocklisted driver no longer forces the flat 2D globe).
+
+### UI, section by section (set by the owner, 2 November 2026)
+
+The existing interface is improved one part at a time, in this order.
+For each: review what is there, list ideas (edit, add, remove), the owner
+picks, then it is built, tested and merged before the next part starts.
+
+1. **The opening page** (landing) ← now
+2. Sign in and sign up (the crossing), the age and parent steps
+3. The setup (the first questions)
+4. Now
+5. Plan (and Customize, the block check)
+6. Study Room
+7. Calendar
+8. World
+9. Settings, Privacy & data
+10. The parent page and the legal pages
+
+**The opening page: ideas to choose from.** Its sections today: Arrival
+(hero and globe), The cast (subject guardians), 01 The idea, 02 Inside
+(world demo and the five spaces), 03 In numbers, 04 Is this for you?,
+05 A letter, 06 Safety and privacy, 07 Questions, Launch, footer.
+
+*Edit (out of date or unclear):*
+- E1. The world demo's sliders still describe the old world (tasks →
+  city lights, making things → aurora). Match the real model: study
+  hours → land, chapters covered → forests, chapters known → glowing
+  seas, marks earned → aurora, past papers → atmosphere, days away →
+  clouds.
+- E2. Remove the Archive left-overs: "files" in The idea and Safety,
+  the FAQ "Who can see my files?", the letter's "shelf for the things
+  you made", the marquee's notes and recordings lines.
+- E3. In numbers says "06 spaces"; there are five (Now, Plan, Study,
+  Calendar, World).
+- E4. Footer shows v0.1; read it from version.js.
+- E5. The hero globe is the real Earth but wears a ring and moons; drop
+  them so it reads as Earth, and show it larger with the new detail.
+- E6. One image, not three: the copy mixes a climb ("Start the climb",
+  "the mountain will wait"), a world and space. Pick one.
+- E7. FAQ: add "Which exams?", "What does Pan (the AI) do, and is it
+  on?", "Does it work on a school laptop?".
+
+*Add:*
+- A1. How it plans, in three steps: your subjects and exam dates → a
+  week fitted around school, prep and sleep → it re-plans when a day
+  goes wrong. With a real sample week.
+- A2. Try it without an account: pick exams and subjects, see a first
+  week built by the real planner (no mascot).
+- A3. What's covered: every Cambridge syllabus with its code,
+  searchable; "ICSE/ISC next, CBSE later".
+- A4. A sample exam-style question with its mark scheme and the
+  examiner's advice, to show the practice is real.
+- A5. For parents: consent for under-18s, what is kept, no chat, how
+  to reach the Grievance Officer.
+- A6. Exam countdown: pick your series, see the days left (nothing
+  saved).
+- A7. Install it: a short note for school and boarding laptops (Edge or
+  Chrome, keyboard shortcuts).
+
+*Remove:*
+- R1. The cast (the subject guardians), if no characters at all is the
+  rule.
+- R2. Is this for you? (the marquee): vague, partly about features that
+  are gone.
+- R3. In numbers, or replace it with coverage (syllabuses, questions).
+- R4. The kanji numerals on section labels.
+- R5. The letter, or shorten it to three lines.
+
 Done: CI, migrations 22–26 recorded, LIMITATIONS refreshed, calm by
 default and the focus shield, Students made private (phase 28), and **the
 logo** — Ascent, adaptive to each look, as favicon, home-screen icons, in

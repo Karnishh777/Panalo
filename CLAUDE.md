@@ -16,7 +16,8 @@ live site no longer answers `{"error":"pan-not-configured"}`.
 
 ## Order of work (set by the owner)
 
-1. Finish the Cambridge curriculum. 2. UI redesign. 3. ICSE/ISC grades
+1. Finish the Cambridge curriculum. 2. Improve the existing UI section by
+section (no mascot; no full redesign). 3. ICSE/ISC grades
 9-12. 4. CBSE (on hold until ICSE is done). See STUDENTS-ROADMAP.md §5.
 
 ## Working here
