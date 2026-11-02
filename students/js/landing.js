@@ -8,6 +8,7 @@ import { reveal, speedLines, burstOn, impactFrame } from "./fx.js";
 import { initLandingHud } from "./landing-hud.js";
 import { initTryPlan } from "./try-plan.js";
 import { panFox } from "./pan.js";
+import { cometOrbit } from "./comet.js";
 
 let started = false;
 
@@ -37,6 +38,7 @@ export function initLanding() {
   reveal($("landing"));
   initLandingHud();
   initTryPlan($("try-plan"));
+  drawHero();
   drawPan();
 
   // The calls to action land with a hit.
@@ -50,6 +52,14 @@ export function initLanding() {
   });
 
   startGlobes();
+}
+
+// The welcome: Pan beside your world, and its comet circling it.
+function drawHero() {
+  const pan = document.querySelector(".hero-pan");
+  const orbit = document.querySelector(".hero-orbit");
+  if (pan && !pan.firstChild) pan.append(panFox({ pose: "idle", tails: 6, lit: 4, size: 210, label: "Pan, a fox drawn in stars, with six tails of light, four glowing" }));
+  if (orbit && !orbit.firstChild) orbit.append(cometOrbit({ tails: 6, lit: 4 }));
 }
 
 // Meet Pan: the first week (two dim tails) beside the week before exams
@@ -115,6 +125,14 @@ function startGlobes() {
 }
 
 function buildGlobes(g) {
+  // The welcome's world: the whole Earth risen, its cities lit.
+  try {
+    const hero = createGlobe($("hero-globe"), { seed: "panalo-students", interactive: true, maxDisk: 520, maxPixels: 1600 });
+    hero.setLayers({ earth: 1, cities: 0.85, land: 0.46, lights: 220, forest: 0.75, aurora: 0.35, glow: 0.3, atmosphere: 0.85, clouds: 0.3, ring: 0 }, []);
+    g.stops.push(() => hero.destroy?.());
+  } catch (e) {
+    console.error("hero globe", e);
+  }
   const canvas = $("demo-globe");
   let demo;
   try {

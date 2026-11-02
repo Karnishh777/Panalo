@@ -32,7 +32,7 @@ import { reducedMotion, animationLoop, lively as livelyEffects } from "./motion.
 import { surfaceFor, paint, thresholdFor, TW, TH } from "./world-surface.js";
 import { getLight, onLight, lightVector } from "./world-light.js";
 import { deviceTier } from "./device-tier.js";
-import { loadEarth, earthLevels } from "./earth.js";
+import { loadEarth, earthLevels, earthSizeFor } from "./earth.js";
 
 const MAX_MOONS = 6;
 const EXTENT = 1.7; // half the canvas, in planet radii, at zoom 1
@@ -57,6 +57,9 @@ uniform sampler2D uLights;  // one light per finished task
 uniform sampler2D uClouds;  // weather systems
 uniform sampler2D uMoist;   // where forests grow
 uniform sampler2D uNoise;   // tiling detail noise, 3 channels
+uniform sampler2D uRelief;  // the real Earth's land elevation (v0.3)
+uniform float uReliefK;      // how strongly it shades (0 = none loaded)
+uniform vec2 uReliefTexel;   // one texel of it
 uniform float uExtent, uAspect, uRot, uCloudShift, uTime, uTilt, uSea;
 uniform float uAtmo, uAurora, uCloudCover, uRing, uForest, uGlow, uNight;
 uniform vec2 uRes;           // the canvas, in pixels
@@ -166,6 +169,23 @@ vec3 shadeEarth(vec3 n, vec3 f, vec3 L, vec3 V, vec2 uv, vec3 P) {
   float land = smoothstep(uEarthT - 0.005, uEarthT + 0.005, e + wobble) * isLand;
   vec3 map = texture2D(uMoist, eu).rgb;
   map = map * map * (0.8 + 0.2 * map);             // to linear light
+  // Relief (v0.3): the land's own elevation (NASA's) tilts the ground
+  // towards or away from the sun, so ranges, plateaus and valleys show,
+  // and peaks catch the dawn before the plains. Gentler seen small.
+  vec3 fn = f;
+  if (uReliefK > 0.0) {
+    vec2 rt = uReliefTexel * 1.5;
+    float hx = texture2D(uRelief, eu + vec2(rt.x, 0.0)).r - texture2D(uRelief, eu - vec2(rt.x, 0.0)).r;
+    float hy = texture2D(uRelief, eu + vec2(0.0, rt.y)).r - texture2D(uRelief, eu - vec2(0.0, rt.y)).r;
+    vec3 east = vec3(f.z, 0.0, -f.x);
+    float el = length(east);
+    if (el > 1e-4) {
+      east /= el;
+      vec3 north = cross(f, east);
+      float k = uReliefK * 5.0 * land * clamp(gPx * 260.0, 0.35, 1.0);
+      fn = normalize(f - (east * hx + north * hy) * k);
+    }
+  }
   // Forests (chapters covered) keep the greens lush; without them the
   // land dries towards ochre.
   float green = clamp((map.g - map.r) * 7.0 + 0.25, 0.0, 1.0);
@@ -186,7 +206,10 @@ vec3 shadeEarth(vec3 n, vec3 f, vec3 L, vec3 V, vec2 uv, vec3 P) {
   // The night is as dark as it really is from orbit (moonlight is yours to
   // choose), and only cities glow in it.
   vec3 moonlit = vec3(0.25, 0.38, 1.0) * (0.002 + 0.14 * uNight * uNight) * (0.6 + 0.4 * max(dot(f, -L) * 0.5 + 0.5, 0.0));
-  vec3 col = albedo * (sun * max(d, 0.0) + moonlit);
+  // The ground's own tilt (relief) decides how much sun it gets; the
+  // terminator's colour still follows the globe's curve.
+  float dr = mix(d, dot(fn, L), land);
+  vec3 col = albedo * (sun * max(dr, 0.0) * (0.9 + 0.1 * smoothstep(-0.2, 0.3, dr - d + 0.1)) + moonlit);
 
   // Sun on water, rippled by waves (calmer seen large).
   float waveK = clamp(gPx * 70.0, 0.12, 1.0);
@@ -955,8 +978,8 @@ export function createGlobeGL(canvas, { seed, tilt = 0.38, interactive = false, 
     gl.vertexAttribPointer(0, 2, gl.FLOAT, false, 0, 0);
     const U = (n) => gl.getUniformLocation(prog, n);
     u = {};
-    for (const name of ["uExtent", "uAspect", "uRot", "uCloudShift", "uTime", "uTilt", "uSea", "uAtmo", "uAurora", "uCloudCover", "uRing", "uForest", "uGlow", "uNight", "uLight", "uRingN", "uMoon", "uMoonVal", "uRes", "uOffset", "uStars", "uWarp", "uDpr", "uStarPar", "uWarpC", "uEarth", "uEarthT", "uLightsF", "uGrid"]) u[name] = U(name);
-    ["uHeight", "uLights", "uClouds", "uMoist", "uNoise"].forEach((name, i) => gl.uniform1i(U(name), i + 1));
+    for (const name of ["uExtent", "uAspect", "uRot", "uCloudShift", "uTime", "uTilt", "uSea", "uAtmo", "uAurora", "uCloudCover", "uRing", "uForest", "uGlow", "uNight", "uLight", "uRingN", "uMoon", "uMoonVal", "uRes", "uOffset", "uStars", "uWarp", "uDpr", "uStarPar", "uWarpC", "uEarth", "uEarthT", "uLightsF", "uGrid", "uReliefK", "uReliefTexel"]) u[name] = U(name);
+    ["uHeight", "uLights", "uClouds", "uMoist", "uNoise", "uRelief"].forEach((name, i) => gl.uniform1i(U(name), i + 1));
     post = null;
     if (wantBloom || styleOk) {
       try {
@@ -1092,10 +1115,19 @@ export function createGlobeGL(canvas, { seed, tilt = 0.38, interactive = false, 
 
   // The real Earth's maps (js/earth.js), in the generated world's slots.
   let earthOn = false;
+  let relief = null; // { w, h } once the elevation map is in
+  let reliefTex = null; // its texture (slot 6), or a blank one until then
   function uploadEarth(maps) {
     imageTexture(gl, 1, maps.emerge, gl.LUMINANCE);
     imageTexture(gl, 2, maps.lights, gl.LUMINANCE);
     imageTexture(gl, 4, maps.albedo, gl.RGB);
+    // The real weather as the clouds' starting point, and the land's
+    // relief (v0.3): both optional, the world draws without them.
+    if (maps.clouds) imageTexture(gl, 3, maps.clouds, gl.LUMINANCE);
+    if (maps.relief) {
+      reliefTex = imageTexture(gl, 6, maps.relief, gl.LUMINANCE);
+      relief = { w: maps.relief.naturalWidth || maps.relief.width, h: maps.relief.naturalHeight || maps.relief.height };
+    }
     earthOn = true;
   }
 
@@ -1106,10 +1138,11 @@ export function createGlobeGL(canvas, { seed, tilt = 0.38, interactive = false, 
     texture(gl, 3, TW, TH, gl.LUMINANCE, toBytes(surface.cloud));
     texture(gl, 4, TW, TH, gl.LUMINANCE, toBytes(surface.moistRank));
     texture(gl, 5, 256, 256, gl.RGB, makeNoiseTile(), { wrapT: gl.REPEAT, mip: true });
+    reliefTex = texture(gl, 6, 1, 1, gl.LUMINANCE, new Uint8Array([0])); // no relief until the map is in
     // The world is the real Earth: shown once its maps have arrived (a
     // moment, the first time; cached after). If they can't load, the
     // generated planet stands in.
-    loadEarth()
+    loadEarth(earthSizeFor(gl))
       .then((maps) => {
         if (destroyed || lost) return;
         uploadEarth(maps);
@@ -1187,6 +1220,8 @@ export function createGlobeGL(canvas, { seed, tilt = 0.38, interactive = false, 
     }
     const lv = earthLevels(layers);
     gl.uniform1f(u.uEarth, earthOn ? 1 : 0);
+    gl.uniform1f(u.uReliefK, earthOn && relief ? 1 : 0);
+    gl.uniform2f(u.uReliefTexel, relief ? 1 / relief.w : 0, relief ? 1 / relief.h : 0);
     gl.uniform1f(u.uEarthT, lv.rise > 0 ? 1 - lv.rise : 2); // none risen: none at all
     gl.uniform1f(u.uLightsF, lv.lit);
     gl.uniform1f(u.uGrid, style === 5 ? 1 : 0);
@@ -1211,6 +1246,10 @@ export function createGlobeGL(canvas, { seed, tilt = 0.38, interactive = false, 
     gl.uniform3fv(u.uLight, light);
     gl.uniform3fv(u.uRingN, rot(ringBase, "x", pitchNow));
     moonUniforms(t);
+    // The relief lives in slot 6, which the glow passes borrow for the
+    // frame they read: put it back before the world is drawn.
+    gl.activeTexture(gl.TEXTURE6);
+    gl.bindTexture(gl.TEXTURE_2D, reliefTex);
     gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
     if (!bloomNow) return;
     const { bright, blur, comp, scene, a, b } = post;

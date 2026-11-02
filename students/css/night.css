@@ -731,9 +731,6 @@ html[data-look] #landing .section-lead {
 }
 
 /* The welcome: Pan and the world on the right, the words over dark space. */
-html[data-look] .hero::before {
-  background: url("../assets/pan/hero.jpg") 88% 0 / auto 54vh no-repeat;
-}
 html[data-look] .hero::after {
   background: linear-gradient(to bottom, rgba(11, 10, 18, 0.1) 0%, rgba(11, 10, 18, 0) 30%, rgba(11, 10, 18, 0.86) 47%, var(--bg) 56%);
 }
@@ -994,26 +991,6 @@ html[data-look] #landing .meet-pan {
   min-height: 32px;
 }
 
-/* Pan, drawn from parts (pan.js). */
-.pan {
-  position: relative;
-  flex: none;
-}
-.pan-tail,
-.pan-body {
-  position: absolute;
-  pointer-events: none;
-  user-select: none;
-}
-.pan-tail {
-  width: auto;
-  transform-origin: 50% 100%;
-}
-.pan-body {
-  inset: 0;
-  width: 100%;
-  height: 100%;
-}
 
 /* Safety and the footer. */
 html[data-look] #landing .safety-grid {
@@ -1266,4 +1243,125 @@ html[data-look] #now-plan-go {
 }
 html[data-look] #now-plan-go:hover {
   background: var(--ember-hover);
+}
+
+/* ---- v0.3: the welcome is your world, with Pan and his comet ---------- */
+html[data-look] .hero::before {
+  background:
+    radial-gradient(1px 1px at 12% 18%, #fff8, transparent 60%),
+    radial-gradient(1px 1px at 32% 8%, #fff6, transparent 60%),
+    radial-gradient(1.5px 1.5px at 56% 22%, #fff9, transparent 60%),
+    radial-gradient(1px 1px at 74% 12%, #fff7, transparent 60%),
+    radial-gradient(1px 1px at 88% 34%, #fff6, transparent 60%),
+    radial-gradient(1.5px 1.5px at 22% 42%, #c7bdff99, transparent 60%),
+    radial-gradient(1px 1px at 8% 64%, #fff5, transparent 60%),
+    radial-gradient(1px 1px at 92% 70%, #fff6, transparent 60%),
+    radial-gradient(60% 50% at 70% 30%, rgba(106, 88, 242, 0.16), transparent 70%),
+    var(--bg);
+}
+html[data-look] .hero {
+  min-height: 100svh;
+}
+html[data-look] .hero .hero-earth {
+  display: block;
+  position: absolute;
+  z-index: -1;
+  left: 50%;
+  top: 56px;
+  width: min(108vw, 58svh);
+  aspect-ratio: 1;
+  transform: translateX(-50%);
+}
+html[data-look] .hero-earth canvas,
+html[data-look] .hero-earth .hero-orbit,
+html[data-look] .hero-earth .comet-orbit {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+html[data-look] .hero-earth canvas {
+  cursor: grab;
+  touch-action: pan-y;
+}
+html[data-look] .hero-earth .hero-orbit {
+  pointer-events: none;
+}
+/* Pan sits on the near edge of the world (wide screens; on a phone he
+   waits further down the page). */
+html[data-look] .hero-pan {
+  display: none;
+  position: absolute;
+  left: -6%;
+  bottom: 6%;
+  width: 30%;
+  pointer-events: none;
+}
+html[data-look] .hero-pan .pan {
+  width: 100%;
+  height: auto;
+}
+html[data-look] .hero::after {
+  background: linear-gradient(to bottom, rgba(11, 10, 18, 0) 0%, rgba(11, 10, 18, 0) 30%, rgba(11, 10, 18, 0.7) 44%, var(--bg) 52%);
+}
+@media (max-width: 899px) {
+  html[data-look] .hero {
+    padding-top: calc(36px + min(100vw, 50svh) * 0.92);
+  }
+  html[data-look] .hero .hero-earth {
+    width: min(100vw, 50svh);
+  }
+}
+@media (min-width: 900px) {
+  html[data-look] .hero-pan {
+    display: block;
+  }
+  html[data-look] .hero::before {
+    background-position: 0 0;
+    background-size: auto;
+  }
+  html[data-look] .hero .hero-earth {
+    left: auto;
+    right: max(-4vw, calc(50% - 760px));
+    top: 50%;
+    width: min(58vw, 88svh);
+    transform: translateY(-50%);
+  }
+  html[data-look] .hero::after {
+    background:
+      linear-gradient(90deg, rgba(11, 10, 18, 0.88) 0%, rgba(11, 10, 18, 0.4) 38%, rgba(11, 10, 18, 0) 52%),
+      linear-gradient(to top, var(--bg) 0%, rgba(11, 10, 18, 0) 18%);
+  }
+}
+
+/* Pan, a fox drawn in stars (pan.js), and the comet (comet.js). */
+.pan {
+  display: block;
+  overflow: visible;
+}
+.pan-live .pan {
+  max-width: 100%;
+  height: auto;
+}
+.pan-strand.lit {
+  transition: opacity 0.4s ease;
+}
+.comet-orbit {
+  overflow: visible;
+}
+.world-stage {
+  position: relative;
+}
+.world-orbit {
+  position: absolute;
+  left: 50%;
+  top: 0;
+  width: min(100%, 620px);
+  aspect-ratio: 1;
+  transform: translateX(-50%);
+  pointer-events: none;
+}
+.world-orbit .comet-orbit {
+  width: 100%;
+  height: 100%;
 }

@@ -25,6 +25,13 @@ export function earthSize() {
   return deviceTier().tier === "low" ? 1024 : 2048;
 }
 
+/** The size for a GPU globe: the sharpest maps (4096) on strong devices
+ * whose GPU takes them. */
+export function earthSizeFor(gl) {
+  const max = gl?.getParameter?.(gl.MAX_TEXTURE_SIZE) || 0;
+  return deviceTier().tier === "high" && max >= 4096 ? 4096 : earthSize();
+}
+
 const cache = new Map(); // size -> Promise<{albedo, lights, emerge}>
 
 function image(name) {
@@ -40,7 +47,16 @@ function image(name) {
 /** The three maps, loaded once per size and shared by every globe. */
 export function loadEarth(size = earthSize()) {
   if (!cache.has(size)) {
-    const p = Promise.all([image(`earth-albedo-${size}.jpg`), image(`earth-lights-${size}.jpg`), image(`earth-emerge-${size}.png`)]).then(([albedo, lights, emerge]) => ({ albedo, lights, emerge, size }));
+    // The relief and the real clouds (v0.3) are extras: a world draws
+    // without them if they don't arrive.
+    const extra = (name) => image(name).catch(() => null);
+    const p = Promise.all([
+      image(`earth-albedo-${size}.jpg`),
+      image(`earth-lights-${size}.jpg`),
+      image(`earth-emerge-${size}.png`),
+      extra(`earth-relief-${size}.jpg`),
+      extra(`earth-clouds-${size === 1024 ? 1024 : 2048}.jpg`),
+    ]).then(([albedo, lights, emerge, relief, clouds]) => ({ albedo, lights, emerge, relief, clouds, size }));
     p.catch(() => cache.delete(size));
     cache.set(size, p);
   }

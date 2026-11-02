@@ -14,7 +14,9 @@ import { state } from "../../../src/state.js";
 import { activeDays } from "../model/world-model.js";
 import { monthSky, journal, MOODS, ENERGY, DONE } from "../model/daily.js";
 import { openCheckin } from "../checkin.js";
-import { worldInput } from "../planner.js";
+import { worldInput, profile, subjectView } from "../planner.js";
+import { cometOrbit } from "../comet.js";
+import { tailsFor } from "../model/pan-tails.js";
 
 let root;
 let legendEl;
@@ -28,6 +30,17 @@ let journalShown = 14;
 let numbersEl;
 let dock = null;
 let globe = null;
+
+// Pan's comet circles the world: a streak per subject, lit when ready.
+function subjectComet() {
+  try {
+    const views = profile().subjects.map((s) => subjectView(s));
+    const { tails, lit } = tailsFor(views.map((v) => v.readiness), { ready: views[0]?.target ?? 0.75 });
+    return cometOrbit({ tails, lit });
+  } catch {
+    return cometOrbit({ tails: 1, lit: 0 });
+  }
+}
 let unsubs = [];
 
 
@@ -381,7 +394,7 @@ export function mount(section) {
   skyEl = el("div", { class: "sky-wrap" });
   journalEl = el("div");
   const canvas = el("canvas", { class: "world-globe", tabindex: "0", role: "img", "aria-label": "Your world. Drag it, or use the arrow keys to turn and tip it. The legend lists what each feature means." });
-  const stage = el("div", { class: "world-stage" }, [canvas]);
+  const stage = el("div", { class: "world-stage" }, [canvas, el("div", { class: "world-orbit" }, [subjectComet()])]);
   root.append(
     el("div", { class: "s-head" }, [
       el("div", {}, [el("p", { class: "kicker toned tone-world", text: "World" }), titleEl, subEl]),
