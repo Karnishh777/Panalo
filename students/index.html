@@ -57,6 +57,7 @@
   <link rel="modulepreload" href="js/art.js">
   <link rel="modulepreload" href="js/auth.js">
   <link rel="modulepreload" href="js/checkin.js">
+  <link rel="modulepreload" href="js/comet.js">
   <link rel="modulepreload" href="js/dawn.js">
   <link rel="modulepreload" href="js/details.js">
   <link rel="modulepreload" href="js/device-tier.js">
@@ -228,7 +229,13 @@
     <main id="top" class="land">
       <!-- The welcome: Pan on the edge of your world, looking up. -->
       <section class="hero" aria-labelledby="hero-title" data-chapter="Arrival">
-        <span class="hero-art" role="img" aria-label="Pan, a white star kitsune with glowing nebula tails, sits on the edge of a small Earth and looks up at the stars"></span>
+        <!-- Your world: the real Earth, lit by what you do, with Pan's comet
+             on its orbit and Pan beside it (landing.js draws them). -->
+        <div class="hero-earth">
+          <canvas id="hero-globe" width="900" height="900" tabindex="0" role="img" aria-label="Your world: the real Earth, its land and city lights grown from study. Drag it, or use the arrow keys, to turn it."></canvas>
+          <div class="hero-orbit"></div>
+          <div class="hero-pan"></div>
+        </div>
         <div class="hero-copy">
           <p class="kicker hero-kicker">Cambridge IGCSE, AS and A Level · for the intensely curious</p>
           <h1 id="hero-title" class="hero-title">

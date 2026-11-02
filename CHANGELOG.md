@@ -13,6 +13,18 @@ AI, runs as "Pan Lite" (our own planner code does the planning; the AI
 only where nothing else can).
 
 **0.2.0 (in progress)**
+- **A new Pan, a comet, and a more detailed Earth.** Pan is now a fox
+  drawn in stars (students/js/pan.js): bright points joined by thin
+  lines, sharp almond eyes, a violet brow star. Its tails are strands of
+  light, one per subject, dim until that subject is ready, then violet
+  into gold. It's drawn in code, so the painted Pan images are gone.
+  **Pan's comet** (students/js/comet.js) circles your world on a tilted
+  orbit, with a streak per subject that lights up when the subject is
+  ready, and passes behind the planet. **The front page** opens on the
+  real Earth itself, which you can drag, with the comet circling it and
+  Pan beside it. **The globe** gets mountains and valleys that catch the
+  sun (NASA GEBCO relief), real cloud cover, and sharper 4096 maps on
+  strong laptops (tools/earth/build_earth_hd.py).
 - **The remake, step 3: one Pan, the week at a glance, Sunday.** The new
   Pan replaces the old painted one everywhere (setup, Today, Plan, the
   block check, Customize); the old paintings are removed. Today's banner

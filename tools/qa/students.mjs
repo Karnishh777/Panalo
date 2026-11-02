@@ -91,7 +91,7 @@ try {
     await page.waitForTimeout(600);
     check("the landing page is shown to a visitor", await page.isVisible("#landing"));
     check("the landing explains who it is for", /intensely curious/i.test(await page.textContent(".hero")));
-    check("the welcome is Pan on the edge of your world: the art, one line, two ways in", /A world made of\s*what you actually do/.test(await page.textContent(".hero-title")) && /pan\/hero/.test(await page.evaluate(() => getComputedStyle(document.querySelector(".hero"), "::before").backgroundImage)) && (await page.$$(".hero-actions a")).length === 2);
+    check("the welcome is your world: the real Earth, Pan's comet circling it, Pan beside it, one line, two ways in", /A world made of\s*what you actually do/.test(await page.textContent(".hero-title")) && (await page.isVisible("#hero-globe")) && (await page.$$(".hero-orbit .comet-streak")).length === 6 && (await page.$$(".hero-orbit .comet-streak.lit")).length === 4 && (await page.$$(".hero-pan .pan .pan-strand.lit")).length === 8 && (await page.$$(".hero-actions a")).length === 2);
     // The slider is in the page from the start, but the demo only starts
     // listening once its globes are built: keep nudging until it answers.
     const demoAnswers = await page
@@ -141,7 +141,7 @@ try {
     await page.click("#try-plan .try-chip");
     const week = await page.waitForFunction(() => document.querySelectorAll("#try-plan .try-day").length === 7, null, { timeout: 10000 }).then(() => true, () => false);
     check("…the third tap builds a seven-day week on the real planner, with study in it", week && /\d+ (h|min)/.test(await page.textContent("#try-plan .try-week")));
-    const tryTails = (await page.$$("#try-plan .pan-tail")).length;
+    const tryTails = (await page.$$("#try-plan .pan-tip, #try-plan .pan-strand.dim + .pan-strand.dim")).length;
     check("…and Pan has a tail for each subject chosen", tryTails >= 1 && tryTails <= 9);
     check("…and keeping it goes on to sign-up", (await page.getAttribute("#try-plan a.btn-primary", "href")) === "#signup");
     // Meet Pan: a tail per subject, lit as subjects get ready.
@@ -150,7 +150,7 @@ try {
       r.value = "9";
       r.dispatchEvent(new Event("input"));
     });
-    check("Meet Pan: nine subjects ready lights all nine tails", (await page.$$(".pan-live .pan-tail[src$='tail-lit.webp']")).length === 9 && (await page.$$(".pan-live .pan-tail[src$='tail-dim.webp']")).length === 0);
+    check("Meet Pan: nine subjects ready lights all nine tails", (await page.$$(".pan-live .pan-tip")).length === 9 && (await page.$$(".pan-live .pan-strand.dim")).length === 0);
     const foot = await page.evaluate(() => [...document.querySelectorAll(".land-foot a")].map((a) => a.getAttribute("href")));
     check("the footer links privacy, the rules, contact and the grievance officer", ["privacy.html", "rules.html", "contact.html", "contact.html#grievance"].every((h) => foot.includes(h)));
     const contact = await page.evaluate(() => fetch("contact.html").then((r) => r.text()));
@@ -535,6 +535,7 @@ try {
   check("the world legend counts the finished task as a light", /Lights\s*Tasks finished.*1/s.test(legend));
   check("only studying grows the world: no activity logging", !(await page.isVisible("text=Log an activity")) && /Only studying grows it/.test(await page.textContent(".world .s-sub")));
   check("the legend explains each feature as study", /Forests\s*Chapters covered/.test(legend) && /Aurora\s*Marks earned/.test(legend) && /Atmosphere\s*Past papers/.test(legend));
+  check("Pan's comet circles the world, a streak per subject", (await page.$$(".world-orbit .comet-streak")).length >= 1 && /streaks?, one per subject/.test(await page.getAttribute(".world-orbit .comet-orbit", "aria-label")));
   check("the first session is a discovery", /First session/.test(await page.textContent(".world-lower")));
   await shot(page, "world");
 
@@ -614,7 +615,7 @@ try {
   // Today on autopilot (autopilot-ui.js): Pan with a tail per subject, energy
   // in one tap, "Something came up", and Undo for each.
   const ap = await page.waitForSelector(".autopilot-panel", { timeout: 10000 }).then(() => true, () => false);
-  check("Today has Pan's autopilot, with Pan drawn with a tail per subject", ap && (await page.$$(".autopilot-panel .pan-tail")).length >= 1 && /tails?, \d+ glowing/.test(await page.getAttribute(".autopilot-panel .pan", "aria-label")));
+  check("Today has Pan's autopilot, with Pan drawn with a tail per subject", ap && (await page.$$(".autopilot-panel .pan-strand")).length >= 1 && /tails?, \d+ glowing/.test(await page.getAttribute(".autopilot-panel .pan", "aria-label")));
   await page.click(".ap-chip[data-energy=low]");
   await page.waitForSelector("#ap-undo", { timeout: 8000 }).catch(() => {});
   check("one tap on Low energy makes today lighter, and says so", (await page.getAttribute(".ap-chip[data-energy=low]", "aria-pressed")) === "true" && /lighter day/.test(await page.textContent(".ap-note")));
@@ -1442,8 +1443,8 @@ try {
     await r.waitForTimeout(500);
     const anim = await r.evaluate(() => getComputedStyle(document.querySelector(".ht-line")).animationName);
     check("reduced motion turns the landing animation off", anim === "none");
-    await r.waitForSelector("#pan-stage .pan-tail", { state: "attached", timeout: 8000 }).catch(() => {});
-    check("reduced motion still draws Pan with his tails", (await r.$$("#pan-stage .pan-tail")).length >= 2);
+    await r.waitForSelector("#pan-stage .pan-strand", { state: "attached", timeout: 8000 }).catch(() => {});
+    check("reduced motion still draws Pan with his tails", (await r.$$("#pan-stage .pan-strand")).length >= 2);
     check("no console errors (reduced motion)", r.errors.length === 0);
   }
 } finally {
