@@ -16,7 +16,7 @@ import { monthSky, journal, MOODS, ENERGY, DONE } from "../model/daily.js";
 import { openCheckin } from "../checkin.js";
 import { worldInput, profile, subjectView } from "../planner.js";
 import { cometOrbit } from "../comet.js";
-import { tailsFor } from "../model/pan-tails.js";
+import { streaksFor } from "../model/streaks.js";
 
 let root;
 let legendEl;
@@ -31,14 +31,13 @@ let numbersEl;
 let dock = null;
 let globe = null;
 
-// Pan's comet circles the world: a streak per subject, lit when ready.
+// The comet circles the world: a streak per subject, lit when ready.
 function subjectComet() {
   try {
     const views = profile().subjects.map((s) => subjectView(s));
-    const { tails, lit } = tailsFor(views.map((v) => v.readiness), { ready: views[0]?.target ?? 0.75 });
-    return cometOrbit({ tails, lit });
+    return cometOrbit(streaksFor(views.map((v) => v.readiness), { ready: views[0]?.target ?? 0.75 }));
   } catch {
-    return cometOrbit({ tails: 1, lit: 0 });
+    return cometOrbit({ streaks: 1, lit: 0 });
   }
 }
 let unsubs = [];

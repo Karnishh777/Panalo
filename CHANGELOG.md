@@ -13,48 +13,46 @@ AI, runs as "Pan Lite" (our own planner code does the planning; the AI
 only where nothing else can).
 
 **0.2.0 (in progress)**
-- **A new Pan, a comet, and a more detailed Earth.** Pan is now a fox
-  drawn in stars (students/js/pan.js): bright points joined by thin
-  lines, sharp almond eyes, a violet brow star. Its tails are strands of
-  light, one per subject, dim until that subject is ready, then violet
-  into gold. It's drawn in code, so the painted Pan images are gone.
-  **Pan's comet** (students/js/comet.js) circles your world on a tilted
-  orbit, with a streak per subject that lights up when the subject is
-  ready, and passes behind the planet. **The front page** opens on the
-  real Earth itself, which you can drag, with the comet circling it and
-  Pan beside it. **The globe** gets mountains and valleys that catch the
-  sun (NASA GEBCO relief), real cloud cover, and sharper 4096 maps on
-  strong laptops (tools/earth/build_earth_hd.py).
-- **The remake, step 3: one Pan, the week at a glance, Sunday.** The new
-  Pan replaces the old painted one everywhere (setup, Today, Plan, the
-  block check, Customize); the old paintings are removed. Today's banner
+- **No mascot.** Panalo has no character any more: the fox, its poses
+  and every picture of it are gone (students/js/pan.js,
+  model/pan-tails.js, the coded molten star in motion-art.js and the
+  mascot prompts in assets/art/PROMPTS.md). A subject's readiness is shown
+  by **the comet** instead (students/js/comet.js, model/streaks.js): one
+  streak per subject, dim indigo until the subject is ready, then lit.
+  It circles your world on the front page and on World, and sits small
+  beside the autopilot on Today and the week at a glance on Plan. The
+  setup keeps its one line per step, in plain words. "Pan" is now only
+  the name of the optional AI (Tell Pan, Other subject, photo marking).
+- **A more detailed Earth.** The globe gets mountains and valleys that
+  catch the sun (NASA GEBCO relief), real cloud cover, and sharper 4096
+  maps on strong laptops (tools/earth/build_earth_hd.py). **The front
+  page** opens on the real Earth itself, which you can drag, with the
+  comet circling it on a tilted orbit and passing behind the planet.
+- **The remake, step 3: the week at a glance, Sunday.** Today's banner
   is a night window with the day in one serif line ("Monday morning.")
   instead of the mountain photo, and Go is ember. **Sunday** (or Monday
   morning): the week looked back on and the next one in a few plain
   sentences, until "Looks right". **Plan** opens with the week at a
   glance: seven columns of the day's blocks in their subjects' colours,
-  and Pan's lines about the week. **Space** on Today starts the next step;
-  the shortcuts list loses the Archive.
+  and a few plain lines about the week. **Space** on Today starts the
+  next step; the shortcuts list loses the Archive.
 - **The remake, step 2: Today on autopilot** (students/js/autopilot-ui.js,
-  model/autopilot.js). Under Today's banner, Pan (a tail per subject, lit
-  when the subject is at your target) says in one line what moved in the
-  plan since the morning. **Energy** in one tap: Low makes today lighter,
-  High fuller, OK puts it back. **Something came up**: extra class, ill,
-  family, just tired or busy all day, one tap each; the rest of today (and
-  a light tomorrow when ill) is rearranged and the work moves later in the
-  week. Every change says what it did and has **Undo**.
+  model/autopilot.js). Under Today's banner, one line says what moved in
+  the plan since the morning. **Energy** in one tap: Low makes today
+  lighter, High fuller, OK puts it back. **Something came up**: extra
+  class, ill, family, just tired or busy all day, one tap each; the rest
+  of today (and a light tomorrow when ill) is rearranged and the work
+  moves later in the week. Every change says what it did and has
+  **Undo**.
 - **The remake, step 1: a new front page** (the approved "Observatory"
-  design). Pan, the star kitsune, sits on the edge of your world; the
-  headline is "A world made of what you actually do." **Try it in three
-  taps** (no account): pick your exams, your subjects and when you sit
-  them, and the same planner the app runs builds a first week. **Pan grows
-  a tail for every subject** (students/js/pan.js, model/pan-tails.js): one
-  tail per subject, lit when that subject is exam-ready, drawn from parts
-  so the count is always right. New sections for autopilot, the world
-  demo, Meet Pan, safety and questions; the old cast, numbers and letter
-  sections are gone. A full footer links Privacy, Rules and terms,
-  **Contact** (new contact.html: help, your data, parents, security,
-  accessibility) and the **Grievance Officer**.
+  design): the headline is "A world made of what you actually do."
+  **Try it in three taps** (no account): pick your exams, your subjects
+  and when you sit them, and the same planner the app runs builds a first
+  week. New sections for autopilot, the world demo, your comet, safety
+  and questions; the old cast, numbers and letter sections are gone. A
+  full footer links Privacy, Rules and terms, **Contact** (new
+  contact.html: help, your data, parents, security, accessibility) and
+  the **Grievance Officer**.
 - **Archive removed**: Panalo is a study planner, so the file archive is
   gone (its page, menu entries, Warp commands and the landing card). Old
   links to it open Now. Files kept there before still appear in Export

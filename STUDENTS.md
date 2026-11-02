@@ -40,9 +40,13 @@ landing ──► the crossing (sign in / sign up) ──► first time? the set
                                          Privacy & data · Settings     (Warp: Ctrl/⌘ K)
 ```
 
-- **Landing** (`#top`): what it is, who it's for, why, what's inside (with a
-  live world demo driven by the real model), the product in four honest
-  numbers, a letter, safety facts, questions answered, footer. Around it
+- **Landing** (`#top`, `js/landing.js`): it opens on the real Earth (drag
+  to turn), with the comet of your subjects circling it; then try it in
+  three taps with no account (`js/try-plan.js`, the app's own planner
+  builds a first week), the autopilot in three cards, a live world demo
+  driven by the real model, your comet (a streak per subject, with a
+  slider), safety facts, questions answered, footer with the legal pages
+  and Contact (`contact.html`). There is no mascot. Around it
   (`js/landing-hud.js`): a HUD with the current chapter and scroll progress, the thread (a star per
   chapter down the right edge, lit as you pass, each a link), and headings
   that decode as they arrive. All of it steps aside for reduced motion. `#login`
@@ -207,6 +211,10 @@ landing ──► the crossing (sign in / sign up) ──► first time? the set
 | `js/setup.js` | The 90-second setup that fills the study profile. |
 | `js/planner.js` | The plan in the app: loads the question banks, builds the plan from what is stored, saves what a block changed. |
 | `js/block-check.js` | The check that closes a block: questions with their explanations, coverage or how it went, then saved. |
+| `js/autopilot-ui.js` | Today on autopilot: one line on what moved since the morning, energy in one tap, "Something came up", Undo, and the Sunday card. |
+| `js/model/autopilot.js` | Pure: what moved between two plans, energy and "came up" changes, the week looked back on and ahead. |
+| `js/comet.js` | The comet: a streak per subject, dim until the subject is ready, then lit. `cometOrbit` circles a globe (front page, World); `cometMark` draws it alone (Today, Plan, the try-it). |
+| `js/model/streaks.js` | Pure: how many streaks, and how many lit, from each subject's readiness. |
 | `js/model/learner.js` | Pure: per-topic mastery (Elo) and memory (FSRS-6), per-subject pace, typical time per topic. |
 | `js/model/capacity.js` | Pure: how much study each day really has room for. |
 | `js/model/plan.js` | Pure: the week's blocks, the next block, a topic after a block, results. |

@@ -12,7 +12,6 @@ import { store, api } from "./store.js";
 import * as L from "./model/learner.js";
 import * as P from "./model/plan.js";
 import { questionsFor, topicName, nameOf, stateOf, saveTopic, savePace, colourOf, currentPlan } from "./planner.js";
-import { panPose } from "./pan.js";
 import { openPastPaper, openPaperMarks } from "./paper-sheets.js";
 
 const COUNT = { check: 5, review: 3, practice: 3, learn: 3 };
@@ -184,11 +183,7 @@ export function openBlockCheck(block, { minutes = 0, sessionId = null, onDone } 
       next && !(next.subject === block.subject && next.topic === block.topic)
         ? el("button", { type: "button", class: "btn btn-quiet", id: "bc-next-block", text: `Next: ${nameOf(next.subject)} · ${P.KINDS[next.kind].label}`, onClick: () => { sheet.close(); startBlock(next); } })
         : null;
-    // Pan cheers a good check and thinks along with a hard one.
-    const right = answers.filter((a) => a.correct).length;
-    const good = answers.length ? right / answers.length >= 0.67 : (rating || 3) >= 3 || t.covered >= 1;
     stage.replaceChildren(
-      panPose(good ? "cheer" : "think", { cls: `bc-pan${good ? " cheer" : ""}`, label: good ? "Pan, cheering" : "Pan, thinking" }),
       ...lead,
       el("div", { class: "bc-summary" }, lines.map((l) => el("p", { text: l }))),
       el("div", { class: "bc-foot" }, [nextBtn, el("button", { type: "button", class: "btn btn-primary", id: "bc-done", text: "Done", onClick: () => sheet.close() })])

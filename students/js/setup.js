@@ -13,21 +13,20 @@ import { otherSubjectForm } from "./other-subject.js";
 import { toRow, fromRow, ACTIVITY_KINDS, cleanActivities, prepSlotsOf, MAX_PREP } from "./model/profile.js";
 import { clockOfText } from "./model/time.js";
 import { art, onArt, GUARDIANS, guardianOf } from "./art.js";
-import { panPose as panImage } from "./pan.js";
 
-// Pan, beside each question: one short line, and how Pan looks saying it.
-const PAN = {
-  board: ["idle", "Hi, I'm Pan. A few quick questions and I'll plan your week."],
-  stage: ["idle", "Which year? The syllabus changes with it."],
-  subjects: ["cheer", "Every subject you pick gets a tail. It lights up when you're ready."],
-  levels: ["think", "Be honest. Weaker subjects get more time, not less."],
-  papers: ["think", "Your papers decide what we study, and when the countdown ends."],
-  aim: ["idle", "Aim high or steady: both are good plans."],
-  school: ["think", "School comes first. I plan around it, never over it."],
-  boarding: ["think", "Boarding or travelling: it changes your evenings and weekends."],
-  sleep: ["idle", "Sleep is protected. I never plan into it."],
-  tuition: ["think", "Sport, art, coaching: I plan around all of it."],
-  exams: ["cheer", "Last one. Then your plan is ready."],
+// The setup: one short line beside each question.
+const LINES = {
+  board: "A few quick questions, and your week is planned.",
+  stage: "Which year? The syllabus changes with it.",
+  subjects: "Every subject you pick is a streak on your comet. It lights up when you're ready.",
+  levels: "Be honest. Weaker subjects get more time, not less.",
+  papers: "Your papers decide what you study, and when the countdown ends.",
+  aim: "Aim high or steady: both are good plans.",
+  school: "School comes first. The plan goes around it, never over it.",
+  boarding: "Boarding or travelling: it changes your evenings and weekends.",
+  sleep: "Sleep is protected. Nothing is ever planned into it.",
+  tuition: "Sport, art, coaching: the plan goes around all of it.",
+  exams: "Last one. Then your plan is ready.",
 };
 
 const $ = (id) => document.getElementById(id);
@@ -88,27 +87,20 @@ export function runSetup({ onDone, editing = false }) {
   document.body.classList.add("in-setup");
   stillSky(true);
 
-  // The side: the painted wallpaper and Pan, with a line for each step.
+  // The side: the painted wallpaper, with a line for each step.
   root.querySelector(".setup-side")?.remove();
-  const panBox = el("div", { class: "setup-pan" });
-  const panLine = el("p", { class: "setup-pan-line", "aria-hidden": "true" });
-  const side = el("aside", { class: "setup-side", "aria-hidden": "true" }, [panBox, panLine]);
+  const sideLine = el("p", { class: "setup-side-line", "aria-hidden": "true" });
+  const side = el("aside", { class: "setup-side", "aria-hidden": "true" }, [sideLine]);
   root.prepend(side);
   root.classList.add("has-side");
-  let panPose = null;
-  const showPan = (id) => {
-    const [pose, line] = PAN[id] || PAN.board;
-    panLine.textContent = line;
-    if (pose === panPose && panBox.firstChild) return;
-    panPose = pose;
-    panBox.replaceChildren(panImage(pose, { cls: "setup-pan-img" }));
+  const showLine = (id) => {
+    sideLine.textContent = LINES[id] || LINES.board;
   };
   onArt(() => {
     const wall = art("wall-tall") || art("wall-wide");
     if (wall) side.style.setProperty("--setup-wall", `url("${new URL(wall, location.href).href}")`);
     side.classList.toggle("painted", !!wall);
-    panPose = null;
-    showPan(form.dataset.step);
+    showLine(form.dataset.step);
   });
 
   const a = { ...fromRow(store.student) };
@@ -521,7 +513,7 @@ export function runSetup({ onDone, editing = false }) {
       el("div", { class: "setup-actions" }, [back, next])
     );
     form.dataset.step = s.id;
-    showPan(s.id);
+    showLine(s.id);
     form.querySelector("button[role=radio], button.chip, input, select")?.focus();
   };
 

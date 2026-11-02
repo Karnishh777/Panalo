@@ -1190,14 +1190,8 @@ input[type="range"].range {
     linear-gradient(to top, rgba(5, 7, 14, 0.92), rgba(5, 7, 14, 0) 55%),
     var(--setup-wall) center 35% / cover no-repeat;
 }
-.setup-pan-img {
-  display: block;
-  width: clamp(120px, 13vw, 190px);
-  height: auto;
-  filter: drop-shadow(0 12px 30px rgba(255, 140, 60, 0.45));
-  animation: pan-float 5s ease-in-out infinite;
-}
-.setup-pan-line {
+
+.setup-side-line {
   max-width: 28ch;
   margin: 14px 0 0;
   font: italic 400 clamp(18px, 1.7vw, 24px) / 1.35 var(--f-serif);
@@ -1361,21 +1355,14 @@ input[type="range"].range {
   .setup-side.painted {
     background: linear-gradient(to top, var(--bg), rgba(5, 7, 14, 0.4)), var(--setup-wall) center 30% / cover no-repeat;
   }
-  .setup-pan-img {
-    width: 64px;
-  }
-  .setup-pan-line {
+
+  .setup-side-line {
     margin: 0;
     font-size: 16px;
   }
   .setup-form {
     margin: 8px 16px 24px;
     width: auto;
-  }
-}
-@media (prefers-reduced-motion: reduce) {
-  .setup-pan-img {
-    animation: none;
   }
 }
 @media (max-width: 520px) {
@@ -2007,38 +1994,7 @@ input[type="range"].range {
   width: 100%;
   height: auto;
 }
-.cast-pan {
-  grid-column: 1 / -1;
-  display: flex;
-  align-items: center;
-  gap: 24px;
-  max-width: 760px;
-  margin-top: 30px;
-}
-.cast-pan[hidden] {
-  display: none;
-}
-/* Pan keeps its size: the row's text wraps around it, never squeezes it */
-.cast-pan-art {
-  flex: none;
-}
-.cast-pan-img {
-  width: 160px;
-  max-width: none;
-  height: auto;
-  filter: drop-shadow(0 10px 30px rgba(255, 150, 60, 0.45));
-  animation: pan-float 5s ease-in-out infinite;
-}
-.cast-pan h3 {
-  margin: 0 0 8px;
-  font-size: clamp(26px, 3vw, 36px);
-  font-weight: 400;
-}
-.cast-pan p {
-  margin: 0;
-  color: var(--text-2);
-  line-height: 1.6;
-}
+
 @media (max-width: 860px) {
   .cast {
     grid-template-columns: 1fr;
@@ -2052,22 +2008,14 @@ input[type="range"].range {
     width: clamp(60px, 16vw, 140px);
     margin: 0 -12px;
   }
-  .cast-pan {
-    flex-direction: column;
-    align-items: flex-start;
-  }
-  .cast-pan-img {
-    width: 100px;
-  }
+
 }
 @media (prefers-reduced-motion: reduce) {
   .cast-guard,
   .cast-scene i {
     transition: none;
   }
-  .cast-pan-img {
-    animation: none;
-  }
+
 }
 
 /* The rest of the week (setup): activities at set times */

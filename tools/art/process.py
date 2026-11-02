@@ -5,9 +5,8 @@
 
 Originals live in art-source/ (kept as made, never served by the app).
 
-Each input is named as in students/assets/art/PROMPTS.md (pan-idle.png,
-guardian-physics.png, scene-art.png, wall-wide.png ...). Cut-outs (pan-*,
-guardian-*) have their chroma-green background keyed out, with soft
+Each input is named as in students/assets/art/PROMPTS.md (guardian-physics.png,
+scene-art.png, wall-wide.png ...). Cut-outs (guardian-*) have their chroma-green background keyed out, with soft
 edges and the green spill on the rim removed; everything is resized and
 written as WebP to students/assets/art/, and manifest.json lists what
 exists, so the app only asks for images that are really there.
@@ -22,12 +21,11 @@ OUT = Path(__file__).resolve().parents[2] / "students" / "assets" / "art"
 # Sized for how big each is ever shown, at 2x for sharp screens, and no
 # bigger: every image is decoded in full into memory, and a page showing
 # eight 1200-px guardians as thumbnails ran low-memory laptops out of it.
-# Guardians are at most ~340 CSS px wide, Pan ~190 px, scenes and walls sit
+# Guardians are at most ~340 CSS px wide; scenes and walls sit
 # dimmed and blurred behind everything.
-SIZES = {"pan": (512, 512), "guardian": (720, 1080), "scene": (1600, 900), "wall": (1920, 1920)}
+SIZES = {"guardian": (720, 1080), "scene": (1600, 900), "wall": (1920, 1920)}
 QUALITY = 92  # WebP; visually lossless for painted art
 KNOWN = {
-    "pan": ["idle", "cheer", "think", "sleep"],
     "guardian": ["physics", "chemistry", "biology", "maths", "computing", "commerce", "words", "art"],
     "scene": ["physics", "chemistry", "biology", "maths", "computing", "commerce", "words", "art"],
     "wall": ["wide", "tall"],
@@ -83,7 +81,7 @@ def process(path):
         print(f"skip {path.name}: not a name from PROMPTS.md")
         return None
     img = Image.open(path)
-    cutout = kind in ("pan", "guardian")
+    cutout = kind == "guardian"
     img = unmark(img, cutout)
     img = key_green(img) if cutout else img.convert("RGB")
     img = fit(img, SIZES[kind])
