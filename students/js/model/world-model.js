@@ -1,18 +1,26 @@
 // Your world, as numbers.
 //
 // The globe is not decoration: every visible feature is computed here from
-// studying you actually did (phase 37: only studying grows it), and the
-// World page prints the number next to the feature it drives:
+// something you actually did -- study, and the rest of life (v0.3: all of
+// life grows it) -- and the World page prints the number next to the
+// feature it drives:
 //
-//   land        study hours, all time         focus sessions and exam-style questions; never shrinks
-//   lights      tasks completed, all time     one light per task, on the night side
-//   forests     chapters covered              green spreads as the syllabus gets covered
-//   glow        chapters known                the seas light up with what you know well
-//   aurora      marks earned, last 30 days    exam-style questions and past papers
-//   atmosphere  past papers, last 60 days     each timed paper thickens the air
-//   ring        study days, last 7            appears at 5 study days of 7
-//   moons       your goals                    each fills as the goal is met
-//   clouds      time away, reviews due        mist over what's fading; clears when you review or return
+//   land        study hours, all time           focus sessions and exam-style questions; never shrinks
+//   forests     chapters covered                green spreads as the syllabus gets covered
+//   glow        chapters known                  the seas light up with what you know well
+//   aurora      marks earned, last 30 days      exam-style questions and past papers
+//   atmosphere  past papers, last 60 days       each timed paper thickens the air
+//   cities      time with people, 30 days       Earth's real cities light up at night (finished tasks help a little)
+//   arcs        time with people, 30 days       arcs of light join cities
+//   towns       helping, 30 days                small towns come on between the cities
+//   vital       sport and movement, 30 days     greener valleys, a livelier sea
+//   stars       reading, 30 days                the stars around the world brighten
+//   moonlight   rest and sleep, 30 days         moonlight on the night side
+//   hue         making things, 30 days          the air takes on colour at the edge
+//   outdoors    time outside, 30 days           the clouds part
+//   ring        days you showed up, last 7      appears at 5 of 7 (any area counts)
+//   moons       your goals                      each fills as the goal is met
+//   clouds      time away, reviews due          mist over what's fading; clears when you review or return
 //
 // Nothing here punishes. Land and forests are cumulative, so a bad week
 // cannot undo a good term; fading and time away show as weather, and
@@ -41,20 +49,33 @@ function within(rows, field, since) {
   });
 }
 
+// The areas of life you can log (activity_log kinds; "outdoors" and "help"
+// since phase 38), each with what it does to the world.
+export const LIFE = [
+  { id: "connect", label: "Time with people", short: "People", feature: "City lights", tone: "tone-signal" },
+  { id: "move", label: "Sport and movement", short: "Sport", feature: "Green valleys", tone: "tone-world" },
+  { id: "read", label: "Reading", short: "Reading", feature: "Stars", tone: "tone-focus" },
+  { id: "rest", label: "Rest and sleep", short: "Rest", feature: "Moonlight", tone: "tone-time" },
+  { id: "create", label: "Making things", short: "Making", feature: "Coloured air", tone: "tone-drift" },
+  { id: "outdoors", label: "Outdoors", short: "Outdoors", feature: "Clear skies", tone: "tone-world" },
+  { id: "help", label: "Helping", short: "Helping", feature: "Towns", tone: "tone-signal" },
+];
+export const LIFE_KINDS = LIFE.map((a) => a.id);
+
 // Exam-style questions marked (phase 37): logs of kind "questions".
 export const questionLogs = (logs) => logs.filter((l) => l.kind === "questions");
 // Past papers: results titled "Paper N · …" (paper-sheets.js).
 export const pastPapers = (results) => results.filter((r) => /^Paper \d{1,2} · /.test(r.title || ""));
 
-// Every local day on which you studied: a focus session, a finished task,
-// exam-style questions marked, or a result added. The world counts only
-// these; the week's rhythm and the month's stars (which aren't the world)
-// also count a day you closed, when given `entries`.
+// Every local day you showed up: a focus session, a finished task,
+// anything logged (study or the rest of life), or a result added; the
+// week's rhythm and the month's stars also count a day you closed, when
+// given `entries`.
 export function activeDays({ sessions = [], tasks = [], logs = [], results = [], entries = [] }) {
   const days = new Set();
   for (const s of sessions) if (s.focused_minutes > 0) days.add(dayKey(s.started_at));
   for (const t of tasks) if (t.done_at) days.add(dayKey(t.done_at));
-  for (const l of questionLogs(logs)) days.add(l.occurred_on);
+  for (const l of logs) if (l.occurred_on) days.add(l.occurred_on);
   for (const r of results) if (r.created_at) days.add(dayKey(r.created_at));
   for (const e of entries) if (e.closed_at) days.add(e.day);
   return days;
@@ -117,22 +138,37 @@ export function buildWorld({ sessions = [], tasks = [], logs = [], goals = [], e
   const born = bornAt ? Date.parse(bornAt) : NaN;
   const ageDays = Number.isFinite(born) ? Math.max(0, Math.floor((now - born) / DAY)) : 0;
 
+  // The rest of life: minutes of each area in the last 30 days.
+  const life30 = Object.fromEntries(LIFE_KINDS.map((k) => [k, 0]));
+  for (const l of within(logs, "occurred_on", d30)) if (l.kind in life30) life30[l.kind] += Number(l.minutes) || 0;
+
   const focusHours = (focusMinutesTotal + questionMinutes) / 60;
+  // Ten hours with people in a month lights most of the great cities.
+  const cities = clamp01(0.8 * sat(life30.connect, 600) + 0.2 * sat(tasksDone, 120));
+  const outdoors = sat(life30.outdoors, 600);
   const layers = {
     land: LAND_BASE + LAND_MAX_GAIN * sat(focusHours, 60),
     // The real Earth (js/earth.js): how much of its land has risen from the
     // sea -- none at first, a third after about thirty hours of focus, all
     // of it after a few hundred -- and how many of its city lights are on.
     earth: Math.min(1, 1.06 * sat(focusHours, 70)),
-    cities: sat(tasksDone, 120),
-    lights: Math.min(MAX_LIGHTS, tasksDone),
+    cities,
+    lights: Math.round(MAX_LIGHTS * cities),
+    arcs: sat(life30.connect, 900),
+    towns: sat(life30.help, 300),
+    vital: sat(life30.move, 600),
+    stars: sat(life30.read, 600),
+    moonlight: sat(life30.rest, 600),
+    hue: sat(life30.create, 600),
+    outdoors,
     aurora: sat(marks30, 120),
     forest: 0.12 + 0.78 * covered,
     glow: known,
     atmosphere: 0.15 + 0.85 * sat(papers60, 3),
     // A brand-new world has never been away: clear skies. Mist gathers over
     // chapters due for review, and clears as they're reviewed.
-    clouds: Math.max(daysSinceActive === null ? 0.08 : 0.08 + 0.5 * clamp01(daysSinceActive / 14), 0.08 + 0.3 * due),
+    // Time outside parts them.
+    clouds: Math.max(0.03, Math.max(daysSinceActive === null ? 0.08 : 0.08 + 0.5 * clamp01(daysSinceActive / 14), 0.08 + 0.3 * due) - 0.12 * outdoors),
     ring: active7 >= 5 ? active7 / 7 : 0,
   };
 
@@ -158,6 +194,7 @@ export function buildWorld({ sessions = [], tasks = [], logs = [], goals = [], e
       due: k ? k.due : 0,
       active7,
       daysSinceActive,
+      life30,
       ageDays,
     },
     discoveries: discoveries({ sessions, tasks, logs, goals, entries, results, now }),

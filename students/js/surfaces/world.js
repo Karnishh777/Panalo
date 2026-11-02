@@ -8,12 +8,13 @@ import { el, openSheet, confirmSheet, showToast, chipGroup, reportError, emptySt
 import { store, api, redrawOn } from "../store.js";
 import { createGlobe } from "../world-render.js";
 import { globeDock } from "../globe-dock.js";
-import { buildWorld, weatherLine } from "../model/world-model.js";
+import { buildWorld, weatherLine, LIFE } from "../model/world-model.js";
 import { formatMinutes, dayKey, parseDayKey } from "../model/time.js";
 import { state } from "../../../src/state.js";
 import { activeDays } from "../model/world-model.js";
 import { monthSky, journal, MOODS, ENERGY, DONE } from "../model/daily.js";
 import { openCheckin } from "../checkin.js";
+import { openLifeLog } from "../life-log.js";
 import { worldInput } from "../planner.js";
 
 let root;
@@ -35,6 +36,20 @@ function world() {
   return buildWorld(worldInput());
 }
 
+// The rest of life, last 30 days: what each area did to the world.
+const LIFE_EXPLAIN = {
+  connect: "Time with family and friends: Earth's real cities light up at night, and arcs of light join them.",
+  move: "Sport, walking, dance, yoga: the valleys come greener and the sea livelier.",
+  read: "Reading for yourself: the stars around your world brighten.",
+  rest: "Sleep and calm breaks: moonlight on the night side.",
+  create: "Art, music, writing, code: the air glows with colour at the edge.",
+  outdoors: "Time outside: the clouds part.",
+  help: "Chores, helping at home, volunteering: small towns come on between the cities.",
+};
+function lifeRows(s) {
+  return LIFE.map((a) => row(a.tone, a.feature, s.life30?.[a.id] ? formatMinutes(s.life30[a.id]) : "—", `${a.label}, last 30 days. ${LIFE_EXPLAIN[a.id]}`));
+}
+
 function row(tone, name, value, explain) {
   return el("li", { class: `legend-row ${tone}` }, [el("span", { class: "legend-swatch", "aria-hidden": "true" }), el("div", {}, [el("b", { text: name }), el("small", { text: explain })]), el("span", { class: "legend-val num", text: value })]);
 }
@@ -43,18 +58,18 @@ function render() {
   const w = world();
   const s = w.stats;
   titleEl.textContent = store.student?.world_name || "Your world";
-  subEl.textContent = `${s.ageDays === 0 ? "Born today" : `${s.ageDays} day${s.ageDays === 1 ? "" : "s"} old`}. Only studying grows it: every feature here is study you actually did — drag to turn it.`;
+  subEl.textContent = `${s.ageDays === 0 ? "Born today" : `${s.ageDays} day${s.ageDays === 1 ? "" : "s"} old`}. Study raises its land; the rest of your life lights, greens and colours it. Every feature here is something you actually did — drag to turn it.`;
   globe?.setLayers(w.layers, w.moons);
   renderNumbers(w);
 
   legendEl.replaceChildren(
     row("tone-world", "Land", formatMinutes(s.studyMinutesTotal), `Study, all time: focus sessions and exam-style questions. ${landLine(w.layers.earth)} It never sinks again.`),
-    row("tone-time", "Lights", String(s.tasksDone), "Tasks finished, all time — Earth's real cities light up on the night side, the brightest first."),
     row("tone-world", "Forests", s.chapters ? `${s.covered} of ${s.chapters}` : "—", "Chapters covered: green spreads over the land as your syllabus gets covered. It stays."),
     row("tone-focus", "Glowing seas", s.chapters ? `${s.known} of ${s.chapters}` : "—", "Chapters you know to your aim. The seas glow with what you know well."),
     row("tone-drift", "Aurora", `${s.marks30} marks`, "Marks earned in the last 30 days: exam-style questions you marked, and past papers."),
     row("tone-signal", "Atmosphere", `${s.papers60} paper${s.papers60 === 1 ? "" : "s"}`, "Past papers marked in the last 60 days: each one thickens the air."),
-    row("tone-time", "Ring", `${s.active7} of 7 days`, w.layers.ring ? "You studied on five or more of the last seven days." : "Appears when you study five days out of seven."),
+    ...lifeRows(s),
+    row("tone-time", "Ring", `${s.active7} of 7 days`, w.layers.ring ? "You showed up on five or more of the last seven days." : "Appears when you show up five days out of seven: study or anything you log."),
     row("tone-signal", "Weather", s.daysSinceActive == null ? "—" : s.daysSinceActive === 0 ? "clear" : `${s.daysSinceActive} d away`, weatherLine(s))
   );
 
@@ -390,6 +405,7 @@ export function mount(section) {
           el("button", { type: "button", class: "btn btn-quiet btn-sm", text: "Rename", onClick: rename }),
           el("button", { type: "button", class: "btn btn-ghost btn-sm", id: "world-postcard", text: "Postcard", onClick: () => postcard().catch((e) => reportError(e)) }),
         ]),
+        el("button", { type: "button", class: "btn btn-ghost", id: "world-log", text: "Log your day", onClick: () => openLifeLog() }),
         el("a", { class: "btn btn-primary", href: "#/plan", text: "Study" }),
       ]),
     ]),
