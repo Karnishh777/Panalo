@@ -567,7 +567,7 @@
   background: var(--surface-2);
   isolation: isolate;
 }
-/* The wallpaper is a mask tinted with the theme's ink, so the same doodle
+/* The wallpaper is a mask tinted with the theme's ink, so the same pattern
    reads as pencil on paper in light mode and chalk on slate in dark. */
 .chat-main::before {
   content: "";
@@ -577,14 +577,6 @@
   pointer-events: none;
   opacity: var(--wp-alpha);
 }
-.app-container[data-wallpaper="doodle"] .chat-main:not([data-wp])::before,
-.chat-main[data-wp="doodle"]::before {
-  background-color: var(--wp-ink);
-  -webkit-mask: url("../doodle.svg") repeat;
-  mask: url("../doodle.svg") repeat;
-  -webkit-mask-size: 300px;
-  mask-size: 300px;
-}
 .app-container[data-wallpaper="dots"] .chat-main:not([data-wp])::before,
 .chat-main[data-wp="dots"]::before {
   background-image: radial-gradient(color-mix(in oklab, var(--wp-ink) 16%, transparent) 1.3px, transparent 1.4px);
@@ -593,34 +585,6 @@
 .app-container[data-wallpaper="plain"] .chat-main:not([data-wp])::before,
 .chat-main[data-wp="plain"]::before {
   background: none;
-}
-/* Illustrated scenes. A veil in the theme's own colour keeps everything
-   drawn straight on the wallpaper (dates, stickers)
-   legible: pastel in light mode, deep in dark. */
-.app-container[data-wallpaper="city"] .chat-main:not([data-wp])::before,
-.chat-main[data-wp="city"]::before {
-  --scene: url("../wallpapers/night-city.svg");
-}
-.app-container[data-wallpaper="northern"] .chat-main:not([data-wp])::before,
-.chat-main[data-wp="northern"]::before {
-  --scene: url("../wallpapers/northern-lights.svg");
-}
-.app-container[data-wallpaper="galaxy"] .chat-main:not([data-wp])::before,
-.chat-main[data-wp="galaxy"]::before {
-  --scene: url("../wallpapers/galaxy.svg");
-}
-.app-container:is([data-wallpaper="city"], [data-wallpaper="northern"], [data-wallpaper="galaxy"]) .chat-main:not([data-wp])::before,
-.chat-main:is([data-wp="city"], [data-wp="northern"], [data-wp="galaxy"])::before {
-  background:
-    linear-gradient(color-mix(in oklab, var(--surface-2) 60%, transparent), color-mix(in oklab, var(--surface-2) 60%, transparent)),
-    var(--scene) center / cover no-repeat;
-  opacity: 1;
-}
-:root[data-theme="dark"] .app-container:is([data-wallpaper="city"], [data-wallpaper="northern"], [data-wallpaper="galaxy"]) .chat-main:not([data-wp])::before,
-:root[data-theme="dark"] .chat-main:is([data-wp="city"], [data-wp="northern"], [data-wp="galaxy"])::before {
-  background:
-    linear-gradient(color-mix(in oklab, var(--bg) 22%, transparent), color-mix(in oklab, var(--bg) 38%, transparent)),
-    var(--scene) center / cover no-repeat;
 }
 
 /* A chat tinted by its theme: a whisper of the chat's colour in the floor. */

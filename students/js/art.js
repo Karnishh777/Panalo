@@ -1,8 +1,7 @@
-// The painted art (v0.2): the subject guardians, their
-// scenes and the wallpapers -- bitmaps made from students/assets/art/
-// PROMPTS.md by tools/art/process.py. manifest.json lists what exists; the
-// app asks only for those, and every place that shows art has a plain
-// fallback, so a missing image never leaves a hole.
+// The painted art (v0.2). The AI-made pictures were removed on 2 November
+// 2026 (the owner keeps a copy), so there is none: every place that showed
+// art uses its plain fallback (an emblem, a colour). The lookups stay so
+// real photographs can be listed here again later.
 const BASE = "assets/art/";
 let have = null;
 let sizes = {};
@@ -12,9 +11,7 @@ const listeners = new Set();
 /** Load the manifest once; resolves when known. */
 export function loadArt() {
   if (have) return Promise.resolve(have);
-  loading ??= fetch(`${BASE}manifest.json`, { cache: "no-cache" })
-    .then((r) => (r.ok ? r.json() : { files: [] }))
-    .catch(() => ({ files: [] }))
+  loading ??= Promise.resolve({ files: [] })
     .then((j) => {
       have = new Set(Array.isArray(j.files) ? j.files : []);
       sizes = j.sizes && typeof j.sizes === "object" ? j.sizes : {};

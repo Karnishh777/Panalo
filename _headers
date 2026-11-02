@@ -32,6 +32,3 @@
 /manifest.webmanifest
   Cache-Control: no-cache
 
-# The manifest lists your stickers, so it must not go stale after you add some.
-/stickers/manifest.json
-  Cache-Control: no-cache

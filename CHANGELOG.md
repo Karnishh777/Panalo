@@ -13,6 +13,14 @@ AI, runs as "Pan Lite" (our own planner code does the planning; the AI
 only where nothing else can).
 
 **0.2.0 (in progress)**
+- **Clean-up: the AI-made pictures are gone.** At the owner's request the
+  AI-generated art is removed from the repository (a copy was handed to
+  the owner first): `art-source/` (169 MB of originals), the app's
+  guardians, scenes and wallpapers (`students/assets/art/`) and the art
+  script. Every place that showed them uses its plain fallback. Panalo
+  Chat loses its doodle and its three illustrated backgrounds and its
+  stickers folder; its default background is now Dots, and anyone who had
+  chosen a removed one gets Dots. The built-in stickers stay.
 - **Sign-in and a globe that shows.** A page opened before the bot check
   was switched on kept signing in without a check token, and Supabase
   refused it ("captcha protection: request disallowed"); a missing site

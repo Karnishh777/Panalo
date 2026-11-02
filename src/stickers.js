@@ -65,7 +65,7 @@ export function describeText(text) {
 
 // ---- Your own stickers (the stickers/ folder) ----
 // Static hosting can't list a directory, so the folder ships a manifest built
-// by tools/build-stickers.mjs. Missing or empty is fine — the built-in vector
+// by a build script (removed with the folder, Nov 2026). Missing or empty is fine — the built-in vector
 // cards always work on their own.
 let customStickers = [];
 

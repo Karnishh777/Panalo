@@ -88,10 +88,7 @@ export const MAX_FILE_BYTES = 50 * 1024 * 1024;
 // "aurora" and "mesh" were dropped — both were rainbow gradient-blob patterns
 // that clashed with the matte direction.
 export const WALLPAPER_PRESETS = [
-  { id: "doodle", name: "Doodle" },
-  { id: "city", name: "Night city", scene: "wallpapers/night-city.svg" },
-  { id: "northern", name: "Northern lights", scene: "wallpapers/northern-lights.svg" },
-  { id: "galaxy", name: "Galaxy", scene: "wallpapers/galaxy.svg" },
+  // The doodle and the three illustrated scenes were removed (2 Nov 2026).
   { id: "dots", name: "Dots" },
   { id: "plain", name: "Plain" },
   // "Ambient" makes the app translucent so the ambient effect shows through it.

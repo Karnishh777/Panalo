@@ -547,7 +547,7 @@ export function initSettings() {
   const wpThumb = (w) => {
     const thumb = el("span", { class: "wp-thumb", "aria-hidden": "true" });
     if (w.scene) thumb.style.backgroundImage = `url("${w.scene}")`;
-    else if (w.id === "doodle" || w.id === "dots") thumb.classList.add(`pat-${w.id}`);
+    else if (w.id === "dots") thumb.classList.add("pat-dots");
     else if (w.id === "custom" && settings.customWallpaper) thumb.style.backgroundImage = `url("${settings.customWallpaper}")`;
     else if (w.icon) thumb.append(icon(w.icon, 22));
     return thumb;

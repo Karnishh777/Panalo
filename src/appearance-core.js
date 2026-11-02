@@ -20,7 +20,7 @@ export const SETTINGS_DEFAULTS = Object.freeze({
   density: "comfortable",
   quickReplies: true, // the one-tap emoji bar above the message box
   reduceMotion: false,
-  wallpaper: "doodle",
+  wallpaper: "dots",
   customWallpaper: null,
   effect: "aurora",
   ambientImage: null,
