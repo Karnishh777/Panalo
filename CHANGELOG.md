@@ -13,6 +13,14 @@ AI, runs as "Pan Lite" (our own planner code does the planning; the AI
 only where nothing else can).
 
 **0.2.0 (in progress)**
+- **The remake, step 2: Today on autopilot** (students/js/autopilot-ui.js,
+  model/autopilot.js). Under Today's banner, Pan (a tail per subject, lit
+  when the subject is at your target) says in one line what moved in the
+  plan since the morning. **Energy** in one tap: Low makes today lighter,
+  High fuller, OK puts it back. **Something came up**: extra class, ill,
+  family, just tired or busy all day, one tap each; the rest of today (and
+  a light tomorrow when ill) is rearranged and the work moves later in the
+  week. Every change says what it did and has **Undo**.
 - **The remake, step 1: a new front page** (the approved "Observatory"
   design). Pan, the star kitsune, sits on the edge of your world; the
   headline is "A world made of what you actually do." **Try it in three

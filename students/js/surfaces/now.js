@@ -23,12 +23,14 @@ import { KINDS, nextBlock } from "../model/plan.js";
 import { startBlock } from "../block-check.js";
 import { art, artImg, onArt } from "../art.js";
 import { createPan } from "../motion-art.js";
+import { autopilotPanel } from "../autopilot-ui.js";
 
 let root;
 let orbitSlot;
 let logEl;
 let greetEl;
 let heroEl;
+let apEl;
 let subEl;
 let stepEl;
 let globe = null;
@@ -374,6 +376,8 @@ function renderHero() {
 
 function render() {
   renderHero();
+  // Pan's autopilot: what moved, energy, something came up (autopilot-ui.js).
+  apEl.replaceChildren(...(hasPlan() && banksReady() ? [autopilotPanel({ rerender: render })] : []));
   if (!greetPan || (art("pan-idle") && greetPan.tagName === "CANVAS")) greetPan = panFor("pan-idle", "idle", "greet-pan", 64);
   greetEl.replaceChildren(greeting(), greetPan);
   renderOrbit();
@@ -385,6 +389,7 @@ export function mount(section, ctx) {
   root = el("div", { class: "now" });
   greetEl = el("h1");
   heroEl = el("section", { class: "today-hero", "aria-label": "Today's climb" });
+  apEl = el("div", { class: "ap-slot" });
   subEl = el("p", { class: "s-sub" });
   stepEl = el("p", { class: "now-step", "aria-live": "polite" });
   const globeCanvas = el("canvas", { class: "orbit-world", role: "img", "aria-label": "Your world. Open World for what shapes it." });
@@ -395,6 +400,7 @@ export function mount(section, ctx) {
   onArt(() => sleeper.replaceChildren(panFor("pan-sleep", "sleep", "", 140)));
   root.append(
     heroEl,
+    apEl,
     el("div", { class: "s-head" }, [el("div", { class: "now-head" }, [el("p", { class: "kicker toned tone-time", text: longDate(new Date()) }), greetEl, subEl, stepEl, captureForm()])]),
     el("div", { class: "now-grid" }, [el("div", { class: "now-instrument" }, [sleeper, orbitSlot, el("p", { class: "orbit-legend faint" }, [legend("time", "classes & events"), legend("focus", "focus done"), legend("alert", "deadlines"), legend("hand", "now")])]), logEl])
   );
