@@ -13,6 +13,18 @@ AI, runs as "Pan Lite" (our own planner code does the planning; the AI
 only where nothing else can).
 
 **0.2.0 (in progress)**
+- **The remake, step 1: a new front page** (the approved "Observatory"
+  design). Pan, the star kitsune, sits on the edge of your world; the
+  headline is "A world made of what you actually do." **Try it in three
+  taps** (no account): pick your exams, your subjects and when you sit
+  them, and the same planner the app runs builds a first week. **Pan grows
+  a tail for every subject** (students/js/pan.js, model/pan-tails.js): one
+  tail per subject, lit when that subject is exam-ready, drawn from parts
+  so the count is always right. New sections for autopilot, the world
+  demo, Meet Pan, safety and questions; the old cast, numbers and letter
+  sections are gone. A full footer links Privacy, Rules and terms,
+  **Contact** (new contact.html: help, your data, parents, security,
+  accessibility) and the **Grievance Officer**.
 - **Archive removed**: Panalo is a study planner, so the file archive is
   gone (its page, menu entries, Warp commands and the landing card). Old
   links to it open Now. Files kept there before still appear in Export
