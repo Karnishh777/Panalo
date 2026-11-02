@@ -55,16 +55,16 @@ ok("land is bounded", lots.layers.land < 0.47 && lots.layers.land > tenHours.lay
 const tasks = Array.from({ length: 12 }, (_, i) => ({ id: `t${i}`, title: "x", done_at: at(i % 3, 12) }));
 tasks.push({ id: "open", title: "open", done_at: null });
 const withTasks = buildWorld({ tasks, now: NOW });
-ok("one light per finished task", withTasks.layers.lights === 12, withTasks.layers.lights);
+ok("finished tasks light a few cities", withTasks.layers.lights > 0 && withTasks.layers.lights < 20, withTasks.layers.lights);
 ok("lights and land are independent", withTasks.layers.land === LAND_BASE);
 
 // The real Earth: all ocean at first, rising with focus; cities light with tasks.
 ok("a new Earth is all ocean, all dark", empty.layers.earth === 0 && empty.layers.cities === 0);
 ok("focus raises Earth's land", tenHours.layers.earth > 0.1 && tenHours.layers.earth < 0.3, tenHours.layers.earth);
 ok("Earth rises fully, and no further", lots.layers.earth === 1);
-ok("finished tasks light Earth's cities", withTasks.layers.cities > 0.05 && withTasks.layers.cities < 0.2 && withTasks.layers.earth === 0, withTasks.layers.cities);
+ok("finished tasks help the cities a little", withTasks.layers.cities > 0 && withTasks.layers.cities < 0.05 && withTasks.layers.earth === 0, withTasks.layers.cities);
 
-// Only studying grows the world (phase 37).
+// Study grows the land; the rest of life grows the rest (v0.3).
 const q = (daysAgo, marks, outOf) => ({ kind: "questions", minutes: Math.round(outOf * 1.5), marks, out_of: outOf, occurred_on: dayKey(at(daysAgo)) });
 const marked = buildWorld({ logs: [q(2, 40, 50)], now: NOW });
 const oldMarked = buildWorld({ logs: [q(45, 40, 50)], now: NOW });
@@ -72,7 +72,22 @@ ok("marks earned light the aurora", marked.layers.aurora > 0.2 && empty.layers.a
 ok("the aurora reflects the last 30 days", oldMarked.layers.aurora === 0);
 ok("exam-style questions count as study time", marked.stats.studyMinutesTotal === 75 && marked.layers.land > empty.layers.land);
 const notStudy = buildWorld({ logs: [{ kind: "create", minutes: 300, occurred_on: dayKey(at(1)) }, { kind: "move", minutes: 300, occurred_on: dayKey(at(1)) }, { kind: "read", minutes: 300, occurred_on: dayKey(at(1)) }, { kind: "connect", minutes: 300, occurred_on: dayKey(at(1)) }], entries: [{ day: dayKey(at(0)), closed_at: at(0, 21) }], now: NOW });
-ok("things that aren't studying don't grow it", JSON.stringify(notStudy.layers) === JSON.stringify(empty.layers), JSON.stringify(notStudy.layers));
+ok("making, sport and reading don't raise land", notStudy.layers.land === empty.layers.land && notStudy.layers.earth === 0);
+ok("…reading brightens the stars, sport the valleys, making the air", notStudy.layers.stars > 0.3 && notStudy.layers.vital > 0.3 && notStudy.layers.hue > 0.3 && empty.layers.stars === 0);
+const life = (kind, minutes, daysAgo = 1) => ({ kind, minutes, occurred_on: dayKey(at(daysAgo)) });
+const people = buildWorld({ logs: [life("connect", 300), life("connect", 300, 3)], now: NOW });
+ok("time with people lights the cities and joins them", people.layers.cities > 0.45 && people.layers.arcs > 0.4 && people.stats.life30.connect === 600, JSON.stringify(people.layers));
+const helping = buildWorld({ logs: [life("help", 120)], now: NOW });
+ok("helping brings the towns on", helping.layers.towns > 0.3 && empty.layers.towns === 0);
+const rested = buildWorld({ logs: [life("rest", 480)], now: NOW });
+ok("rest lays moonlight", rested.layers.moonlight > 0.5);
+const outside = buildWorld({ logs: [life("outdoors", 600)], now: NOW });
+const inside = buildWorld({ logs: [life("read", 1)], now: NOW });
+ok("time outside parts the clouds", outside.layers.clouds < inside.layers.clouds && outside.layers.outdoors > 0.6);
+const longAgo = buildWorld({ logs: [life("connect", 600, 45)], now: NOW });
+ok("the rest of life counts the last 30 days", longAgo.layers.arcs === 0 && longAgo.stats.life30.connect === 0);
+const lifeWeek = buildWorld({ logs: [0, 1, 2, 3, 4].map((d) => life("move", 30, d)), now: NOW });
+ok("any area counts toward the ring", lifeWeek.layers.ring > 0 && lifeWeek.stats.active7 === 5);
 const knows = buildWorld({ knowledge: { total: 40, covered: 20, known: 10, due: 0 }, now: NOW });
 ok("chapters covered green the land", knows.layers.forest > empty.layers.forest + 0.3 && knows.stats.covered === 20);
 ok("chapters known light the seas", Math.abs(knows.layers.glow - 0.25) < 1e-9 && empty.layers.glow === 0);
@@ -253,7 +268,7 @@ ok("anything else is just bytes", T_("application/zip", "a.zip") === "applicatio
   ok("top subjects, biggest first", c.subjects[0].subject === "Physics" && c.subjects[0].minutes === 140 && c.subjects[1].subject === "Chemistry");
   ok("tasks finished that week", c.tasksDone === 1);
   ok("logged time by kind", c.logged.read === 40);
-  ok("days shown up: studied or closed (activity logs aren't)", c.shown.length === 4, String(c.shown.length));
+  ok("days shown up: studied, logged or closed", c.shown.length === 5, String(c.shown.length));
   ok("how the days felt, on average", c.mood === 3.5);
   ok("intentions set and kept", c.intentions === 2 && c.kept === 1);
   ok("what you wrote is kept for the chronicle", c.words.length === 2 && c.words.some((w) => w.text === "Snell's law"));

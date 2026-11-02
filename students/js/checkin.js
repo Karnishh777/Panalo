@@ -9,6 +9,7 @@
 import { el, openSheet, showToast, reportError } from "./ui.js";
 import { store, api } from "./store.js";
 import { MOODS, ENERGY, DONE, todayEntry, journal } from "./model/daily.js";
+import { lifeChips } from "./life-log.js";
 
 // A row of chips with a scale (mood, energy): radiogroup, re-pressable.
 function scale(label, options, value, tone) {
@@ -77,6 +78,8 @@ export function openCheckin({ onSaved } = {}) {
   const done = entry?.intention ? scale("Did it happen?", DONE, entry.intention_done, "tone-time") : null;
   const mood = scale("How was today?", MOODS, entry?.mood, "tone-drift");
   const energy = scale("Energy", ENERGY, entry?.energy, "tone-focus");
+  // What else filled the day (v0.3: all of life grows the world).
+  const life = lifeChips();
 
   const learned = el("input", { type: "text", class: "ink", maxlength: "280", value: entry?.learned || "", placeholder: "Something you didn't know this morning", "aria-label": "One thing you learned" });
   const win = el("input", { type: "text", class: "ink", maxlength: "280", value: entry?.win || "", placeholder: "However small", "aria-label": "One good thing" });
@@ -90,6 +93,7 @@ export function openCheckin({ onSaved } = {}) {
       done ? block(`“${entry.intention}”`, done.node, "Your intention this morning.") : null,
       block("How was today?", mood.node),
       block("Energy", energy.node),
+      block("What else filled the day?", life.node, "Tap what you did. Each grows your world: people light the cities, sport greens the valleys, reading brightens the stars."),
       el("label", { class: "field" }, [el("span", { text: "One thing you learned" }), learned]),
       el("label", { class: "field" }, [el("span", { text: "One good thing" }), win]),
     ],
@@ -107,6 +111,7 @@ export function openCheckin({ onSaved } = {}) {
           }
           btn.disabled = true;
           try {
+            if (!(await life.save())) return false;
             const { error } = await api.saveEntry({
               mood: mood.value,
               energy: energy.value,

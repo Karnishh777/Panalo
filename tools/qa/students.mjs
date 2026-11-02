@@ -509,8 +509,18 @@ try {
   await go(page, "#/world");
   const legend = await page.textContent(".legend");
   check("the world legend shows the focus that grew the land", /25 min/.test(legend));
-  check("the world legend counts the finished task as a light", /Lights\s*Tasks finished.*1/s.test(legend));
-  check("only studying grows the world: no activity logging", !(await page.isVisible("text=Log an activity")) && /Only studying grows it/.test(await page.textContent(".world .s-sub")));
+  check("the legend lists the rest of life: people, sport, reading, rest, making, outdoors, helping", ["City lights", "Green valleys", "Stars", "Moonlight", "Coloured air", "Clear skies", "Towns"].every((f) => legend.includes(f)));
+  // All of life grows the world (v0.3): log your day from World.
+  await page.click("#world-log");
+  await page.waitForSelector(".sheet-life .life-chips", { timeout: 5000 }).catch(() => {});
+  await page.click(".sheet-life .chip[data-kind='connect']");
+  await page.selectOption(".sheet-life select[data-mins='connect']", "120");
+  await page.click(".sheet-life .chip[data-kind='read']");
+  await page.click("#life-save");
+  await page.waitForTimeout(600);
+  const lifeLogged = await page.evaluate(() => window.__qa.db.activity_log.filter((l) => l.kind === "connect" || l.kind === "read").map((l) => `${l.kind}:${l.minutes}`).sort().join(","));
+  check("World logs the rest of your day: time with people and reading", lifeLogged === "connect:120,read:30", lifeLogged);
+  check("…and the legend shows it", /City lights[\s\S]*2 h/.test(await page.textContent(".legend")) && /Study raises its land/.test(await page.textContent(".world .s-sub")));
   check("the legend explains each feature as study", /Forests\s*Chapters covered/.test(legend) && /Aurora\s*Marks earned/.test(legend) && /Atmosphere\s*Past papers/.test(legend));
   check("the first session is a discovery", /First session/.test(await page.textContent(".world-lower")));
   await shot(page, "world");
@@ -733,15 +743,16 @@ try {
     await d.click(".chips.scale .chip.tone-drift[data-v='4']");
     await d.click(".chips.scale .chip.tone-focus[data-v='3']");
     await d.fill("input[aria-label='One thing you learned']", "Light bends more in glass than in water");
+    await d.click("dialog.sheet-journal .chip[data-kind='move']");
     await d.click("#checkin-save");
     await d.waitForTimeout(700);
     const closed = await d.evaluate(() => {
       const today = new Date().toLocaleDateString("en-CA");
       const e = window.__qa.db.daily_entries.find((x) => x.day === today);
-      return { mood: e?.mood, energy: e?.energy, closed: !!e?.closed_at, learned: e?.learned, read: window.__qa.db.activity_log.filter((l) => l.kind === "read" && l.occurred_on === today).reduce((n, l) => n + l.minutes, 0) };
+      return { mood: e?.mood, energy: e?.energy, closed: !!e?.closed_at, learned: e?.learned, move: window.__qa.db.activity_log.filter((l) => l.kind === "move" && l.occurred_on === today).reduce((n, l) => n + l.minutes, 0) };
     });
     check("closing the day keeps mood, energy and what you learned", closed.closed && closed.mood === 4 && closed.energy === 3 && /glass/.test(closed.learned || ""));
-    check("closing the day logs nothing to the world (only studying grows it)", closed.read === 0 && !(await d.isVisible(".checkin-acts")));
+    check("closing the day logs what else filled it: sport, 45 minutes", closed.move === 45, String(closed.move));
     check("Now shows the day closed", /Day closed · Good/.test(await d.textContent(".closed-line").catch(() => "")));
     check("today's star is lit in the week", await d.isVisible(".rhythm li.today.lit"));
 

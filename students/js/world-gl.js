@@ -72,6 +72,10 @@ float gPx;                   // one pixel, in planet radii (set in main)
 // A sky behind the world (the cinema looks): stars in three depths, which
 // part for the camera (parallax, CSS px) and streak in a warp.
 uniform float uStars, uWarp, uDpr;
+// All of life (v0.3): towns (helping), arcs between cities (time with
+// people), lively green and sea (sport), colour in the air (making things).
+uniform float uTowns, uArcs, uVital, uHue;
+uniform vec3 uArcP[20];               // ten pairs of cities, in the planet's own frame
 uniform vec2 uStarPar, uWarpC;
 uniform vec3 uLight;        // towards the sun, view space
 uniform vec3 uRingN;        // ring plane normal, view space
@@ -191,6 +195,8 @@ vec3 shadeEarth(vec3 n, vec3 f, vec3 L, vec3 V, vec2 uv, vec3 P) {
   float green = clamp((map.g - map.r) * 7.0 + 0.25, 0.0, 1.0);
   vec3 dry = vec3(dot(map, vec3(0.5, 0.38, 0.12))) * vec3(1.2, 0.98, 0.7);
   vec3 landCol = mix(map, mix(dry, map, 0.45 + 0.55 * uForest), green);
+  // Sport and movement: the valleys come greener.
+  landCol = mix(landCol, landCol * vec3(0.85, 1.18, 0.88), uVital * green * 0.7);
   // The sea: the map's own ocean, depths shaded in; and above land that
   // hasn't risen yet, shallow water over a sunken continent.
   // Before any land has risen the sea is one deep ocean; the real seafloor
@@ -214,7 +220,7 @@ vec3 shadeEarth(vec3 n, vec3 f, vec3 L, vec3 V, vec2 uv, vec3 P) {
   vec3 col = albedo * (sun * max(dr, 0.0) * (0.9 + 0.1 * smoothstep(-0.2, 0.3, dr - d + 0.1)) + moonlit);
 
   // Sun on water, rippled by waves (calmer seen large).
-  float waveK = clamp(gPx * 70.0, 0.12, 1.0);
+  float waveK = clamp(gPx * 70.0, 0.12, 1.0) * (1.0 + 0.8 * uVital);
   vec3 wv = tn3(P * 140.0 + vec3(uTime * 0.25, 0.0, uTime * 0.18)) - 0.5;
   vec3 nw = normalize(f + (1.0 - land) * 0.08 * waveK * (wv - dot(wv, f) * f));
   vec3 H = normalize(L + V);
@@ -250,6 +256,26 @@ vec3 shadeEarth(vec3 n, vec3 f, vec3 L, vec3 V, vec2 uv, vec3 P) {
   float city = pow(lv, 1.2) * shown * land;
   vec3 tint = mix(vec3(1.0, 0.55, 0.19), vec3(1.0, 0.83, 0.62), smoothstep(0.55, 0.95, lv));
   col += (tint * city * 3.0 + vec3(1.0, 0.5, 0.17) * halo * shown * land * 0.7) * night;
+  // Helping: the small towns between the cities come on.
+  float towns = uTowns * smoothstep(0.02, 0.07, lv) * (1.0 - shown) * land;
+  col += tint * towns * pow(lv, 0.8) * 1.8 * night;
+  // Time with people: arcs of light join cities, a slow light along each.
+  if (uArcs > 0.0) {
+    float wA = max(0.003, gPx * 0.9);
+    float arcs = 0.0;
+    for (int i = 0; i < 10; i++) {
+      float on = clamp(uArcs * 10.0 - float(i), 0.0, 1.0);
+      vec3 A = uArcP[2 * i];
+      vec3 B = uArcP[2 * i + 1];
+      vec3 nn = normalize(cross(A, B));
+      float dd = dot(P, nn);
+      float inside = step(0.0, dot(cross(A, P), nn)) * step(0.0, dot(cross(P, B), nn));
+      float t = acos(clamp(dot(A, P), -1.0, 1.0)) / max(acos(clamp(dot(A, B), -1.0, 1.0)), 1e-3);
+      float pulse = 0.55 + 0.45 * sin((t - uTime * 0.08 - float(i) * 0.37) * 12.566);
+      arcs += on * inside * exp(-dd * dd / (wA * wA)) * pulse;
+    }
+    col += vec3(1.0, 0.78, 0.45) * arcs * night * 0.6;
+  }
   return col;
 }
 
@@ -539,7 +565,14 @@ void main() {
     vec3 q = vec3(p / max(r, 1e-4), 0.0);
     vec3 glow = scatter(od, dot(q, L), L) * 0.55;
     col = glow;
-    a = clamp(max(glow.r, max(glow.g, glow.b)), 0.0, 1.0);
+    // Making things: the air takes on colour, shifting round the limb.
+    if (uHue > 0.0) {
+      // Violet, rose and gold, drifting slowly round the edge of the air.
+      float w = 0.5 + 0.5 * sin(atan(p.y, p.x) * 2.0 + uTime * 0.15);
+      vec3 hc = mix(vec3(0.55, 0.42, 1.0), vec3(1.0, 0.72, 0.42), w);
+      col += hc * uHue * 0.2 * exp(-h / (Hs * 2.0));
+    }
+    a = clamp(max(col.r, max(col.g, col.b)), 0.0, 1.0);
   }
 
   // The ground, with the cloud deck over it, seen through the air.
@@ -1000,7 +1033,15 @@ export function createGlobeGL(canvas, { seed, tilt = 0.38, interactive = false, 
     gl.vertexAttribPointer(0, 2, gl.FLOAT, false, 0, 0);
     const U = (n) => gl.getUniformLocation(prog, n);
     u = {};
-    for (const name of ["uExtent", "uAspect", "uRot", "uCloudShift", "uTime", "uTilt", "uSea", "uAtmo", "uAurora", "uCloudCover", "uRing", "uForest", "uGlow", "uNight", "uLight", "uRingN", "uMoon", "uMoonVal", "uRes", "uOffset", "uStars", "uWarp", "uDpr", "uStarPar", "uWarpC", "uEarth", "uEarthT", "uLightsF", "uGrid", "uReliefK", "uReliefTexel"]) u[name] = U(name);
+    for (const name of ["uExtent", "uAspect", "uRot", "uCloudShift", "uTime", "uTilt", "uSea", "uAtmo", "uAurora", "uCloudCover", "uRing", "uForest", "uGlow", "uNight", "uLight", "uRingN", "uMoon", "uMoonVal", "uRes", "uOffset", "uStars", "uWarp", "uDpr", "uStarPar", "uWarpC", "uEarth", "uEarthT", "uLightsF", "uGrid", "uReliefK", "uReliefTexel", "uTowns", "uArcs", "uVital", "uHue"]) u[name] = U(name);
+    // Ten pairs of cities the arcs join (latitude, longitude).
+    const at = (lat, lon) => {
+      const f = Math.PI / 180;
+      return [Math.cos(lat * f) * Math.sin(lon * f), Math.sin(lat * f), Math.cos(lat * f) * Math.cos(lon * f)];
+    };
+    const D = [28.6, 77.2], M = [19.1, 72.9], B = [12.97, 77.6], K = [22.6, 88.4], C = [13.1, 80.3], DX = [25.2, 55.3], SG = [1.35, 103.8], LN = [51.5, -0.13], TK = [35.7, 139.7], NB = [-1.3, 36.8], SY = [-33.9, 151.2];
+    const pairs = [[D, M], [M, B], [D, K], [B, C], [M, DX], [K, SG], [DX, LN], [SG, TK], [DX, NB], [SG, SY]];
+    gl.uniform3fv(U("uArcP[0]") || U("uArcP"), new Float32Array(pairs.flatMap(([a, b]) => [...at(...a), ...at(...b)])));
     ["uHeight", "uLights", "uClouds", "uMoist", "uNoise", "uRelief"].forEach((name, i) => gl.uniform1i(U(name), i + 1));
     post = null;
     if (wantBloom || styleOk) {
@@ -1271,7 +1312,12 @@ export function createGlobeGL(canvas, { seed, tilt = 0.38, interactive = false, 
     gl.uniform1f(u.uEarthT, lv.rise > 0 ? 1 - lv.rise : 2); // none risen: none at all
     gl.uniform1f(u.uLightsF, lv.lit);
     gl.uniform1f(u.uGrid, style === 5 ? 1 : 0);
-    gl.uniform1f(u.uStars, skyOn.stars || 0);
+    // Reading brightens the stars around the world.
+    gl.uniform1f(u.uStars, Math.max(skyOn.stars || 0, 0.9 * (layers.stars || 0)));
+    gl.uniform1f(u.uTowns, layers.towns || 0);
+    gl.uniform1f(u.uArcs, layers.arcs || 0);
+    gl.uniform1f(u.uVital, layers.vital || 0);
+    gl.uniform1f(u.uHue, layers.hue || 0);
     gl.uniform1f(u.uWarp, skyOn.warp || 0);
     gl.uniform1f(u.uDpr, cssW ? canvas.width / cssW : 1);
     gl.uniform2f(u.uStarPar, skyOn.par?.[0] || 0, skyOn.par?.[1] || 0);
@@ -1288,7 +1334,8 @@ export function createGlobeGL(canvas, { seed, tilt = 0.38, interactive = false, 
     gl.uniform1f(u.uRing, layers.ring);
     gl.uniform1f(u.uForest, layers.forest);
     gl.uniform1f(u.uGlow, layers.glow);
-    gl.uniform1f(u.uNight, lighting.night);
+    // Rest lays moonlight on the night side.
+    gl.uniform1f(u.uNight, lighting.night + (1 - lighting.night) * 0.5 * (layers.moonlight || 0));
     gl.uniform3fv(u.uLight, light);
     gl.uniform3fv(u.uRingN, rot(ringBase, "x", pitchNow));
     moonUniforms(t);

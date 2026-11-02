@@ -1362,6 +1362,15 @@ async function studyWorldTests() {
   ok("kinds are still checked", await bad("insert into activity_log (kind, minutes) values ('nap', 5)"));
   const again = await runFile(db, "supabase-phase37.sql");
   ok("phase 37 is safe to re-run", again.ok, again.error);
+  // Phase 38: all of life grows the world: outdoors and helping join.
+  const r38 = await runFile(db, "supabase-phase38.sql");
+  ok("phase 38 applies", r38.ok, r38.error);
+  ok("time outdoors can be logged", !(await bad("insert into activity_log (kind, minutes) values ('outdoors', 40)")));
+  ok("helping can be logged", !(await bad("insert into activity_log (kind, minutes) values ('help', 30)")));
+  ok("kinds are still checked after phase 38", await bad("insert into activity_log (kind, minutes) values ('nap', 5)"));
+  ok("questions still need their marks", await bad("insert into activity_log (kind, minutes) values ('questions', 5)"));
+  const again38 = await runFile(db, "supabase-phase38.sql");
+  ok("phase 38 is safe to re-run", again38.ok, again38.error);
 }
 
 async function main() {

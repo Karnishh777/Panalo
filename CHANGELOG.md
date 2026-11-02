@@ -13,6 +13,18 @@ AI, runs as "Pan Lite" (our own planner code does the planning; the AI
 only where nothing else can).
 
 **0.2.0 (in progress)**
+- **All of life grows the world** (the owner's updated idea). Study still
+  raises the land, covers it in forest, lights the seas and the aurora;
+  now the rest of a student's life shows too, from what they log in the
+  last 30 days: **time with people** lights Earth's real cities at night
+  and joins them with arcs of light; **sport** greens the valleys and
+  livens the sea; **reading** brightens the stars; **rest** lays moonlight
+  on the night side; **making things** colours the edge of the air;
+  **time outside** parts the clouds; **helping** brings on the small towns
+  between the cities. Any of them counts toward the ring. Logged in one
+  tap each when closing the day, or from **Log your day** on World (today
+  or yesterday); all optional, never a streak. World's legend lists each
+  area with its minutes. Phase 38 adds the `outdoors` and `help` kinds.
 - **The welcome, in real photographs.** The opening page's world now
   turns in front of real imagery instead of the AI-painted wall: the sky
   is Webb's "Cosmic Cliffs" in the Carina Nebula (NASA, ESA, CSA, STScI;
