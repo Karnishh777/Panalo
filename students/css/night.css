@@ -1060,3 +1060,105 @@ html[data-look] .land-foot {
   max-width: 1240px;
   margin: 28px auto 0;
 }
+
+/* ---- Today on autopilot (v0.3) ---------------------------------------------
+   Pan with a tail per subject, one plain line about what moved, and the
+   one-tap changes: energy and "Something came up". */
+.autopilot-panel {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin: 0 0 18px;
+  padding: 14px 18px;
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  background: rgba(19, 16, 42, 0.6);
+}
+.autopilot-panel .pan {
+  align-self: flex-end;
+}
+.ap-main {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.ap-note {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+}
+.ap-note > :first-child {
+  flex: 1;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  line-height: 1.5;
+}
+.ap-moves {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.ap-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+}
+.ap-row .hud-label {
+  margin-right: 4px;
+}
+.ap-chip {
+  min-height: 44px;
+  padding: 8px 16px;
+  border: 1px solid var(--line-2);
+  border-radius: 999px;
+  background: transparent;
+  color: var(--text);
+  font: inherit;
+  font-size: 14px;
+  cursor: pointer;
+}
+.ap-chip.on {
+  border-color: var(--violet);
+  background: rgba(155, 140, 255, 0.2);
+}
+.ap-chip.ap-came {
+  color: #ffc79a;
+  border-color: rgba(255, 154, 77, 0.45);
+}
+.came-up .sheet-body {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.ap-reason {
+  min-height: 52px;
+  padding: 12px 16px;
+  border: 1px solid var(--line-2);
+  border-radius: 14px;
+  background: var(--surface);
+  color: var(--text);
+  font: inherit;
+  font-weight: 600;
+  text-align: left;
+  cursor: pointer;
+}
+.ap-reason:hover {
+  border-color: var(--line-3);
+}
+html[data-look="day"] .autopilot-panel {
+  background: var(--surface);
+}
+@media (max-width: 599px) {
+  .autopilot-panel {
+    align-items: flex-start;
+    padding: 12px 14px;
+  }
+}

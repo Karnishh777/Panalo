@@ -605,6 +605,27 @@ try {
   check("…and in Day the banner stays a night window, light words on the photo", (await page.evaluate(() => getComputedStyle(document.querySelector(".today-hero h2")).color)) === "rgb(244, 242, 251)");
   check("…and the ember wallpaper is gone", await page.evaluate(() => [...document.querySelectorAll(".wall")].every((w) => getComputedStyle(w).display === "none")));
 
+  // Today on autopilot (autopilot-ui.js): Pan with a tail per subject, energy
+  // in one tap, "Something came up", and Undo for each.
+  const ap = await page.waitForSelector(".autopilot-panel", { timeout: 10000 }).then(() => true, () => false);
+  check("Today has Pan's autopilot, with Pan drawn with a tail per subject", ap && (await page.$$(".autopilot-panel .pan-tail")).length >= 1 && /tails?, \d+ glowing/.test(await page.getAttribute(".autopilot-panel .pan", "aria-label")));
+  await page.click(".ap-chip[data-energy=low]");
+  await page.waitForSelector("#ap-undo", { timeout: 8000 }).catch(() => {});
+  check("one tap on Low energy makes today lighter, and says so", (await page.getAttribute(".ap-chip[data-energy=low]", "aria-pressed")) === "true" && /lighter day/.test(await page.textContent(".ap-note")));
+  await page.click("#ap-undo");
+  await page.waitForFunction(() => document.querySelector(".ap-chip[data-energy=ok]")?.getAttribute("aria-pressed") === "true", null, { timeout: 8000 }).catch(() => {});
+  check("…and Undo puts today back", (await page.getAttribute(".ap-chip[data-energy=ok]", "aria-pressed")) === "true" && !(await page.$("#ap-undo")));
+  await page.click("#ap-came-up");
+  await page.waitForSelector(".came-up .ap-reason", { timeout: 5000 }).catch(() => {});
+  check("Something came up offers reasons, one tap each", (await page.$$(".came-up .ap-reason")).length === 5);
+  await page.click(".came-up .ap-reason[data-reason=busy]");
+  await page.waitForSelector("#ap-undo", { timeout: 8000 }).catch(() => {});
+  const offToday = await page.evaluate(() => document.querySelector(".ap-note")?.textContent || "");
+  check("…a busy day takes the rest of today off and says where the work went", /rest of today is off/.test(offToday) && !(await page.$("dialog.came-up[open]")));
+  await page.click("#ap-undo");
+  await page.waitForFunction(() => !document.getElementById("ap-undo"), null, { timeout: 8000 }).catch(() => {});
+  check("…and Undo brings today back", !(await page.$("#ap-undo")));
+
   // Reload: the session, the world and the data survive.
   await page.reload();
   await page.waitForSelector("#app:not([hidden])", { timeout: 15000 });
