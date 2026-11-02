@@ -15,16 +15,17 @@ import { initLandingArt } from "./landing-art.js";
 
 let started = false;
 
-// A plausible life, generated from the four slider values, run through the
+// A plausible month, generated from the slider values, run through the
 // same model the app uses -- so the demo can't promise anything the product
-// doesn't do.
-function demoLayers({ focusHours, tasks, createHours, away }) {
+// doesn't do: study raises land, time with people lights the cities, sport
+// greens the valleys, reading brightens the stars, days away bring clouds.
+function demoLayers({ focusHours, people, move, read, away }) {
   const now = Date.now();
   const last = now - away * DAY;
   const sessions = focusHours > 0 ? [{ started_at: new Date(last - 3600000).toISOString(), ended_at: new Date(last).toISOString(), focused_minutes: Math.round(focusHours * 60) }] : [];
-  const doneTasks = Array.from({ length: tasks }, () => ({ done_at: new Date(last).toISOString() }));
-  const logs = createHours > 0 ? [{ kind: "create", minutes: Math.round(createHours * 60), occurred_on: dayKey(last) }] : [];
-  const w = buildWorld({ sessions, tasks: doneTasks, logs, now });
+  const on = dayKey(last);
+  const logs = [["connect", people], ["move", move], ["read", read]].filter(([, h]) => h > 0).map(([kind, h]) => ({ kind, minutes: Math.round(h * 60), occurred_on: on }));
+  const w = buildWorld({ sessions, tasks: [], logs, now });
   return w.layers;
 }
 
@@ -164,20 +165,23 @@ function buildGlobes(g) {
     }
     const inputs = {
       focus: $("wd-focus"),
-      tasks: $("wd-tasks"),
-      create: $("wd-create"),
+      people: $("wd-people"),
+      move: $("wd-move"),
+      read: $("wd-read"),
       away: $("wd-away"),
     };
     const update = () => {
       const v = {
         focusHours: Number(inputs.focus.value),
-        tasks: Number(inputs.tasks.value),
-        createHours: Number(inputs.create.value),
+        people: Number(inputs.people.value),
+        move: Number(inputs.move.value),
+        read: Number(inputs.read.value),
         away: Number(inputs.away.value),
       };
       $("wd-focus-out").textContent = `${v.focusHours} h`;
-      $("wd-tasks-out").textContent = String(v.tasks);
-      $("wd-create-out").textContent = `${v.createHours} h`;
+      $("wd-people-out").textContent = `${v.people} h`;
+      $("wd-move-out").textContent = `${v.move} h`;
+      $("wd-read-out").textContent = `${v.read} h`;
       $("wd-away-out").textContent = v.away === 1 ? "1 day" : `${v.away} days`;
       demo.setLayers(demoLayers(v));
     };

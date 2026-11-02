@@ -13,6 +13,17 @@ AI, runs as "Pan Lite" (our own planner code does the planning; the AI
 only where nothing else can).
 
 **0.2.0 (in progress)**
+- **The world opens fast.** Every globe shows the real Earth as soon as
+  the small maps are in (about 200 KB), then adds relief and clouds, then
+  sharper maps in the background, only as sharp as the world on screen
+  needs; before, a strong laptop waited for about 2.7 MB of 4096 maps.
+- **The home page, rewritten.** Plain, calm words for what Panalo does
+  now: "A study plan that fits your life"; how it works (built around
+  your day, knows your syllabus, bends without breaking); the world demo
+  follows all of life (study, people, sport, reading, days away); who
+  it's for; the letter; safety; questions about exams, missed days,
+  tuition and boarding. Gone: the climbing lines, the decorative
+  Japanese numerals, the Archive and the old world rules.
 - **A more detailed setup, for a timetable that fits the day.** The setup
   asks more, all of it optional: wake and sleep times **on days without
   school**; **when dinner is** and how long it takes (kept free); **when

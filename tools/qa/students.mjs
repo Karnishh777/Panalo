@@ -90,7 +90,7 @@ try {
     const page = await qa.open({ viewport: "desktop", path: "students/" });
     await page.waitForTimeout(600);
     check("the landing page is shown to a visitor", await page.isVisible("#landing"));
-    check("the landing explains who it is for", /intensely curious/i.test(await page.textContent(".hero")));
+    check("the landing says what it is and who it is for", /fits your life/i.test(await page.textContent(".hero")) && /IGCSE, AS and A Level/.test(await page.textContent(".hero")));
     check("no mascot on the landing", (await page.$$(".cast-pan, .pan, img[src*='pan-']")).length === 0);
     const foot = await page.evaluate(() => [...document.querySelectorAll("a")].map((x) => x.getAttribute("href")));
     check("the footer links Contact and the Grievance Officer", foot.includes("contact.html") && foot.includes("contact.html#grievance"));
@@ -110,6 +110,8 @@ try {
       )
       .then(() => true, () => false);
     check("the world demo responds to its sliders", demoAnswers);
+    check("the demo follows all of life: people, sport, reading", await page.evaluate(() => ["wd-people", "wd-move", "wd-read"].every((id) => document.getElementById(id))) && /lights the cities/.test(await page.textContent("#world-demo")));
+    check("the home page has no leftover words: no climb, no kanji, no Archive", !/climb|Archive|intensely curious|[壱弐参肆伍陸漆]/.test(await page.textContent("#landing")));
     await shot(page, "landing");
 
     check("no 0-to-100 gate holds the landing", !(await page.$(".gate")) && !(await page.evaluate(() => document.documentElement.hasAttribute("data-gate"))));
@@ -137,7 +139,7 @@ try {
       want: [...document.querySelectorAll("#landing section[data-chapter]")].findIndex((x) => x.id === "numbers"),
     }));
     check("the HUD names the chapter you're in and its star is lit", hudState.name === "In numbers" && hudState.here === hudState.want && hudState.want > 2);
-    check("the numbers count to their real values", hudState.counts.join() === "06,90,00,00");
+    check("the numbers count to their real values", hudState.counts.join() === "05,05,00,00");
     await page.evaluate(() => document.getElementById("faq").scrollIntoView());
     await page.waitForTimeout(900);
     await page.click("#faq details:first-of-type summary");
@@ -1430,7 +1432,7 @@ try {
     await r.waitForTimeout(500);
     const anim = await r.evaluate(() => getComputedStyle(document.querySelector(".ht-line")).animationName);
     check("reduced motion turns the landing animation off", anim === "none");
-    check("reduced motion shows the numbers at once", (await r.$$eval("[data-count]", (n) => n.map((x) => x.textContent))).join() === "06,90,00,00");
+    check("reduced motion shows the numbers at once", (await r.$$eval("[data-count]", (n) => n.map((x) => x.textContent))).join() === "05,05,00,00");
     check("no console errors (reduced motion)", r.errors.length === 0);
   }
 } finally {
