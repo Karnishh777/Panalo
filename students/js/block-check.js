@@ -12,8 +12,7 @@ import { store, api } from "./store.js";
 import * as L from "./model/learner.js";
 import * as P from "./model/plan.js";
 import { questionsFor, topicName, nameOf, stateOf, saveTopic, savePace, colourOf, currentPlan } from "./planner.js";
-import { artImg } from "./art.js";
-import { createPan } from "./motion-art.js";
+import { panPose } from "./pan.js";
 import { openPastPaper, openPaperMarks } from "./paper-sheets.js";
 
 const COUNT = { check: 5, review: 3, practice: 3, learn: 3 };
@@ -189,8 +188,7 @@ export function openBlockCheck(block, { minutes = 0, sessionId = null, onDone } 
     const right = answers.filter((a) => a.correct).length;
     const good = answers.length ? right / answers.length >= 0.67 : (rating || 3) >= 3 || t.covered >= 1;
     stage.replaceChildren(
-      artImg(good ? "pan-cheer" : "pan-think", { cls: `pan bc-pan${good ? " cheer" : ""}` }) ||
-        Object.assign(createPan({ size: 130, pose: good ? "cheer" : "think", label: good ? "Pan, cheering" : "Pan, thinking" }).canvas, { className: "pan pan-live bc-pan" }),
+      panPose(good ? "cheer" : "think", { cls: `bc-pan${good ? " cheer" : ""}`, label: good ? "Pan, cheering" : "Pan, thinking" }),
       ...lead,
       el("div", { class: "bc-summary" }, lines.map((l) => el("p", { text: l }))),
       el("div", { class: "bc-foot" }, [nextBtn, el("button", { type: "button", class: "btn btn-primary", id: "bc-done", text: "Done", onClick: () => sheet.close() })])

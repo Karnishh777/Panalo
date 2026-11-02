@@ -12,14 +12,14 @@ import { paperChooser, seriesChooser } from "./paper-sheets.js";
 import { otherSubjectForm } from "./other-subject.js";
 import { toRow, fromRow, ACTIVITY_KINDS, cleanActivities, prepSlotsOf, MAX_PREP } from "./model/profile.js";
 import { clockOfText } from "./model/time.js";
-import { art, artImg, onArt, GUARDIANS, guardianOf } from "./art.js";
-import { createPan } from "./motion-art.js";
+import { art, onArt, GUARDIANS, guardianOf } from "./art.js";
+import { panPose as panImage } from "./pan.js";
 
 // Pan, beside each question: one short line, and how Pan looks saying it.
 const PAN = {
   board: ["idle", "Hi, I'm Pan. A few quick questions and I'll plan your week."],
   stage: ["idle", "Which year? The syllabus changes with it."],
-  subjects: ["cheer", "Every subject you pick gets a guardian."],
+  subjects: ["cheer", "Every subject you pick gets a tail. It lights up when you're ready."],
   levels: ["think", "Be honest. Weaker subjects get more time, not less."],
   papers: ["think", "Your papers decide what we study, and when the countdown ends."],
   aim: ["idle", "Aim high or steady: both are good plans."],
@@ -96,20 +96,12 @@ export function runSetup({ onDone, editing = false }) {
   root.prepend(side);
   root.classList.add("has-side");
   let panPose = null;
-  let livePan = null;
   const showPan = (id) => {
     const [pose, line] = PAN[id] || PAN.board;
     panLine.textContent = line;
     if (pose === panPose && panBox.firstChild) return;
     panPose = pose;
-    const img = artImg(`pan-${pose}`, { cls: "setup-pan-img" });
-    if (img) panBox.replaceChildren(img);
-    else {
-      livePan ??= createPan({ size: 160, pose });
-      livePan.setPose?.(pose);
-      livePan.canvas.className = "setup-pan-img pan-live";
-      panBox.replaceChildren(livePan.canvas);
-    }
+    panBox.replaceChildren(panImage(pose, { cls: "setup-pan-img" }));
   };
   onArt(() => {
     const wall = art("wall-tall") || art("wall-wide");
