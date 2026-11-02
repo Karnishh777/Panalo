@@ -24,8 +24,6 @@ import { openCustomSyllabus, foundLine } from "../other-subject.js";
 import * as D from "../model/diagnose.js";
 import { art, artImg, onArt, GUARDIANS, guardianOf } from "../art.js";
 import { createEmblem, createAura } from "../motion-art.js";
-import { weekAhead } from "../model/autopilot.js";
-import { subjectComet } from "../autopilot-ui.js";
 
 let root;
 let body;
@@ -209,45 +207,6 @@ function dayCard(d, i) {
   return el("li", { class: `pl-day${i === 0 ? " today" : ""}${d.light ? " light" : ""}${d.off ? " off" : ""}${d.crash ? " crash" : ""}`, "data-weekday": String(d.weekday) }, [
     el("div", { class: "pl-day-head" }, [el("b", { text: dayLabel(d.date, i) }), el("span", { class: "faint", text: dayNote(d) })]),
     d.blocks.length ? el("ul", { class: "pl-blocks" }, d.blocks.map((b) => blockLine(b, { time: true, date: d.date, today: i === 0 }))) : i === 0 ? el("p", { class: "faint small", text: d.off ? "Today's off." : "Nothing more today." }) : null,
-  ]);
-}
-
-// The week at a glance (v0.3): seven columns, each a stack of its blocks in
-// their subjects' colours, and a few plain lines about the week.
-function weekGlance(plan) {
-  const days = plan.slice(0, 7);
-  const ahead = weekAhead(days, { nameOf, events: store.events || [] });
-  const max = Math.max(60, ...days.map((d) => d.minutes || 0));
-  return el("section", { class: "pl-glance", "aria-labelledby": "pl-glance-h" }, [
-    el("div", { class: "pl-glance-head" }, [
-      subjectComet({ width: 64 }),
-      el("div", {}, [
-        el("h2", { id: "pl-glance-h", class: "hud-label", text: "This week" }),
-        ahead.lines.length ? el("ul", { class: "pl-glance-lines" }, ahead.lines.map((l) => el("li", { text: l }))) : el("p", { class: "faint", text: "Nothing planned this week yet." }),
-      ]),
-    ]),
-    el(
-      "ol",
-      { class: "pl-glance-days" },
-      days.map((d, i) => {
-        const name = i === 0 ? "Today" : new Date(d.date).toLocaleDateString(undefined, { weekday: "short" });
-        const amount = d.off ? "off" : d.minutes ? formatMinutes(d.minutes) : "free";
-        return el("li", { class: i === 0 ? "today" : null, "aria-label": `${name}: ${amount}` }, [
-          el(
-            "span",
-            { class: "pl-glance-bars", "aria-hidden": "true" },
-            d.blocks.map((b) => {
-              const bar = el("i");
-              bar.style.height = `${Math.max(4, (b.minutes / max) * 100)}%`;
-              bar.style.background = colourOf(b.subject);
-              return bar;
-            })
-          ),
-          el("b", { text: name, "aria-hidden": "true" }),
-          el("small", { text: amount, "aria-hidden": "true" }),
-        ]);
-      })
-    ),
   ]);
 }
 
@@ -543,7 +502,6 @@ function render() {
       store.progressMissing ? el("p", { class: "pl-note", text: "This Panalo can't save progress yet (supabase-phase30.sql). The plan shows, but checks won't be kept." }) : null,
       checkInCard(),
       hero(plan),
-      weekGlance(plan),
       el("div", { class: "pl-grid" }, [week(plan), el("div", { class: "pl-side" }, [subjects(now), results()])]),
     ].filter(Boolean)
   );
