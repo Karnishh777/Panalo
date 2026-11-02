@@ -29,10 +29,43 @@ export function createGlobe(canvas, opts = {}) {
   // Which renderer drew it is marked on the canvas: the Verse look inks the
   // 2D one with CSS, the GPU one in its own composite pass.
   if (!opts.force2d && glSupported()) {
-    const g = createGlobeGL(canvas, opts);
+    // The GPU globe checks its own first frames; if it drew nothing, this
+    // swaps in the 2D globe on a fresh canvas, with the same layers, behind
+    // the same object.
+    let cur = null;
+    let lastLayers = null;
+    const g = createGlobeGL(canvas, {
+      ...opts,
+      onBroken: (why) => {
+        if (cur !== g) return;
+        try {
+          g.destroy?.();
+        } catch {}
+        const fresh = canvas.cloneNode(false);
+        canvas.replaceWith(fresh);
+        fresh.dataset.renderer = "2d";
+        fresh.dataset.glFailed = why;
+        cur = createGlobe2D(fresh, opts);
+        if (lastLayers) cur.setLayers(...lastLayers);
+        debugNote(fresh, why);
+      },
+    });
     if (g) {
+      cur = g;
       canvas.dataset.renderer = "webgl";
-      return g;
+      debugNote(canvas);
+      return new Proxy(
+        {},
+        {
+          get(_, k) {
+            if (k === "setLayers") return (...a) => ((lastLayers = a), cur.setLayers(...a));
+            const v = cur[k];
+            if (typeof v === "function") return v.bind(cur);
+            // A GPU-only control the 2D globe doesn't have: do nothing.
+            return typeof g[k] === "function" ? () => undefined : v;
+          },
+        }
+      );
     }
   }
   // A canvas that has handed out a WebGL context can never draw in 2D: if
@@ -43,7 +76,27 @@ export function createGlobe(canvas, opts = {}) {
     canvas = fresh;
   }
   canvas.dataset.renderer = "2d";
+  debugNote(canvas, opts.force2d ? "2D asked for" : "no usable GPU");
   return createGlobe2D(canvas, opts);
+}
+
+// ?globe=debug in the address: a line under each globe saying how it is
+// drawn and on what GPU, so a blank globe can be reported in one screenshot.
+function debugNote(canvas, why = "") {
+  if (!/[?&]globe=debug\b/.test(location.search)) return;
+  let gpu = "";
+  try {
+    const gl = document.createElement("canvas").getContext("webgl");
+    const ext = gl?.getExtension("WEBGL_debug_renderer_info");
+    gpu = String((ext && gl.getParameter(ext.UNMASKED_RENDERER_WEBGL)) || gl?.getParameter(gl.RENDERER) || "no WebGL");
+    gl?.getExtension("WEBGL_lose_context")?.loseContext();
+  } catch {}
+  const note = document.createElement("p");
+  note.className = "globe-debug";
+  note.style.cssText = "font:12px monospace;color:#ffd29a;margin:4px 0;word-break:break-all";
+  note.textContent = `globe: ${canvas.dataset.renderer}${why ? ` (${why})` : ""} · ${gpu}`;
+  canvas.parentElement?.querySelector(".globe-debug")?.remove();
+  canvas.after(note);
 }
 
 function createGlobe2D(canvas, { seed, tilt = 0.38, interactive = false, maxDisk = 300, spin = 1, onMotion } = {}) {

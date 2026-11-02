@@ -25,7 +25,6 @@ const SHELL = [
   "./src/boot.js",
   "./crypto.js",
   "./logo.svg",
-  "./doodle.svg",
   "./manifest.webmanifest",
 ];
 

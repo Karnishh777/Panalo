@@ -11,7 +11,7 @@ const failures = [];
 const ok = (label, cond) => (cond ? passed++ : failures.push(label));
 
 const accentIds = THEME_PRESETS.map((t) => t.id);
-const wallpaperIds = ["doodle", "ambient", "dots", "plain", "custom"];
+const wallpaperIds = ["dots", "ambient", "plain", "custom"];
 
 // ---- defaults ----
 const d = normalizeSettings(null);
@@ -40,8 +40,8 @@ ok("unknown bubble shape → round", bad.bubbles === "round");
 ok("unknown text size → m", bad.textSize === "m");
 ok("unknown density → comfortable", bad.density === "comfortable");
 ok("unknown accent → default", bad.accent === "default");
-ok("unknown wallpaper → doodle", bad.wallpaper === "doodle");
-ok("custom wallpaper without an image falls back", normalizeSettings({ wallpaper: "custom" }, { wallpaperIds }).wallpaper === "doodle");
+ok("unknown wallpaper → dots", bad.wallpaper === "dots");
+ok("custom wallpaper without an image falls back", normalizeSettings({ wallpaper: "custom" }, { wallpaperIds }).wallpaper === "dots");
 ok("custom wallpaper with an image is kept", normalizeSettings({ wallpaper: "custom", customWallpaper: "data:x" }, { wallpaperIds }).wallpaper === "custom");
 ok("flags are booleans", normalizeSettings({ quickReplies: 1, reduceMotion: "yes" }).quickReplies === true);
 ok("quick replies are on by default", normalizeSettings(null).quickReplies === true);
@@ -98,8 +98,8 @@ for (const w of WALLPAPER_PRESETS.filter((w) => w.scene)) {
   ok(`wallpaper "${w.id}" file exists`, fs.existsSync(new URL(`../${w.scene}`, import.meta.url)));
 }
 ok("wallpaper ids are unique", new Set(WALLPAPER_PRESETS.map((w) => w.id)).size === WALLPAPER_PRESETS.length);
-ok("new wallpapers are accepted by the settings rules",
-  normalizeSettings({ wallpaper: "galaxy" }, { wallpaperIds: WALLPAPER_PRESETS.map((w) => w.id) }).wallpaper === "galaxy");
+ok("a removed wallpaper falls back to the default",
+  normalizeSettings({ wallpaper: "galaxy" }, { wallpaperIds: WALLPAPER_PRESETS.map((w) => w.id) }).wallpaper === "dots");
 
 console.log(`${passed} passed, ${failures.length} failed`);
 if (failures.length) {

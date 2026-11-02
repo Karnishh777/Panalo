@@ -94,7 +94,7 @@ try {
     check("no mascot on the landing", (await page.$$(".cast-pan, .pan, img[src*='pan-']")).length === 0);
     const foot = await page.evaluate(() => [...document.querySelectorAll("a")].map((x) => x.getAttribute("href")));
     check("the footer links Contact and the Grievance Officer", foot.includes("contact.html") && foot.includes("contact.html#grievance"));
-    check("the welcome is the climb: the photo, one line, one way in", /Every topic is\s*a step up/.test(await page.textContent(".hero-title")) && /climb-night/.test(await page.evaluate(() => getComputedStyle(document.querySelector(".hero"), "::before").backgroundImage)) && !(await page.isVisible("#hero-globe")));
+    check("the welcome is your world over real photographs: the Webb sky, the Moon's horizon, the live globe", /hero-sky/.test(await page.evaluate(() => getComputedStyle(document.querySelector("#landing .hero")).backgroundImage)) && (await page.isVisible(".hero-moon")) && (await page.isVisible("#hero-globe")) && /CC BY 4\.0/.test(await page.textContent(".land-foot")));
     // The slider is in the page from the start, but the demo only starts
     // listening once its globes are built: keep nudging until it answers.
     const demoAnswers = await page
@@ -807,7 +807,8 @@ try {
     await shot(w, "moment");
     await w.waitForTimeout(1000);
     await w.click("#moment-on");
-    await w.waitForTimeout(600);
+    // It leaves after a short fade; wait for it to go rather than guessing how long.
+    await w.waitForSelector(".moment", { state: "detached", timeout: 5000 }).catch(() => {});
     check("and gets out of the way", !(await w.isVisible(".moment")));
     await w.reload();
     await w.waitForSelector("#app:not([hidden])", { timeout: 15000 });

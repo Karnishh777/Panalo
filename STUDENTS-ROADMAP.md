@@ -323,55 +323,85 @@ picks, then it is built, tested and merged before the next part starts.
 9. Settings, Privacy & data
 10. The parent page and the legal pages
 
-**The opening page: ideas to choose from.** Its sections today: Arrival
-(hero and globe), The cast (subject guardians), 01 The idea, 02 Inside
-(world demo and the five spaces), 03 In numbers, 04 Is this for you?,
-05 A letter, 06 Safety and privacy, 07 Questions, Launch, footer.
+**The opening page: ideas to choose from** (revised 2 November 2026,
+after the world was put back at the top of the page, and with web
+research on landing pages; sources at the end). Its sections today:
+Arrival (the words, and the world with its controls), The cast (subject
+guardians), 01 The idea, 02 Inside (world demo, the five spaces),
+03 In numbers, 04 Is this for you?, 05 A letter, 06 Safety and privacy,
+07 Questions, Launch, footer.
 
-*Edit (out of date or unclear):*
-- E1. The world demo's sliders still describe the old world (tasks →
-  city lights, making things → aurora). Match the real model: study
-  hours → land, chapters covered → forests, chapters known → glowing
-  seas, marks earned → aurora, past papers → atmosphere, days away →
-  clouds.
-- E2. Remove the Archive left-overs: "files" in The idea and Safety,
-  the FAQ "Who can see my files?", the letter's "shelf for the things
-  you made", the marquee's notes and recordings lines.
-- E3. In numbers says "06 spaces"; there are five (Now, Plan, Study,
-  Calendar, World).
-- E4. Footer shows v0.1; read it from version.js.
-- E5. The hero globe is the real Earth but wears a ring and moons; drop
-  them so it reads as Earth, and show it larger with the new detail.
-- E6. One image, not three: the copy mixes a climb ("Start the climb",
-  "the mountain will wait"), a world and space. Pick one.
-- E7. FAQ: add "Which exams?", "What does Pan (the AI) do, and is it
-  on?", "Does it work on a school laptop?".
+*What the research says, in short:* a visitor should understand what
+the app is within about five seconds (headline, one line, one visual,
+one main button); a hands-on demo right under the first screen, with no
+sign-up, works better than describing features; the page must load
+fast, because each second of delay loses people; for an audience of
+teenagers, safety and privacy belong in the main page, not only the
+footer, written for parents too, and framed as trust, not surveillance.
+
+*Edit:*
+- E1. Headline for the new idea. "Every topic is a step up" speaks only
+  of study. Suggested: "A world made of what you actually do." with the
+  line "Study, sport, reading, rest, friends: a calm plan for all of it,
+  and a world that grows from every part."
+- E2. One main button in the first screen ("Start"), and "I already
+  have an account" as a plain link, so the choice is clear.
+- E3. The world demo's sliders follow the real world, all of life:
+  study hours → land, time with people → city lights, sport → rivers and
+  green, reading → stars, rest → moonlight, making things → the glowing
+  air, days away → clouds.
+- E4. Remove the Archive left-overs ("files" in The idea, Safety and
+  the questions; the letter's "shelf"; the marquee's notes lines) and
+  correct "06 spaces" to five.
+- E5. Speed: show a still picture of the world at once, and start the
+  live GPU world when the page is idle; lighter on weak phones (no
+  ribbons and embers there).
+- E6. One image throughout: the world. Retire the climb words ("Start
+  the climb", "the mountain will wait").
+- E7. Questions to add: "Is it only for studying?", "What does Pan (the
+  AI) do, and is it on?", "Does it work on a school laptop?". The
+  footer version shows the real one.
 
 *Add:*
-- A1. How it plans, in three steps: your subjects and exam dates → a
-  week fitted around school, prep and sleep → it re-plans when a day
-  goes wrong. With a real sample week.
-- A2. Try it without an account: pick exams and subjects, see a first
-  week built by the real planner (no mascot).
-- A3. What's covered: every Cambridge syllabus with its code,
-  searchable; "ICSE/ISC next, CBSE later".
-- A4. A sample exam-style question with its mark scheme and the
-  examiner's advice, to show the practice is real.
-- A5. For parents: consent for under-18s, what is kept, no chat, how
-  to reach the Grievance Officer.
-- A6. Exam countdown: pick your series, see the days left (nothing
-  saved).
-- A7. Install it: a short note for school and boarding laptops (Edge or
-  Chrome, keyboard shortcuts).
+- A1. Try a day, no account: tap what you did today (an hour of study,
+  football, a chapter of a book, a good sleep, time with friends) and
+  watch the world change, on the real model. Right under the first
+  screen.
+- A2. Day and night on the first screen: one tap turns the world to
+  night, where the city lights (time with people) show.
+- A3. How it works, in three steps: tell it your subjects and your week;
+  it plans around school, prep and sleep; you live your life and the
+  world grows from all of it.
+- A4. For parents, in the page itself: consent for under-18s, what is
+  kept and what never is, no chat or feed, the Grievance Officer.
+- A5. What's covered: every Cambridge syllabus with its code, searchable;
+  ICSE and ISC next, then CBSE.
+- A6. A sample exam-style question with its mark scheme and the
+  examiner's advice.
+- A7. Install it on a school or boarding laptop (Edge or Chrome), with
+  the keyboard shortcuts.
+- A8 (later, needs a partner and money). Something real: a milestone of
+  the whole community funds something in the real world, the way the
+  Forest app plants real trees.
 
 *Remove:*
-- R1. The cast (the subject guardians), if no characters at all is the
-  rule.
-- R2. Is this for you? (the marquee): vague, partly about features that
-  are gone.
-- R3. In numbers, or replace it with coverage (syllabuses, questions).
-- R4. The kanji numerals on section labels.
-- R5. The letter, or shorten it to three lines.
+- R1. The kanji numerals on the section labels.
+- R2. Is this for you? (the scrolling lines).
+- R3. In numbers, or replace it with honest facts (syllabuses covered,
+  questions, "0 ads").
+- R4. The letter, or shorten it to three lines.
+- R5. The cast (the subject guardians), if there are to be no
+  characters at all.
+
+*Sources:* [Zoho landing page checklist 2026](https://www.zoho.com/landingpage/landing-page-checklist.html),
+[Framer: landing page best practices](https://www.framer.com/ja/blog/landing-page-best-practices/),
+[SaaSHero: landing page trends](https://www.saashero.net/uncategorized/top-landing-page-design-trends/),
+[Guideflow: embedding demos](https://www.guideflow.com/blog/embed-demos-landing-pages),
+[Userpilot: SaaS landing pages](https://userpilot.com/blog/saas-landing-pages/),
+[Apexure: children's course landing page teardown](https://www.apexure.com/landing-page-examples/master-hobbies-landing-page),
+[Circle of Trust (teen and parent app study)](https://htirlab.github.io/papers/circle_of_trust.pdf),
+[Forest app](https://forestapp.cc). Most landing-page sources are
+vendor blogs; their numbers are not independently checked.
 
 Done: CI, migrations 22–26 recorded, LIMITATIONS refreshed, calm by
 default and the focus shield, Students made private (phase 28), and **the

@@ -13,6 +13,29 @@ AI, runs as "Pan Lite" (our own planner code does the planning; the AI
 only where nothing else can).
 
 **0.2.0 (in progress)**
+- **The welcome, in real photographs.** The opening page's world now
+  turns in front of real imagery instead of the AI-painted wall: the sky
+  is Webb's "Cosmic Cliffs" in the Carina Nebula (NASA, ESA, CSA, STScI;
+  CC BY 4.0, credited in the footer) and the ground is the Moon's far side
+  photographed by Artemis II (NASA, public domain), cut along its horizon.
+  4K on sharp screens, a tall crop on phones. Sources in
+  students/assets/photos/README.md.
+- **Clean-up: the AI-made pictures are gone.** At the owner's request the
+  AI-generated art is removed from the repository (a copy was handed to
+  the owner first): `art-source/` (169 MB of originals), the app's
+  guardians, scenes and wallpapers (`students/assets/art/`) and the art
+  script. Every place that showed them uses its plain fallback. Panalo
+  Chat loses its doodle and its three illustrated backgrounds and its
+  stickers folder; its default background is now Dots, and anyone who had
+  chosen a removed one gets Dots. The built-in stickers stay.
+- **Sign-in and a globe that shows.** A page opened before the bot check
+  was switched on kept signing in without a check token, and Supabase
+  refused it ("captcha protection: request disallowed"); a missing site
+  key is now asked for again, the key is never cached, and that error
+  reads as a plain sentence. The GPU globe now checks its first frames:
+  if a GPU took the context but drew nothing, the world switches to the
+  2D globe (same layers) instead of staying blank. Add `?globe=debug` to
+  the address to see under each globe how it is drawn and on what GPU.
 - **The globe at night, and on more laptops.** City lights were sparse
   specks on a small globe (the map's fine detail averaged away); they are
   now lifted to match and given the soft glow cities have from orbit, so

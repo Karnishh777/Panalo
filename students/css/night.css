@@ -317,49 +317,20 @@ html[data-look] .wall {
   display: none;
 }
 
-/* ---- Welcome: the climber, and one line ----------------------------------- */
+/* ---- Welcome: your world first, then the words ----------------------------- */
 
 html[data-look] body:not(.in-app) {
   background: var(--bg);
 }
-/* The HUD, chapter thread, painted wall and hero globe belong to the old
-   looks. */
+/* The HUD and chapter thread belong to the old looks. The hero globe
+   stays: the owner preferred the welcome with the world in it (2 Nov). */
 html[data-look] #landing .hud,
-html[data-look] #landing .thread,
-html[data-look] .hero-stage,
-html[data-look] .hero-drift,
-html[data-look] .hero .ignition,
-html[data-look] .hero-copy::before {
+html[data-look] #landing .thread {
   display: none;
 }
 html[data-look] .land-bar {
   background: linear-gradient(to bottom, rgba(11, 10, 18, 0.7), transparent);
   border: 0;
-}
-html[data-look] .hero,
-html[data-look] .hero.painted {
-  display: flex;
-  align-items: flex-end;
-  padding: 120px var(--gutter) 96px;
-  background: var(--bg);
-  isolation: isolate;
-}
-html[data-look] .hero::before,
-html[data-look] .hero::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-}
-html[data-look] .hero::before {
-  z-index: -2;
-  background: url("../assets/photos/climb-night.webp") 50% 30% / cover no-repeat;
-}
-html[data-look] .hero::after {
-  z-index: -1;
-  background:
-    linear-gradient(to bottom, rgba(11, 10, 18, 0.45) 0%, rgba(11, 10, 18, 0) 30%, rgba(11, 10, 18, 0.55) 62%, var(--bg) 100%),
-    radial-gradient(80% 50% at 50% 100%, rgba(106, 88, 242, 0.22), transparent 70%);
 }
 html[data-look] .hero-copy {
   max-width: 640px;
@@ -399,23 +370,6 @@ html[data-look] .hero-actions .btn {
     color: var(--violet-soft);
   }
 }
-@media (min-width: 900px) {
-  /* Wide screens: the words on the left, the whole climb on the right. */
-  html[data-look] .hero::before {
-    left: 38%;
-    background-position: 50% 88%;
-  }
-  html[data-look] .hero::after {
-    background:
-      linear-gradient(90deg, var(--bg) 38%, rgba(11, 10, 18, 0.55) 50%, rgba(11, 10, 18, 0) 66%),
-      linear-gradient(to top, var(--bg) 0%, rgba(11, 10, 18, 0) 22%),
-      radial-gradient(50% 60% at 20% 70%, rgba(106, 88, 242, 0.18), transparent 70%);
-  }
-  html[data-look] .hero {
-    align-items: center;
-  }
-}
-
 /* ---- Focus: one lamp, one topic ------------------------------------------- */
 
 html[data-look] body[data-view="study"].in-app {

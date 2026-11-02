@@ -952,7 +952,7 @@ function rot(v, axis, a) {
  * `spin` is a speed multiplier (1 = one turn in about 40 seconds).
  * Returns null if WebGL can't be used on this canvas.
  */
-export function createGlobeGL(canvas, { seed, tilt = 0.38, interactive = false, spin = 1, maxPixels = 1400, onMotion, manual = false, bloom } = {}) {
+export function createGlobeGL(canvas, { seed, tilt = 0.38, interactive = false, spin = 1, maxPixels = 1400, onMotion, manual = false, bloom, onBroken } = {}) {
   const gl = canvas.getContext("webgl", { premultipliedAlpha: true, alpha: true, antialias: false });
   // fwidth, for reading the Earth's maps across the date line without a seam.
   gl?.getExtension("OES_standard_derivatives");
@@ -1219,7 +1219,31 @@ export function createGlobeGL(canvas, { seed, tilt = 0.38, interactive = false, 
     gl.uniform2fv(u.uMoonVal, val);
   }
 
+  // A GPU can take the context and still draw nothing (a driver bug, a rule
+  // stricter than ours). A few frames in, check the middle of the world
+  // was really drawn; if not, say why and let the caller fall back to 2D.
+  let healthChecks = 0;
+  function healthCheck() {
+    if (healthChecks > 2 || !onBroken || !ready || destroyed || lost || framing || manual) return;
+    if (++healthChecks < 3) return;
+    const err = gl.getError();
+    const px = new Uint8Array(4);
+    gl.bindFramebuffer(gl.FRAMEBUFFER, null);
+    gl.readPixels(canvas.width >> 1, canvas.height >> 1, 1, 1, gl.RGBA, gl.UNSIGNED_BYTE, px);
+    const err2 = gl.getError();
+    if (err || err2 || px[3] === 0) {
+      const why = err || err2 ? `gl error ${err || err2}` : "nothing drawn";
+      console.warn(`World: the GPU globe ${why}; drawing in 2D instead.`);
+      onBroken(why);
+    }
+  }
+
   function draw(t) {
+    drawFrame(t);
+    healthCheck();
+  }
+
+  function drawFrame(t) {
     if (destroyed || lost) return;
     size();
     const style = styleNow(t);

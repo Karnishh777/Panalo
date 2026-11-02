@@ -50,6 +50,7 @@ export function redirectUrl() {
 export function authErrorText(error) {
   const text = error?.message || "";
   if (/expired or is invalid|invalid otp|otp.*expired/i.test(text)) return "That code is wrong or has expired. Use the newest email, or send a new code.";
+  if (/captcha/i.test(text)) return "The quick bot check didn't go through. Reload the page and try again.";
   if (/error sending .*email/i.test(text)) return "We couldn't send the email just now. Try again in a few minutes.";
   if (/rate|seconds/i.test(text)) return "A code was sent a moment ago. Check your email (and spam), or wait a minute.";
   return text || "Something went wrong. Try again.";

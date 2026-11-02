@@ -513,21 +513,6 @@
 .wp-tile.selected {
   color: var(--text);
 }
-.wp-thumb.pat-doodle {
-  background-color: var(--surface-2);
-  background-image: none;
-  position: relative;
-  overflow: hidden;
-}
-.wp-thumb.pat-doodle::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background-color: var(--wp-ink);
-  -webkit-mask: url("../doodle.svg") 0 0 / 150px repeat;
-  mask: url("../doodle.svg") 0 0 / 150px repeat;
-  opacity: var(--wp-alpha);
-}
 .wp-thumb.pat-dots {
   background-image: radial-gradient(color-mix(in oklab, var(--wp-ink) 22%, transparent) 1.3px, transparent 1.4px);
   background-size: 12px 12px;
