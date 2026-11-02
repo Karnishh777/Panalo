@@ -21,9 +21,9 @@ import { parseQuickAdd } from "../model/quick-add.js";
 import { hasPlan, currentPlan, loadBanks, banksReady, colourOf, focusedToday, worldInput } from "../planner.js";
 import { KINDS, nextBlock } from "../model/plan.js";
 import { startBlock } from "../block-check.js";
-import { art, artImg, onArt } from "../art.js";
-import { createPan } from "../motion-art.js";
-import { autopilotPanel } from "../autopilot-ui.js";
+import { onArt } from "../art.js";
+import { panPose } from "../pan.js";
+import { autopilotPanel, sundayCard } from "../autopilot-ui.js";
 
 let root;
 let orbitSlot;
@@ -330,12 +330,18 @@ function nextStep(now) {
   ].filter(Boolean);
 }
 
-// Pan beside the greeting: the painting if there is one, else the live one.
-let greetPan = null;
-function panFor(name, pose, cls, size) {
-  return artImg(name, { cls: `pan ${cls}` }) || Object.assign(createPan({ size, pose }).canvas, { className: `pan pan-live ${cls}` });
+// Pan in a pose (pan.js).
+function panFor(pose, cls) {
+  return panPose(pose, { cls });
 }
-// Today's climb (the Night look): how much of today's plan is done, as a
+// "Monday evening.": the day and its part, as the banner's one line.
+function dayTitle(d) {
+  const h = d.getHours();
+  const part = h < 5 ? "night" : h < 12 ? "morning" : h < 17 ? "afternoon" : h < 22 ? "evening" : "night";
+  return `${d.toLocaleDateString("en-GB", { weekday: "long" })} ${part}.`;
+}
+
+// Today's banner (the Night look): how much of today's plan is done, as a
 // ring over the photo. Done = minutes studied today; the rest = the plan's
 // blocks still to come.
 function renderHero() {
@@ -348,7 +354,7 @@ function renderHero() {
   const C = 2 * Math.PI * 38;
   const exam = countdowns(store.events, now).find((c) => c.days >= 0);
   heroEl.replaceChildren(
-    el("div", {}, [el("p", { class: "kicker", text: exam ? `${exam.title} ${exam.days === 0 ? "today" : exam.days === 1 ? "tomorrow" : `in ${exam.days} days`}` : longDate(new Date()) }), el("h2", {}, ["Today's", el("br"), "climb"])]),
+    el("div", {}, [el("p", { class: "kicker", text: exam ? `${exam.title} ${exam.days === 0 ? "today" : exam.days === 1 ? "tomorrow" : `in ${exam.days} days`}` : longDate(new Date()) }), el("h2", { text: dayTitle(new Date()) })]),
     el("div", { class: "climb-ring", role: "img", "aria-label": total ? `${pct}% of today's plan done: ${done} of ${total} minutes` : "Nothing planned today" }, [
       el("span", {}, [el("b", { text: total ? `${pct}%` : "—" }), el("small", { text: total ? `${done} of ${total} min` : "no plan yet" })]),
     ])
@@ -377,9 +383,8 @@ function renderHero() {
 function render() {
   renderHero();
   // Pan's autopilot: what moved, energy, something came up (autopilot-ui.js).
-  apEl.replaceChildren(...(hasPlan() && banksReady() ? [autopilotPanel({ rerender: render })] : []));
-  if (!greetPan || (art("pan-idle") && greetPan.tagName === "CANVAS")) greetPan = panFor("pan-idle", "idle", "greet-pan", 64);
-  greetEl.replaceChildren(greeting(), greetPan);
+  apEl.replaceChildren(...(hasPlan() && banksReady() ? [sundayCard(Date.now(), render), autopilotPanel({ rerender: render })].filter(Boolean) : []));
+  greetEl.replaceChildren(greeting());
   renderOrbit();
   renderLog();
 }
@@ -388,7 +393,7 @@ export function mount(section, ctx) {
   navigate = ctx.navigate;
   root = el("div", { class: "now" });
   greetEl = el("h1");
-  heroEl = el("section", { class: "today-hero", "aria-label": "Today's climb" });
+  heroEl = el("section", { class: "today-hero", "aria-label": "Today" });
   apEl = el("div", { class: "ap-slot" });
   subEl = el("p", { class: "s-sub" });
   stepEl = el("p", { class: "now-step", "aria-live": "polite" });
@@ -397,7 +402,7 @@ export function mount(section, ctx) {
   logEl = el("div", { class: "now-log" });
   // Idle, Pan dozes beside your world.
   const sleeper = el("div", { class: "now-sleeper", "aria-hidden": "true" });
-  onArt(() => sleeper.replaceChildren(panFor("pan-sleep", "sleep", "", 140)));
+  sleeper.replaceChildren(panFor("sleep", ""));
   root.append(
     heroEl,
     apEl,

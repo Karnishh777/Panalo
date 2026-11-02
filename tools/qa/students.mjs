@@ -249,6 +249,12 @@ try {
     check("each subject is a map of its topics, grey until met", (await page.locator(".pl-subject").count()) === 2 && (await page.locator(".pl-topic:not(.met)").count()) > 10);
     check("the shelf has a spine for each subject, each one a way to it", (await page.locator(".pl-shelf .pl-spine").count()) === 2 && (await page.evaluate(() => [...document.querySelectorAll(".pl-spine")].every((a) => document.querySelector(a.getAttribute("href"))))));
     check("a new student's first block is a quick check", /Quick check/.test(await page.textContent(":is(.pl-stage, .pl-hero)")));
+    check("Plan shows the week at a glance: seven days, with Pan's lines about it", (await page.$$(".pl-glance-days li")).length === 7 && (await page.isVisible(".pl-glance .pan")));
+    await page.keyboard.press("Shift+Slash");
+    await page.waitForSelector("dialog[open] .shortcuts", { timeout: 4000 }).catch(() => {});
+    const keysText = await page.evaluate(() => document.querySelector("dialog[open] .shortcuts")?.textContent || "");
+    check("the shortcuts list has Space for the next step and no Archive", /next step/.test(keysText) && !/Archive/.test(keysText));
+    await page.keyboard.press("Escape");
     check("the exam from the setup shows on its subject", /Exam in \d+ days/.test(await page.textContent(".pl-subjects")));
     await shot(page, "plan");
     await page.click("#plan-start");
@@ -601,8 +607,8 @@ try {
   if (!off) console.log("  lively switch:", await whatsThere());
   await page.evaluate(() => (location.hash = "#/now"));
   await page.waitForTimeout(900);
-  check("Today opens on the climb: the photo, with a ring for today's plan", await page.isVisible(".today-hero .climb-ring") && /Today's\s*climb/.test(await page.textContent(".today-hero h2")));
-  check("…and in Day the banner stays a night window, light words on the photo", (await page.evaluate(() => getComputedStyle(document.querySelector(".today-hero h2")).color)) === "rgb(244, 242, 251)");
+  check("Today opens on a night window: the day in one line, with a ring for today's plan", await page.isVisible(".today-hero .climb-ring") && /^(Monday|Tuesday|Wednesday|Thursday|Friday|Saturday|Sunday) (morning|afternoon|evening|night)\.$/.test((await page.textContent(".today-hero h2")).trim()));
+  check("…and in Day the banner stays a night window, light words on the sky", (await page.evaluate(() => getComputedStyle(document.querySelector(".today-hero h2")).color)) === "rgb(244, 242, 251)");
   check("…and the ember wallpaper is gone", await page.evaluate(() => [...document.querySelectorAll(".wall")].every((w) => getComputedStyle(w).display === "none")));
 
   // Today on autopilot (autopilot-ui.js): Pan with a tail per subject, energy
@@ -1436,6 +1442,7 @@ try {
     await r.waitForTimeout(500);
     const anim = await r.evaluate(() => getComputedStyle(document.querySelector(".ht-line")).animationName);
     check("reduced motion turns the landing animation off", anim === "none");
+    await r.waitForSelector("#pan-stage .pan-tail", { state: "attached", timeout: 8000 }).catch(() => {});
     check("reduced motion still draws Pan with his tails", (await r.$$("#pan-stage .pan-tail")).length >= 2);
     check("no console errors (reduced motion)", r.errors.length === 0);
   }

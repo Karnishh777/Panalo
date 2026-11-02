@@ -8,10 +8,6 @@
     "guardian-maths",
     "guardian-physics",
     "guardian-words",
-    "pan-cheer",
-    "pan-idle",
-    "pan-sleep",
-    "pan-think",
     "scene-art",
     "scene-biology",
     "scene-chemistry",
@@ -55,22 +51,6 @@
     "guardian-words": [
       720,
       887
-    ],
-    "pan-cheer": [
-      423,
-      512
-    ],
-    "pan-idle": [
-      378,
-      512
-    ],
-    "pan-sleep": [
-      317,
-      512
-    ],
-    "pan-think": [
-      371,
-      512
     ],
     "scene-art": [
       1600,

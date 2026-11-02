@@ -13,6 +13,16 @@ AI, runs as "Pan Lite" (our own planner code does the planning; the AI
 only where nothing else can).
 
 **0.2.0 (in progress)**
+- **The remake, step 3: one Pan, the week at a glance, Sunday.** The new
+  Pan replaces the old painted one everywhere (setup, Today, Plan, the
+  block check, Customize); the old paintings are removed. Today's banner
+  is a night window with the day in one serif line ("Monday morning.")
+  instead of the mountain photo, and Go is ember. **Sunday** (or Monday
+  morning): the week looked back on and the next one in a few plain
+  sentences, until "Looks right". **Plan** opens with the week at a
+  glance: seven columns of the day's blocks in their subjects' colours,
+  and Pan's lines about the week. **Space** on Today starts the next step;
+  the shortcuts list loses the Archive.
 - **The remake, step 2: Today on autopilot** (students/js/autopilot-ui.js,
   model/autopilot.js). Under Today's banner, Pan (a tail per subject, lit
   when the subject is at your target) says in one line what moved in the

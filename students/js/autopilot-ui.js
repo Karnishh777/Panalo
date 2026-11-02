@@ -4,15 +4,41 @@
 // picked from a list. Every change of the student's own can be undone.
 // The rules come from model/autopilot.js; nothing here asks for typing.
 import { el, openSheet, reportError } from "./ui.js";
-import { currentPlan, planRules, changePlan, saveRules, profile, subjectView } from "./planner.js";
+import { currentPlan, planRules, changePlan, saveRules, profile, subjectView, nameOf } from "./planner.js";
+import { store } from "./store.js";
 import * as A from "./model/autopilot.js";
 import { dateKey } from "./model/rules.js";
 import { tailsFor } from "./model/pan-tails.js";
-import { clockOf } from "./model/time.js";
+import { clockOf, formatMinutes } from "./model/time.js";
 import { panFox } from "./pan.js";
 
 const KEY = "panalo.students.autopilot";
 const ENERGY_KEY = "panalo.students.energy";
+const SUNDAY_KEY = "panalo.students.sunday";
+const DAY = 86400000;
+
+/**
+ * Sunday (or Monday morning, if Sunday went by): the week looked back on
+ * and the next one in three plain sentences, until "Looks right".
+ */
+export function sundayCard(now = Date.now(), rerender = () => {}) {
+  const d = new Date(now);
+  const due = d.getDay() === 0 || (d.getDay() === 1 && d.getHours() < 12);
+  // The week being looked back on: this one on Sunday, last week on Monday.
+  const week = A.weekStart(d.getDay() === 1 ? now - DAY : now);
+  if (!due || read(SUNDAY_KEY) === week) return null;
+  const back = A.weekLookBack(store.sessions || [], { now: week + 3 * DAY });
+  const ahead = A.weekAhead(currentPlan({ now, days: 7 }), { nameOf, events: store.events || [] });
+  return el("section", { class: "sunday-card hud-frame", "aria-labelledby": "sunday-h" }, [
+    el("span", { class: "hud-label", text: d.getDay() === 0 ? "Sunday · the week in a minute" : "Monday · last week in a minute" }),
+    el("h2", { id: "sunday-h", class: "serif", text: back.minutes ? `${formatMinutes(back.minutes)} studied, on ${back.days} of 7 days.` : "A quiet week. Next week starts fresh." }),
+    ahead.lines.length ? el("ul", { class: "sunday-lines" }, ahead.lines.map((l) => el("li", { text: l }))) : null,
+    el("div", { class: "ap-row" }, [
+      el("a", { class: "btn btn-quiet btn-sm", href: "#/plan", text: "See the week" }),
+      el("button", { type: "button", class: "btn btn-primary btn-sm", id: "sunday-ok", text: "Looks right", onClick: () => (write(week, SUNDAY_KEY), rerender()) }),
+    ]),
+  ]);
+}
 // The last change the student made here, and the rules from before it.
 let undo = null;
 

@@ -198,7 +198,7 @@ html[data-look] .today-hero {
   align-items: flex-end;
   justify-content: space-between;
   gap: 16px;
-  min-height: 300px;
+  min-height: 200px;
   margin: 0 calc(-1 * var(--gutter)) 18px;
   padding: 0 var(--gutter) 6px;
   overflow: hidden;
@@ -209,7 +209,16 @@ html[data-look] .today-hero::before {
   position: absolute;
   inset: 0;
   z-index: -2;
-  background: url("../assets/photos/climb-night.webp") 50% 64% / cover no-repeat;
+  background:
+    radial-gradient(1.2px 1.2px at 12% 24%, rgba(255, 255, 255, 0.85), transparent 70%),
+    radial-gradient(1px 1px at 31% 62%, rgba(255, 255, 255, 0.6), transparent 70%),
+    radial-gradient(1.4px 1.4px at 47% 18%, rgba(255, 255, 255, 0.8), transparent 70%),
+    radial-gradient(1px 1px at 63% 44%, rgba(255, 255, 255, 0.55), transparent 70%),
+    radial-gradient(1.2px 1.2px at 78% 70%, rgba(255, 255, 255, 0.7), transparent 70%),
+    radial-gradient(1px 1px at 91% 28%, rgba(255, 255, 255, 0.6), transparent 70%),
+    radial-gradient(70% 120% at 88% 0%, rgba(155, 140, 255, 0.34), transparent 62%),
+    radial-gradient(45% 90% at 18% 0%, rgba(255, 154, 77, 0.14), transparent 66%),
+    linear-gradient(180deg, #19132f 0%, #0b0a12 100%);
 }
 html[data-look] .today-hero::after {
   content: "";
@@ -220,8 +229,8 @@ html[data-look] .today-hero::after {
 }
 html[data-look] .today-hero h2 {
   margin: 0;
-  font: 900 clamp(38px, 9vw, 64px) / 0.96 var(--f-display);
-  letter-spacing: -0.03em;
+  font: 400 clamp(40px, 7vw, 64px) / 1 var(--f-serif);
+  letter-spacing: -0.015em;
 }
 /* The hero carries the date (or the next exam): no second date below. */
 html[data-look] .now-head > .kicker {
@@ -229,15 +238,12 @@ html[data-look] .now-head > .kicker {
 }
 @media (min-width: 900px) {
   html[data-look] .today-hero {
-    min-height: 340px;
+    min-height: 220px;
     margin: 0 0 22px;
     padding: 0 32px 18px;
     border-radius: var(--r-3);
   }
-  html[data-look] .today-hero::before {
-    background-image: url("../assets/photos/climb-wide.webp");
-    background-position: 50% 20%;
-  }
+
 }
 html[data-look] .today-hero .kicker {
   color: #dad6ea;
@@ -1161,4 +1167,103 @@ html[data-look="day"] .autopilot-panel {
     align-items: flex-start;
     padding: 12px 14px;
   }
+}
+
+/* ---- The week at a glance, and the Sunday card (v0.3) --------------------- */
+.pl-glance {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: 18px 32px;
+  margin: 0 0 22px;
+  padding: 16px 18px;
+  border: 1px solid var(--line);
+  border-radius: 18px;
+}
+.pl-glance-pan {
+  flex: 1 1 320px;
+  display: flex;
+  align-items: flex-end;
+  gap: 14px;
+}
+.pl-glance-pan h2 {
+  margin: 0 0 6px;
+}
+.pl-glance-lines {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  line-height: 1.45;
+}
+.pl-glance-days {
+  flex: 2 1 420px;
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.pl-glance-days li {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  font-size: 12.5px;
+}
+.pl-glance-days li.today b {
+  color: var(--violet-soft);
+}
+.pl-glance-days small {
+  font: 500 11px var(--f-mono);
+  color: var(--text-3);
+}
+.pl-glance-bars {
+  display: flex;
+  flex-direction: column-reverse;
+  justify-content: flex-start;
+  gap: 2px;
+  width: 100%;
+  max-width: 40px;
+  height: 86px;
+  padding: 2px;
+  border-radius: 8px;
+  background: var(--surface);
+}
+.pl-glance-bars i {
+  display: block;
+  border-radius: 4px;
+  opacity: 0.85;
+}
+.sunday-card {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin: 0 0 18px;
+  padding: 18px 20px;
+  background: rgba(42, 30, 62, 0.45);
+}
+.sunday-card h2 {
+  margin: 0;
+  font: 400 30px / 1.1 var(--f-serif);
+}
+.sunday-lines {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  line-height: 1.5;
+}
+/* Ember is for Go: the one thing to press on Today. */
+html[data-look] #now-plan-go {
+  background: var(--ember);
+  color: var(--on-ember);
+}
+html[data-look] #now-plan-go:hover {
+  background: var(--ember-hover);
 }

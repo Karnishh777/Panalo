@@ -31,3 +31,11 @@ export function panFox({ pose = "idle", tails = 6, lit = 3, size = 200, label } 
   box.append(el("img", { class: "pan-body", src: `${ART}pan-${pose}.webp`, alt: "", draggable: "false", decoding: "async" }));
   return box;
 }
+
+const KNOWN = new Set(["idle", "think", "cheer", "early", "sleep"]);
+
+/** Pan in a pose, without tails: for small places (a sheet, the setup). */
+export function panPose(pose, { cls = "", label = null } = {}) {
+  const p = KNOWN.has(pose) ? pose : "idle";
+  return el("img", { class: `pan pan-pose ${cls}`.trim(), src: `${ART}pan-${p}.webp`, alt: label || "", draggable: "false", decoding: "async" });
+}
