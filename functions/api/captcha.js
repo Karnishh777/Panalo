@@ -6,7 +6,7 @@ export function onRequestGet({ env }) {
   return new Response(JSON.stringify({ siteKey: env.TURNSTILE_SITE_KEY || null }), {
     headers: {
       "content-type": "application/json",
-      "cache-control": "public, max-age=300",
+      "cache-control": "no-store",
       "x-content-type-options": "nosniff",
     },
   });

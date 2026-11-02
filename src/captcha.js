@@ -15,11 +15,18 @@ const SCRIPT = "https://challenges.cloudflare.com/turnstile/v0/api.js?render=exp
 let keyPromise = null;
 let apiPromise = null;
 
+// The key is remembered once found; "no key" (or a failed fetch) is asked
+// again next time, so a page opened before bot protection was switched on
+// doesn't keep signing in without a token (Supabase then refuses it).
 function siteKey() {
   keyPromise ??= fetch("/api/captcha", { cache: "no-store" })
     .then((r) => (r.ok ? r.json() : {}))
     .then((j) => (typeof j?.siteKey === "string" && j.siteKey ? j.siteKey : null))
-    .catch(() => null);
+    .catch(() => null)
+    .then((key) => {
+      if (!key) keyPromise = null;
+      return key;
+    });
   return keyPromise;
 }
 

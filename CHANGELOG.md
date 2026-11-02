@@ -13,6 +13,14 @@ AI, runs as "Pan Lite" (our own planner code does the planning; the AI
 only where nothing else can).
 
 **0.2.0 (in progress)**
+- **Sign-in and a globe that shows.** A page opened before the bot check
+  was switched on kept signing in without a check token, and Supabase
+  refused it ("captcha protection: request disallowed"); a missing site
+  key is now asked for again, the key is never cached, and that error
+  reads as a plain sentence. The GPU globe now checks its first frames:
+  if a GPU took the context but drew nothing, the world switches to the
+  2D globe (same layers) instead of staying blank. Add `?globe=debug` to
+  the address to see under each globe how it is drawn and on what GPU.
 - **The globe at night, and on more laptops.** City lights were sparse
   specks on a small globe (the map's fine detail averaged away); they are
   now lifted to match and given the soft glow cities have from orbit, so
