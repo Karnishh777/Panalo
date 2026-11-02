@@ -373,6 +373,10 @@ ok("anything else is just bytes", T_("application/zip", "a.zip") === "applicatio
   ok("a bad time falls back to the default", row.school_end === P.DEFAULTS.schoolEnd && row.school_start === "08:10");
   ok("travel is clamped", row.travel_minutes === 240);
   ok("the setup is marked done", row.setup_at === new Date(NOW).toISOString());
+  const rt = P.toRow({ stage: "as", routine: { weekendWake: "08:00", weekendSleep: "9pm", dinnerAt: "20:00", dinnerMinutes: 500, best: "night", focus: 45, goals: { read: 125, move: -5, nap: 60 } } }).routine;
+  ok("the routine is cleaned", rt.weekendWake === "08:00" && rt.weekendSleep === null && rt.dinnerMinutes === 120 && rt.best === "any" && rt.focus === 25, JSON.stringify(rt));
+  ok("only real areas with time are kept", JSON.stringify(rt.goals) === '{"read":125}');
+  ok("an older row reads as an empty routine", P.fromRow({ stage: "as" }).routine.focus === 25 && !P.fromRow({}).routine.dinnerAt);
   ok("a boarder has no travel", P.toRow({ stage: "as", boarding: true, travelMinutes: 45 }).travel_minutes === 0);
   const prep = P.toRow({ stage: "as", boarding: true, prepStart: "18:30", prepEnd: "20:00" });
   ok("a boarder's prep time is saved", prep.prep_start === "18:30" && prep.prep_end === "20:00");

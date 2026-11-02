@@ -24,6 +24,7 @@ import { openCustomSyllabus, foundLine } from "../other-subject.js";
 import * as D from "../model/diagnose.js";
 import { art, artImg, onArt, GUARDIANS, guardianOf } from "../art.js";
 import { createEmblem, createAura } from "../motion-art.js";
+import { lifeText } from "../model/world-model.js";
 
 let root;
 let body;
@@ -207,6 +208,7 @@ function dayCard(d, i) {
   return el("li", { class: `pl-day${i === 0 ? " today" : ""}${d.light ? " light" : ""}${d.off ? " off" : ""}${d.crash ? " crash" : ""}`, "data-weekday": String(d.weekday) }, [
     el("div", { class: "pl-day-head" }, [el("b", { text: dayLabel(d.date, i) }), el("span", { class: "faint", text: dayNote(d) })]),
     d.blocks.length ? el("ul", { class: "pl-blocks" }, d.blocks.map((b) => blockLine(b, { time: true, date: d.date, today: i === 0 }))) : i === 0 ? el("p", { class: "faint small", text: d.off ? "Today's off." : "Nothing more today." }) : null,
+    d.life?.length ? el("p", { class: "pl-life faint small", text: `Also ${i === 0 ? "today" : "this day"}: ${lifeText(d.life, formatMinutes)}` }) : null,
   ]);
 }
 

@@ -28,7 +28,40 @@ export const DEFAULTS = {
   tuitionHours: 0, // a week, for coaching without fixed times
   activities: [], // [{ kind, name, days: [0..6], start: "HH:MM", end: "HH:MM" }] (phase 34)
   customSyllabi: {}, // { subjectId: { name, code, board, known, topics: [{ id, name, stage? }] } } (phase 35)
+  routine: {}, // a more detailed day (phase 39): see cleanRoutine
 };
+
+// The areas of life a week can keep time for (model/world-model.js LIFE).
+export const LIFE_GOALS = ["connect", "move", "read", "rest", "create", "outdoors", "help"];
+export const BEST_TIMES = ["any", "morning", "afternoon", "evening"];
+export const FOCUS = [25, 40, 50];
+
+/**
+ * A more detailed day (phase 39), cleaned:
+ *   weekendWake, weekendSleep  "HH:MM" on days without school, or null (as on school days)
+ *   dinnerAt                   "HH:MM", or null (meals are an hour somewhere in the day)
+ *   dinnerMinutes              15..120 (45)
+ *   best                       when to study on days without school (BEST_TIMES)
+ *   focus                      minutes of study before a break (FOCUS)
+ *   goals                      { area: minutes a week, 0..1200 } for LIFE_GOALS
+ */
+export function cleanRoutine(r) {
+  const x = r && typeof r === "object" && !Array.isArray(r) ? r : {};
+  const goals = {};
+  for (const k of LIFE_GOALS) {
+    const m = clamp(x.goals?.[k], 0, 1200);
+    if (m > 0) goals[k] = Math.round(m / 5) * 5;
+  }
+  return {
+    weekendWake: time(x.weekendWake, null),
+    weekendSleep: time(x.weekendSleep, null),
+    dinnerAt: time(x.dinnerAt, null),
+    dinnerMinutes: clamp(x.dinnerMinutes ?? 45, 15, 120),
+    best: BEST_TIMES.includes(x.best) ? x.best : "any",
+    focus: FOCUS.includes(Number(x.focus)) ? Number(x.focus) : 25,
+    goals,
+  };
+}
 
 export const ACTIVITY_KINDS = [
   ["coaching", "Coaching"],
@@ -126,6 +159,7 @@ export function toRow(a, now = new Date()) {
     tuition_hours: clamp(a.tuitionHours, 0, 40),
     activities: cleanActivities(a.activities),
     custom_syllabi: cleanCustomSyllabi(a.customSyllabi, subjects.filter((s) => s.custom).map((s) => s.id)),
+    routine: cleanRoutine(a.routine),
     setup_at: now.toISOString(),
   };
 }
@@ -180,6 +214,7 @@ export function fromRow(row) {
     tuitionHours: row.tuition_hours ?? DEFAULTS.tuitionHours,
     activities: cleanActivities(row.activities),
     customSyllabi: row.custom_syllabi && typeof row.custom_syllabi === "object" ? row.custom_syllabi : {},
+    routine: cleanRoutine(row.routine),
   };
 }
 

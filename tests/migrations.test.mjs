@@ -1371,6 +1371,22 @@ async function studyWorldTests() {
   ok("questions still need their marks", await bad("insert into activity_log (kind, minutes) values ('questions', 5)"));
   const again38 = await runFile(db, "supabase-phase38.sql");
   ok("phase 38 is safe to re-run", again38.ok, again38.error);
+  // Phase 39: a more detailed day (the routine), restored with a journey.
+  const r39 = await runFile(db, "supabase-phase39.sql");
+  ok("phase 39 applies", r39.ok, r39.error);
+  await as(db, me, (tx) => tx.query("insert into student_profiles (world_name) values ('Mine')"));
+  const routine = { dinnerAt: "20:00", dinnerMinutes: 45, best: "morning", focus: 40, goals: { read: 120, move: 180 } };
+  const kept = await as(db, me, async (tx) => (await tx.query("update student_profiles set routine = $1 where user_id = auth.uid() returning routine", [JSON.stringify(routine)])).rows[0]?.routine);
+  ok("the routine is kept", kept?.focus === 40 && kept?.goals?.move === 180);
+  ok("the routine is an object", await bad("update student_profiles set routine = '[]' where user_id = auth.uid()"));
+  ok("the routine stays small", await bad(`update student_profiles set routine = jsonb_build_object('x', repeat('a', 5000)) where user_id = auth.uid()`));
+  const exp = await as(db, me, async (tx) => (await tx.query("select journey_export() as x")).rows[0].x);
+  await as(db, me, (tx) => tx.query("update student_profiles set routine = '{}' where user_id = auth.uid()"));
+  await as(db, me, (tx) => tx.query("select journey_import($1, $2)", [exp.journey, exp.seal]));
+  const back = await as(db, me, async (tx) => (await tx.query("select routine from student_profiles")).rows[0]?.routine);
+  ok("a journey brings the routine back", back?.dinnerAt === "20:00" && back?.goals?.read === 120, JSON.stringify(back));
+  const again39 = await runFile(db, "supabase-phase39.sql");
+  ok("phase 39 is safe to re-run", again39.ok, again39.error);
 }
 
 async function main() {

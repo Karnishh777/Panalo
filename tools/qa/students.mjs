@@ -68,7 +68,7 @@ async function finishSetup(page, { board = "Cambridge", stage = "AS", subjects =
   }
   for (const name of subjects) await page.click(`#setup-form .setup-subjects .chip:has-text("${name}") >> nth=0`);
   await next();
-  for (let i = 0; i < 12 && (await page.isVisible("#setup")); i++) {
+  for (let i = 0; i < 16 && (await page.isVisible("#setup")); i++) {
     await next();
     await page.waitForTimeout(60);
   }
@@ -187,6 +187,19 @@ try {
     await page.click('#setup-form .setup-level:has-text("Physics") .chip:has-text("Struggling")');
     await page.selectOption('#setup-form .setup-level:has-text("Chemistry") select', "b");
     await shot(page, "setup-levels");
+    while ((await page.getAttribute("#setup-form", "data-step")) !== "sleep") {
+      await page.click("#setup-form button[type=submit]");
+      await page.waitForTimeout(60);
+    }
+    // Days without school: up later (phase 39).
+    await page.click('#setup-form [aria-label="Wake up on days without school"] .chip:has-text("08:00")');
+    await page.click("#setup-form button[type=submit]");
+    await page.waitForTimeout(60);
+    check("the setup asks how the day runs", (await page.getAttribute("#setup-form", "data-step")) === "day");
+    await page.click('#setup-form [aria-label="Dinner time"] .chip:has-text("20:00")');
+    await page.click('#setup-form .setup-choice:has-text("Afternoon")');
+    await page.click('#setup-form .setup-choice:has-text("50 minutes")');
+    await shot(page, "setup-day");
     while ((await page.getAttribute("#setup-form", "data-step")) !== "tuition") {
       await page.click("#setup-form button[type=submit]");
       await page.waitForTimeout(60);
@@ -200,7 +213,13 @@ try {
     await page.fill("#setup-act-0-end", "18:30");
     await page.click("#setup-form button[type=submit]");
     await page.waitForTimeout(80);
-    check("the setup asks about sport, art and coaching at set times", (await page.getAttribute("#setup-form", "data-step")) === "exams");
+    check("the setup asks about sport, art and coaching at set times", (await page.getAttribute("#setup-form", "data-step")) === "life");
+    check("…and then time for the rest of life, sport counted", (await page.locator("#setup-form .setup-life").count()) === 7 && /sport times count/.test(await page.textContent('#setup-form [data-life="move"]')));
+    await page.click('#setup-form [data-life="read"] .chip:has-text("2 h")');
+    await shot(page, "setup-life");
+    await page.click("#setup-form button[type=submit]");
+    await page.waitForTimeout(80);
+    check("the exams come last", (await page.getAttribute("#setup-form", "data-step")) === "exams");
     const soon = new Date(Date.now() + 9 * 86400000).toISOString().slice(0, 10);
     await page.fill("#setup-exam-date", soon);
     await page.click("#setup-form .setup-exam-add button");
@@ -213,6 +232,7 @@ try {
     check("…with how each subject is going", prof?.subjects.find((x) => x.id === "phy")?.level === 1 && prof?.subjects.find((x) => x.id === "chem")?.grade === "b");
     check("…and the school day", prof?.school_start === "08:10" && prof?.school_days.length === 5);
     check("…and the rest of the week", prof?.activities?.[0]?.name === "Football" && prof.activities[0].days.join() === "2,4" && prof.activities[0].start === "17:00", JSON.stringify(prof?.activities));
+    check("…and how the day runs", prof?.routine?.weekendWake === "08:00" && prof.routine.dinnerAt === "20:00" && prof.routine.best === "afternoon" && prof.routine.focus === 50 && prof.routine.goals?.read === 120, JSON.stringify(prof?.routine));
     check("an exam from the setup is on the calendar", await page.evaluate(() => window.__qa.db.student_events.some((e) => e.kind === "exam" && /Physics test/.test(e.title))));
     check("a new account lands on its plan, to check in on each subject", /Plan/.test(await page.title()) && (await page.isVisible("#plan-checkin")));
     check("the new account has encryption keys", await page.evaluate(() => window.__qa.db.user_keys.length === 2));

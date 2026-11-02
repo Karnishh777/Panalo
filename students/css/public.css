@@ -2023,6 +2023,13 @@ input[type="range"].range {
   display: grid;
   gap: 12px;
 }
+.setup-sub {
+  margin: 18px 0 0;
+  font-size: 1rem;
+}
+.setup-life + .setup-life {
+  margin-top: 4px;
+}
 .setup-activity {
   display: grid;
   gap: 10px;

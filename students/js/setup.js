@@ -11,6 +11,7 @@ import * as PP from "./model/papers.js";
 import { paperChooser, seriesChooser } from "./paper-sheets.js";
 import { otherSubjectForm } from "./other-subject.js";
 import { toRow, fromRow, ACTIVITY_KINDS, cleanActivities, prepSlotsOf, MAX_PREP } from "./model/profile.js";
+import { LIFE } from "./model/world-model.js";
 import { clockOfText } from "./model/time.js";
 import { art, onArt, GUARDIANS, guardianOf } from "./art.js";
 
@@ -25,7 +26,9 @@ const LINES = {
   school: "School comes first. The plan goes around it, never over it.",
   boarding: "Boarding or travelling: it changes your evenings and weekends.",
   sleep: "Sleep is protected. Nothing is ever planned into it.",
+  day: "Study when you're sharpest, stop before you fade.",
   tuition: "Sport, art, coaching: the plan goes around all of it.",
+  life: "A good week isn't only study. Keep time for the rest.",
   exams: "Last one. Then your plan is ready.",
 };
 
@@ -105,6 +108,10 @@ export function runSetup({ onDone, editing = false }) {
 
   const a = { ...fromRow(store.student) };
   if (!a.subjects.length) a.subjects = [];
+  a.routine = { ...a.routine, goals: { ...a.routine.goals } };
+  const r = a.routine;
+  const timeChips = (label, value, list, onChange, extra = null) =>
+    chipGroup({ label, value: value ?? (extra ? extra.id : null), options: [...(extra ? [extra] : []), ...list.map((t) => ({ id: t, label: clockOfText(t) }))], onChange, toneOf: () => "tone-time" }).node;
   a.activities = cleanActivities(a.activities).map((x) => ({ ...x }));
   const exams = [];
 
@@ -388,6 +395,43 @@ export function runSetup({ onDone, editing = false }) {
         chipGroup({ label: "Wake up", value: a.wakeAt, options: ["05:30", "06:00", "06:30", "07:00", "07:30"].map((t) => ({ id: t, label: clockOfText(t) })), onChange: (v) => (a.wakeAt = v), toneOf: () => "tone-time" }).node,
         el("p", { class: "faint", text: "Go to sleep" }),
         chipGroup({ label: "Go to sleep", value: a.sleepAt, options: ["21:30", "22:00", "22:30", "23:00", "23:30"].map((t) => ({ id: t, label: clockOfText(t) })), onChange: (v) => (a.sleepAt = v), toneOf: () => "tone-time" }).node,
+        el("h3", { class: "setup-sub", text: "On days without school" }),
+        el("p", { class: "faint", text: "Wake up" }),
+        timeChips("Wake up on days without school", r.weekendWake, ["06:30", "07:00", "07:30", "08:00", "08:30", "09:00"], (v) => (r.weekendWake = v === "same" ? null : v), { id: "same", label: "Same" }),
+        el("p", { class: "faint", text: "Go to sleep" }),
+        timeChips("Go to sleep on days without school", r.weekendSleep, ["22:00", "22:30", "23:00", "23:30"], (v) => (r.weekendSleep = v === "same" ? null : v), { id: "same", label: "Same" }),
+      ],
+    },
+    {
+      id: "day",
+      title: "How your day runs",
+      lead: "So study lands when it suits you. Leave anything you're not sure of; you can change it later in Settings.",
+      body: () => [
+        el("p", { class: "faint", text: "Dinner is usually at" }),
+        timeChips("Dinner time", r.dinnerAt, ["19:00", "19:30", "20:00", "20:30", "21:00"], (v) => (r.dinnerAt = v === "varies" ? null : v), { id: "varies", label: "It varies" }),
+        el("p", { class: "faint", text: "Dinner takes about" }),
+        chipGroup({ label: "How long dinner takes", value: String(r.dinnerMinutes), options: [20, 30, 45, 60].map((m) => ({ id: String(m), label: `${m} min` })), onChange: (v) => (r.dinnerMinutes = Number(v)), toneOf: () => "tone-time" }).node,
+        el("p", { class: "faint", text: "On days without school, you study best in the" }),
+        choices(
+          [
+            { id: "morning", label: "Morning", sub: "Start soon after breakfast" },
+            { id: "afternoon", label: "Afternoon", sub: "From about 1:30" },
+            { id: "evening", label: "Evening", sub: "From about 4:00" },
+            { id: "any", label: "No preference", sub: "Start whenever the day allows" },
+          ],
+          () => r.best,
+          (v) => (r.best = v)
+        ),
+        el("p", { class: "faint", text: "Before a break, you can focus for about" }),
+        choices(
+          [
+            { id: 25, label: "25 minutes", sub: "Short stretches, a 5-minute break after each" },
+            { id: 40, label: "40 minutes", sub: "Then a 5-minute break" },
+            { id: 50, label: "50 minutes", sub: "Then a 10-minute break" },
+          ],
+          () => r.focus,
+          (v) => (r.focus = v)
+        ),
       ],
     },
     {
@@ -450,6 +494,21 @@ export function runSetup({ onDone, editing = false }) {
         const bad = a.activities.find((x) => !x.days.length || !x.start || !x.end || x.end <= x.start);
         if (!bad) return true;
         return !bad.days.length ? `Pick the days for ${bad.name || "each activity"}.` : `${bad.name || "An activity"} has to end after it starts.`;
+      },
+    },
+    {
+      id: "life",
+      title: "Time for the rest of your life",
+      lead: "Roughly how much in a week would you like for each? Your plan keeps that time free and reminds you on the day. Logging it later grows your world. All optional.",
+      body: () => {
+        const OPTS = [0, 60, 120, 180, 300, 420];
+        const label = (m) => (m ? `${m / 60} h` : "None");
+        return LIFE.map((x) =>
+          el("div", { class: "setup-life", "data-life": x.id }, [
+            el("p", { class: "faint", text: x.id === "move" && a.activities.some((y) => y.kind === "sport") ? `${x.label} (your sport times count)` : x.label }),
+            chipGroup({ label: `${x.label}, a week`, value: String(OPTS.includes(r.goals[x.id] || 0) ? r.goals[x.id] || 0 : 0), options: OPTS.map((m) => ({ id: String(m), label: label(m) })), onChange: (v) => (r.goals[x.id] = Number(v)), toneOf: () => x.tone }).node,
+          ])
+        );
       },
     },
     {
