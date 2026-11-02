@@ -14,11 +14,11 @@ import { toRow, fromRow, ACTIVITY_KINDS, cleanActivities, prepSlotsOf, MAX_PREP 
 import { clockOfText } from "./model/time.js";
 import { art, onArt, GUARDIANS, guardianOf } from "./art.js";
 
-// The setup: one short line beside each question.
+// One short line beside each question.
 const LINES = {
   board: "A few quick questions, and your week is planned.",
   stage: "Which year? The syllabus changes with it.",
-  subjects: "Every subject you pick is a streak on your comet. It lights up when you're ready.",
+  subjects: "Every subject you pick gets a guardian.",
   levels: "Be honest. Weaker subjects get more time, not less.",
   papers: "Your papers decide what you study, and when the countdown ends.",
   aim: "Aim high or steady: both are good plans.",

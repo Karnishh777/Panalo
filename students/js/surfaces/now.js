@@ -22,14 +22,12 @@ import { hasPlan, currentPlan, loadBanks, banksReady, colourOf, focusedToday, wo
 import { KINDS, nextBlock } from "../model/plan.js";
 import { startBlock } from "../block-check.js";
 import { onArt } from "../art.js";
-import { autopilotPanel, sundayCard } from "../autopilot-ui.js";
 
 let root;
 let orbitSlot;
 let logEl;
 let greetEl;
 let heroEl;
-let apEl;
 let subEl;
 let stepEl;
 let globe = null;
@@ -329,14 +327,7 @@ function nextStep(now) {
   ].filter(Boolean);
 }
 
-// "Monday evening.": the day and its part, as the banner's one line.
-function dayTitle(d) {
-  const h = d.getHours();
-  const part = h < 5 ? "night" : h < 12 ? "morning" : h < 17 ? "afternoon" : h < 22 ? "evening" : "night";
-  return `${d.toLocaleDateString("en-GB", { weekday: "long" })} ${part}.`;
-}
-
-// Today's banner (the Night look): how much of today's plan is done, as a
+// Today's climb (the Night look): how much of today's plan is done, as a
 // ring over the photo. Done = minutes studied today; the rest = the plan's
 // blocks still to come.
 function renderHero() {
@@ -349,7 +340,7 @@ function renderHero() {
   const C = 2 * Math.PI * 38;
   const exam = countdowns(store.events, now).find((c) => c.days >= 0);
   heroEl.replaceChildren(
-    el("div", {}, [el("p", { class: "kicker", text: exam ? `${exam.title} ${exam.days === 0 ? "today" : exam.days === 1 ? "tomorrow" : `in ${exam.days} days`}` : longDate(new Date()) }), el("h2", { text: dayTitle(new Date()) })]),
+    el("div", {}, [el("p", { class: "kicker", text: exam ? `${exam.title} ${exam.days === 0 ? "today" : exam.days === 1 ? "tomorrow" : `in ${exam.days} days`}` : longDate(new Date()) }), el("h2", {}, ["Today's", el("br"), "climb"])]),
     el("div", { class: "climb-ring", role: "img", "aria-label": total ? `${pct}% of today's plan done: ${done} of ${total} minutes` : "Nothing planned today" }, [
       el("span", {}, [el("b", { text: total ? `${pct}%` : "—" }), el("small", { text: total ? `${done} of ${total} min` : "no plan yet" })]),
     ])
@@ -377,8 +368,6 @@ function renderHero() {
 
 function render() {
   renderHero();
-  // The autopilot: what moved, energy, something came up (autopilot-ui.js).
-  apEl.replaceChildren(...(hasPlan() && banksReady() ? [sundayCard(Date.now(), render), autopilotPanel({ rerender: render })].filter(Boolean) : []));
   greetEl.replaceChildren(greeting());
   renderOrbit();
   renderLog();
@@ -388,8 +377,7 @@ export function mount(section, ctx) {
   navigate = ctx.navigate;
   root = el("div", { class: "now" });
   greetEl = el("h1");
-  heroEl = el("section", { class: "today-hero", "aria-label": "Today" });
-  apEl = el("div", { class: "ap-slot" });
+  heroEl = el("section", { class: "today-hero", "aria-label": "Today's climb" });
   subEl = el("p", { class: "s-sub" });
   stepEl = el("p", { class: "now-step", "aria-live": "polite" });
   const globeCanvas = el("canvas", { class: "orbit-world", role: "img", "aria-label": "Your world. Open World for what shapes it." });
@@ -397,7 +385,6 @@ export function mount(section, ctx) {
   logEl = el("div", { class: "now-log" });
   root.append(
     heroEl,
-    apEl,
     el("div", { class: "s-head" }, [el("div", { class: "now-head" }, [el("p", { class: "kicker toned tone-time", text: longDate(new Date()) }), greetEl, subEl, stepEl, captureForm()])]),
     el("div", { class: "now-grid" }, [el("div", { class: "now-instrument" }, [orbitSlot, el("p", { class: "orbit-legend faint" }, [legend("time", "classes & events"), legend("focus", "focus done"), legend("alert", "deadlines"), legend("hand", "now")])]), logEl])
   );

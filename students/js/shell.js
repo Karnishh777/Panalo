@@ -225,9 +225,11 @@ export function openShortcuts() {
         row(["g", "s"], "Study Room"),
         row(["g", "w"], "World"),
         row(["g", "c"], "Calendar"),
+        row(["g", "a"], "Archive"),
         row(["g", "y"], "Privacy & data"),
         row(["g", ","], "Settings"),
-        row(["Space"], "Start the next step (Now), or start or pause a focus block (Study Room)"),
+        row(["/"], "Search (Archive)"),
+        row(["Space"], "Start or pause a focus block (Study Room)"),
         row(["?"], "This list"),
       ]),
     ],
@@ -383,10 +385,6 @@ export function initShell(h) {
       if (e.key === "?") {
         e.preventDefault();
         openShortcuts();
-      } else if (e.key === " " && document.body.dataset.view === "now" && !e.target.closest?.("button, a, summary") && document.getElementById("now-plan-go")) {
-        // Space on Now starts the next step: one key from opening the laptop to studying.
-        e.preventDefault();
-        document.getElementById("now-plan-go").click();
       } else if (goArmed && Date.now() - goArmed < 1500 && GO_KEYS[e.key.toLowerCase()]) {
         e.preventDefault();
         goArmed = 0;

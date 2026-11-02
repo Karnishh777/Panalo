@@ -31,7 +31,7 @@ export function onArt(fn) {
   loadArt();
 }
 
-/** The URL of an image by its name ("pan-cheer"), or null if it isn't there. */
+/** The URL of an image by its name ("wall-wide"), or null if it isn't there. */
 export function art(name) {
   return have?.has(name) ? `${BASE}${name}.webp` : null;
 }

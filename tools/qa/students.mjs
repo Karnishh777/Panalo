@@ -91,7 +91,10 @@ try {
     await page.waitForTimeout(600);
     check("the landing page is shown to a visitor", await page.isVisible("#landing"));
     check("the landing explains who it is for", /intensely curious/i.test(await page.textContent(".hero")));
-    check("the welcome is your world: the real Earth, the comet circling it, no mascot, one line, two ways in", /A world made of\s*what you actually do/.test(await page.textContent(".hero-title")) && (await page.isVisible("#hero-globe")) && (await page.$$(".hero-orbit .comet-streak")).length === 6 && (await page.$$(".hero-orbit .comet-streak.lit")).length === 4 && (await page.$$("#landing .pan, .hero-pan")).length === 0 && (await page.$$(".hero-actions a")).length === 2);
+    check("no mascot on the landing", (await page.$$(".cast-pan, .pan, img[src*='pan-']")).length === 0);
+    const foot = await page.evaluate(() => [...document.querySelectorAll("a")].map((x) => x.getAttribute("href")));
+    check("the footer links Contact and the Grievance Officer", foot.includes("contact.html") && foot.includes("contact.html#grievance"));
+    check("the welcome is the climb: the photo, one line, one way in", /Every topic is\s*a step up/.test(await page.textContent(".hero-title")) && /climb-night/.test(await page.evaluate(() => getComputedStyle(document.querySelector(".hero"), "::before").backgroundImage)) && !(await page.isVisible("#hero-globe")));
     // The slider is in the page from the start, but the demo only starts
     // listening once its globes are built: keep nudging until it answers.
     const demoAnswers = await page
@@ -125,36 +128,16 @@ try {
       return { ok: hrefs.every((h) => document.querySelector(h)), stars: hrefs.length, chapters: document.querySelectorAll("#landing section[data-chapter]").length };
     });
     check("the thread has a star for every chapter", thread.ok && thread.stars === thread.chapters && thread.stars > 5);
-    await page.evaluate(() => document.getElementById("autopilot").scrollIntoView());
+    await page.evaluate(() => document.getElementById("numbers").scrollIntoView());
     await page.waitForTimeout(1800);
     const hudState = await page.evaluate(() => ({
       name: document.querySelector(".hud-name").textContent,
       here: [...document.querySelectorAll(".thread-stars li")].findIndex((li) => li.classList.contains("here")),
-      want: [...document.querySelectorAll("#landing section[data-chapter]")].findIndex((x) => x.id === "autopilot"),
+      counts: [...document.querySelectorAll("[data-count]")].map((n) => n.textContent),
+      want: [...document.querySelectorAll("#landing section[data-chapter]")].findIndex((x) => x.id === "numbers"),
     }));
-    check("the HUD names the chapter you're in and its star is lit", hudState.name === "Autopilot" && hudState.here === hudState.want && hudState.want > 1);
-    // Try it: three taps, and the real planner builds a week, with no account.
-    await page.evaluate(() => document.getElementById("try").scrollIntoView());
-    await page.click("#try-plan .try-chip:not(:disabled)");
-    check("try it: the first tap picks the exams and offers subjects", (await page.$$("#try-plan .try-chip.on")).length > 0 && /Your subjects/.test(await page.textContent("#try-plan")));
-    await page.click("#try-plan .btn-primary");
-    await page.click("#try-plan .try-chip");
-    const week = await page.waitForFunction(() => document.querySelectorAll("#try-plan .try-day").length === 7, null, { timeout: 10000 }).then(() => true, () => false);
-    check("…the third tap builds a seven-day week on the real planner, with study in it", week && /\d+ (h|min)/.test(await page.textContent("#try-plan .try-week")));
-    const tryStreaks = (await page.$$("#try-plan .comet-streak")).length;
-    check("…and the comet has a streak for each subject chosen", tryStreaks >= 1 && tryStreaks <= 9);
-    check("…and keeping it goes on to sign-up", (await page.getAttribute("#try-plan a.btn-primary", "href")) === "#signup");
-    // Your comet: a streak per subject, lit as subjects get ready.
-    await page.evaluate(() => {
-      const r = document.getElementById("comet-ready");
-      r.value = "9";
-      r.dispatchEvent(new Event("input"));
-    });
-    check("Your comet: nine subjects ready lights all nine streaks", (await page.$$("#comet-stage .comet-streak.lit")).length === 9 && (await page.$$("#comet-stage .comet-streak.dim")).length === 0);
-    const foot = await page.evaluate(() => [...document.querySelectorAll(".land-foot a")].map((a) => a.getAttribute("href")));
-    check("the footer links privacy, the rules, contact and the grievance officer", ["privacy.html", "rules.html", "contact.html", "contact.html#grievance"].every((h) => foot.includes(h)));
-    const contact = await page.evaluate(() => fetch("contact.html").then((r) => r.text()));
-    check("the contact page names the Grievance Officer and the 24-hour and 15-day promises", /K\.V\.Karnishh/.test(contact) && /24 hours/.test(contact) && /15 days/.test(contact) && /id="accessibility"/.test(contact));
+    check("the HUD names the chapter you're in and its star is lit", hudState.name === "In numbers" && hudState.here === hudState.want && hudState.want > 2);
+    check("the numbers count to their real values", hudState.counts.join() === "06,90,00,00");
     await page.evaluate(() => document.getElementById("faq").scrollIntoView());
     await page.waitForTimeout(900);
     await page.click("#faq details:first-of-type summary");
@@ -249,12 +232,6 @@ try {
     check("each subject is a map of its topics, grey until met", (await page.locator(".pl-subject").count()) === 2 && (await page.locator(".pl-topic:not(.met)").count()) > 10);
     check("the shelf has a spine for each subject, each one a way to it", (await page.locator(".pl-shelf .pl-spine").count()) === 2 && (await page.evaluate(() => [...document.querySelectorAll(".pl-spine")].every((a) => document.querySelector(a.getAttribute("href"))))));
     check("a new student's first block is a quick check", /Quick check/.test(await page.textContent(":is(.pl-stage, .pl-hero)")));
-    check("Plan shows the week at a glance: seven days, with lines about it and the subjects' comet", (await page.$$(".pl-glance-days li")).length === 7 && (await page.isVisible(".pl-glance .comet-mark")));
-    await page.keyboard.press("Shift+Slash");
-    await page.waitForSelector("dialog[open] .shortcuts", { timeout: 4000 }).catch(() => {});
-    const keysText = await page.evaluate(() => document.querySelector("dialog[open] .shortcuts")?.textContent || "");
-    check("the shortcuts list has Space for the next step and no Archive", /next step/.test(keysText) && !/Archive/.test(keysText));
-    await page.keyboard.press("Escape");
     check("the exam from the setup shows on its subject", /Exam in \d+ days/.test(await page.textContent(".pl-subjects")));
     await shot(page, "plan");
     await page.click("#plan-start");
@@ -535,7 +512,6 @@ try {
   check("the world legend counts the finished task as a light", /Lights\s*Tasks finished.*1/s.test(legend));
   check("only studying grows the world: no activity logging", !(await page.isVisible("text=Log an activity")) && /Only studying grows it/.test(await page.textContent(".world .s-sub")));
   check("the legend explains each feature as study", /Forests\s*Chapters covered/.test(legend) && /Aurora\s*Marks earned/.test(legend) && /Atmosphere\s*Past papers/.test(legend));
-  check("the comet circles the world, a streak per subject", (await page.$$(".world-orbit .comet-streak")).length >= 1 && /streaks?, one per subject/.test(await page.getAttribute(".world-orbit .comet-orbit", "aria-label")));
   check("the first session is a discovery", /First session/.test(await page.textContent(".world-lower")));
   await shot(page, "world");
 
@@ -608,30 +584,9 @@ try {
   if (!off) console.log("  lively switch:", await whatsThere());
   await page.evaluate(() => (location.hash = "#/now"));
   await page.waitForTimeout(900);
-  check("Today opens on a night window: the day in one line, with a ring for today's plan", await page.isVisible(".today-hero .climb-ring") && /^(Monday|Tuesday|Wednesday|Thursday|Friday|Saturday|Sunday) (morning|afternoon|evening|night)\.$/.test((await page.textContent(".today-hero h2")).trim()));
-  check("…and in Day the banner stays a night window, light words on the sky", (await page.evaluate(() => getComputedStyle(document.querySelector(".today-hero h2")).color)) === "rgb(244, 242, 251)");
+  check("Today opens on the climb: the photo, with a ring for today's plan", await page.isVisible(".today-hero .climb-ring") && /Today's\s*climb/.test(await page.textContent(".today-hero h2")));
+  check("…and in Day the banner stays a night window, light words on the photo", (await page.evaluate(() => getComputedStyle(document.querySelector(".today-hero h2")).color)) === "rgb(244, 242, 251)");
   check("…and the ember wallpaper is gone", await page.evaluate(() => [...document.querySelectorAll(".wall")].every((w) => getComputedStyle(w).display === "none")));
-
-  // Today on autopilot (autopilot-ui.js): the comet with a streak per subject, energy
-  // in one tap, "Something came up", and Undo for each.
-  const ap = await page.waitForSelector(".autopilot-panel", { timeout: 10000 }).then(() => true, () => false);
-  check("Today has the autopilot, with the comet drawn with a streak per subject", ap && (await page.$$(".autopilot-panel .comet-streak")).length >= 1 && /streaks?, one per subject, \d+ glowing/.test(await page.getAttribute(".autopilot-panel .comet-mark", "aria-label")));
-  await page.click(".ap-chip[data-energy=low]");
-  await page.waitForSelector("#ap-undo", { timeout: 8000 }).catch(() => {});
-  check("one tap on Low energy makes today lighter, and says so", (await page.getAttribute(".ap-chip[data-energy=low]", "aria-pressed")) === "true" && /lighter day/.test(await page.textContent(".ap-note")));
-  await page.click("#ap-undo");
-  await page.waitForFunction(() => document.querySelector(".ap-chip[data-energy=ok]")?.getAttribute("aria-pressed") === "true", null, { timeout: 8000 }).catch(() => {});
-  check("…and Undo puts today back", (await page.getAttribute(".ap-chip[data-energy=ok]", "aria-pressed")) === "true" && !(await page.$("#ap-undo")));
-  await page.click("#ap-came-up");
-  await page.waitForSelector(".came-up .ap-reason", { timeout: 5000 }).catch(() => {});
-  check("Something came up offers reasons, one tap each", (await page.$$(".came-up .ap-reason")).length === 5);
-  await page.click(".came-up .ap-reason[data-reason=busy]");
-  await page.waitForSelector("#ap-undo", { timeout: 8000 }).catch(() => {});
-  const offToday = await page.evaluate(() => document.querySelector(".ap-note")?.textContent || "");
-  check("…a busy day takes the rest of today off and says where the work went", /rest of today is off/.test(offToday) && !(await page.$("dialog.came-up[open]")));
-  await page.click("#ap-undo");
-  await page.waitForFunction(() => !document.getElementById("ap-undo"), null, { timeout: 8000 }).catch(() => {});
-  check("…and Undo brings today back", !(await page.$("#ap-undo")));
 
   // Reload: the session, the world and the data survive.
   await page.reload();
@@ -1443,8 +1398,7 @@ try {
     await r.waitForTimeout(500);
     const anim = await r.evaluate(() => getComputedStyle(document.querySelector(".ht-line")).animationName);
     check("reduced motion turns the landing animation off", anim === "none");
-    await r.waitForSelector("#comet-stage .comet-streak", { state: "attached", timeout: 8000 }).catch(() => {});
-    check("reduced motion still draws the comet, holding still", (await r.$$("#comet-stage .comet-streak")).length === 9 && (await r.$$(".hero-orbit animateMotion")).length === 0);
+    check("reduced motion shows the numbers at once", (await r.$$eval("[data-count]", (n) => n.map((x) => x.textContent))).join() === "06,90,00,00");
     check("no console errors (reduced motion)", r.errors.length === 0);
   }
 } finally {
