@@ -264,7 +264,15 @@ An honest look at the process, by the agent that did most of the work.
 1. **Finish the Cambridge curriculum** (IGCSE, AS and A Level): every
    subject has papers, a question bank with at least three questions a
    topic, exam-style questions, examiner-report advice and photo marking.
-2. **UI redesign** of Panalo Students.
+2. **UI redesign** of Panalo Students (in progress, the "Observatory"
+   remake): done so far: the front page (the real Earth with the comet
+   of your subjects; try it in three taps; Contact and the legal pages),
+   Today on autopilot, the week at a glance, the Sunday card, and a more
+   detailed globe. **No mascot** (the owner's decision, 2 November): a
+   subject's readiness is shown by the comet's streaks, not a character.
+   Pan remains only as the name of the optional AI (Tell Pan, Other
+   subject, photo marking). Still to do: Subjects, World and Me in the new
+   look, then polish and v0.3.
 3. **ICSE and ISC, grades 9 to 12** (CISCE): syllabuses, papers, question
    banks and exam-style questions, as for Cambridge.
 4. **CBSE, classes 9 to 12**: on hold until ICSE/ISC is done.

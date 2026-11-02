@@ -6,7 +6,7 @@ import { DEFAULTS } from "./model/profile.js";
 import { STAGES, subjectsFor } from "./model/subjects.js";
 import { buildPlan, syllabusPath } from "./model/plan.js";
 import { upcomingSeries, seriesLabel } from "./model/papers.js";
-import { panFox } from "./pan.js";
+import { cometMark } from "./comet.js";
 
 const SOON = [
   { label: "ICSE and ISC", sub: "Coming next" },
@@ -66,7 +66,7 @@ export function initTryPlan(root) {
     const all = subjectsFor(state.stage);
     return [
       el("h3", { class: "try-q", text: "Your subjects" }),
-      el("p", { class: "try-hint", text: "Tap all that apply. Pan picks the papers." }),
+      el("p", { class: "try-hint", text: "Tap all that apply. The usual papers are picked for you." }),
       el(
         "div",
         { class: "try-wrap" },
@@ -113,18 +113,18 @@ export function initTryPlan(root) {
   ];
 
   const stepWeek = () => {
-    const out = el("div", { class: "try-week" }, [el("p", { class: "try-hint", text: "Pan is building it…" })]);
+    const out = el("div", { class: "try-week" }, [el("p", { class: "try-hint", text: "Building it…" })]);
     week(state).then(
       (days) => out.replaceChildren(...weekView(days)),
       () => out.replaceChildren(el("p", { class: "try-hint", text: "The plan couldn't be built just now. Try again in a moment." }))
     );
     return [
       el("div", { class: "try-done" }, [
-        panFox({ pose: "cheer", tails: state.picked.length, lit: 0, size: 86 }),
+        cometMark({ streaks: state.picked.length, lit: 0, width: 86 }),
         el("div", {}, [el("span", { class: "hud-label mint", text: "Done in three taps" }), el("h3", { class: "try-q", text: "Here it is." })]),
       ]),
       out,
-      el("p", { class: "try-hint", text: "Built around a 3:10 pm end to school and lights out at 10. After sign-up, tell Pan your real timetable." }),
+      el("p", { class: "try-hint", text: "Built around a 3:10 pm end to school and lights out at 10. After sign-up, add your real timetable." }),
       el("div", { class: "try-actions" }, [
         el("button", { type: "button", class: "btn btn-quiet", text: "Start again", onclick: () => Object.assign(state, { step: 0, stage: null, picked: [], series: null }) && draw() }),
         el("a", { class: "btn btn-primary", href: "#signup", text: "Keep this plan" }),

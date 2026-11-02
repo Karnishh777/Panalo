@@ -771,7 +771,7 @@ html[data-look] .hero-sub {
 /* Sections share one column and rhythm. */
 html[data-look] #landing .try,
 html[data-look] #landing .autopilot,
-html[data-look] #landing .meet-pan,
+html[data-look] #landing .ready-comet,
 html[data-look] #landing .inside,
 html[data-look] #landing .safety,
 html[data-look] #landing .faq {
@@ -953,14 +953,14 @@ html[data-look] #landing .try {
   color: var(--text-2);
 }
 
-/* Meet Pan. */
-html[data-look] #landing .meet-pan {
+/* Your comet: a streak per subject. */
+html[data-look] #landing .ready-comet {
   display: flex;
   flex-wrap: wrap-reverse;
   align-items: center;
   gap: 40px;
 }
-.pan-stage {
+.comet-stage {
   flex: 1 1 380px;
   display: flex;
   justify-content: center;
@@ -968,29 +968,28 @@ html[data-look] #landing .meet-pan {
   gap: 8px;
   min-height: 400px;
 }
-.pan-copy {
+.comet-copy {
   flex: 1 1 420px;
 }
-.pan-try {
+.comet-try {
   display: flex;
   flex-direction: column;
   gap: 8px;
   max-width: 340px;
   margin-top: 24px;
 }
-.pan-try span {
+.comet-try span {
   display: flex;
   justify-content: space-between;
 }
-.pan-try output {
+.comet-try output {
   font: 500 13px var(--f-mono);
   color: #ffc79a;
 }
-.pan-try input {
+.comet-try input {
   accent-color: var(--violet);
   min-height: 32px;
 }
-
 
 /* Safety and the footer. */
 html[data-look] #landing .safety-grid {
@@ -1057,9 +1056,7 @@ html[data-look] .land-foot {
   border-radius: 18px;
   background: rgba(19, 16, 42, 0.6);
 }
-.autopilot-panel .pan {
-  align-self: flex-end;
-}
+
 .ap-main {
   flex: 1;
   min-width: 0;
@@ -1157,13 +1154,13 @@ html[data-look="day"] .autopilot-panel {
   border: 1px solid var(--line);
   border-radius: 18px;
 }
-.pl-glance-pan {
+.pl-glance-head {
   flex: 1 1 320px;
   display: flex;
   align-items: flex-end;
   gap: 14px;
 }
-.pl-glance-pan h2 {
+.pl-glance-head h2 {
   margin: 0 0 6px;
 }
 .pl-glance-lines {
@@ -1287,20 +1284,7 @@ html[data-look] .hero-earth canvas {
 html[data-look] .hero-earth .hero-orbit {
   pointer-events: none;
 }
-/* Pan sits on the near edge of the world (wide screens; on a phone he
-   waits further down the page). */
-html[data-look] .hero-pan {
-  display: none;
-  position: absolute;
-  left: -6%;
-  bottom: 6%;
-  width: 30%;
-  pointer-events: none;
-}
-html[data-look] .hero-pan .pan {
-  width: 100%;
-  height: auto;
-}
+
 html[data-look] .hero::after {
   background: linear-gradient(to bottom, rgba(11, 10, 18, 0) 0%, rgba(11, 10, 18, 0) 30%, rgba(11, 10, 18, 0.7) 44%, var(--bg) 52%);
 }
@@ -1313,9 +1297,7 @@ html[data-look] .hero::after {
   }
 }
 @media (min-width: 900px) {
-  html[data-look] .hero-pan {
-    display: block;
-  }
+
   html[data-look] .hero::before {
     background-position: 0 0;
     background-size: auto;
@@ -1334,18 +1316,6 @@ html[data-look] .hero::after {
   }
 }
 
-/* Pan, a fox drawn in stars (pan.js), and the comet (comet.js). */
-.pan {
-  display: block;
-  overflow: visible;
-}
-.pan-live .pan {
-  max-width: 100%;
-  height: auto;
-}
-.pan-strand.lit {
-  transition: opacity 0.4s ease;
-}
 .comet-orbit {
   overflow: visible;
 }

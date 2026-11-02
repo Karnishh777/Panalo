@@ -1,5 +1,5 @@
 // The front page's live parts (v0.3): the try-it (three taps, a real first
-// week), Pan with a tail per subject, sections that open as they arrive,
+// week), the comet with a streak per subject, sections that open as they arrive,
 // and the world demo whose sliders drive the real world model.
 import { createGlobe } from "./world-render.js";
 import { buildWorld } from "./model/world-model.js";
@@ -7,8 +7,7 @@ import { DAY, dayKey } from "./model/time.js";
 import { reveal, speedLines, burstOn, impactFrame } from "./fx.js";
 import { initLandingHud } from "./landing-hud.js";
 import { initTryPlan } from "./try-plan.js";
-import { panFox } from "./pan.js";
-import { cometOrbit } from "./comet.js";
+import { cometOrbit, cometMark } from "./comet.js";
 
 let started = false;
 
@@ -39,7 +38,7 @@ export function initLanding() {
   initLandingHud();
   initTryPlan($("try-plan"));
   drawHero();
-  drawPan();
+  drawComet();
 
   // The calls to action land with a hit.
   document.querySelectorAll("#landing .fx-cta").forEach((a) => {
@@ -54,41 +53,26 @@ export function initLanding() {
   startGlobes();
 }
 
-// The welcome: Pan beside your world, and its comet circling it.
+// The welcome: your world, with your subjects' comet circling it.
 function drawHero() {
-  const pan = document.querySelector(".hero-pan");
   const orbit = document.querySelector(".hero-orbit");
-  if (pan && !pan.firstChild) pan.append(panFox({ pose: "idle", tails: 6, lit: 4, size: 210, label: "Pan, a fox drawn in stars, with six tails of light, four glowing" }));
-  if (orbit && !orbit.firstChild) orbit.append(cometOrbit({ tails: 6, lit: 4 }));
+  if (orbit && !orbit.firstChild) orbit.append(cometOrbit({ streaks: 6, lit: 4 }));
 }
 
-// Meet Pan: the first week (two dim tails) beside the week before exams
-// (nine, all lit), and a slider to try the idea.
-function drawPan() {
-  const stage = $("pan-stage");
-  if (!stage || stage.dataset.ready) return;
+// Your comet: a streak per subject, and a slider to try the idea.
+function drawComet() {
+  const stage = $("comet-stage");
+  const range = $("comet-ready");
+  if (!stage || !range || stage.dataset.ready) return;
   stage.dataset.ready = "1";
-  stage.append(panFox({ pose: "early", tails: 2, lit: 0, size: 150, label: "Pan in the first week: two dim tails" }));
-  const live = livePan();
-  stage.append(live.box);
-  const range = $("pan-ready");
-  const out = $("pan-ready-out");
+  const out = $("comet-ready-out");
   const draw = () => {
     const k = Number(range.value);
     out.textContent = `${k} of 9`;
-    live.set(k);
+    stage.replaceChildren(cometMark({ streaks: 9, lit: k, width: 360 }));
   };
-  range?.addEventListener("input", draw);
-  if (range) draw();
-}
-
-function livePan() {
-  const box = document.createElement("div");
-  box.className = "pan-live";
-  return {
-    box,
-    set: (k) => box.replaceChildren(panFox({ pose: k >= 9 ? "cheer" : "idle", tails: 9, lit: k, size: 290 })),
-  };
+  range.addEventListener("input", draw);
+  draw();
 }
 
 // The demo world is WebGL, with its own textures and buffers. It exists

@@ -1,5 +1,5 @@
-// Today on autopilot (v0.3): Pan says, in one plain line, what moved in the
-// plan since the morning; one tap changes today for low or high energy; and
+// Today on autopilot (v0.3): one plain line says what moved in the plan
+// since the morning; one tap changes today for low or high energy; and
 // "Something came up" reshapes today (and, when ill, tomorrow) for a reason
 // picked from a list. Every change of the student's own can be undone.
 // The rules come from model/autopilot.js; nothing here asks for typing.
@@ -8,9 +8,9 @@ import { currentPlan, planRules, changePlan, saveRules, profile, subjectView, na
 import { store } from "./store.js";
 import * as A from "./model/autopilot.js";
 import { dateKey } from "./model/rules.js";
-import { tailsFor } from "./model/pan-tails.js";
+import { streaksFor } from "./model/streaks.js";
 import { clockOf, formatMinutes } from "./model/time.js";
-import { panFox } from "./pan.js";
+import { cometMark } from "./comet.js";
 
 const KEY = "panalo.students.autopilot";
 const ENERGY_KEY = "panalo.students.energy";
@@ -91,12 +91,11 @@ const when = (at, now) => {
   return `${day} ${clockOf(d.getHours() * 60 + d.getMinutes())}`;
 };
 
-/** Pan with a tail per subject, lit when the subject is at the student's target. */
-export function studentPan({ pose = "idle", size = 72 } = {}) {
+/** The student's comet: a streak per subject, lit when the subject is at their target. */
+export function subjectComet({ width = 72 } = {}) {
   const views = profile().subjects.map((s) => subjectView(s));
   const target = views[0]?.target ?? 0.75;
-  const { tails, lit } = tailsFor(views.map((v) => v.readiness), { ready: target });
-  return panFox({ pose, tails, lit, size });
+  return cometMark({ ...streaksFor(views.map((v) => v.readiness), { ready: target }), width });
 }
 
 async function change(changes, text, rerender) {
@@ -138,7 +137,7 @@ export function autopilotPanel({ now = Date.now(), rerender }) {
   } else if (moved.length) {
     note = el("div", { class: "ap-note" }, [
       el("div", {}, [
-        el("span", { class: "hud-label", text: `Pan moved ${moved.length === 1 ? "1 thing" : `${moved.length} things`}` }),
+        el("span", { class: "hud-label", text: `Moved since this morning: ${moved.length === 1 ? "1 thing" : `${moved.length} things`}` }),
         el(
           "ul",
           { class: "ap-moves" },
@@ -149,7 +148,7 @@ export function autopilotPanel({ now = Date.now(), rerender }) {
     ]);
   } else {
     const left = plannedToday(now);
-    note = el("div", { class: "ap-note" }, [el("p", {}, [el("span", { class: "hud-label", text: "Pan" }), el("span", { text: left ? `${left} minutes planned for the rest of today. Nothing has needed moving.` : "Nothing more planned today. The rest of the day is yours." })])]);
+    note = el("div", { class: "ap-note" }, [el("p", {}, [el("span", { class: "hud-label", text: "Today" }), el("span", { text: left ? `${left} minutes planned for the rest of today. Nothing has needed moving.` : "Nothing more planned today. The rest of the day is yours." })])]);
   }
 
   const chip = (id, label) =>
@@ -169,8 +168,8 @@ export function autopilotPanel({ now = Date.now(), rerender }) {
       },
     });
 
-  return el("section", { class: "autopilot-panel", "aria-label": "Pan's autopilot" }, [
-    studentPan({ pose: moved.length || undo ? "think" : "idle", size: 64 }),
+  return el("section", { class: "autopilot-panel", "aria-label": "Autopilot" }, [
+    subjectComet({ width: 72 }),
     el("div", { class: "ap-main" }, [
       note,
       el("div", { class: "ap-row" }, [
@@ -185,7 +184,7 @@ export function autopilotPanel({ now = Date.now(), rerender }) {
 function cameUp(rerender) {
   const sheet = openSheet({
     title: "What happened?",
-    lead: "One tap. Pan fixes the week; nothing is lost.",
+    lead: "One tap. The week is rearranged; nothing is lost.",
     form: false,
     cls: "came-up",
     body: A.REASONS.map((r) =>

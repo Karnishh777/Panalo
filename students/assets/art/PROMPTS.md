@@ -11,34 +11,9 @@ wallpaper, **9:16** for the tall one.
 the same prompt in Google AI Studio (aistudio.google.com, the image model)
 or another image tool. The prompts name no people, characters, brands or
 artists, so they shouldn't trigger refusals.
-**Keep the cast consistent:** after the first mascot image, attach it
-when making the other three and start the prompt with "The same character
-as in the attached image,". Do the same with your first student for the
-other seven.
-
----
-
-## Mascot (4 images, 2:3)
-
-### `pan-idle.png`
-```
-A small original mascot creature: a round young star made of glowing orange-gold light, with a darker warm charcoal core showing through like cooling lava, a soft flame on top of its head like a little crown, two big calm dark eyes with bright highlights, tiny stubby arms, and a short deep-blue scarf with a faint star pattern. It floats calmly with a small confident smile and one tiny hand raised in a hello. Friendly and clever, not babyish. Digital painting with visible brushstrokes and a slightly rough hand-made finish, warm orange light from the left, cool blue rim light from the right, a few glowing embers, rich contrast, subtle film grain. Plain solid bright green background (#00FF00), evenly lit, no shadows on it, empty space around the whole figure. No text, no logo, no watermark.
-```
-
-### `pan-cheer.png`
-```
-A small original mascot creature: a round young star made of glowing orange-gold light, with a darker warm charcoal core like cooling lava, a soft flame on top of its head like a little crown, two big dark eyes with bright highlights, tiny stubby arms, and a short deep-blue scarf with a faint star pattern. It is bursting with joy, both arms up, its head flame flaring tall, a ring of bright sparks exploding around it like a small firework. Digital painting with visible brushstrokes and a slightly rough hand-made finish, warm orange light from the left, cool blue rim light from the right, rich contrast, subtle film grain. Plain solid bright green background (#00FF00), evenly lit, no shadows on it, empty space around the whole figure. No text, no logo, no watermark.
-```
-
-### `pan-think.png`
-```
-A small original mascot creature: a round young star made of glowing orange-gold light, with a darker warm charcoal core like cooling lava, a soft flame on top of its head like a little crown, two big dark eyes with bright highlights, tiny stubby arms, and a short deep-blue scarf with a faint star pattern. It is thinking, one tiny hand on its chin, eyes looking up and to the side, its head flame low and steady, a few slow embers drifting. Digital painting with visible brushstrokes and a slightly rough hand-made finish, warm orange light from the left, cool blue rim light from the right, rich contrast, subtle film grain. Plain solid bright green background (#00FF00), evenly lit, no shadows on it, empty space around the whole figure. No text, no logo, no watermark.
-```
-
-### `pan-sleep.png`
-```
-A small original mascot creature: a round young star made of glowing orange-gold light, with a darker warm charcoal core like cooling lava, a soft flame on top of its head, tiny stubby arms, and a short deep-blue scarf with a faint star pattern. It is peacefully asleep, curled slightly, eyes closed, the scarf wrapped around it like a blanket, its head flame dimmed to a soft glow, a single ember drifting up. Digital painting with visible brushstrokes and a slightly rough hand-made finish, gentle warm light, cool blue rim light, subtle film grain. Plain solid bright green background (#00FF00), evenly lit, no shadows on it, empty space around the whole figure. No text, no logo, no watermark.
-```
+**Keep the cast consistent:** after your first student image, attach it
+when making the other seven and start the prompt with "The same style as
+in the attached image,". There is no mascot (removed 2 November 2026).
 
 ---
 
@@ -146,6 +121,6 @@ A vast night sky over the quiet flat rooftop of a school building, glowing ember
 
 ---
 
-**22 images in all.** Start with `wall-wide.png`, `pan-idle.png`,
-`pan-cheer.png` and the guardians for your own subjects; each lights up
+**18 images in all.** Start with `wall-wide.png` and the guardians for
+your own subjects; each lights up
 its place in the app as it arrives.

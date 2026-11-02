@@ -22,7 +22,6 @@ import { hasPlan, currentPlan, loadBanks, banksReady, colourOf, focusedToday, wo
 import { KINDS, nextBlock } from "../model/plan.js";
 import { startBlock } from "../block-check.js";
 import { onArt } from "../art.js";
-import { panPose } from "../pan.js";
 import { autopilotPanel, sundayCard } from "../autopilot-ui.js";
 
 let root;
@@ -330,10 +329,6 @@ function nextStep(now) {
   ].filter(Boolean);
 }
 
-// Pan in a pose (pan.js).
-function panFor(pose, cls) {
-  return panPose(pose, { cls });
-}
 // "Monday evening.": the day and its part, as the banner's one line.
 function dayTitle(d) {
   const h = d.getHours();
@@ -382,7 +377,7 @@ function renderHero() {
 
 function render() {
   renderHero();
-  // Pan's autopilot: what moved, energy, something came up (autopilot-ui.js).
+  // The autopilot: what moved, energy, something came up (autopilot-ui.js).
   apEl.replaceChildren(...(hasPlan() && banksReady() ? [sundayCard(Date.now(), render), autopilotPanel({ rerender: render })].filter(Boolean) : []));
   greetEl.replaceChildren(greeting());
   renderOrbit();
@@ -400,14 +395,11 @@ export function mount(section, ctx) {
   const globeCanvas = el("canvas", { class: "orbit-world", role: "img", "aria-label": "Your world. Open World for what shapes it." });
   orbitSlot = el("a", { class: "orbit-wrap", href: "#/world", "aria-label": "Your day and your world" }, [globeCanvas]);
   logEl = el("div", { class: "now-log" });
-  // Idle, Pan dozes beside your world.
-  const sleeper = el("div", { class: "now-sleeper", "aria-hidden": "true" });
-  sleeper.replaceChildren(panFor("sleep", ""));
   root.append(
     heroEl,
     apEl,
     el("div", { class: "s-head" }, [el("div", { class: "now-head" }, [el("p", { class: "kicker toned tone-time", text: longDate(new Date()) }), greetEl, subEl, stepEl, captureForm()])]),
-    el("div", { class: "now-grid" }, [el("div", { class: "now-instrument" }, [sleeper, orbitSlot, el("p", { class: "orbit-legend faint" }, [legend("time", "classes & events"), legend("focus", "focus done"), legend("alert", "deadlines"), legend("hand", "now")])]), logEl])
+    el("div", { class: "now-grid" }, [el("div", { class: "now-instrument" }, [orbitSlot, el("p", { class: "orbit-legend faint" }, [legend("time", "classes & events"), legend("focus", "focus done"), legend("alert", "deadlines"), legend("hand", "now")])]), logEl])
   );
   section.append(root);
   try {

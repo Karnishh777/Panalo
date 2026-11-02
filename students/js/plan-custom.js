@@ -7,7 +7,6 @@ import { supabaseClient } from "../../src/client.js";
 import * as R from "./model/rules.js";
 import { clockOfText } from "./model/time.js";
 import { profile, nameOf, planRules, changePlan, saveRules } from "./planner.js";
-import { panPose } from "./pan.js";
 
 const ORDER = [1, 2, 3, 4, 5, 6, 0]; // Monday first
 const WD = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
@@ -40,10 +39,6 @@ export async function askPan(text, { fetchImpl = fetch } = {}) {
   } catch {
     return local();
   }
-}
-
-function panArt() {
-  return panPose("think", { cls: "cz-pan" });
 }
 
 /** The Customize sheet. */
@@ -181,7 +176,7 @@ export function openCustomize() {
     form: false,
     wide: true,
     body: [
-      el("section", { class: "cz-ask" }, [panArt(), el("div", { class: "cz-ask-main" }, [el("h3", { class: "cz-h", text: "Tell Pan" }), text, chips, el("div", { class: "cz-row" }, [ask]), preview])]),
+      el("section", { class: "cz-ask" }, [el("div", { class: "cz-ask-main" }, [el("h3", { class: "cz-h", text: "Tell Pan" }), text, chips, el("div", { class: "cz-row" }, [ask]), preview])]),
       own,
     ],
   });

@@ -25,8 +25,7 @@ import * as D from "../model/diagnose.js";
 import { art, artImg, onArt, GUARDIANS, guardianOf } from "../art.js";
 import { createEmblem, createAura } from "../motion-art.js";
 import { weekAhead } from "../model/autopilot.js";
-import { studentPan } from "../autopilot-ui.js";
-import { panPose } from "../pan.js";
+import { subjectComet } from "../autopilot-ui.js";
 
 let root;
 let body;
@@ -96,7 +95,7 @@ function hero(plan) {
   }
   const fams = [...new Set(profile().subjects.map((s) => guardianOf(s.id)))];
   if (fams.length) return stage(plan, fams);
-  return el("section", { class: "pl-hero", style: `--subj:${colourOf(next.subject)}`, "aria-labelledby": "pl-next" }, [...heroText(plan, next, di), pan("idle", "pl-pan")]);
+  return el("section", { class: "pl-hero", style: `--subj:${colourOf(next.subject)}`, "aria-labelledby": "pl-next" }, [...heroText(plan, next, di)]);
 }
 
 // The stage: the student's subjects as a row, small, grey and faint; the
@@ -176,11 +175,6 @@ function stage(plan, fams) {
   return root;
 }
 
-// Pan, the mascot: the painting if there is one, else the live one.
-function pan(pose, cls) {
-  return panPose(pose, { cls });
-}
-
 // The week: today in full; any other day when asked for. The days chosen
 // stay chosen on this device.
 const DAYS_KEY = "panalo.plan.days";
@@ -219,16 +213,16 @@ function dayCard(d, i) {
 }
 
 // The week at a glance (v0.3): seven columns, each a stack of its blocks in
-// their subjects' colours, and Pan's few plain lines about the week.
+// their subjects' colours, and a few plain lines about the week.
 function weekGlance(plan) {
   const days = plan.slice(0, 7);
   const ahead = weekAhead(days, { nameOf, events: store.events || [] });
   const max = Math.max(60, ...days.map((d) => d.minutes || 0));
   return el("section", { class: "pl-glance", "aria-labelledby": "pl-glance-h" }, [
-    el("div", { class: "pl-glance-pan" }, [
-      studentPan({ pose: "think", size: 56 }),
+    el("div", { class: "pl-glance-head" }, [
+      subjectComet({ width: 64 }),
       el("div", {}, [
-        el("h2", { id: "pl-glance-h", class: "hud-label", text: "Pan on this week" }),
+        el("h2", { id: "pl-glance-h", class: "hud-label", text: "This week" }),
         ahead.lines.length ? el("ul", { class: "pl-glance-lines" }, ahead.lines.map((l) => el("li", { text: l }))) : el("p", { class: "faint", text: "Nothing planned this week yet." }),
       ]),
     ]),

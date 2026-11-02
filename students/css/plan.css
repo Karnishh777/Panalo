@@ -649,65 +649,8 @@ body.in-app[data-view="plan"] .wall {
   }
 }
 
-/* Pan, the mascot. */
-.pan {
-  display: block;
-  pointer-events: none;
-  user-select: none;
-  filter: drop-shadow(0 8px 24px rgba(255, 150, 60, 0.35));
-}
-.pl-hero .pl-pan,
-.pl-stage .st-pan {
-  position: absolute;
-  right: 18px;
-  bottom: -6px;
-  width: clamp(80px, 12vw, 140px);
-  z-index: 3;
-  animation: pan-float 5s ease-in-out infinite;
-}
-.greet-pan {
-  display: inline-block;
-  height: 1.25em;
-  width: auto;
-  filter: none;
-  margin-left: 0.25em;
-  vertical-align: -0.2em;
-  animation: pan-float 5s ease-in-out infinite;
-}
-.bc-pan {
-  width: 120px;
-  margin: 0 auto -6px;
-}
-.bc-pan.cheer {
-  animation: pan-pop 0.7s cubic-bezier(0.2, 1.6, 0.4, 1) both;
-}
-.now-sleeper {
-  position: absolute;
-  z-index: 2;
-  left: 50%;
-  top: 46%;
-  width: 120px;
-  transform: translate(-50%, -50%);
-  opacity: 0;
-  transition: opacity 1.2s ease;
-  pointer-events: none;
-}
 .now-instrument {
   position: relative;
-}
-.now.is-idle .now-sleeper {
-  opacity: 1;
-}
-@keyframes pan-float {
-  50% {
-    transform: translateY(-8px);
-  }
-}
-@keyframes pan-pop {
-  from {
-    transform: scale(0.4);
-    opacity: 0;
-  }
 }
 
 /* The stage: guardians in a row, black and white until chosen. */
@@ -846,24 +789,16 @@ body.in-app[data-view="plan"] .wall {
   .st-info {
     padding: 4px 20px 24px;
   }
-  .pl-stage .st-pan {
-    display: none;
-  }
+
 }
 @media (prefers-reduced-motion: reduce) {
-  .pan,
-  .pl-hero .pl-pan,
-  .pl-stage .st-pan,
-  .bc-pan.cheer {
-    animation: none;
-  }
+
   .aura {
     animation: none;
   }
   .st-guard,
   .st-scene,
-  .wall,
-  .now-sleeper {
+  .wall {
     transition: none;
   }
 }
@@ -1028,10 +963,7 @@ body.in-app[data-view="plan"] .wall {
   gap: 16px;
   align-items: start;
 }
-.cz-pan {
-  width: 72px;
-  height: auto;
-}
+
 .cz-ask-main {
   display: grid;
   gap: 10px;
@@ -1120,9 +1052,7 @@ body.in-app[data-view="plan"] .wall {
   .cz-ask {
     grid-template-columns: minmax(0, 1fr);
   }
-  .cz-pan {
-    width: 56px;
-  }
+
   .cz-days,
   .cz-subjects {
     grid-template-columns: repeat(2, minmax(0, 1fr));

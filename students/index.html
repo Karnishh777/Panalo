@@ -75,11 +75,11 @@
   <link rel="modulepreload" href="js/model/examiner.js">
   <link rel="modulepreload" href="js/model/focus-timer.js">
   <link rel="modulepreload" href="js/model/learner.js">
-  <link rel="modulepreload" href="js/model/pan-tails.js">
   <link rel="modulepreload" href="js/model/papers.js">
   <link rel="modulepreload" href="js/model/plan.js">
   <link rel="modulepreload" href="js/model/profile.js">
   <link rel="modulepreload" href="js/model/rules.js">
+  <link rel="modulepreload" href="js/model/streaks.js">
   <link rel="modulepreload" href="js/model/subjects.js">
   <link rel="modulepreload" href="js/model/time.js">
   <link rel="modulepreload" href="js/model/world-model.js">
@@ -88,7 +88,6 @@
   <link rel="modulepreload" href="js/motion-art.js">
   <link rel="modulepreload" href="js/motion.js">
   <link rel="modulepreload" href="js/other-subject.js">
-  <link rel="modulepreload" href="js/pan.js">
   <link rel="modulepreload" href="js/paper-sheets.js">
   <link rel="modulepreload" href="js/parent.js">
   <link rel="modulepreload" href="js/perf-guard.js">
@@ -212,7 +211,7 @@
       <nav class="land-links" aria-label="Sections">
         <a href="#try">Try it</a>
         <a href="#autopilot">Autopilot</a>
-        <a href="#pan">Pan</a>
+        <a href="#ready">Your comet</a>
         <a href="#safety">Safety</a>
         <a href="#faq">Questions</a>
       </nav>
@@ -227,14 +226,12 @@
     </header>
 
     <main id="top" class="land">
-      <!-- The welcome: Pan on the edge of your world, looking up. -->
       <section class="hero" aria-labelledby="hero-title" data-chapter="Arrival">
-        <!-- Your world: the real Earth, lit by what you do, with Pan's comet
-             on its orbit and Pan beside it (landing.js draws them). -->
+        <!-- Your world: the real Earth, lit by what you do, with your
+             subjects' comet on its orbit (landing.js draws them). -->
         <div class="hero-earth">
           <canvas id="hero-globe" width="900" height="900" tabindex="0" role="img" aria-label="Your world: the real Earth, its land and city lights grown from study. Drag it, or use the arrow keys, to turn it."></canvas>
           <div class="hero-orbit"></div>
-          <div class="hero-pan"></div>
         </div>
         <div class="hero-copy">
           <p class="kicker hero-kicker">Cambridge IGCSE, AS and A Level · for the intensely curious</p>
@@ -242,7 +239,7 @@
             <span class="ht-line">A world made of</span>
             <span class="ht-line"><em>what you actually do.</em></span>
           </h1>
-          <p class="hero-sub">Tell Panalo your subjects and when your exams are. Pan plans every day around school, prep and sleep, and changes the plan when life does. You press Go.</p>
+          <p class="hero-sub">Tell Panalo your subjects and when your exams are. Panalo plans every day around school, prep and sleep, and changes the plan when life does. You press Go.</p>
           <div class="hero-actions">
             <a class="btn btn-primary btn-lg fx-cta" href="#try">Try it in three taps</a>
             <a class="btn btn-ghost btn-lg" href="#signup">Start free</a>
@@ -293,14 +290,14 @@
         </div>
       </section>
 
-      <section class="meet-pan" id="pan" aria-labelledby="pan-title" data-chapter="Pan">
-        <div class="pan-stage" id="pan-stage"></div>
-        <div class="pan-copy">
-          <p class="kicker">04 · Meet Pan</p>
-          <h2 id="pan-title" class="section-title serif">A star fox that grows <em>a tail for every subject you're ready for.</em></h2>
-          <p class="section-lead">In old Japanese stories a kitsune earns a new tail as it grows wiser, up to nine. Pan earns one for each subject you take, and each tail turns from night-sky indigo to glowing nebula when that subject is ready for the exam hall. Pan plans, says what changed, and sleeps when you should.</p>
-          <label class="pan-try"><span><b>Subjects ready</b><output id="pan-ready-out">3 of 9</output></span>
-            <input type="range" id="pan-ready" min="0" max="9" value="3"></label>
+      <section class="ready-comet" id="ready" aria-labelledby="ready-title" data-chapter="Your comet">
+        <div class="comet-stage" id="comet-stage"></div>
+        <div class="comet-copy">
+          <p class="kicker">04 · Your comet</p>
+          <h2 id="ready-title" class="section-title serif">A streak for every subject. <em>It lights up when you're ready.</em></h2>
+          <p class="section-lead">Your subjects fly round your world as one comet. Each streak stays night-sky indigo until that subject is ready for the exam hall, then glows gold. One look tells you where you stand, without a single number.</p>
+          <label class="comet-try"><span><b>Subjects ready</b><output id="comet-ready-out">3 of 9</output></span>
+            <input type="range" id="comet-ready" min="0" max="9" value="3"></label>
         </div>
       </section>
 
@@ -313,7 +310,7 @@
           <div><h3>Under 18</h3><p>A parent or guardian says yes before the account opens, as Indian law asks.</p></div>
           <div><h3>Take it with you</h3><p>Download everything, or delete it, any time.</p></div>
           <div><h3>On a laptop in boarding</h3><p>Install it from Edge or Chrome. Space starts a session; Ctrl K finds anything.</p></div>
-          <div><h3>AI only when you ask</h3><p>Pan's AI is used only when you ask it to change your plan or mark an answer.</p></div>
+          <div><h3>AI only when you ask</h3><p>Pan, the built-in AI, is used only when you ask it to change your plan or mark an answer.</p></div>
         </div>
       </section>
 
@@ -325,7 +322,7 @@
           <details><summary>Which exams does it know?</summary><p>Cambridge IGCSE, AS and A Level now. ICSE and ISC are next, then CBSE.</p></details>
           <details><summary>Do I need a phone number?</summary><p>No. An email and a username are all it asks for.</p></details>
           <details><summary>Can other people see what I do?</summary><p>No. There are no profiles, no chat and no feed: your plan, focus and world are yours alone.</p></details>
-          <details><summary>What happens if I stop for a while?</summary><p>Nothing bad. Clouds gather over your world while you're away and clear when you come back, and Pan rebuilds the plan from where you are. No streaks to lose.</p></details>
+          <details><summary>What happens if I stop for a while?</summary><p>Nothing bad. Clouds gather over your world while you're away and clear when you come back, and the plan is rebuilt from where you are. No streaks to lose.</p></details>
           <details><summary>Does it work on a school laptop?</summary><p>Yes, in Edge or Chrome on Windows, and it can be installed like an app.</p></details>
           <details><summary>Can I delete everything?</summary><p>Yes, from Privacy &amp; data: your account and your world. It can't be undone.</p></details>
         </div>
@@ -344,12 +341,12 @@
           <span class="wordmark small"><svg class="mark" width="22" height="22" viewBox="0 0 90 90" aria-hidden="true"><use class="mk-glass" href="#mark-glass"/><use class="mk-signal" href="#mark-signal"/><use class="mk-verse" href="#mark-verse"/></svg><span class="wm-name">panalo</span><span class="wm-sub">Students</span></span>
           <p>A world made of what you actually do.</p>
         </div>
-        <nav aria-label="Product"><h2 class="hud-label">Product</h2><a href="#try">Try it</a><a href="#autopilot">How it works</a><a href="#pan">Meet Pan</a></nav>
+        <nav aria-label="Product"><h2 class="hud-label">Product</h2><a href="#try">Try it</a><a href="#autopilot">How it works</a><a href="#ready">Your comet</a></nav>
         <nav aria-label="Help"><h2 class="hud-label">Help</h2><a href="#faq">Questions</a><a href="contact.html">Contact us</a><a href="contact.html#parents">For parents</a><a href="privacy.html#limits">What it can't do yet</a></nav>
         <nav aria-label="Legal"><h2 class="hud-label">Legal</h2><a href="privacy.html">Privacy</a><a href="rules.html">Rules and terms</a><a href="contact.html#grievance">Grievance officer</a><a href="contact.html#accessibility">Accessibility</a></nav>
       </div>
       <div class="foot-line">
-        <span class="hud-label">Not affiliated with Cambridge, CISCE or CBSE · Pan and the art are original</span>
+        <span class="hud-label">Not affiliated with Cambridge, CISCE or CBSE · the art is original</span>
         <span class="land-version">v0.1</span>
       </div>
     </footer>

@@ -1,4 +1,4 @@
-// The painted art (v0.2): Pan the mascot, the subject guardians, their
+// The painted art (v0.2): the subject guardians, their
 // scenes and the wallpapers -- bitmaps made from students/assets/art/
 // PROMPTS.md by tools/art/process.py. manifest.json lists what exists; the
 // app asks only for those, and every place that shows art has a plain
