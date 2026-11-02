@@ -13,3 +13,10 @@ given here anyway). Resized to 900 px wide WebP; `climb-wide.webp` is an 1800 px
 | `lamp-night.webp` | A student writing notes under a desk lamp | Rafay Ansari |
 
 No photo shows a person's face.
+
+## The welcome (opening page)
+
+| File | Photo | Credit and licence |
+| --- | --- | --- |
+| `hero-sky-1920.webp`, `hero-sky-3840.webp`, `hero-sky-tall-1080.webp` | "Cosmic Cliffs" in the Carina Nebula, James Webb Space Telescope NIRCam ([weic2205a](https://esawebb.org/images/weic2205a/)), graded slightly darker | NASA, ESA, CSA, STScI. [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/): credit required (in the page footer) |
+| `hero-moon-1920.webp`, `hero-moon-3840.webp` | The Moon's far side from the Artemis II lunar flyby, 6 April 2026 ([art002e021278](https://images.nasa.gov/details/art002e021278)), cut along the limb, the Earth in the photo removed | NASA. Public domain (NASA media guidelines: no endorsement implied) |

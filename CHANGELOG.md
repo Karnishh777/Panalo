@@ -13,6 +13,13 @@ AI, runs as "Pan Lite" (our own planner code does the planning; the AI
 only where nothing else can).
 
 **0.2.0 (in progress)**
+- **The welcome, in real photographs.** The opening page's world now
+  turns in front of real imagery instead of the AI-painted wall: the sky
+  is Webb's "Cosmic Cliffs" in the Carina Nebula (NASA, ESA, CSA, STScI;
+  CC BY 4.0, credited in the footer) and the ground is the Moon's far side
+  photographed by Artemis II (NASA, public domain), cut along its horizon.
+  4K on sharp screens, a tall crop on phones. Sources in
+  students/assets/photos/README.md.
 - **Clean-up: the AI-made pictures are gone.** At the owner's request the
   AI-generated art is removed from the repository (a copy was handed to
   the owner first): `art-source/` (169 MB of originals), the app's
