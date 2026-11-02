@@ -1442,6 +1442,7 @@ try {
     await r.waitForTimeout(500);
     const anim = await r.evaluate(() => getComputedStyle(document.querySelector(".ht-line")).animationName);
     check("reduced motion turns the landing animation off", anim === "none");
+    await r.waitForSelector("#pan-stage .pan-tail", { state: "attached", timeout: 8000 }).catch(() => {});
     check("reduced motion still draws Pan with his tails", (await r.$$("#pan-stage .pan-tail")).length >= 2);
     check("no console errors (reduced motion)", r.errors.length === 0);
   }
