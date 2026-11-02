@@ -8,7 +8,7 @@ import { el, emptyState, reportError, shortDate, longDate, showToast } from "../
 import { store, api, redrawOn } from "../store.js";
 import { dayOrbit } from "../dayorbit.js";
 import { createGlobe } from "../world-render.js";
-import { buildWorld, weatherLine } from "../model/world-model.js";
+import { buildWorld, weatherLine, lifeText } from "../model/world-model.js";
 import { nextUp, tasksAsDeadlines, EVENT_KINDS, countdowns } from "../model/timeline.js";
 import { relTime, clockTime, clockOf, formatMinutes, DAY, sameDay } from "../model/time.js";
 import * as T from "../model/focus-timer.js";
@@ -280,6 +280,7 @@ function planPanel(now, w) {
         )
       : el("p", { class: "muted", text: done ? "That's today's plan done. The rest of the evening is yours." : "Nothing more planned for today." }),
     live,
+    today?.life?.length ? el("p", { class: "small now-life", text: `Also today: ${lifeText(today.life, formatMinutes)}` }) : null,
     el("p", { class: "faint small plan-studied", text: `${formatMinutes(done)} studied today · ${formatMinutes(w.stats.focusMinutesWeek)} this week` }),
   ]);
 }

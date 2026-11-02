@@ -19,14 +19,20 @@
 //     up to 3 h for grades 10–12 on school days; more at weekends.
 //   - One lighter day a week, and 20% of the week left unplanned for the
 //     things nobody can plan (rule 3 of the research report).
+//   - A more detailed day (phase 39, profile.routine): other wake and sleep
+//     times on days without school; dinner kept free at its time; the best
+//     time to study on days without school; and a weekly wish for each area
+//     of life (people, sport, reading, rest...), spread over the week
+//     (lifeOn) and kept free beyond the daily hour that is theirs anyway.
 import { stageOf } from "./subjects.js";
-import { minutesOf, prepSlotsOf } from "./profile.js";
+import { minutesOf, prepSlotsOf, cleanRoutine, LIFE_GOALS } from "./profile.js";
 
 const SLEEP_MIN = 8 * 60; // the hard floor
 const MORNING = 60; // wake to ready
 const WIND_DOWN = 30; // no study in the last half hour before bed
 const REST = 45; // after getting home from school
-const MEALS = 60; // dinner and a snack, on any day
+const MEALS = 60; // dinner and a snack, on any day (without a dinner time)
+const SNACK = 15; // with a dinner time: the rest of the day's eating
 const LEISURE = 60; // time that is theirs, every day
 export const BUFFER = 0.2; // of the week, left unplanned
 const GETTING_THERE = 15; // before and after a fixed activity
@@ -55,6 +61,44 @@ export function activitiesOn(p, day) {
   return (p.activities || [])
     .filter((a) => a.days.includes(day))
     .map((a) => [minutesOf(a.start) - GETTING_THERE, minutesOf(a.end) + GETTING_THERE]);
+}
+
+/** Dinner as a busy interval [start, end], or null without a dinner time. */
+export function dinnerOn(p) {
+  const r = cleanRoutine(p.routine);
+  if (!r.dinnerAt) return null;
+  const a = minutesOf(r.dinnerAt);
+  return [a, a + r.dinnerMinutes];
+}
+
+// The week's order for spreading a wish over n days: days without school
+// first, then school days spaced apart; each area starts at a different
+// place so they don't all land on the same day.
+const SPREAD = [6, 0, 3, 1, 5, 2, 4];
+
+/**
+ * The areas of life on a weekday: [{ kind, minutes }], from the weekly
+ * wishes. Sport at fixed times (activities of kind "sport") counts towards
+ * moving. A wish of at least 3½ hours is every day; less is 30-minute-ish
+ * times on some days.
+ */
+export function lifeOn(p, day) {
+  const { goals } = cleanRoutine(p.routine);
+  const school = new Set(p.schoolDays || []);
+  const order = [...SPREAD.filter((d) => !school.has(d)), ...SPREAD.filter((d) => school.has(d))];
+  const out = [];
+  LIFE_GOALS.forEach((kind, i) => {
+    let week = goals[kind] || 0;
+    if (kind === "move") {
+      const sport = (p.activities || []).filter((a) => a.kind === "sport").reduce((n, a) => n + a.days.length * Math.max(0, minutesOf(a.end) - minutesOf(a.start)), 0);
+      week = Math.max(0, week - sport);
+    }
+    if (week < 10) return;
+    const times = week >= 210 ? 7 : Math.max(1, Math.min(7, Math.round(week / 30)));
+    const days = times === 7 ? order : [...order.slice(i % order.length), ...order.slice(0, i % order.length)].slice(0, times);
+    if (days.includes(day)) out.push({ kind, minutes: Math.max(10, Math.round(week / times / 5) * 5) });
+  });
+  return out;
 }
 
 /** Minutes of [from, to] covered by busy intervals (which may overlap). */
@@ -87,21 +131,29 @@ export function caps(grade) {
  * weekend at home, { returning: true } on the last day of one.
  */
 export function dayCapacity(p, day, o = {}) {
-  const wake = minutesOf(p.wakeAt);
-  let sleep = minutesOf(p.sleepAt);
+  const routine = cleanRoutine(p.routine);
+  const school = (p.schoolDays || []).includes(day);
+  const wake = minutesOf((!school && routine.weekendWake) || p.wakeAt);
+  let sleep = minutesOf((!school && routine.weekendSleep) || p.sleepAt);
   if (sleep <= wake) sleep += 1440;
   const shortSleep = 1440 - (sleep - wake) < SLEEP_MIN;
   const bed = Math.min(sleep, wake + 1440 - SLEEP_MIN);
   const to = bed - WIND_DOWN;
 
-  const school = (p.schoolDays || []).includes(day);
   const grade = stageOf(p.stage)?.grade;
   const cap = caps(grade)[school ? "school" : "free"];
   const tuition = ((p.tuitionHours || 0) * 60) / 7;
-  const base = { day, school, to, shortSleep, fixed: 0 };
+  // The day's areas of life, beyond the hour that is theirs anyway.
+  const life = lifeOn(p, day);
+  const lifeExtra = Math.max(0, life.reduce((n, x) => n + x.minutes, 0) - LEISURE);
+  const base = { day, school, to, shortSleep, fixed: 0, life };
   // Free time from `from` to `end`, after meals, leisure, coaching and
-  // fixed activities, up to the day's cap.
-  const open = (from, end, less = 0) => Math.round(Math.max(0, Math.min(end - from - MEALS - LEISURE - tuition - busyWithin(activitiesOn(p, day), from, end) - less, cap)));
+  // fixed activities, up to the day's cap. With a dinner time, dinner is
+  // taken where it falls.
+  const dinner = dinnerOn(p);
+  const taken = dinner ? [...activitiesOn(p, day), dinner] : activitiesOn(p, day);
+  const meals = dinner ? SNACK : MEALS;
+  const open = (from, end, less = 0) => Math.round(Math.max(0, Math.min(end - from - meals - LEISURE - lifeExtra - tuition - busyWithin(taken, from, end) - less, cap)));
 
   if (p.boarding) {
     const home = Math.max(0, p.homeTravel ?? 60);
@@ -113,13 +165,13 @@ export function dayCapacity(p, day, o = {}) {
     const fixed = prep.reduce((n, [a, b]) => n + b - a, 0);
     if (school && prep.length) return { ...base, from: prep[0][0], to: prep[prep.length - 1][1], minutes: Math.min(fixed, 300), fixed: Math.min(fixed, 300), windows: prep, prep: true };
     if (!school && o.where === "home") {
-      const from = wake + MORNING;
+      const from = later(wake + MORNING, to, routine.best);
       const end = o.returning ? to - home - SETTLE : to;
       return { ...base, from, to: end, minutes: open(from, end), where: "home", travel: o.returning ? home : 0 };
     }
     if (!school) {
       // In the hostel: weekend prep in full, and free time around it.
-      const from = wake + MORNING;
+      const from = later(wake + MORNING, to, routine.best);
       const flex = Math.max(0, open(from, to) - fixed);
       return { ...base, from, minutes: fixed + flex, fixed, where: "stay", prep: fixed > 0 };
     }
@@ -127,8 +179,16 @@ export function dayCapacity(p, day, o = {}) {
     return { ...base, from, minutes: open(from, to) };
   }
   const travel = Math.max(0, p.travelMinutes || 0);
-  const from = school ? minutesOf(p.schoolEnd) + travel + REST : wake + MORNING;
+  const from = school ? minutesOf(p.schoolEnd) + travel + REST : later(wake + MORNING, to, routine.best);
   return { ...base, from, minutes: open(from, to) };
+}
+
+// Days without school start study at the student's best time, but never so
+// late that less than three hours are left before the evening ends.
+const BEST_FROM = { morning: 0, afternoon: 13 * 60 + 30, evening: 16 * 60 };
+function later(from, to, best) {
+  const want = BEST_FROM[best] || 0;
+  return want > from ? Math.max(from, Math.min(want, to - 180)) : from;
 }
 
 /**

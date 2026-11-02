@@ -23,9 +23,9 @@
 // Nothing new in a subject in the last two days before its exam; nothing
 // at all for it on the exam day.
 import * as L from "./learner.js";
-import { dateCapacity, activitiesOn, busyWithin } from "./capacity.js";
+import { dateCapacity, activitiesOn, busyWithin, dinnerOn } from "./capacity.js";
 import { stageOf, subjectName } from "./subjects.js";
-import { minutesOf } from "./profile.js";
+import { minutesOf, cleanRoutine } from "./profile.js";
 import * as R_ from "./rules.js";
 import * as PP from "./papers.js";
 
@@ -45,6 +45,8 @@ const BLOCKING = new Set(["class", "event", "personal", "exam"]);
 export function busyOf(profile, events, dayStart) {
   const date = new Date(dayStart);
   const out = activitiesOn(profile, date.getDay());
+  const dinner = dinnerOn(profile);
+  if (dinner) out.push(dinner);
   const end = dayStart + DAY_MS;
   for (const e of events || []) {
     if (!BLOCKING.has(e.kind)) continue;
@@ -189,6 +191,10 @@ export function buildPlan({ profile, syllabi = {}, topics = {}, pace = {}, event
   const level = stageOf(profile.stage)?.level || "other";
   // A boarder's weekend: their answer for it, or their usual (capacity.js).
   const whereOf = (ms) => R_.awayOn(R, ms, profile.schoolDays || []);
+  // How long they like to focus before a break (phase 39): a longer
+  // stretch earns a longer break.
+  const focus = cleanRoutine(profile.routine).focus;
+  const pause = focus >= 50 ? 10 : BREAK;
 
   // Every subject's topics, with live (simulated) state.
   const subjects = (profile.subjects || []).map((s) => {
@@ -227,7 +233,7 @@ export function buildPlan({ profile, syllabi = {}, topics = {}, pace = {}, event
       room = Math.max(0, Math.min(room - doneToday, free(from)));
     }
     const at = date.getTime() + Math.max(from, minutesOf("12:00")) * 60000; // a moment in the study window
-    const day = { date: date.getTime(), weekday: date.getDay(), light: cap.light, school: cap.school, planned: cap.planned, from, to: cap.to, off: own.off, crash: !own.off && own.crash, capped: own.cap != null, busy: cap.windows ? 0 : busyWithin(busy, from, cap.to), prep: !!cap.prep, where: cap.where || null, travel: cap.travel || 0, blocks: [] };
+    const day = { date: date.getTime(), weekday: date.getDay(), light: cap.light, school: cap.school, planned: cap.planned, from, to: cap.to, off: own.off, crash: !own.off && own.crash, capped: own.cap != null, busy: cap.windows ? 0 : busyWithin(busy, from, cap.to), prep: !!cap.prep, where: cap.where || null, travel: cap.travel || 0, life: cap.life || [], blocks: [] };
     const perSubject = new Map(); // minutes
     const blocksOf = new Map();
     const checksOf = new Map();
@@ -256,7 +262,7 @@ export function buildPlan({ profile, syllabi = {}, topics = {}, pace = {}, event
       if (kind === "check") checksOf.set(s.id, (checksOf.get(s.id) || 0) + 1);
       usedTopics.add(`${s.id}/${tp.id}`);
       sinceBreak += minutes;
-      const rest = sinceBreak >= 25 ? BREAK : 0;
+      const rest = sinceBreak >= focus ? pause : 0;
       if (rest) sinceBreak = 0;
       room -= minutes + rest;
       start += minutes + rest;

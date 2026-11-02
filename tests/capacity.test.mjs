@@ -88,6 +88,31 @@ const day12 = { ...DEFAULTS, stage: "a2", travelMinutes: 40, wakeAt: "06:30", sl
   ok("an older profile's one prep counts on school days", C.dayCapacity(old, 3).minutes === 90 && !C.dayCapacity(old, 0).fixed);
 }
 
+// A more detailed day (phase 39): weekend times, dinner, best time, life.
+{
+  const wk = { ...day12, routine: { weekendWake: "08:00", weekendSleep: "23:30" } };
+  const sun = C.dayCapacity(wk, 0);
+  ok("days without school use their own wake time", sun.from === 9 * 60, String(sun.from));
+  ok("and their own bedtime", sun.to === 23 * 60, String(sun.to));
+  ok("school days keep the usual times", C.dayCapacity(wk, 1).to === 22 * 60);
+  ok("an evening person starts later on days without school", C.dayCapacity({ ...day12, routine: { best: "evening" } }, 0).from === 16 * 60);
+  ok("but never with under three hours left", C.dayCapacity({ ...day12, sleepAt: "18:30", routine: { best: "evening" } }, 0).from === 15 * 60);
+  ok("a school day doesn't move for it", C.dayCapacity({ ...day12, routine: { best: "evening" } }, 1).from === C.dayCapacity(day12, 1).from);
+  const dinner = { ...day12, routine: { dinnerAt: "20:00", dinnerMinutes: 45 } };
+  ok("dinner is an interval", JSON.stringify(C.dinnerOn(dinner)) === "[1200,1245]" && C.dinnerOn(day12) === null);
+  ok("a dinner time takes the place of the meals hour", C.dayCapacity(dinner, 1).minutes === 154, String(C.dayCapacity(dinner, 1).minutes));
+  const reads = { ...day12, routine: { goals: { read: 120 } } };
+  const week = [0, 1, 2, 3, 4, 5, 6].map((d) => C.lifeOn(reads, d));
+  ok("a weekly wish is spread over the week", week.flat().reduce((n, x) => n + x.minutes, 0) === 120 && week.filter((d) => d.length).length === 4, JSON.stringify(week));
+  const sporty = { ...day12, activities: [{ kind: "sport", name: "Football", days: [2, 4], start: "17:00", end: "18:00" }], routine: { goals: { move: 300 } } };
+  ok("sport at set times counts towards moving", [0, 1, 2, 3, 4, 5, 6].reduce((n, d) => n + C.lifeOn(sporty, d).reduce((m, x) => m + x.minutes, 0), 0) === 180);
+  const daily = { ...day12, routine: { goals: { connect: 420 } } };
+  ok("an hour a day fits in the time that is theirs anyway", C.dayCapacity(daily, 1).minutes === 154 && C.lifeOn(daily, 1)[0].minutes === 60);
+  const busy = { ...day12, routine: { goals: { connect: 420, read: 420 } } };
+  ok("more than that comes off study time", C.dayCapacity(busy, 1).minutes === 94, String(C.dayCapacity(busy, 1).minutes));
+  ok("an older profile has no life list", C.dayCapacity(day12, 1).life.length === 0);
+}
+
 console.log(`\n${passed} passed, ${failures.length} failed`);
 if (failures.length) {
   failures.forEach((f) => console.log(`  ✗ ${f}`));

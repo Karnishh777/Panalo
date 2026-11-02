@@ -275,7 +275,7 @@ An honest look at the process, by the agent that did most of the work.
 
 ### The idea, updated (the owner, 2 November 2026): all of life grows the world
 
-**Approved by the owner (2 November 2026); built in phase 38 and v0.3.** Next: a longer setup that asks enough to plan these areas into a more detailed timetable.
+**Approved by the owner (2 November 2026); built in phase 38 and v0.3.** The longer setup that plans these areas into a more detailed timetable is built too (phase 39).
 
 Panalo is not only for academics. The world grows from every area of a
 student's life: study, and also sport, reading, rest, time with people,

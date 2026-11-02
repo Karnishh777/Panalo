@@ -134,6 +134,20 @@ for (const s of profile.subjects) syllabi[s.id] = load(P.syllabusPath(profile.st
   ok("staying in the hostel keeps Saturday's prep", stay[0].prep && stay[1].where === "stay");
 }
 
+// A more detailed day (phase 39): dinner kept free, longer focus, life.
+{
+  const routine = { dinnerAt: "19:00", dinnerMinutes: 45, focus: 50, goals: { read: 210 } };
+  const plan = P.buildPlan({ profile: { ...profile, routine }, syllabi, now: NOW, days: 3 });
+  const blocks = plan.flatMap((d) => d.blocks);
+  ok("no block over dinner", blocks.every((b) => b.start + b.minutes <= 19 * 60 || b.start >= 19 * 60 + 45), JSON.stringify(blocks.map((b) => [b.start, b.minutes])));
+  ok("each day lists its areas of life", plan.every((d) => d.life.some((x) => x.kind === "read" && x.minutes === 30)));
+  const gaps = [];
+  for (const d of plan) for (let k = 1; k < d.blocks.length; k++) gaps.push(d.blocks[k].start - d.blocks[k - 1].start - d.blocks[k - 1].minutes);
+  ok("a 50-minute focus earns a 10-minute break", gaps.includes(10) && !gaps.some((g) => g > 0 && g < 10 && g !== 5), JSON.stringify(gaps));
+  const short = P.buildPlan({ profile, syllabi, now: NOW, days: 1 })[0];
+  ok("without a routine, nothing changes", short.life.length === 0);
+}
+
 console.log(`\n${passed} passed, ${failures.length} failed`);
 if (failures.length) {
   failures.forEach((f) => console.log(`  ✗ ${f}`));

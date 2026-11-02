@@ -591,6 +591,14 @@
 .plan-studied {
   margin: 10px 0 0;
 }
+/* The day's areas of life (profile.routine goals): kept free, a reminder. */
+.pl-life {
+  margin: 8px 0 0;
+}
+.now-life {
+  margin: 10px 0 0;
+  color: var(--text-2, inherit);
+}
 
 /* Idle: everything but your world and its day fades away. */
 .now .now-head,

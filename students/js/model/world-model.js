@@ -62,6 +62,13 @@ export const LIFE = [
 ];
 export const LIFE_KINDS = LIFE.map((a) => a.id);
 
+// The plan's areas of life for a day (capacity.js lifeOn), in words:
+// "Also today: 30 min reading · 1 h sport".
+const DOING = { connect: "with people", move: "sport or moving", read: "reading", rest: "rest", create: "making things", outdoors: "outdoors", help: "helping" };
+export function lifeText(list, fmt = (m) => `${m} min`) {
+  return (list || []).map((x) => `${fmt(x.minutes)} ${DOING[x.kind] || x.kind}`).join(" · ");
+}
+
 // Exam-style questions marked (phase 37): logs of kind "questions".
 export const questionLogs = (logs) => logs.filter((l) => l.kind === "questions");
 // Past papers: results titled "Paper N · …" (paper-sheets.js).

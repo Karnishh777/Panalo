@@ -25,42 +25,63 @@ export function earthSize() {
   return deviceTier().tier === "low" ? 1024 : 2048;
 }
 
-/** The size for a GPU globe: the sharpest maps (4096) on strong devices
- * whose GPU takes them. */
-export function earthSizeFor(gl) {
+/**
+ * The size for a GPU globe: no bigger than the world on screen needs
+ * (`diskPx`, its width in device pixels; a map about pi times that is
+ * sharp at the centre), the GPU takes, and the device can afford (4096
+ * only on strong devices).
+ */
+export function earthSizeFor(gl, diskPx = 0) {
   const max = gl?.getParameter?.(gl.MAX_TEXTURE_SIZE) || 0;
-  return deviceTier().tier === "high" && max >= 4096 ? 4096 : earthSize();
+  const most = deviceTier().tier === "high" && max >= 4096 ? 4096 : earthSize();
+  if (!diskPx) return most;
+  const need = diskPx * 2.6;
+  return Math.min(most, need <= 1024 ? 1024 : need <= 2048 ? 2048 : 4096);
 }
 
-const cache = new Map(); // size -> Promise<{albedo, lights, emerge}>
+/** The first maps a globe shows: small, so the world appears at once. */
+export const FIRST_SIZE = 1024;
+
+const cache = new Map(); // key -> Promise
 
 function image(name) {
   return new Promise((resolve, reject) => {
     const img = new Image();
     img.decoding = "async";
-    img.onload = () => resolve(img);
+    img.onload = () => (img.decode ? img.decode().catch(() => {}) : Promise.resolve()).then(() => resolve(img));
     img.onerror = () => reject(new Error(`Earth map ${name} didn't load`));
     img.src = new URL(name, BASE).href;
   });
 }
 
-/** The three maps, loaded once per size and shared by every globe. */
-export function loadEarth(size = earthSize()) {
-  if (!cache.has(size)) {
-    // The relief and the real clouds (v0.3) are extras: a world draws
-    // without them if they don't arrive.
-    const extra = (name) => image(name).catch(() => null);
-    const p = Promise.all([
-      image(`earth-albedo-${size}.jpg`),
-      image(`earth-lights-${size}.jpg`),
-      image(`earth-emerge-${size}.png`),
-      extra(`earth-relief-${size}.jpg`),
-      extra(`earth-clouds-${size === 1024 ? 1024 : 2048}.jpg`),
-    ]).then(([albedo, lights, emerge, relief, clouds]) => ({ albedo, lights, emerge, relief, clouds, size }));
-    p.catch(() => cache.delete(size));
-    cache.set(size, p);
+const once = (key, make) => {
+  if (!cache.has(key)) {
+    const p = make();
+    p.catch(() => cache.delete(key));
+    cache.set(key, p);
   }
-  return cache.get(size);
+  return cache.get(key);
+};
+
+/** The three maps a world needs (colour, night lights, land), once per size. */
+export function loadEarthCore(size = earthSize()) {
+  return once(`core-${size}`, () =>
+    Promise.all([image(`earth-albedo-${size}.jpg`), image(`earth-lights-${size}.jpg`), image(`earth-emerge-${size}.png`)]).then(([albedo, lights, emerge]) => ({ albedo, lights, emerge, size }))
+  );
+}
+
+/**
+ * The relief and the real clouds (v0.3): extras, each null if it doesn't
+ * arrive; a world draws without them.
+ */
+export function loadEarthExtras(size = earthSize()) {
+  const extra = (name) => image(name).catch(() => null);
+  return once(`extras-${size}`, () => Promise.all([extra(`earth-relief-${size}.jpg`), extra(`earth-clouds-${size === 1024 ? 1024 : 2048}.jpg`)]).then(([relief, clouds]) => ({ relief, clouds, size })));
+}
+
+/** All the maps of one size. */
+export function loadEarth(size = earthSize()) {
+  return Promise.all([loadEarthCore(size), loadEarthExtras(size)]).then(([core, extras]) => ({ ...core, ...extras }));
 }
 
 /**

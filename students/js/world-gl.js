@@ -32,7 +32,7 @@ import { reducedMotion, animationLoop, lively as livelyEffects } from "./motion.
 import { surfaceFor, paint, thresholdFor, TW, TH } from "./world-surface.js";
 import { getLight, onLight, lightVector } from "./world-light.js";
 import { deviceTier } from "./device-tier.js";
-import { loadEarth, earthLevels, earthSizeFor } from "./earth.js";
+import { loadEarthCore, loadEarthExtras, earthLevels, earthSizeFor, FIRST_SIZE } from "./earth.js";
 
 const MAX_MOONS = 6;
 const EXTENT = 1.7; // half the canvas, in planet radii, at zoom 1
@@ -1180,18 +1180,28 @@ export function createGlobeGL(canvas, { seed, tilt = 0.38, interactive = false, 
   let earthOn = false;
   let relief = null; // { w, h } once the elevation map is in
   let reliefTex = null; // its texture (slot 6), or a blank one until then
+  // A map replaces the one in its slot (sharper maps arrive after the
+  // first ones), and the old texture is freed.
+  const mapTex = {};
+  const put = (unit, img, format) => {
+    if (mapTex[unit]) gl.deleteTexture(mapTex[unit]);
+    return (mapTex[unit] = imageTexture(gl, unit, img, format));
+  };
   function uploadEarth(maps) {
-    imageTexture(gl, 1, maps.emerge, gl.LUMINANCE);
-    imageTexture(gl, 2, maps.lights, gl.LUMINANCE);
-    imageTexture(gl, 4, maps.albedo, gl.RGB);
-    // The real weather as the clouds' starting point, and the land's
-    // relief (v0.3): both optional, the world draws without them.
-    if (maps.clouds) imageTexture(gl, 3, maps.clouds, gl.LUMINANCE);
+    put(1, maps.emerge, gl.LUMINANCE);
+    put(2, maps.lights, gl.LUMINANCE);
+    put(4, maps.albedo, gl.RGB);
+    earthOn = true;
+  }
+  // The real weather as the clouds' starting point, and the land's relief
+  // (v0.3): both optional, the world draws without them.
+  function uploadExtras(maps) {
+    if (maps.clouds) put(3, maps.clouds, gl.LUMINANCE);
     if (maps.relief) {
-      reliefTex = imageTexture(gl, 6, maps.relief, gl.LUMINANCE);
+      if (reliefTex && reliefTex !== mapTex[6]) gl.deleteTexture(reliefTex);
+      reliefTex = put(6, maps.relief, gl.LUMINANCE);
       relief = { w: maps.relief.naturalWidth || maps.relief.width, h: maps.relief.naturalHeight || maps.relief.height };
     }
-    earthOn = true;
   }
 
   function prepare() {
@@ -1202,20 +1212,32 @@ export function createGlobeGL(canvas, { seed, tilt = 0.38, interactive = false, 
     texture(gl, 4, TW, TH, gl.LUMINANCE, toBytes(surface.moistRank));
     texture(gl, 5, 256, 256, gl.RGB, makeNoiseTile(), { wrapT: gl.REPEAT, mip: true });
     reliefTex = texture(gl, 6, 1, 1, gl.LUMINANCE, new Uint8Array([0])); // no relief until the map is in
-    // The world is the real Earth: shown once its maps have arrived (a
-    // moment, the first time; cached after). If they can't load, the
-    // generated planet stands in.
-    loadEarth(earthSizeFor(gl))
-      .then((maps) => {
-        if (destroyed || lost) return;
-        uploadEarth(maps);
-      })
+    // The world is the real Earth. It shows as soon as the small maps are
+    // in (about 200 KB, cached after), then gets its relief and clouds,
+    // then, if the world on screen is big enough to need them, sharper
+    // maps, all in the background. If the maps can't load, the generated
+    // planet stands in.
+    const live = () => !destroyed && !lost;
+    loadEarthCore(FIRST_SIZE)
+      .then((maps) => live() && uploadEarth(maps))
       .catch((e) => console.warn("World: the Earth maps didn't load; a generated world stands in.", e))
       .finally(() => {
-        if (destroyed || lost) return;
+        if (!live()) return;
         upload();
         ready = true;
         draw(performance.now());
+        if (!earthOn) return;
+        const want = earthSizeFor(gl, Math.min(canvas.width, canvas.height));
+        loadEarthExtras(FIRST_SIZE)
+          .then((x) => live() && (uploadExtras(x), draw(performance.now())))
+          .then(() => (want > FIRST_SIZE && live() ? Promise.all([loadEarthCore(want), loadEarthExtras(want)]) : null))
+          .then((both) => {
+            if (!both || !live()) return;
+            uploadEarth(both[0]);
+            uploadExtras(both[1]);
+            draw(performance.now());
+          })
+          .catch(() => {}); // the first maps stay
       });
   }
 

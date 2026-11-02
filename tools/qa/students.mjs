@@ -68,7 +68,7 @@ async function finishSetup(page, { board = "Cambridge", stage = "AS", subjects =
   }
   for (const name of subjects) await page.click(`#setup-form .setup-subjects .chip:has-text("${name}") >> nth=0`);
   await next();
-  for (let i = 0; i < 12 && (await page.isVisible("#setup")); i++) {
+  for (let i = 0; i < 16 && (await page.isVisible("#setup")); i++) {
     await next();
     await page.waitForTimeout(60);
   }
@@ -90,7 +90,7 @@ try {
     const page = await qa.open({ viewport: "desktop", path: "students/" });
     await page.waitForTimeout(600);
     check("the landing page is shown to a visitor", await page.isVisible("#landing"));
-    check("the landing explains who it is for", /intensely curious/i.test(await page.textContent(".hero")));
+    check("the landing says what it is and who it is for", /fits your life/i.test(await page.textContent(".hero")) && /IGCSE, AS and A Level/.test(await page.textContent(".hero")));
     check("no mascot on the landing", (await page.$$(".cast-pan, .pan, img[src*='pan-']")).length === 0);
     const foot = await page.evaluate(() => [...document.querySelectorAll("a")].map((x) => x.getAttribute("href")));
     check("the footer links Contact and the Grievance Officer", foot.includes("contact.html") && foot.includes("contact.html#grievance"));
@@ -110,6 +110,8 @@ try {
       )
       .then(() => true, () => false);
     check("the world demo responds to its sliders", demoAnswers);
+    check("the demo follows all of life: people, sport, reading", await page.evaluate(() => ["wd-people", "wd-move", "wd-read"].every((id) => document.getElementById(id))) && /lights the cities/.test(await page.textContent("#world-demo")));
+    check("the home page has no leftover words: no climb, no kanji, no Archive", !/climb|Archive|intensely curious|[壱弐参肆伍陸漆]/.test(await page.textContent("#landing")));
     await shot(page, "landing");
 
     check("no 0-to-100 gate holds the landing", !(await page.$(".gate")) && !(await page.evaluate(() => document.documentElement.hasAttribute("data-gate"))));
@@ -137,7 +139,7 @@ try {
       want: [...document.querySelectorAll("#landing section[data-chapter]")].findIndex((x) => x.id === "numbers"),
     }));
     check("the HUD names the chapter you're in and its star is lit", hudState.name === "In numbers" && hudState.here === hudState.want && hudState.want > 2);
-    check("the numbers count to their real values", hudState.counts.join() === "06,90,00,00");
+    check("the numbers count to their real values", hudState.counts.join() === "05,05,00,00");
     await page.evaluate(() => document.getElementById("faq").scrollIntoView());
     await page.waitForTimeout(900);
     await page.click("#faq details:first-of-type summary");
@@ -187,6 +189,19 @@ try {
     await page.click('#setup-form .setup-level:has-text("Physics") .chip:has-text("Struggling")');
     await page.selectOption('#setup-form .setup-level:has-text("Chemistry") select', "b");
     await shot(page, "setup-levels");
+    while ((await page.getAttribute("#setup-form", "data-step")) !== "sleep") {
+      await page.click("#setup-form button[type=submit]");
+      await page.waitForTimeout(60);
+    }
+    // Days without school: up later (phase 39).
+    await page.click('#setup-form [aria-label="Wake up on days without school"] .chip:has-text("08:00")');
+    await page.click("#setup-form button[type=submit]");
+    await page.waitForTimeout(60);
+    check("the setup asks how the day runs", (await page.getAttribute("#setup-form", "data-step")) === "day");
+    await page.click('#setup-form [aria-label="Dinner time"] .chip:has-text("20:00")');
+    await page.click('#setup-form .setup-choice:has-text("Afternoon")');
+    await page.click('#setup-form .setup-choice:has-text("50 minutes")');
+    await shot(page, "setup-day");
     while ((await page.getAttribute("#setup-form", "data-step")) !== "tuition") {
       await page.click("#setup-form button[type=submit]");
       await page.waitForTimeout(60);
@@ -200,7 +215,13 @@ try {
     await page.fill("#setup-act-0-end", "18:30");
     await page.click("#setup-form button[type=submit]");
     await page.waitForTimeout(80);
-    check("the setup asks about sport, art and coaching at set times", (await page.getAttribute("#setup-form", "data-step")) === "exams");
+    check("the setup asks about sport, art and coaching at set times", (await page.getAttribute("#setup-form", "data-step")) === "life");
+    check("…and then time for the rest of life, sport counted", (await page.locator("#setup-form .setup-life").count()) === 7 && /sport times count/.test(await page.textContent('#setup-form [data-life="move"]')));
+    await page.click('#setup-form [data-life="read"] .chip:has-text("2 h")');
+    await shot(page, "setup-life");
+    await page.click("#setup-form button[type=submit]");
+    await page.waitForTimeout(80);
+    check("the exams come last", (await page.getAttribute("#setup-form", "data-step")) === "exams");
     const soon = new Date(Date.now() + 9 * 86400000).toISOString().slice(0, 10);
     await page.fill("#setup-exam-date", soon);
     await page.click("#setup-form .setup-exam-add button");
@@ -213,6 +234,7 @@ try {
     check("…with how each subject is going", prof?.subjects.find((x) => x.id === "phy")?.level === 1 && prof?.subjects.find((x) => x.id === "chem")?.grade === "b");
     check("…and the school day", prof?.school_start === "08:10" && prof?.school_days.length === 5);
     check("…and the rest of the week", prof?.activities?.[0]?.name === "Football" && prof.activities[0].days.join() === "2,4" && prof.activities[0].start === "17:00", JSON.stringify(prof?.activities));
+    check("…and how the day runs", prof?.routine?.weekendWake === "08:00" && prof.routine.dinnerAt === "20:00" && prof.routine.best === "afternoon" && prof.routine.focus === 50 && prof.routine.goals?.read === 120, JSON.stringify(prof?.routine));
     check("an exam from the setup is on the calendar", await page.evaluate(() => window.__qa.db.student_events.some((e) => e.kind === "exam" && /Physics test/.test(e.title))));
     check("a new account lands on its plan, to check in on each subject", /Plan/.test(await page.title()) && (await page.isVisible("#plan-checkin")));
     check("the new account has encryption keys", await page.evaluate(() => window.__qa.db.user_keys.length === 2));
@@ -1410,7 +1432,7 @@ try {
     await r.waitForTimeout(500);
     const anim = await r.evaluate(() => getComputedStyle(document.querySelector(".ht-line")).animationName);
     check("reduced motion turns the landing animation off", anim === "none");
-    check("reduced motion shows the numbers at once", (await r.$$eval("[data-count]", (n) => n.map((x) => x.textContent))).join() === "06,90,00,00");
+    check("reduced motion shows the numbers at once", (await r.$$eval("[data-count]", (n) => n.map((x) => x.textContent))).join() === "05,05,00,00");
     check("no console errors (reduced motion)", r.errors.length === 0);
   }
 } finally {

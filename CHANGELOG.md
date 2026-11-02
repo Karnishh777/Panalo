@@ -13,6 +13,28 @@ AI, runs as "Pan Lite" (our own planner code does the planning; the AI
 only where nothing else can).
 
 **0.2.0 (in progress)**
+- **The world opens fast.** Every globe shows the real Earth as soon as
+  the small maps are in (about 200 KB), then adds relief and clouds, then
+  sharper maps in the background, only as sharp as the world on screen
+  needs; before, a strong laptop waited for about 2.7 MB of 4096 maps.
+- **The home page, rewritten.** Plain, calm words for what Panalo does
+  now: "A study plan that fits your life"; how it works (built around
+  your day, knows your syllabus, bends without breaking); the world demo
+  follows all of life (study, people, sport, reading, days away); who
+  it's for; the letter; safety; questions about exams, missed days,
+  tuition and boarding. Gone: the climbing lines, the decorative
+  Japanese numerals, the Archive and the old world rules.
+- **A more detailed setup, for a timetable that fits the day.** The setup
+  asks more, all of it optional: wake and sleep times **on days without
+  school**; **when dinner is** and how long it takes (kept free); **when
+  you study best** on days without school (morning, afternoon, evening);
+  **how long you can focus** before a break (25, 40 or 50 minutes, with a
+  10-minute break after 50); and **time for the rest of your life**: a
+  rough weekly wish for time with people, sport, reading, rest, making
+  things, outdoors and helping (sport at set times counts). The plan
+  keeps that time free, spreads it over the week, and shows it on each
+  day ("Also today: 30 min reading") on Plan and Now. Phase 39 adds
+  `student_profiles.routine`; a journey download brings it back.
 - **All of life grows the world** (the owner's updated idea). Study still
   raises the land, covers it in forest, lights the seas and the aurora;
   now the rest of a student's life shows too, from what they log in the
