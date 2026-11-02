@@ -13,6 +13,15 @@ AI, runs as "Pan Lite" (our own planner code does the planning; the AI
 only where nothing else can).
 
 **0.2.0 (in progress)**
+- **The globe at night, and on more laptops.** City lights were sparse
+  specks on a small globe (the map's fine detail averaged away); they are
+  now lifted to match and given the soft glow cities have from orbit, so
+  Europe, the Nile, the Gulf and India read clearly at night. A faint
+  earthshine shows the continents on the night side, and mountain slopes
+  no longer catch sun past the terminator. The GPU globe is used on more
+  laptops: when a browser flags a real GPU with a "performance caveat"
+  (a blocklisted driver feature), Panalo now asks again and uses it,
+  falling back to the flat 2D globe only for a software renderer.
 - **The Observatory redesign is withdrawn; no mascot.** The owner chose
   to keep the earlier interface and improve it instead, so the redesign
   merged on 2 November (pull requests 67 to 71: the new front page, Today

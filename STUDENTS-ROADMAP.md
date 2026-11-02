@@ -273,6 +273,39 @@ An honest look at the process, by the agent that did most of the work.
    banks and exam-style questions, as for Cambridge.
 4. **CBSE, classes 9 to 12**: on hold until ICSE/ISC is done.
 
+### The idea, updated (the owner, 2 November 2026): all of life grows the world
+
+Panalo is not only for academics. The world grows from every area of a
+student's life: study, and also sport, reading, rest, time with people,
+making things and more. This fuses the current world (study only, since
+phase 37) with the earlier one (reading, making, moving, resting and
+people), and adds new things to the globe. **Proposed mapping, for the
+owner to approve or change:**
+
+| Area | What you log | What it does to the globe |
+| --- | --- | --- |
+| Study | focus sessions, questions, papers (as now) | land rises (all time); forests = chapters covered; seas glow = chapters known; aurora = marks |
+| Time with people | minutes with family and friends | **city lights** spread on the night side, and thin arcs of light join cities |
+| Sport and movement | minutes of sport, walking, dance, yoga | rivers and green valleys brighten; the sea's waves come alive |
+| Reading (not for school) | minutes or books | the **sky**: stars and constellations brighten around the world |
+| Rest and sleep | a good night's sleep, a calm break | **moonlight** on the night side, and a calm, clear night sky |
+| Making things | art, music, writing, code | the **atmosphere** glows with colour at the edge of the world |
+| Outdoors and nature | time outside | clouds part over the land; a brighter, bluer day side |
+| Helping | chores, volunteering, helping at home | towns appear between the cities |
+| Showing up | any of the above on 5 days of 7 | the **ring** (as now) |
+| Time away | days with nothing logged | clouds gather, and clear when you're back (as now) |
+
+How it is logged, kept calm: one sheet when closing the day ("What else
+did you do today?"), one tap per area with a rough time, all optional,
+nothing counted against you, never a streak. Private, like everything
+else. More areas can be added from Settings later (music practice,
+faith, a club, a part-time job).
+
+Also on the globe (from the owner's notes): the city lights and the night
+side are being improved (done in part: real cities now show at night, a
+faint earthshine shows the continents), and the GPU globe should work on
+more laptops (a blocklisted driver no longer forces the flat 2D globe).
+
 ### UI, section by section (set by the owner, 2 November 2026)
 
 The existing interface is improved one part at a time, in this order.

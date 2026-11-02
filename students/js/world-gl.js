@@ -205,10 +205,12 @@ vec3 shadeEarth(vec3 n, vec3 f, vec3 L, vec3 V, vec2 uv, vec3 P) {
   vec3 sun = sunThrough(d) * SUN;
   // The night is as dark as it really is from orbit (moonlight is yours to
   // choose), and only cities glow in it.
-  vec3 moonlit = vec3(0.25, 0.38, 1.0) * (0.002 + 0.14 * uNight * uNight) * (0.6 + 0.4 * max(dot(f, -L) * 0.5 + 0.5, 0.0));
+  // A little earthshine always, so the continents read faintly at night.
+  vec3 moonlit = vec3(0.25, 0.38, 1.0) * (0.007 + 0.18 * uNight * uNight) * (0.6 + 0.4 * max(dot(f, -L) * 0.5 + 0.5, 0.0));
   // The ground's own tilt (relief) decides how much sun it gets; the
   // terminator's colour still follows the globe's curve.
-  float dr = mix(d, dot(fn, L), land);
+  // Past the terminator the slopes go dark with the plains.
+  float dr = mix(d, dot(fn, L), land * smoothstep(-0.08, 0.06, d));
   vec3 col = albedo * (sun * max(dr, 0.0) * (0.9 + 0.1 * smoothstep(-0.2, 0.3, dr - d + 0.1)) + moonlit);
 
   // Sun on water, rippled by waves (calmer seen large).
@@ -238,12 +240,16 @@ vec3 shadeEarth(vec3 n, vec3 f, vec3 L, vec3 V, vec2 uv, vec3 P) {
   // City lights: the real ones (NASA's Black Marble), on risen land, lit
   // brightest first as tasks are finished. Sodium-warm, whiter at the
   // cores, the way cities look from orbit.
-  float lv = texture2D(uLights, eu).r;
+  // Seen small, a map's mip levels average the bright cores away, so the
+  // lights are lifted to match, and a coarser read gives each city region
+  // the soft glow it has from orbit.
+  float lv = clamp(texture2D(uLights, eu).r * mix(1.0, 2.2, clamp(gPx * 400.0 - 0.2, 0.0, 1.0)), 0.0, 1.0);
+  float halo = texture2D(uLights, eu, 2.5).r;
   float cut = 0.92 * (1.0 - uLightsF);
-  float shown = smoothstep(cut, cut + 0.06, lv) * step(0.001, uLightsF);
-  float city = pow(lv, 1.3) * shown * land;
+  float shown = smoothstep(cut, cut + 0.06, max(lv, halo * 1.8)) * step(0.001, uLightsF);
+  float city = pow(lv, 1.2) * shown * land;
   vec3 tint = mix(vec3(1.0, 0.55, 0.19), vec3(1.0, 0.83, 0.62), smoothstep(0.55, 0.95, lv));
-  col += tint * city * night * 3.0;
+  col += (tint * city * 3.0 + vec3(1.0, 0.5, 0.17) * halo * shown * land * 0.7) * night;
   return col;
 }
 
@@ -835,7 +841,23 @@ export function glSupported() {
   if (pref === "off") return (supported = false);
   try {
     const c = document.createElement("canvas");
-    const gl = c.getContext("webgl", pref === "force" ? {} : { failIfMajorPerformanceCaveat: true }) || null;
+    let gl = c.getContext("webgl", pref === "force" ? {} : { failIfMajorPerformanceCaveat: true }) || null;
+    // Some browsers report a "major performance caveat" for a real GPU
+    // they've merely blocklisted a driver feature on (common on school
+    // laptops). Ask again without the caveat, and use the GPU unless what
+    // answers is a software renderer.
+    if (!gl) {
+      const c2 = document.createElement("canvas");
+      gl = c2.getContext("webgl") || null;
+      if (gl) {
+        const ext = gl.getExtension("WEBGL_debug_renderer_info");
+        const name = String((ext && gl.getParameter(ext.UNMASKED_RENDERER_WEBGL)) || gl.getParameter(gl.RENDERER) || "");
+        if (/SwiftShader|llvmpipe|softpipe|Software|Microsoft Basic/i.test(name)) {
+          gl.getExtension("WEBGL_lose_context")?.loseContext();
+          gl = null;
+        }
+      }
+    }
     if (!gl) return (supported = false);
     program(gl);
     gl.getExtension("WEBGL_lose_context")?.loseContext();
