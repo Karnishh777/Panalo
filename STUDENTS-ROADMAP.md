@@ -273,6 +273,73 @@ An honest look at the process, by the agent that did most of the work.
    banks and exam-style questions, as for Cambridge.
 4. **CBSE, classes 9 to 12**: on hold until ICSE/ISC is done.
 
+### UI, section by section (set by the owner, 2 November 2026)
+
+The existing interface is improved one part at a time, in this order.
+For each: review what is there, list ideas (edit, add, remove), the owner
+picks, then it is built, tested and merged before the next part starts.
+
+1. **The opening page** (landing) ← now
+2. Sign in and sign up (the crossing), the age and parent steps
+3. The setup (the first questions)
+4. Now
+5. Plan (and Customize, the block check)
+6. Study Room
+7. Calendar
+8. World
+9. Settings, Privacy & data
+10. The parent page and the legal pages
+
+**The opening page: ideas to choose from.** Its sections today: Arrival
+(hero and globe), The cast (subject guardians), 01 The idea, 02 Inside
+(world demo and the five spaces), 03 In numbers, 04 Is this for you?,
+05 A letter, 06 Safety and privacy, 07 Questions, Launch, footer.
+
+*Edit (out of date or unclear):*
+- E1. The world demo's sliders still describe the old world (tasks →
+  city lights, making things → aurora). Match the real model: study
+  hours → land, chapters covered → forests, chapters known → glowing
+  seas, marks earned → aurora, past papers → atmosphere, days away →
+  clouds.
+- E2. Remove the Archive left-overs: "files" in The idea and Safety,
+  the FAQ "Who can see my files?", the letter's "shelf for the things
+  you made", the marquee's notes and recordings lines.
+- E3. In numbers says "06 spaces"; there are five (Now, Plan, Study,
+  Calendar, World).
+- E4. Footer shows v0.1; read it from version.js.
+- E5. The hero globe: show the real, detailed Earth (relief, clouds)
+  rather than a seeded world.
+- E6. One image, not three: the copy mixes a climb ("Start the climb",
+  "the mountain will wait"), a world and space. Pick one.
+- E7. FAQ: add "Which exams?", "What does Pan (the AI) do, and is it
+  on?", "Does it work on a school laptop?".
+
+*Add:*
+- A1. How it plans, in three steps: your subjects and exam dates → a
+  week fitted around school, prep and sleep → it re-plans when a day
+  goes wrong. With a real sample week.
+- A2. Try it without an account: pick exams and subjects, see a first
+  week built by the real planner (no mascot).
+- A3. What's covered: every Cambridge syllabus with its code,
+  searchable; "ICSE/ISC next, CBSE later".
+- A4. A sample exam-style question with its mark scheme and the
+  examiner's advice, to show the practice is real.
+- A5. For parents: consent for under-18s, what is kept, no chat, how
+  to reach the Grievance Officer.
+- A6. Exam countdown: pick your series, see the days left (nothing
+  saved).
+- A7. Install it: a short note for school and boarding laptops (Edge or
+  Chrome, keyboard shortcuts).
+
+*Remove:*
+- R1. The cast (the subject guardians), if no characters at all is the
+  rule.
+- R2. Is this for you? (the marquee): vague, partly about features that
+  are gone.
+- R3. In numbers, or replace it with coverage (syllabuses, questions).
+- R4. The kanji numerals on section labels.
+- R5. The letter, or shorten it to three lines.
+
 Done: CI, migrations 22–26 recorded, LIMITATIONS refreshed, calm by
 default and the focus shield, Students made private (phase 28), and **the
 logo** — Ascent, adaptive to each look, as favicon, home-screen icons, in
