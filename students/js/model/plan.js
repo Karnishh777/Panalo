@@ -23,7 +23,7 @@
 // Nothing new in a subject in the last two days before its exam; nothing
 // at all for it on the exam day.
 import * as L from "./learner.js";
-import { dateCapacity, activitiesOn, busyWithin, dinnerOn } from "./capacity.js";
+import { dateCapacity, activitiesOn, busyWithin, dinnerOn, caps } from "./capacity.js";
 import { stageOf, subjectName } from "./subjects.js";
 import { minutesOf, cleanRoutine } from "./profile.js";
 import * as R_ from "./rules.js";
@@ -280,7 +280,11 @@ export function buildPlan({ profile, syllabi = {}, topics = {}, pace = {}, event
     for (let w = 1; w < (cap.windows?.length || 0); w++) busy.push([cap.windows[w - 1][1], cap.windows[w][0] - BREAK]);
     from = Math.max(from, afterExams);
     const free = (a) => Math.max(0, cap.to - a - busyWithin(busy, a, cap.to));
-    let room = own.off ? 0 : own.crash ? Math.min(CRASH, free(from)) : own.cap != null ? Math.min(own.cap, free(from)) : Math.min(cap.planned, free(from));
+    // The student's own crash day or cap can go past the usual plan, but
+    // never past a humane ceiling: the usual cap plus an hour on a school
+    // day, the weekend cap otherwise (capacity.js caps).
+    const ceiling = Math.min(CRASH, cap.school ? caps(stageOf(profile.stage)?.grade).school + 60 : caps(stageOf(profile.stage)?.grade).free);
+    let room = own.off ? 0 : own.crash ? Math.min(ceiling, free(from)) : own.cap != null ? Math.min(own.cap, ceiling, free(from)) : Math.min(cap.planned, free(from));
     if (d === 0) {
       const nowMin = Math.ceil((now - date.getTime()) / 60000 / 5) * 5;
       from = Math.max(from, nowMin);
@@ -337,7 +341,7 @@ export function buildPlan({ profile, syllabi = {}, topics = {}, pace = {}, event
       for (const s of subjects) {
         const weight = R.weight[s.id] ?? 1;
         // Its exam day rests it, and after its last exam it's done.
-        if (!weight || examToday.has(s.id) || finished.has(s.id)) continue;
+        if (!weight || examToday.has(s.id) || finished.has(s.id) || skipped.has(`${s.id}|*`)) continue;
         const used = perSubject.get(s.id) || 0;
         const count = blocksOf.get(s.id) || 0;
         const checks = checksOf.get(s.id) || 0;

@@ -25,6 +25,17 @@ only where nothing else can).
     practised (or learned) instead of another short review.
   - **Calendar exams match whole words:** "Physics test" no longer counts
     as a Computer Science exam; "Maths" counts for Mathematics.
+  - **Sleep:** study ends eight hours before *tomorrow's* wake-up (a Sunday
+    before school ends earlier than a Saturday).
+  - **Crash days stay humane:** at most the usual cap plus an hour on a
+    school day, the weekend cap otherwise.
+  - **Coursework isn't a timed paper:** Global Perspectives' report,
+    project and essay, and speaking tests, get no past-paper blocks; an
+    exam series can be chosen until eight weeks in.
+  - **Sentences understood better without Pan:** "1.5 hours" is 90
+    minutes; "skip maths tomorrow" skips Maths that day only; "after 9 on
+    Saturday" no longer moves every day to 21:00; "no study before 6 am"
+    and "maths is hard" are understood.
 - **Safety fixes from the review.** Nothing is stored for an account until
   a date of birth is on record, and an error checking it keeps the door
   shut instead of open. A parent's "no" stands: only that parent can change

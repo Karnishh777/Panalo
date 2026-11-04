@@ -147,8 +147,12 @@ export function dayCapacity(p, day, o = {}) {
   const wake = minutesOf((!school && routine.weekendWake) || p.wakeAt);
   let sleep = minutesOf((!school && routine.weekendSleep) || p.sleepAt);
   if (sleep <= wake) sleep += 1440;
-  const shortSleep = 1440 - (sleep - wake) < SLEEP_MIN;
-  const bed = Math.min(sleep, wake + 1440 - SLEEP_MIN);
+  // Eight hours before tomorrow's wake-up (a school day may start earlier
+  // than today did), not today's.
+  const tomorrowSchool = (p.schoolDays || []).includes((day + 1) % 7);
+  const nextWake = minutesOf((!tomorrowSchool && routine.weekendWake) || p.wakeAt) + 1440;
+  const shortSleep = nextWake - sleep < SLEEP_MIN;
+  const bed = Math.min(sleep, nextWake - SLEEP_MIN);
   const to = bed - WIND_DOWN;
 
   const grade = stageOf(p.stage)?.grade;

@@ -94,7 +94,8 @@ const day12 = { ...DEFAULTS, stage: "a2", travelMinutes: 40, wakeAt: "06:30", sl
   const wk = { ...day12, routine: { homework: 0, weekendWake: "08:00", weekendSleep: "23:30" } };
   const sun = C.dayCapacity(wk, 0);
   ok("days without school use their own wake time", sun.from === 9 * 60, String(sun.from));
-  ok("and their own bedtime", sun.to === 23 * 60, String(sun.to));
+  ok("and their own bedtime, before another day without school", C.dayCapacity(wk, 6).to === 23 * 60, String(C.dayCapacity(wk, 6).to));
+  ok("but eight hours before Monday's earlier wake-up on a Sunday", sun.to === 22 * 60, String(sun.to));
   ok("school days keep the usual times", C.dayCapacity(wk, 1).to === 22 * 60);
   ok("an evening person starts later on days without school", C.dayCapacity({ ...day12, routine: { homework: 0, best: "evening" } }, 0).from === 16 * 60);
   ok("but never with under three hours left", C.dayCapacity({ ...day12, sleepAt: "18:30", routine: { homework: 0, best: "evening" } }, 0).from === 15 * 60);
