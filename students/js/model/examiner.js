@@ -138,7 +138,9 @@ export const EXAMINER = {
     1: ["Read each item carefully before choosing; be confident with numerical and diagrammatic data."],
     2: ["In Section A, use the source material in your answers: answers that ignore it score low."],
   },
-  "0450": {
+  // Business 0264 (from 2027) keeps 0450's two papers: the advice is from
+  // the 0450 reports, paraphrased.
+  "0264": {
     1: ["Learn precise definitions; each point needs its own application and analysis.", "Evaluation means a justified decision that follows from your points."],
     2: ["Apply every answer to the case study business (its size, sector and type)."],
   },

@@ -13,6 +13,10 @@ AI, runs as "Pan Lite" (our own planner code does the planning; the AI
 only where nothing else can).
 
 **0.2.0 (in progress)**
+- **IGCSE Business is now 0264.** Cambridge replaces Business Studies 0450
+  with Business 0264 from March 2027 (the same two papers, 1 h 30 and 80
+  marks each). **Accounting 0452** has its 2027 papers: Multiple Choice
+  1 h 30 (40 marks) and Structured Written 1 h 45 (100 marks).
 - **Glass, Signal and Verse are back** (the owner preferred them to the
   newer look). Glass is the default again; Night and Day stay as choices.
   The Look button is back in the bar and on the welcome page. Their fonts

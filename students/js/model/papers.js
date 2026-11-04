@@ -135,7 +135,9 @@ export const SYLLABUS_PAPERS = {
     ],
     routes: { igcse: ["1", "2"] },
   },
-  "0450": {
+  "0264": {
+    // IGCSE Business, first exams March 2027 (replaces Business Studies
+    // 0450): the same two papers, 1 h 30 and 80 marks each, 50% each.
     papers: [
       { id: "1", name: "Short Answer and Data Response", kind: "written", minutes: 90, marks: 80, level: "any", topics: "all" },
       { id: "2", name: "Case Study", kind: "written", minutes: 90, marks: 80, level: "any", topics: "all" },
@@ -143,9 +145,10 @@ export const SYLLABUS_PAPERS = {
     routes: { igcse: ["1", "2"] },
   },
   "0452": {
+    // The 2027-2029 syllabus: Paper 1 is longer (40 questions in 1 h 30).
     papers: [
-      { id: "1", name: "Multiple Choice", kind: "mcq", minutes: null, marks: null, level: "any", topics: "all" },
-      { id: "2", name: "Structured Written Paper", kind: "written", minutes: null, marks: null, level: "any", topics: "all" },
+      { id: "1", name: "Multiple Choice", kind: "mcq", minutes: 90, marks: 40, level: "any", topics: "all" },
+      { id: "2", name: "Structured Written Paper", kind: "written", minutes: 105, marks: 100, level: "any", topics: "all" },
     ],
     routes: { igcse: ["1", "2"] },
   },
