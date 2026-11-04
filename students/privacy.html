@@ -30,18 +30,17 @@
       <tr><td>Username</td><td>Your profile.</td><td>Only you, in Panalo Students: there are no profiles, no chat and no feed, so nobody else sees it here. You can log in with it.</td></tr>
       <tr><td>Your days: when you first opened the app each day, your intention, how the day felt (mood, energy), one thing learned, one good thing</td><td>The database, in the clear.</td><td>Only your account. Used for the morning dawn, closing the day and your journal. Never shown to anyone, never analysed.</td></tr>
       <tr><td>Tasks, focus sessions, calendar, goals, activity log, world name, interests</td><td>The database, in the clear.</td><td>Only your account. Access rules on the server stop anyone else reading them.</td></tr>
-      <tr><td>Archive files</td><td>A private file store (Supabase Storage, or Cloudflare R2 where the site has it turned on), in the clear.</td><td>Only you. Not end-to-end encrypted.</td></tr>
       <tr><td>Security logs: when the app was used, the IP address and browser it was used from, sign-ins and errors</td><td>The database, in a locked table. Kept for 180 days, then erased automatically.</td><td>Only the people who run this Panalo, to investigate attacks or abuse, and the authorities when Indian law requires it (CERT-In Directions 2022). Never what you wrote or stored.</td></tr>
       <tr><td>Wrong passwords typed with a username</td><td>The database, in a locked table: the username and the time.</td><td>Nobody. Used only to stop password guessing (ten tries an hour), and erased after a day.</td></tr>
       <tr><td>Questions and requests you send about your data</td><td>The database.</td><td>You, and whoever runs this Panalo, who answer them.</td></tr>
       <tr><td>Panalo Chat, if you use it with the same account</td><td>Its messages are stored encrypted, as Panalo Chat describes.</td><td>Panalo Students doesn't show, read or use them.</td></tr>
       <tr><td>What you ask Pan (the AI): a sentence about your plan, a subject's name, or a photo of an answer you want marked</td><td>Sent through our server to Anthropic (Claude) for that one request. Panalo doesn't keep the sentence or the photo; only a count of your asks each day, for 7 days.</td><td>Only you see Pan's answer. Anthropic handles the request under its API terms. Don't put names or other personal details in a photo.</td></tr>
-      <tr><td>Timer state, sound and motion preferences, world lighting, which Drift items you opened</td><td>Your browser, and a copy on your account so they follow you to your other devices.</td><td>Only your account.</td></tr>
+      <tr><td>Timer state, sound and motion preferences, world lighting, which looks and effects you chose</td><td>Your browser, and a copy on your account so they follow you to your other devices.</td><td>Only your account.</td></tr>
     </table>
 
     <h2 id="encryption">Encryption, exactly</h2>
     <ul>
-      <li>Your study data and journal (and any files kept in the old Archive) are protected by server-side access rules that let only your account read them. They are <b>not</b> end-to-end encrypted, so we don't say they are.</li>
+      <li>Your study data and journal are protected by server-side access rules that let only your account read them. They are <b>not</b> end-to-end encrypted, so we don't say they are.</li>
       <li>Everything travels to and from the server over HTTPS.</li>
       <li>The app itself is delivered by a web host. A compromised host could serve modified code — no browser-based app can rule that out.</li>
       <li>Your account also holds the encryption keys Panalo Chat uses, kept on the server encrypted with your password. If you reset your password on a device that doesn't have them cached, older Panalo Chat messages can no longer be opened.</li>
@@ -51,10 +50,9 @@
     <ul>
       <li>No advertising, and no selling or sharing of data with advertisers.</li>
       <li>No analytics or tracking scripts.</li>
-      <li>No AI: nothing you write is sent to an AI service, and nothing is generated about you by one.</li>
+      <li>No AI unless you ask: only what you send to Pan yourself goes to an AI service (see the table above), one request at a time, and nothing is kept or used to build a profile of you.</li>
       <li>No profiles, no chat, no follower counts and no feed: nothing you do in Panalo Students is shown to anyone else.</li>
     </ul>
-    <p>The intro film's music, effects and any narration play from this site and your browser; nothing about you is sent anywhere to make them.</p>
 
     <h2 id="children">Under 18: a parent or guardian agrees first</h2>
     <ul>

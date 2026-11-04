@@ -21,6 +21,9 @@ only where nothing else can).
   person's uploaded files too. A failed load (a weak connection) can no
   longer save over a student's progress or rerun the setup over their
   answers; the app keeps trying quietly and says when everything's back.
+  The privacy page, the parent's consent screen, Contact and sign-up now
+  say only what's true (no chat in Students, no Archive, Pan is the only
+  AI and only when asked, usernames are private).
 - **IGCSE Business is now 0264.** Cambridge replaces Business Studies 0450
   with Business 0264 from March 2027 (the same two papers, 1 h 30 and 80
   marks each). **Accounting 0452** has its 2027 papers: Multiple Choice
