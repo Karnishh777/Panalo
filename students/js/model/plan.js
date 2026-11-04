@@ -398,14 +398,17 @@ export const nextBlock = (plan) => plan[0]?.blocks[0] || null;
  */
 export function afterBlock(t, { kind, answers = [], covered = null, rating = null, minutes = 0, now = Date.now() }) {
   let next = { ...t, minutes: Math.min(100000, (t.minutes || 0) + Math.max(0, Math.round(minutes))) };
-  for (const a of answers) next = L.answer(next, { correct: !!a.correct, options: a.options || 4, now });
+  for (const a of answers) next = L.answer(next, { correct: !!a.correct, options: a.options || 4, difficulty: Number(a.d) || 0, repeat: !!a.repeat, now });
+  if (answers.some((a) => a.id)) next.asked = L.noteAsked(t.asked, answers.filter((a) => a.id).map((a) => a.id), now);
   const score = answers.length ? answers.filter((a) => a.correct).length / answers.length : null;
   if (kind === "check") {
     next.covered = score != null && score >= 0.67 ? 1 : Math.max(next.covered, 0);
   } else if (kind === "learn" && covered != null) {
     next.covered = Math.min(1, Math.max(next.covered, covered));
   }
-  const grade = score != null ? L.gradeOf(score) : rating;
+  // All right, but only on questions seen lately: Good, not Easy.
+  const allRepeats = answers.length && answers.every((a) => a.repeat);
+  const grade = score != null ? Math.min(L.gradeOf(score), allRepeats ? 3 : 4) : rating;
   // The memory clock starts once the topic has been met properly: a check
   // that showed it is known, any later block on it, or own-work blocks.
   if (grade && (kind !== "learn" || next.covered >= 1) && !(kind === "check" && next.covered < 1)) next = L.review(next, grade, now);

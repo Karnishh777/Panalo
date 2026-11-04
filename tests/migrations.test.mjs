@@ -1416,6 +1416,13 @@ async function studyWorldTests() {
   ok("a journey brings the routine back", back?.dinnerAt === "20:00" && back?.goals?.read === 120, JSON.stringify(back));
   const again39 = await runFile(db, "supabase-phase39.sql");
   ok("phase 39 is safe to re-run", again39.ok, again39.error);
+  // Phase 41: which questions a topic asked.
+  const r41 = await runFile(db, "supabase-phase41.sql");
+  ok("phase 41 applies", r41.ok, r41.error);
+  const askedOk = await attempt(db, me, (tx) => tx.query(`insert into student_topics (subject, topic, asked) values ('phy', '1', '[["abc", 20000]]')`));
+  ok("a topic keeps the questions it asked", askedOk.ok, askedOk.error);
+  ok("…as a list", await bad(`insert into student_topics (subject, topic, asked) values ('phy', '2', '{}')`));
+  ok("…of at most 60", await bad(`insert into student_topics (subject, topic, asked) values ('phy', '3', (select jsonb_agg(jsonb_build_array('x' || g, 1)) from generate_series(1, 61) g))`));
 }
 
 async function main() {

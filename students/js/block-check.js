@@ -51,7 +51,11 @@ export function openBlockCheck(block, { minutes = 0, sessionId = null, onDone } 
   if (block.kind === "paper") return openPaperMarks(block.subject, String(block.topic).replace(/^paper-/, ""));
   const started = Date.now();
   const own = block.topic === "*";
-  const questions = own ? [] : shuffle(questionsFor(block.subject, block.topic)).slice(0, COUNT[block.kind] || 3);
+  // Unseen questions first, then the ones asked longest ago (phase 41). A
+  // small bank asks fewer at a time, so it lasts longer between repeats.
+  const bank = own ? [] : questionsFor(block.subject, block.topic);
+  const want = Math.min(COUNT[block.kind] || 3, bank.length <= 4 ? 2 : bank.length <= 8 ? 3 : 5);
+  const questions = own ? [] : L.pickQuestions(bank, stateOf(block.subject, block.topic).asked, want, Date.now());
   const answers = [];
   let covered = null;
   let rating = null;
@@ -84,7 +88,7 @@ export function openBlockCheck(block, { minutes = 0, sessionId = null, onDone } 
           text: o.text,
           onClick: (e) => {
             const right = o.idx === q.a;
-            answers.push({ correct: right, options: q.o.length });
+            answers.push({ correct: right, options: q.o.length, id: q.id, repeat: q.repeat, d: q.d });
             for (const b of opts.children) {
               b.disabled = true;
               if (b.dataset.correct) b.classList.add("is-right");
