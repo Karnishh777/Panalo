@@ -1,26 +1,38 @@
-// Looks: how Panalo looks and moves.
+// Looks: how Panalo looks and moves. Five, chosen in Settings or from the
+// Look button (on the welcome page too):
 //
+//   glass   Cinematic Glass -- frosted, layered panels floating over your
+//           world; serif headlines; light that catches edges. Calm. The
+//           default.
+//   signal  Signal -- pure black, dot-matrix numerals, one red, a strict grid
+//           of rounded tiles. Bold, precise, playful.
+//   verse   Verse -- your day laid out in orbit around your world, drawn
+//           like a comic book torn between universes. Halftone, ink,
+//           caption boxes, speed lines.
 //   night   Panalo Night -- near-black, one violet glow, frosted cards,
-//           heavy display type and big pill buttons, over a real photo of a
-//           climber on a mountain at night: every topic is a step up.
-//   day     The same Panalo in daylight: paper-white, ink type, the same
-//           violet for the one thing to press. The photos stay night:
-//           windows onto the climb.
+//           heavy display type and big pill buttons (css/night.css).
+//   day     Night in daylight: paper-white, ink type, the same violet
+//           (css/day.css). Only inside the app; the welcome shows Night.
 //
-// Glass, Signal and Verse were retired in v0.2; a saved one opens as Night.
-// The fonts are the site's own (css/fonts.css), the same for both.
-// The look is a preference (prefs.look), so it follows you to every device.
-// boot.js applies it before the first paint (no flash of the wrong look);
-// this module switches it live, with a short fade.
+// Glass, Signal and Verse were retired in v0.2 and brought back in v0.3,
+// when the owner preferred them. The fonts are the site's own
+// (css/fonts.css). The look is a preference (prefs.look), so it follows
+// you to every device. boot.js applies it before the first paint (no flash
+// of the wrong look); this module switches it live, with a transition in
+// the new look's style.
 import { getPrefs, setPrefs, el } from "./ui.js";
 import { reducedMotion, lively } from "./motion.js";
 
 export const LOOKS = [
-  { id: "night", name: "Night", line: "Dark, one violet glow, a mountain to climb." },
+  { id: "glass", name: "Glass", line: "Dark glass and ember: poster type, calm by default." },
+  { id: "signal", name: "Signal", line: "Black, dot-matrix, one red." },
+  { id: "verse", name: "Verse", line: "Your day in orbit, drawn like a comic between universes." },
+  { id: "night", name: "Night", line: "Dark, one violet glow." },
   { id: "day", name: "Day", line: "Paper-white and ink, for bright rooms and daytime." },
 ];
-export const DEFAULT_LOOK = "night";
+export const DEFAULT_LOOK = "glass";
 const EVENT = "panalo:look";
+const THEME = { glass: "#070912", signal: "#000000", verse: "#0b0a12", night: "#0b0a12", day: "#f6f4fb" };
 
 const byId = (id) => LOOKS.find((l) => l.id === id) || LOOKS[0];
 
@@ -41,7 +53,7 @@ export function applyLook(id = getLook()) {
   const look = byId(id === "day" && !inside ? "night" : id);
   if (document.documentElement.dataset.look !== look.id) {
     document.documentElement.dataset.look = look.id;
-    document.querySelector('meta[name="theme-color"]')?.setAttribute("content", look.id === "day" ? "#f6f4fb" : "#0b0a12");
+    document.querySelector('meta[name="theme-color"]')?.setAttribute("content", THEME[look.id] || "#0b0a12");
     window.dispatchEvent(new CustomEvent(EVENT, { detail: look.id }));
   }
 }
@@ -65,7 +77,7 @@ export function setLook(id) {
   setTimeout(() => veil.remove(), 900);
 }
 
-/** A row of the three looks, as radio buttons. compact: names only. */
+/** A row of the looks, as radio buttons. compact: names only. */
 export function lookPicker({ compact = false, onPick } = {}) {
   const name = `look-${Math.random().toString(36).slice(2, 7)}`;
   const wrap = el("div", { class: `look-picker${compact ? " compact" : ""}`, role: "radiogroup", "aria-label": "Look" });
@@ -93,7 +105,7 @@ export function lookPicker({ compact = false, onPick } = {}) {
   return wrap;
 }
 
-// A Look button opens its menu of the three.
+// A Look button opens its menu of the looks.
 function wireButton(btn, menu) {
   if (!btn || !menu || btn.dataset.wired) return;
   btn.dataset.wired = "1";

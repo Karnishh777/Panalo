@@ -13,6 +13,10 @@ AI, runs as "Pan Lite" (our own planner code does the planning; the AI
 only where nothing else can).
 
 **0.2.0 (in progress)**
+- **Glass, Signal and Verse are back** (the owner preferred them to the
+  newer look). Glass is the default again; Night and Day stay as choices.
+  The Look button is back in the bar and on the welcome page. Their fonts
+  are now served from the site itself (no font service), like the rest.
 - **The world opens fast.** Every globe shows the real Earth as soon as
   the small maps are in (about 200 KB), then adds relief and clouds, then
   sharper maps in the background, only as sharp as the world on screen

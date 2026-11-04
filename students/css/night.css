@@ -7,7 +7,7 @@
  * thing to press, never decoration.
  */
 
-html[data-look] {
+html:is([data-look="night"], [data-look="day"]) {
   color-scheme: dark;
   --bg: #0b0a12;
   --bg-2: #100e1a;
@@ -48,10 +48,10 @@ html[data-look] {
   --glow: 0 10px 34px -8px rgba(106, 88, 242, 0.65);
 }
 
-html[data-look] body {
+html:is([data-look="night"], [data-look="day"]) body {
   font-family: var(--f-body);
 }
-html[data-look] body.in-app {
+html:is([data-look="night"], [data-look="day"]) body.in-app {
   background:
     radial-gradient(90% 45% at 50% -8%, rgba(106, 88, 242, 0.2), transparent 65%),
     radial-gradient(60% 40% at 100% 100%, rgba(94, 230, 184, 0.05), transparent 70%),
@@ -61,35 +61,30 @@ html[data-look] body.in-app {
 
 /* ---- Bar and dock --------------------------------------------------------- */
 
-html[data-look] .bar {
+html:is([data-look="night"], [data-look="day"]) .bar {
   background: rgba(11, 10, 18, 0.72);
   -webkit-backdrop-filter: blur(20px) saturate(150%);
   backdrop-filter: blur(20px) saturate(150%);
   border-bottom: 1px solid var(--line);
 }
-html[data-look] .wm-name {
+html:is([data-look="night"], [data-look="day"]) .wm-name {
   font-family: var(--f-display);
   font-weight: 900;
   letter-spacing: 0.01em;
 }
-html[data-look] .bar-nav a {
+html:is([data-look="night"], [data-look="day"]) .bar-nav a {
   font-weight: 600;
 }
-html[data-look] .bar-nav a[aria-current="page"] {
+html:is([data-look="night"], [data-look="day"]) .bar-nav a[aria-current="page"] {
   background: var(--text);
   color: var(--bg);
 }
-html[data-look] .bar-nav a[aria-current="page"]::after {
+html:is([data-look="night"], [data-look="day"]) .bar-nav a[aria-current="page"]::after {
   display: none;
-}
-/* One look: no look switcher. */
-html[data-look] .look-btn,
-html[data-look] .look-menu {
-  display: none !important;
 }
 
 @media (max-width: 899px) {
-  html[data-look] .dock {
+  html:is([data-look="night"], [data-look="day"]) .dock {
     inset: auto 12px calc(12px + env(safe-area-inset-bottom));
     height: var(--dock-h);
     padding: 0 6px;
@@ -100,15 +95,15 @@ html[data-look] .look-menu {
     backdrop-filter: blur(22px) saturate(160%);
     box-shadow: 0 20px 50px -20px rgba(0, 0, 0, 0.9);
   }
-  html[data-look] .dock a,
-  html[data-look] .dock button {
+  html:is([data-look="night"], [data-look="day"]) .dock a,
+  html:is([data-look="night"], [data-look="day"]) .dock button {
     color: var(--text-2);
     font-weight: 600;
   }
-  html[data-look] .dock a[aria-current="page"] {
+  html:is([data-look="night"], [data-look="day"]) .dock a[aria-current="page"] {
     color: var(--text);
   }
-  html[data-look] .dock a[aria-current="page"] .dock-glyph {
+  html:is([data-look="night"], [data-look="day"]) .dock a[aria-current="page"] .dock-glyph {
     background: var(--text);
     border-color: var(--text);
     box-shadow: none;
@@ -117,25 +112,25 @@ html[data-look] .look-menu {
 
 /* ---- Headings and panels -------------------------------------------------- */
 
-html[data-look] .s-head h1 {
+html:is([data-look="night"], [data-look="day"]) .s-head h1 {
   font: 900 clamp(32px, 6vw, 52px) / 1 var(--f-display);
   letter-spacing: -0.03em;
 }
-html[data-look] .kicker {
+html:is([data-look="night"], [data-look="day"]) .kicker {
   font-weight: 700;
   letter-spacing: 0.1em;
   color: var(--text-2);
 }
-html[data-look] .panel {
+html:is([data-look="night"], [data-look="day"]) .panel {
   padding: 18px 20px;
   border: 1px solid var(--line);
   border-radius: var(--r-3);
   background: var(--glass-card);
 }
-html[data-look] .panel + .panel {
+html:is([data-look="night"], [data-look="day"]) .panel + .panel {
   margin-top: 14px;
 }
-html[data-look] .panel-head h2 {
+html:is([data-look="night"], [data-look="day"]) .panel-head h2 {
   font: 700 12px var(--f-body);
   letter-spacing: 0.1em;
   color: var(--text-2);
@@ -143,47 +138,47 @@ html[data-look] .panel-head h2 {
 
 /* ---- Buttons, chips, fields ----------------------------------------------- */
 
-html[data-look] .btn {
+html:is([data-look="night"], [data-look="day"]) .btn {
   font-weight: 700;
 }
-html[data-look] .btn-primary {
+html:is([data-look="night"], [data-look="day"]) .btn-primary {
   background: var(--go);
   color: #fff;
   box-shadow: var(--glow);
 }
-html[data-look] .btn-primary:hover:not(:disabled) {
+html:is([data-look="night"], [data-look="day"]) .btn-primary:hover:not(:disabled) {
   background: var(--go-hover);
 }
-html[data-look] .btn-ghost,
-html[data-look] .chip {
+html:is([data-look="night"], [data-look="day"]) .btn-ghost,
+html:is([data-look="night"], [data-look="day"]) .chip {
   background: rgba(255, 255, 255, 0.05);
   border-color: var(--line-2);
 }
-html[data-look] .chip[aria-checked="true"],
-html[data-look] .chip[aria-pressed="true"],
-html[data-look] .chip.on {
+html:is([data-look="night"], [data-look="day"]) .chip[aria-checked="true"],
+html:is([data-look="night"], [data-look="day"]) .chip[aria-pressed="true"],
+html:is([data-look="night"], [data-look="day"]) .chip.on {
   background: var(--text);
   border-color: var(--text);
   color: var(--bg);
 }
-html[data-look] .input,
-html[data-look] .field input,
-html[data-look] .field select,
-html[data-look] .field textarea {
+html:is([data-look="night"], [data-look="day"]) .input,
+html:is([data-look="night"], [data-look="day"]) .field input,
+html:is([data-look="night"], [data-look="day"]) .field select,
+html:is([data-look="night"], [data-look="day"]) .field textarea {
   background: rgba(255, 255, 255, 0.05);
   border-color: var(--line-2);
   border-radius: 14px;
 }
-html[data-look] dialog.sheet,
-html[data-look] .menu,
-html[data-look] .toast {
+html:is([data-look="night"], [data-look="day"]) dialog.sheet,
+html:is([data-look="night"], [data-look="day"]) .menu,
+html:is([data-look="night"], [data-look="day"]) .toast {
   background: var(--surface-2);
   border-color: var(--line-2);
   border-radius: var(--r-3);
   -webkit-backdrop-filter: blur(24px) saturate(150%);
   backdrop-filter: blur(24px) saturate(150%);
 }
-html[data-look] :focus-visible {
+html:is([data-look="night"], [data-look="day"]) :focus-visible {
   outline-color: var(--violet);
 }
 
@@ -192,7 +187,7 @@ html[data-look] :focus-visible {
 .today-hero {
   display: none;
 }
-html[data-look] .today-hero {
+html:is([data-look="night"], [data-look="day"]) .today-hero {
   position: relative;
   display: flex;
   align-items: flex-end;
@@ -204,42 +199,42 @@ html[data-look] .today-hero {
   overflow: hidden;
   isolation: isolate;
 }
-html[data-look] .today-hero::before {
+html:is([data-look="night"], [data-look="day"]) .today-hero::before {
   content: "";
   position: absolute;
   inset: 0;
   z-index: -2;
   background: url("../assets/photos/climb-night.webp") 50% 64% / cover no-repeat;
 }
-html[data-look] .today-hero::after {
+html:is([data-look="night"], [data-look="day"]) .today-hero::after {
   content: "";
   position: absolute;
   inset: 0;
   z-index: -1;
   background: linear-gradient(to bottom, rgba(11, 10, 18, 0.35) 0%, rgba(11, 10, 18, 0.05) 40%, var(--bg) 100%);
 }
-html[data-look] .today-hero h2 {
+html:is([data-look="night"], [data-look="day"]) .today-hero h2 {
   margin: 0;
   font: 900 clamp(38px, 9vw, 64px) / 0.96 var(--f-display);
   letter-spacing: -0.03em;
 }
 /* The hero carries the date (or the next exam): no second date below. */
-html[data-look] .now-head > .kicker {
+html:is([data-look="night"], [data-look="day"]) .now-head > .kicker {
   display: none;
 }
 @media (min-width: 900px) {
-  html[data-look] .today-hero {
+  html:is([data-look="night"], [data-look="day"]) .today-hero {
     min-height: 340px;
     margin: 0 0 22px;
     padding: 0 32px 18px;
     border-radius: var(--r-3);
   }
-  html[data-look] .today-hero::before {
+  html:is([data-look="night"], [data-look="day"]) .today-hero::before {
     background-image: url("../assets/photos/climb-wide.webp");
     background-position: 50% 20%;
   }
 }
-html[data-look] .today-hero .kicker {
+html:is([data-look="night"], [data-look="day"]) .today-hero .kicker {
   color: #dad6ea;
 }
 .climb-ring {
@@ -278,31 +273,31 @@ html[data-look] .today-hero .kicker {
   color: var(--text-2);
 }
 /* The next step: the one card that glows. */
-html[data-look] .now-step {
+html:is([data-look="night"], [data-look="day"]) .now-step {
   padding: 18px;
   border-radius: var(--r-3);
   background: linear-gradient(140deg, rgba(139, 124, 255, 0.24), rgba(255, 255, 255, 0.04));
   border: 1px solid rgba(155, 140, 255, 0.38);
 }
-html[data-look] .now-step .step-label {
+html:is([data-look="night"], [data-look="day"]) .now-step .step-label {
   color: var(--violet-soft);
   font-weight: 700;
   letter-spacing: 0.08em;
   text-transform: uppercase;
   font-size: 12px;
 }
-html[data-look] .now-step b {
+html:is([data-look="night"], [data-look="day"]) .now-step b {
   font: 800 clamp(20px, 4.6vw, 26px) / 1.1 var(--f-display);
   letter-spacing: -0.01em;
 }
-html[data-look] .now-step .btn-primary {
+html:is([data-look="night"], [data-look="day"]) .now-step .btn-primary {
   --h: 52px;
   padding: 0 26px;
   font: 800 17px var(--f-display);
 }
 /* Calm-by-default still holds: no glow when motion is reduced. */
-html[data-look][data-motion="reduce"] .btn-primary,
-html[data-look][data-motion="reduce"] .climb-ring .ring-fill {
+html:is([data-look="night"], [data-look="day"])[data-motion="reduce"] .btn-primary,
+html:is([data-look="night"], [data-look="day"])[data-motion="reduce"] .climb-ring .ring-fill {
   box-shadow: none;
   filter: none;
 }
@@ -313,58 +308,58 @@ html[data-look][data-motion="reduce"] .climb-ring .ring-fill {
 }
 
 /* The painted ember wallpaper belongs to the old looks: Night has its photo. */
-html[data-look] .wall {
+html:is([data-look="night"], [data-look="day"]) .wall {
   display: none;
 }
 
 /* ---- Welcome: your world first, then the words ----------------------------- */
 
-html[data-look] body:not(.in-app) {
+html:is([data-look="night"], [data-look="day"]) body:not(.in-app) {
   background: var(--bg);
 }
 /* The HUD and chapter thread belong to the old looks. The hero globe
    stays: the owner preferred the welcome with the world in it (2 Nov). */
-html[data-look] #landing .hud,
-html[data-look] #landing .thread {
+html:is([data-look="night"], [data-look="day"]) #landing .hud,
+html:is([data-look="night"], [data-look="day"]) #landing .thread {
   display: none;
 }
-html[data-look] .land-bar {
+html:is([data-look="night"], [data-look="day"]) .land-bar {
   background: linear-gradient(to bottom, rgba(11, 10, 18, 0.7), transparent);
   border: 0;
 }
-html[data-look] .hero-copy {
+html:is([data-look="night"], [data-look="day"]) .hero-copy {
   max-width: 640px;
 }
-html[data-look] .hero-kicker {
+html:is([data-look="night"], [data-look="day"]) .hero-kicker {
   color: var(--violet-soft);
   letter-spacing: 0.06em;
 }
-html[data-look] .hero-title {
+html:is([data-look="night"], [data-look="day"]) .hero-title {
   margin: 14px 0 16px;
   font: 900 clamp(46px, 11vw, 96px) / 0.95 var(--f-display);
   letter-spacing: -0.035em;
 }
-html[data-look] .hero-sub {
+html:is([data-look="night"], [data-look="day"]) .hero-sub {
   max-width: 34ch;
   font-size: clamp(16px, 2vw, 19px);
   line-height: 1.5;
   color: var(--text-2);
 }
-html[data-look] .hero-actions {
+html:is([data-look="night"], [data-look="day"]) .hero-actions {
   margin-top: 26px;
 }
-html[data-look] .hero-actions .btn {
+html:is([data-look="night"], [data-look="day"]) .hero-actions .btn {
   --h: 56px;
   border-radius: 28px;
   padding: 0 28px;
   font: 800 17px var(--f-display);
 }
 @media (max-width: 599px) {
-  html[data-look] .hero-actions {
+  html:is([data-look="night"], [data-look="day"]) .hero-actions {
     flex-direction: column;
     align-items: stretch;
   }
-  html[data-look] .hero-actions .btn-ghost {
+  html:is([data-look="night"], [data-look="day"]) .hero-actions .btn-ghost {
     background: none;
     border-color: transparent;
     color: var(--violet-soft);
@@ -372,11 +367,11 @@ html[data-look] .hero-actions .btn {
 }
 /* ---- Focus: one lamp, one topic ------------------------------------------- */
 
-html[data-look] body[data-view="study"].in-app {
+html:is([data-look="night"], [data-look="day"]) body[data-view="study"].in-app {
   background: var(--bg);
 }
 /* The lamp, blurred and dimmed: the photo sets the mood, never the focus. */
-html[data-look] body[data-view="study"].in-app::before {
+html:is([data-look="night"], [data-look="day"]) body[data-view="study"].in-app::before {
   content: "";
   position: fixed;
   inset: -12px;
@@ -387,57 +382,57 @@ html[data-look] body[data-view="study"].in-app::before {
   filter: blur(4px) brightness(0.7);
   pointer-events: none;
 }
-html[data-look] .study-dial {
+html:is([data-look="night"], [data-look="day"]) .study-dial {
   width: min(68vw, 300px);
 }
-html[data-look] .ring-track {
+html:is([data-look="night"], [data-look="day"]) .ring-track {
   fill: rgba(11, 10, 18, 0.55);
   stroke: rgba(255, 255, 255, 0.1);
   stroke-width: 9;
 }
-html[data-look] .ring-arc {
+html:is([data-look="night"], [data-look="day"]) .ring-arc {
   stroke: var(--violet);
   stroke-width: 9;
   filter: drop-shadow(0 0 10px rgba(139, 124, 255, 0.85));
 }
-html[data-look] .study[data-phase="rest"] .ring-arc {
+html:is([data-look="night"], [data-look="day"]) .study[data-phase="rest"] .ring-arc {
   stroke: var(--mint);
   filter: drop-shadow(0 0 10px rgba(94, 230, 184, 0.6));
 }
-html[data-look] .ring-body {
+html:is([data-look="night"], [data-look="day"]) .ring-body {
   r: 6;
 }
-html[data-look] .study-readout {
+html:is([data-look="night"], [data-look="day"]) .study-readout {
   font: 800 clamp(52px, 14vw, 72px) / 1 var(--f-display);
   letter-spacing: -0.03em;
   font-variant-numeric: tabular-nums;
 }
-html[data-look] .study-phase {
+html:is([data-look="night"], [data-look="day"]) .study-phase {
   letter-spacing: 0.12em;
   color: var(--text-2);
 }
-html[data-look] .study-center .btn-primary {
+html:is([data-look="night"], [data-look="day"]) .study-center .btn-primary {
   --h: 56px;
   min-width: 180px;
   border-radius: 28px;
   font: 800 17px var(--f-display);
 }
-html[data-look][data-motion="reduce"] .ring-arc {
+html:is([data-look="night"], [data-look="day"])[data-motion="reduce"] .ring-arc {
   filter: none;
 }
 
 /* ---- Close the day: a page of a night journal ----------------------------- */
 
-html[data-look] dialog.sheet-journal {
+html:is([data-look="night"], [data-look="day"]) dialog.sheet-journal {
   overflow: hidden;
 }
-html[data-look] .sheet-journal .sheet-head {
+html:is([data-look="night"], [data-look="day"]) .sheet-journal .sheet-head {
   position: relative;
   isolation: isolate;
   margin: -1px -1px 0;
   padding-top: 64px;
 }
-html[data-look] .sheet-journal .sheet-head::before {
+html:is([data-look="night"], [data-look="day"]) .sheet-journal .sheet-head::before {
   content: "";
   position: absolute;
   inset: 0;
@@ -447,12 +442,12 @@ html[data-look] .sheet-journal .sheet-head::before {
     url("../assets/photos/summit-night.webp") 50% 40% / cover no-repeat;
   opacity: 0.9;
 }
-html[data-look] .sheet-journal .sheet-head h2 {
+html:is([data-look="night"], [data-look="day"]) .sheet-journal .sheet-head h2 {
   font: 900 30px / 1 var(--f-display);
   letter-spacing: -0.02em;
 }
 /* Your own words, in your own hand. */
-html[data-look] .sheet-journal input.ink {
+html:is([data-look="night"], [data-look="day"]) .sheet-journal input.ink {
   font: italic 21px / 1.3 var(--f-serif);
   background: transparent;
   border: 0;
@@ -460,23 +455,23 @@ html[data-look] .sheet-journal input.ink {
   border-radius: 0;
   padding-inline: 2px;
 }
-html[data-look] .sheet-journal input.ink:focus-visible {
+html:is([data-look="night"], [data-look="day"]) .sheet-journal input.ink:focus-visible {
   border-bottom-color: var(--violet);
   outline: none;
 }
-html[data-look] .sheet-journal input.ink::placeholder {
+html:is([data-look="night"], [data-look="day"]) .sheet-journal input.ink::placeholder {
   color: var(--text-3);
 }
 
 /* ---- World: what shapes it, as tiles --------------------------------------- */
 
-html[data-look] .legend {
+html:is([data-look="night"], [data-look="day"]) .legend {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 8px;
 }
-html[data-look] .legend-row,
-html[data-look] .legend-row:first-child {
+html:is([data-look="night"], [data-look="day"]) .legend-row,
+html:is([data-look="night"], [data-look="day"]) .legend-row:first-child {
   grid-template-columns: 1fr;
   grid-template-areas: "val" "name";
   gap: 4px;
@@ -485,22 +480,22 @@ html[data-look] .legend-row:first-child {
   border-radius: var(--r-2);
   background: rgba(255, 255, 255, 0.04);
 }
-html[data-look] .legend-swatch {
+html:is([data-look="night"], [data-look="day"]) .legend-swatch {
   display: none;
 }
-html[data-look] .legend-val {
+html:is([data-look="night"], [data-look="day"]) .legend-val {
   grid-area: val;
   font: 800 20px / 1.1 var(--f-display);
   white-space: normal;
 }
-html[data-look] .legend-row > div {
+html:is([data-look="night"], [data-look="day"]) .legend-row > div {
   grid-area: name;
 }
-html[data-look] .legend-row b {
+html:is([data-look="night"], [data-look="day"]) .legend-row b {
   font-size: 13px;
   color: var(--text);
 }
-html[data-look] .legend-row small {
+html:is([data-look="night"], [data-look="day"]) .legend-row small {
   display: block;
   margin-top: 2px;
   font-size: 11.5px;
@@ -509,24 +504,24 @@ html[data-look] .legend-row small {
 
 /* ---- Settings: quiet rows, a clear switch ----------------------------------- */
 
-html[data-look] .setting input[type="checkbox"] {
+html:is([data-look="night"], [data-look="day"]) .setting input[type="checkbox"] {
   width: 46px;
   height: 28px;
   border-radius: 14px;
 }
-html[data-look] .setting input[type="checkbox"]::after {
+html:is([data-look="night"], [data-look="day"]) .setting input[type="checkbox"]::after {
   width: 22px;
   height: 22px;
   background: var(--text);
 }
-html[data-look] .setting input[type="checkbox"]:checked {
+html:is([data-look="night"], [data-look="day"]) .setting input[type="checkbox"]:checked {
   background: var(--go);
   border-color: var(--go);
 }
-html[data-look] .setting input[type="checkbox"]:checked::after {
+html:is([data-look="night"], [data-look="day"]) .setting input[type="checkbox"]:checked::after {
   background: #fff;
 }
-html[data-look] .panel-head h2::after {
+html:is([data-look="night"], [data-look="day"]) .panel-head h2::after {
   display: none;
 }
 
@@ -586,16 +581,16 @@ html[data-look] .panel-head h2::after {
   border-color: var(--violet);
   box-shadow: 0 0 18px rgba(139, 124, 255, 0.5);
 }
-html[data-look] .wn-v {
+html:is([data-look="night"], [data-look="day"]) .wn-v {
   font-weight: 800;
   letter-spacing: -0.02em;
 }
 /* The climb to each paper: a thicker, glowing line up to your aim. */
-html[data-look] .pl-ready .meter {
+html:is([data-look="night"], [data-look="day"]) .pl-ready .meter {
   height: 8px;
   border-radius: 4px;
 }
-html[data-look] .pl-ready .meter i {
+html:is([data-look="night"], [data-look="day"]) .pl-ready .meter i {
   border-radius: 4px;
   box-shadow: 0 0 12px color-mix(in srgb, var(--subj) 60%, transparent);
 }
