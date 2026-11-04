@@ -14,8 +14,8 @@ import fs from "node:fs";
 const SHOTS = process.env.QA_SHOTS;
 if (SHOTS) fs.mkdirSync(SHOTS, { recursive: true });
 let failed = 0;
-const check = (label, cond) => {
-  console.log(`${cond ? "  ok  " : "  FAIL"} ${label}`);
+const check = (label, cond, detail = "") => {
+  console.log(`${cond ? "  ok  " : "  FAIL"} ${label}${!cond && detail ? ` (${String(detail).slice(0, 300)})` : ""}`);
   if (!cond) failed++;
 };
 const shot = async (page, name) => SHOTS && page.screenshot({ path: `${SHOTS}/students-${name}.png` });
@@ -632,6 +632,21 @@ try {
   await page.waitForSelector("#app:not([hidden])", { timeout: 15000 });
   await page.waitForTimeout(800);
   check("the session and data survive a reload", /Kepler QA|alex/.test(await page.textContent("#me-menu")) && (await page.evaluate(() => window.__qa.db.focus_sessions.length)) === 1);
+  // A dropped connection while loading: progress that didn't load is never
+  // saved over (store.js NOT_LOADED), and the next good load clears it.
+  const guard = await page.evaluate(async () => {
+    const m = await import(new URL("js/store.js", location.href).href);
+    const saved = window.__qa.db.student_topics.length;
+    const had = m.store.topics.length;
+    window.__qa.failReads.add("student_topics");
+    await m.loadAll();
+    const kept = m.store.topics.length;
+    const r = await m.api.saveTopic({ subject: "phy", topic: "zz", theta: 0, covered: 0, stability: 0 });
+    window.__qa.failReads.clear();
+    await m.loadAll();
+    return { saved, had, kept, refused: r.error?.code === "not-loaded", untouched: window.__qa.db.student_topics.length === saved, cleared: !m.store.loadFailed.size };
+  });
+  check("a failed load never saves over saved progress", guard.kept === guard.had && guard.refused && guard.untouched && guard.cleared, JSON.stringify(guard));
   check("Day is set before the first paint after a reload", (await page.evaluate(() => document.documentElement.dataset.look)) === "day");
   // Verse is back: a saved Verse opens as Verse.
   await page.evaluate(() => {

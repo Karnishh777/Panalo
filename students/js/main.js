@@ -88,8 +88,11 @@ async function onReady(session, { fresh }) {
   } catch (e) {
     console.error(e);
     showToast("Couldn't reach Panalo. Check your connection.");
+    retryLoads();
   }
-  const loading = loadAll().catch((e) => console.error(e));
+  const loading = loadAll()
+    .then(() => store.loadFailed.size && retryLoads())
+    .catch((e) => console.error(e));
 
   if (setupDue()) {
     runSetup({
@@ -107,8 +110,32 @@ async function onReady(session, { fresh }) {
 // The setup runs until it has been finished once. A database without
 // phase 29 has no setup_at column at all: skip it there rather than ask
 // questions that can't be saved.
+// While the profile or a list hasn't loaded, nothing is saved over it
+// (store.js NOT_LOADED); keep trying quietly, and once the profile is in,
+// reload if it turns out the setup is still to do.
+let retrying = 0;
+function retryLoads() {
+  if (retrying) return;
+  retrying = setInterval(async () => {
+    if (store.profileFailed) {
+      try {
+        await loadStudentProfile();
+        if (setupDue()) return location.reload();
+      } catch {
+        return;
+      }
+    }
+    if (store.loadFailed.size) await loadAll().catch(() => {});
+    if (!store.profileFailed && !store.loadFailed.size) {
+      clearInterval(retrying);
+      retrying = 0;
+      showToast("Back online. Everything's loaded.", "success");
+    }
+  }, 15000);
+}
+
 function setupDue() {
-  if (store.schemaMissing) return false;
+  if (store.schemaMissing || store.profileFailed) return false;
   if (store.student && !("setup_at" in store.student)) return false;
   return needsSetup(store.student);
 }

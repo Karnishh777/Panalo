@@ -9,6 +9,11 @@ import { dayKey } from "./model/time.js";
 export const store = {
   me: null, // { id, username }
   student: null, // student_profiles row, or null before the universe is born
+  // Tables whose last load failed (a weak connection, a server hiccup), and
+  // whether the profile failed to load: their saved rows aren't known, so
+  // nothing may be written over them until a load succeeds.
+  loadFailed: new Set(),
+  profileFailed: false,
   tasks: [],
   sessions: [],
   events: [],
@@ -68,10 +73,17 @@ export async function loadStudentProfile() {
     store.schemaMissing = true;
     return null;
   }
-  if (error) throw error;
+  if (error) {
+    store.profileFailed = true;
+    throw error;
+  }
+  store.profileFailed = false;
   store.student = data || null;
   return store.student;
 }
+
+// The error a write returns while the rows it would replace haven't loaded.
+export const NOT_LOADED = { message: "Your saved progress didn't load, so nothing was saved over it. Check your connection, then try again.", code: "not-loaded" };
 
 export async function loadAll() {
   const queries = await Promise.all([
@@ -84,19 +96,22 @@ export async function loadAll() {
     supabaseClient.from("student_topics").select("*").limit(3000),
     supabaseClient.from("student_results").select("*").order("taken_on", { ascending: false }).limit(2000),
   ]);
-  const [tasks, sessions, events, logs, goals, entries, topics, results] = queries;
+  const [, , , , , entries, topics, results] = queries;
   if (queries.slice(0, 5).some((q) => missingTable(q.error))) {
     store.schemaMissing = true;
   }
-  store.tasks = tasks.data || [];
-  store.sessions = sessions.data || [];
-  store.events = events.data || [];
-  store.logs = logs.data || [];
-  store.goals = goals.data || [];
-  store.entries = entries.data || [];
+  // A list that failed to load keeps what it had (nothing, the first time)
+  // and is marked, so the app never saves "fresh" rows over saved ones.
+  const TABLES = ["student_tasks", "focus_sessions", "student_events", "activity_log", "student_goals", "daily_entries", "student_topics", "student_results"];
+  const KEYS = ["tasks", "sessions", "events", "logs", "goals", "entries", "topics", "results"];
+  queries.forEach((q, i) => {
+    if (q.error && !missingTable(q.error)) store.loadFailed.add(TABLES[i]);
+    else {
+      store.loadFailed.delete(TABLES[i]);
+      store[KEYS[i]] = q.data || [];
+    }
+  });
   store.entriesMissing = missingTable(entries.error);
-  store.topics = topics.data || [];
-  store.results = results.data || [];
   store.progressMissing = missingTable(topics.error) || missingTable(results.error);
   store.loaded = true;
   emit("any");
@@ -153,6 +168,7 @@ export const api = {
 
   /** Save one topic's planner state (a student_topics row, without user_id). */
   async saveTopic(row) {
+    if (store.loadFailed.has("student_topics")) return { error: NOT_LOADED };
     const full = { user_id: state.currentUser.id, ...row };
     const { data, error } = await supabaseClient.from("student_topics").upsert(full, { onConflict: "user_id,subject,topic" }).select().single();
     if (error) return { error };
@@ -166,6 +182,7 @@ export const api = {
   // Many topics at once (a subject check-in), in one request.
   async saveTopics(rows) {
     if (!rows.length) return { data: [] };
+    if (store.loadFailed.has("student_topics")) return { error: NOT_LOADED };
     const full = rows.map((row) => ({ user_id: state.currentUser.id, ...row }));
     const { data, error } = await supabaseClient.from("student_topics").upsert(full, { onConflict: "user_id,subject,topic" }).select();
     if (error) return { error };
@@ -186,6 +203,7 @@ export const api = {
   deleteResult: (id) => remove("student_results", id, "results", "results"),
 
   async saveStudent(patch) {
+    if (store.profileFailed) return { error: NOT_LOADED };
     const row = { user_id: state.currentUser.id, ...patch };
     const { data, error } = await supabaseClient.from("student_profiles").upsert(row, { onConflict: "user_id" }).select().single();
     if (error) return { error };
@@ -214,5 +232,6 @@ export function resetStore() {
     topics: [], results: [], progressMissing: false,
     resources: null,
     schemaMissing: false, loaded: false,
+    loadFailed: new Set(), profileFailed: false,
   });
 }

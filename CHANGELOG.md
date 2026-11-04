@@ -13,6 +13,14 @@ AI, runs as "Pan Lite" (our own planner code does the planning; the AI
 only where nothing else can).
 
 **0.2.0 (in progress)**
+- **Safety fixes from the review.** Nothing is stored for an account until
+  a date of birth is on record, and an error checking it keeps the door
+  shut instead of open. A parent's "no" stands: only that parent can change
+  it. Pan checks consent and has a daily cap for the whole service.
+  Deleting an account (or a parent withdrawing consent) now removes the
+  person's uploaded files too. A failed load (a weak connection) can no
+  longer save over a student's progress or rerun the setup over their
+  answers; the app keeps trying quietly and says when everything's back.
 - **IGCSE Business is now 0264.** Cambridge replaces Business Studies 0450
   with Business 0264 from March 2027 (the same two papers, 1 h 30 and 80
   marks each). **Accounting 0452** has its 2027 papers: Multiple Choice
