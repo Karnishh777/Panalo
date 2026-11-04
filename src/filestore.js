@@ -8,6 +8,7 @@
 // Keys begin with their uploader (o/<owner>/...), so deleting an account
 // can remove every file of theirs in one call.
 import { supabaseClient } from "./client.js";
+import { SUPABASE_URL } from "./config.js";
 
 const UUID = "[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}";
 const R2_URL = new RegExp(`^/api/files/(o/${UUID}/(?:u/${UUID}|c/${UUID}/${UUID}|a/${UUID}))$`);
@@ -128,4 +129,17 @@ export async function deleteAllMyFiles() {
   }
   await r2DeleteMine().catch(() => false);
   return failed;
+}
+
+/**
+ * After an account is erased: ask the erase-files function (phase 40) to
+ * remove the files the database queued for it. Fire and forget; an hourly
+ * schedule catches anything this misses.
+ */
+export function nudgeErasure() {
+  try {
+    fetch(`${SUPABASE_URL}/functions/v1/erase-files`, { method: "POST", keepalive: true }).catch(() => {});
+  } catch {
+    /* the hourly run will do it */
+  }
 }

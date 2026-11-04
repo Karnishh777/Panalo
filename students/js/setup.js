@@ -411,6 +411,8 @@ export function runSetup({ onDone, editing = false }) {
         timeChips("Dinner time", r.dinnerAt, ["19:00", "19:30", "20:00", "20:30", "21:00"], (v) => (r.dinnerAt = v === "varies" ? null : v), { id: "varies", label: "It varies" }),
         el("p", { class: "faint", text: "Dinner takes about" }),
         chipGroup({ label: "How long dinner takes", value: String(r.dinnerMinutes), options: [20, 30, 45, 60].map((m) => ({ id: String(m), label: `${m} min` })), onChange: (v) => (r.dinnerMinutes = Number(v)), toneOf: () => "tone-time" }).node,
+        el("p", { class: "faint", text: "Homework on a school day takes about" }),
+        chipGroup({ label: "Homework on a school day", value: r.homework == null ? "usual" : String(r.homework), options: [{ id: "usual", label: "Not sure" }, ...[0, 30, 45, 60, 90, 120].map((m) => ({ id: String(m), label: m ? (m < 60 ? `${m} min` : `${m / 60} h`.replace(".5 h", "½ h")) : "None" }))], onChange: (v) => (r.homework = v === "usual" ? null : Number(v)), toneOf: () => "tone-time" }).node,
         el("p", { class: "faint", text: "On days without school, you study best in the" }),
         choices(
           [

@@ -14,8 +14,8 @@ import fs from "node:fs";
 const SHOTS = process.env.QA_SHOTS;
 if (SHOTS) fs.mkdirSync(SHOTS, { recursive: true });
 let failed = 0;
-const check = (label, cond) => {
-  console.log(`${cond ? "  ok  " : "  FAIL"} ${label}`);
+const check = (label, cond, detail = "") => {
+  console.log(`${cond ? "  ok  " : "  FAIL"} ${label}${!cond && detail ? ` (${String(detail).slice(0, 300)})` : ""}`);
   if (!cond) failed++;
 };
 const shot = async (page, name) => SHOTS && page.screenshot({ path: `${SHOTS}/students-${name}.png` });
@@ -202,6 +202,7 @@ try {
     await page.waitForTimeout(60);
     check("the setup asks how the day runs", (await page.getAttribute("#setup-form", "data-step")) === "day");
     await page.click('#setup-form [aria-label="Dinner time"] .chip:has-text("20:00")');
+    await page.click('#setup-form [aria-label="Homework on a school day"] .chip:has-text("1½ h")');
     await page.click('#setup-form .setup-choice:has-text("Afternoon")');
     await page.click('#setup-form .setup-choice:has-text("50 minutes")');
     await shot(page, "setup-day");
@@ -237,7 +238,7 @@ try {
     check("…with how each subject is going", prof?.subjects.find((x) => x.id === "phy")?.level === 1 && prof?.subjects.find((x) => x.id === "chem")?.grade === "b");
     check("…and the school day", prof?.school_start === "08:10" && prof?.school_days.length === 5);
     check("…and the rest of the week", prof?.activities?.[0]?.name === "Football" && prof.activities[0].days.join() === "2,4" && prof.activities[0].start === "17:00", JSON.stringify(prof?.activities));
-    check("…and how the day runs", prof?.routine?.weekendWake === "08:00" && prof.routine.dinnerAt === "20:00" && prof.routine.best === "afternoon" && prof.routine.focus === 50 && prof.routine.goals?.read === 120, JSON.stringify(prof?.routine));
+    check("…and how the day runs", prof?.routine?.weekendWake === "08:00" && prof.routine.dinnerAt === "20:00" && prof.routine.best === "afternoon" && prof.routine.focus === 50 && prof.routine.homework === 90 && prof.routine.goals?.read === 120, JSON.stringify(prof?.routine));
     check("an exam from the setup is on the calendar", await page.evaluate(() => window.__qa.db.student_events.some((e) => e.kind === "exam" && /Physics test/.test(e.title))));
     check("a new account lands on its plan, to check in on each subject", /Plan/.test(await page.title()) && (await page.isVisible("#plan-checkin")));
     check("the new account has encryption keys", await page.evaluate(() => window.__qa.db.user_keys.length === 2));
@@ -632,6 +633,21 @@ try {
   await page.waitForSelector("#app:not([hidden])", { timeout: 15000 });
   await page.waitForTimeout(800);
   check("the session and data survive a reload", /Kepler QA|alex/.test(await page.textContent("#me-menu")) && (await page.evaluate(() => window.__qa.db.focus_sessions.length)) === 1);
+  // A dropped connection while loading: progress that didn't load is never
+  // saved over (store.js NOT_LOADED), and the next good load clears it.
+  const guard = await page.evaluate(async () => {
+    const m = await import(new URL("js/store.js", location.href).href);
+    const saved = window.__qa.db.student_topics.length;
+    const had = m.store.topics.length;
+    window.__qa.failReads.add("student_topics");
+    await m.loadAll();
+    const kept = m.store.topics.length;
+    const r = await m.api.saveTopic({ subject: "phy", topic: "zz", theta: 0, covered: 0, stability: 0 });
+    window.__qa.failReads.clear();
+    await m.loadAll();
+    return { saved, had, kept, refused: r.error?.code === "not-loaded", untouched: window.__qa.db.student_topics.length === saved, cleared: !m.store.loadFailed.size };
+  });
+  check("a failed load never saves over saved progress", guard.kept === guard.had && guard.refused && guard.untouched && guard.cleared, JSON.stringify(guard));
   check("Day is set before the first paint after a reload", (await page.evaluate(() => document.documentElement.dataset.look)) === "day");
   // Verse is back: a saved Verse opens as Verse.
   await page.evaluate(() => {

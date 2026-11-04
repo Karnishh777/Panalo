@@ -900,10 +900,10 @@ async function attemptWith(db, userId, claims, fn) {
 async function consentTests() {
   const db = await freshDb();
   const year = new Date().getFullYear();
-  const adult = await createUser(db, "c_adult");
-  const teen = await createUser(db, "c_teen");
-  const kid = await createUser(db, "c_kid");
-  const mum = await createUser(db, "c_mum");
+  const adult = await createUser(db, "c_adult", { birth: false });
+  const teen = await createUser(db, "c_teen", { birth: false });
+  const kid = await createUser(db, "c_kid", { birth: false });
+  const mum = await createUser(db, "c_mum", { birth: false });
   const stranger = await createUser(db, "c_stranger");
   const birth = (u, y, m = 1) => as(db, u, async (tx) => (await tx.query("select set_my_birth($1, $2) as r", [y, m])).rows[0].r);
   const task = (u) => attempt(db, u, (tx) => tx.query("insert into student_tasks (title) values ('x')"));
@@ -947,7 +947,13 @@ async function consentTests() {
   const rec = (await db.query("select parent_name, relation, decision from private.parental_consents where child_id = $1", [teen])).rows[0];
   ok("the consent is recorded", rec && rec.parent_name === "Asha Rao" && rec.decision === "approved", JSON.stringify(rec));
 
+  // Phase 40: a file the student uploaded is queued for erasure with them.
+  await db.query("insert into storage.objects (bucket_id, name, owner, metadata) values ('student-resources', $1, $2, '{}')", [`${teen}/notes.pdf`, teen]);
   await asWith(db, mum, byCode, (tx) => tx.query("select withdraw_parent_consent($1)", [teen]));
+  const queued = (await db.query("select count(*)::int as n from private.file_erasure where owner = $1", [teen])).rows[0].n;
+  ok("an erased account's files are queued for removal", queued === 1, String(queued));
+  const next = await attempt(db, mum, (tx) => tx.query("select * from file_erasure_next()"));
+  ok("only the service can read the erasure queue", !next.ok);
   const gone = (await db.query("select (select count(*)::int from auth.users where id = $1) as u, (select count(*)::int from private.deleted_registrations where user_id = $1) as r", [teen])).rows[0];
   ok("withdrawing consent deletes the student's account, keeping only registration details", gone.u === 0 && gone.r === 1, JSON.stringify(gone));
 
@@ -959,6 +965,29 @@ async function consentTests() {
   ok("and erases them after 180 days", purged === 1 && (await db.query("select count(*)::int as n from private.deleted_registrations where user_id = $1", [adult])).rows[0].n === 0);
   const peek = await attempt(db, mum, (tx) => tx.query("select * from private.deleted_registrations"));
   ok("kept registration details aren't readable from the API", !peek.ok);
+
+  // Phase 40: the gate fails closed, a parent's no stands, Pan asks consent.
+  const nobirth = await createUser(db, "c_nobirth", { birth: false });
+  ok("no date of birth on record: nothing is stored", !(await task(nobirth)).ok);
+  ok("…and Pan says no", (await as(db, nobirth, async (tx) => (await tx.query("select pan_take() as n")).rows[0].n)) < 0);
+  const teen2 = await createUser(db, "c_teen2", { birth: false });
+  await birth(teen2, year - 16);
+  await as(db, teen2, (tx) => tx.query("select request_parent_consent('c_mum@example.test')"));
+  await asWith(db, mum, byCode, (tx) => tx.query("select decide_parent_consent($1, false, 'Asha Rao', 'parent', $2)", [teen2, year - 45]));
+  const other = await attempt(db, teen2, (tx) => tx.query("select request_parent_consent('c_other@example.test')"));
+  ok("after a parent says no, someone else can't be asked instead", !other.ok);
+  await as(db, teen2, (tx) => tx.query("update account_age set requested_at = now() - interval '1 hour' where user_id = auth.uid()")).catch(() => {});
+  await db.query("update public.account_age set requested_at = now() - interval '1 hour' where user_id = $1", [teen2]);
+  await as(db, teen2, (tx) => tx.query("select request_parent_consent('c_mum@example.test')"));
+  const still = (await db.query("select consent from public.account_age where user_id = $1", [teen2])).rows[0].consent;
+  ok("asking the same parent again keeps their no until they change it", still === "declined", still);
+  ok("…so nothing is stored meanwhile", !(await task(teen2)).ok);
+  await asWith(db, mum, byCode, (tx) => tx.query("select decide_parent_consent($1, true, 'Asha Rao', 'parent', $2)", [teen2, year - 45]));
+  ok("the parent who said no can still say yes", (await task(teen2)).ok);
+  const grown = await createUser(db, "c_grown");
+  ok("an adult gets Pan asks", (await as(db, grown, async (tx) => (await tx.query("select pan_take() as n")).rows[0].n)) === 29);
+  await db.query("update private.pan_settings set daily_cap = 1");
+  ok("past the service's daily cap, nobody gets more", (await as(db, grown, async (tx) => (await tx.query("select pan_take() as n")).rows[0].n)) < 0);
 }
 
 // Phase 23: security logs copied in by the GitHub Action, kept 180 days.
@@ -996,7 +1025,7 @@ async function dailyTests() {
   const year = new Date().getFullYear();
   const me = await createUser(db, "d_me");
   const other = await createUser(db, "d_other");
-  const teen = await createUser(db, "d_teen");
+  const teen = await createUser(db, "d_teen", { birth: false });
   await as(db, teen, (tx) => tx.query("select set_my_birth($1, 1)", [year - 15]));
   const up = (u, sql, args = []) => attempt(db, u, (tx) => tx.query(sql, args));
 
@@ -1395,7 +1424,7 @@ async function main() {
     try {
       await run();
     } catch (e) {
-      failures.push(`${run.name} crashed: ${e.message}`);
+      failures.push(`${run.name} crashed: ${e.message} @ ${(e.stack || "").split("\n").filter((l) => l.includes("migrations.test")).slice(0, 2).join(" ")}`);
     }
   }
 

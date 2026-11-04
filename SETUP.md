@@ -99,6 +99,7 @@ For each: **SQL Editor → New query** → paste the whole file → **Run**.
 | 35 | [`supabase-phase37.sql`](supabase-phase37.sql) | Only studying grows the world: exam-style questions marked are kept as `activity_log` kind `questions` with `marks` and `out_of` | Required by Students v0.2 |
 | 36 | [`supabase-phase38.sql`](supabase-phase38.sql) | All of life grows the world: `activity_log` also takes `outdoors` and `help` | Required by Students v0.3 |
 | 37 | [`supabase-phase39.sql`](supabase-phase39.sql) | A more detailed day: `student_profiles.routine` (weekend times, dinner, best study time, focus length, weekly life wishes); `journey_import` restores it | Required by Students v0.3 |
+| 38 | [`supabase-phase40.sql`](supabase-phase40.sql) | Safety: the consent gate fails closed (no date of birth, no storing); a parent's no stands; Pan checks consent and has a service-wide daily cap; erased accounts' files are queued for the `erase-files` Edge Function (`supabase/functions/erase-files`, scheduled hourly with pg_cron + pg_net) | Required by Students v0.3 |
 
 Phase 8 is self-contained and re-applies everything phase 7 does, so running 8
 is enough if you are starting fresh. Run 7 anyway if you prefer the history to

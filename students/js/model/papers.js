@@ -135,7 +135,9 @@ export const SYLLABUS_PAPERS = {
     ],
     routes: { igcse: ["1", "2"] },
   },
-  "0450": {
+  "0264": {
+    // IGCSE Business, first exams March 2027 (replaces Business Studies
+    // 0450): the same two papers, 1 h 30 and 80 marks each, 50% each.
     papers: [
       { id: "1", name: "Short Answer and Data Response", kind: "written", minutes: 90, marks: 80, level: "any", topics: "all" },
       { id: "2", name: "Case Study", kind: "written", minutes: 90, marks: 80, level: "any", topics: "all" },
@@ -143,9 +145,10 @@ export const SYLLABUS_PAPERS = {
     routes: { igcse: ["1", "2"] },
   },
   "0452": {
+    // The 2027-2029 syllabus: Paper 1 is longer (40 questions in 1 h 30).
     papers: [
-      { id: "1", name: "Multiple Choice", kind: "mcq", minutes: null, marks: null, level: "any", topics: "all" },
-      { id: "2", name: "Structured Written Paper", kind: "written", minutes: null, marks: null, level: "any", topics: "all" },
+      { id: "1", name: "Multiple Choice", kind: "mcq", minutes: 90, marks: 40, level: "any", topics: "all" },
+      { id: "2", name: "Structured Written Paper", kind: "written", minutes: 105, marks: 100, level: "any", topics: "all" },
     ],
     routes: { igcse: ["1", "2"] },
   },
@@ -220,8 +223,8 @@ export const SYLLABUS_PAPERS = {
     // Global Perspectives (Cambridge IGCSE)
     papers: [
       { id: "1", name: "Written Examination", kind: "written", minutes: 90, marks: null, level: "any", topics: ["1", "2", "3", "6"] },
-      { id: "2", name: "Individual Report", kind: "practical", minutes: null, marks: null, level: "any", topics: ["1", "2", "3", "4", "6"] },
-      { id: "3", name: "Team Project", kind: "practical", minutes: null, marks: null, level: "any", topics: ["4", "5", "6"] },
+      { id: "2", name: "Individual Report", kind: "coursework", minutes: null, marks: null, level: "any", topics: ["1", "2", "3", "4", "6"] },
+      { id: "3", name: "Team Project", kind: "coursework", minutes: null, marks: null, level: "any", topics: ["4", "5", "6"] },
     ],
     routes: { igcse: ["1", "2", "3"] },
   },
@@ -229,9 +232,9 @@ export const SYLLABUS_PAPERS = {
     // Global Perspectives and Research (Cambridge International AS & A Level)
     papers: [
       { id: "1", name: "Written Examination", kind: "written", minutes: 90, marks: 30, level: "as", topics: ["1", "2"] },
-      { id: "2", name: "Essay", kind: "practical", minutes: null, marks: null, level: "as", topics: ["2", "3", "4"] },
-      { id: "3", name: "Team Project", kind: "practical", minutes: null, marks: null, level: "as", topics: ["3", "5"] },
-      { id: "4", name: "Cambridge Research Report", kind: "practical", minutes: null, marks: null, level: "a2", topics: ["3", "6"] },
+      { id: "2", name: "Essay", kind: "coursework", minutes: null, marks: null, level: "as", topics: ["2", "3", "4"] },
+      { id: "3", name: "Team Project", kind: "coursework", minutes: null, marks: null, level: "as", topics: ["3", "5"] },
+      { id: "4", name: "Cambridge Research Report", kind: "coursework", minutes: null, marks: null, level: "a2", topics: ["3", "6"] },
     ],
     routes: { as: ["1", "2", "3"], a2: ["1", "2", "3", "4"] },
   },
@@ -318,8 +321,12 @@ export const SYLLABUS_PAPERS = {
 
 export const KIND_LABEL = { mcq: "Multiple choice", written: "Written", practical: "Practical", coursework: "Coursework" };
 
-/** Whether a timed past paper of it makes sense (not coursework, not a day-long assignment). */
-export const timedPaper = (p) => p.kind !== "coursework" && !(p.minutes > 240);
+/**
+ * Whether a timed past paper of it makes sense: not coursework, not a
+ * day-long assignment, and not a speaking test (practised aloud, not as a
+ * paper).
+ */
+export const timedPaper = (p) => p.kind !== "coursework" && !(p.minutes > 240) && !/speaking/i.test(p.name || "");
 
 /** The papers of a syllabus (by its code), or []. */
 export function papersOf(code) {
@@ -400,8 +407,9 @@ export function upcomingSeries(now = Date.now(), n = 4) {
   for (let y = year; out.length < n && y < year + 4; y++) {
     for (const k of ["fm", "mj", "on"]) {
       const key = `${y}-${k}`;
-      // A series counts until a few weeks in: it may already be under way.
-      if (seriesStart(key) + 28 * 86400000 > now && out.length < n) out.push(key);
+      // A series counts until eight weeks in: it may already be under way
+      // (May/June runs about six weeks).
+      if (seriesStart(key) + 56 * 86400000 > now && out.length < n) out.push(key);
     }
   }
   return out;

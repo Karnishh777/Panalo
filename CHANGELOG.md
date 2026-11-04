@@ -13,6 +13,44 @@ AI, runs as "Pan Lite" (our own planner code does the planning; the AI
 only where nothing else can).
 
 **0.2.0 (in progress)**
+- **The planner, corrected (from the review).**
+  - **Exam days:** a subject rests on its exam day; the sitting is kept
+    busy; study that day starts after the exam; the evening before is two
+    short reviews at most; no timed past paper the day before, of or after
+    a real one; and nothing is planned for a subject after its last exam.
+  - **Homework counts:** school days keep time for homework (about 45
+    minutes in grade 9, an hour after, or the student's own answer, asked
+    in the setup); a boarder's prep keeps time for it too.
+  - **Weak topics get practice:** a due topic that's still weak is
+    practised (or learned) instead of another short review.
+  - **Calendar exams match whole words:** "Physics test" no longer counts
+    as a Computer Science exam; "Maths" counts for Mathematics.
+  - **Sleep:** study ends eight hours before *tomorrow's* wake-up (a Sunday
+    before school ends earlier than a Saturday).
+  - **Crash days stay humane:** at most the usual cap plus an hour on a
+    school day, the weekend cap otherwise.
+  - **Coursework isn't a timed paper:** Global Perspectives' report,
+    project and essay, and speaking tests, get no past-paper blocks; an
+    exam series can be chosen until eight weeks in.
+  - **Sentences understood better without Pan:** "1.5 hours" is 90
+    minutes; "skip maths tomorrow" skips Maths that day only; "after 9 on
+    Saturday" no longer moves every day to 21:00; "no study before 6 am"
+    and "maths is hard" are understood.
+- **Safety fixes from the review.** Nothing is stored for an account until
+  a date of birth is on record, and an error checking it keeps the door
+  shut instead of open. A parent's "no" stands: only that parent can change
+  it. Pan checks consent and has a daily cap for the whole service.
+  Deleting an account (or a parent withdrawing consent) now removes the
+  person's uploaded files too. A failed load (a weak connection) can no
+  longer save over a student's progress or rerun the setup over their
+  answers; the app keeps trying quietly and says when everything's back.
+  The privacy page, the parent's consent screen, Contact and sign-up now
+  say only what's true (no chat in Students, no Archive, Pan is the only
+  AI and only when asked, usernames are private).
+- **IGCSE Business is now 0264.** Cambridge replaces Business Studies 0450
+  with Business 0264 from March 2027 (the same two papers, 1 h 30 and 80
+  marks each). **Accounting 0452** has its 2027 papers: Multiple Choice
+  1 h 30 (40 marks) and Structured Written 1 h 45 (100 marks).
 - **Glass, Signal and Verse are back** (the owner preferred them to the
   newer look). Glass is the default again; Night and Day stay as choices.
   The Look button is back in the bar and on the welcome page. Their fonts

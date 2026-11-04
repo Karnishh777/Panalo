@@ -10,7 +10,7 @@
 import { supabaseClient } from "../../src/client.js";
 import { withBusy, showToast } from "../../src/util.js";
 import { captcha } from "../../src/captcha.js";
-import { deleteAllMyFiles } from "../../src/filestore.js";
+import { deleteAllMyFiles, nudgeErasure } from "../../src/filestore.js";
 
 const $ = (id) => document.getElementById(id);
 const FORMS = ["age-form", "guardian-form", "young-form"];
@@ -21,6 +21,7 @@ let signOutHook = async () => {};
 let wired = false;
 let pass = null; // resolves when the gate opens
 let pollTimer = null;
+let retryTimer = 0;
 
 function message(text, ok = false) {
   const m = $("auth-message");
@@ -30,7 +31,9 @@ function message(text, ok = false) {
 
 async function status() {
   const { data, error } = await supabaseClient.rpc("my_age_status");
-  if (error) return { unavailable: true, error };
+  // Only a database without phase 22 has no such function; any other error
+  // keeps the gate shut (it fails closed, phase 40).
+  if (error) return /PGRST202|42883|Could not find the function/.test(`${error.code} ${error.message}`) ? { unavailable: true, error } : { failed: true, error };
   return data?.[0] || { needs_birth: true };
 }
 
@@ -52,6 +55,7 @@ async function deleteAccount() {
   await deleteAllMyFiles().catch(() => 0);
   const { error } = await supabaseClient.rpc("delete_my_account");
   if (error) return message("Couldn't delete it. Try again.");
+  nudgeErasure();
   await signOutHook();
 }
 
@@ -109,6 +113,15 @@ async function run(manual = false) {
     // The database hasn't had phase 22: nothing to check.
     return open();
   }
+  if (st.failed) {
+    // Couldn't check (offline, a server hiccup): stay at the door and try
+    // again shortly, rather than letting anyone in unchecked.
+    showFormHook("age-form");
+    message("We couldn't check your account just now. Trying again…");
+    clearTimeout(retryTimer);
+    retryTimer = setTimeout(() => run(), 8000);
+    return;
+  }
   if (st.needs_birth) {
     // Given at sign-up? Then it's already ours to save.
     const meta = (await supabaseClient.auth.getUser()).data.user?.user_metadata || {};
@@ -130,8 +143,10 @@ async function run(manual = false) {
     $("guardian-wait").hidden = !waiting;
     if (st.parent_email && !$("guardian-email").value) $("guardian-email").value = st.parent_email;
     $("guardian-submit").textContent = waiting ? "Send again" : "Send to my parent";
-    $("guardian-lead").textContent = st.consent === "declined"
-      ? "Your parent or guardian said no for now. Talk to them — they can change their mind, or you can ask another parent or guardian."
+    const declined = st.consent === "declined";
+    $("guardian-email").readOnly = declined;
+    $("guardian-lead").textContent = declined
+      ? "Your parent or guardian said no for now. Only they can change that: they can open the link in their email again and say yes. If something's wrong, write to us from the Contact page."
       : `Because you're ${st.age}, a parent or legal guardian has to agree before you can use Panalo. Enter their email: we'll send them a code and a link.`;
     $("guardian-status").textContent = waiting ? `Waiting for ${st.parent_email} to say yes.` : "";
     if (manual && waiting) message("Not yet. It updates by itself once they've said yes.");
@@ -143,6 +158,7 @@ async function run(manual = false) {
 
 function open() {
   stopPolling();
+  clearTimeout(retryTimer);
   FORMS.forEach((f) => ($(f).hidden = true));
   message("");
   const p = pass;

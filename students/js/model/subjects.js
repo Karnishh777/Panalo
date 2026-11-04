@@ -39,7 +39,7 @@ const IGCSE = [
   ["cs", "Computer Science", "0478"],
   ["ict", "ICT", "0417"],
   ["acc", "Accounting", "0452"],
-  ["bus", "Business Studies", "0450"],
+  ["bus", "Business", "0264"], // replaced Business Studies 0450 from 2027 (same two papers)
   ["eco", "Economics", "0455"],
   ["soc", "Sociology", "0495"],
   ["gp", "Global Perspectives", "0457"],

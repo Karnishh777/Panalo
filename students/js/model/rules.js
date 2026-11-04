@@ -242,6 +242,8 @@ export function describeChange(c, { nameOf = (s) => s, clock = (t) => t, now = D
       const w = nearestWeight(Number(c.weight ?? 1));
       return `${nameOf(c.subject)}: ${w === 0 ? "paused" : w === 1 ? "as normal" : w < 1 ? "less" : w >= 2 ? "a lot more" : "more"}`;
     }
+    case "skip":
+      return c.topic === "*" ? `${dayOf(c.date, now)}: no ${nameOf(c.subject)}` : `${dayOf(c.date, now)}: skip a ${nameOf(c.subject)} block`;
     case "weekend_home":
       return `Weekend of ${dayOf(c.date, now)}: going home`;
     case "weekend_stay":
@@ -276,14 +278,18 @@ function amount(text) {
   return /^h/.test(m[2]) ? Math.round(n * 60) : Math.round(n);
 }
 
-function clockTime(text) {
-  const m = text.match(/(?:after|from|not before|no earlier than|start(?:ing)? at|start after)\s*(\d{1,2})(?::(\d{2}))?\s*(am|pm)?/);
+function clockTime(text, freeDay = false) {
+  const m = text.match(/(?:after|from|not before|no earlier than|start(?:ing)? at|start after|no (?:study|studying|work|plan|planning)\w* before|nothing before)\s*(\d{1,2})(?::(\d{2}))?\s*(am|pm|in the morning|in the evening)?/);
   if (!m) return null;
   let h = Number(m[1]);
   const min = Number(m[2] || 0);
-  if (m[3] === "pm" && h < 12) h += 12;
-  if (m[3] === "am" && h === 12) h = 0;
-  if (!m[3] && h >= 1 && h <= 9) h += 12; // "after 5" means the evening
+  const pm = m[3] === "pm" || m[3] === "in the evening";
+  const am = m[3] === "am" || m[3] === "in the morning";
+  if (pm && h < 12) h += 12;
+  if (am && h === 12) h = 0;
+  // "after 5" means the evening on a school day, the morning on a day
+  // without school ("after 9 on saturday").
+  if (!pm && !am && h >= 1 && h <= 9 && !(freeDay && h >= 6)) h += 12;
   if (h > 23 || min > 59) return null;
   return `${String(h).padStart(2, "0")}:${String(min).padStart(2, "0")}`;
 }
@@ -321,7 +327,8 @@ function daysIn(text, now) {
  */
 export function understand(sentence, { subjects = [], now = Date.now() } = {}) {
   const changes = [];
-  const parts = String(sentence || "").toLowerCase().slice(0, 500).split(/[.;\n]|,|\band\b|\bbut\b/);
+  // Split into clauses, but not inside a number ("1.5 hours").
+  const parts = String(sentence || "").toLowerCase().slice(0, 500).split(/(?<!\d)\.|\.(?!\d)|[;\n]|,|\band\b|\bbut\b/);
   for (const raw of parts) {
     const text = raw.trim();
     if (!text) continue;
@@ -339,24 +346,37 @@ export function understand(sentence, { subjects = [], now = Date.now() } = {}) {
       changes.push({ op: staying ? "weekend_stay" : "weekend_home", date });
       continue;
     }
-    const t = clockTime(text);
-    if (t) {
+    const named = daysIn(text, now);
+    const freeDay = /\b(sat|sun|saturdays?|sundays?|weekends?|holidays?)\b/.test(text);
+    const t = clockTime(text, freeDay);
+    // A start time is for every day; one said about a particular day can't
+    // be kept as that yet, so it isn't applied to all of them.
+    if (t && !named.length) {
       changes.push({ op: "start_after", time: t });
     }
+    if (t && named.length) continue;
     // subjects: more / less / pause
     for (const s of subjects) {
       const names = [s.name.toLowerCase(), s.id.toLowerCase(), ...(s.aliases || [])];
       if (!names.some((n) => n && new RegExp(`\\b${n.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}\\b`).test(text))) continue;
+      // "Skip maths tomorrow", "no physics this saturday": that day only.
+      const dropWords = /\b(pause|stop|drop|no more|skip|leave out|without|no)\b/.test(text);
+      const once = named.filter((d) => d.date && (d.once || d.weekday == null));
+      if (dropWords && once.length) {
+        for (const d of once) changes.push({ op: "skip", date: d.date, subject: s.id, topic: "*" });
+        continue;
+      }
       let w = null;
       if (/\b(pause|stop|drop|no more|skip|leave out|without)\b/.test(text)) w = 0;
       else if (/\b(a lot more|much more|lots more|way more|double)\b/.test(text)) w = 2;
-      else if (/\b(more|focus|extra|priorit|harder|weak)\w*/.test(text)) w = 1.5;
+      else if (/\b(more|focus|extra|priorit|hard|difficult|struggl|weak|behind)\w*/.test(text)) w = 1.5;
       else if (/\b(less|fewer|lighter|reduce|cut)\b/.test(text)) w = 0.5;
       else if (/\b(normal|usual|resume|unpause|back)\b/.test(text)) w = 1;
       if (w != null) {
         changes.push({ op: "subject_weight", subject: s.id, weight: w });
       }
     }
+    if (changes.some((c) => c.op === "skip" && c.topic === "*")) continue;
     if (changes.some((c) => c.op === "subject_weight") && !/\b(day|days|today|tomorrow|week|hour|min|off)\b/.test(text) && !daysIn(text, now).length) continue;
     const days = daysIn(text, now);
     if (!days.length) continue;

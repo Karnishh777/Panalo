@@ -119,7 +119,7 @@ for (const s of profile.subjects) syllabi[s.id] = load(P.syllabusPath(profile.st
 
 // ---- a boarder: blocks inside study times; a weekend at home ----
 {
-  const boarder = { ...profile, boarding: true, schoolDays: [1, 2, 3, 4, 5, 6], wakeAt: "06:00", sleepAt: "22:00", prepSlots: [{ start: "06:15", end: "07:00", days: [1, 2, 3, 4, 5, 6] }, { start: "18:00", end: "19:30", days: [1, 2, 3, 4, 5, 6] }], homeTravel: 60 };
+  const boarder = { ...profile, boarding: true, schoolDays: [1, 2, 3, 4, 5, 6], wakeAt: "06:00", sleepAt: "22:00", prepSlots: [{ start: "06:15", end: "07:00", days: [1, 2, 3, 4, 5, 6] }, { start: "18:00", end: "19:30", days: [1, 2, 3, 4, 5, 6] }], homeTravel: 60, routine: { homework: 0 } };
   const morning = new Date(2026, 9, 20, 5, 0).getTime(); // Tuesday 05:00
   const plan = P.buildPlan({ profile: boarder, syllabi, now: morning });
   const inside = (d, b) => [[375, 420], [1080, 1170]].some(([a, z]) => b.start >= a && b.start + b.minutes <= z);
@@ -146,6 +146,29 @@ for (const s of profile.subjects) syllabi[s.id] = load(P.syllabusPath(profile.st
   ok("a 50-minute focus earns a 10-minute break", gaps.includes(10) && !gaps.some((g) => g > 0 && g < 10 && g !== 5), JSON.stringify(gaps));
   const short = P.buildPlan({ profile, syllabi, now: NOW, days: 1 })[0];
   ok("without a routine, nothing changes", short.life.length === 0);
+}
+
+// Exam days (the review): the subject rests on its exam day, the sitting is
+// busy, the evening before is a light review, and nothing after the last.
+{
+  const NOW2 = new Date(2026, 10, 4, 16).getTime(); // Wed 4 Nov 2026
+  const prof = { ...profile, subjects: [{ id: "phy", level: 2, papers: ["2"], dates: { "2": "2026-11-07" } }, { id: "chem", level: 3 }] };
+  const plan = P.buildPlan({ profile: prof, syllabi, now: NOW2, days: 6 });
+  const on = (dd) => plan.find((x) => new Date(x.date).getDate() === dd);
+  const sat = on(7), fri = on(6), sun = on(8);
+  ok("nothing for a subject on its exam day", sat && !sat.blocks.some((b) => b.subject === "phy"), JSON.stringify(sat?.blocks.map((b) => b.subject)));
+  ok("…and study that day starts after the sitting", sat && sat.blocks.every((b) => b.start >= 9 * 60 + 30), JSON.stringify(sat?.blocks.map((b) => b.start)));
+  const eve = fri.blocks.filter((b) => b.subject === "phy");
+  ok("the evening before: two short reviews at most", eve.length <= 2 && eve.every((b) => b.kind === "review"), JSON.stringify(eve.map((b) => b.kind)));
+  ok("after the last paper, the subject is done", sun && !sun.blocks.some((b) => b.subject === "phy"));
+  ok("calendar exams match whole words", P.nextExam({ id: "cs", name: "Computer Science", code: "0478" }, [{ kind: "exam", title: "Physics test", starts_at: new Date(NOW2 + DAY).toISOString() }], NOW2) === null && P.nextExam({ id: "math", name: "Mathematics", code: "0580" }, [{ kind: "exam", title: "Maths unit test", starts_at: new Date(NOW2 + DAY).toISOString() }], NOW2) != null);
+}
+
+// A weak topic that's due gets practice, not another short review.
+{
+  const weak = L.review({ ...L.newTopic(1), covered: 1, n: 3, theta: -1.5 }, 1, NOW - 10 * DAY);
+  const n = P.need(weak, { at: NOW, target: 0.75, examAt: null, level: 1, firstNew: false });
+  ok("a weak, due topic is practised", n?.kind === "practice", JSON.stringify(n));
 }
 
 console.log(`\n${passed} passed, ${failures.length} failed`);

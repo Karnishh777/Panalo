@@ -56,6 +56,14 @@ const opts = { subjects: SUBJECTS.map((s) => s.id), now: NOW };
   ok("'crash day on saturday' is a one-off crash day", has(u("crash day on saturday"), { op: "date_crash", date: "2026-10-24" }));
   ok("'make tomorrow a crash day'", has(u("make tomorrow a crash day"), { op: "date_crash", date: "2026-10-20" }));
   ok("'back to normal'", has(u("back to normal"), { op: "reset" }));
+  // From the review: decimals, one-day subject skips, day-bound times.
+  ok("'only 1.5 hours on saturdays' is 90 minutes", has(u("only 1.5 hours on saturdays"), { op: "day_minutes", weekday: 6, minutes: 90 }));
+  const sk = u("skip maths tomorrow");
+  ok("'skip maths tomorrow' skips maths that day only", has(sk, { op: "skip", date: "2026-10-20", subject: "math", topic: "*" }) && !sk.some((c) => c.op === "subject_weight" || c.op === "date_off"), JSON.stringify(sk));
+  ok("'no maths tomorrow' too", has(u("no maths tomorrow"), { op: "skip", subject: "math", topic: "*" }));
+  ok("'start after 9 on saturday' doesn't move every day to 21:00", !u("start after 9 on saturday").some((c) => c.op === "start_after"));
+  ok("'no study before 6 am'", has(u("no study before 6 am"), { op: "start_after", time: "06:00" }));
+  ok("'maths is hard' means more maths", has(u("maths is hard"), { op: "subject_weight", subject: "math", weight: 1.5 }));
   ok("nonsense changes nothing", u("what is the capital of france").length === 0);
 }
 
@@ -114,6 +122,11 @@ const opts = { subjects: SUBJECTS.map((s) => s.id), now: NOW };
   const crash = P.buildPlan({ profile: base, syllabi, now: NOW, rules: R.applyChanges(R.empty(), [{ op: "date_crash", date: "2026-10-24" }], opts) }).find((d) => d.weekday === 6);
   ok("a crash day holds more than a normal one", crash.crash && crash.minutes > normal.minutes, `${normal.minutes} → ${crash.minutes}`);
   ok("…but never more than six hours", crash.minutes <= 360);
+  // A crash on a grade 9 school day (Monday 26 Oct) stays humane: the
+  // school-day cap (2 h) plus an hour at most.
+  const g9 = { ...base, stage: "igcse1" };
+  const g9crash = P.buildPlan({ profile: g9, syllabi, now: NOW, days: 8, rules: R.applyChanges(R.empty(), [{ op: "date_crash", date: "2026-10-26" }], opts) }).find((d) => d.crash);
+  ok("a grade 9 crash on a school day stays within three hours", g9crash && g9crash.minutes > 0 && g9crash.minutes <= 180, String(g9crash?.minutes));
 }
 
 console.log(`${passed} passed, ${failures.length} failed`);

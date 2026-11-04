@@ -8,8 +8,9 @@ const failures = [];
 const ok = (label, cond, detail = "") => (cond ? passed++ : failures.push(detail ? `${label} (${detail})` : label));
 
 // The teacher's two students.
-const boarder9 = { ...DEFAULTS, stage: "igcse1", boarding: true, wakeAt: "05:30", sleepAt: "21:30", schoolStart: "08:00", schoolEnd: "15:30", schoolDays: [1, 2, 3, 4, 5, 6] };
-const day12 = { ...DEFAULTS, stage: "a2", travelMinutes: 40, wakeAt: "06:30", sleepAt: "22:30", tuitionHours: 6 };
+const boarder9 = { ...DEFAULTS, stage: "igcse1", boarding: true, wakeAt: "05:30", sleepAt: "21:30", schoolStart: "08:00", schoolEnd: "15:30", schoolDays: [1, 2, 3, 4, 5, 6], routine: { homework: 0 } };
+const day12 = { ...DEFAULTS, stage: "a2", travelMinutes: 40, wakeAt: "06:30", sleepAt: "22:30", tuitionHours: 6, routine: { homework: 0 } };
+// (Homework is 0 in these two, to test the rest; it has its own tests below.)
 
 {
   const mon = C.dayCapacity(day12, 1);
@@ -90,27 +91,39 @@ const day12 = { ...DEFAULTS, stage: "a2", travelMinutes: 40, wakeAt: "06:30", sl
 
 // A more detailed day (phase 39): weekend times, dinner, best time, life.
 {
-  const wk = { ...day12, routine: { weekendWake: "08:00", weekendSleep: "23:30" } };
+  const wk = { ...day12, routine: { homework: 0, weekendWake: "08:00", weekendSleep: "23:30" } };
   const sun = C.dayCapacity(wk, 0);
   ok("days without school use their own wake time", sun.from === 9 * 60, String(sun.from));
-  ok("and their own bedtime", sun.to === 23 * 60, String(sun.to));
+  ok("and their own bedtime, before another day without school", C.dayCapacity(wk, 6).to === 23 * 60, String(C.dayCapacity(wk, 6).to));
+  ok("but eight hours before Monday's earlier wake-up on a Sunday", sun.to === 22 * 60, String(sun.to));
   ok("school days keep the usual times", C.dayCapacity(wk, 1).to === 22 * 60);
-  ok("an evening person starts later on days without school", C.dayCapacity({ ...day12, routine: { best: "evening" } }, 0).from === 16 * 60);
-  ok("but never with under three hours left", C.dayCapacity({ ...day12, sleepAt: "18:30", routine: { best: "evening" } }, 0).from === 15 * 60);
-  ok("a school day doesn't move for it", C.dayCapacity({ ...day12, routine: { best: "evening" } }, 1).from === C.dayCapacity(day12, 1).from);
-  const dinner = { ...day12, routine: { dinnerAt: "20:00", dinnerMinutes: 45 } };
+  ok("an evening person starts later on days without school", C.dayCapacity({ ...day12, routine: { homework: 0, best: "evening" } }, 0).from === 16 * 60);
+  ok("but never with under three hours left", C.dayCapacity({ ...day12, sleepAt: "18:30", routine: { homework: 0, best: "evening" } }, 0).from === 15 * 60);
+  ok("a school day doesn't move for it", C.dayCapacity({ ...day12, routine: { homework: 0, best: "evening" } }, 1).from === C.dayCapacity(day12, 1).from);
+  const dinner = { ...day12, routine: { homework: 0, dinnerAt: "20:00", dinnerMinutes: 45 } };
   ok("dinner is an interval", JSON.stringify(C.dinnerOn(dinner)) === "[1200,1245]" && C.dinnerOn(day12) === null);
   ok("a dinner time takes the place of the meals hour", C.dayCapacity(dinner, 1).minutes === 154, String(C.dayCapacity(dinner, 1).minutes));
-  const reads = { ...day12, routine: { goals: { read: 120 } } };
+  const reads = { ...day12, routine: { homework: 0, goals: { read: 120 } } };
   const week = [0, 1, 2, 3, 4, 5, 6].map((d) => C.lifeOn(reads, d));
   ok("a weekly wish is spread over the week", week.flat().reduce((n, x) => n + x.minutes, 0) === 120 && week.filter((d) => d.length).length === 4, JSON.stringify(week));
-  const sporty = { ...day12, activities: [{ kind: "sport", name: "Football", days: [2, 4], start: "17:00", end: "18:00" }], routine: { goals: { move: 300 } } };
+  const sporty = { ...day12, activities: [{ kind: "sport", name: "Football", days: [2, 4], start: "17:00", end: "18:00" }], routine: { homework: 0, goals: { move: 300 } } };
   ok("sport at set times counts towards moving", [0, 1, 2, 3, 4, 5, 6].reduce((n, d) => n + C.lifeOn(sporty, d).reduce((m, x) => m + x.minutes, 0), 0) === 180);
-  const daily = { ...day12, routine: { goals: { connect: 420 } } };
+  const daily = { ...day12, routine: { homework: 0, goals: { connect: 420 } } };
   ok("an hour a day fits in the time that is theirs anyway", C.dayCapacity(daily, 1).minutes === 154 && C.lifeOn(daily, 1)[0].minutes === 60);
-  const busy = { ...day12, routine: { goals: { connect: 420, read: 420 } } };
+  const busy = { ...day12, routine: { homework: 0, goals: { connect: 420, read: 420 } } };
   ok("more than that comes off study time", C.dayCapacity(busy, 1).minutes === 94, String(C.dayCapacity(busy, 1).minutes));
   ok("an older profile has no life list", C.dayCapacity(day12, 1).life.length === 0);
+}
+
+// Homework (the review): kept free on school days, part of a boarder's prep.
+{
+  const hw = { ...day12, routine: {} };
+  ok("a grade 12 school day keeps an hour for homework", C.homeworkOf(hw) === 60 && C.dayCapacity(hw, 1).minutes === Math.max(0, C.dayCapacity(day12, 1).minutes - 60), String(C.dayCapacity(hw, 1).minutes));
+  ok("grade 9 keeps 45 minutes", C.homeworkOf({ ...boarder9, routine: {} }) === 45);
+  ok("the student's own answer wins", C.homeworkOf({ ...day12, routine: { homework: 90 } }) === 90);
+  ok("days without school have no homework kept", C.dayCapacity(hw, 0).minutes === C.dayCapacity(day12, 0).minutes);
+  const prep = { ...boarder9, stage: "as", wakeAt: "06:00", sleepAt: "22:00", prepSlots: [{ start: "18:00", end: "20:00", days: [1, 2, 3, 4, 5] }], routine: {} };
+  ok("a boarder's prep keeps time for homework", C.dayCapacity(prep, 1).minutes === 60 && C.dayCapacity(prep, 1).homework === 60, JSON.stringify(C.dayCapacity(prep, 1)));
 }
 
 console.log(`\n${passed} passed, ${failures.length} failed`);

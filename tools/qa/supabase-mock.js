@@ -503,6 +503,8 @@
     async run() {
       await ready;
       await sleep(QA.latency ?? 15);
+      // window.__qa.failReads: tables whose reads fail, like a dropped connection.
+      if (this.op === "select" && window.__qa?.failReads?.has(this.table)) return { data: null, error: { message: "Failed to fetch", code: "" } };
       try {
         return this.finish(this.exec());
       } catch (e) {
@@ -1230,6 +1232,7 @@
   window.__qa = {
     db,
     ready,
+    failReads: new Set(),
     // Make someone the moderator, or set the claim passphrase (phase 20).
     makeModerator(username) {
       const M = (db.__mod ||= { moderators: [], passphrase: null, log: [], banned: {} });

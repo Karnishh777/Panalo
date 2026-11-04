@@ -1,8 +1,8 @@
 {
   "subject": "bus",
-  "name": "Business Studies",
+  "name": "Business",
   "board": "Cambridge IGCSE",
-  "code": "0450",
+  "code": "0264",
   "topics": [
     {
       "id": "1", "name": "Understanding business activity",

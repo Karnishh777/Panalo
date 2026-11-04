@@ -52,6 +52,9 @@ export const MIGRATIONS = [
   "supabase-phase35.sql",
   "supabase-phase36.sql",
   "supabase-phase37.sql",
+  "supabase-phase38.sql",
+  "supabase-phase39.sql",
+  "supabase-phase40.sql",
 ];
 
 export async function createDb() {
@@ -83,7 +86,9 @@ export async function replay(db, files = MIGRATIONS) {
 }
 
 // A signed-in account with keys, the way the app leaves one after first login.
-export async function createUser(db, username) {
+// Users are adults with a date of birth on record (phase 22), as the app
+// makes sure of before anything else; { birth: false } leaves it unset.
+export async function createUser(db, username, { birth = true } = {}) {
   const { rows } = await db.query(
     "insert into auth.users (email, raw_user_meta_data) values ($1, $2) returning id",
     [`${username}@example.test`, JSON.stringify({ username })]
@@ -95,6 +100,10 @@ export async function createUser(db, username) {
      on conflict (id) do update set public_key = excluded.public_key`,
     [id, username, `pk-${username}`]
   );
+  if (birth) {
+    const has = (await db.query("select to_regclass('public.account_age') is not null as t")).rows[0].t;
+    if (has) await db.query("insert into public.account_age (user_id, birth_year, birth_month) values ($1, 1990, 1) on conflict do nothing", [id]);
+  }
   return id;
 }
 
