@@ -13,6 +13,18 @@ AI, runs as "Pan Lite" (our own planner code does the planning; the AI
 only where nothing else can).
 
 **0.2.0 (in progress)**
+- **The planner, corrected (from the review).**
+  - **Exam days:** a subject rests on its exam day; the sitting is kept
+    busy; study that day starts after the exam; the evening before is two
+    short reviews at most; no timed past paper the day before, of or after
+    a real one; and nothing is planned for a subject after its last exam.
+  - **Homework counts:** school days keep time for homework (about 45
+    minutes in grade 9, an hour after, or the student's own answer, asked
+    in the setup); a boarder's prep keeps time for it too.
+  - **Weak topics get practice:** a due topic that's still weak is
+    practised (or learned) instead of another short review.
+  - **Calendar exams match whole words:** "Physics test" no longer counts
+    as a Computer Science exam; "Maths" counts for Mathematics.
 - **Safety fixes from the review.** Nothing is stored for an account until
   a date of birth is on record, and an error checking it keeps the door
   shut instead of open. A parent's "no" stands: only that parent can change

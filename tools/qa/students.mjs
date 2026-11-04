@@ -202,6 +202,7 @@ try {
     await page.waitForTimeout(60);
     check("the setup asks how the day runs", (await page.getAttribute("#setup-form", "data-step")) === "day");
     await page.click('#setup-form [aria-label="Dinner time"] .chip:has-text("20:00")');
+    await page.click('#setup-form [aria-label="Homework on a school day"] .chip:has-text("1½ h")');
     await page.click('#setup-form .setup-choice:has-text("Afternoon")');
     await page.click('#setup-form .setup-choice:has-text("50 minutes")');
     await shot(page, "setup-day");
@@ -237,7 +238,7 @@ try {
     check("…with how each subject is going", prof?.subjects.find((x) => x.id === "phy")?.level === 1 && prof?.subjects.find((x) => x.id === "chem")?.grade === "b");
     check("…and the school day", prof?.school_start === "08:10" && prof?.school_days.length === 5);
     check("…and the rest of the week", prof?.activities?.[0]?.name === "Football" && prof.activities[0].days.join() === "2,4" && prof.activities[0].start === "17:00", JSON.stringify(prof?.activities));
-    check("…and how the day runs", prof?.routine?.weekendWake === "08:00" && prof.routine.dinnerAt === "20:00" && prof.routine.best === "afternoon" && prof.routine.focus === 50 && prof.routine.goals?.read === 120, JSON.stringify(prof?.routine));
+    check("…and how the day runs", prof?.routine?.weekendWake === "08:00" && prof.routine.dinnerAt === "20:00" && prof.routine.best === "afternoon" && prof.routine.focus === 50 && prof.routine.homework === 90 && prof.routine.goals?.read === 120, JSON.stringify(prof?.routine));
     check("an exam from the setup is on the calendar", await page.evaluate(() => window.__qa.db.student_events.some((e) => e.kind === "exam" && /Physics test/.test(e.title))));
     check("a new account lands on its plan, to check in on each subject", /Plan/.test(await page.title()) && (await page.isVisible("#plan-checkin")));
     check("the new account has encryption keys", await page.evaluate(() => window.__qa.db.user_keys.length === 2));

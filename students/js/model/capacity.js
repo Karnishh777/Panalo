@@ -114,6 +114,17 @@ export function busyWithin(busy, from, to) {
   return total;
 }
 
+/**
+ * School homework on a school day (minutes): the student's answer, or the
+ * usual for the grade (about 45 minutes in grade 9, an hour after). It is
+ * kept free: the plan is self-study on top of homework, and the caps above
+ * are for both together.
+ */
+export function homeworkOf(p, grade = stageOf(p.stage)?.grade) {
+  const h = cleanRoutine(p.routine).homework;
+  return h != null ? h : grade && grade <= 9 ? 45 : 60;
+}
+
 /** School-day and other-day caps (minutes) by grade. */
 export function caps(grade) {
   if (grade && grade <= 9) return { school: 120, free: 240 };
@@ -146,14 +157,16 @@ export function dayCapacity(p, day, o = {}) {
   // The day's areas of life, beyond the hour that is theirs anyway.
   const life = lifeOn(p, day);
   const lifeExtra = Math.max(0, life.reduce((n, x) => n + x.minutes, 0) - LEISURE);
-  const base = { day, school, to, shortSleep, fixed: 0, life };
+  const base = { day, school, to, shortSleep, fixed: 0, life, homework: school ? homeworkOf(p, grade) : 0 };
   // Free time from `from` to `end`, after meals, leisure, coaching and
   // fixed activities, up to the day's cap. With a dinner time, dinner is
   // taken where it falls.
   const dinner = dinnerOn(p);
   const taken = dinner ? [...activitiesOn(p, day), dinner] : activitiesOn(p, day);
   const meals = dinner ? SNACK : MEALS;
-  const open = (from, end, less = 0) => Math.round(Math.max(0, Math.min(end - from - meals - LEISURE - lifeExtra - tuition - busyWithin(taken, from, end) - less, cap)));
+  // Homework comes off school days: the caps hold homework and study together.
+  const homework = school ? homeworkOf(p, grade) : 0;
+  const open = (from, end, less = 0) => Math.round(Math.max(0, Math.min(end - from - meals - LEISURE - lifeExtra - tuition - busyWithin(taken, from, end) - less, cap) - homework));
 
   if (p.boarding) {
     const home = Math.max(0, p.homeTravel ?? 60);
@@ -163,7 +176,11 @@ export function dayCapacity(p, day, o = {}) {
     }
     const prep = prepOn(p, day).map(([a, b]) => [a, Math.min(b, to)]).filter(([a, b]) => b > a);
     const fixed = prep.reduce((n, [a, b]) => n + b - a, 0);
-    if (school && prep.length) return { ...base, from: prep[0][0], to: prep[prep.length - 1][1], minutes: Math.min(fixed, 300), fixed: Math.min(fixed, 300), windows: prep, prep: true };
+    // Prep holds the day's homework too: the plan takes what's left of it.
+    if (school && prep.length) {
+      const own = Math.max(0, Math.min(fixed, 300) - homework);
+      return { ...base, from: prep[0][0], to: prep[prep.length - 1][1], minutes: own, fixed: own, windows: prep, prep: true, homework };
+    }
     if (!school && o.where === "home") {
       const from = later(wake + MORNING, to, routine.best);
       const end = o.returning ? to - home - SETTLE : to;

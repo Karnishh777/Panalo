@@ -43,6 +43,7 @@ export const FOCUS = [25, 40, 50];
  *   dinnerMinutes              15..120 (45)
  *   best                       when to study on days without school (BEST_TIMES)
  *   focus                      minutes of study before a break (FOCUS)
+ *   homework                   school homework on a school day, minutes (null: the usual)
  *   goals                      { area: minutes a week, 0..1200 } for LIFE_GOALS
  */
 export function cleanRoutine(r) {
@@ -59,6 +60,9 @@ export function cleanRoutine(r) {
     dinnerMinutes: clamp(x.dinnerMinutes ?? 45, 15, 120),
     best: BEST_TIMES.includes(x.best) ? x.best : "any",
     focus: FOCUS.includes(Number(x.focus)) ? Number(x.focus) : 25,
+    // School homework on a school day, in minutes; null = the usual for the
+    // grade (capacity.js homeworkOf).
+    homework: x.homework == null || x.homework === "" ? null : clamp(x.homework, 0, 240),
     goals,
   };
 }

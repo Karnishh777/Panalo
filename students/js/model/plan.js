@@ -116,16 +116,39 @@ export function paperPlan(s, syllabus, list, now) {
   return { papers, examOf };
 }
 
-/** The next exam in a subject: an exam event naming it. */
+const sameDay = (a, b) => new Date(a).toDateString() === new Date(b).toDateString();
+const startOfDay = (ms) => new Date(ms).setHours(0, 0, 0, 0);
+const nextDay = (ms) => {
+  const d = new Date(ms);
+  d.setDate(d.getDate() + 1);
+  return d.setHours(0, 0, 0, 0);
+};
+
+// The words a calendar exam may use for a subject: its name, its code and
+// common short forms ("Maths" for Mathematics), each matched as a whole
+// word, so "Physics test" is never a Computer Science ("cs") exam.
+function examNames(subject) {
+  const out = new Set([subject.name, subject.code].filter(Boolean).map((x) => String(x).toLowerCase()));
+  for (const n of [...out]) {
+    if (/\bmathematics\b/.test(n)) {
+      out.add(n.replace(/\bmathematics\b/, "maths"));
+      out.add(n.replace(/\bmathematics\b/, "math"));
+    }
+  }
+  return [...out].filter((n) => n.length >= 3);
+}
+const wordIn = (title, n) => new RegExp(`(^|[^a-z0-9])${n.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}([^a-z0-9]|$)`).test(title);
+
+/** The next exam in a subject: an exam event naming it (as a whole word). */
 export function nextExam(subject, events, now) {
-  const names = [subject.name, subject.id, subject.code].filter(Boolean).map((s) => String(s).toLowerCase());
+  const names = examNames(subject);
   let best = null;
   for (const e of events || []) {
     if (e.kind !== "exam") continue;
     const at = Date.parse(e.starts_at);
     if (!(at >= now - DAY / 2)) continue;
     const title = String(e.title || "").toLowerCase();
-    if (!names.some((n) => title.includes(n))) continue;
+    if (!names.some((n) => wordIn(title, n))) continue;
     if (!best || at < best) best = at;
   }
   return best;
@@ -143,7 +166,7 @@ const untouched = (t) => t.n === 0 && t.covered === 0 && t.minutes === 0 && t.S 
 export function need(t, ctx) {
   const { at, target, examAt, level, firstNew, own } = ctx;
   const days = examAt ? (examAt - at) / DAY : Infinity;
-  if (days >= 0 && days < 1) return null; // the exam day: rest it
+  if (examAt && sameDay(examAt, at)) return null; // the exam day: rest it (buildPlan also skips the subject)
   const exam = Number.isFinite(days) && days >= 0 ? 1 + 2 * Math.exp(-days / 21) : 1;
   const boost = (LEVEL_BOOST[level] || 1) * exam;
   if (own) return { kind: "practice", score: 0.5 * boost };
@@ -152,7 +175,12 @@ export function need(t, ctx) {
   const due = L.dueAt(t, { examAt, now: at });
   if (due != null && due <= at) {
     const R = L.recallNow(t, at);
-    return { kind: "review", score: (0.9 + Math.max(0, 0.9 - R) * 3) * boost };
+    const score = (0.9 + Math.max(0, 0.9 - R) * 3) * boost;
+    // Still weak: a short review only re-asks what isn't known yet, so it
+    // becomes practice (or learning, if the topic isn't finished), with the
+    // review's urgency. Close to the exam (2 days) a review is enough.
+    if (gap > 0.25 && days > 2) return t.covered < 1 ? { kind: "learn", score } : { kind: "practice", score };
+    return { kind: "review", score };
   }
   if (untouched(t)) return firstNew && days > 2 ? { kind: "check", score: (0.5 + (level <= 2 ? 0.3 : 0)) * boost } : null;
   if (t.covered < 1) return days > 2 ? { kind: "learn", score: (0.6 + gap) * boost } : null;
@@ -206,8 +234,16 @@ export function buildPlan({ profile, syllabi = {}, topics = {}, pace = {}, event
     const state = {};
     for (const tp of list) state[tp.id] = topics[s.id]?.[tp.id] || L.newTopic(s.level ?? 2);
     const lastPaper = { ...(papersDone[s.id] || {}) };
-    return { id: s.id, code: syllabus?.code, name: (s.custom && s.name) || subjectName(profile.stage, s.id) || syllabus?.name || s.id, level: s.level ?? 2, list, own, perTopic, state, papers, examOf, lastPaper };
+    // The sittings of its papers: busy on the day, and the subject rests.
+    const sittings = papers.filter((p) => p.at != null && PP.timedPaper(p)).map((p) => ({ at: p.at, minutes: p.minutes || 120 }));
+    // Its last exam, when every chosen paper has a date: after that day,
+    // the subject is done and isn't planned.
+    const lastExam = papers.length && papers.every((p) => p.at != null) ? Math.max(...papers.map((p) => p.at)) : null;
+    return { id: s.id, code: syllabus?.code, name: (s.custom && s.name) || subjectName(profile.stage, s.id) || syllabus?.name || s.id, level: s.level ?? 2, list, own, perTopic, state, papers, examOf, lastPaper, sittings, lastExam };
   });
+  // Does subject `s` sit an exam (a paper, or a calendar exam naming it)
+  // in [a, b)?
+  const examIn = (s, a, b) => s.sittings.some((x) => x.at >= a && x.at < b) || (events || []).some((e) => e.kind === "exam" && Date.parse(e.starts_at) >= a && Date.parse(e.starts_at) < b && examNames(s).some((n) => wordIn(String(e.title || "").toLowerCase(), n)));
 
   const out = [];
   const midnight = new Date(now);
@@ -224,7 +260,25 @@ export function buildPlan({ profile, syllabi = {}, topics = {}, pace = {}, event
     // study times counts as taken too (ending a break early, so the next
     // time starts on the minute).
     const busy = busyOf(profile, events, date.getTime());
+    const t0 = date.getTime();
+    const t1 = nextDay(t0);
+    const t2 = nextDay(t1);
+    const yesterday = startOfDay(t0 - DAY / 2);
+    // A paper sat today is busy from half an hour before to half an hour
+    // after, and nothing is planned on the morning before it: study that
+    // day starts once the last sitting is over.
+    let afterExams = 0;
+    for (const s of subjects) for (const x of s.sittings) if (x.at >= t0 && x.at < t1) {
+      const a = Math.round((x.at - t0) / 60000);
+      busy.push([a - 30, a + x.minutes + 30]);
+      afterExams = Math.max(afterExams, a + x.minutes + 30);
+    }
+    const examToday = new Set(subjects.filter((s) => examIn(s, t0, t1)).map((s) => s.id));
+    const examTomorrow = new Set(subjects.filter((s) => examIn(s, t1, t2)).map((s) => s.id));
+    const nearExam = new Set(subjects.filter((s) => examIn(s, yesterday, t2)).map((s) => s.id));
+    const finished = new Set(subjects.filter((s) => s.lastExam != null && s.lastExam < t0).map((s) => s.id));
     for (let w = 1; w < (cap.windows?.length || 0); w++) busy.push([cap.windows[w - 1][1], cap.windows[w][0] - BREAK]);
+    from = Math.max(from, afterExams);
     const free = (a) => Math.max(0, cap.to - a - busyWithin(busy, a, cap.to));
     let room = own.off ? 0 : own.crash ? Math.min(CRASH, free(from)) : own.cap != null ? Math.min(own.cap, free(from)) : Math.min(cap.planned, free(from));
     if (d === 0) {
@@ -272,7 +326,7 @@ export function buildPlan({ profile, syllabi = {}, topics = {}, pace = {}, event
       const s = subjects.find((x) => x.id === pin.subject);
       const tp = s?.list.find((x) => x.id === pin.topic);
       const minutes = KINDS[pin.kind]?.minutes;
-      if (!s || !tp || !minutes || minutes > room || slot(minutes) == null) continue;
+      if (!s || !tp || !minutes || minutes > room || slot(minutes) == null || examToday.has(s.id) || finished.has(s.id)) continue;
       place(s, tp, pin.kind, minutes);
       day.blocks[day.blocks.length - 1].pinned = true;
     }
@@ -282,7 +336,8 @@ export function buildPlan({ profile, syllabi = {}, topics = {}, pace = {}, event
       let best = null;
       for (const s of subjects) {
         const weight = R.weight[s.id] ?? 1;
-        if (!weight) continue;
+        // Its exam day rests it, and after its last exam it's done.
+        if (!weight || examToday.has(s.id) || finished.has(s.id)) continue;
         const used = perSubject.get(s.id) || 0;
         const count = blocksOf.get(s.id) || 0;
         const checks = checksOf.get(s.id) || 0;
@@ -291,7 +346,8 @@ export function buildPlan({ profile, syllabi = {}, topics = {}, pace = {}, event
         // A timed past paper of each chosen paper, as its date nears.
         const papersToday = day.blocks.filter((b) => b.kind === "paper").length;
         for (const p of s.papers) {
-          if (p.at == null || !PP.timedPaper(p) || papersToday >= (own.crash ? 2 : 1) || skipped.has(`${s.id}|paper-${p.id}`)) continue;
+          // No timed past paper the day before, of, or after a real one.
+          if (p.at == null || !PP.timedPaper(p) || nearExam.has(s.id) || papersToday >= (own.crash ? 2 : 1) || skipped.has(`${s.id}|paper-${p.id}`)) continue;
           const left = (p.at - date.getTime()) / DAY;
           if (left < 1 || left > PAPER_WINDOW) continue;
           const last = s.lastPaper[p.id];
@@ -310,6 +366,8 @@ export function buildPlan({ profile, syllabi = {}, topics = {}, pace = {}, event
           const exam = examFor(tp);
           const n = need(s.state[tp.id], { at, target, examAt: Number.isFinite(exam) ? exam : null, level: s.level, firstNew: tp.id === firstNewId, own: s.own });
           if (!n || (n.kind === "check" && checks >= 3)) continue;
+          // The evening before its exam: a light review at most (two blocks).
+          if (examTomorrow.has(s.id) && (n.kind !== "review" || count >= 2)) continue;
           const minutes = KINDS[n.kind].minutes;
           if (minutes > room || used + minutes > maxPerSubject * Math.max(1, weight) || slot(minutes) == null) continue;
           const score = n.score * weight * Math.pow(0.75, count);
