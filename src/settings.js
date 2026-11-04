@@ -22,7 +22,7 @@ import { state } from "./state.js";
 import { rewrapPrivateKey, idbDelKey } from "./encryption.js";
 import { confirmDelete } from "./chatinfo.js";
 import { deleteAttachment, clearAttachmentCache } from "./attachments.js";
-import { deleteAllMyFiles } from "./filestore.js";
+import { deleteAllMyFiles, nudgeErasure } from "./filestore.js";
 import { normalizeSettings, accentVars } from "./appearance-core.js";
 import { applyRootAppearance, watchSystemTheme, paintAccent, accentPreset, paintFavicon } from "./appearance.js";
 import { ensureFont, ensureAllFonts } from "./fonts.js";
@@ -287,6 +287,7 @@ async function deleteAccount() {
 
     const { error } = await supabaseClient.rpc("delete_my_account");
     if (error) throw error;
+    nudgeErasure();
 
     // The account is gone; clear every local trace of it before the reload.
     await idbDelKey(userId);

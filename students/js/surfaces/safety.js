@@ -4,7 +4,7 @@
 import { el, openSheet, showToast, getPrefs, setPrefs } from "../ui.js";
 import { sealedJourney } from "../journey.js";
 import { supabaseClient } from "../../../src/client.js";
-import { deleteAllMyFiles } from "../../../src/filestore.js";
+import { deleteAllMyFiles, nudgeErasure } from "../../../src/filestore.js";
 import { idbDelKey } from "../../../src/encryption.js";
 import { state } from "../../../src/state.js";
 
@@ -111,6 +111,7 @@ function deleteAccount() {
             b.textContent = "Delete forever";
             return showToast("Couldn't delete the account. Try again."), false;
           }
+          nudgeErasure();
           const id = state.currentUser?.id;
           if (id) await idbDelKey(id).catch(() => {});
           try {

@@ -10,6 +10,7 @@ import { supabaseClient } from "../../src/client.js";
 import { withBusy, showToast, authErrorText } from "../../src/util.js";
 import { el } from "./ui.js";
 import { emailParentCode, validCode } from "./age-gate.js";
+import { nudgeErasure } from "../../src/filestore.js";
 
 const $ = (id) => document.getElementById(id);
 const FORMS = ["parent-start-form", "parent-code-form", "parent-decide"];
@@ -67,6 +68,7 @@ function requestCard(r) {
       withBusy(withdraw, "Deleting…", async () => {
         const { error } = await supabaseClient.rpc("withdraw_parent_consent", { p_child: r.child_id });
         if (error) return message(error.message || "Couldn't do that.");
+        nudgeErasure();
         message(`Consent withdrawn. @${r.child_username}'s account is deleted.`, true);
         load();
       });
