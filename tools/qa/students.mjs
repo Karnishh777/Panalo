@@ -116,8 +116,11 @@ try {
 
     check("no 0-to-100 gate holds the landing", !(await page.$(".gate")) && !(await page.evaluate(() => document.documentElement.hasAttribute("data-gate"))));
     // One look now: Panalo Night, with no switch to show.
-    check("the landing opens in the Night look", (await page.evaluate(() => document.documentElement.dataset.look)) === "night");
-    check("…with no look switch on it", !(await page.isVisible("#land-look-open")));
+    check("the landing opens in the Glass look", (await page.evaluate(() => document.documentElement.dataset.look)) === "glass");
+    check("…with the look switch on it", await page.isVisible("#land-look-open"));
+    await page.click("#land-look-open");
+    check("the welcome's look menu lists every look", (await page.locator("#land-look-menu .look-opt").count()) === 5);
+    await page.keyboard.press("Escape");
     {
       const dayVisitor = await qa.open({ viewport: "mobile", path: "students/", storage: { "panalo.students.prefs": JSON.stringify({ look: "day" }) } });
       await dayVisitor.waitForTimeout(600);
@@ -578,12 +581,16 @@ try {
   check("Warp jumps anywhere by typing", /Privacy/.test(await page.title()) && /Yours, and only yours/.test(await page.textContent("[data-surface=safety] h1")));
   check("Privacy & data has no blocking or reports: there's nobody to block", !(await page.isVisible("[data-surface=safety] >> text=Blocked")) && !(await page.isVisible("[data-surface=safety] >> text=Reports you've sent")));
 
-  // ---- The look: Panalo Night (Glass, Signal and Verse are retired) ---------------
-  check("the look is Panalo Night", (await page.evaluate(() => document.documentElement.dataset.look)) === "night");
-  check("there's no look switch in the bar (it's in Settings)", !(await page.isVisible("#look-open")));
+  // ---- The looks: Glass (the default), Signal, Verse, Night and Day ---------------
+  check("the look is Glass by default", (await page.evaluate(() => document.documentElement.dataset.look)) === "glass");
+  check("Glass has its own type (Geist)", /Geist/.test(await page.evaluate(() => getComputedStyle(document.body).fontFamily)));
   await page.evaluate(() => (location.hash = "#/settings"));
   await page.waitForTimeout(900);
-  check("Settings offers two looks: Night and Day", (await page.locator(".settings-look .look-opt").count()) === 2 && (await page.locator(".settings-look .look-opt-day").count()) === 1);
+  check("Settings offers five looks", (await page.locator(".settings-look .look-opt").count()) === 5 && (await page.locator(".settings-look .look-opt-signal").count()) === 1 && (await page.locator(".settings-look .look-opt-verse").count()) === 1);
+  await page.locator(".settings-look .look-opt-signal").click();
+  const isSignal = await page.waitForFunction(() => document.documentElement.dataset.look === "signal", null, { timeout: 3000 }).then(() => true, () => false);
+  check("choosing Signal switches to it", isSignal && !/Inter Tight/.test(await page.evaluate(() => getComputedStyle(document.documentElement).getPropertyValue("--f-display"))));
+  await page.locator(".settings-look .look-opt-day").click();
   await page.locator(".settings-look .look-opt-day").click();
   const isDay = await page.waitForFunction(() => document.documentElement.dataset.look === "day", null, { timeout: 3000 }).then(() => true, () => false);
   const dayBg = await page.evaluate(() => getComputedStyle(document.documentElement).getPropertyValue("--bg").trim());
@@ -626,7 +633,7 @@ try {
   await page.waitForTimeout(800);
   check("the session and data survive a reload", /Kepler QA|alex/.test(await page.textContent("#me-menu")) && (await page.evaluate(() => window.__qa.db.focus_sessions.length)) === 1);
   check("Day is set before the first paint after a reload", (await page.evaluate(() => document.documentElement.dataset.look)) === "day");
-  // A retired look saved before the redesign opens as Night.
+  // Verse is back: a saved Verse opens as Verse.
   await page.evaluate(() => {
     const p = JSON.parse(localStorage.getItem("panalo.students.prefs") || "{}");
     localStorage.setItem("panalo.students.prefs", JSON.stringify({ ...p, look: "verse" }));
@@ -634,7 +641,15 @@ try {
   await page.reload();
   await page.waitForSelector("#app:not([hidden])", { timeout: 15000 });
   await page.waitForTimeout(600);
-  check("a saved Verse look opens as Night", (await page.evaluate(() => document.documentElement.dataset.look)) === "night");
+  check("a saved Verse look opens as Verse", (await page.evaluate(() => document.documentElement.dataset.look)) === "verse");
+  // Back to Glass, the default, for the rest.
+  await page.evaluate(() => {
+    const p = JSON.parse(localStorage.getItem("panalo.students.prefs") || "{}");
+    localStorage.setItem("panalo.students.prefs", JSON.stringify({ ...p, look: "glass" }));
+  });
+  await page.reload();
+  await page.waitForSelector("#app:not([hidden])", { timeout: 15000 });
+  await page.waitForTimeout(600);
   // Details: the nav's marker sits under the page you're on, and moves with you.
   await page.evaluate(() => (location.hash = "#/calendar"));
   await page.waitForTimeout(900);

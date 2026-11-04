@@ -37,18 +37,18 @@
     e.preventDefault();
   }, true);
 
-  // 4. The look (js/looks.js): Night or Day, before the first paint so the
-  //    page never flashes the wrong one. The fonts are the site's own
-  //    (css/fonts.css).
-  var LOOKS = { night: 1, day: 1 };
-  var look = "night";
+  // 4. The look (js/looks.js): Glass, Signal, Verse, Night or Day, before
+  //    the first paint so the page never flashes the wrong one. The fonts
+  //    are the site's own (css/fonts.css).
+  var LOOKS = { glass: 1, signal: 1, verse: 1, night: 1, day: 1 };
+  var look = "glass";
   root.setAttribute("data-effects", "calm");
   try {
     var prefs = JSON.parse(localStorage.getItem("panalo.students.prefs") || "{}") || {};
     if (prefs.reduceMotion) root.setAttribute("data-motion", "reduce");
     if (prefs.textSize && prefs.textSize !== "normal") root.setAttribute("data-text", prefs.textSize);
-    // Day is for the app: the welcome and sign-in pages are always Night.
-    if (LOOKS[prefs.look] && (signedIn || prefs.look === "night")) look = prefs.look;
+    // Day is for the app: the welcome and sign-in pages show Night instead.
+    if (LOOKS[prefs.look]) look = prefs.look === "day" && !signedIn ? "night" : prefs.look;
     if (prefs.effects === "lively") root.setAttribute("data-effects", "lively");
   } catch (e) {}
   root.setAttribute("data-look", look);
