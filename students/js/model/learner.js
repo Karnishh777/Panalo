@@ -31,7 +31,45 @@ const START = { 1: logit(0.25), 2: logit(0.45), 3: logit(0.6), 4: logit(0.75) };
 
 /** A topic's starting state. `level` is the setup's 1..4 for the subject. */
 export function newTopic(level = 2) {
-  return { theta: START[clamp(Math.round(level), 1, 4)], n: 0, seen: null, S: null, D: null, last: null, reps: 0, lapses: 0, minutes: 0, covered: 0 };
+  return { theta: START[clamp(Math.round(level), 1, 4)], n: 0, seen: null, S: null, D: null, last: null, reps: 0, lapses: 0, minutes: 0, covered: 0, asked: [] };
+}
+
+// ---- which questions a topic has asked (phase 41) ------------------------------
+
+/** A question's id: a short, stable hash of its wording. */
+export function questionId(q) {
+  let h = 2166136261;
+  const s = String(q?.q || "");
+  for (let i = 0; i < s.length; i++) h = Math.imul(h ^ s.charCodeAt(i), 16777619);
+  return (h >>> 0).toString(36);
+}
+
+const dayNo = (ms) => Math.floor(ms / DAY);
+export const REPEAT_DAYS = 14; // a question asked within this many days is a repeat
+
+/** asked: [[id, day], ...] cleaned, newest last, at most 60. */
+export function cleanAsked(a) {
+  const out = (Array.isArray(a) ? a : []).filter((x) => Array.isArray(x) && typeof x[0] === "string" && x[0].length <= 12 && Number.isInteger(x[1]));
+  return out.slice(-60);
+}
+
+/** The asked list after asking `ids` at `now`. */
+export function noteAsked(asked, ids, now) {
+  const set = new Set(ids);
+  return cleanAsked([...cleanAsked(asked).filter((x) => !set.has(x[0])), ...ids.map((id) => [id, dayNo(now)])]);
+}
+
+/**
+ * Pick `n` of a topic's questions: never asked first (in random order),
+ * then the ones asked longest ago. Each comes back with `id` and `repeat`
+ * (asked within REPEAT_DAYS). `rand` is for tests.
+ */
+export function pickQuestions(questions, asked, n, now, rand = Math.random) {
+  const last = new Map(cleanAsked(asked).map(([id, day]) => [id, day]));
+  const today = dayNo(now);
+  const all = (questions || []).map((q) => ({ q, id: questionId(q), r: rand() }));
+  all.sort((a, b) => (last.get(a.id) ?? -Infinity) - (last.get(b.id) ?? -Infinity) || a.r - b.r);
+  return all.slice(0, n).map(({ q, id }) => ({ ...q, id, repeat: last.has(id) && today - last.get(id) < REPEAT_DAYS }));
 }
 
 /** How well the topic is known: chance of getting a typical question right. */
@@ -48,10 +86,12 @@ export function pCorrect(t, difficulty = 0, options = 0) {
  * count behind K fades by half for every month without practice, so a
  * topic left alone can be re-measured quickly.
  */
-export function answer(t, { correct, difficulty = 0, options = 4, now = null }) {
+export function answer(t, { correct, difficulty = 0, options = 4, now = null, repeat = false }) {
   const gap = now != null && t.seen != null ? Math.max(0, (now - t.seen) / DAY) : 0;
   const n = t.n * Math.pow(0.5, gap / 30);
-  const K = 1 / (1 + 0.05 * n);
+  // A question seen lately may be remembered rather than known: a right
+  // answer to it counts for a third.
+  const K = (1 / (1 + 0.05 * n)) * (repeat && correct ? 1 / 3 : 1);
   const p = pCorrect(t, difficulty, options);
   return { ...t, theta: clamp(t.theta + K * ((correct ? 1 : 0) - p), -4, 4), n: n + 1, seen: now ?? t.seen };
 }
@@ -190,6 +230,7 @@ export function fromTopicRow(r) {
     lapses: r.lapses || 0,
     minutes: r.minutes || 0,
     covered: Number(r.covered) || 0,
+    asked: cleanAsked(r.asked),
   };
 }
 
@@ -208,5 +249,6 @@ export function toTopicRow(subject, topic, t) {
     lapses: clamp(Math.round(t.lapses || 0), 0, 100000),
     minutes: clamp(Math.round(t.minutes || 0), 0, 100000),
     covered: clamp(t.covered || 0, 0, 1),
+    asked: cleanAsked(t.asked),
   };
 }

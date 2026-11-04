@@ -95,6 +95,26 @@ const T0 = Date.UTC(2026, 9, 1, 4, 30);
   ok("a sparse row reads as never reviewed", fresh.S === null && fresh.last === null && fresh.theta === 0.2);
 }
 
+// ---- which questions a topic asked (phase 41) ----
+{
+  const bank = ["A?", "B?", "C?", "D?", "E?"].map((q) => ({ q, o: ["1", "2"], a: 0 }));
+  const ids = bank.map(L.questionId);
+  ok("question ids are stable and distinct", L.questionId(bank[0]) === L.questionId({ q: "A?" }) && new Set(ids).size === 5);
+  const asked = L.noteAsked([], ids.slice(0, 3), T0);
+  const pick = L.pickQuestions(bank, asked, 2, T0 + DAY);
+  ok("unseen questions are asked first", pick.every((p) => [ids[3], ids[4]].includes(p.id)) && pick.every((p) => !p.repeat), JSON.stringify(pick.map((p) => p.id)));
+  const later = L.pickQuestions(bank, L.noteAsked(asked, ids.slice(3), T0 + DAY), 3, T0 + 2 * DAY);
+  ok("then the ones asked longest ago, marked as repeats", later.every((p) => ids.slice(0, 3).includes(p.id)) && later.every((p) => p.repeat));
+  ok("a question asked weeks ago isn't a repeat", L.pickQuestions(bank, asked, 5, T0 + 20 * DAY).every((p) => !p.repeat));
+  ok("the list stays small", L.noteAsked(Array.from({ length: 80 }, (_, k) => [`q${k}`, 1]), ["new"], T0).length === 60);
+  const t = L.newTopic(2);
+  const fresh = L.answer(t, { correct: true, now: T0 });
+  const again = L.answer(t, { correct: true, now: T0, repeat: true });
+  ok("a right answer to a repeated question counts for less", again.theta - t.theta < (fresh.theta - t.theta) / 2);
+  const row = L.toTopicRow("phy", "1", { ...t, asked });
+  ok("asked travels in the topic row", Array.isArray(row.asked) && L.fromTopicRow(row).asked.length === 3);
+}
+
 console.log(`\n${passed} passed, ${failures.length} failed`);
 if (failures.length) {
   failures.forEach((f) => console.log(`  ✗ ${f}`));

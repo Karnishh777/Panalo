@@ -13,6 +13,12 @@ AI, runs as "Pan Lite" (our own planner code does the planning; the AI
 only where nothing else can).
 
 **0.2.0 (in progress)**
+- **Checks stop re-asking the same questions.** Each topic remembers the
+  questions it asked and when; a check asks unseen ones first, then the
+  ones asked longest ago, and asks fewer at a time where a topic has few.
+  A right answer to a question seen in the last two weeks counts for a
+  third, and all-right on repeats is "Good", not "Easy", so mastery and
+  the next review aren't overstated. Questions may carry a difficulty.
 - **The planner, corrected (from the review).**
   - **Exam days:** a subject rests on its exam day; the sitting is kept
     busy; study that day starts after the exam; the evening before is two

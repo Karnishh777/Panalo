@@ -171,6 +171,15 @@ for (const s of profile.subjects) syllabi[s.id] = load(P.syllabusPath(profile.st
   ok("a weak, due topic is practised", n?.kind === "practice", JSON.stringify(n));
 }
 
+// Repeated questions don't earn an Easy (phase 41).
+{
+  const t = { ...L.newTopic(2), covered: 1 };
+  const fresh = P.afterBlock(t, { kind: "review", answers: [{ correct: true, id: "a" }, { correct: true, id: "b" }], now: NOW });
+  const repeats = P.afterBlock(t, { kind: "review", answers: [{ correct: true, id: "a", repeat: true }, { correct: true, id: "b", repeat: true }], now: NOW });
+  ok("all right on repeats is Good, not Easy: a shorter interval", repeats.S < fresh.S, `${repeats.S} vs ${fresh.S}`);
+  ok("the questions asked are remembered", fresh.asked.map((x) => x[0]).join() === "a,b");
+}
+
 console.log(`\n${passed} passed, ${failures.length} failed`);
 if (failures.length) {
   failures.forEach((f) => console.log(`  ✗ ${f}`));
