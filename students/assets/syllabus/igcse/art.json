@@ -9,7 +9,9 @@
       "questions": [
         { "q": "Recording from first-hand observation means", "o": ["drawing or photographing real objects in front of you", "copying images from the internet", "writing an essay", "tracing a photograph"], "a": 0, "why": "First-hand work is valued over second-hand sources." },
         { "q": "Annotation in a sketchbook should", "o": ["explain your thinking, choices and next steps", "describe the weather", "list materials only", "be avoided"], "a": 0, "why": "It shows your reflection and intentions." },
-        { "q": "Which is first-hand (primary) recording?", "o": ["Drawing a plant you are looking at", "Copying a photo from the internet", "Tracing a magazine picture", "Printing an artist's work"], "a": 0, "why": "Examiners (2023): many portfolios had little recording from primary sources, and second-hand sources were often not credited." }
+        { "q": "Which is first-hand (primary) recording?", "o": ["Drawing a plant you are looking at", "Copying a photo from the internet", "Tracing a magazine picture", "Printing an artist's work"], "a": 0, "why": "Examiners (2023): many portfolios had little recording from primary sources, and second-hand sources were often not credited." },
+        { "q": "A student photographs the same building at dawn, midday and dusk. What is this recording mainly useful for?", "o": ["Proving the student visited the building", "Avoiding the need to draw anything", "Showing how changing light and shadow alter the forms and the mood", "Making the sketchbook look full"], "a": 2, "why": "Recording a subject under different conditions gathers visual information (light, shadow, mood) that can feed later ideas. Photography is a valid recording method, but it should support drawing and development, not replace them." },
+        { "q": "Why might a student make several quick, timed sketches of people moving in a busy market?", "o": ["To capture gesture, movement and proportion quickly", "To produce a finished final outcome", "Because detailed drawing is not credited for recording", "To avoid looking closely at the subject"], "a": 0, "why": "Short timed sketches train observation of moving subjects, recording gesture and proportion before the pose changes." }
       ]
     },
     {
@@ -17,7 +19,9 @@
       "questions": [
         { "q": "Exploring media means", "o": ["experimenting with different materials and techniques", "using only pencil", "finishing the final piece first", "copying an artist exactly"], "a": 0, "why": "Experiments show how ideas develop." },
         { "q": "Studying another artist's work helps you", "o": ["understand techniques and ideas to develop your own", "copy their final piece", "avoid making choices", "skip research"], "a": 0, "why": "Contextual study informs your own direction." },
-        { "q": "Why try several media before choosing one?", "o": ["To fill more pages", "To find which best expresses your idea and develop it further", "Because the syllabus bans one medium", "To copy an artist exactly"], "a": 1, "why": "Examiners (2023): candidates often didn't use what they discovered to move the work forward." }
+        { "q": "Why try several media before choosing one?", "o": ["To fill more pages", "To find which best expresses your idea and develop it further", "Because the syllabus bans one medium", "To copy an artist exactly"], "a": 1, "why": "Examiners (2023): candidates often didn't use what they discovered to move the work forward." },
+        { "q": "Which approach best shows a student exploring a printmaking technique?", "o": ["Printing one image once in black ink", "Printing the same block on different papers and in different inks, and noting the results", "Buying a ready-made print to stick in the sketchbook", "Writing an essay about the history of printmaking"], "a": 1, "why": "Exploration means purposeful experiment: varying paper, ink and pressure and reflecting on what works. A single print or a bought one shows no investigation of the process." },
+        { "q": "What is a resist technique in painting?", "o": ["Painting with very thick, textured paint (impasto)", "Priming a surface with gesso", "Using wax or masking fluid to stop paint reaching chosen areas", "Mixing sand into paint for texture"], "a": 2, "why": "A resist, such as wax crayon or masking fluid, repels water-based paint so those areas stay clear. The other options are different surface or texture techniques." }
       ]
     },
     {
@@ -25,7 +29,9 @@
       "questions": [
         { "q": "Developing ideas means", "o": ["refining compositions and solutions through a series of studies", "starting a new topic each week", "making one drawing", "choosing at random"], "a": 0, "why": "Show how each step leads to the next." },
         { "q": "How should an artist you research be used?", "o": ["Write their biography", "Analyse how their work is made and use what you learn in your own ideas", "Copy one painting as your final piece", "Paste in their photo"], "a": 1, "why": "Examiners (2023): some gave a biography instead of researching the artwork." },
-        { "q": "What makes annotation useful?", "o": ["It analyses decisions and explains how the work will develop", "It describes what is on the page", "It lists materials only", "It repeats the title"], "a": 0, "why": "Examiners (2023): annotations were mostly descriptive rather than analytical." }
+        { "q": "What makes annotation useful?", "o": ["It analyses decisions and explains how the work will develop", "It describes what is on the page", "It lists materials only", "It repeats the title"], "a": 0, "why": "Examiners (2023): annotations were mostly descriptive rather than analytical." },
+        { "q": "A student's theme is 'Decay'. Which is the best way to develop ideas?", "o": ["Make one finished painting straight away", "Change the theme to something easier", "Copy a famous painting of ruins as the final piece", "Study rusting metal and rotting fruit, try different crops and compositions, then refine the strongest"], "a": 3, "why": "Development is a sequence of linked studies that test and refine ideas. Jumping to an outcome or copying skips the investigation that AO3 rewards." },
+        { "q": "Why might a student make a small trial version, such as a maquette or colour study, before the final piece?", "o": ["To test composition, scale or colour and solve problems before committing", "Because only trial pieces are marked", "So that no final outcome is needed", "To copy another student's idea"], "a": 0, "why": "Trials let the student solve practical and visual problems in advance, so the final piece is better resolved." }
       ]
     },
     {
@@ -33,7 +39,9 @@
       "questions": [
         { "q": "A final outcome should", "o": ["realise your intentions and connect to your preparatory work", "be unrelated to your research", "be as large as possible", "copy a famous work"], "a": 0, "why": "The journey to it is assessed too." },
         { "q": "What should a final piece show?", "o": ["A new idea unrelated to the studies", "A copy of an artist's work", "Only technical skill", "A personal response that grows clearly out of the supporting studies"], "a": 3, "why": "The journey from studies to outcome is assessed." },
-        { "q": "How should a 3D piece be submitted in a portfolio?", "o": ["Posted as the object", "As a written description only", "It cannot be submitted", "As photographs"], "a": 3, "why": "Examiners (2023): photograph 3D objects and organic matter rather than sending them." }
+        { "q": "How should a 3D piece be submitted in a portfolio?", "o": ["Posted as the object", "As a written description only", "It cannot be submitted", "As photographs"], "a": 3, "why": "Examiners (2023): photograph 3D objects and organic matter rather than sending them." },
+        { "q": "In the Externally Set Assignment, the final outcome is made in a supervised test. What should the preparatory work have done?", "o": ["Nothing, because only the test piece is assessed", "Followed a different starting point from the test piece", "Researched, developed and rehearsed the outcome so the supervised time is used well", "Produced a finished copy of the outcome to trace in the test"], "a": 2, "why": "Preparatory work and the outcome are assessed together; good preparation means the student arrives at the test with a planned, tested idea." },
+        { "q": "What makes a portfolio or response 'coherent'?", "o": ["Every page explores a different, unrelated theme", "Each stage links clearly to the next, showing a journey from first ideas to the outcome", "All the work is in the same medium", "The final outcome is the largest piece"], "a": 1, "why": "Coherence means the work hangs together: the outcome grows logically from the recording, exploration and development that came before." }
       ]
     },
     {
@@ -41,7 +49,9 @@
       "questions": [
         { "q": "Complementary colours", "o": ["sit opposite each other on the colour wheel", "are next to each other", "are shades of grey", "are only primary colours"], "a": 0, "why": "e.g. red and green." },
         { "q": "Negative space is", "o": ["the space around and between objects", "a dark colour", "a mistake", "the background colour only"], "a": 0, "why": "Using it strengthens composition." },
-        { "q": "Linear perspective uses", "o": ["a horizon line and vanishing points", "only colour", "random lines", "flat shapes"], "a": 0, "why": "To create the illusion of depth." }
+        { "q": "Linear perspective uses", "o": ["a horizon line and vanishing points", "only colour", "random lines", "flat shapes"], "a": 0, "why": "To create the illusion of depth." },
+        { "q": "Which describes 'tone' as a visual element?", "o": ["The surface feel of an object", "The arrangement of parts within a picture", "The outline of a shape", "The lightness or darkness of a colour or area"], "a": 3, "why": "Tone is about light and dark values, used to show form and mood. Surface feel is texture, arrangement is composition, and outline is line." },
+        { "q": "Which art movement is known for breaking objects into geometric planes and showing several viewpoints at once?", "o": ["Impressionism", "Cubism", "Pop Art", "Romanticism"], "a": 1, "why": "Cubism, developed by Picasso and Braque, fractured forms into planes seen from multiple angles. Impressionism focused on light and colour, and Pop Art on mass culture." }
       ]
     }
   ]
