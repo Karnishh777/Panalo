@@ -179,6 +179,14 @@ export const EXAMINER = {
     2: ["Give only the information asked for; answers in the first person are unlikely to be right in some questions."],
     4: ["Answer every part in the tense indicated, use simple linking words for opinions, and plan a coherent piece."],
   },
+  // Hindi 0549: general advice for Cambridge's language papers in our own
+  // words, not taken from a specific 0549 report.
+  "0549": {
+    "*": ["Write in Hindi in Devanagari, and check gender and number agreement (लिंग, वचन) in every sentence."],
+    1: ["Find the answer in the text and give just that detail; copying a whole sentence can add something wrong.", "Cover every bullet point in the writing tasks, keep near the word count and match the register to the reader."],
+    2: ["Read the questions before each recording and listen for the exact detail asked for; short answers are enough."],
+    3: ["Develop answers with reasons and examples rather than one-word replies; if you don't understand, ask in Hindi for it to be repeated."],
+  },
   "0400": {
     "*": ["Record from direct observation and your own photography, not just the internet; label your own photos."],
   },
