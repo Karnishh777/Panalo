@@ -11,6 +11,11 @@
 //             first; the check is the first retrieval.
 //   practice  25 min. Covered, but below the aim: questions with feedback.
 //   review    15 min. Due by the memory model: a short self-test.
+//   topical   15-50 min. Practice once a chapter is half known (or its exam
+//             is within six weeks) and it has exam-style questions: a set
+//             of them on one paper, timed at that paper's pace, then
+//             marked with the scheme ("Physics P2 · Ch 2 Kinematics ·
+//             topical Q1-3 (12 marks) · 25 min").
 //
 // The week is filled day by day up to each day's capacity (capacity.js),
 // inside a boarder's study times when the day has them, with a 5-minute
@@ -75,7 +80,82 @@ export const KINDS = {
   review: { label: "Review", minutes: 15, verb: "A short self-test before it fades" },
   // A whole paper, timed, then marked with its scheme (minutes vary by paper).
   paper: { label: "Past paper", minutes: null, verb: "A timed paper, then marked with the scheme" },
+  // A chapter's exam-style questions on one paper (minutes vary by set).
+  topical: { label: "Topical questions", minutes: null, verb: "Exam-style questions on this chapter, timed, then marked with the scheme" },
 };
+
+// Topical sets: minutes a mark when the paper's own pace isn't known (as
+// exam-questions.js logs them), time to mark, and the length of a set.
+const MIN_PER_MARK = 1.5;
+const MARKING_MINUTES = 5;
+const TOPICAL_MIN = 15;
+const TOPICAL_MAX = 50;
+// Practice turns topical from this mastery, or this close to the exam (days).
+const TOPICAL_MASTERY = 0.5;
+const TOPICAL_WINDOW = 42;
+
+/** "Ch 2" for a numbered chapter; a coded one (P1.2) as it is; "" for own work. */
+export function chapterOf(id) {
+  if (!id || id === "*" || String(id).startsWith("paper-")) return "";
+  return /^\d+(\.\d+)*$/.test(id) ? `Ch ${id}` : String(id);
+}
+
+const marksOf = (qs) => qs.reduce((n, q) => n + q.marks, 0);
+
+/**
+ * A topical set for chapter `tp`: its exam-style questions on one paper
+ * (the one with the most marks among the student's papers, or any), as
+ * many as fit TOPICAL_MAX minutes but at least one, starting at question
+ * `turn` so the next set differs. null when it has none.
+ */
+export function topicalSet(tp, { code = null, papers = [], turn = 0 } = {}) {
+  const pool = (tp?.long || []).map((q, i) => ({ ...q, key: `${tp.id}#${i}` })).filter((q) => !papers.length || papers.includes(q.paper));
+  if (!pool.length) return null;
+  const byPaper = new Map();
+  for (const q of pool) byPaper.set(q.paper, [...(byPaper.get(q.paper) || []), q]);
+  const [paper, qs] = [...byPaper.entries()].sort((a, b) => marksOf(b[1]) - marksOf(a[1]) || String(a[0]).localeCompare(String(b[0])))[0];
+  const p = PP.paperOf(code, paper);
+  const rate = p?.minutes && p?.marks ? p.minutes / p.marks : MIN_PER_MARK;
+  const from = Math.abs(Math.trunc(turn)) % qs.length;
+  const picked = [];
+  let marks = 0;
+  for (const q of [...qs.slice(from), ...qs.slice(0, from)]) {
+    if (picked.length && (marks + q.marks) * rate + MARKING_MINUTES > TOPICAL_MAX) break;
+    picked.push(q);
+    marks += q.marks;
+  }
+  const minutes = Math.min(TOPICAL_MAX, Math.max(TOPICAL_MIN, Math.ceil((marks * rate + MARKING_MINUTES) / 5) * 5));
+  return { paper, keys: picked.map((q) => q.key), count: picked.length, marks, minutes };
+}
+
+/** Whether practice on a topic should be a topical set: half known, or its exam near. */
+export const preferTopical = (t, daysToExam) => L.mastery(t) >= TOPICAL_MASTERY || daysToExam <= TOPICAL_WINDOW;
+
+/** A block's heading: its chapter and topic (a paper's or own work's name as it is). */
+export function blockTitle(b) {
+  if (b.own) return b.subjectName;
+  if (b.kind === "paper") return b.topicName;
+  return [b.chapter ?? chapterOf(b.topic), b.topicName].filter(Boolean).join(" ");
+}
+
+/** What the block asks for: "topical Q1–3 (12 marks)", or its kind. */
+export function blockTask(b) {
+  if (b.kind !== "topical") return KINDS[b.kind]?.label || "";
+  const qs = b.count > 1 ? `Q1–${b.count}` : "Q1";
+  return `topical ${qs} (${b.marks} mark${b.marks === 1 ? "" : "s"})`;
+}
+
+/** The subject, with the paper a topical block targets: "Physics P2". */
+const subjectPart = (b) => `${b.subjectName}${b.kind === "topical" && b.paper ? ` P${b.paper}` : ""}`;
+
+/** The line under a block's heading: "Physics P2 · topical Q1–3 (12 marks)". */
+export const blockSub = (b) => (b.own ? KINDS[b.kind]?.verb || "" : `${subjectPart(b)} · ${blockTask(b)}`);
+
+/** All of it on one line: "Physics P2 · Ch 2 Kinematics · topical Q1–3 (12 marks) · 25 min". */
+export function blockLabel(b) {
+  if (b.own) return [b.subjectName, KINDS[b.kind]?.label, `${b.minutes} min`].filter(Boolean).join(" · ");
+  return [subjectPart(b), blockTitle(b), blockTask(b), `${b.minutes} min`].filter(Boolean).join(" · ");
+}
 
 // Past papers start this long before a paper's date, this often (days).
 const PAPER_WINDOW = 42;
@@ -195,7 +275,7 @@ function simulate(t, kind, minutes, at, perTopic) {
     const covered = Math.min(1, t.covered + minutes / Math.max(1, perTopic));
     return covered >= 1 ? L.review({ ...t, covered }, 3, at) : { ...t, covered };
   }
-  if (kind === "practice") return L.review({ ...t, theta: Math.min(4, t.theta + 0.35) }, 3, at);
+  if (kind === "practice" || kind === "topical") return L.review({ ...t, theta: Math.min(4, t.theta + 0.35) }, 3, at);
   return L.review(t, 3, at);
 }
 
@@ -310,9 +390,12 @@ export function buildPlan({ profile, syllabi = {}, topics = {}, pace = {}, event
       }
       return null;
     };
-    const place = (s, tp, kind, minutes) => {
+    // A topical set for one of a subject's topics, rotated by how often it's been practised.
+    const setFor = (s, tp) => (s.own ? null : topicalSet(tp, { code: s.code, papers: s.papers.map((p) => p.id), turn: s.state[tp.id]?.n || 0 }));
+    const place = (s, tp, kind, minutes, set = null) => {
       start = slot(minutes) ?? start;
-      day.blocks.push({ kind, subject: s.id, subjectName: s.name, topic: tp.id, topicName: tp.name, minutes, start, own: s.own, ...(tp.paper ? { paper: tp.paper } : {}) });
+      const what = set ? { paper: set.paper, qs: set.keys, count: set.count, marks: set.marks } : tp.paper ? { paper: tp.paper } : {};
+      day.blocks.push({ kind, subject: s.id, subjectName: s.name, topic: tp.id, topicName: tp.name, chapter: chapterOf(tp.id), minutes, start, own: s.own, ...what });
       if (kind === "paper") s.lastPaper[tp.paper] = at;
       else s.state[tp.id] = simulate(s.state[tp.id], kind, minutes, at, s.perTopic);
       perSubject.set(s.id, (perSubject.get(s.id) || 0) + minutes);
@@ -329,9 +412,10 @@ export function buildPlan({ profile, syllabi = {}, topics = {}, pace = {}, event
     for (const pin of R.pins.filter((p) => p.date === own.key)) {
       const s = subjects.find((x) => x.id === pin.subject);
       const tp = s?.list.find((x) => x.id === pin.topic);
-      const minutes = KINDS[pin.kind]?.minutes;
+      const set = s && tp && pin.kind === "topical" ? setFor(s, tp) : null;
+      const minutes = set ? set.minutes : KINDS[pin.kind]?.minutes;
       if (!s || !tp || !minutes || minutes > room || slot(minutes) == null || examToday.has(s.id) || finished.has(s.id)) continue;
-      place(s, tp, pin.kind, minutes);
+      place(s, tp, pin.kind, minutes, set);
       day.blocks[day.blocks.length - 1].pinned = true;
     }
     const skipped = new Set(R.skips.filter((k) => k.startsWith(own.key)).map((k) => k.slice(11)));
@@ -368,18 +452,23 @@ export function buildPlan({ profile, syllabi = {}, topics = {}, pace = {}, event
           const key = `${s.id}/${tp.id}`;
           if (usedTopics.has(key) || skipped.has(`${s.id}|${tp.id}`)) continue;
           const exam = examFor(tp);
-          const n = need(s.state[tp.id], { at, target, examAt: Number.isFinite(exam) ? exam : null, level: s.level, firstNew: tp.id === firstNewId, own: s.own });
+          let n = need(s.state[tp.id], { at, target, examAt: Number.isFinite(exam) ? exam : null, level: s.level, firstNew: tp.id === firstNewId, own: s.own });
           if (!n || (n.kind === "check" && checks >= 3)) continue;
+          // Practice on a chapter that's half known, or near its exam, is a timed topical set.
+          if (n.kind === "practice" && preferTopical(s.state[tp.id], (exam - at) / DAY)) {
+            const set = setFor(s, tp);
+            if (set) n = { ...n, kind: "topical", set };
+          }
           // The evening before its exam: a light review at most (two blocks).
           if (examTomorrow.has(s.id) && (n.kind !== "review" || count >= 2)) continue;
-          const minutes = KINDS[n.kind].minutes;
+          const minutes = n.set ? n.set.minutes : KINDS[n.kind].minutes;
           if (minutes > room || used + minutes > maxPerSubject * Math.max(1, weight) || slot(minutes) == null) continue;
           const score = n.score * weight * Math.pow(0.75, count);
           if (!best || score > best.score) best = { ...n, score, s, tp, minutes };
         }
       }
       if (!best) break;
-      place(best.s, best.tp, best.kind, best.minutes);
+      place(best.s, best.tp, best.kind, best.minutes, best.set);
     }
     day.minutes = day.blocks.reduce((n, b) => n + b.minutes, 0);
     out.push(day);

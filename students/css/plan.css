@@ -1343,6 +1343,55 @@ body.in-app[data-view="plan"] .wall {
 .xq-topic {
   max-width: 100%;
 }
+/* A topical set: jump grid, flags, and the questions read like a paper. */
+.xq-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.xq-cell {
+  min-width: 36px;
+  min-height: 36px;
+  border-radius: 8px;
+  border: 1px solid var(--line, rgba(127, 127, 127, 0.35));
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  font-variant-numeric: tabular-nums;
+  cursor: pointer;
+}
+.xq-cell.done {
+  background: color-mix(in srgb, var(--subj, currentColor) 22%, transparent);
+  border-color: var(--subj, currentColor);
+}
+.xq-cell.flagged {
+  box-shadow: inset 0 -3px 0 #e0a100;
+}
+.xq-cell[aria-current="true"] {
+  outline: 2px solid var(--subj, currentColor);
+  outline-offset: 1px;
+}
+.xq-set-item {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 8px;
+  align-items: start;
+}
+.xq-flag[aria-pressed="true"] {
+  color: #b07d00;
+}
+.xq-nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+.xq-paper {
+  margin: 0;
+  padding-left: 1.4em;
+  display: grid;
+  gap: 14px;
+}
 .xq-list {
   list-style: none;
   margin: 0;

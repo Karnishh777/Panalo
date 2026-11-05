@@ -16,7 +16,8 @@ import { SOUNDS, playAmbient, setVolume, chime, currentSound } from "../ambient.
 import { startOfDay, startOfWeek, addDays, formatMinutes, clockTime, DAY, relTime, dayKey } from "../model/time.js";
 import { openBlockCheck } from "../block-check.js";
 import { loadBanks, nameOf, topicName, colourOf } from "../planner.js";
-import { KINDS } from "../model/plan.js";
+import { KINDS, chapterOf } from "../model/plan.js";
+import { openTopical } from "../exam-questions.js";
 
 let root;
 let timer = T.idle();
@@ -150,7 +151,13 @@ function renderBlock() {
   blockEl.hidden = !b;
   if (!b) return blockEl.replaceChildren();
   blockEl.style.setProperty("--subj", colourOf(b.subject));
-  blockEl.replaceChildren(el("span", { class: "sb-kind", text: KINDS[b.kind]?.label || "" }), el("b", { text: topicName(b.subject, b.topic) }), el("span", { class: "faint", text: KINDS[b.kind]?.verb || "" }));
+  blockEl.replaceChildren(
+    el("span", { class: "sb-kind", text: KINDS[b.kind]?.label || "" }),
+    el("b", { text: [chapterOf(b.topic), topicName(b.subject, b.topic)].filter(Boolean).join(" ") }),
+    el("span", { class: "faint", text: KINDS[b.kind]?.verb || "" }),
+    // A topical set's questions stay a tap away while the timer runs.
+    b.kind === "topical" ? el("button", { type: "button", class: "btn btn-quiet btn-sm", id: "sb-questions", text: "See the questions", onClick: () => openTopical(b, { during: true }) }) : null
+  );
 }
 
 // The latest session saved for this block, so its check can note coverage.

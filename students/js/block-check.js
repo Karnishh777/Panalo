@@ -13,6 +13,7 @@ import * as L from "./model/learner.js";
 import * as P from "./model/plan.js";
 import { questionsFor, topicName, nameOf, stateOf, saveTopic, savePace, colourOf, currentPlan } from "./planner.js";
 import { openPastPaper, openPaperMarks } from "./paper-sheets.js";
+import { openTopical, openExamQuestions } from "./exam-questions.js";
 
 const COUNT = { check: 5, review: 3, practice: 3, learn: 3 };
 const COVERED = [[0.25, "A quarter"], [0.5, "Half"], [0.75, "Most of it"], [1, "All of it"]];
@@ -49,6 +50,8 @@ const dayName = (ms) => {
 export function openBlockCheck(block, { minutes = 0, sessionId = null, onDone } = {}) {
   // A timed past paper ends in its marks, not a few questions.
   if (block.kind === "paper") return openPaperMarks(block.subject, String(block.topic).replace(/^paper-/, ""));
+  // A timed topical set ends in marking its answers with the scheme.
+  if (block.kind === "topical") return openExamQuestions(block.subject, { block });
   const started = Date.now();
   const own = block.topic === "*";
   // Unseen questions first, then the ones asked longest ago (phase 41). A
@@ -185,7 +188,7 @@ export function openBlockCheck(block, { minutes = 0, sessionId = null, onDone } 
     const next = P.nextBlock(currentPlan());
     const nextBtn =
       next && !(next.subject === block.subject && next.topic === block.topic)
-        ? el("button", { type: "button", class: "btn btn-quiet", id: "bc-next-block", text: `Next: ${nameOf(next.subject)} · ${P.KINDS[next.kind].label}`, onClick: () => { sheet.close(); startBlock(next); } })
+        ? el("button", { type: "button", class: "btn btn-quiet", id: "bc-next-block", text: `Next: ${nameOf(next.subject)} · ${P.blockTask(next)}`, onClick: () => { sheet.close(); startBlock(next); } })
         : null;
     stage.replaceChildren(
       ...lead,
@@ -207,6 +210,7 @@ export function openBlockCheck(block, { minutes = 0, sessionId = null, onDone } 
  */
 export function startBlock(block) {
   if (block.kind === "paper") return openPastPaper(block);
+  if (block.kind === "topical") return openTopical(block);
   if (block.kind === "check" || block.kind === "review") {
     if (block.topic !== "*" && questionsFor(block.subject, block.topic).length) return openBlockCheck(block);
   }

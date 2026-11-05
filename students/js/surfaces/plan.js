@@ -40,12 +40,12 @@ function dayLabel(ms, i) {
 }
 
 function blockLine(b, { time = false, date = null, today = false } = {}) {
-  const what = b.own ? b.subjectName : b.topicName;
+  const what = P.blockTitle(b);
   // has-time / has-more: what the row's grid makes room for (not :has(), for older browsers).
-  return el("li", { class: `pl-block k-${b.kind}${b.pinned ? " pinned" : ""}${time ? " has-time" : ""}${date != null ? " has-more" : ""}`, style: `--subj:${colourOf(b.subject)}` }, [
+  return el("li", { class: `pl-block k-${b.kind}${b.pinned ? " pinned" : ""}${time ? " has-time" : ""}${date != null ? " has-more" : ""}`, style: `--subj:${colourOf(b.subject)}`, title: P.blockLabel(b) }, [
     time ? el("span", { class: "pl-time num faint", text: hhmm(b.start) }) : null,
     el("i", { class: "pl-dot", "aria-hidden": "true" }),
-    el("span", { class: "pl-what" }, [el("b", { text: what }), el("small", { class: "faint", text: `${b.own ? P.KINDS[b.kind].verb : `${b.subjectName} · ${P.KINDS[b.kind].label}`}${b.pinned ? " · moved here" : ""}` })]),
+    el("span", { class: "pl-what" }, [el("b", { text: what }), el("small", { class: "faint", text: `${P.blockSub(b)}${b.pinned ? " · moved here" : ""}` })]),
     el("span", { class: "pl-min num faint", text: `${b.minutes} min` }),
     date != null ? el("button", { type: "button", class: "pl-more", "aria-label": `Change: ${what}`, title: "Skip it, or do it today", text: "⋯", onClick: () => blockSheet(b, date, today) }) : null,
   ]);
@@ -60,8 +60,8 @@ function blockSheet(b, date, today) {
     showToast(said);
   };
   openSheet({
-    title: b.own ? b.subjectName : b.topicName,
-    lead: `${b.subjectName} · ${P.KINDS[b.kind].label} · ${b.minutes} min`,
+    title: P.blockTitle(b),
+    lead: `${P.blockSub(b)} · ${b.minutes} min`,
     form: false,
     actions: [
       { label: "Start now", kind: "btn-primary", id: "blk-start", onClick: () => startBlock(b) },
@@ -77,8 +77,8 @@ function heroText(plan, next, di) {
   const when = di === 0 ? hhmm(next.start) : `${dayLabel(plan[di].date, di)}, ${hhmm(next.start)}`;
   return [
     el("p", { class: "pl-hero-kicker" }, [el("span", { text: di === 0 ? "Next" : "Today's plan is done · next" }), el("span", { class: "num faint", text: ` · ${when}` })]),
-    el("h2", { class: "pl-hero-title", id: "pl-next", text: next.own ? next.subjectName : next.topicName }),
-    el("p", { class: "pl-hero-sub" }, [next.own ? "" : `${next.subjectName} · `, el("b", { text: P.KINDS[next.kind].label }), ` · ${next.minutes} min — ${P.KINDS[next.kind].verb.toLowerCase()}`]),
+    el("h2", { class: "pl-hero-title", id: "pl-next", text: P.blockTitle(next) }),
+    el("p", { class: "pl-hero-sub" }, [next.own ? "" : `${next.subjectName}${next.kind === "topical" ? ` P${next.paper}` : ""} · `, el("b", { text: P.blockTask(next) }), ` · ${next.minutes} min — ${P.KINDS[next.kind].verb.toLowerCase()}`]),
     el("div", { class: "pl-hero-go" }, [
       el("button", { type: "button", class: di === 0 ? "btn btn-primary" : "btn btn-ghost", id: "plan-start", text: di === 0 ? "Start" : "Start it now", onClick: () => startBlock(next) }),
       plan[di].blocks.length > 1 ? el("button", { type: "button", class: "btn btn-quiet", id: "plan-unsure", text: "Not sure? Pick from three", onClick: () => deck(plan[di].blocks.slice(0, 3)) }) : null,
@@ -609,8 +609,8 @@ function deck(cards) {
       el("div", { class: "deck" }, [
         ...peek.reverse().map((c, k) => el("div", { class: "deck-card peek", style: `--subj:${colourOf(c.subject)};--k:${peek.length - k}`, "aria-hidden": "true" })),
         el("div", { class: "deck-card", style: `--subj:${colourOf(b.subject)}` }, [
-          el("span", { class: "deck-kind", text: `${P.KINDS[b.kind].label} · ${b.minutes} min` }),
-          el("b", { class: "deck-title", text: b.own ? b.subjectName : b.topicName }),
+          el("span", { class: "deck-kind", text: `${P.blockTask(b)} · ${b.minutes} min` }),
+          el("b", { class: "deck-title", text: P.blockTitle(b) }),
           el("span", { class: "faint", text: b.own ? P.KINDS[b.kind].verb : b.subjectName }),
         ]),
       ]),
