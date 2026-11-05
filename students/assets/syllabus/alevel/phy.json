@@ -52,7 +52,8 @@
         { "q": "For an object in equilibrium, which is true?", "o": ["The resultant force is zero only", "The resultant moment is zero only", "Both the resultant force and the resultant moment are zero", "It must be at rest"], "a": 2, "why": "Equilibrium needs no resultant force and no resultant torque." },
         { "q": "What is upthrust on a submerged object equal to?", "o": ["Its weight", "The weight of fluid displaced", "Its mass × g", "Pressure × its height"], "a": 1, "why": "Archimedes' principle; it comes from the pressure difference across the object (ρgV)." },
         { "q": "The torque of a couple equals…", "o": ["one force × the perpendicular distance between the forces", "the sum of the forces", "force × time", "zero"], "a": 0, "why": "Two equal, opposite, parallel forces produce a torque F × d." },
-        { "q": "The centre of gravity of an object is the point where:", "o": ["all the weight actually acts", "the mass is greatest", "all the weight may be taken to act", "the object balances only when it is symmetrical"], "a": 2, "why": "Examiners (2023): a common misconception was that all the weight actually acts there; it is where the weight is taken to act." }
+        { "q": "The centre of gravity of an object is the point where:", "o": ["all the weight actually acts", "the mass is greatest", "all the weight may be taken to act", "the object balances only when it is symmetrical"], "a": 2, "why": "Examiners (2023): a common misconception was that all the weight actually acts there; it is where the weight is taken to act." },
+        { "q": "A solid block of volume 2.0 × 10⁻³ m³ is fully submerged in water of density 1000 kg m⁻³. What is the upthrust on it? (g = 9.81 m s⁻²)", "o": ["2.0 N", "19.6 N", "1960 N", "0.020 N"], "a": 1, "why": "Upthrust = weight of water displaced = ρVg = 1000 × 2.0 × 10⁻³ × 9.81 ≈ 19.6 N. Leaving out g gives 2.0." }
       ],
       "long": [
         { "q": "Calculate the pressure due to the water 3.0 m below the surface of a lake. The density of water is 1000 kg m⁻³. (g = 9.81 m s⁻²)", "marks": 2, "paper": "2", "scheme": ["C1: p = ρgh", "A1: 2.9 × 10⁴ Pa"], "ans": "2.9 × 10⁴ Pa" }
@@ -64,7 +65,8 @@
         { "q": "A motor lifts a 20 kg load 3.0 m in 4.0 s. What is its useful power output? (g = 9.81)", "o": ["15 W", "60 W", "147 W", "589 W"], "a": 2, "why": "P = mgh/t = 20 × 9.81 × 3.0 ÷ 4.0 ≈ 147 W." },
         { "q": "Power can also be written as…", "o": ["Fv", "Fs", "mv", "½mv"], "a": 0, "why": "P = W/t = F × (s/t) = Fv." },
         { "q": "A machine has 600 J input and 450 J useful output. Its efficiency is…", "o": ["25%", "75%", "133%", "150%"], "a": 1, "why": "450 ÷ 600 = 0.75." },
-        { "q": "What does the area under a force–extension graph represent for a spring obeying Hooke's law?", "o": ["The spring constant", "The elastic potential energy stored in the spring", "The work done per unit volume", "The power supplied"], "a": 1, "why": "Work done W = ∫ F dx, which equals the area under the force–extension curve (½kx²)." }
+        { "q": "What does the area under a force–extension graph represent for a spring obeying Hooke's law?", "o": ["The spring constant", "The elastic potential energy stored in the spring", "The work done per unit volume", "The power supplied"], "a": 1, "why": "Work done W = ∫ F dx, which equals the area under the force–extension curve (½kx²)." },
+        { "q": "A car of mass 1200 kg speeds up from 10 m s⁻¹ to 20 m s⁻¹. How much work is done by the resultant force on it?", "o": ["6.0 × 10⁴ J", "2.4 × 10⁵ J", "3.6 × 10⁵ J", "1.8 × 10⁵ J"], "a": 3, "why": "Work done by the resultant force = change in kinetic energy = ½ × 1200 × (20² − 10²) = 600 × 300 = 1.8 × 10⁵ J." }
       ],
       "long": [
         { "q": "A climber of mass 60 kg climbs a vertical height of 25 m in 50 s. Calculate the gain in gravitational potential energy and the average useful power. (g = 9.81 m s⁻²)", "marks": 3, "paper": "2", "scheme": ["C1: ΔEp = mgΔh", "A1: 1.47 × 10⁴ J", "A1: power = 294 W"], "ans": "1.47 × 10⁴ J; 294 W" }
@@ -76,7 +78,8 @@
         { "q": "Young modulus is defined as…", "o": ["force ÷ extension", "stress ÷ strain", "strain ÷ stress", "force × area"], "a": 1, "why": "E = stress/strain, in Pa." },
         { "q": "What does the area under a force–extension graph (within the limit of proportionality) represent?", "o": ["Stiffness", "Elastic potential energy stored", "Young modulus", "Stress"], "a": 1, "why": "Work done stretching it = ½Fx." },
         { "q": "Plastic deformation means the material…", "o": ["returns to its original shape", "does not return to its original shape when the load is removed", "snaps immediately", "becomes stiffer"], "a": 1, "why": "Beyond the elastic limit, the deformation is permanent." },
-        { "q": "A wire is stretched so that its length increases. Ignoring temperature, what happens to its resistance?", "o": ["It decreases because the area increases", "It increases only because the length increases", "It increases because the length increases and the area decreases", "It is unchanged"], "a": 2, "why": "Examiners (2023): many ignored the change in cross-sectional area when the wire is stretched." }
+        { "q": "A wire is stretched so that its length increases. Ignoring temperature, what happens to its resistance?", "o": ["It decreases because the area increases", "It increases only because the length increases", "It increases because the length increases and the area decreases", "It is unchanged"], "a": 2, "why": "Examiners (2023): many ignored the change in cross-sectional area when the wire is stretched." },
+        { "q": "Wires A and B are made of the same metal. B is twice as long as A and has twice the diameter. Each carries the same load. What is (extension of B) ÷ (extension of A)?", "o": ["0.5", "1", "2", "0.25"], "a": 0, "why": "Extension = FL/(AE). Doubling the diameter makes the area 4 times larger, so B's extension is 2/4 = 0.5 of A's." }
       ],
       "long": [
         { "q": "A wire of length 2.0 m and cross-sectional area 0.40 mm² extends by 1.2 mm when a load of 50 N hangs from it. Calculate the Young modulus of the wire.", "marks": 4, "paper": "2", "scheme": ["C1: stress = 50 ÷ (0.40 × 10⁻⁶) = 1.25 × 10⁸ Pa", "C1: strain = 1.2 × 10⁻³ ÷ 2.0 = 6.0 × 10⁻⁴", "C1: E = stress ÷ strain", "A1: 2.1 × 10¹¹ Pa"], "ans": "2.1 × 10¹¹ Pa" }
@@ -115,7 +118,9 @@
       "questions": [
         { "q": "A wire of length 2.0 m and cross-sectional area 1.0 × 10⁻⁶ m² has resistivity 1.7 × 10⁻⁸ Ω m. What is its resistance?", "o": ["0.0085 Ω", "0.034 Ω", "0.34 Ω", "3.4 Ω"], "a": 1, "why": "R = ρL/A = 1.7 × 10⁻⁸ × 2.0 ÷ 1.0 × 10⁻⁶ = 0.034 Ω." },
         { "q": "In I = Anvq, what is v?", "o": ["Voltage", "The mean drift velocity of the charge carriers", "Volume", "The speed of light"], "a": 1, "why": "n is the number density, A the area, q the charge, v the drift velocity." },
-        { "q": "Power dissipated in a resistor can be written as…", "o": ["V/R", "I²R", "IR²", "V²R"], "a": 1, "why": "P = VI = I²R = V²/R." }
+        { "q": "Power dissipated in a resistor can be written as…", "o": ["V/R", "I²R", "IR²", "V²R"], "a": 1, "why": "P = VI = I²R = V²/R." },
+        { "q": "Two wires of the same metal are connected in series. The second has half the cross-sectional area of the first. What is (drift velocity in the second) ÷ (drift velocity in the first)?", "o": ["2", "1", "½", "4"], "a": 0, "why": "I = Anvq, and I, n and q are the same in both, so v ∝ 1/A. Halving A doubles the drift velocity." },
+        { "q": "A heater is rated 2.0 kW at 230 V. What is its resistance when working normally?", "o": ["8.7 Ω", "26 Ω", "115 Ω", "0.038 Ω"], "a": 1, "why": "P = V²/R, so R = 230²/2000 ≈ 26 Ω. 8.7 is the current in amperes, not the resistance." }
       ],
       "long": [
         { "q": "A wire of length 1.5 m and diameter 0.40 mm is made of metal of resistivity 4.9 × 10⁻⁷ Ω m. Calculate its resistance.", "marks": 3, "paper": "2", "scheme": ["C1: A = π(0.20 × 10⁻³)² = 1.26 × 10⁻⁷ m²", "C1: R = ρL ÷ A", "A1: 5.8 Ω"], "ans": "5.8 Ω" }
@@ -127,7 +132,8 @@
         { "q": "Kirchhoff's first law is a consequence of conservation of…", "o": ["energy", "charge", "momentum", "mass"], "a": 1, "why": "Current into a junction equals current out: charge is conserved." },
         { "q": "A cell of e.m.f. 6.0 V and internal resistance 1.0 Ω is connected to a 5.0 Ω resistor. What is the current?", "o": ["0.83 A", "1.0 A", "1.2 A", "6.0 A"], "a": 1, "why": "I = E/(R + r) = 6.0 ÷ 6.0 = 1.0 A." },
         { "q": "In a potential divider of 2 kΩ (top) and 8 kΩ (bottom) across 10 V, what is the output across the 8 kΩ?", "o": ["2 V", "5 V", "8 V", "10 V"], "a": 2, "why": "Vout = 10 × 8/(2 + 8) = 8 V." },
-        { "q": "A battery of e.m.f. 9.6 V and negligible internal resistance is in series with two resistors. The p.d. across one is 6.0 V. What is the p.d. across the other, of resistance 5800 Ω?", "o": ["9.6 V", "6.0 V", "3.6 V", "15.6 V"], "a": 2, "why": "Examiners (2023): candidates assumed 6.0 V or 9.6 V. In series the p.d.s add to the e.m.f.: 9.6 − 6.0 = 3.6 V." }
+        { "q": "A battery of e.m.f. 9.6 V and negligible internal resistance is in series with two resistors. The p.d. across one is 6.0 V. What is the p.d. across the other, of resistance 5800 Ω?", "o": ["9.6 V", "6.0 V", "3.6 V", "15.6 V"], "a": 2, "why": "Examiners (2023): candidates assumed 6.0 V or 9.6 V. In series the p.d.s add to the e.m.f.: 9.6 − 6.0 = 3.6 V." },
+        { "q": "Two 6.0 Ω resistors in parallel are connected in series with a 3.0 Ω resistor. What is the total resistance?", "o": ["15 Ω", "9.0 Ω", "1.5 Ω", "6.0 Ω"], "a": 3, "why": "The parallel pair gives 1/R = 1/6 + 1/6, so R = 3.0 Ω; adding the 3.0 Ω in series gives 6.0 Ω." }
       ],
       "long": [
         { "q": "In the circuit shown, the battery has an e.m.f. of 12 V and negligible internal resistance. Calculate the current from the battery and the potential difference across the 3.0 Ω resistor.", "marks": 4, "paper": "2", "scheme": ["C1: the parallel pair is 2.0 Ω", "C1: total resistance 6.0 Ω", "A1: current = 2.0 A", "A1: p.d. across the 3.0 Ω resistor = 4.0 V"], "ans": "2.0 A; 4.0 V", "fig": "assets/syllabus/fig/9702-circuit.svg" }
@@ -139,7 +145,8 @@
         { "q": "What is the quark composition of a proton?", "o": ["uud", "udd", "uuu", "ud̄"], "a": 0, "why": "Two up (+2/3 each) and one down (−1/3): total charge +1." },
         { "q": "In β⁻ decay, a down quark changes into…", "o": ["a strange quark", "an up quark", "a top quark", "an electron"], "a": 1, "why": "d → u + e⁻ + ν̄ₑ." },
         { "q": "Which are leptons?", "o": ["Protons and neutrons", "Electrons and neutrinos", "Pions", "Quarks"], "a": 1, "why": "Leptons are fundamental particles that don't feel the strong force." },
-        { "q": "Which particles are found in the nucleus?", "o": ["Protons and neutrons", "Protons, neutrons and electrons", "Electrons and neutrons", "Protons only"], "a": 0, "why": "Examiners (2023): some weaker candidates thought there are electrons in the nucleus." }
+        { "q": "Which particles are found in the nucleus?", "o": ["Protons and neutrons", "Protons, neutrons and electrons", "Electrons and neutrons", "Protons only"], "a": 0, "why": "Examiners (2023): some weaker candidates thought there are electrons in the nucleus." },
+        { "q": "A meson consists of an up quark and an anti-down quark (u d̄). What is its charge?", "o": ["0", "+⅓e", "+e", "−e"], "a": 2, "why": "u has charge +⅔e and d has −⅓e, so d̄ has +⅓e. The total is +⅔e + ⅓e = +e." }
       ],
       "long": [
         { "q": "A proton is made of up (u) and down (d) quarks. State its quark composition and show that its charge is +e.", "marks": 2, "paper": "2", "scheme": ["B1: uud", "B1: (+⅔ e) + (+⅔ e) + (−⅓ e) = +e"], "ans": "uud" }
@@ -151,7 +158,8 @@
         { "q": "An object moves in a circle of radius 2.0 m at 4.0 m s⁻¹. What is its centripetal acceleration?", "o": ["2.0 m s⁻²", "4.0 m s⁻²", "8.0 m s⁻²", "32 m s⁻²"], "a": 2, "why": "a = v²/r = 16 ÷ 2.0 = 8.0 m s⁻²." },
         { "q": "Angular speed ω is related to period T by…", "o": ["ω = 2πT", "ω = 2π/T", "ω = T/2π", "ω = πT²"], "a": 1, "why": "One revolution is 2π radians in time T." },
         { "q": "A body moves at constant speed in a circle. Its acceleration is:", "o": ["Zero", "Along the direction of motion", "Towards the centre, with constant magnitude", "Away from the centre"], "a": 2, "why": "The direction of velocity changes, so there is a centripetal acceleration v²/r." },
-        { "q": "A car of mass m travels over the crest of a curved hill of radius r at speed v. What is the normal reaction force on the car?", "o": ["mg + mv²/r", "mg − mv²/r", "mv²/r", "mg"], "a": 1, "why": "Resultant force towards the centre of the curvature is mg − N = mv²/r, so N = mg − mv²/r." }
+        { "q": "A car of mass m travels over the crest of a curved hill of radius r at speed v. What is the normal reaction force on the car?", "o": ["mg + mv²/r", "mg − mv²/r", "mv²/r", "mg"], "a": 1, "why": "Resultant force towards the centre of the curvature is mg − N = mv²/r, so N = mg − mv²/r." },
+        { "q": "A wheel turns at 1200 revolutions per minute. What is its angular speed?", "o": ["126 rad s⁻¹", "7.5 × 10³ rad s⁻¹", "20 rad s⁻¹", "3.2 rad s⁻¹"], "a": 0, "why": "1200 rev/min = 20 rev/s, and each revolution is 2π rad, so ω = 2π × 20 ≈ 126 rad s⁻¹." }
       ],
       "long": [
         { "q": "A car of mass 900 kg travels at a constant speed of 15 m s⁻¹ round a horizontal bend of radius 50 m. Calculate the centripetal force required.", "marks": 2, "paper": "4", "scheme": ["C1: F = mv²/r", "A1: = 900 × 15² ÷ 50 = 4050 N"], "ans": "4.1 × 10³ N" }
@@ -163,7 +171,8 @@
         { "q": "If the distance between two masses doubles, the gravitational force becomes…", "o": ["double", "half", "a quarter", "four times"], "a": 2, "why": "F = GMm/r², an inverse-square law." },
         { "q": "A geostationary satellite has an orbital period of…", "o": ["1 hour", "12 hours", "24 hours", "27 days"], "a": 2, "why": "It orbits above the equator, in the same direction as Earth's rotation, once every 24 hours." },
         { "q": "Gravitational potential at a point is…", "o": ["always positive", "always negative (zero at infinity)", "zero at the surface", "equal to g"], "a": 1, "why": "φ = −GM/r: work must be done to move a mass to infinity." },
-        { "q": "Why is gravitational potential in a field always defined as negative?", "o": ["Gravity repels objects at short distances", "Energy cannot have positive values in physics", "Gravitational force is attractive and potential is defined as zero at infinity", "Mass is mathematically negative in field equations"], "a": 2, "why": "Work is done by the attractive field bringing mass from infinity, so potential is zero at infinity and negative everywhere else." }
+        { "q": "Why is gravitational potential in a field always defined as negative?", "o": ["Gravity repels objects at short distances", "Energy cannot have positive values in physics", "Gravitational force is attractive and potential is defined as zero at infinity", "Mass is mathematically negative in field equations"], "a": 2, "why": "Work is done by the attractive field bringing mass from infinity, so potential is zero at infinity and negative everywhere else." },
+        { "q": "A satellite moves in a circular orbit of radius r at speed v. At what speed would it move in a circular orbit of radius 4r about the same planet?", "o": ["v/4", "v/2", "2v", "v/16"], "a": 1, "why": "Gravity provides the centripetal force: GMm/r² = mv²/r, so v = √(GM/r). Multiplying r by 4 divides v by 2." }
       ],
       "long": [
         { "q": "Show that the orbital period T of a satellite in a circular orbit of radius r about a planet of mass M satisfies T² = 4π²r³/(GM).", "marks": 3, "paper": "4", "scheme": ["M1: GMm/r² = mv²/r (gravity provides centripetal force)", "M1: v = 2πr/T", "A1: substitution and rearrangement to T² = 4π²r³/(GM)"] }
@@ -174,7 +183,9 @@
       "questions": [
         { "q": "What is 27 °C in kelvin?", "o": ["246 K", "273 K", "300 K", "327 K"], "a": 2, "why": "T(K) = θ(°C) + 273.15 ≈ 300 K." },
         { "q": "How much energy melts 0.20 kg of ice at 0 °C? (specific latent heat of fusion 3.3 × 10⁵ J kg⁻¹)", "o": ["6.6 × 10³ J", "6.6 × 10⁴ J", "1.65 × 10⁶ J", "3.3 × 10⁵ J"], "a": 1, "why": "E = mL = 0.20 × 3.3 × 10⁵ = 6.6 × 10⁴ J." },
-        { "q": "Specific latent heat of fusion is the energy needed to:", "o": ["Raise unit mass by 1 K", "Boil unit mass", "Change unit mass from solid to liquid with no change in temperature", "Melt any mass"], "a": 2, "why": "Learn definitions exactly: 'unit mass' and 'no change in temperature' both matter." }
+        { "q": "Specific latent heat of fusion is the energy needed to:", "o": ["Raise unit mass by 1 K", "Boil unit mass", "Change unit mass from solid to liquid with no change in temperature", "Melt any mass"], "a": 2, "why": "Learn definitions exactly: 'unit mass' and 'no change in temperature' both matter." },
+        { "q": "How much energy is needed to heat 0.50 kg of water from 20 °C to 80 °C? (specific heat capacity of water = 4200 J kg⁻¹ K⁻¹)", "o": ["4.2 × 10⁴ J", "1.68 × 10⁵ J", "1.26 × 10⁵ J", "2.52 × 10⁵ J"], "a": 2, "why": "E = mcΔθ = 0.50 × 4200 × 60 = 1.26 × 10⁵ J. Using 80 °C instead of the change of 60 K gives 1.68 × 10⁵ J." },
+        { "q": "Two objects in contact are in thermal equilibrium. Which statement must be true?", "o": ["They have the same internal energy", "They have the same specific heat capacity", "No energy at all passes between them", "They are at the same temperature, so there is no net transfer of thermal energy between them"], "a": 3, "why": "Thermal equilibrium means equal temperature, so there is no net energy flow. Energy can still pass both ways at equal rates, and the internal energies can differ." }
       ],
       "long": [
         { "q": "Calculate the energy needed to melt 0.25 kg of ice at 0 °C. (Specific latent heat of fusion = 3.3 × 10⁵ J kg⁻¹)", "marks": 2, "paper": "4", "scheme": ["C1: E = mL", "A1: = 0.25 × 3.3 × 10⁵ = 8.3 × 10⁴ J"], "ans": "8.3 × 10⁴ J" }
@@ -185,7 +196,9 @@
       "questions": [
         { "q": "The mean kinetic energy of a molecule in an ideal gas is proportional to…", "o": ["pressure", "volume", "thermodynamic temperature", "the number of molecules"], "a": 2, "why": "½m⟨c²⟩ = (3/2)kT." },
         { "q": "For an ideal gas, pV = …", "o": ["nRT", "nR/T", "RT/n", "nT/R"], "a": 0, "why": "The ideal gas equation, with n in moles." },
-        { "q": "The mean kinetic energy of the molecules of an ideal gas is proportional to:", "o": ["The Celsius temperature", "The thermodynamic (kelvin) temperature", "The pressure only", "The volume"], "a": 1, "why": "Mean E_k = (3/2)kT." }
+        { "q": "The mean kinetic energy of the molecules of an ideal gas is proportional to:", "o": ["The Celsius temperature", "The thermodynamic (kelvin) temperature", "The pressure only", "The volume"], "a": 1, "why": "Mean E_k = (3/2)kT." },
+        { "q": "A fixed mass of ideal gas at constant volume is heated from 27 °C to 327 °C. By what factor does its pressure change?", "o": ["×12", "×2", "×1.1", "×0.5"], "a": 1, "why": "At constant volume p ∝ T in kelvin: 300 K to 600 K doubles the pressure. Using °C values gives the wrong factor of about 12." },
+        { "q": "The thermodynamic temperature of an ideal gas is quadrupled. What happens to the root-mean-square speed of its molecules?", "o": ["It quadruples", "It increases by a factor of √2", "It doubles", "It increases by a factor of 16"], "a": 2, "why": "½m⟨c²⟩ = (3/2)kT, so ⟨c²⟩ ∝ T and c_rms ∝ √T. Quadrupling T doubles c_rms." }
       ],
       "long": [
         { "q": "A gas cylinder of volume 0.020 m³ contains an ideal gas at 2.0 × 10⁵ Pa and 300 K. Calculate the number of moles of gas. (R = 8.31 J mol⁻¹ K⁻¹)", "marks": 3, "paper": "4", "scheme": ["C1: n = pV/(RT)", "C1: = 2.0 × 10⁵ × 0.020 ÷ (8.31 × 300)", "A1: = 1.6 mol"], "ans": "1.6 mol" }
@@ -196,7 +209,9 @@
       "questions": [
         { "q": "The first law of thermodynamics is ΔU = q + W. W is…", "o": ["work done by the gas", "work done on the system", "heat out", "internal energy"], "a": 1, "why": "In the Cambridge convention, W is work done on the system." },
         { "q": "For an ideal gas, internal energy depends only on…", "o": ["pressure", "volume", "temperature", "density"], "a": 2, "why": "There are no intermolecular forces, so internal energy is all kinetic, set by temperature." },
-        { "q": "In the first law, ΔU = q + W. What is W?", "o": ["The work done on the system", "The work done by the system", "The heat lost", "The internal energy"], "a": 0, "why": "Compressing a gas does work on it, so W is positive." }
+        { "q": "In the first law, ΔU = q + W. What is W?", "o": ["The work done on the system", "The work done by the system", "The heat lost", "The internal energy"], "a": 0, "why": "Compressing a gas does work on it, so W is positive." },
+        { "q": "A gas expands at a constant pressure of 1.0 × 10⁵ Pa from 2.0 × 10⁻³ m³ to 5.0 × 10⁻³ m³ while 500 J of heat is supplied to it. What is the change in its internal energy?", "o": ["+800 J", "+200 J", "−200 J", "+500 J"], "a": 1, "why": "Work done on the gas W = −pΔV = −300 J. ΔU = q + W = 500 − 300 = +200 J." },
+        { "q": "An ideal gas is compressed so quickly that no heat enters or leaves it. What happens to its temperature?", "o": ["It stays the same, because q = 0", "It falls, because the gas does work", "It rises, because heat is supplied", "It rises, because the work done on the gas increases its internal energy"], "a": 3, "why": "With q = 0, ΔU = W, and W is positive in a compression. The internal energy of an ideal gas depends only on temperature, so the temperature rises." }
       ]
     },
     {
@@ -205,7 +220,8 @@
         { "q": "In simple harmonic motion, acceleration is…", "o": ["constant", "proportional to displacement and opposite in direction", "proportional to velocity", "zero at the extremes"], "a": 1, "why": "Defining equation of SHM: a = −ω²x." },
         { "q": "At what point of an SHM is the speed greatest?", "o": ["At maximum displacement", "At the equilibrium position", "Halfway out", "It is constant"], "a": 1, "why": "All the energy is kinetic at x = 0." },
         { "q": "What is resonance?", "o": ["Damping that stops oscillation", "A large amplitude when the driving frequency equals the natural frequency", "Oscillation at any frequency", "A sound effect only"], "a": 1, "why": "Maximum energy transfer happens when the frequencies match." },
-        { "q": "What happens to the capacitance of a parallel-plate capacitor if a dielectric of relative permittivity ε_r = 3 is inserted between the plates?", "o": ["The capacitance is halved", "The capacitance remains unchanged", "The capacitance drops by a factor of 3", "The capacitance triples"], "a": 3, "why": "C = ε_r ε₀ A / d; inserting a dielectric with ε_r = 3 increases the capacitance by a factor of 3." }
+        { "q": "A particle moves with simple harmonic motion given by x = 0.050 sin(10t), with x in metres and t in seconds. What is its maximum acceleration?", "o": ["0.50 m s⁻²", "50 m s⁻²", "5.0 m s⁻²", "0.050 m s⁻²"], "a": 2, "why": "a_max = ω²x₀ = 10² × 0.050 = 5.0 m s⁻². ωx₀ = 0.50 is the maximum speed, not acceleration." },
+        { "q": "A mass on a spring oscillates with simple harmonic motion of period 0.50 s. What is its angular frequency?", "o": ["2.0 rad s⁻¹", "3.1 rad s⁻¹", "13 rad s⁻¹", "0.080 rad s⁻¹"], "a": 2, "why": "ω = 2π/T = 2π ÷ 0.50 ≈ 12.6 rad s⁻¹ (13 to 2 s.f.). 2.0 is the frequency in Hz, not the angular frequency." }
       ],
       "long": [
         { "q": "A mass on a spring oscillates with simple harmonic motion of amplitude 3.0 cm and frequency 2.0 Hz. Calculate its maximum speed and maximum acceleration.", "marks": 3, "paper": "4", "scheme": ["C1: ω = 2πf = 4π rad s⁻¹ (12.6)", "A1: v_max = ωx₀ = 0.38 m s⁻¹", "A1: a_max = ω²x₀ = 4.7 m s⁻²"], "ans": "0.38 m s⁻¹; 4.7 m s⁻²" }
@@ -216,7 +232,9 @@
       "questions": [
         { "q": "The electric field between parallel plates 0.020 m apart with 400 V across them is…", "o": ["8 V m⁻¹", "800 V m⁻¹", "2.0 × 10⁴ V m⁻¹", "8000 V m⁻¹"], "a": 2, "why": "E = V/d = 400 ÷ 0.020 = 2.0 × 10⁴ V m⁻¹." },
         { "q": "Coulomb's law: halving the distance between two charges makes the force…", "o": ["half", "double", "four times bigger", "a quarter"], "a": 2, "why": "Coulomb's law is an inverse-square law: F ∝ 1/r²." },
-        { "q": "Electric field strength is:", "o": ["The charge per unit area", "The work per unit charge", "The force on any charge", "The force per unit positive charge"], "a": 3, "why": "Units N C⁻¹ (= V m⁻¹)." }
+        { "q": "Electric field strength is:", "o": ["The charge per unit area", "The work per unit charge", "The force on any charge", "The force per unit positive charge"], "a": 3, "why": "Units N C⁻¹ (= V m⁻¹)." },
+        { "q": "What is the electric field strength 0.30 m from a point charge of +2.0 nC? (1/(4πε₀) = 8.99 × 10⁹ N m² C⁻²)", "o": ["60 N C⁻¹", "18 N C⁻¹", "2000 N C⁻¹", "200 N C⁻¹"], "a": 3, "why": "E = Q/(4πε₀r²) = 8.99 × 10⁹ × 2.0 × 10⁻⁹/0.30² ≈ 200 N C⁻¹. Forgetting to square r gives 60." },
+        { "q": "An electron is accelerated from rest through a potential difference of 500 V. How much kinetic energy does it gain? (e = 1.60 × 10⁻¹⁹ C)", "o": ["8.0 × 10⁻¹⁷ J", "3.2 × 10⁻²² J", "500 J", "8.0 × 10⁻¹⁹ J"], "a": 0, "why": "Work done by the field = QV = 1.60 × 10⁻¹⁹ × 500 = 8.0 × 10⁻¹⁷ J (500 eV)." }
       ]
     },
     {
@@ -225,7 +243,8 @@
         { "q": "A 100 µF capacitor is charged to 12 V. How much energy is stored?", "o": ["1.2 mJ", "7.2 mJ", "14.4 mJ", "0.6 mJ"], "a": 1, "why": "W = ½CV² = ½ × 100 × 10⁻⁶ × 144 = 7.2 × 10⁻³ J." },
         { "q": "What is the time constant of a 2.0 kΩ resistor and 50 µF capacitor?", "o": ["0.010 s", "0.10 s", "1.0 s", "100 s"], "a": 1, "why": "τ = RC = 2000 × 50 × 10⁻⁶ = 0.10 s." },
         { "q": "Capacitors in parallel…", "o": ["add like resistors in parallel", "add directly: C = C₁ + C₂", "always halve", "cancel out"], "a": 1, "why": "In parallel, capacitances add." },
-        { "q": "A proton enters a uniform magnetic field perpendicular to its velocity. What path does it follow?", "o": ["A straight line with increasing speed", "A parabolic path with increasing speed", "A helical path with decreasing speed", "A circular path with constant speed"], "a": 3, "why": "The magnetic force F = Bqv is always perpendicular to velocity, doing no work and causing uniform centripetal circular motion." }
+        { "q": "Two 4.0 µF capacitors are connected in series. What is their combined capacitance?", "o": ["8.0 µF", "4.0 µF", "2.0 µF", "0.50 µF"], "a": 2, "why": "In series 1/C = 1/4.0 + 1/4.0 = 1/2.0, so C = 2.0 µF; series capacitance is less than either one." },
+        { "q": "What happens to the capacitance of a parallel-plate capacitor if a dielectric of relative permittivity ε_r = 3 is inserted between the plates?", "o": ["The capacitance is halved", "The capacitance remains unchanged", "The capacitance drops by a factor of 3", "The capacitance triples"], "a": 3, "why": "C = ε_r ε₀ A / d; inserting a dielectric with ε_r = 3 increases the capacitance by a factor of 3." }
       ],
       "long": [
         { "q": "A 470 µF capacitor is charged to 12 V and then discharged through a 2.0 kΩ resistor. Calculate the time constant and the potential difference after 1.0 s.", "marks": 4, "paper": "4", "scheme": ["C1: τ = RC = 2000 × 470 × 10⁻⁶", "A1: = 0.94 s", "C1: V = 12 e^(−1.0/0.94)", "A1: = 4.1 V"], "ans": "0.94 s; 4.1 V" }
@@ -237,7 +256,8 @@
         { "q": "What is the force on a 0.50 m wire carrying 3.0 A at right angles to a 0.20 T field?", "o": ["0.03 N", "0.30 N", "0.60 N", "3.0 N"], "a": 1, "why": "F = BIL = 0.20 × 3.0 × 0.50 = 0.30 N." },
         { "q": "A charged particle enters a uniform magnetic field at right angles. Its path is…", "o": ["a straight line", "a parabola", "a circle", "a spiral outward"], "a": 2, "why": "The force Bqv is always perpendicular to the velocity, giving circular motion." },
         { "q": "Lenz's law is a consequence of conservation of…", "o": ["charge", "energy", "momentum", "mass"], "a": 1, "why": "The induced current opposes the change that caused it; otherwise energy would be created." },
-        { "q": "According to Lenz's law, the direction of an induced e.m.f. is such that it:", "o": ["Increases the rate of change of flux", "Aligns with the external magnetic field", "Eliminates electric resistance", "Opposes the change in magnetic flux that produces it"], "a": 3, "why": "Lenz's law expresses conservation of energy: the induced current produces a field opposing the flux change." }
+        { "q": "According to Lenz's law, the direction of an induced e.m.f. is such that it:", "o": ["Increases the rate of change of flux", "Aligns with the external magnetic field", "Eliminates electric resistance", "Opposes the change in magnetic flux that produces it"], "a": 3, "why": "Lenz's law expresses conservation of energy: the induced current produces a field opposing the flux change." },
+        { "q": "A coil of 200 turns and area 4.0 × 10⁻⁴ m² is perpendicular to a 0.050 T magnetic field. The field falls uniformly to zero in 0.020 s. What is the average induced e.m.f.?", "o": ["1.0 × 10⁻³ V", "0.20 V", "8.0 × 10⁻⁵ V", "0.50 V"], "a": 1, "why": "Change in flux linkage = NBA = 200 × 0.050 × 4.0 × 10⁻⁴ = 4.0 × 10⁻³ Wb; e.m.f. = 4.0 × 10⁻³/0.020 = 0.20 V. Leaving out N gives 1.0 × 10⁻³ V." }
       ],
       "long": [
         { "q": "An electron travels at 3.0 × 10⁶ m s⁻¹ perpendicular to a uniform magnetic field of 2.0 mT. Calculate the radius of its circular path. (e = 1.60 × 10⁻¹⁹ C, mₑ = 9.11 × 10⁻³¹ kg)", "marks": 3, "paper": "4", "scheme": ["M1: Bqv = mv²/r so r = mv/(Bq)", "C1: = 9.11 × 10⁻³¹ × 3.0 × 10⁶ ÷ (2.0 × 10⁻³ × 1.60 × 10⁻¹⁹)", "A1: = 8.5 × 10⁻³ m"], "ans": "8.5 mm" }
@@ -248,7 +268,9 @@
       "questions": [
         { "q": "A sinusoidal a.c. has a peak voltage of 325 V. What is its r.m.s. value?", "o": ["162 V", "230 V", "325 V", "460 V"], "a": 1, "why": "Vrms = V₀/√2 = 325 ÷ 1.414 ≈ 230 V." },
         { "q": "What does a single diode do to a.c.?", "o": ["Full-wave rectification", "Half-wave rectification", "Smooths it", "Doubles it"], "a": 1, "why": "It lets current through in one direction only, removing half of each cycle." },
-        { "q": "A sinusoidal alternating voltage has peak value 10 V. What is its r.m.s. value?", "o": ["5.0 V", "10 V", "14 V", "7.1 V"], "a": 3, "why": "V_rms = V₀ ÷ √2." }
+        { "q": "A sinusoidal alternating voltage has peak value 10 V. What is its r.m.s. value?", "o": ["5.0 V", "10 V", "14 V", "7.1 V"], "a": 3, "why": "V_rms = V₀ ÷ √2." },
+        { "q": "A sinusoidal alternating current of peak value 2.0 A passes through a 100 Ω resistor. What is the mean power dissipated?", "o": ["400 W", "283 W", "200 W", "141 W"], "a": 2, "why": "Mean power = I_rms²R = (I₀²/2)R = (4.0/2) × 100 = 200 W. Using the peak current gives the peak power of 400 W." },
+        { "q": "A capacitor smooths the output of a rectifier feeding a load resistor. What is the effect of using a larger capacitance?", "o": ["The ripple decreases, because the time constant RC is larger", "The ripple increases, because the capacitor stores more charge", "The output becomes alternating", "The peak output voltage doubles"], "a": 0, "why": "A larger C gives a larger time constant RC, so the capacitor discharges less between peaks and the ripple is smaller." }
       ]
     },
     {
@@ -256,7 +278,9 @@
       "questions": [
         { "q": "The energy of a photon is E = hf. Doubling the frequency…", "o": ["halves E", "doubles E", "leaves E unchanged", "quadruples E"], "a": 1, "why": "E is proportional to f." },
         { "q": "In the photoelectric effect, increasing the intensity of light above the threshold frequency…", "o": ["increases the maximum kinetic energy of electrons", "increases the number of electrons emitted per second", "decreases the work function", "has no effect"], "a": 1, "why": "More photons per second release more electrons; each photon still has the same energy." },
-        { "q": "Electron diffraction is evidence that electrons…", "o": ["have charge", "behave as waves", "have mass", "orbit the nucleus"], "a": 1, "why": "Diffraction is a wave property; λ = h/p." }
+        { "q": "Electron diffraction is evidence that electrons…", "o": ["have charge", "behave as waves", "have mass", "orbit the nucleus"], "a": 1, "why": "Diffraction is a wave property; λ = h/p." },
+        { "q": "What is the de Broglie wavelength of an electron moving at 2.0 × 10⁶ m s⁻¹? (h = 6.63 × 10⁻³⁴ J s, mₑ = 9.11 × 10⁻³¹ kg)", "o": ["7.3 × 10⁻¹⁰ m", "3.6 × 10⁻¹⁰ m", "1.8 × 10⁻¹⁰ m", "3.6 × 10⁻⁴ m"], "a": 1, "why": "λ = h/(mv) = 6.63 × 10⁻³⁴/(9.11 × 10⁻³¹ × 2.0 × 10⁶) ≈ 3.6 × 10⁻¹⁰ m, comparable to atomic spacings." },
+        { "q": "An electron in a hydrogen atom drops from the −3.4 eV level to the −13.6 eV level. What is the wavelength of the photon emitted? (h = 6.63 × 10⁻³⁴ J s, c = 3.00 × 10⁸ m s⁻¹, e = 1.60 × 10⁻¹⁹ C)", "o": ["73 nm", "366 nm", "122 nm", "91 nm"], "a": 2, "why": "The photon energy is the difference, 10.2 eV = 1.63 × 10⁻¹⁸ J, so λ = hc/E ≈ 1.22 × 10⁻⁷ m = 122 nm." }
       ],
       "long": [
         { "q": "Light of wavelength 400 nm falls on a metal of work function 2.3 eV. Calculate the maximum kinetic energy of the emitted electrons in eV. (h = 6.63 × 10⁻³⁴ J s, c = 3.00 × 10⁸ m s⁻¹)", "marks": 3, "paper": "4", "scheme": ["C1: photon energy = hc/λ = 4.97 × 10⁻¹⁹ J", "C1: = 3.1 eV", "A1: KE_max = 3.1 − 2.3 = 0.8 eV"], "ans": "0.8 eV" }
@@ -267,7 +291,9 @@
       "questions": [
         { "q": "Binding energy per nucleon is greatest for nuclei around…", "o": ["hydrogen", "iron", "uranium", "helium"], "a": 1, "why": "Iron-56 is near the peak; fusion of lighter and fission of heavier nuclei both release energy." },
         { "q": "A source has decay constant λ. Its half-life is…", "o": ["λ/ln 2", "ln 2/λ", "1/λ", "2λ"], "a": 1, "why": "t½ = ln 2 / λ ≈ 0.693/λ." },
-        { "q": "What is the mass defect of a nucleus?", "o": ["The mass of its electrons", "The mass lost in alpha decay", "The mass of one proton", "The difference between the mass of its separate nucleons and the mass of the nucleus"], "a": 3, "why": "It corresponds to the binding energy, E = Δm c²." }
+        { "q": "What is the mass defect of a nucleus?", "o": ["The mass of its electrons", "The mass lost in alpha decay", "The mass of one proton", "The difference between the mass of its separate nucleons and the mass of the nucleus"], "a": 3, "why": "It corresponds to the binding energy, E = Δm c²." },
+        { "q": "A source has an activity of 800 Bq and a half-life of 5.0 minutes. What is its activity 15 minutes later?", "o": ["267 Bq", "200 Bq", "50 Bq", "100 Bq"], "a": 3, "why": "15 minutes is 3 half-lives, so the activity is 800 × (½)³ = 100 Bq. Dividing by 3 instead gives 267 Bq." },
+        { "q": "A nucleus has a mass defect of 0.030 u. What is its binding energy? (1 u = 1.66 × 10⁻²⁷ kg, c = 3.00 × 10⁸ m s⁻¹)", "o": ["4.5 × 10⁻¹² J", "1.5 × 10⁻²⁰ J", "2.7 × 10¹⁵ J", "4.5 × 10⁻¹⁵ J"], "a": 0, "why": "Δm = 0.030 × 1.66 × 10⁻²⁷ = 4.98 × 10⁻²⁹ kg, and E = Δmc² = 4.98 × 10⁻²⁹ × 9.0 × 10¹⁶ ≈ 4.5 × 10⁻¹² J." }
       ],
       "long": [
         { "q": "A radioactive isotope has a half-life of 8.0 days. Calculate its decay constant and the fraction remaining after 20 days.", "marks": 3, "paper": "4", "scheme": ["C1: λ = ln 2 / 8.0 = 0.0866 day⁻¹", "C1: N/N₀ = e^(−0.0866 × 20)", "A1: = 0.18"], "ans": "0.087 day⁻¹; 0.18" }
@@ -278,7 +304,9 @@
       "questions": [
         { "q": "In ultrasound imaging, a gel is used between the probe and skin to…", "o": ["cool the skin", "reduce reflection at the air boundary (match acoustic impedance)", "kill bacteria", "absorb X-rays"], "a": 1, "why": "Air causes almost total reflection; gel matches impedances so ultrasound enters the body." },
         { "q": "PET scanning detects…", "o": ["X-rays from a tube", "pairs of gamma photons from positron–electron annihilation", "ultrasound echoes", "alpha particles"], "a": 1, "why": "A positron annihilates with an electron, emitting two gamma photons in opposite directions." },
-        { "q": "Why is gel used between an ultrasound probe and the skin?", "o": ["It cools the skin", "It matches acoustic impedance, so little ultrasound is reflected at the skin", "It amplifies the signal", "It absorbs X-rays"], "a": 1, "why": "Air has a very different impedance from skin, so without gel most of the wave reflects." }
+        { "q": "Why is gel used between an ultrasound probe and the skin?", "o": ["It cools the skin", "It matches acoustic impedance, so little ultrasound is reflected at the skin", "It amplifies the signal", "It absorbs X-rays"], "a": 1, "why": "Air has a very different impedance from skin, so without gel most of the wave reflects." },
+        { "q": "Ultrasound meets a boundary between soft tissue (Z = 1.6 × 10⁶ kg m⁻² s⁻¹) and bone (Z = 7.8 × 10⁶ kg m⁻² s⁻¹). What fraction of the incident intensity is reflected?", "o": ["0.66", "0.21", "0.44", "0.80"], "a": 2, "why": "I_R/I₀ = (Z₂ − Z₁)²/(Z₂ + Z₁)² = (6.2/9.4)² ≈ 0.44. Forgetting to square gives 0.66." },
+        { "q": "X-rays are attenuated in a material with linear attenuation coefficient 0.50 cm⁻¹. What thickness halves the intensity?", "o": ["2.0 cm", "0.35 cm", "1.0 cm", "1.4 cm"], "a": 3, "why": "I = I₀e^(−μx); for I = I₀/2, x = ln 2/μ = 0.693/0.50 ≈ 1.4 cm." }
       ]
     },
     {
@@ -286,7 +314,9 @@
       "questions": [
         { "q": "A standard candle is…", "o": ["any bright star", "an object of known luminosity, used to find distances", "the Sun", "a galaxy"], "a": 1, "why": "Knowing L and measuring the flux F gives the distance from F = L/4πd²." },
         { "q": "Hubble's law states that the recession speed of a galaxy is proportional to…", "o": ["its mass", "its distance", "its temperature", "its age"], "a": 1, "why": "v = H₀d, evidence for an expanding Universe." },
-        { "q": "Wien's displacement law: a hotter star's peak wavelength is…", "o": ["longer", "shorter", "the same", "not related"], "a": 1, "why": "λmax ∝ 1/T, so hotter stars peak at shorter wavelengths (bluer)." }
+        { "q": "Wien's displacement law: a hotter star's peak wavelength is…", "o": ["longer", "shorter", "the same", "not related"], "a": 1, "why": "λmax ∝ 1/T, so hotter stars peak at shorter wavelengths (bluer)." },
+        { "q": "A spectral line emitted at 500.0 nm is observed in a galaxy's spectrum at 505.0 nm. What is the galaxy's recession speed? (c = 3.00 × 10⁸ m s⁻¹)", "o": ["3.0 × 10⁶ m s⁻¹", "3.0 × 10⁷ m s⁻¹", "1.5 × 10⁶ m s⁻¹", "3.0 × 10⁵ m s⁻¹"], "a": 0, "why": "Δλ/λ ≈ v/c, so v = (5.0/500.0) × 3.00 × 10⁸ = 3.0 × 10⁶ m s⁻¹, moving away (redshift)." },
+        { "q": "Stars A and B have the same radius, but A's surface temperature is twice B's. What is the ratio of luminosities L_A/L_B?", "o": ["2", "16", "8", "4"], "a": 1, "why": "Stefan–Boltzmann: L = 4πr²σT⁴. With equal radii, doubling T multiplies L by 2⁴ = 16." }
       ]
     }
   ]
