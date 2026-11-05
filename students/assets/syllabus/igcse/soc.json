@@ -21,6 +21,9 @@
         { "q": "Norms are", "o": ["unwritten rules of behaviour", "laws passed by government", "beliefs about God", "biological instincts"], "a": 0, "why": "Norms guide everyday behaviour." },
         { "q": "Primary socialisation mainly takes place in", "o": ["the family", "school", "the workplace", "the media"], "a": 0, "why": "In early childhood, within the family." },
         { "q": "What are norms?", "o": ["Unwritten rules of expected behaviour", "Laws passed by government", "Beliefs about God", "Personal choices"], "a": 0, "why": "Values are beliefs about what is important." }
+      ],
+      "long": [
+        { "q": "Describe two ways in which the peer group socialises young people.", "marks": 4, "paper": "1", "scheme": ["B1: one way, e.g. peer pressure encourages conformity to group norms (dress, music, language)", "B1: developed: those who don't conform face informal sanctions such as teasing or exclusion", "B1: a second way, e.g. peers act as role models for attitudes and behaviour", "B1: developed: this shapes identity, e.g. through youth subcultures"] }
       ]
     },
     {
@@ -29,6 +32,9 @@
         { "q": "Social mobility means", "o": ["movement between social classes", "moving house", "migration", "changing jobs within a class"], "a": 0, "why": "Upward or downward mobility." },
         { "q": "A meritocracy is a system where rewards are based on", "o": ["ability and effort", "inheritance", "gender", "ethnicity"], "a": 0, "why": "Functionalists claim modern societies are meritocratic." },
         { "q": "What is social mobility?", "o": ["Movement of people between social classes", "Moving house", "Travelling abroad", "Changing jobs at the same level"], "a": 0, "why": "It can be upward or downward, within or between generations." }
+      ],
+      "long": [
+        { "q": "Explain two ways in which social class can affect a person's life chances.", "marks": 4, "paper": "1", "scheme": ["B1: one way, e.g. health: working-class people tend to have lower life expectancy", "B1: developed: e.g. poorer housing and diet, less access to private healthcare", "B1: a second way, e.g. education: middle-class children are more likely to reach university", "B1: developed: e.g. cultural capital, paying for tutors, or moving near high-performing schools"] }
       ]
     },
     {
@@ -37,6 +43,9 @@
         { "q": "A nuclear family consists of", "o": ["parents and their dependent children", "grandparents, parents and children", "a single parent", "relatives living nearby"], "a": 0, "why": "The extended family includes wider kin." },
         { "q": "What is a nuclear family?", "o": ["Grandparents, parents and children", "One parent and children", "Two parents and their dependent children", "A couple with no children"], "a": 2, "why": "The extended family includes other relatives." },
         { "q": "Which is evidence of family diversity?", "o": ["Growth of single-parent and same-sex families", "Every family being nuclear", "Falling divorce", "More arranged marriages only"], "a": 0, "why": "Explain why the change has happened." }
+      ],
+      "long": [
+        { "q": "'The nuclear family is no longer the main family type.' Evaluate this view. (Mark yourself with this scheme.)", "marks": 6, "paper": "2", "scheme": ["B1: for: growth of lone-parent families, e.g. through divorce or choice", "B1: for: other diverse types, e.g. reconstituted, same-sex, cohabiting, single-person households", "B1: for: supported with a theorist or trend, e.g. the Rapoports on family diversity", "B1: against: most people still live in a nuclear family at some stage of life", "B1: against: e.g. Chester's 'neo-conventional family': the nuclear form has adapted rather than disappeared", "B1: a reasoned judgement that follows from the points made"] }
       ]
     },
     {
@@ -45,6 +54,9 @@
         { "q": "The 'hidden curriculum' is", "o": ["the values and attitudes learned informally at school", "the exam syllabus", "homework", "private tuition"], "a": 0, "why": "e.g. punctuality, obedience." },
         { "q": "What is the hidden curriculum?", "o": ["The exam syllabus", "Secret lessons", "Values and attitudes taught informally through school life", "Homework"], "a": 2, "why": "For example punctuality and obedience." },
         { "q": "How might material deprivation affect educational achievement?", "o": ["Lack of resources such as books, space or food can lower attainment", "It always raises attainment", "It has no effect", "It only affects teachers"], "a": 0, "why": "Cultural factors and labelling in school also matter." }
+      ],
+      "long": [
+        { "q": "Explain why girls have tended to outperform boys at school in many countries.", "marks": 4, "paper": "2", "scheme": ["B1: one reason, e.g. changing employment opportunities and aspirations for women", "B1: developed: girls see qualifications as the route to a career (e.g. Sharpe's study of girls' changing priorities)", "B1: a second reason, e.g. boys' anti-school or 'laddish' subcultures", "B1: developed: being seen to work hard is 'uncool', so boys put in less effort"] }
       ]
     },
     {
@@ -65,6 +77,9 @@
         { "q": "A 'moral panic' is", "o": ["an exaggerated public reaction to a group seen as a threat", "a financial crash", "a news report", "a type of censorship"], "a": 0, "why": "Cohen's study of Mods and Rockers." },
         { "q": "What is a moral panic?", "o": ["A real crime wave", "A news report", "Exaggerated media reaction to a group seen as a threat", "A protest"], "a": 2, "why": "Cohen's folk devils." },
         { "q": "What is agenda-setting by the media?", "o": ["Choosing which issues the public thinks about", "Printing the news", "Selling advertising", "Writing laws"], "a": 0, "why": "Gatekeepers decide what is reported." }
+      ],
+      "long": [
+        { "q": "Describe how the media can create a moral panic.", "marks": 4, "paper": "2", "scheme": ["B1: exaggerated or sensationalised reporting of a group or event", "B1: the group is labelled as 'folk devils', a threat to society's values", "B1: public concern grows and moral entrepreneurs demand action, e.g. tougher laws or policing", "B1: an example or theorist, e.g. Cohen's study of Mods and Rockers"] }
       ]
     }
   ]
