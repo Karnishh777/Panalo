@@ -66,7 +66,8 @@
         { "q": "What is the area of a circle of radius 5 cm? (π ≈ 3.14)", "o": ["15.7 cm²", "31.4 cm²", "78.5 cm²", "157 cm²"], "a": 2, "why": "A = πr² = 3.14 × 25 = 78.5 cm²." },
         { "q": "What is the volume of a cuboid 3 cm by 4 cm by 5 cm?", "o": ["12 cm³", "47 cm³", "60 cm³", "94 cm³"], "a": 2, "why": "3 × 4 × 5 = 60 cm³." },
         { "q": "A triangle has base 10 cm and height 6 cm. What is its area?", "o": ["16 cm²", "30 cm²", "60 cm²", "36 cm²"], "a": 1, "why": "½ × base × height = ½ × 10 × 6 = 30 cm²." },
-        { "q": "How many cm² are in 1 m²?", "o": ["100", "1000", "10 000", "1 000 000"], "a": 2, "why": "1 m² = 100 cm × 100 cm = 10 000 cm²." }
+        { "q": "How many cm² are in 1 m²?", "o": ["100", "1000", "10 000", "1 000 000"], "a": 2, "why": "1 m² = 100 cm × 100 cm = 10 000 cm²." },
+        { "q": "A sector of a circle has radius 6 cm and angle 60°. What is its arc length? (Use π = 3.142)", "o": ["3.14 cm", "6.28 cm", "18.8 cm", "37.7 cm"], "a": 1, "why": "Arc length = (60/360) × 2π × 6 = 2π ≈ 6.28 cm. 37.7 cm is the whole circumference and 18.8 is the sector's area in cm²." }
       ],
       "long": [
         { "q": "A cylinder has radius 5 cm and height 12 cm. Find its volume and its total surface area, giving each answer correct to 3 significant figures.", "marks": 4, "paper": "4", "scheme": ["M1: V = πr²h", "A1: 942 cm³", "M1: surface area = 2πr² + 2πrh", "A1: 534 cm²"], "ans": "942 cm³; 534 cm²" }
@@ -78,7 +79,8 @@
         { "q": "A right-angled triangle has legs 6 cm and 8 cm. How long is the hypotenuse?", "o": ["7 cm", "10 cm", "14 cm", "48 cm"], "a": 1, "why": "√(6² + 8²) = √100 = 10 cm." },
         { "q": "Which ratio is tan θ in a right-angled triangle?", "o": ["opposite/hypotenuse", "adjacent/hypotenuse", "opposite/adjacent", "hypotenuse/opposite"], "a": 2, "why": "SOH CAH TOA: tan = opposite ÷ adjacent." },
         { "q": "In a triangle, a = 7, b = 5 and the angle C between them is 60°. Which rule finds side c?", "o": ["Pythagoras", "The sine rule", "The cosine rule", "SOH CAH TOA"], "a": 2, "why": "Two sides and the included angle: c² = a² + b² − 2ab cos C." },
-        { "q": "What is the area of a triangle with sides 4 and 9 and an included angle of 30°?", "o": ["9", "18", "36", "4.5"], "a": 0, "why": "Area = ½ab sin C = ½ × 4 × 9 × 0.5 = 9." }
+        { "q": "What is the area of a triangle with sides 4 and 9 and an included angle of 30°?", "o": ["9", "18", "36", "4.5"], "a": 0, "why": "Area = ½ab sin C = ½ × 4 × 9 × 0.5 = 9." },
+        { "q": "From a point 20 m from the foot of a tree, the angle of elevation of the top is 35°. How tall is the tree, to 3 significant figures?", "o": ["16.4 m", "11.5 m", "28.6 m", "14.0 m"], "a": 3, "why": "The height is opposite the angle and 20 m is adjacent, so h = 20 × tan 35° ≈ 14.0 m. Using sin or cos, or dividing by tan, gives the other values." }
       ],
       "long": [
         { "q": "In the right-angled triangle ABC, angle ACB = 90°, AB = 13 cm and BC = 5 cm. Calculate angle BAC and the length AC.", "marks": 3, "paper": "4", "scheme": ["M1: sin A = 5/13", "A1: angle BAC = 22.6°", "B1: AC = 12 cm"], "ans": "22.6°; 12 cm", "fig": "assets/syllabus/fig/0580-triangle.svg" }
@@ -89,7 +91,9 @@
       "questions": [
         { "q": "Shape A is enlarged by scale factor 3. How do the areas compare?", "o": ["Image area is 3 times", "Image area is 6 times", "Image area is 9 times", "They are equal"], "a": 2, "why": "Area scale factor = (length scale factor)² = 9." },
         { "q": "Which transformation keeps a shape the same size but turns it?", "o": ["Translation", "Rotation", "Enlargement", "Stretch"], "a": 1, "why": "A rotation turns a shape about a centre; size and shape are unchanged." },
-        { "q": "What is the magnitude of the vector (3, 4)?", "o": ["5", "7", "12", "25"], "a": 0, "why": "√(3² + 4²) = 5." }
+        { "q": "What is the magnitude of the vector (3, 4)?", "o": ["5", "7", "12", "25"], "a": 0, "why": "√(3² + 4²) = 5." },
+        { "q": "The point (2, 5) is reflected in the line y = x. What are the coordinates of its image?", "o": ["(−2, 5)", "(2, −5)", "(5, 2)", "(−5, −2)"], "a": 2, "why": "Reflecting in y = x swaps the coordinates, so (2, 5) maps to (5, 2)." },
+        { "q": "The point (3, 1) is rotated 90° clockwise about the origin. What are the coordinates of its image?", "o": ["(1, −3)", "(−1, 3)", "(−3, −1)", "(3, −1)"], "a": 0, "why": "A 90° clockwise rotation about the origin maps (x, y) to (y, −x), so (3, 1) goes to (1, −3). (−1, 3) is the anticlockwise image and (−3, −1) is a half turn." }
       ],
       "long": [
         { "q": "a is the column vector (3, −2) and b is the column vector (−1, 4). Find 2a − b and |2a − b|.", "marks": 3, "paper": "2", "scheme": ["B1: 2a − b = (7, −8)", "M1: √(7² + 8²)", "A1: 10.6"], "ans": "(7, −8); 10.6" }
@@ -101,7 +105,8 @@
         { "q": "A fair die is rolled. What is the probability of a number greater than 4?", "o": ["1/6", "1/3", "1/2", "2/3"], "a": 1, "why": "5 and 6 are 2 of 6 outcomes: 2/6 = 1/3." },
         { "q": "P(rain) = 0.3. What is P(no rain)?", "o": ["0.3", "0.6", "0.7", "1.3"], "a": 2, "why": "Probabilities of all outcomes add to 1: 1 − 0.3 = 0.7." },
         { "q": "Two fair coins are tossed. What is the probability of two heads?", "o": ["1/2", "1/3", "1/4", "1/8"], "a": 2, "why": "Independent events multiply: ½ × ½ = ¼." },
-        { "q": "A bag has 3 red and 2 blue balls. Two are taken without replacement. P(both red)?", "o": ["9/25", "3/10", "6/25", "3/5"], "a": 1, "why": "3/5 × 2/4 = 6/20 = 3/10." }
+        { "q": "A bag has 3 red and 2 blue balls. Two are taken without replacement. P(both red)?", "o": ["9/25", "3/10", "6/25", "3/5"], "a": 1, "why": "3/5 × 2/4 = 6/20 = 3/10." },
+        { "q": "A biased coin lands on heads with probability 0.6. It is thrown 50 times. How many heads would you expect?", "o": ["20", "25", "30", "35"], "a": 2, "why": "Expected frequency = probability × number of trials = 0.6 × 50 = 30. 25 would be expected only for a fair coin." }
       ],
       "long": [
         { "q": "A spinner lands on red with probability 0.35. It is spun twice. Find the probability that it lands on red exactly once.", "marks": 3, "paper": "4", "scheme": ["M1: 0.35 × 0.65", "M1: × 2 for the two orders", "A1: 0.455"], "ans": "0.455" }
@@ -113,7 +118,8 @@
         { "q": "What is the median of 3, 7, 2, 9, 5?", "o": ["2", "5", "5.2", "7"], "a": 1, "why": "In order: 2, 3, 5, 7, 9; the middle value is 5." },
         { "q": "What is the mean of 4, 6, 8, 10?", "o": ["6", "7", "8", "28"], "a": 1, "why": "Total 28 ÷ 4 values = 7." },
         { "q": "A scatter graph shows points rising from left to right. This is…", "o": ["negative correlation", "positive correlation", "no correlation", "a histogram"], "a": 1, "why": "As one variable increases, so does the other." },
-        { "q": "In a histogram, the height of each bar shows…", "o": ["frequency", "frequency density", "class width", "the cumulative total"], "a": 1, "why": "Frequency density = frequency ÷ class width, so the area shows frequency." }
+        { "q": "In a histogram, the height of each bar shows…", "o": ["frequency", "frequency density", "class width", "the cumulative total"], "a": 1, "why": "Frequency density = frequency ÷ class width, so the area shows frequency." },
+        { "q": "20 students were asked how many pets they own: 5 own 0, 8 own 1, 4 own 2 and 3 own 3. What is the mean number of pets per student?", "o": ["1", "1.25", "1.5", "5"], "a": 1, "why": "Total pets = 0×5 + 1×8 + 2×4 + 3×3 = 25, and 25 ÷ 20 = 1.25. 1 is the mode and median, and 1.5 is just the mean of 0, 1, 2 and 3." }
       ],
       "long": [
         { "q": "The mean of 6 numbers is 14. A seventh number is added and the mean becomes 15. Find the seventh number.", "marks": 2, "paper": "2", "scheme": ["M1: totals 6 × 14 = 84 and 7 × 15 = 105", "A1: 21"], "ans": "21" }

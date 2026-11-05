@@ -9,7 +9,9 @@
       "questions": [
         { "q": "What is the accounting equation?", "o": ["Assets = Capital + Liabilities", "Assets = Capital − Liabilities", "Capital = Assets + Liabilities", "Profit = Assets − Liabilities"], "a": 0, "why": "Everything the business owns is financed by the owner or by others." },
         { "q": "Which is a liability?", "o": ["Inventory", "Bank loan", "Machinery", "Trade receivables"], "a": 1, "why": "A liability is an amount the business owes." },
-        { "q": "Which is the accounting equation?", "o": ["Assets = Capital − Liabilities", "Capital = Assets + Liabilities", "Profit = Assets − Capital", "Assets = Capital + Liabilities"], "a": 3, "why": "It always balances." }
+        { "q": "Which is the accounting equation?", "o": ["Assets = Capital − Liabilities", "Capital = Assets + Liabilities", "Profit = Assets − Capital", "Assets = Capital + Liabilities"], "a": 3, "why": "It always balances." },
+        { "q": "A business has assets of $85 000 and liabilities of $23 000. What is the owner's capital?", "o": ["$108 000", "$23 000", "$85 000", "$62 000"], "a": 3, "why": "Capital = Assets − Liabilities, so 85 000 − 23 000 = $62 000." },
+        { "q": "The owner takes $500 cash from the business for personal use. What is the effect on the accounting equation?", "o": ["Assets fall and liabilities fall", "Assets rise and capital rises", "Assets fall and capital falls", "Capital falls and liabilities rise"], "a": 2, "why": "Drawings reduce cash (an asset) and reduce the owner's capital by the same amount, so the equation still balances." }
       ]
     },
     {
@@ -17,7 +19,9 @@
       "questions": [
         { "q": "Which document is sent by a seller to request payment?", "o": ["Credit note", "Invoice", "Receipt", "Statement of account"], "a": 1, "why": "A credit note reduces the amount owed, e.g. for returns." },
         { "q": "In double entry, buying goods on credit is recorded as…", "o": ["Debit purchases, credit supplier", "Debit supplier, credit purchases", "Debit cash, credit purchases", "Debit purchases, credit cash"], "a": 0, "why": "Purchases increase (debit); the amount owed to the supplier increases (credit)." },
-        { "q": "Which is the book of prime entry for credit sales?", "o": ["Purchases journal", "General journal", "Sales journal", "Cash book"], "a": 2, "why": "Cash sales go in the cash book." }
+        { "q": "Which is the book of prime entry for credit sales?", "o": ["Purchases journal", "General journal", "Sales journal", "Cash book"], "a": 2, "why": "Cash sales go in the cash book." },
+        { "q": "A trader pays a credit supplier $400 by cheque. What is the double entry?", "o": ["Debit supplier's account, credit bank", "Debit bank, credit supplier's account", "Debit purchases, credit bank", "Debit supplier's account, credit purchases"], "a": 0, "why": "The amount owed (a liability) falls, so the supplier is debited; the bank balance falls, so bank is credited." },
+        { "q": "Goods with a list price of $2 000 are sold on credit less 10% trade discount. What amount is entered in the sales journal?", "o": ["$2 000", "$200", "$1 800", "$2 200"], "a": 2, "why": "Trade discount is deducted on the invoice and never recorded in the ledger, so only the net $1 800 is entered." }
       ],
       "long": [
         { "q": "State the difference between an invoice and a credit note.", "marks": 2, "paper": "2", "scheme": ["B1: an invoice is sent by the seller to a credit customer, showing the amount owed for goods sold", "B1: a credit note is sent by the seller to reduce the amount owed, e.g. for returned or faulty goods"] }
@@ -28,7 +32,9 @@
       "questions": [
         { "q": "Which error does NOT affect the trial balance?", "o": ["Single-sided entry", "Error of commission", "Wrong addition in one account", "Entry on the wrong side of one account only"], "a": 1, "why": "Commission errors post to the wrong account of the right type; debits still equal credits." },
         { "q": "A bank reconciliation explains differences between…", "o": ["two suppliers", "the cash book and the bank statement", "assets and liabilities", "profit and cash"], "a": 1, "why": "Timing differences like unpresented cheques cause them." },
-        { "q": "Which error does not affect the agreement of the trial balance?", "o": ["A single-sided entry", "An error of commission", "Addition error in one account", "Entering different amounts on each side"], "a": 1, "why": "Errors of commission, omission, principle, original entry, reversal and complete reversal don't show in the trial balance." }
+        { "q": "Which error does not affect the agreement of the trial balance?", "o": ["A single-sided entry", "An error of commission", "Addition error in one account", "Entering different amounts on each side"], "a": 1, "why": "Errors of commission, omission, principle, original entry, reversal and complete reversal don't show in the trial balance." },
+        { "q": "A cash book shows a debit (favourable) bank balance of $3 000. The bank statement shows bank charges of $40 not yet in the cash book. What is the updated cash book balance?", "o": ["$2 960", "$3 040", "$3 000", "$2 920"], "a": 0, "why": "Bank charges reduce the money in the bank, so they are credited in the cash book: 3 000 − 40 = $2 960." },
+        { "q": "Repairs of $300 to a delivery van were debited to the motor vehicles account. What type of error is this?", "o": ["Error of commission", "Error of omission", "Error of principle", "Compensating error"], "a": 2, "why": "Revenue expenditure was posted to a non-current asset account, the wrong class of account, which is an error of principle." }
       ]
     },
     {
@@ -37,7 +43,8 @@
         { "q": "A machine costs $10 000, lasts 5 years and has no residual value. What is straight-line depreciation per year?", "o": ["$1000", "$2000", "$5000", "$500"], "a": 1, "why": "(cost − residual value) ÷ useful life = 10 000 ÷ 5." },
         { "q": "Prepaid expenses are shown as…", "o": ["a current liability", "a current asset", "income", "capital"], "a": 1, "why": "They are paid in advance for a future period." },
         { "q": "Writing off an irrecoverable debt…", "o": ["increases profit", "reduces profit", "increases cash", "has no effect"], "a": 1, "why": "It is an expense in the income statement." },
-        { "q": "Inventory items: A cost $50, NRV $40; B cost $30, NRV $45. At what value should inventory be shown?", "o": ["$80", "$70", "$85", "$75"], "a": 1, "why": "Examiners (2023): some compared total cost with total NRV. Apply lower of cost and NRV to each item: 40 + 30 = $70." }
+        { "q": "Inventory items: A cost $50, NRV $40; B cost $30, NRV $45. At what value should inventory be shown?", "o": ["$80", "$70", "$85", "$75"], "a": 1, "why": "Examiners (2023): some compared total cost with total NRV. Apply lower of cost and NRV to each item: 40 + 30 = $70." },
+        { "q": "Annual rent is $6 000. During the year the business paid $5 500. What rent expense is charged in the income statement?", "o": ["$5 500", "$500", "$11 500", "$6 000"], "a": 3, "why": "The accruals principle charges the full year's cost of $6 000; the unpaid $500 is shown as an accrued expense (a current liability)." }
       ],
       "long": [
         { "q": "A van cost $12 000 and is expected to last 5 years, with a residual value of $2000. Calculate the annual depreciation using the straight-line method and the net book value after 2 years.", "marks": 3, "paper": "2", "scheme": ["M1: (12 000 − 2000) ÷ 5", "A1: = $2000 a year", "A1: net book value after 2 years = $8000"], "ans": "$2000; $8000" }
@@ -48,7 +55,9 @@
       "questions": [
         { "q": "Revenue $50 000, cost of sales $30 000. What is gross profit?", "o": ["$80 000", "$20 000", "$30 000", "$50 000"], "a": 1, "why": "Gross profit = revenue − cost of sales." },
         { "q": "Cost of sales is calculated as…", "o": ["opening inventory + purchases − closing inventory", "purchases − sales", "sales − expenses", "closing inventory − opening inventory"], "a": 0, "why": "It is the cost of the goods actually sold in the period." },
-        { "q": "A club buys new furniture. Where is this shown?", "o": ["Income and expenditure account", "Receipts and payments account only", "Statement of financial position as a non-current asset", "Accumulated fund as a deduction"], "a": 2, "why": "Examiners (2023): some put the furniture in the income and expenditure account; it is capital expenditure." }
+        { "q": "A club buys new furniture. Where is this shown?", "o": ["Income and expenditure account", "Receipts and payments account only", "Statement of financial position as a non-current asset", "Accumulated fund as a deduction"], "a": 2, "why": "Examiners (2023): some put the furniture in the income and expenditure account; it is capital expenditure." },
+        { "q": "Gross profit is $32 000, expenses are $19 000 and rent received is $1 500. What is the profit for the year?", "o": ["$13 000", "$11 500", "$14 500", "$52 500"], "a": 2, "why": "Profit for the year = gross profit + other income − expenses = 32 000 + 1 500 − 19 000 = $14 500." },
+        { "q": "In a partnership's financial statements, where is interest on partners' capital shown?", "o": ["Income statement as an expense", "Statement of financial position as a current liability", "Trading account as part of cost of sales", "Appropriation account"], "a": 3, "why": "Interest on capital is a share of profit to the partners, not a business expense, so it goes in the appropriation account." }
       ],
       "long": [
         { "q": "Revenue was $80 000. Opening inventory was $6000, purchases $50 000 and closing inventory $8000. Calculate the cost of sales and the gross profit.", "marks": 3, "paper": "2", "scheme": ["M1: cost of sales = 6000 + 50 000 − 8000", "A1: = $48 000", "A1: gross profit = 80 000 − 48 000 = $32 000"], "ans": "$48 000; $32 000" }
@@ -59,7 +68,9 @@
       "questions": [
         { "q": "Gross profit $20 000 on revenue $80 000. What is the gross margin?", "o": ["20%", "25%", "40%", "400%"], "a": 1, "why": "20 000 ÷ 80 000 × 100 = 25%." },
         { "q": "A quick (acid test) ratio excludes…", "o": ["cash", "inventory", "trade receivables", "trade payables"], "a": 1, "why": "Inventory may be slow to turn into cash." },
-        { "q": "What does the current ratio measure?", "o": ["Profit per sale", "Whether a business can pay its short-term debts", "How fast inventory sells", "The return on capital"], "a": 1, "why": "Current assets ÷ current liabilities." }
+        { "q": "What does the current ratio measure?", "o": ["Profit per sale", "Whether a business can pay its short-term debts", "How fast inventory sells", "The return on capital"], "a": 1, "why": "Current assets ÷ current liabilities." },
+        { "q": "Revenue is $120 000 and profit for the year is $18 000. What is the profit margin?", "o": ["15%", "18%", "6.67%", "85%"], "a": 0, "why": "Profit margin = profit for the year ÷ revenue × 100 = 18 000 ÷ 120 000 × 100 = 15%." },
+        { "q": "Cost of sales is $60 000 and average inventory is $7 500. What is the rate of inventory turnover?", "o": ["0.125 times", "12.5 times", "80 times", "8 times"], "a": 3, "why": "Rate of inventory turnover = cost of sales ÷ average inventory = 60 000 ÷ 7 500 = 8 times a year." }
       ],
       "long": [
         { "q": "A trader has current assets of $18 000 and current liabilities of $12 000. Calculate the current ratio and comment on it.", "marks": 3, "paper": "2", "scheme": ["M1: 18 000 ÷ 12 000", "A1: = 1.5 : 1", "B1: comment, e.g. the business can cover its short-term debts, though below the 2 : 1 often suggested"], "ans": "1.5 : 1" }
@@ -70,7 +81,9 @@
       "questions": [
         { "q": "Which principle says revenue is recorded when earned, not when cash is received?", "o": ["Prudence", "Accruals (matching)", "Going concern", "Consistency"], "a": 1, "why": "Income and expenses are matched to the period they relate to." },
         { "q": "Prudence means…", "o": ["recording profits early", "not overstating assets or profits", "changing methods often", "ignoring small items"], "a": 1, "why": "Accountants shouldn't anticipate gains, but should provide for likely losses." },
-        { "q": "Which concept says a business records assets at cost, not what they'd fetch today?", "o": ["Prudence", "Historic cost", "Going concern", "Matching"], "a": 1, "why": "Examiners (2023): many could name prudence but struggled to suggest another reason." }
+        { "q": "Which concept says a business records assets at cost, not what they'd fetch today?", "o": ["Prudence", "Historic cost", "Going concern", "Matching"], "a": 1, "why": "Examiners (2023): many could name prudence but struggled to suggest another reason." },
+        { "q": "A business keeps using straight-line depreciation every year instead of switching methods to make profit look higher. Which principle is it following?", "o": ["Prudence", "Business entity", "Consistency", "Realisation"], "a": 2, "why": "Consistency means using the same methods from year to year so that results can be compared fairly." },
+        { "q": "The owner pays her home electricity bill from the business bank account. The bookkeeper records it as drawings, not as a business expense. Which principle is applied?", "o": ["Business entity", "Going concern", "Matching", "Materiality"], "a": 0, "why": "The business is treated as separate from its owner, so the owner's private spending is drawings, not a business cost." }
       ]
     }
   ]

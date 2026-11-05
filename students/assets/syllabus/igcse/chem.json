@@ -9,7 +9,9 @@
       "questions": [
         { "q": "What is the change from gas to liquid called?", "o": ["Melting", "Condensation", "Sublimation", "Evaporation"], "a": 1, "why": "Condensation is a gas turning into a liquid as it cools." },
         { "q": "Which gas diffuses fastest at the same temperature?", "o": ["Chlorine (Mr 71)", "Carbon dioxide (Mr 44)", "Ammonia (Mr 17)", "Oxygen (Mr 32)"], "a": 2, "why": "Lighter molecules move faster on average, so the gas with the lowest Mr diffuses fastest." },
-        { "q": "A substance melts at −7 °C and boils at 59 °C. What state is it at 25 °C?", "o": ["Solid", "Liquid", "Gas", "It cannot be told"], "a": 1, "why": "25 °C is above its melting point and below its boiling point." }
+        { "q": "A substance melts at −7 °C and boils at 59 °C. What state is it at 25 °C?", "o": ["Solid", "Liquid", "Gas", "It cannot be told"], "a": 1, "why": "25 °C is above its melting point and below its boiling point." },
+        { "q": "A gas is sealed in a syringe and heated at constant pressure. Why does its volume increase?", "o": ["The gas particles get bigger", "More gas particles are made", "The particles move faster and hit the walls harder and more often, pushing the plunger out", "The particles become lighter"], "a": 2, "why": "Heating gives the particles more kinetic energy. Faster particles collide with the walls harder and more often, so the gas expands until the pressure is back to its original value." },
+        { "q": "A heating curve for a pure solid has a flat section while it melts. Why does the temperature stay constant?", "o": ["The energy supplied is used to overcome the forces between particles, not to increase their kinetic energy", "The heater stops working during melting", "The particles stop moving while they melt", "Energy is being released by the solid"], "a": 0, "why": "During a change of state the energy breaks the attractions between particles, so their average kinetic energy, and so the temperature, does not rise until melting is complete." }
       ]
     },
     {
@@ -59,7 +61,9 @@
       "questions": [
         { "q": "In an exothermic reaction, the temperature of the surroundings…", "o": ["falls", "rises", "stays the same", "drops to zero"], "a": 1, "why": "Exothermic reactions transfer thermal energy to the surroundings." },
         { "q": "Bond breaking is…", "o": ["exothermic", "endothermic", "neither", "always fast"], "a": 1, "why": "Energy must be taken in to break bonds; making bonds releases energy." },
-        { "q": "A reaction has ΔH = −90 kJ/mol. It is…", "o": ["endothermic", "exothermic", "reversible only", "not a chemical reaction"], "a": 1, "why": "A negative ΔH means energy is released to the surroundings." }
+        { "q": "A reaction has ΔH = −90 kJ/mol. It is…", "o": ["endothermic", "exothermic", "reversible only", "not a chemical reaction"], "a": 1, "why": "A negative ΔH means energy is released to the surroundings." },
+        { "q": "Use the bond energies H–H 436, Cl–Cl 242 and H–Cl 431 kJ/mol to find ΔH for H₂ + Cl₂ → 2HCl.", "o": ["+184 kJ/mol", "+247 kJ/mol", "−1540 kJ/mol", "−184 kJ/mol"], "a": 3, "why": "Energy in to break bonds = 436 + 242 = 678 kJ; energy out making 2 H–Cl bonds = 2 × 431 = 862 kJ. ΔH = 678 − 862 = −184 kJ/mol, so the reaction is exothermic." },
+        { "q": "On a reaction pathway diagram, the products are at a higher energy level than the reactants. Which description is correct?", "o": ["Exothermic, ΔH is negative", "Endothermic, ΔH is positive", "Exothermic, ΔH is positive", "Endothermic, ΔH is negative"], "a": 1, "why": "Products with more energy than the reactants means energy was taken in from the surroundings, so the reaction is endothermic and ΔH is positive." }
       ]
     },
     {

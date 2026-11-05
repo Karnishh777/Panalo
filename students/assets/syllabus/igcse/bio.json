@@ -9,7 +9,9 @@
       "questions": [
         { "q": "Which is one of the seven characteristics of living things?", "o": ["Colour", "Excretion", "Size", "Shape"], "a": 1, "why": "MRS GREN: movement, respiration, sensitivity, growth, reproduction, excretion, nutrition." },
         { "q": "In the binomial system, what are the two parts of a name?", "o": ["Kingdom and phylum", "Genus and species", "Class and order", "Family and genus"], "a": 1, "why": "For example Homo sapiens: genus Homo, species sapiens." },
-        { "q": "Which group has a body made of segments with jointed legs and an exoskeleton?", "o": ["Arthropods", "Mammals", "Ferns", "Fungi"], "a": 0, "why": "Arthropods (insects, crustaceans, arachnids, myriapods) have jointed legs and an exoskeleton." }
+        { "q": "Which group has a body made of segments with jointed legs and an exoskeleton?", "o": ["Arthropods", "Mammals", "Ferns", "Fungi"], "a": 0, "why": "Arthropods (insects, crustaceans, arachnids, myriapods) have jointed legs and an exoskeleton." },
+        { "q": "An animal has dry scaly skin, breathes with lungs and lays eggs with rubbery shells on land. Which vertebrate group does it belong to?", "o": ["Fish", "Amphibians", "Birds", "Reptiles"], "a": 3, "why": "Dry scales and rubbery-shelled eggs laid on land are features of reptiles. Amphibians have moist skin and lay eggs in water, birds have feathers, and fish have gills." },
+        { "q": "Two species have very similar base sequences in their DNA. What does this most likely show?", "o": ["They share a recent common ancestor", "They live in the same habitat", "They eat the same food", "They belong to different kingdoms"], "a": 0, "why": "The more recently two groups shared an ancestor, the more similar their DNA base sequences are, so DNA comparisons are used in classification." }
       ],
       "long": [
         { "q": "Explain why viruses are not considered living organisms by biologists.", "marks": 4, "paper": "4", "scheme": ["B1: viruses lack cellular structure (no cytoplasm, cell membrane, or organelles)", "B1: they do not carry out metabolic processes or respiration on their own", "B1: they cannot reproduce independently; they can only replicate inside a host cell by hijacking the host's machinery", "B1: they do not feed, excrete, or grow"] }
@@ -43,7 +45,9 @@
       "questions": [
         { "q": "Which test detects starch?", "o": ["Benedict's solution", "Iodine solution turns blue-black", "Biuret turns purple", "Ethanol emulsion"], "a": 1, "why": "Iodine turns blue-black with starch." },
         { "q": "What are proteins made from?", "o": ["Fatty acids and glycerol", "Amino acids", "Glucose", "Nucleotides"], "a": 1, "why": "Proteins are chains of amino acids." },
-        { "q": "Benedict's solution is heated with a sample and turns brick red. What is present?", "o": ["Starch", "Protein", "Reducing sugar", "Fat"], "a": 2, "why": "Reducing sugars give a green to brick-red colour with hot Benedict's." }
+        { "q": "Benedict's solution is heated with a sample and turns brick red. What is present?", "o": ["Starch", "Protein", "Reducing sugar", "Fat"], "a": 2, "why": "Reducing sugars give a green to brick-red colour with hot Benedict's." },
+        { "q": "In a DNA molecule, which base always pairs with adenine (A)?", "o": ["Cytosine (C)", "Guanine (G)", "Thymine (T)", "Uracil (U)"], "a": 2, "why": "The bases on the two strands pair in a fixed way: A with T and C with G. Uracil is not found in DNA." },
+        { "q": "A food sample is shaken with ethanol and the liquid is then poured into water. A cloudy white emulsion forms. What does the food contain?", "o": ["Starch", "Protein", "Reducing sugar", "Fats or oils"], "a": 3, "why": "A cloudy white emulsion in the ethanol emulsion test shows fats or oils are present. Starch, protein and reducing sugar are tested with iodine, biuret and Benedict's solution." }
       ]
     },
     {
@@ -65,7 +69,8 @@
         { "q": "What is the word equation for photosynthesis?", "o": ["glucose + oxygen → carbon dioxide + water", "carbon dioxide + water → glucose + oxygen", "carbon dioxide + oxygen → glucose + water", "water + oxygen → glucose"], "a": 1, "why": "Light energy, absorbed by chlorophyll, converts carbon dioxide and water into glucose and oxygen." },
         { "q": "Which mineral ion is needed to make chlorophyll?", "o": ["Nitrate", "Magnesium", "Iron", "Calcium"], "a": 1, "why": "Magnesium is part of the chlorophyll molecule; a lack causes yellow leaves." },
         { "q": "Gas exchange in a leaf happens mainly through…", "o": ["the cuticle", "stomata", "xylem", "the epidermis cells' walls"], "a": 1, "why": "Stomata, opened and closed by guard cells, let gases in and out." },
-        { "q": "What is the balanced equation for plant photosynthesis?", "o": ["CO₂ + H₂O → CH₂O + O₂", "C₆H₁₂O₆ + 6O₂ → 6CO₂ + 6H₂O", "6CO₂ + 12H₂O → C₆H₁₂O₆ + 6O₂ + 6H₂O", "6CO₂ + 6H₂O → C₆H₁₂O₆ + 6O₂"], "a": 3, "why": "Six molecules of carbon dioxide and six molecules of water yield one molecule of glucose and six molecules of oxygen gas." }
+        { "q": "What is the balanced equation for plant photosynthesis?", "o": ["CO₂ + H₂O → CH₂O + O₂", "C₆H₁₂O₆ + 6O₂ → 6CO₂ + 6H₂O", "6CO₂ + 12H₂O → C₆H₁₂O₆ + 6O₂ + 6H₂O", "6CO₂ + 6H₂O → C₆H₁₂O₆ + 6O₂"], "a": 3, "why": "Six molecules of carbon dioxide and six molecules of water yield one molecule of glucose and six molecules of oxygen gas." },
+        { "q": "Increasing the light intensity on a plant does not change its rate of photosynthesis, but raising the carbon dioxide concentration makes the rate go up. What was limiting the rate?", "o": ["Light intensity", "Oxygen concentration", "Carbon dioxide concentration", "The amount of chlorophyll"], "a": 2, "why": "A limiting factor is the one in shortest supply: only changing it changes the rate. Here only the carbon dioxide increase raised the rate, so carbon dioxide was limiting." }
       ],
       "long": [
         { "q": "Write the balanced chemical equation for photosynthesis and explain why increasing light intensity stops increasing the rate of photosynthesis above a certain point.", "marks": 3, "paper": "4", "scheme": ["B1: 6CO₂ + 6H₂O → C₆H₁₂O₆ + 6O₂ (light, chlorophyll)", "B1: another factor becomes limiting", "B1: e.g. carbon dioxide concentration or temperature"] },
@@ -78,7 +83,8 @@
         { "q": "Where is bile made?", "o": ["Stomach", "Gall bladder", "Liver", "Pancreas"], "a": 2, "why": "Bile is made in the liver and stored in the gall bladder." },
         { "q": "What does bile do?", "o": ["Digests protein", "Emulsifies fats and neutralises stomach acid", "Absorbs water", "Makes amylase"], "a": 1, "why": "Bile breaks fat into small droplets (bigger surface area) and is alkaline." },
         { "q": "Where are most digested nutrients absorbed?", "o": ["Stomach", "Small intestine (ileum)", "Large intestine", "Oesophagus"], "a": 1, "why": "The ileum has villi giving a huge surface area for absorption." },
-        { "q": "Which disease is caused by a lack of vitamin C?", "o": ["Rickets", "Scurvy", "Anaemia", "Diabetes"], "a": 1, "why": "Vitamin C deficiency causes scurvy; vitamin D deficiency causes rickets." }
+        { "q": "Which disease is caused by a lack of vitamin C?", "o": ["Rickets", "Scurvy", "Anaemia", "Diabetes"], "a": 1, "why": "Vitamin C deficiency causes scurvy; vitamin D deficiency causes rickets." },
+        { "q": "What are the functions of the hydrochloric acid in gastric juice?", "o": ["It kills harmful microorganisms in food and gives an acidic pH for stomach enzymes", "It digests starch and emulsifies fats", "It neutralises bile and absorbs glucose", "It makes bile and stores glycogen"], "a": 0, "why": "Stomach acid kills many microorganisms swallowed with food and provides the low pH that the protease pepsin works best at. It does not digest food itself." }
       ]
     },
     {
@@ -87,7 +93,8 @@
         { "q": "What does xylem carry?", "o": ["Sugars", "Water and mineral ions", "Oxygen", "Hormones only"], "a": 1, "why": "Xylem transports water and mineral ions up from the roots." },
         { "q": "Which conditions increase the rate of transpiration?", "o": ["Cold, still, humid air", "Warm, windy, dry air", "Darkness", "High humidity"], "a": 1, "why": "Higher temperature and wind speed and lower humidity all speed up water loss." },
         { "q": "Translocation in phloem moves…", "o": ["water only", "sucrose and amino acids", "carbon dioxide", "mineral ions only"], "a": 1, "why": "Phloem moves sucrose and amino acids from sources to sinks." },
-        { "q": "Which tissue transports sucrose and amino acids in a plant?", "o": ["Phloem", "Xylem", "Epidermis", "Root hair cells"], "a": 0, "why": "Examiners (2023): many did not understand the functions of xylem (water and ions) and phloem (sucrose and amino acids)." }
+        { "q": "Which tissue transports sucrose and amino acids in a plant?", "o": ["Phloem", "Xylem", "Epidermis", "Root hair cells"], "a": 0, "why": "Examiners (2023): many did not understand the functions of xylem (water and ions) and phloem (sucrose and amino acids)." },
+        { "q": "Why do root hair cells have a long, thin extension into the soil?", "o": ["To anchor the plant firmly in the soil", "To carry out photosynthesis underground", "To transport sucrose down to the root tip", "To increase the surface area for absorbing water and mineral ions"], "a": 3, "why": "The extension gives each root hair cell a large surface area in contact with soil water, so more water (by osmosis) and mineral ions can be taken in." }
       ],
       "long": [
         { "q": "Explain how transpiration in leaves produces a continuous flow of water upwards through the xylem of a plant.", "marks": 5, "paper": "4", "scheme": ["B1: water evaporates from the moist surfaces of mesophyll cells into the air spaces within the leaf", "B1: water vapour diffuses out through open stomata down a water vapour concentration gradient", "B1: this water loss creates a low water potential in the mesophyll cells, drawing water out of the leaf xylem by osmosis", "B1: this creates a negative pressure / transpiration pull that draws water up the xylem vessels", "B1: cohesion between polar water molecules forms a continuous unbroken water column up the stem from the roots"] }
@@ -111,7 +118,9 @@
       "questions": [
         { "q": "What is a pathogen?", "o": ["A white blood cell", "A disease-causing organism", "An antibody", "A vaccine"], "a": 1, "why": "Pathogens include bacteria, viruses, fungi and protoctists that cause disease." },
         { "q": "How does a vaccine protect you?", "o": ["It kills all bacteria", "It makes your body produce antibodies and memory cells", "It is an antibiotic", "It removes pathogens from the blood"], "a": 1, "why": "Harmless antigens trigger an immune response, leaving memory cells for a faster future response." },
-        { "q": "Why don't antibiotics work against viral infections?", "o": ["Viruses are too big", "Viruses don't have the structures antibiotics target", "Viruses are not living cells, so antibiotics kill them instantly", "Antibiotics only work on fungi"], "a": 1, "why": "Antibiotics act on bacterial structures (like cell walls) that viruses don't have." }
+        { "q": "Why don't antibiotics work against viral infections?", "o": ["Viruses are too big", "Viruses don't have the structures antibiotics target", "Viruses are not living cells, so antibiotics kill them instantly", "Antibiotics only work on fungi"], "a": 1, "why": "Antibiotics act on bacterial structures (like cell walls) that viruses don't have." },
+        { "q": "Which of these is a chemical barrier against pathogens?", "o": ["Skin", "Hairs in the nose", "Stomach acid", "Phagocytes"], "a": 2, "why": "Stomach acid (and mucus) are chemical barriers. Skin and nose hairs are mechanical barriers, and phagocytes are white blood cells, not barriers." },
+        { "q": "A baby receives antibodies from its mother in breast milk. Why does this protection only last a short time?", "o": ["Breast milk also contains antibiotics that wear off", "No memory cells are made, because the baby's own immune system did not make the antibodies", "The antibodies turn into antigens", "The baby's stomach acid destroys every antibody at once"], "a": 1, "why": "This is passive immunity: the antibodies are made by someone else, so the baby's lymphocytes make no memory cells and the antibodies are broken down over time." }
       ]
     },
     {
@@ -119,7 +128,9 @@
       "questions": [
         { "q": "Where does gas exchange happen in the lungs?", "o": ["Trachea", "Bronchi", "Alveoli", "Larynx"], "a": 2, "why": "Alveoli have thin walls, a large surface area and a good blood supply." },
         { "q": "When you breathe in, the diaphragm…", "o": ["relaxes and moves up", "contracts and flattens", "stays still", "pushes air out"], "a": 1, "why": "Contracting flattens it, increasing chest volume and drawing air in." },
-        { "q": "Exhaled air contains more ___ than inhaled air.", "o": ["oxygen", "nitrogen", "carbon dioxide", "argon"], "a": 2, "why": "Exhaled air has about 4% CO₂ compared with about 0.04% in inhaled air." }
+        { "q": "Exhaled air contains more ___ than inhaled air.", "o": ["oxygen", "nitrogen", "carbon dioxide", "argon"], "a": 2, "why": "Exhaled air has about 4% CO₂ compared with about 0.04% in inhaled air." },
+        { "q": "Which feature makes the alveoli efficient at gas exchange?", "o": ["Thick muscular walls", "Rings of cartilage", "Very few blood capillaries", "Walls only one cell thick, giving a short diffusion distance"], "a": 3, "why": "Thin alveolar walls, a large surface area and a good blood supply keep the diffusion distance short and the concentration gradients steep." },
+        { "q": "When the external intercostal muscles contract as you breathe in, what happens inside the thorax?", "o": ["Volume increases and pressure decreases", "Volume decreases and pressure increases", "Volume and pressure both increase", "Volume and pressure both decrease"], "a": 0, "why": "The ribs move up and out, so the volume of the thorax increases and the pressure inside falls below atmospheric pressure, and air is drawn in." }
       ]
     },
     {
@@ -128,7 +139,8 @@
         { "q": "What is the word equation for aerobic respiration?", "o": ["glucose + oxygen → carbon dioxide + water", "glucose → lactic acid", "carbon dioxide + water → glucose + oxygen", "glucose → ethanol + carbon dioxide"], "a": 0, "why": "Aerobic respiration releases energy from glucose using oxygen." },
         { "q": "What is made by anaerobic respiration in human muscles?", "o": ["Ethanol", "Lactic acid", "Carbon dioxide and water", "Oxygen"], "a": 1, "why": "Without enough oxygen, muscles make lactic acid, creating an oxygen debt." },
         { "q": "Anaerobic respiration in yeast produces…", "o": ["lactic acid", "ethanol and carbon dioxide", "oxygen", "glucose"], "a": 1, "why": "This is used in bread-making and brewing." },
-        { "q": "Which is the word equation for aerobic respiration?", "o": ["carbon dioxide + water → glucose + oxygen", "glucose → lactic acid", "glucose + oxygen → carbon dioxide + water", "glucose → alcohol + carbon dioxide"], "a": 2, "why": "Examiners (2023): some chose the photosynthesis equation, which is the reverse." }
+        { "q": "Which is the word equation for aerobic respiration?", "o": ["carbon dioxide + water → glucose + oxygen", "glucose → lactic acid", "glucose + oxygen → carbon dioxide + water", "glucose → alcohol + carbon dioxide"], "a": 2, "why": "Examiners (2023): some chose the photosynthesis equation, which is the reverse." },
+        { "q": "Which statement best describes respiration?", "o": ["Breathing air in and out of the lungs", "Chemical reactions in cells that break down nutrient molecules and release energy", "The exchange of gases across the alveoli", "Making glucose using light energy"], "a": 1, "why": "Respiration is a set of chemical reactions in every living cell that releases energy for metabolism. Breathing and gas exchange are different processes." }
       ],
       "long": [
         { "q": "Describe anaerobic respiration in human muscles during vigorous exercise and explain why breathing stays fast after exercise ends.", "marks": 3, "paper": "4", "scheme": ["B1: glucose is broken down to lactic acid without oxygen", "B1: releasing much less energy than aerobic respiration", "B1: afterwards extra oxygen is needed to break down the lactic acid (oxygen debt)"] },
@@ -140,7 +152,9 @@
       "questions": [
         { "q": "Which organ makes urea?", "o": ["Kidney", "Liver", "Bladder", "Lungs"], "a": 1, "why": "The liver breaks down excess amino acids (deamination), forming urea." },
         { "q": "What do the kidneys remove from the blood?", "o": ["Glucose", "Urea, excess water and salts", "Red blood cells", "Proteins"], "a": 1, "why": "Kidneys filter blood and reabsorb what's useful, excreting urea, water and salts as urine." },
-        { "q": "Which organ removes urea from the blood?", "o": ["The liver", "The lungs", "The bladder", "The kidneys"], "a": 3, "why": "The liver makes urea by deamination; the kidneys excrete it." }
+        { "q": "Which organ removes urea from the blood?", "o": ["The liver", "The lungs", "The bladder", "The kidneys"], "a": 3, "why": "The liver makes urea by deamination; the kidneys excrete it." },
+        { "q": "How is urea formed in the liver?", "o": ["From the breakdown of old red blood cells", "From the deamination of excess amino acids", "From the breakdown of glucose", "From the digestion of fats"], "a": 1, "why": "Excess amino acids cannot be stored, so the liver removes their nitrogen-containing part (deamination), which is converted to urea." },
+        { "q": "In a healthy kidney, which substance is filtered out of the blood but then completely reabsorbed back into it?", "o": ["Urea", "Protein", "Red blood cells", "Glucose"], "a": 3, "why": "Glucose passes into the filtrate but is all reabsorbed in the tubule, so it is not normally in urine. Protein and red cells are too large to be filtered, and urea stays in the urine." }
       ]
     },
     {
@@ -149,7 +163,8 @@
         { "q": "What is the correct order in a reflex arc?", "o": ["Receptor → sensory neurone → relay neurone → motor neurone → effector", "Effector → motor → relay → sensory → receptor", "Receptor → motor → relay → effector", "Brain → receptor → effector"], "a": 0, "why": "Reflexes are fast, automatic responses through this pathway." },
         { "q": "Which hormone lowers blood glucose?", "o": ["Adrenaline", "Glucagon", "Insulin", "Testosterone"], "a": 2, "why": "Insulin from the pancreas makes the liver store glucose as glycogen." },
         { "q": "In bright light, the pupil…", "o": ["gets bigger", "gets smaller", "stays the same", "closes completely"], "a": 1, "why": "Circular muscles of the iris contract, making the pupil smaller to protect the retina." },
-        { "q": "A shoot bending towards light is called…", "o": ["gravitropism", "phototropism", "hydrotropism", "photosynthesis"], "a": 1, "why": "Auxin collects on the shaded side, which grows more, bending the shoot to the light." }
+        { "q": "A shoot bending towards light is called…", "o": ["gravitropism", "phototropism", "hydrotropism", "photosynthesis"], "a": 1, "why": "Auxin collects on the shaded side, which grows more, bending the shoot to the light." },
+        { "q": "Which is a difference between nervous and hormonal control?", "o": ["Nervous responses are faster and shorter-lasting", "Hormones travel along neurones", "Hormonal responses are always faster", "Nerve impulses are carried in the blood plasma"], "a": 0, "why": "Nerve impulses travel quickly along neurones to a specific target and their effects are brief; hormones travel in the blood, act more slowly and their effects last longer." }
       ]
     },
     {
@@ -157,7 +172,9 @@
       "questions": [
         { "q": "What is a drug?", "o": ["Any food", "Any substance taken into the body that modifies or affects chemical reactions in the body", "Only illegal substances", "A vitamin"], "a": 1, "why": "This is the definition used in the syllabus; it includes medicines." },
         { "q": "Why should a course of antibiotics be finished?", "o": ["To taste better", "To reduce the chance of resistant bacteria surviving", "To make the next course stronger", "It doesn't matter"], "a": 1, "why": "Stopping early lets the more resistant bacteria survive and multiply." },
-        { "q": "Why should a full course of antibiotics be finished?", "o": ["Antibiotics kill viruses", "To prevent addiction", "To make the next course cheaper", "To kill all the bacteria and reduce the chance of resistant bacteria surviving"], "a": 3, "why": "Antibiotics have no effect on viruses." }
+        { "q": "Why should a full course of antibiotics be finished?", "o": ["Antibiotics kill viruses", "To prevent addiction", "To make the next course cheaper", "To kill all the bacteria and reduce the chance of resistant bacteria surviving"], "a": 3, "why": "Antibiotics have no effect on viruses." },
+        { "q": "Which practice helps to reduce the development of antibiotic-resistant bacteria such as MRSA?", "o": ["Prescribing antibiotics for colds and flu", "Giving antibiotics routinely to healthy farm animals", "Using antibiotics only when they are really needed", "Stopping antibiotics as soon as symptoms go"], "a": 2, "why": "Each use of an antibiotic selects for resistant bacteria, so using them only when essential (and finishing the course) slows the spread of resistance." },
+        { "q": "Bacteria from a patient are grown on agar with paper discs of four antibiotics. The clear zones around the discs are: A 2 mm, B 15 mm, C 0 mm, D 8 mm. Which antibiotic should the doctor choose?", "o": ["A", "B", "C", "D"], "a": 1, "why": "The clear zone is where bacteria have been killed or stopped growing; the widest zone (B) shows the antibiotic these bacteria are most sensitive to. No zone (C) means they are resistant." }
       ]
     },
     {
@@ -165,7 +182,9 @@
       "questions": [
         { "q": "What is the main advantage of sexual reproduction?", "o": ["It is faster", "It produces genetic variation", "It needs only one parent", "Offspring are identical"], "a": 1, "why": "Variation helps a population survive changes in the environment." },
         { "q": "Where does fertilisation usually happen in humans?", "o": ["Uterus", "Ovary", "Oviduct", "Vagina"], "a": 2, "why": "The sperm meets the egg in the oviduct." },
-        { "q": "Which part of a flower makes pollen?", "o": ["Stigma", "Anther", "Ovary", "Petal"], "a": 1, "why": "Pollen is made in the anthers, on the filaments of the stamens." }
+        { "q": "Which part of a flower makes pollen?", "o": ["Stigma", "Anther", "Ovary", "Petal"], "a": 1, "why": "Pollen is made in the anthers, on the filaments of the stamens." },
+        { "q": "What is the function of the placenta?", "o": ["It exchanges oxygen, nutrients and wastes between the mother's and the fetus's blood without them mixing", "It lets the mother's blood flow directly into the fetus", "It produces the eggs for the next pregnancy", "It stops every substance in the mother's blood reaching the fetus"], "a": 0, "why": "The placenta brings the two blood supplies close together so substances diffuse across, while keeping them separate. Some harmful substances and pathogens can still cross." },
+        { "q": "Which features are typical of an insect-pollinated flower?", "o": ["Feathery stigmas hanging outside the flower", "Small, light, smooth pollen made in huge amounts", "Large, brightly coloured petals, scent and nectar", "No petals and long, dangling anthers"], "a": 2, "why": "Insect-pollinated flowers attract insects with colourful petals, scent and nectar. The other features belong to wind-pollinated flowers." }
       ]
     },
     {
@@ -174,7 +193,8 @@
         { "q": "Two heterozygous parents (Tt) are crossed. What fraction of offspring show the recessive phenotype?", "o": ["0", "1/4", "1/2", "3/4"], "a": 1, "why": "Tt × Tt gives TT, Tt, Tt, tt: one in four is tt." },
         { "q": "How many chromosomes are in a human gamete?", "o": ["23", "46", "92", "22"], "a": 0, "why": "Gametes are haploid: 23 chromosomes, half the body-cell number." },
         { "q": "What type of cell division makes gametes?", "o": ["Mitosis", "Meiosis", "Binary fission", "Budding"], "a": 1, "why": "Meiosis halves the chromosome number and gives genetic variation." },
-        { "q": "Which sex chromosomes does a human male have?", "o": ["XX", "XY", "YY", "X only"], "a": 1, "why": "Males are XY and females XX." }
+        { "q": "Which sex chromosomes does a human male have?", "o": ["XX", "XY", "YY", "X only"], "a": 1, "why": "Males are XY and females XX." },
+        { "q": "In mice, black fur (B) is dominant to white fur (b). A black mouse is crossed with a white mouse and half of the offspring are white. What is the black mouse's genotype?", "o": ["Homozygous recessive (bb)", "Homozygous dominant (BB)", "It cannot be told from this cross", "Heterozygous (Bb)"], "a": 3, "why": "White offspring (bb) need a b allele from each parent, so the black parent must carry b and be Bb. Bb × bb gives a 1 : 1 ratio of black to white." }
       ],
       "long": [
         { "q": "In pea plants the allele for tall (T) is dominant to the allele for short (t). Two heterozygous tall plants are crossed. Use a genetic diagram to find the expected percentage of short offspring.", "marks": 4, "paper": "4", "scheme": ["B1: parents Tt × Tt", "B1: gametes T and t from each parent", "B1: offspring TT, Tt, Tt, tt", "B1: 1 in 4 short: 25%"], "ans": "25%" }
@@ -185,7 +205,9 @@
       "questions": [
         { "q": "Which is an example of continuous variation?", "o": ["Blood group", "Height", "Tongue rolling", "Eye colour in a simple cross"], "a": 1, "why": "Height has a range of values, influenced by genes and environment." },
         { "q": "What is the source of all new alleles?", "o": ["Selection", "Mutation", "Meiosis", "Fertilisation"], "a": 1, "why": "Mutation creates new alleles; meiosis and fertilisation shuffle existing ones." },
-        { "q": "How do bacteria become resistant to antibiotics?", "o": ["They learn", "Resistant mutants survive and reproduce (natural selection)", "Antibiotics change their DNA on purpose", "They hide inside cells"], "a": 1, "why": "Antibiotics kill non-resistant bacteria; resistant ones survive and pass on the allele." }
+        { "q": "How do bacteria become resistant to antibiotics?", "o": ["They learn", "Resistant mutants survive and reproduce (natural selection)", "Antibiotics change their DNA on purpose", "They hide inside cells"], "a": 1, "why": "Antibiotics kill non-resistant bacteria; resistant ones survive and pass on the allele." },
+        { "q": "Which describes artificial selection?", "o": ["The best-adapted organisms in the wild survive and reproduce", "Humans choose individuals with useful features and breed only from them", "Random mutations produce new alleles", "A gene from one species is inserted into another"], "a": 1, "why": "In artificial (selective) breeding, people decide which individuals reproduce, over many generations. Survival of the best adapted in the wild is natural selection." },
+        { "q": "Which feature helps a cactus reduce water loss in a desert?", "o": ["Large, thin leaves with many stomata", "Stomata on the upper surface exposed to the wind", "Leaves reduced to spines, giving a small surface area", "No waxy cuticle"], "a": 2, "why": "Spines give a very small surface area for transpiration. Xerophytes also have thick waxy cuticles and few stomata, so the other options would increase water loss." }
       ]
     },
     {
@@ -193,7 +215,9 @@
       "questions": [
         { "q": "In a food chain, what do the arrows show?", "o": ["Who eats whom, in reverse", "The flow of energy", "The size of organisms", "Where organisms live"], "a": 1, "why": "Arrows point from the organism eaten to the one that eats it: the direction of energy flow." },
         { "q": "Why is energy lost at each trophic level?", "o": ["Plants waste it", "It is used in respiration and lost as heat, movement and waste", "It is destroyed", "Animals store it all"], "a": 1, "why": "Only about 10% passes to the next level; the rest is used or lost." },
-        { "q": "Which process returns carbon dioxide to the air?", "o": ["Photosynthesis", "Respiration", "Absorption", "Transpiration"], "a": 1, "why": "Respiration (and combustion and decomposition) release CO₂; photosynthesis removes it." }
+        { "q": "Which process returns carbon dioxide to the air?", "o": ["Photosynthesis", "Respiration", "Absorption", "Transpiration"], "a": 1, "why": "Respiration (and combustion and decomposition) release CO₂; photosynthesis removes it." },
+        { "q": "The producers in a food chain contain 20 000 kJ of energy and the primary consumers contain 2000 kJ. What percentage of the energy was transferred?", "o": ["10%", "90%", "1%", "0.1%"], "a": 0, "why": "2000 ÷ 20 000 × 100 = 10%. The other 90% was lost, for example as heat from respiration and in parts not eaten or not digested." },
+        { "q": "In the nitrogen cycle, which organisms convert ammonium ions into nitrate ions in the soil?", "o": ["Nitrogen-fixing bacteria", "Nitrifying bacteria", "Denitrifying bacteria", "Decomposers"], "a": 1, "why": "Nitrifying bacteria turn ammonium ions into nitrates that plants can absorb. Decomposers make ammonium from proteins, and denitrifying bacteria turn nitrates back into nitrogen gas." }
       ]
     },
     {
@@ -201,7 +225,9 @@
       "questions": [
         { "q": "What can happen when fertiliser runs into a lake?", "o": ["Fish grow faster", "Eutrophication: algae bloom, then decay uses up oxygen", "The water becomes cleaner", "Plants stop growing"], "a": 1, "why": "Excess nitrates cause algal growth; bacteria decomposing dead algae use up the oxygen." },
         { "q": "Why does deforestation increase carbon dioxide in the air?", "o": ["Trees release CO₂ when alive", "Less photosynthesis, and burning or decay releases CO₂", "Soil makes CO₂", "It does not"], "a": 1, "why": "Fewer trees take in CO₂, and burned or rotting wood releases it." },
-        { "q": "Why can fertiliser running into a lake kill fish?", "o": ["Fertiliser is poisonous to fish", "It makes the water too warm", "Algae grow, die and are decomposed by bacteria that use up the oxygen", "Fish eat the fertiliser"], "a": 2, "why": "This is eutrophication. Examiners (2023): candidates confused water pollutants with air pollutants." }
+        { "q": "Why can fertiliser running into a lake kill fish?", "o": ["Fertiliser is poisonous to fish", "It makes the water too warm", "Algae grow, die and are decomposed by bacteria that use up the oxygen", "Fish eat the fertiliser"], "a": 2, "why": "This is eutrophication. Examiners (2023): candidates confused water pollutants with air pollutants." },
+        { "q": "Which is a negative effect of growing a large monoculture of one crop?", "o": ["Biodiversity increases", "Biodiversity falls and pests of that crop can spread easily", "Fewer pesticides are needed", "More habitats are made for wild animals"], "a": 1, "why": "Large areas of a single crop support few other species and give pests of that crop plenty of food, so biodiversity falls and pesticide use often rises." },
+        { "q": "What is the main purpose of a seed bank?", "o": ["To sell seeds to farmers", "To produce genetically modified crops", "To feed animals in zoos", "To store seeds of many plant species so that endangered ones can be grown again if lost in the wild"], "a": 3, "why": "Seed banks conserve the genetic diversity of plants, including endangered species, so they can be regrown and reintroduced in future." }
       ]
     },
     {
@@ -209,7 +235,9 @@
       "questions": [
         { "q": "Which organism is used to make bread rise?", "o": ["Bacteria", "Yeast", "Penicillium", "Viruses"], "a": 1, "why": "Yeast respires anaerobically, releasing carbon dioxide that makes dough rise." },
         { "q": "In genetic modification of bacteria to make insulin, what is used to cut DNA?", "o": ["Ligase", "Restriction enzymes", "Amylase", "Protease"], "a": 1, "why": "Restriction enzymes cut DNA at specific sequences, leaving sticky ends; ligase joins the pieces." },
-        { "q": "Why are bacteria useful in biotechnology?", "o": ["They are large", "They reproduce quickly and have plasmids that are easy to modify", "They make oxygen", "They cannot mutate"], "a": 1, "why": "Fast reproduction and plasmids make them easy to grow and engineer." }
+        { "q": "Why are bacteria useful in biotechnology?", "o": ["They are large", "They reproduce quickly and have plasmids that are easy to modify", "They make oxygen", "They cannot mutate"], "a": 1, "why": "Fast reproduction and plasmids make them easy to grow and engineer." },
+        { "q": "Why is the enzyme pectinase added when making fruit juice?", "o": ["It sweetens the juice", "It kills bacteria in the juice", "It breaks down pectin in plant cell walls, so more juice is released and it is clearer", "It adds vitamins to the juice"], "a": 2, "why": "Pectinase breaks down pectin, which helps hold plant cells together, so the fruit releases more juice and the juice is less cloudy." },
+        { "q": "A human gene and a bacterial plasmid are both cut with the same restriction enzyme. Why does this help them join?", "o": ["Both get complementary sticky ends that can pair up", "It kills the bacterium so the plasmid can be removed", "It makes the plasmid much larger", "It removes all the bases from the gene"], "a": 0, "why": "The same restriction enzyme leaves matching single-stranded sticky ends, so the gene's bases pair with the plasmid's, and DNA ligase then joins them." }
       ]
     }
   ]

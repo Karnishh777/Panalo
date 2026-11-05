@@ -9,7 +9,9 @@
       "questions": [
         { "q": "'Le petit-déjeuner' is", "o": ["breakfast", "lunch", "dinner", "a snack"], "a": 0, "why": "Le déjeuner is lunch; le dîner is dinner." },
         { "q": "'Je me lève à sept heures' means", "o": ["I get up at seven o'clock", "I go to bed at seven", "I leave at seven", "I eat at seven"], "a": 0, "why": "Se lever = to get up." },
-        { "q": "Complete: « Le matin, je ___ le bus pour aller au collège. »", "o": ["prend", "prendre", "pris", "prends"], "a": 3, "why": "Prendre: je prends, tu prends, il prend." }
+        { "q": "Complete: « Le matin, je ___ le bus pour aller au collège. »", "o": ["prend", "prendre", "pris", "prends"], "a": 3, "why": "Prendre: je prends, tu prends, il prend." },
+        { "q": "« Je me couche à dix heures » means", "o": ["I get up at ten o'clock", "I have a shower at ten o'clock", "I go to bed at ten o'clock", "I go out at ten o'clock"], "a": 2, "why": "Se coucher means to go to bed. Se lever is to get up, se doucher is to have a shower and sortir is to go out." },
+        { "q": "Complete: « Le samedi, je ___ mes devoirs avant le déjeuner. »", "o": ["fais", "fait", "faire", "faisons"], "a": 0, "why": "With je, faire becomes je fais. Fait goes with il/elle, faisons with nous, and faire is the infinitive." }
       ],
       "long": [
         { "q": "Lisez le texte et répondez en français : « Je m'appelle Léa. Pendant la semaine, je me lève à six heures et demie et je prends le bus pour aller au collège. Le mercredi après-midi, je n'ai pas cours, alors je fais de la natation avec ma cousine. Le soir, j'aide ma mère à préparer le dîner, mais je déteste faire la vaisselle ! » (a) À quelle heure Léa se lève-t-elle ? (b) Comment va-t-elle au collège ? (c) Que fait-elle le mercredi après-midi ? (d) Avec qui ? (e) Qu'est-ce qu'elle n'aime pas faire ? (Mark yourself with this scheme.)", "marks": 5, "paper": "2", "scheme": ["B1: (a) à six heures et demie (6h30)", "B1: (b) en bus", "B1: (c) elle fait de la natation", "B1: (d) avec sa cousine (not « ma cousine »: answer in the third person)", "B1: (e) faire la vaisselle"], "ans": "6h30; en bus; de la natation; avec sa cousine; la vaisselle" }
@@ -20,7 +22,9 @@
       "questions": [
         { "q": "'Mon frère aîné' is my", "o": ["older brother", "younger brother", "cousin", "uncle"], "a": 0, "why": "Aîné = older; cadet = younger." },
         { "q": "Which means 'I get on well with my sister'?", "o": ["Je m'appelle ma sœur.", "J'entends ma sœur.", "Je m'entends bien avec ma sœur.", "Je suis bien ma sœur."], "a": 2, "why": "S'entendre avec quelqu'un = to get on with someone." },
-        { "q": "Choose the correct past tense: « Hier, nous ___ au cinéma. »", "o": ["sommes allés", "avons allé", "allons", "irons"], "a": 0, "why": "Aller takes être in the passé composé, and the participle agrees." }
+        { "q": "Choose the correct past tense: « Hier, nous ___ au cinéma. »", "o": ["sommes allés", "avons allé", "allons", "irons"], "a": 0, "why": "Aller takes être in the passé composé, and the participle agrees." },
+        { "q": "Complete: « Ma meilleure amie est très ___. »", "o": ["gentil", "gentille", "gentils", "gentilles"], "a": 1, "why": "Amie is feminine singular, so the adjective takes the feminine singular form gentille (the l doubles before the -e)." },
+        { "q": "« Mes grands-parents » are my", "o": ["parents", "cousins", "grandchildren", "grandparents"], "a": 3, "why": "Les grands-parents are grandparents. Grandchildren are les petits-enfants, and cousins are les cousins." }
       ],
       "long": [
         { "q": "Écrivez un e-mail (130–150 mots) à un(e) ami(e) sur vos dernières vacances : où vous êtes allé(e), ce que vous avez fait, et vos projets pour l'année prochaine. (Mark yourself with this scheme.)", "marks": 5, "paper": "4", "scheme": ["B1: all three points covered and developed", "B1: past tense (passé composé / imparfait) used accurately", "B1: a future form for next year's plans", "B1: opinions with reasons (parce que, car)", "B1: varied vocabulary and accurate agreement"] }
@@ -31,7 +35,9 @@
       "questions": [
         { "q": "'Il fait beau' means", "o": ["the weather is nice", "it is cold", "it is raining", "it is windy"], "a": 0, "why": "Il pleut = it's raining." },
         { "q": "'La gare' is", "o": ["the railway station", "the car park", "the bus stop", "the shop"], "a": 0, "why": "Le commissariat is the police station." },
-        { "q": "« Il faut protéger l'environnement. » What does il faut mean?", "o": ["It is raining", "He is going", "There is", "It is necessary / we must"], "a": 3, "why": "Il faut + infinitive." }
+        { "q": "« Il faut protéger l'environnement. » What does il faut mean?", "o": ["It is raining", "He is going", "There is", "It is necessary / we must"], "a": 3, "why": "Il faut + infinitive." },
+        { "q": "« Il pleut » means", "o": ["It is snowing", "It is raining", "It is sunny", "It is foggy"], "a": 1, "why": "Il pleut comes from pleuvoir, to rain. It is snowing is il neige, it is sunny is il fait du soleil, and it is foggy is il y a du brouillard." },
+        { "q": "Complete: « Pour aller à la banque, tournez à gauche et continuez tout ___. »", "o": ["à droite", "droite", "droit", "gauche"], "a": 2, "why": "Tout droit means straight on. À droite means on the right, so droite or à droite after tout does not make sense here." }
       ],
       "long": [
         { "q": "Votre ville. Écrivez 80–90 mots en français : décrivez votre ville ou votre village ; ce qu'on peut y faire ; ce que vous avez fait en ville le week-end dernier ; ce que vous aimeriez changer dans votre ville à l'avenir. (Mark yourself with this scheme.)", "marks": 5, "paper": "4", "scheme": ["B1: all four points covered", "B1: present-tense description with accurate agreement (une grande ville, des magasins modernes)", "B1: passé composé for last weekend", "B1: conditional or future for the change (j'aimerais, il faudrait, on construira)", "B1: opinions with reasons and varied vocabulary"] }
@@ -42,7 +48,9 @@
       "questions": [
         { "q": "'Un stage' in a work context is", "o": ["a work placement", "a stage show", "a salary", "a factory"], "a": 0, "why": "Faire un stage = do work experience." },
         { "q": "Which means 'I would like to work abroad'?", "o": ["J'aime travaillé étranger.", "Je travaille à l'étranger hier.", "J'aimerai travailler en l'étranger.", "J'aimerais travailler à l'étranger."], "a": 3, "why": "Conditional j'aimerais + infinitive." },
-        { "q": "« un stage » means:", "o": ["a stage in a theatre", "a salary", "a work placement / internship", "a manager"], "a": 2, "why": "Faire un stage = do work experience." }
+        { "q": "« un stage » means:", "o": ["a stage in a theatre", "a salary", "a work placement / internship", "a manager"], "a": 2, "why": "Faire un stage = do work experience." },
+        { "q": "Which means 'My mother is a nurse'?", "o": ["Ma mère est une infirmier.", "Ma mère est infirmier.", "Ma mère est un infirmière.", "Ma mère est infirmière."], "a": 3, "why": "After être, French usually gives a job with no article, and the job must agree with a woman: infirmière. The other options have the wrong gender or a mismatched article." },
+        { "q": "« Un emploi à temps partiel » is", "o": ["a full-time job", "a part-time job", "a temporary contract", "an unpaid job"], "a": 1, "why": "À temps partiel means part-time. A full-time job is un emploi à plein temps, and a temporary contract is un contrat à durée déterminée (CDD)." }
       ],
       "long": [
         { "q": "Ask someone to read this aloud to you once while you don't look at it, then answer in French: « Bonjour, je m'appelle Karim. L'été dernier, j'ai fait un stage de deux semaines dans un hôtel à Nice. Je travaillais à la réception et je répondais au téléphone. C'était fatigant parce que je commençais à sept heures, mais mes collègues étaient sympas. Plus tard, je voudrais devenir guide touristique. » (a) Où Karim a-t-il fait son stage ? (b) Combien de temps a duré le stage ? (c) Qu'est-ce qu'il faisait ? Donnez un détail. (d) Pourquoi c'était fatigant ? (e) Quel métier veut-il faire plus tard ? (Mark yourself with this scheme.)", "marks": 5, "paper": "1", "scheme": ["B1: (a) dans un hôtel (à Nice)", "B1: (b) deux semaines", "B1: (c) il travaillait à la réception / il répondait au téléphone", "B1: (d) il commençait à sept heures (tôt)", "B1: (e) guide touristique"], "ans": "dans un hôtel à Nice; deux semaines; à la réception / au téléphone; il commençait à 7h; guide touristique" }
@@ -53,7 +61,9 @@
       "questions": [
         { "q": "'L'environnement' and 'le recyclage' belong to the topic of", "o": ["global issues", "school", "family", "food"], "a": 0, "why": "Topic area E." },
         { "q": "Complete: « L'année prochaine, je ___ en Espagne. »", "o": ["voyageais", "voyagerai", "ai voyagé", "voyage hier"], "a": 1, "why": "Future tense: infinitive + -ai." },
-        { "q": "« les pays francophones » are:", "o": ["countries near France", "foreign countries", "countries where French is spoken", "European countries only"], "a": 2, "why": "For example Sénégal, le Québec (Canada), la Belgique." }
+        { "q": "« les pays francophones » are:", "o": ["countries near France", "foreign countries", "countries where French is spoken", "European countries only"], "a": 2, "why": "For example Sénégal, le Québec (Canada), la Belgique." },
+        { "q": "Complete: « Si on veut protéger la planète, il faut ___ les déchets. »", "o": ["recycler", "recycle", "recyclé", "recyclons"], "a": 0, "why": "Il faut is followed by an infinitive, so the answer is recycler. Recyclé is the past participle, which sounds the same but is the wrong form." },
+        { "q": "« Le réchauffement climatique » means", "o": ["renewable energy", "air pollution", "global warming", "climate refugees"], "a": 2, "why": "Le réchauffement (warming) climatique is global warming. Renewable energy is les énergies renouvelables and air pollution is la pollution de l'air." }
       ],
       "long": [
         { "q": "Préparez et enregistrez environ deux minutes en français : « Parlez d'un pays que vous avez visité ou que vous aimeriez visiter. » Dites où il se trouve, ce que vous y avez fait (ou ce que vous y feriez), ce que vous pensez de la culture ou de la cuisine, et si vous aimeriez y habiter un jour. Then listen back and mark yourself with this scheme.", "marks": 4, "paper": "3", "scheme": ["B1: all four points developed, not one-word answers", "B1: past or conditional used accurately (j'ai visité / j'aimerais visiter)", "B1: opinions justified (parce que, car, à mon avis)", "B1: clear pronunciation, keeps going without long pauses"] }
@@ -64,7 +74,9 @@
       "questions": [
         { "q": "Hier, je ___ au cinéma.", "o": ["suis allé(e)", "ai allé", "vais", "irai"], "a": 0, "why": "Aller takes être in the passé composé." },
         { "q": "The adjective 'grand' agreeing with 'une maison' is", "o": ["grande", "grand", "grands", "grandes"], "a": 0, "why": "Feminine singular adds -e." },
-        { "q": "'Si j'avais de l'argent, je ___ un vélo.'", "o": ["achèterais", "achète", "ai acheté", "achetais"], "a": 0, "why": "Si + imperfect, then conditional." }
+        { "q": "'Si j'avais de l'argent, je ___ un vélo.'", "o": ["achèterais", "achète", "ai acheté", "achetais"], "a": 0, "why": "Si + imperfect, then conditional." },
+        { "q": "Complete with the correct pronoun: « Tu vois Marie ? — Oui, je ___ vois. »", "o": ["le", "la", "lui", "leur"], "a": 1, "why": "Marie is a feminine direct object (voir quelqu'un), so the pronoun is la. Lui and leur are indirect object pronouns, and le is masculine." },
+        { "q": "Complete: « Elles ___ parties très tôt ce matin. »", "o": ["ont", "avons", "êtes", "sont"], "a": 3, "why": "Partir takes être in the passé composé, and with elles the auxiliary is sont; the participle parties agrees in the feminine plural." }
       ],
       "long": [
         { "q": "Réécrivez chaque phrase selon l'instruction : (a) « Je mange une pomme. » — au passé composé. (b) « Nous allons à la plage. » — au futur simple. (c) « Ma sœur est petit. » — corrigez l'accord. (d) « Je vais au cinéma. » — remplacez « au cinéma » par le pronom y. (Mark yourself with this scheme.)", "marks": 4, "paper": "4", "scheme": ["B1: (a) J'ai mangé une pomme.", "B1: (b) Nous irons à la plage.", "B1: (c) Ma sœur est petite.", "B1: (d) J'y vais."], "ans": "J'ai mangé une pomme; Nous irons à la plage; Ma sœur est petite; J'y vais" }

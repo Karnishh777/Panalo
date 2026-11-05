@@ -28,7 +28,8 @@
         { "q": "Which method sends bits one at a time down a single wire?", "o": ["Parallel", "Serial", "Duplex", "Simplex only"], "a": 1, "why": "Serial transmission uses one channel; parallel uses several at once." },
         { "q": "What does a parity bit help detect?", "o": ["Viruses", "Errors in transmission", "Lost packets only", "Encryption keys"], "a": 1, "why": "An odd or even count of 1s that doesn't match shows a bit has changed." },
         { "q": "Symmetric encryption uses…", "o": ["one shared key to encrypt and decrypt", "a public and a private key", "no key", "a parity bit"], "a": 0, "why": "Asymmetric encryption uses a public/private key pair." },
-        { "q": "Which method of error detection uses an extra bit added to a byte to ensure the total number of 1s is even or odd?", "o": ["Checksum", "Echo check", "Check digit", "Parity check"], "a": 3, "why": "A parity bit (even or odd parity) flags single-bit transmission errors when the count of 1s does not match the rule." }
+        { "q": "Which method of error detection uses an extra bit added to a byte to ensure the total number of 1s is even or odd?", "o": ["Checksum", "Echo check", "Check digit", "Parity check"], "a": 3, "why": "A parity bit (even or odd parity) flags single-bit transmission errors when the count of 1s does not match the rule." },
+        { "q": "Data is sent using even parity. Which received byte must contain an error?", "o": ["10110100", "01100011", "11100101", "00000000"], "a": 2, "why": "11100101 contains five 1s, an odd number, so with even parity it must have been corrupted; each of the others has an even number of 1s." }
       ],
       "long": [
         { "q": "Describe how an even parity check is used to detect errors in data transmission.", "marks": 3, "paper": "1", "scheme": ["B1: sender and receiver agree to use even parity", "B1: a parity bit is set so that each byte has an even number of 1s", "B1: the receiver counts the 1s; an odd number means an error has occurred"] }
@@ -40,7 +41,8 @@
         { "q": "Which register holds the address of the next instruction?", "o": ["MAR", "MDR", "Program counter", "Accumulator"], "a": 2, "why": "The PC is incremented during the fetch stage." },
         { "q": "Which is volatile memory?", "o": ["ROM", "RAM", "SSD", "Hard disk"], "a": 1, "why": "RAM loses its contents when the power is off." },
         { "q": "What is the main advantage of an SSD over an HDD?", "o": ["Cheaper per GB", "Faster access with no moving parts", "Holds more data always", "Never wears out"], "a": 1, "why": "Solid-state storage uses flash memory, so access is faster and it is more robust." },
-        { "q": "What is the role of the program counter (PC)?", "o": ["It counts how many programs are open", "It holds the address of the next instruction to be fetched", "It stores the result of a calculation", "It decodes instructions"], "a": 1, "why": "Examiners (2023): candidates mostly named registers instead of describing their role." }
+        { "q": "What is the role of the program counter (PC)?", "o": ["It counts how many programs are open", "It holds the address of the next instruction to be fetched", "It stores the result of a calculation", "It decodes instructions"], "a": 1, "why": "Examiners (2023): candidates mostly named registers instead of describing their role." },
+        { "q": "When the CPU fetches an instruction, which bus carries the address from the MAR to memory?", "o": ["The data bus, in both directions", "The address bus, one way from the CPU to memory", "The control bus, from memory to the CPU", "The address bus, from memory to the CPU"], "a": 1, "why": "Addresses only ever travel from the CPU to memory, so the address bus is one-way; the data bus is two-way because data is both read and written." }
       ],
       "long": [
         { "q": "Describe the role of registers during the Fetch stage of the Fetch–Decode–Execute cycle.", "marks": 5, "paper": "1", "scheme": ["B1: the Program Counter (PC) holds the address of the next instruction to be fetched from memory", "B1: the address is copied from the PC to the Memory Address Register (MAR) via the address bus", "B1: the PC is incremented by 1 to point to the subsequent instruction", "B1: the instruction at that memory address is fetched along the data bus and copied into the Memory Data Register (MDR)", "B1: the instruction is copied from the MDR to the Current Instruction Register (CIR) for decoding"] }
@@ -52,7 +54,8 @@
         { "q": "Which translator converts a whole program to machine code before it runs?", "o": ["Interpreter", "Compiler", "Assembler only", "Linker"], "a": 1, "why": "A compiler produces an executable; an interpreter translates line by line as it runs." },
         { "q": "Which is a function of an operating system?", "o": ["Writing essays", "Managing memory and peripherals", "Editing photos", "Browsing the web"], "a": 1, "why": "Applications do tasks for users; the OS manages hardware, files, memory and security." },
         { "q": "What is an interrupt?", "o": ["A program crash", "A signal to the processor that something needs attention", "A type of memory", "A loop"], "a": 1, "why": "The CPU pauses, services the interrupt, then resumes." },
-        { "q": "What does a compiler do?", "o": ["Translates and runs one line at a time", "Checks the computer for viruses", "Translates the whole program into machine code before it is run", "Stores the program in RAM"], "a": 2, "why": "Examiners (2023): candidates described the benefits of a compiler rather than how it operates. It translates all the source code and reports errors at the end." }
+        { "q": "What does a compiler do?", "o": ["Translates and runs one line at a time", "Checks the computer for viruses", "Translates the whole program into machine code before it is run", "Stores the program in RAM"], "a": 2, "why": "Examiners (2023): candidates described the benefits of a compiler rather than how it operates. It translates all the source code and reports errors at the end." },
+        { "q": "A programmer is still writing a program and wants it to stop at the first error so it can be fixed and run again straight away. Which translator suits this best?", "o": ["An interpreter", "A compiler", "An assembler", "A utility program"], "a": 0, "why": "An interpreter translates and runs one statement at a time and stops at the first error it meets; a compiler translates the whole program and reports all the errors at the end." }
       ]
     },
     {
@@ -60,7 +63,9 @@
       "questions": [
         { "q": "What does a DNS server do?", "o": ["Stores web pages", "Turns domain names into IP addresses", "Encrypts data", "Blocks viruses"], "a": 1, "why": "Browsers need the IP address to reach a web server." },
         { "q": "What does HTTPS add to HTTP?", "o": ["Speed", "Encryption using SSL/TLS", "Colour", "Compression only"], "a": 1, "why": "Data between browser and server is encrypted." },
-        { "q": "Phishing is…", "o": ["a virus that copies itself", "fake emails or sites that trick users into giving personal data", "a hardware fault", "a firewall setting"], "a": 1, "why": "It relies on deceiving the user, not on exploiting software." }
+        { "q": "Phishing is…", "o": ["a virus that copies itself", "fake emails or sites that trick users into giving personal data", "a hardware fault", "a firewall setting"], "a": 1, "why": "It relies on deceiving the user, not on exploiting software." },
+        { "q": "In the URL https://www.example.com/shop/index.html, which part is the domain name?", "o": ["https", "www.example.com", "/shop/index.html", "index.html"], "a": 1, "why": "The domain name identifies the web server (www.example.com); https is the protocol and the rest is the path to the web page file." },
+        { "q": "An online shop still remembers the items in a user's basket when the user returns a week later. What is the shop using?", "o": ["A session cookie", "A proxy server", "A firewall", "A persistent cookie"], "a": 3, "why": "A persistent cookie stays on the user's computer until it expires, so it survives closing the browser; a session cookie is deleted when the browser is closed." }
       ]
     },
     {
@@ -68,7 +73,9 @@
       "questions": [
         { "q": "In an automated system, what does an actuator do?", "o": ["Measures temperature", "Carries out a physical action such as opening a valve", "Stores data", "Displays results"], "a": 1, "why": "Sensors measure; the microprocessor decides; actuators act." },
         { "q": "Machine learning is a type of AI where the system…", "o": ["follows only fixed rules", "improves its performance from data", "has no data", "is always a robot"], "a": 1, "why": "It learns patterns from training data." },
-        { "q": "Which is part of a robot's characteristics?", "o": ["It must look human", "It cannot be programmed", "It always uses AI", "It has sensors, a microprocessor and actuators"], "a": 3, "why": "Examiners (2023): many gave advantages to the owner when asked about the employee." }
+        { "q": "Which is part of a robot's characteristics?", "o": ["It must look human", "It cannot be programmed", "It always uses AI", "It has sensors, a microprocessor and actuators"], "a": 3, "why": "Examiners (2023): many gave advantages to the owner when asked about the employee." },
+        { "q": "In an automated greenhouse the sensor reading is 18 °C and the stored value is 22 °C. What does the microprocessor do?", "o": ["Sends a signal to an actuator to switch the heater on", "Switches the temperature sensor off", "Stores the reading and takes no action", "Sends a signal telling the sensor to raise its reading"], "a": 0, "why": "The reading is below the stored value, so the microprocessor signals an actuator to turn the heater on; the sensor only measures and cannot change the temperature." },
+        { "q": "Which part of an expert system applies the rules to the facts entered by the user to reach a conclusion?", "o": ["The knowledge base", "The rule base", "The inference engine", "The user interface"], "a": 2, "why": "The inference engine uses the rules stored in the rule base on the facts in the knowledge base to reach a conclusion; the rule base only stores the rules." }
       ]
     },
     {
@@ -76,7 +83,9 @@
       "questions": [
         { "q": "Which search needs the list to be sorted first?", "o": ["Linear search", "Binary search", "Both", "Neither"], "a": 1, "why": "Binary search repeatedly halves a sorted list." },
         { "q": "What is a trace table used for?", "o": ["Drawing flowcharts", "Following the values of variables through an algorithm to find errors", "Sorting data", "Storing records"], "a": 1, "why": "It records each variable's value step by step." },
-        { "q": "A range check on an age field rejects 150. This is…", "o": ["verification", "validation", "encryption", "decomposition"], "a": 1, "why": "Validation checks data is sensible; verification checks it was entered correctly." }
+        { "q": "A range check on an age field rejects 150. This is…", "o": ["verification", "validation", "encryption", "decomposition"], "a": 1, "why": "Validation checks data is sensible; verification checks it was entered correctly." },
+        { "q": "What is output? Total ← 0 ; FOR Count ← 1 TO 4 ; Total ← Total + Count * 2 ; NEXT Count ; OUTPUT Total", "o": ["10", "8", "16", "20"], "a": 3, "why": "Each pass adds Count × 2, so Total adds 2, 4, 6 and 8, giving 20." },
+        { "q": "A bubble sort puts 5, 2, 8, 1, 9 into ascending order. What is the list after the first pass?", "o": ["2, 5, 1, 8, 9", "1, 2, 5, 8, 9", "2, 5, 8, 1, 9", "2, 1, 5, 8, 9"], "a": 0, "why": "The first pass swaps 5 and 2, leaves 5 and 8, swaps 8 and 1, then leaves 8 and 9; the largest value has reached the end, but the list is not yet sorted." }
       ],
       "long": [
         { "q": "Write pseudocode that inputs 10 numbers and outputs the largest.", "marks": 5, "paper": "2", "scheme": ["M1: initialise Largest with the first number (or a very small value)", "M1: a loop that runs 10 times", "M1: INPUT a number inside the loop", "M1: IF Number > Largest THEN Largest ← Number", "M1: OUTPUT Largest after the loop"] },
@@ -89,7 +98,8 @@
         { "q": "Which loop is best when you know exactly how many times to repeat?", "o": ["WHILE", "REPEAT…UNTIL", "FOR (count-controlled)", "IF"], "a": 2, "why": "FOR loops run a fixed number of times; WHILE and REPEAT are condition-controlled." },
         { "q": "What does MOD return for 17 MOD 5?", "o": ["3", "2", "3.4", "12"], "a": 1, "why": "MOD gives the remainder: 17 = 3 × 5 + 2." },
         { "q": "A local variable is…", "o": ["available anywhere in the program", "only available inside the subroutine where it is declared", "a constant", "stored in ROM"], "a": 1, "why": "Global variables are available throughout the program." },
-        { "q": "In programming, what is a variable's scope?", "o": ["The region of a program where the variable is recognised and accessible", "The total amount of memory it occupies", "Its initial default value", "The data type it stores"], "a": 0, "why": "Scope determines variable visibility: local variables exist only within their function/block, while global variables are accessible everywhere." }
+        { "q": "In programming, what is a variable's scope?", "o": ["The region of a program where the variable is recognised and accessible", "The total amount of memory it occupies", "Its initial default value", "The data type it stores"], "a": 0, "why": "Scope determines variable visibility: local variables exist only within their function/block, while global variables are accessible everywhere." },
+        { "q": "What is output? X ← 1 ; WHILE X < 50 DO X ← X * 3 ENDWHILE ; OUTPUT X", "o": ["27", "50", "81", "243"], "a": 2, "why": "X becomes 3, 9, 27 and then 81; the condition is checked before each repeat, and 81 < 50 is false, so the loop stops and 81 is output." }
       ]
     },
     {
@@ -97,7 +107,9 @@
       "questions": [
         { "q": "What is a primary key?", "o": ["The first field", "A field that uniquely identifies each record", "A password", "The largest value"], "a": 1, "why": "No two records share the same primary key value." },
         { "q": "Which SQL keyword chooses which fields to show?", "o": ["FROM", "WHERE", "SELECT", "ORDER BY"], "a": 2, "why": "SELECT fields FROM table WHERE condition ORDER BY field." },
-        { "q": "Which SQL keyword chooses which fields to display?", "o": ["WHERE", "ORDER BY", "SELECT", "FROM"], "a": 2, "why": "WHERE chooses which records." }
+        { "q": "Which SQL keyword chooses which fields to display?", "o": ["WHERE", "ORDER BY", "SELECT", "FROM"], "a": 2, "why": "WHERE chooses which records." },
+        { "q": "A table STUDENT has fields StudentID, Name and Form. Which SQL statement gives the number of students in form 10B?", "o": ["SELECT COUNT(StudentID) FROM STUDENT WHERE Form = '10B';", "SELECT SUM(Form) FROM STUDENT WHERE Form = '10B';", "SELECT Name FROM STUDENT ORDER BY Form;", "COUNT STUDENT WHERE Form = '10B';"], "a": 0, "why": "COUNT counts the records that match the WHERE condition; SUM adds numeric values, and ORDER BY only sorts the results." },
+        { "q": "Which data type is most suitable for a field storing a telephone number such as 07700 900123?", "o": ["Integer", "Real", "Boolean", "Text"], "a": 3, "why": "A phone number can start with 0 and contain spaces, and no calculations are done on it, so it is stored as text; an integer would lose the leading zero." }
       ],
       "long": [
         { "q": "A table PRODUCT has fields ProductID, Name and Price. Write an SQL query to show the Name and Price of products costing more than 20, cheapest first.", "marks": 4, "paper": "2", "scheme": ["B1: SELECT Name, Price", "B1: FROM PRODUCT", "B1: WHERE Price > 20", "B1: ORDER BY Price ASC"] }
@@ -108,7 +120,9 @@
       "questions": [
         { "q": "What is the output of an XOR gate with inputs 1 and 1?", "o": ["0", "1", "2", "Undefined"], "a": 0, "why": "XOR outputs 1 only when the inputs differ." },
         { "q": "A NAND gate outputs 0 only when…", "o": ["both inputs are 0", "both inputs are 1", "one input is 1", "never"], "a": 1, "why": "NAND is NOT AND: AND gives 1 only for 1,1, so NAND gives 0 only for 1,1." },
-        { "q": "What is the output of A AND (NOT B) when A = 1 and B = 1?", "o": ["1", "2", "0", "It depends on C"], "a": 2, "why": "NOT B = 0, and 1 AND 0 = 0." }
+        { "q": "What is the output of A AND (NOT B) when A = 1 and B = 1?", "o": ["1", "2", "0", "It depends on C"], "a": 2, "why": "NOT B = 0, and 1 AND 0 = 0." },
+        { "q": "For which inputs is X = (A OR B) AND NOT C equal to 1?", "o": ["A = 0, B = 0, C = 0", "A = 1, B = 0, C = 1", "A = 0, B = 1, C = 0", "A = 1, B = 1, C = 1"], "a": 2, "why": "A OR B is 1 because B = 1, and NOT C is 1 because C = 0, so both inputs to the AND are 1; every other option has A OR B = 0 or C = 1." },
+        { "q": "Which single gate gives the same output as NOT (A OR B)?", "o": ["AND", "NOR", "NAND", "XOR"], "a": 1, "why": "NOR is an OR gate followed by NOT: its output is 1 only when both inputs are 0." }
       ],
       "long": [
         { "q": "An alarm (X) sounds when a door is open (D = 1) AND either the system is armed (A = 1) OR a window is open (W = 1). Write the logic expression.", "marks": 2, "paper": "2", "scheme": ["B1: X = D AND (A OR W)", "B1: correct use of brackets so OR is evaluated first"], "ans": "X = D AND (A OR W)" }
