@@ -10,7 +10,8 @@
         { "q": "If f(x) = 2x + 3, what is f⁻¹(x)?", "o": ["(x − 3)/2", "2x − 3", "(x + 3)/2", "1/(2x + 3)"], "a": 0, "why": "Swap x and y in y = 2x + 3 and solve: x = (y − 3)/2." },
         { "q": "If f(x) = x² and g(x) = x + 1, what is fg(x)?", "o": ["(x + 1)²", "x² + 1", "x² + x", "2x + 1"], "a": 0, "why": "fg(x) means f(g(x)): square the whole of x + 1." },
         { "q": "Which function has an inverse over all real x?", "o": ["f(x) = x³", "f(x) = x²", "f(x) = |x|", "f(x) = cos x"], "a": 0, "why": "Only a one-one function has an inverse; x³ is one-one, the others are not." },
-        { "q": "Under what condition does a function f(x) possess an inverse function f⁻¹(x)?", "o": ["f(x) must be a one-to-one function", "f(x) must be a many-to-one function", "f(x) must be a quadratic function", "f(0) must equal 0"], "a": 0, "why": "A function has an inverse if and only if each element of the codomain maps to at most one element of the domain (passes the horizontal line test)." }
+        { "q": "Under what condition does a function f(x) possess an inverse function f⁻¹(x)?", "o": ["f(x) must be a one-to-one function", "f(x) must be a many-to-one function", "f(x) must be a quadratic function", "f(0) must equal 0"], "a": 0, "why": "A function has an inverse if and only if each element of the codomain maps to at most one element of the domain (passes the horizontal line test)." },
+        { "q": "f(x) = x² + 1 for x ≥ 0. What is the range of f?", "o": ["f(x) ≥ 0", "f(x) ≥ 1", "f(x) > 1", "f(x) ≤ 1"], "a": 1, "why": "x² ≥ 0 on this domain, and x = 0 gives the least value f(0) = 1, so the range is f(x) ≥ 1." }
       ]
     },
     {
@@ -19,7 +20,8 @@
         { "q": "For what values of k does x² + kx + 9 = 0 have equal roots?", "o": ["k = ±6", "k = ±3", "k = 9", "k = 0"], "a": 0, "why": "Equal roots when b² − 4ac = 0: k² − 36 = 0." },
         { "q": "The minimum point of y = (x − 2)² + 5 is", "o": ["(2, 5)", "(−2, 5)", "(2, −5)", "(5, 2)"], "a": 0, "why": "Completed-square form a(x − p)² + q has its vertex at (p, q)." },
         { "q": "x² − 5x + 6 < 0 is true for", "o": ["2 < x < 3", "x < 2 or x > 3", "x > 6", "−3 < x < −2"], "a": 0, "why": "The roots are 2 and 3; a positive quadratic is negative between its roots." },
-        { "q": "What condition indicates that the quadratic equation ax² + bx + c = 0 has two distinct real roots?", "o": ["b² − 4ac = 0", "b² − 4ac < 0", "b² − 4ac > 0", "b² − 4ac ≤ 0"], "a": 2, "why": "A positive discriminant (Δ > 0) means the parabola intersects the x-axis at two distinct real coordinates." }
+        { "q": "What condition indicates that the quadratic equation ax² + bx + c = 0 has two distinct real roots?", "o": ["b² − 4ac = 0", "b² − 4ac < 0", "b² − 4ac > 0", "b² − 4ac ≤ 0"], "a": 2, "why": "A positive discriminant (Δ > 0) means the parabola intersects the x-axis at two distinct real coordinates." },
+        { "q": "Write x² − 6x + 11 in the form (x − a)² + b.", "o": ["(x + 3)² + 2", "(x − 3)² + 20", "(x − 3)² + 2", "(x − 6)² − 25"], "a": 2, "why": "Halve the x coefficient: x² − 6x = (x − 3)² − 9, so x² − 6x + 11 = (x − 3)² − 9 + 11 = (x − 3)² + 2." }
       ],
       "long": [
         { "q": "Find the set of values of k for which the line y = kx − 1 does not meet the curve y = x² + 3.", "marks": 4, "paper": "1", "scheme": ["M1: x² − kx + 4 = 0", "M1: no real roots: k² − 16 < 0", "A1: critical values k = ±4", "A1: −4 < k < 4"], "ans": "−4 < k < 4" }
@@ -31,7 +33,8 @@
         { "q": "The remainder when x³ − 2x + 5 is divided by (x − 1) is", "o": ["4", "6", "2", "0"], "a": 0, "why": "Remainder theorem: p(1) = 1 − 2 + 5 = 4." },
         { "q": "(x + 2) is a factor of p(x) if", "o": ["p(−2) = 0", "p(2) = 0", "p(0) = 2", "p(−2) = 2"], "a": 0, "why": "Factor theorem: (x − a) is a factor when p(a) = 0; here a = −2." },
         { "q": "x − 2 is a factor of p(x). What is p(2)?", "o": ["2", "−2", "0", "1"], "a": 2, "why": "The factor theorem." },
-        { "q": "According to the factor theorem, if P(x) is a polynomial and P(3) = 0, which statement is true?", "o": ["(x + 3) is a factor of P(x)", "3 is the remainder when P(x) is divided by x", "(x − 3) is a factor of P(x)", "P(x) has no real roots"], "a": 2, "why": "The factor theorem states that if substituting x = c gives P(c) = 0, then the linear expression (x − c) divides P(x) exactly without remainder." }
+        { "q": "According to the factor theorem, if P(x) is a polynomial and P(3) = 0, which statement is true?", "o": ["(x + 3) is a factor of P(x)", "3 is the remainder when P(x) is divided by x", "(x − 3) is a factor of P(x)", "P(x) has no real roots"], "a": 2, "why": "The factor theorem states that if substituting x = c gives P(c) = 0, then the linear expression (x − c) divides P(x) exactly without remainder." },
+        { "q": "When p(x) = x³ + ax − 6 is divided by (x − 2), the remainder is 4. Find a.", "o": ["1", "−9", "−3", "5"], "a": 0, "why": "By the remainder theorem p(2) = 4, so 8 + 2a − 6 = 4, giving 2a = 2 and a = 1. Using p(−2) instead gives −9." }
       ],
       "long": [
         { "q": "p(x) = 2x³ + ax² − 7x + 6. Given that (x − 1) is a factor of p(x), find a and hence factorise p(x) completely.", "marks": 4, "paper": "1", "scheme": ["M1: p(1) = 2 + a − 7 + 6 = 0", "A1: a = −1", "M1: divide by (x − 1): 2x² + x − 6", "A1: p(x) = (x − 1)(2x − 3)(x + 2)"], "ans": "a = −1; (x − 1)(2x − 3)(x + 2)" }
@@ -42,7 +45,9 @@
       "questions": [
         { "q": "Solve |x − 3| = 5.", "o": ["x = 8 or x = −2", "x = 8 only", "x = 2 or x = −8", "x = ±5"], "a": 0, "why": "x − 3 = 5 or x − 3 = −5." },
         { "q": "The graph of y = |2x − 4| meets the x-axis at", "o": ["x = 2", "x = −2", "x = 4", "x = 0 and x = 4"], "a": 0, "why": "The modulus is zero only where 2x − 4 = 0." },
-        { "q": "Solve |x − 1| = 3.", "o": ["x = 4 or x = −2", "x = 4", "x = 2", "x = −4 or x = 2"], "a": 0, "why": "x − 1 = 3 or x − 1 = −3." }
+        { "q": "Solve |x − 1| = 3.", "o": ["x = 4 or x = −2", "x = 4", "x = 2", "x = −4 or x = 2"], "a": 0, "why": "x − 1 = 3 or x − 1 = −3." },
+        { "q": "Solve |x − 2| < 3.", "o": ["x < 5", "−1 < x < 5", "x < −1 or x > 5", "−5 < x < 1"], "a": 1, "why": "|x − 2| < 3 means −3 < x − 2 < 3, so −1 < x < 5: the values of x within 3 of 2." },
+        { "q": "Where does the curve y = (x + 1)(x − 2)(x − 4) cross the y-axis?", "o": ["(0, −8)", "(0, 4)", "(0, −4)", "(0, 8)"], "a": 3, "why": "Put x = 0: y = (1)(−2)(−4) = 8, so it crosses at (0, 8). The roots −1, 2 and 4 are where it meets the x-axis." }
       ]
     },
     {
@@ -50,7 +55,9 @@
       "questions": [
         { "q": "Solving y = x + 1 and y = x² − 1 gives x =", "o": ["2 or −1", "1 or −2", "0 or 1", "2 only"], "a": 0, "why": "x² − 1 = x + 1 so x² − x − 2 = 0, (x − 2)(x + 1) = 0." },
         { "q": "A line meets a curve where", "o": ["their equations are satisfied together", "their gradients are equal", "their y-intercepts are equal", "x = 0"], "a": 0, "why": "Intersections are the common solutions of the two equations." },
-        { "q": "y = x + 1 and x² + y² = 13. Substituting gives:", "o": ["x² + 2x − 12 = 0", "2x² + 2x − 12 = 0", "2x² − 12 = 0", "x² + x = 13"], "a": 1, "why": "x² + (x + 1)² = 13 gives 2x² + 2x + 1 = 13, so x = 2 or −3." }
+        { "q": "y = x + 1 and x² + y² = 13. Substituting gives:", "o": ["x² + 2x − 12 = 0", "2x² + 2x − 12 = 0", "2x² − 12 = 0", "x² + x = 13"], "a": 1, "why": "x² + (x + 1)² = 13 gives 2x² + 2x + 1 = 13, so x = 2 or −3." },
+        { "q": "Solve the simultaneous equations x + y = 5 and xy = 6.", "o": ["x = 2, y = 3 or x = 3, y = 2", "x = 1, y = 6 or x = 6, y = 1", "x = −2, y = −3 or x = −3, y = −2", "x = 5, y = 0"], "a": 0, "why": "Substitute y = 5 − x: x(5 − x) = 6, so x² − 5x + 6 = 0 and (x − 2)(x − 3) = 0. Each x gives y from y = 5 − x." },
+        { "q": "The line y = 2x + c is a tangent to the curve y = x² + 3. Find c.", "o": ["4", "−2", "3", "2"], "a": 3, "why": "x² + 3 = 2x + c gives x² − 2x + (3 − c) = 0. A tangent meets the curve once, so b² − 4ac = 4 − 4(3 − c) = 0, giving c = 2." }
       ]
     },
     {
@@ -59,7 +66,8 @@
         { "q": "log₂ 32 =", "o": ["5", "16", "6", "4"], "a": 0, "why": "Because 2⁵ = 32." },
         { "q": "log a + log b =", "o": ["log ab", "log (a + b)", "log a · log b", "log (a/b)"], "a": 0, "why": "The product rule for logarithms." },
         { "q": "Solve 3ˣ = 20 (to 3 s.f.).", "o": ["2.73", "6.67", "1.30", "2.99"], "a": 0, "why": "x = ln 20 ÷ ln 3 ≈ 2.73." },
-        { "q": "Which identity correctly changes the base of log_a(b) to base c?", "o": ["log_c(a) · log_c(b)", "log_c(a) / log_c(b)", "log_c(b − a)", "log_c(b) / log_c(a)"], "a": 3, "why": "The change of base formula is log_a(b) = log_c(b) / log_c(a), often applied with natural log or base 10." }
+        { "q": "Which identity correctly changes the base of log_a(b) to base c?", "o": ["log_c(a) · log_c(b)", "log_c(a) / log_c(b)", "log_c(b − a)", "log_c(b) / log_c(a)"], "a": 3, "why": "The change of base formula is log_a(b) = log_c(b) / log_c(a), often applied with natural log or base 10." },
+        { "q": "Solve e²ˣ = 9, giving x to 3 significant figures.", "o": ["0.477", "1.10", "2.20", "4.50"], "a": 1, "why": "Take natural logs: 2x = ln 9, so x = ln 9 ÷ 2 ≈ 1.10. 2.20 forgets to divide by 2, and 0.477 uses lg instead of ln." }
       ],
       "long": [
         { "q": "Solve log₃(x + 6) − log₃ x = 2.", "marks": 3, "paper": "2", "scheme": ["M1: log₃((x + 6)/x) = 2", "M1: (x + 6)/x = 9", "A1: x = 3/4"], "ans": "x = 0.75" }
@@ -70,7 +78,9 @@
       "questions": [
         { "q": "To turn y = axⁿ into a straight line, plot", "o": ["lg y against lg x", "y against x", "y against lg x", "lg y against x"], "a": 0, "why": "lg y = lg a + n lg x: gradient n, intercept lg a." },
         { "q": "The line through (1, 2) with gradient 3 is", "o": ["y = 3x − 1", "y = 3x + 2", "y = 2x + 3", "y = 3x + 1"], "a": 0, "why": "y − 2 = 3(x − 1)." },
-        { "q": "A graph of lg y against x is a straight line. Which form is y?", "o": ["y = Axⁿ", "y = mx + c", "y = A × bˣ", "y = A + bx"], "a": 2, "why": "lg y = lg A + x lg b; for y = Axⁿ plot lg y against lg x." }
+        { "q": "A graph of lg y against x is a straight line. Which form is y?", "o": ["y = Axⁿ", "y = mx + c", "y = A × bˣ", "y = A + bx"], "a": 2, "why": "lg y = lg A + x lg b; for y = Axⁿ plot lg y against lg x." },
+        { "q": "A graph of lg y against lg x is a straight line with gradient 3 and intercept 0.5 on the lg y axis. Which equation links y and x?", "o": ["y = 3.16x³", "y = 0.5x³", "y = 3x + 0.5", "y = 1.65x³"], "a": 0, "why": "lg y = 3 lg x + 0.5, so y = 10⁰·⁵ × x³ ≈ 3.16x³. 1.65 comes from wrongly using e⁰·⁵ with a base-10 log." },
+        { "q": "A is (2, 7) and B is (6, −1). What is the gradient of a line perpendicular to AB?", "o": ["−2", "2", "1/2", "−1/2"], "a": 2, "why": "Gradient of AB = (−1 − 7) ÷ (6 − 2) = −2. Perpendicular gradients multiply to −1, so the answer is 1/2." }
       ]
     },
     {
@@ -78,7 +88,9 @@
       "questions": [
         { "q": "The circle (x − 2)² + (y + 1)² = 16 has centre and radius", "o": ["(2, −1), 4", "(−2, 1), 4", "(2, −1), 16", "(2, 1), 4"], "a": 0, "why": "(x − a)² + (y − b)² = r²." },
         { "q": "A tangent to a circle is ___ to the radius at the point of contact.", "o": ["perpendicular", "parallel", "equal", "at 45°"], "a": 0, "why": "So its gradient is the negative reciprocal of the radius's." },
-        { "q": "What are the centre and radius of (x − 2)² + (y + 3)² = 16?", "o": ["Centre (2, −3), radius 4", "Centre (−2, 3), radius 4", "Centre (2, −3), radius 16", "Centre (2, 3), radius 4"], "a": 0, "why": "(x − a)² + (y − b)² = r²." }
+        { "q": "What are the centre and radius of (x − 2)² + (y + 3)² = 16?", "o": ["Centre (2, −3), radius 4", "Centre (−2, 3), radius 4", "Centre (2, −3), radius 16", "Centre (2, 3), radius 4"], "a": 0, "why": "(x − a)² + (y − b)² = r²." },
+        { "q": "Which is the equation of the circle with centre (3, −2) that passes through the point (6, 2)?", "o": ["(x + 3)² + (y − 2)² = 25", "(x − 3)² + (y + 2)² = 5", "(x − 6)² + (y − 2)² = 25", "(x − 3)² + (y + 2)² = 25"], "a": 3, "why": "r² = (6 − 3)² + (2 + 2)² = 9 + 16 = 25, and centre (3, −2) gives (x − 3)² + (y + 2)². The right-hand side is r², not r." },
+        { "q": "Find the centre and radius of the circle x² + y² + 4x − 10y + 20 = 0.", "o": ["Centre (2, −5), radius 3", "Centre (−2, 5), radius 3", "Centre (−2, 5), radius 9", "Centre (−4, 10), radius √20"], "a": 1, "why": "Complete the square: (x + 2)² − 4 + (y − 5)² − 25 + 20 = 0, so (x + 2)² + (y − 5)² = 9. The centre is (−2, 5) and the radius is √9 = 3." }
       ]
     },
     {
@@ -87,7 +99,8 @@
         { "q": "The arc length of a sector of radius 5 cm and angle 1.2 rad is", "o": ["6 cm", "15 cm", "4.17 cm", "30 cm"], "a": 0, "why": "s = rθ = 5 × 1.2." },
         { "q": "The area of a sector of radius r and angle θ radians is", "o": ["½r²θ", "rθ", "r²θ", "πr²θ"], "a": 0, "why": "A fraction θ/2π of πr²." },
         { "q": "Convert 60° to radians.", "o": ["π/6", "π/2", "π/3", "3π"], "a": 2, "why": "Multiply by π/180." },
-        { "q": "What is the area of a circle sector with radius r and central angle θ measured in radians?", "o": ["½ r² θ", "r² θ", "r θ", "½ r θ²"], "a": 0, "why": "In radians, the fraction of the full circle is θ / (2π); multiplying by the circle area πr² yields ½ r² θ." }
+        { "q": "What is the area of a circle sector with radius r and central angle θ measured in radians?", "o": ["½ r² θ", "r² θ", "r θ", "½ r θ²"], "a": 0, "why": "In radians, the fraction of the full circle is θ / (2π); multiplying by the circle area πr² yields ½ r² θ." },
+        { "q": "A sector has radius 10 cm and angle π/3 radians. Find the area of the segment between the chord and the arc, to 3 significant figures.", "o": ["52.4 cm²", "43.3 cm²", "9.06 cm²", "95.7 cm²"], "a": 2, "why": "Sector area = ½ × 10² × π/3 ≈ 52.36 cm² and triangle area = ½ × 10 × 10 × sin(π/3) ≈ 43.30 cm². Segment = 52.36 − 43.30 ≈ 9.06 cm²." }
       ],
       "long": [
         { "q": "A sector OAB has radius 8 cm and angle AOB = 0.9 radians. Find the perimeter and the area of the sector.", "marks": 4, "paper": "2", "scheme": ["M1: arc AB = 8 × 0.9 = 7.2 cm", "A1: perimeter = 7.2 + 16 = 23.2 cm", "M1: area = ½ × 8² × 0.9", "A1: = 28.8 cm²"], "ans": "23.2 cm; 28.8 cm²" }
@@ -98,7 +111,9 @@
       "questions": [
         { "q": "sin²x + cos²x =", "o": ["1", "0", "tan x", "2"], "a": 0, "why": "The Pythagorean identity." },
         { "q": "By definition, sec x =", "o": ["1/cos x", "1/sin x", "1/tan x", "cos x/sin x"], "a": 0, "why": "secant is the reciprocal of cosine." },
-        { "q": "The period of y = sin 2x is", "o": ["180°", "360°", "90°", "720°"], "a": 0, "why": "y = sin bx has period 360°/b." }
+        { "q": "The period of y = sin 2x is", "o": ["180°", "360°", "90°", "720°"], "a": 0, "why": "y = sin bx has period 360°/b." },
+        { "q": "Solve tan x = −1 for 0° ≤ x ≤ 360°.", "o": ["135°, 315°", "45°, 225°", "135°, 225°", "225°, 315°"], "a": 0, "why": "The basic angle is 45°, and tan is negative in the second and fourth quadrants, so x = 180° − 45° = 135° and x = 360° − 45° = 315°." },
+        { "q": "Which expression is equal to (1 − cos²x) / cos²x?", "o": ["sec²x", "cot²x", "1", "tan²x"], "a": 3, "why": "1 − cos²x = sin²x, so the expression is sin²x / cos²x = tan²x (which also equals sec²x − 1)." }
       ],
       "long": [
         { "q": "Solve 2 sin²x = 3 cos x for 0° ≤ x ≤ 360°.", "marks": 4, "paper": "1", "scheme": ["M1: 2(1 − cos²x) = 3 cos x", "M1: 2cos²x + 3 cos x − 2 = 0, (2cos x − 1)(cos x + 2) = 0", "A1: cos x = ½ (cos x = −2 has no solution)", "A1: x = 60°, 300°"], "ans": "60°, 300°" }
@@ -110,7 +125,8 @@
         { "q": "How many ways can 5 different books be arranged in a row?", "o": ["120", "25", "60", "5"], "a": 0, "why": "5! = 5 × 4 × 3 × 2 × 1 = 120." },
         { "q": "The value of ⁶C₂ is", "o": ["15", "30", "12", "36"], "a": 0, "why": "6!/(2!4!) = 15." },
         { "q": "How many ways can 3 students be chosen from 8 if order does not matter?", "o": ["336", "56", "24", "512"], "a": 1, "why": "⁸C₃ = 56; ⁸P₃ = 336 counts orders too." },
-        { "q": "In how many ways can 4 books be chosen from a shelf of 9 distinct books if the order of selection does not matter?", "o": ["9P4 = 3024", "9C4 = 126", "4⁹ = 262144", "9! = 362880"], "a": 1, "why": "Combinations are used when order does not matter: 9C4 = 9! / (4! 5!) = (9 × 8 × 7 × 6) / (4 × 3 × 2 × 1) = 126." }
+        { "q": "In how many ways can 4 books be chosen from a shelf of 9 distinct books if the order of selection does not matter?", "o": ["9P4 = 3024", "9C4 = 126", "4⁹ = 262144", "9! = 362880"], "a": 1, "why": "Combinations are used when order does not matter: 9C4 = 9! / (4! 5!) = (9 × 8 × 7 × 6) / (4 × 3 × 2 × 1) = 126." },
+        { "q": "How many arrangements of the letters of the word PENCIL begin with a vowel?", "o": ["48", "120", "240", "720"], "a": 2, "why": "The first letter can be E or I (2 ways), then the other 5 letters can be arranged in 5! = 120 ways, giving 2 × 120 = 240." }
       ]
     },
     {
@@ -118,7 +134,9 @@
       "questions": [
         { "q": "The 10th term of the arithmetic progression 3, 7, 11, … is", "o": ["39", "43", "40", "36"], "a": 0, "why": "a + 9d = 3 + 36." },
         { "q": "The sum to infinity of 8 + 4 + 2 + … is", "o": ["16", "14", "∞", "12"], "a": 0, "why": "a/(1 − r) = 8/0.5." },
-        { "q": "The coefficient of x² in (1 + 2x)⁵ is", "o": ["40", "10", "20", "80"], "a": 0, "why": "⁵C₂ × 2² = 10 × 4." }
+        { "q": "The coefficient of x² in (1 + 2x)⁵ is", "o": ["40", "10", "20", "80"], "a": 0, "why": "⁵C₂ × 2² = 10 × 4." },
+        { "q": "A geometric progression has first term 5 and common ratio 2. What is the sum of its first 6 terms?", "o": ["160", "315", "320", "630"], "a": 1, "why": "Sₙ = a(rⁿ − 1)/(r − 1) = 5(2⁶ − 1)/(2 − 1) = 5 × 63 = 315. 160 is the 6th term, not the sum." },
+        { "q": "An arithmetic progression has first term 4 and common difference 3. What is the sum of its first 20 terms?", "o": ["650", "61", "680", "1300"], "a": 0, "why": "Sₙ = n/2 [2a + (n − 1)d] = 10 × (8 + 19 × 3) = 10 × 65 = 650. 61 is the 20th term, and 680 uses 20d instead of 19d." }
       ],
       "long": [
         { "q": "Find the first three terms in the expansion of (2 − x/4)⁶ in ascending powers of x, and hence the coefficient of x² in (1 + 2x)(2 − x/4)⁶.", "marks": 5, "paper": "2", "scheme": ["B1: 64", "B1: − 48x", "B1: + 15x²", "M1: x² terms: 15 + 2 × (−48)", "A1: −81"], "ans": "64 − 48x + 15x²; −81" }
@@ -129,7 +147,9 @@
       "questions": [
         { "q": "The magnitude of 3i + 4j is", "o": ["5", "7", "1", "25"], "a": 0, "why": "√(3² + 4²)." },
         { "q": "If OA = a and OB = b, then AB =", "o": ["b − a", "a − b", "a + b", "½(a + b)"], "a": 0, "why": "AB = AO + OB = −a + b." },
-        { "q": "a = 3i + 4j. What is |a|?", "o": ["7", "5", "25", "1"], "a": 1, "why": "√(3² + 4²) = 5." }
+        { "q": "a = 3i + 4j. What is |a|?", "o": ["7", "5", "25", "1"], "a": 1, "why": "√(3² + 4²) = 5." },
+        { "q": "What is the unit vector in the direction of 6i − 8j?", "o": ["3i − 4j", "0.6i + 0.8j", "0.6i − 0.8j", "0.06i − 0.08j"], "a": 2, "why": "|6i − 8j| = √(36 + 64) = 10, so the unit vector is (6i − 8j) ÷ 10 = 0.6i − 0.8j, which has magnitude 1." },
+        { "q": "A has position vector 2i + 3j and B has position vector 8i − 5j. M is the midpoint of AB. What is the position vector of M?", "o": ["3i − 4j", "6i − 8j", "10i − 2j", "5i − j"], "a": 3, "why": "OM = ½(OA + OB) = ½(10i − 2j) = 5i − j. 3i − 4j is ½AB, the vector from A to M, not M's position vector." }
       ]
     },
     {
