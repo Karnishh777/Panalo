@@ -9,7 +9,8 @@
       "questions": [
         { "q": "If f(x) = 2x + 3, what is f⁻¹(x)?", "o": ["(x − 3)/2", "2x − 3", "(x + 3)/2", "1/(2x + 3)"], "a": 0, "why": "Swap x and y in y = 2x + 3 and solve: x = (y − 3)/2." },
         { "q": "If f(x) = x² and g(x) = x + 1, what is fg(x)?", "o": ["(x + 1)²", "x² + 1", "x² + x", "2x + 1"], "a": 0, "why": "fg(x) means f(g(x)): square the whole of x + 1." },
-        { "q": "Which function has an inverse over all real x?", "o": ["f(x) = x³", "f(x) = x²", "f(x) = |x|", "f(x) = cos x"], "a": 0, "why": "Only a one-one function has an inverse; x³ is one-one, the others are not." }
+        { "q": "Which function has an inverse over all real x?", "o": ["f(x) = x³", "f(x) = x²", "f(x) = |x|", "f(x) = cos x"], "a": 0, "why": "Only a one-one function has an inverse; x³ is one-one, the others are not." },
+        { "q": "Under what condition does a function f(x) possess an inverse function f⁻¹(x)?", "o": ["f(x) must be a one-to-one function", "f(x) must be a many-to-one function", "f(x) must be a quadratic function", "f(0) must equal 0"], "a": 0, "why": "A function has an inverse if and only if each element of the codomain maps to at most one element of the domain (passes the horizontal line test)." }
       ]
     },
     {
@@ -17,7 +18,8 @@
       "questions": [
         { "q": "For what values of k does x² + kx + 9 = 0 have equal roots?", "o": ["k = ±6", "k = ±3", "k = 9", "k = 0"], "a": 0, "why": "Equal roots when b² − 4ac = 0: k² − 36 = 0." },
         { "q": "The minimum point of y = (x − 2)² + 5 is", "o": ["(2, 5)", "(−2, 5)", "(2, −5)", "(5, 2)"], "a": 0, "why": "Completed-square form a(x − p)² + q has its vertex at (p, q)." },
-        { "q": "x² − 5x + 6 < 0 is true for", "o": ["2 < x < 3", "x < 2 or x > 3", "x > 6", "−3 < x < −2"], "a": 0, "why": "The roots are 2 and 3; a positive quadratic is negative between its roots." }
+        { "q": "x² − 5x + 6 < 0 is true for", "o": ["2 < x < 3", "x < 2 or x > 3", "x > 6", "−3 < x < −2"], "a": 0, "why": "The roots are 2 and 3; a positive quadratic is negative between its roots." },
+        { "q": "What condition indicates that the quadratic equation ax² + bx + c = 0 has two distinct real roots?", "o": ["b² − 4ac = 0", "b² − 4ac < 0", "b² − 4ac > 0", "b² − 4ac ≤ 0"], "a": 2, "why": "A positive discriminant (Δ > 0) means the parabola intersects the x-axis at two distinct real coordinates." }
       ],
       "long": [
         { "q": "Find the set of values of k for which the line y = kx − 1 does not meet the curve y = x² + 3.", "marks": 4, "paper": "1", "scheme": ["M1: x² − kx + 4 = 0", "M1: no real roots: k² − 16 < 0", "A1: critical values k = ±4", "A1: −4 < k < 4"], "ans": "−4 < k < 4" }
@@ -28,7 +30,8 @@
       "questions": [
         { "q": "The remainder when x³ − 2x + 5 is divided by (x − 1) is", "o": ["4", "6", "2", "0"], "a": 0, "why": "Remainder theorem: p(1) = 1 − 2 + 5 = 4." },
         { "q": "(x + 2) is a factor of p(x) if", "o": ["p(−2) = 0", "p(2) = 0", "p(0) = 2", "p(−2) = 2"], "a": 0, "why": "Factor theorem: (x − a) is a factor when p(a) = 0; here a = −2." },
-        { "q": "x − 2 is a factor of p(x). What is p(2)?", "o": ["2", "−2", "0", "1"], "a": 2, "why": "The factor theorem." }
+        { "q": "x − 2 is a factor of p(x). What is p(2)?", "o": ["2", "−2", "0", "1"], "a": 2, "why": "The factor theorem." },
+        { "q": "According to the factor theorem, if P(x) is a polynomial and P(3) = 0, which statement is true?", "o": ["(x + 3) is a factor of P(x)", "3 is the remainder when P(x) is divided by x", "(x − 3) is a factor of P(x)", "P(x) has no real roots"], "a": 2, "why": "The factor theorem states that if substituting x = c gives P(c) = 0, then the linear expression (x − c) divides P(x) exactly without remainder." }
       ],
       "long": [
         { "q": "p(x) = 2x³ + ax² − 7x + 6. Given that (x − 1) is a factor of p(x), find a and hence factorise p(x) completely.", "marks": 4, "paper": "1", "scheme": ["M1: p(1) = 2 + a − 7 + 6 = 0", "A1: a = −1", "M1: divide by (x − 1): 2x² + x − 6", "A1: p(x) = (x − 1)(2x − 3)(x + 2)"], "ans": "a = −1; (x − 1)(2x − 3)(x + 2)" }
@@ -55,7 +58,8 @@
       "questions": [
         { "q": "log₂ 32 =", "o": ["5", "16", "6", "4"], "a": 0, "why": "Because 2⁵ = 32." },
         { "q": "log a + log b =", "o": ["log ab", "log (a + b)", "log a · log b", "log (a/b)"], "a": 0, "why": "The product rule for logarithms." },
-        { "q": "Solve 3ˣ = 20 (to 3 s.f.).", "o": ["2.73", "6.67", "1.30", "2.99"], "a": 0, "why": "x = ln 20 ÷ ln 3 ≈ 2.73." }
+        { "q": "Solve 3ˣ = 20 (to 3 s.f.).", "o": ["2.73", "6.67", "1.30", "2.99"], "a": 0, "why": "x = ln 20 ÷ ln 3 ≈ 2.73." },
+        { "q": "Which identity correctly changes the base of log_a(b) to base c?", "o": ["log_c(a) · log_c(b)", "log_c(a) / log_c(b)", "log_c(b − a)", "log_c(b) / log_c(a)"], "a": 3, "why": "The change of base formula is log_a(b) = log_c(b) / log_c(a), often applied with natural log or base 10." }
       ],
       "long": [
         { "q": "Solve log₃(x + 6) − log₃ x = 2.", "marks": 3, "paper": "2", "scheme": ["M1: log₃((x + 6)/x) = 2", "M1: (x + 6)/x = 9", "A1: x = 3/4"], "ans": "x = 0.75" }
@@ -82,7 +86,8 @@
       "questions": [
         { "q": "The arc length of a sector of radius 5 cm and angle 1.2 rad is", "o": ["6 cm", "15 cm", "4.17 cm", "30 cm"], "a": 0, "why": "s = rθ = 5 × 1.2." },
         { "q": "The area of a sector of radius r and angle θ radians is", "o": ["½r²θ", "rθ", "r²θ", "πr²θ"], "a": 0, "why": "A fraction θ/2π of πr²." },
-        { "q": "Convert 60° to radians.", "o": ["π/6", "π/2", "π/3", "3π"], "a": 2, "why": "Multiply by π/180." }
+        { "q": "Convert 60° to radians.", "o": ["π/6", "π/2", "π/3", "3π"], "a": 2, "why": "Multiply by π/180." },
+        { "q": "What is the area of a circle sector with radius r and central angle θ measured in radians?", "o": ["½ r² θ", "r² θ", "r θ", "½ r θ²"], "a": 0, "why": "In radians, the fraction of the full circle is θ / (2π); multiplying by the circle area πr² yields ½ r² θ." }
       ],
       "long": [
         { "q": "A sector OAB has radius 8 cm and angle AOB = 0.9 radians. Find the perimeter and the area of the sector.", "marks": 4, "paper": "2", "scheme": ["M1: arc AB = 8 × 0.9 = 7.2 cm", "A1: perimeter = 7.2 + 16 = 23.2 cm", "M1: area = ½ × 8² × 0.9", "A1: = 28.8 cm²"], "ans": "23.2 cm; 28.8 cm²" }
@@ -104,7 +109,8 @@
       "questions": [
         { "q": "How many ways can 5 different books be arranged in a row?", "o": ["120", "25", "60", "5"], "a": 0, "why": "5! = 5 × 4 × 3 × 2 × 1 = 120." },
         { "q": "The value of ⁶C₂ is", "o": ["15", "30", "12", "36"], "a": 0, "why": "6!/(2!4!) = 15." },
-        { "q": "How many ways can 3 students be chosen from 8 if order does not matter?", "o": ["336", "56", "24", "512"], "a": 1, "why": "⁸C₃ = 56; ⁸P₃ = 336 counts orders too." }
+        { "q": "How many ways can 3 students be chosen from 8 if order does not matter?", "o": ["336", "56", "24", "512"], "a": 1, "why": "⁸C₃ = 56; ⁸P₃ = 336 counts orders too." },
+        { "q": "In how many ways can 4 books be chosen from a shelf of 9 distinct books if the order of selection does not matter?", "o": ["9P4 = 3024", "9C4 = 126", "4⁹ = 262144", "9! = 362880"], "a": 1, "why": "Combinations are used when order does not matter: 9C4 = 9! / (4! 5!) = (9 × 8 × 7 × 6) / (4 × 3 × 2 × 1) = 126." }
       ]
     },
     {
@@ -132,7 +138,8 @@
         { "q": "d/dx (x³) =", "o": ["3x²", "x²", "3x³", "x⁴/4"], "a": 0, "why": "Bring the power down and subtract one." },
         { "q": "d/dx (sin 3x) =", "o": ["3 cos 3x", "cos 3x", "−3 cos 3x", "3 sin 3x"], "a": 0, "why": "Chain rule: derivative of the inside is 3." },
         { "q": "∫ eˣ dx =", "o": ["eˣ + c", "x eˣ + c", "eˣ⁺¹/(x + 1) + c", "ln x + c"], "a": 0, "why": "eˣ is its own derivative." },
-        { "q": "At a stationary point, dy/dx is", "o": ["0", "1", "undefined", "negative"], "a": 0, "why": "The tangent is horizontal there." }
+        { "q": "At a stationary point, dy/dx is", "o": ["0", "1", "undefined", "negative"], "a": 0, "why": "The tangent is horizontal there." },
+        { "q": "What is the derivative of f(x) = e^(3x) with respect to x?", "o": ["e^(3x) / 3", "3x e^(3x - 1)", "3 e^(3x)", "e^(3x) + 3"], "a": 2, "why": "By the chain rule, d/dx[e^(kx)] = k e^(kx). For k = 3, the derivative is 3e^(3x)." }
       ],
       "long": [
         { "q": "A curve has equation y = x³ − 6x² + 9x + 2. Find the coordinates of its stationary points and determine their nature.", "marks": 5, "paper": "1", "scheme": ["M1: dy/dx = 3x² − 12x + 9", "M1: = 0 gives x = 1, x = 3", "A1: (1, 6) and (3, 2)", "M1: d²y/dx² = 6x − 12", "A1: (1, 6) maximum, (3, 2) minimum"], "ans": "(1, 6) max; (3, 2) min" },

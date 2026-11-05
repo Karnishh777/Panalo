@@ -11,7 +11,8 @@
         { "q": "A length is measured as 2.50 ± 0.05 m. What is the percentage uncertainty?", "o": ["0.05%", "1%", "2%", "5%"], "a": 2, "why": "0.05 ÷ 2.50 × 100 = 2%." },
         { "q": "Which pair contains one scalar and one vector?", "o": ["Speed and mass", "Velocity and acceleration", "Work and momentum", "Force and displacement"], "a": 2, "why": "Work is a scalar; momentum is a vector." },
         { "q": "When two quantities are multiplied, their percentage uncertainties are…", "o": ["multiplied", "added", "subtracted", "averaged"], "a": 1, "why": "For products and quotients, add the percentage uncertainties." },
-        { "q": "Which is the SI base unit of intensity?", "o": ["A", "kg s⁻³", "W m⁻²", "J s⁻¹"], "a": 1, "why": "Examiners (2023): some used the ampere because the symbol I is used for both. Intensity is W m⁻² = kg s⁻³ in base units." }
+        { "q": "Which is the SI base unit of intensity?", "o": ["A", "kg s⁻³", "W m⁻²", "J s⁻¹"], "a": 1, "why": "Examiners (2023): some used the ampere because the symbol I is used for both. Intensity is W m⁻² = kg s⁻³ in base units." },
+        { "q": "Which of the following is equivalent to the SI unit of electric potential, the volt (V)?", "o": ["N C⁻¹", "J s⁻¹", "J C⁻¹", "W A⁻¹ s"], "a": 2, "why": "Potential difference is work done per unit charge (V = W / Q), so 1 V = 1 J C⁻¹." }
       ],
       "long": [
         { "q": "A student measures the length of a pendulum as 0.800 ± 0.002 m and its period as 1.80 ± 0.02 s. The acceleration of free fall is given by g = 4π²l/T². Calculate g and its absolute uncertainty.", "marks": 4, "paper": "2", "scheme": ["C1: g = 4π² × 0.800 ÷ 1.80² = 9.75 m s⁻²", "C1: percentage uncertainties 0.25% and 2 × 1.1% = 2.2%", "C1: total about 2.5%, so Δg ≈ 0.24", "A1: g = (9.7 ± 0.2) m s⁻²"], "ans": "(9.7 ± 0.2) m s⁻²" }
@@ -24,7 +25,8 @@
         { "q": "A ball is thrown horizontally off a cliff. Ignoring air resistance, its horizontal velocity…", "o": ["increases", "decreases", "stays constant", "becomes zero"], "a": 2, "why": "No horizontal force acts, so horizontal velocity is constant; only the vertical velocity changes." },
         { "q": "The gradient of a displacement–time graph gives…", "o": ["acceleration", "velocity", "displacement", "force"], "a": 1, "why": "Velocity = rate of change of displacement." },
         { "q": "An object is dropped from rest. How fast is it moving after falling 20 m? (g = 9.81 m s⁻²)", "o": ["14 m s⁻¹", "20 m s⁻¹", "196 m s⁻¹", "9.8 m s⁻¹"], "a": 1, "why": "v² = u² + 2as = 2 × 9.81 × 20 ≈ 392, so v ≈ 19.8 ≈ 20 m s⁻¹." },
-        { "q": "A ball is kicked at 12 m s⁻¹ at 50° above the horizontal. What is the initial vertical component of its velocity?", "o": ["12 m s⁻¹", "12 cos 50° = 7.7 m s⁻¹", "12 sin 50° = 9.2 m s⁻¹", "12 tan 50° = 14.3 m s⁻¹"], "a": 2, "why": "Examiners (2023): candidates often used 12 m s⁻¹ as the vertical component rather than 12 sin 50°." }
+        { "q": "A ball is kicked at 12 m s⁻¹ at 50° above the horizontal. What is the initial vertical component of its velocity?", "o": ["12 m s⁻¹", "12 cos 50° = 7.7 m s⁻¹", "12 sin 50° = 9.2 m s⁻¹", "12 tan 50° = 14.3 m s⁻¹"], "a": 2, "why": "Examiners (2023): candidates often used 12 m s⁻¹ as the vertical component rather than 12 sin 50°." },
+        { "q": "A projectile is launched with velocity v at an angle θ to the horizontal. What is its acceleration at the highest point of its trajectory?", "o": ["g downwards", "0", "v cos θ horizontally", "g sin θ downwards"], "a": 0, "why": "Gravity acts downwards throughout the flight; at the top, vertical velocity is zero but acceleration is still g downwards." }
       ],
       "long": [
         { "q": "A ball is thrown horizontally at 15 m s⁻¹ from the top of a cliff 45 m high. Air resistance is negligible. Calculate the time taken to reach the sea and the horizontal distance travelled. (g = 9.81 m s⁻²)", "marks": 4, "paper": "2", "scheme": ["C1: 45 = ½ × 9.81 × t²", "A1: t = 3.03 s", "C1: horizontal distance = 15 × t", "A1: 45.4 m"], "ans": "3.03 s; 45.4 m" }
@@ -37,7 +39,8 @@
         { "q": "In a perfectly elastic collision, what is conserved besides momentum?", "o": ["Velocity", "Kinetic energy", "Force", "Nothing else"], "a": 1, "why": "Elastic means total kinetic energy is conserved; the relative speed of approach equals that of separation." },
         { "q": "Newton's second law states that resultant force equals…", "o": ["mass × velocity", "the rate of change of momentum", "weight × height", "impulse × time"], "a": 1, "why": "F = Δp/Δt, which becomes F = ma for constant mass." },
         { "q": "The pairs in Newton's third law act on…", "o": ["the same object", "different objects", "only stationary objects", "only in collisions"], "a": 1, "why": "Third-law pairs are equal and opposite and act on different bodies." },
-        { "q": "Which is a correct statement of Newton's second law?", "o": ["The resultant force is proportional to the rate of change of momentum", "Force equals mass times acceleration", "Every force has an equal and opposite force", "An object stays at rest unless acted on"], "a": 0, "why": "Examiners (2023): a common mistake was 'force = mass × acceleration', which is not the law in full." }
+        { "q": "Which is a correct statement of Newton's second law?", "o": ["The resultant force is proportional to the rate of change of momentum", "Force equals mass times acceleration", "Every force has an equal and opposite force", "An object stays at rest unless acted on"], "a": 0, "why": "Examiners (2023): a common mistake was 'force = mass × acceleration', which is not the law in full." },
+        { "q": "Why does an astronaut feel weightless in an orbiting space station?", "o": ["Earth gravity is zero at orbital altitude", "Earth magnetic field shields the gravitational field", "The astronaut and spacecraft are in free fall with the same gravitational acceleration", "Centrifugal force destroys gravitational attraction"], "a": 2, "why": "Both the astronaut and the station accelerate towards Earth at g, so there is no normal reaction force between them." }
       ],
       "long": [
         { "q": "A ball of mass 0.15 kg hits a wall at 20 m s⁻¹ and rebounds along the same line at 15 m s⁻¹. It is in contact with the wall for 0.050 s. Calculate the change in momentum of the ball and the average force on it.", "marks": 3, "paper": "2", "scheme": ["C1: change in momentum = 0.15 × (15 − (−20))", "A1: 5.25 N s", "A1: average force = 5.25 ÷ 0.050 = 105 N"], "ans": "5.25 N s; 105 N" }
@@ -60,7 +63,8 @@
       "questions": [
         { "q": "A motor lifts a 20 kg load 3.0 m in 4.0 s. What is its useful power output? (g = 9.81)", "o": ["15 W", "60 W", "147 W", "589 W"], "a": 2, "why": "P = mgh/t = 20 × 9.81 × 3.0 ÷ 4.0 ≈ 147 W." },
         { "q": "Power can also be written as…", "o": ["Fv", "Fs", "mv", "½mv"], "a": 0, "why": "P = W/t = F × (s/t) = Fv." },
-        { "q": "A machine has 600 J input and 450 J useful output. Its efficiency is…", "o": ["25%", "75%", "133%", "150%"], "a": 1, "why": "450 ÷ 600 = 0.75." }
+        { "q": "A machine has 600 J input and 450 J useful output. Its efficiency is…", "o": ["25%", "75%", "133%", "150%"], "a": 1, "why": "450 ÷ 600 = 0.75." },
+        { "q": "What does the area under a force–extension graph represent for a spring obeying Hooke's law?", "o": ["The spring constant", "The elastic potential energy stored in the spring", "The work done per unit volume", "The power supplied"], "a": 1, "why": "Work done W = ∫ F dx, which equals the area under the force–extension curve (½kx²)." }
       ],
       "long": [
         { "q": "A climber of mass 60 kg climbs a vertical height of 25 m in 50 s. Calculate the gain in gravitational potential energy and the average useful power. (g = 9.81 m s⁻²)", "marks": 3, "paper": "2", "scheme": ["C1: ΔEp = mgΔh", "A1: 1.47 × 10⁴ J", "A1: power = 294 W"], "ans": "1.47 × 10⁴ J; 294 W" }
@@ -85,7 +89,8 @@
         { "q": "A source moves towards a stationary observer. The observed frequency is…", "o": ["lower", "higher", "unchanged", "zero"], "a": 1, "why": "Doppler effect: wavefronts bunch up, so the frequency observed is higher." },
         { "q": "Which waves can be polarised?", "o": ["Only longitudinal waves", "Only transverse waves", "All waves", "Only sound"], "a": 1, "why": "Polarisation restricts oscillation to one plane, which needs transverse oscillations." },
         { "q": "Unpolarised light passes through a polariser, then an analyser at 60°. What fraction of the light after the polariser gets through? (Malus's law)", "o": ["0.25", "0.5", "0.75", "0.87"], "a": 0, "why": "I = I₀ cos²60° = 0.25 I₀." },
-        { "q": "A wave has wavelength 2.1 cm. In which region of the electromagnetic spectrum is it?", "o": ["Radio waves", "Infrared", "Microwaves", "Visible light"], "a": 2, "why": "Examiners (2023): some thought 2.1 cm was a radio wave. Microwaves run from about 1 mm to 30 cm." }
+        { "q": "A wave has wavelength 2.1 cm. In which region of the electromagnetic spectrum is it?", "o": ["Radio waves", "Infrared", "Microwaves", "Visible light"], "a": 2, "why": "Examiners (2023): some thought 2.1 cm was a radio wave. Microwaves run from about 1 mm to 30 cm." },
+        { "q": "What is true for all electromagnetic waves travelling through a vacuum?", "o": ["They have the same speed (3.0 × 10⁸ m s⁻¹)", "They have the same wavelength", "They have the same frequency", "They are longitudinal vibrations"], "a": 0, "why": "All electromagnetic waves travel at the speed of light c in free space, though frequencies and wavelengths vary." }
       ],
       "long": [
         { "q": "The graph shows the displacement of the particles of a wave against distance at one instant. The frequency of the wave is 50 Hz. Use the graph to find the amplitude and the wavelength, and calculate the speed of the wave.", "marks": 3, "paper": "2", "scheme": ["B1: amplitude = 3.0 mm", "B1: wavelength = 0.40 m", "A1: v = fλ = 20 m s⁻¹"], "ans": "3.0 mm; 0.40 m; 20 m s⁻¹", "fig": "assets/syllabus/fig/9702-wave.svg" }
@@ -98,7 +103,8 @@
         { "q": "In Young's double-slit experiment, fringe spacing x = λD/a. What happens if the slit separation a is halved?", "o": ["x halves", "x doubles", "x is unchanged", "x quadruples"], "a": 1, "why": "x is inversely proportional to a." },
         { "q": "A diffraction grating has 500 lines per mm. What is the line spacing d?", "o": ["2.0 × 10⁻⁶ m", "5.0 × 10⁻⁷ m", "2.0 × 10⁻³ m", "5.0 × 10⁵ m"], "a": 0, "why": "d = 1/(500 × 10³) m = 2.0 × 10⁻⁶ m." },
         { "q": "For a stable interference pattern, the sources must be…", "o": ["of different frequencies", "coherent", "at different amplitudes", "very bright"], "a": 1, "why": "Coherent sources have a constant phase difference." },
-        { "q": "Two waves meet. What is needed for them to superpose?", "o": ["They must be of the same type and meet at a point", "They must be coherent", "They must have the same frequency", "They must travel in opposite directions"], "a": 0, "why": "Examiners (2023): many confused the condition for superposition with those for stationary waves or a stable interference pattern." }
+        { "q": "Two waves meet. What is needed for them to superpose?", "o": ["They must be of the same type and meet at a point", "They must be coherent", "They must have the same frequency", "They must travel in opposite directions"], "a": 0, "why": "Examiners (2023): many confused the condition for superposition with those for stationary waves or a stable interference pattern." },
+        { "q": "Two coherent light sources emit waves that arrive at a point in phase with equal amplitude A. What is the resultant intensity compared to one source alone?", "o": ["4 times the intensity of one source", "2 times the intensity", "Equal to one source", "√2 times the intensity"], "a": 0, "why": "Amplitudes add constructively: A_res = 2A. Since intensity is proportional to amplitude squared, I_res ∝ (2A)² = 4A²." }
       ],
       "long": [
         { "q": "In a double-slit experiment the slits are 0.50 mm apart and the screen is 2.0 m away. Light of wavelength 600 nm is used. Calculate the fringe separation.", "marks": 2, "paper": "2", "scheme": ["C1: x = λD ÷ a", "A1: 2.4 mm"], "ans": "2.4 mm" }
@@ -144,7 +150,8 @@
       "questions": [
         { "q": "An object moves in a circle of radius 2.0 m at 4.0 m s⁻¹. What is its centripetal acceleration?", "o": ["2.0 m s⁻²", "4.0 m s⁻²", "8.0 m s⁻²", "32 m s⁻²"], "a": 2, "why": "a = v²/r = 16 ÷ 2.0 = 8.0 m s⁻²." },
         { "q": "Angular speed ω is related to period T by…", "o": ["ω = 2πT", "ω = 2π/T", "ω = T/2π", "ω = πT²"], "a": 1, "why": "One revolution is 2π radians in time T." },
-        { "q": "A body moves at constant speed in a circle. Its acceleration is:", "o": ["Zero", "Along the direction of motion", "Towards the centre, with constant magnitude", "Away from the centre"], "a": 2, "why": "The direction of velocity changes, so there is a centripetal acceleration v²/r." }
+        { "q": "A body moves at constant speed in a circle. Its acceleration is:", "o": ["Zero", "Along the direction of motion", "Towards the centre, with constant magnitude", "Away from the centre"], "a": 2, "why": "The direction of velocity changes, so there is a centripetal acceleration v²/r." },
+        { "q": "A car of mass m travels over the crest of a curved hill of radius r at speed v. What is the normal reaction force on the car?", "o": ["mg + mv²/r", "mg − mv²/r", "mv²/r", "mg"], "a": 1, "why": "Resultant force towards the centre of the curvature is mg − N = mv²/r, so N = mg − mv²/r." }
       ],
       "long": [
         { "q": "A car of mass 900 kg travels at a constant speed of 15 m s⁻¹ round a horizontal bend of radius 50 m. Calculate the centripetal force required.", "marks": 2, "paper": "4", "scheme": ["C1: F = mv²/r", "A1: = 900 × 15² ÷ 50 = 4050 N"], "ans": "4.1 × 10³ N" }
@@ -155,7 +162,8 @@
       "questions": [
         { "q": "If the distance between two masses doubles, the gravitational force becomes…", "o": ["double", "half", "a quarter", "four times"], "a": 2, "why": "F = GMm/r², an inverse-square law." },
         { "q": "A geostationary satellite has an orbital period of…", "o": ["1 hour", "12 hours", "24 hours", "27 days"], "a": 2, "why": "It orbits above the equator, in the same direction as Earth's rotation, once every 24 hours." },
-        { "q": "Gravitational potential at a point is…", "o": ["always positive", "always negative (zero at infinity)", "zero at the surface", "equal to g"], "a": 1, "why": "φ = −GM/r: work must be done to move a mass to infinity." }
+        { "q": "Gravitational potential at a point is…", "o": ["always positive", "always negative (zero at infinity)", "zero at the surface", "equal to g"], "a": 1, "why": "φ = −GM/r: work must be done to move a mass to infinity." },
+        { "q": "Why is gravitational potential in a field always defined as negative?", "o": ["Gravity repels objects at short distances", "Energy cannot have positive values in physics", "Gravitational force is attractive and potential is defined as zero at infinity", "Mass is mathematically negative in field equations"], "a": 2, "why": "Work is done by the attractive field bringing mass from infinity, so potential is zero at infinity and negative everywhere else." }
       ],
       "long": [
         { "q": "Show that the orbital period T of a satellite in a circular orbit of radius r about a planet of mass M satisfies T² = 4π²r³/(GM).", "marks": 3, "paper": "4", "scheme": ["M1: GMm/r² = mv²/r (gravity provides centripetal force)", "M1: v = 2πr/T", "A1: substitution and rearrangement to T² = 4π²r³/(GM)"] }
@@ -196,7 +204,8 @@
       "questions": [
         { "q": "In simple harmonic motion, acceleration is…", "o": ["constant", "proportional to displacement and opposite in direction", "proportional to velocity", "zero at the extremes"], "a": 1, "why": "Defining equation of SHM: a = −ω²x." },
         { "q": "At what point of an SHM is the speed greatest?", "o": ["At maximum displacement", "At the equilibrium position", "Halfway out", "It is constant"], "a": 1, "why": "All the energy is kinetic at x = 0." },
-        { "q": "What is resonance?", "o": ["Damping that stops oscillation", "A large amplitude when the driving frequency equals the natural frequency", "Oscillation at any frequency", "A sound effect only"], "a": 1, "why": "Maximum energy transfer happens when the frequencies match." }
+        { "q": "What is resonance?", "o": ["Damping that stops oscillation", "A large amplitude when the driving frequency equals the natural frequency", "Oscillation at any frequency", "A sound effect only"], "a": 1, "why": "Maximum energy transfer happens when the frequencies match." },
+        { "q": "What happens to the capacitance of a parallel-plate capacitor if a dielectric of relative permittivity ε_r = 3 is inserted between the plates?", "o": ["The capacitance is halved", "The capacitance remains unchanged", "The capacitance drops by a factor of 3", "The capacitance triples"], "a": 3, "why": "C = ε_r ε₀ A / d; inserting a dielectric with ε_r = 3 increases the capacitance by a factor of 3." }
       ],
       "long": [
         { "q": "A mass on a spring oscillates with simple harmonic motion of amplitude 3.0 cm and frequency 2.0 Hz. Calculate its maximum speed and maximum acceleration.", "marks": 3, "paper": "4", "scheme": ["C1: ω = 2πf = 4π rad s⁻¹ (12.6)", "A1: v_max = ωx₀ = 0.38 m s⁻¹", "A1: a_max = ω²x₀ = 4.7 m s⁻²"], "ans": "0.38 m s⁻¹; 4.7 m s⁻²" }
@@ -215,7 +224,8 @@
       "questions": [
         { "q": "A 100 µF capacitor is charged to 12 V. How much energy is stored?", "o": ["1.2 mJ", "7.2 mJ", "14.4 mJ", "0.6 mJ"], "a": 1, "why": "W = ½CV² = ½ × 100 × 10⁻⁶ × 144 = 7.2 × 10⁻³ J." },
         { "q": "What is the time constant of a 2.0 kΩ resistor and 50 µF capacitor?", "o": ["0.010 s", "0.10 s", "1.0 s", "100 s"], "a": 1, "why": "τ = RC = 2000 × 50 × 10⁻⁶ = 0.10 s." },
-        { "q": "Capacitors in parallel…", "o": ["add like resistors in parallel", "add directly: C = C₁ + C₂", "always halve", "cancel out"], "a": 1, "why": "In parallel, capacitances add." }
+        { "q": "Capacitors in parallel…", "o": ["add like resistors in parallel", "add directly: C = C₁ + C₂", "always halve", "cancel out"], "a": 1, "why": "In parallel, capacitances add." },
+        { "q": "A proton enters a uniform magnetic field perpendicular to its velocity. What path does it follow?", "o": ["A straight line with increasing speed", "A parabolic path with increasing speed", "A helical path with decreasing speed", "A circular path with constant speed"], "a": 3, "why": "The magnetic force F = Bqv is always perpendicular to velocity, doing no work and causing uniform centripetal circular motion." }
       ],
       "long": [
         { "q": "A 470 µF capacitor is charged to 12 V and then discharged through a 2.0 kΩ resistor. Calculate the time constant and the potential difference after 1.0 s.", "marks": 4, "paper": "4", "scheme": ["C1: τ = RC = 2000 × 470 × 10⁻⁶", "A1: = 0.94 s", "C1: V = 12 e^(−1.0/0.94)", "A1: = 4.1 V"], "ans": "0.94 s; 4.1 V" }
@@ -226,7 +236,8 @@
       "questions": [
         { "q": "What is the force on a 0.50 m wire carrying 3.0 A at right angles to a 0.20 T field?", "o": ["0.03 N", "0.30 N", "0.60 N", "3.0 N"], "a": 1, "why": "F = BIL = 0.20 × 3.0 × 0.50 = 0.30 N." },
         { "q": "A charged particle enters a uniform magnetic field at right angles. Its path is…", "o": ["a straight line", "a parabola", "a circle", "a spiral outward"], "a": 2, "why": "The force Bqv is always perpendicular to the velocity, giving circular motion." },
-        { "q": "Lenz's law is a consequence of conservation of…", "o": ["charge", "energy", "momentum", "mass"], "a": 1, "why": "The induced current opposes the change that caused it; otherwise energy would be created." }
+        { "q": "Lenz's law is a consequence of conservation of…", "o": ["charge", "energy", "momentum", "mass"], "a": 1, "why": "The induced current opposes the change that caused it; otherwise energy would be created." },
+        { "q": "According to Lenz's law, the direction of an induced e.m.f. is such that it:", "o": ["Increases the rate of change of flux", "Aligns with the external magnetic field", "Eliminates electric resistance", "Opposes the change in magnetic flux that produces it"], "a": 3, "why": "Lenz's law expresses conservation of energy: the induced current produces a field opposing the flux change." }
       ],
       "long": [
         { "q": "An electron travels at 3.0 × 10⁶ m s⁻¹ perpendicular to a uniform magnetic field of 2.0 mT. Calculate the radius of its circular path. (e = 1.60 × 10⁻¹⁹ C, mₑ = 9.11 × 10⁻³¹ kg)", "marks": 3, "paper": "4", "scheme": ["M1: Bqv = mv²/r so r = mv/(Bq)", "C1: = 9.11 × 10⁻³¹ × 3.0 × 10⁶ ÷ (2.0 × 10⁻³ × 1.60 × 10⁻¹⁹)", "A1: = 8.5 × 10⁻³ m"], "ans": "8.5 mm" }

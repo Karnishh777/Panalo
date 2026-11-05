@@ -21,6 +21,9 @@
         { "q": "Evaluating a perspective means judging", "o": ["the quality of its reasoning and evidence", "whether you like it", "its length", "how popular it is"], "a": 0, "why": "Assess strength, not agreement." },
         { "q": "How should two perspectives be compared?", "o": ["One after the other with no link", "Directly, on the same criteria, with a judgement", "Only describing them", "Choosing the longer one"], "a": 1, "why": "Examiners (2023): answers without comparison were limited to half marks." },
         { "q": "Why develop one line of evaluation fully?", "o": ["It is shorter", "It avoids judgement", "Depth on one criterion earns more than several undeveloped ones", "It hides weaknesses"], "a": 2, "why": "Examiners (2023): this advice recurs for this skills-based syllabus." }
+      ],
+      "long": [
+        { "q": "Perspective A: 'Rich countries produced most past emissions, so they should pay for poorer countries to adapt to climate change.' Perspective B: 'Every country now emits, and aid is often wasted, so each country should pay for its own adaptation.' Compare the strengths and weaknesses of the reasoning and evidence in each perspective, and judge which is more convincing. (Mark yourself with this scheme.)", "marks": 5, "paper": "1", "scheme": ["B1: a strength of A explained (e.g. historical emissions data support the fairness argument)", "B1: a weakness of A explained (e.g. assumes past responsibility passes to today's taxpayers; says nothing about how money is spent)", "B1: a strength of B explained (e.g. some emerging economies' current emissions are large and growing)", "B1: a weakness of B explained (e.g. 'aid is often wasted' is an unsupported generalisation; ignores the poorest countries' lack of funds)", "B1: a supported judgement that follows from the comparison"] }
       ]
     },
     {

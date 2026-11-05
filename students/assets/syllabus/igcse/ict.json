@@ -9,7 +9,12 @@
       "questions": [
         { "q": "Which is an example of system software?", "o": ["an operating system", "a word processor", "a spreadsheet", "a web browser"], "a": 0, "why": "System software runs the computer; application software does user tasks." },
         { "q": "RAM is best described as", "o": ["volatile memory that holds data in use", "permanent storage", "a type of ROM", "an output device"], "a": 0, "why": "Its contents are lost when power is off." },
-        { "q": "Which type of memory holds the start-up instructions and is not lost when power is off?", "o": ["ROM", "RAM", "Cache", "Virtual memory"], "a": 0, "why": "Examiners (2023): some candidates gave RAM rather than ROM; RAM is volatile." }
+        { "q": "Which type of memory holds the start-up instructions and is not lost when power is off?", "o": ["ROM", "RAM", "Cache", "Virtual memory"], "a": 0, "why": "Examiners (2023): some candidates gave RAM rather than ROM; RAM is volatile." },
+        { "q": "What is a major advantage of a Graphical User Interface (GUI) over a Command Line Interface (CLI)?", "o": ["It uses significantly less RAM and CPU processing power", "It executes batch operations faster for advanced administrators", "It is intuitive and accessible with icons and pointers without memorising commands", "It does not require a visual monitor"], "a": 2, "why": "GUIs use WIMP (windows, icons, menus, pointer) metaphors that allow everyday users to interact visually without typing command syntax." }
+      ],
+      "long": [
+        { "q": "Describe the differences between RAM and ROM, and give one use of each.", "marks": 4, "paper": "1", "scheme": ["B1: RAM is volatile: its contents are lost when the power is off", "B1: RAM holds the programs and data currently in use, and can be read and written", "B1: ROM is non-volatile and read-only: contents are kept without power", "B1: ROM holds the start-up (boot) instructions"] },
+        { "q": "Compare a Graphical User Interface (GUI) with a Command Line Interface (CLI), and explain why network administrators often prefer a CLI.", "marks": 4, "paper": "1", "scheme": ["B1: GUI uses visual elements (windows, icons, menus, pointer - WIMP), making it accessible for non-technical users", "B1: CLI requires users to type specific syntax commands from memory, demanding higher technical training", "B1: CLI requires far less RAM and processor overhead, allowing it to run over low-bandwidth remote connections", "B1: CLI supports powerful scripting and batch execution of administrative tasks across hundreds of remote servers"] }
       ]
     },
     {
@@ -17,7 +22,11 @@
       "questions": [
         { "q": "Which is a direct data entry device?", "o": ["a barcode reader", "a keyboard", "a mouse", "a monitor"], "a": 0, "why": "It captures data without typing." },
         { "q": "A sensor in a greenhouse is an", "o": ["input device", "output device", "storage device", "processor"], "a": 0, "why": "It sends readings to the computer." },
-        { "q": "Which is an input device?", "o": ["Speaker", "Printer", "Actuator", "Microphone"], "a": 3, "why": "Actuators and speakers are output devices." }
+        { "q": "Which is an input device?", "o": ["Speaker", "Printer", "Actuator", "Microphone"], "a": 3, "why": "Actuators and speakers are output devices." },
+        { "q": "Which input technology is used to read bank cheques quickly and reliably even if written over?", "o": ["Magnetic Ink Character Recognition (MICR)", "Optical Mark Recognition (OMR)", "Barcode scanner", "Radio Frequency Identification (RFID)"], "a": 0, "why": "Cheques use magnetic ink with iron oxide; MICR readers sense magnetic fields so signatures or dirt across the line do not hinder reading." }
+      ],
+      "long": [
+        { "q": "A supermarket uses barcode readers at its checkouts. Give two advantages of barcode readers over typing in product codes, and one disadvantage.", "marks": 3, "paper": "1", "scheme": ["B1: faster data entry, so shorter queues", "B1: more accurate: avoids typing errors", "B1: a disadvantage, e.g. damaged or dirty barcodes won't scan and must be typed; cost of the equipment"] }
       ]
     },
     {
@@ -25,7 +34,11 @@
       "questions": [
         { "q": "Which has no moving parts?", "o": ["a solid-state drive", "a hard disk drive", "a DVD", "magnetic tape"], "a": 0, "why": "SSDs use flash memory." },
         { "q": "Magnetic tape is best for", "o": ["large backups accessed rarely", "fast random access", "booting a computer", "a phone's storage"], "a": 0, "why": "Serial access suits archives." },
-        { "q": "Why is a solid-state drive faster than a hard disk drive?", "o": ["It has no moving parts, so data is accessed electronically", "It spins faster", "It uses magnetic tape", "It is larger"], "a": 0, "why": "SSDs also use less power and are more robust." }
+        { "q": "Why is a solid-state drive faster than a hard disk drive?", "o": ["It has no moving parts, so data is accessed electronically", "It spins faster", "It uses magnetic tape", "It is larger"], "a": 0, "why": "SSDs also use less power and are more robust." },
+        { "q": "Why are Solid State Drives (SSDs) preferred over magnetic hard disk drives (HDDs) in laptops?", "o": ["They have infinite read-write rewrite cycles", "They cost less per gigabyte than optical discs", "They require magnetic tape readers", "They have no moving parts, lower latency, and higher shock resistance"], "a": 3, "why": "SSDs use flash memory with zero mechanical latency, consume less power, and withstand physical drops far better than spinning HDDs." }
+      ],
+      "long": [
+        { "q": "Give three reasons why a laptop is more likely to have a solid-state drive (SSD) than a hard disk drive (HDD).", "marks": 3, "paper": "1", "scheme": ["B1: no moving parts, so it's less likely to be damaged if dropped", "B1: faster access to data, so quicker start-up and loading", "B1: lighter, smaller or uses less power, so longer battery life"] }
       ]
     },
     {
@@ -33,7 +46,12 @@
       "questions": [
         { "q": "What does a router do?", "o": ["connects a local network to other networks such as the internet", "stores web pages", "prints documents", "only connects two computers"], "a": 0, "why": "It forwards packets between networks." },
         { "q": "Which is a benefit of cloud storage?", "o": ["files can be accessed from anywhere with internet", "it never needs internet", "it can't be hacked", "it is always free"], "a": 0, "why": "Access anywhere; relies on connection and the provider." },
-        { "q": "What does a router do on a home network?", "o": ["Connects the home network to the internet and forwards packets", "Stores the files", "Prints documents", "Displays web pages"], "a": 0, "why": "Many routers include a wireless access point." }
+        { "q": "What does a router do on a home network?", "o": ["Connects the home network to the internet and forwards packets", "Stores the files", "Prints documents", "Displays web pages"], "a": 0, "why": "Many routers include a wireless access point." },
+        { "q": "What is the main difference between a Local Area Network (LAN) and a Wide Area Network (WAN)?", "o": ["A LAN always uses satellite links while a WAN uses copper cables", "A LAN covers a small geographic site while a WAN spans multiple distant geographic locations", "A LAN cannot connect to the internet", "A WAN is owned and managed by a single private individual"], "a": 1, "why": "LANs are confined to a single building, campus, or home; WANs (like the internet or multinational corporate nets) connect geographically dispersed sites." }
+      ],
+      "long": [
+        { "q": "Describe two advantages and two disadvantages of storing files in the cloud rather than on a computer's own hard drive.", "marks": 4, "paper": "1", "scheme": ["B1: advantage, e.g. files can be reached from any device with an internet connection", "B1: a second advantage, e.g. the provider backs up the data; easy to share and work together", "B1: disadvantage, e.g. needs a reliable internet connection", "B1: a second disadvantage, e.g. security depends on a third party; ongoing subscription cost"] },
+        { "q": "Explain how a proxy server operates to provide security and caching on an educational institution's network.", "marks": 4, "paper": "1", "scheme": ["B1: the proxy server acts as an intermediary between local client computers and external internet web servers", "B1: clients send web requests to the proxy, which hides the client's internal private IP address from the outside world", "B1: proxy server caches frequently visited web pages on local storage, reducing external WAN bandwidth consumption", "B1: proxy server checks requested URLs against blacklists and content filters, blocking prohibited material"] }
       ]
     },
     {
@@ -42,6 +60,9 @@
         { "q": "Repetitive strain injury can be reduced by", "o": ["ergonomic keyboards and regular breaks", "brighter screens", "faster processors", "larger hard disks"], "a": 0, "why": "A health issue, not a safety one." },
         { "q": "Which is a health risk from using a computer for a long time?", "o": ["Data loss", "Hacking", "Eye strain", "A virus"], "a": 2, "why": "Examiners (2023): safety and health refer to the user, not damage to the equipment." },
         { "q": "Which is an effect of microprocessor-controlled devices in the home?", "o": ["Less electricity is always used", "No need for any skills", "Devices can never fail", "More leisure time because chores are automated"], "a": 3, "why": "Consider both positive and negative effects." }
+      ],
+      "long": [
+        { "q": "Describe two health problems caused by using a computer for long periods, and one way of reducing each.", "marks": 4, "paper": "1", "scheme": ["B1: a problem, e.g. repetitive strain injury (RSI) from typing or using a mouse", "B1: matching remedy, e.g. ergonomic keyboard or mouse, wrist rest, regular breaks", "B1: a second problem, e.g. eye strain and headaches; back or neck pain", "B1: matching remedy, e.g. anti-glare screen and breaks; adjustable chair and correct posture"] }
       ]
     },
     {
@@ -50,6 +71,9 @@
         { "q": "An expert system includes a knowledge base and", "o": ["an inference engine", "a printer driver", "a web server", "a spreadsheet"], "a": 0, "why": "Plus a rules base and user interface." },
         { "q": "Which is an example of a computer-controlled system?", "o": ["A spreadsheet of marks", "A word-processed letter", "An email", "Automatic traffic lights"], "a": 3, "why": "Sensors feed readings to a microprocessor that controls outputs." },
         { "q": "Which is a use of a computer in a school?", "o": ["Recording attendance with a management system", "Growing crops", "Driving buses", "Cooking meals"], "a": 0, "why": "Others: timetables, learning platforms, reports." }
+      ],
+      "long": [
+        { "q": "A greenhouse uses a computer-controlled system to keep the temperature between 20 °C and 25 °C. Describe how the system works.", "marks": 5, "paper": "1", "scheme": ["B1: a temperature sensor measures the temperature", "B1: an ADC converts the analogue signal to digital", "B1: the microprocessor compares the reading with the preset values (20–25 °C)", "B1: below 20 °C it switches the heater on; above 25 °C it opens windows or switches on a fan (using actuators)", "B1: the process repeats continuously"] }
       ]
     },
     {
@@ -57,10 +81,12 @@
       "questions": [
         { "q": "The correct order is", "o": ["analysis, design, development and testing, implementation, documentation, evaluation", "design, analysis, implementation, testing", "testing, design, analysis", "implementation, analysis, design"], "a": 0, "why": "Analyse first, evaluate last." },
         { "q": "Parallel running means", "o": ["the old and new systems run together for a time", "the new system replaces the old at once", "one department changes first", "the system is changed in stages"], "a": 0, "why": "Safer but more costly." },
-        { "q": "Test data for a field 'Age' that accepts 11 to 18. Which is extreme data?", "o": ["15", "25", "abc", "18"], "a": 3, "why": "Examiners (2023): candidates gave explanations instead of test data. Extreme data is on the boundary of what is accepted." }
+        { "q": "Test data for a field 'Age' that accepts 11 to 18. Which is extreme data?", "o": ["15", "25", "abc", "18"], "a": 3, "why": "Examiners (2023): candidates gave explanations instead of test data. Extreme data is on the boundary of what is accepted." },
+        { "q": "Which system implementation strategy runs the new system and old system simultaneously until the new one proves reliable?", "o": ["Direct changeover", "Parallel running", "Pilot running", "Phased implementation"], "a": 1, "why": "Parallel running provides a safety net: if the new system fails, the old system continues operation with zero data loss, despite higher running costs." }
       ],
       "long": [
-        { "q": "Describe two methods of implementing a new system and give one advantage of each.", "marks": 4, "paper": "1", "scheme": ["B1: direct changeover: the old system is replaced at once", "B1: advantage: fast and cheap, benefits immediately", "B1: parallel running: both systems run together", "B1: advantage: if the new system fails, the old one is still there"] }
+        { "q": "Describe two methods of implementing a new system and give one advantage of each.", "marks": 4, "paper": "1", "scheme": ["B1: direct changeover: the old system is replaced at once", "B1: advantage: fast and cheap, benefits immediately", "B1: parallel running: both systems run together", "B1: advantage: if the new system fails, the old one is still there"] },
+        { "q": "A hospital is switching to a new electronic patient records system. Evaluate direct changeover versus parallel running.", "marks": 4, "paper": "1", "scheme": ["B1: direct changeover stops the old system overnight and starts the new system immediately: fast and avoids duplicate data entry", "B1: high risk with direct changeover: if the new system has critical bugs, patient care could be disrupted with no fallback", "B1: parallel running runs both systems side by side until the new one is proven, so there is a fallback if it fails", "B1: disadvantage of parallel running: hospital staff must duplicate all entries in both systems, doubling workload and costs"] }
       ]
     },
     {
@@ -68,10 +94,12 @@
       "questions": [
         { "q": "Phishing is", "o": ["fake emails trying to trick you into giving personal details", "a virus that deletes files", "a firewall", "a type of encryption"], "a": 0, "why": "Check sender and links." },
         { "q": "Encryption", "o": ["makes data unreadable without the key", "deletes data", "blocks all viruses", "speeds up a network"], "a": 0, "why": "It protects data if intercepted." },
-        { "q": "What is a physical safety risk when using computers?", "o": ["Data being hacked", "A virus deleting files", "Tripping over trailing cables", "The computer crashing"], "a": 2, "why": "Examiners (2023): many thought 'safety' meant damage to the equipment rather than harm to the user." }
+        { "q": "What is a physical safety risk when using computers?", "o": ["Data being hacked", "A virus deleting files", "Tripping over trailing cables", "The computer crashing"], "a": 2, "why": "Examiners (2023): many thought 'safety' meant damage to the equipment rather than harm to the user." },
+        { "q": "What encryption mechanism uses a public key to encrypt data and a private key to decrypt it?", "o": ["Symmetric encryption", "Caesar cipher", "Asymmetric encryption", "Hashing without salt"], "a": 2, "why": "Asymmetric cryptography uses mathematically linked key pairs: anyone can encrypt using the public key, but only the recipient's private key can decrypt." }
       ],
       "long": [
-        { "q": "Explain two ways a student could protect their personal data online.", "marks": 4, "paper": "1", "scheme": ["B1: one method, e.g. strong passwords / two-factor authentication", "B1: explained: makes unauthorised access harder", "B1: a second method, e.g. not opening links in unexpected emails (phishing) / privacy settings", "B1: explained"] }
+        { "q": "Explain two ways a student could protect their personal data online.", "marks": 4, "paper": "1", "scheme": ["B1: one method, e.g. strong passwords / two-factor authentication", "B1: explained: makes unauthorised access harder", "B1: a second method, e.g. not opening links in unexpected emails (phishing) / privacy settings", "B1: explained"] },
+        { "q": "Explain how two-factor authentication (2FA) significantly improves security when accessing online financial accounts.", "marks": 4, "paper": "1", "scheme": ["B1: 2FA requires two distinct authentication factors: something you know (password/PIN) and something you have (phone/token) or are (biometric)", "B1: if a cybercriminal steals or guesses the password via phishing or data breaches, they cannot gain access without the second factor", "B1: the second factor usually generates a time-sensitive, one-time passcode (OTP) that expires rapidly", "B1: an unexpected code request warns the genuine owner that someone else has their password"] }
       ]
     },
     {
@@ -80,6 +108,9 @@
         { "q": "When designing for young children, you should use", "o": ["large text, simple language and images", "dense text", "technical terms", "small fonts"], "a": 0, "why": "Match the product to its audience." },
         { "q": "A website is for young children. Which design choice suits the audience?", "o": ["Large text, simple words and bright images", "Long technical paragraphs", "Small fonts", "No images"], "a": 0, "why": "Always consider the audience's age and needs." },
         { "q": "Why find out the audience's needs before designing?", "o": ["To make the file smaller", "So the content, language and design suit them", "To save paper", "It isn't needed"], "a": 1, "why": "Consider age, experience and accessibility." }
+      ],
+      "long": [
+        { "q": "A website is being designed to teach six-year-olds about animals. Describe three ways the design should suit this audience.", "marks": 3, "paper": "1", "scheme": ["B1: simple language and short sentences", "B1: large, clear font with bright colours and plenty of images", "B1: simple navigation, e.g. large buttons or icons; sound or animation to keep interest"] }
       ]
     },
     {
@@ -88,6 +119,9 @@
         { "q": "CC in an email means", "o": ["a copy is sent to another recipient visibly", "a hidden copy", "the email is confidential", "the email is compressed"], "a": 0, "why": "BCC hides recipients." },
         { "q": "What is the generic name for meeting online with sound and video in real time?", "o": ["Video conferencing", "Emailing", "Blogging", "Web browsing"], "a": 0, "why": "Examiners (2023): candidates knew trade names for these meetings but not the generic term." },
         { "q": "Which is a feature of email that saves time when writing to the same group again?", "o": ["A contact group (distribution list)", "Cc", "Attachment", "Spam filter"], "a": 0, "why": "Bcc hides the other recipients' addresses." }
+      ],
+      "long": [
+        { "q": "Explain the difference between CC and BCC when sending an email, and describe a situation where BCC should be used.", "marks": 3, "paper": "1", "scheme": ["B1: CC sends a copy, and every recipient can see who else received it", "B1: BCC sends a copy, but the BCC addresses are hidden from other recipients", "B1: e.g. sending a newsletter to many customers so their email addresses stay private"] }
       ]
     },
     {
@@ -96,6 +130,9 @@
         { "q": "Which file type is best for a photograph on a web page?", "o": ["JPEG", "CSV", "RTF", "TXT"], "a": 0, "why": "JPEG compresses photos well." },
         { "q": "A CSV file stores", "o": ["data as plain text separated by commas", "images", "sound", "formatted documents"], "a": 0, "why": "Easy to import into spreadsheets and databases." },
         { "q": "Which file type is best for a photo on a web page?", "o": [".txt", ".csv", ".rtf", ".jpg"], "a": 3, "why": "JPEG uses lossy compression to keep photos small." }
+      ],
+      "long": [
+        { "q": "Explain why a large photograph should be compressed before it is placed on a web page, and name a suitable file type.", "marks": 3, "paper": "2", "scheme": ["B1: a smaller file size means the page loads faster", "B1: it uses less bandwidth and storage", "B1: a suitable type, e.g. .jpg"] }
       ]
     },
     {
@@ -104,6 +141,9 @@
         { "q": "To resize an image without distorting it, you should", "o": ["keep the aspect ratio", "change only the width", "crop it", "rotate it"], "a": 0, "why": "Maintain the proportions." },
         { "q": "An image is resized without distortion. What has been kept?", "o": ["The file name", "The aspect ratio", "The resolution only", "The colour depth"], "a": 1, "why": "Lock the aspect ratio before resizing." },
         { "q": "What does cropping an image do?", "o": ["Changes its colours", "Removes unwanted outer parts of it", "Makes it larger without loss", "Rotates it"], "a": 1, "why": "Resizing changes its dimensions." }
+      ],
+      "long": [
+        { "q": "Describe how to make an image half its width in a document without distorting it, and explain how cropping is different from resizing.", "marks": 3, "paper": "2", "scheme": ["B1: keep (lock) the aspect ratio", "B1: e.g. set the width to 50% or drag a corner handle, so the height changes in proportion", "B1: cropping removes part of the image; resizing keeps the whole image but changes its size"] }
       ]
     },
     {
@@ -112,6 +152,9 @@
         { "q": "A header in a document", "o": ["appears at the top of every page", "is the first paragraph", "is a table title", "is a footnote"], "a": 0, "why": "Footers appear at the bottom." },
         { "q": "What is a widow in document layout?", "o": ["A blank page", "The last line of a paragraph left alone at the top of a page", "A heading with no text", "A footnote"], "a": 1, "why": "An orphan is the first line left at the bottom of a page." },
         { "q": "What are margins in a document?", "o": ["Lines between columns", "The header text", "The blank space between the text and the edge of the page", "Page numbers"], "a": 2, "why": "Gutter margins allow for binding." }
+      ],
+      "long": [
+        { "q": "Explain the difference between a widow and an orphan in a document, and how either can be removed.", "marks": 3, "paper": "2", "scheme": ["B1: widow: the last line of a paragraph on its own at the top of a new page or column", "B1: orphan: the first line of a paragraph on its own at the bottom of a page or column", "B1: remove with a page or column break, or by turning on widow/orphan control"] }
       ]
     },
     {
@@ -120,6 +163,9 @@
         { "q": "Using styles in a document helps", "o": ["keep formatting consistent", "check spelling", "add images", "encrypt the file"], "a": 0, "why": "Change a style once and it updates everywhere." },
         { "q": "Why use a corporate house style?", "o": ["It makes files smaller", "It checks spelling", "It is required by law", "Documents look consistent and the organisation is recognised"], "a": 3, "why": "It sets fonts, colours, logos and layout." },
         { "q": "Why use styles in a long document?", "o": ["To check spelling", "To apply consistent formatting quickly and build a contents page", "To insert images", "To print faster"], "a": 1, "why": "Change a style once and every heading updates." }
+      ],
+      "long": [
+        { "q": "A company wants all its documents to follow a corporate house style. Explain two benefits of this and give two things the house style would specify.", "marks": 4, "paper": "2", "scheme": ["B1: consistency: every document looks the same, so the company is recognisable", "B1: saves time: staff don't have to choose formatting each time", "B1: an item, e.g. font type and size for headings and body text", "B1: a second item, e.g. logo position, colour scheme, margins, line spacing"] }
       ]
     },
     {
@@ -139,6 +185,9 @@
         { "q": "Which chart best shows parts of a whole?", "o": ["a pie chart", "a line graph", "a scatter graph", "a table"], "a": 0, "why": "Each sector is a share of the total." },
         { "q": "What should every chart include?", "o": ["Only colours", "A title and labelled axes or a legend", "No labels", "3D effects"], "a": 1, "why": "Choose the chart type that fits the data." },
         { "q": "Which chart shows change over time?", "o": ["Pie chart", "Venn diagram", "Table", "Line graph"], "a": 3, "why": "Pie charts show parts of a whole." }
+      ],
+      "long": [
+        { "q": "A teacher wants to compare the average test scores of four classes. Which type of chart should be used, and what labels must it have? Describe a situation where a pie chart would be better.", "marks": 4, "paper": "3", "scheme": ["B1: a bar (column) chart, to compare values across categories", "B1: a chart title", "B1: axis titles and category labels, e.g. 'Class' and 'Average score (%)'", "B1: a pie chart shows parts of a whole, e.g. the proportion of students at each grade"] }
       ]
     },
     {
@@ -147,6 +196,9 @@
         { "q": "Mail merge combines", "o": ["a master document with a data source", "two images", "a spreadsheet and a chart", "web pages"], "a": 0, "why": "To personalise letters for many people." },
         { "q": "What does a page break do?", "o": ["Deletes a page", "Adds a header", "Starts the following text on a new page", "Changes the margins"], "a": 2, "why": "A section break can also change layout from that point." },
         { "q": "What is a header?", "o": ["The first paragraph", "A title in bold", "Text that appears at the top of every page", "A footnote"], "a": 2, "why": "Footers appear at the bottom; both often hold page numbers." }
+      ],
+      "long": [
+        { "q": "Describe the steps needed to carry out a mail merge to send a personalised letter to 200 customers.", "marks": 4, "paper": "2", "scheme": ["B1: create the master (standard) letter", "B1: link it to the data source, e.g. a spreadsheet or database of customers", "B1: insert merge fields (e.g. first name, address) in the right places", "B1: preview, then merge to a new document, the printer or email"] }
       ]
     },
     {
@@ -154,7 +206,11 @@
       "questions": [
         { "q": "A primary key", "o": ["uniquely identifies each record", "is always a name", "links to another table only", "is optional"], "a": 0, "why": "No two records share it." },
         { "q": "Which field type suits a phone number?", "o": ["text", "integer", "Boolean", "date"], "a": 0, "why": "Leading zeros and '+' signs must be kept." },
-        { "q": "Which field type should store a phone number such as 09876543210?", "o": ["Number", "Text", "Boolean", "Date/time"], "a": 1, "why": "Leading zeros would be lost in a number field, and no arithmetic is done on it." }
+        { "q": "Which field type should store a phone number such as 09876543210?", "o": ["Number", "Text", "Boolean", "Date/time"], "a": 1, "why": "Leading zeros would be lost in a number field, and no arithmetic is done on it." },
+        { "q": "Which database validation check ensures that a student mark entered is between 0 and 100?", "o": ["Range check", "Format check", "Length check", "Presence check"], "a": 0, "why": "A range check verifies that a numeric or date value falls between specified upper and lower allowable boundary values." }
+      ],
+      "long": [
+        { "q": "A library database stores details of its books. Design a table with four fields, give a suitable data type for each, and identify the primary key.", "marks": 5, "paper": "2", "scheme": ["B1: a unique identifier field, e.g. BookID or ISBN (text/alphanumeric)", "B1: it's the primary key because its value is different for every book", "B1: Title: text", "B1: e.g. DatePublished: date/time (or Price: currency)", "B1: e.g. OnLoan: Boolean (Yes/No)"] }
       ]
     },
     {
@@ -163,6 +219,9 @@
         { "q": "A master slide is used to", "o": ["set consistent design across all slides", "add a single animation", "print handouts", "record narration"], "a": 0, "why": "Change it once for every slide." },
         { "q": "What is a transition in a presentation?", "o": ["Movement of an object on a slide", "The slide master", "Speaker notes", "An effect between slides"], "a": 3, "why": "An animation moves an object on a slide." },
         { "q": "What is a master slide used for?", "o": ["Adding sound", "Printing notes", "Setting the same layout and style on every slide", "Timing slides"], "a": 2, "why": "It keeps a presentation consistent." }
+      ],
+      "long": [
+        { "q": "Explain two benefits of using a master slide in a presentation, and give two items you would place on it.", "marks": 4, "paper": "2", "scheme": ["B1: every slide has a consistent layout, font and colour scheme", "B1: saves time: an item is placed once and changes update every slide", "B1: an item, e.g. the company logo", "B1: a second item, e.g. slide numbers, footer text, background"] }
       ]
     },
     {
@@ -170,7 +229,11 @@
       "questions": [
         { "q": "Which formula adds cells A1 to A10?", "o": ["=SUM(A1:A10)", "=ADD(A1-A10)", "=A1+A10", "=TOTAL(A1,A10)"], "a": 0, "why": "SUM with a range." },
         { "q": "$A$1 in a formula is", "o": ["an absolute reference", "a relative reference", "a range", "a function"], "a": 0, "why": "It doesn't change when copied." },
-        { "q": "=IF(B2>=50,\"Pass\",\"Fail\") returns 'Pass' when B2 is", "o": ["50 or more", "less than 50", "exactly 49", "empty"], "a": 0, "why": ">= means greater than or equal to." }
+        { "q": "=IF(B2>=50,\"Pass\",\"Fail\") returns 'Pass' when B2 is", "o": ["50 or more", "less than 50", "exactly 49", "empty"], "a": 0, "why": ">= means greater than or equal to." },
+        { "q": "What is the result of the spreadsheet formula =IF(B2>=50, \"Pass\", \"Fail\") when B2 contains 50?", "o": ["Pass", "Fail", "Error", "50"], "a": 0, "why": "Because the comparison operator is >= (greater than or equal to), a value of 50 satisfies the condition and returns the true branch 'Pass'." }
+      ],
+      "long": [
+        { "q": "Cells B2:B31 hold the test marks of 30 students. Write formulas to: (a) find the average mark; (b) find the highest mark; (c) count how many students scored 50 or more; (d) in C2, show 'Pass' if B2 is 50 or more, otherwise 'Fail'.", "marks": 4, "paper": "3", "scheme": ["B1: (a) =AVERAGE(B2:B31)", "B1: (b) =MAX(B2:B31)", "B1: (c) =COUNTIF(B2:B31,\">=50\")", "B1: (d) =IF(B2>=50,\"Pass\",\"Fail\")"], "ans": "=AVERAGE(B2:B31); =MAX(B2:B31); =COUNTIF(B2:B31,\">=50\"); =IF(B2>=50,\"Pass\",\"Fail\")" }
       ]
     },
     {
@@ -180,6 +243,9 @@
         { "q": "A relative file path", "o": ["is relative to the current page's folder", "starts with http://", "is always absolute", "points to a different website"], "a": 0, "why": "Relative paths keep a site portable." },
         { "q": "Which part of a web page sets fonts and colours for every page?", "o": ["The <title> tag", "An external CSS stylesheet", "A hyperlink", "An image"], "a": 1, "why": "One stylesheet keeps the whole site consistent." },
         { "q": "What is a relative file path?", "o": ["A full path from the drive's root", "A path from the current file's location", "A web address with https://", "A path that never changes"], "a": 1, "why": "Relative paths keep links working when the site is moved." }
+      ],
+      "long": [
+        { "q": "Write the HTML to: (a) make 'Our Team' a level 1 heading; (b) show the image team.jpg with the alternative text 'Our team'; (c) link the text 'Contact us' to contact.html; (d) attach the stylesheet style.css to the page.", "marks": 4, "paper": "3", "scheme": ["B1: (a) <h1>Our Team</h1>", "B1: (b) <img src=\"team.jpg\" alt=\"Our team\">", "B1: (c) <a href=\"contact.html\">Contact us</a>", "B1: (d) <link rel=\"stylesheet\" href=\"style.css\"> inside the head section"] }
       ]
     }
   ]

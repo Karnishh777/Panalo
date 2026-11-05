@@ -10,6 +10,9 @@
         { "q": "A primary source is", "o": ["information you collect first-hand, e.g. a survey you run", "a textbook", "a newspaper report", "an encyclopedia"], "a": 0, "why": "Secondary sources are others' work." },
         { "q": "The most reliable source on a medical claim is usually", "o": ["a peer-reviewed study", "a social media post", "an advert", "an anonymous blog"], "a": 0, "why": "Peer review checks methods and evidence." },
         { "q": "Which is the best first step in research?", "o": ["Make a poster", "Choose a conclusion", "Write a clear question to investigate", "Collect any images"], "a": 2, "why": "A focused question guides your sources." }
+      ],
+      "long": [
+        { "q": "A student wants to find out how much food is wasted at their school. Suggest a suitable method for gathering this information, and explain one strength and one weakness of your method. (Mark yourself with this scheme.)", "marks": 4, "paper": "1", "scheme": ["B1: a suitable, specific method (e.g. weighing food left on plates in the canteen each day; a survey of students)", "B1: method detailed enough to carry out (who, when, for how long, how it is recorded)", "B1: a strength explained (e.g. weighing gives accurate first-hand data, not opinion)", "B1: a weakness explained (e.g. one week may not be typical; students may not answer a survey honestly)"] }
       ]
     },
     {
@@ -18,6 +21,9 @@
         { "q": "A 'perspective' is", "o": ["a point of view shaped by experience and values", "a fact", "a statistic", "a source"], "a": 0, "why": "GP asks you to compare personal, local, national and global perspectives." },
         { "q": "What is a consequence?", "o": ["A cause", "A source", "A solution", "A result or effect of an issue"], "a": 3, "why": "Explain links between causes, consequences and possible courses of action." },
         { "q": "Why consider different perspectives (personal, local/national, global)?", "o": ["To make the answer longer", "Issues affect people at different scales in different ways", "Only global views count", "Perspectives don't matter"], "a": 1, "why": "Compare them to reach a judgement." }
+      ],
+      "long": [
+        { "q": "Explain two causes of increasing traffic congestion in many cities and one consequence of it, from either a local or a global perspective. (Mark yourself with this scheme.)", "marks": 4, "paper": "1", "scheme": ["B1: first cause explained (e.g. rising car ownership as incomes grow, so more vehicles share the same roads)", "B1: a second, different cause explained (e.g. poor or expensive public transport, so people choose to drive)", "B1: a consequence identified (e.g. air pollution, longer journeys, lost working time)", "B1: the consequence explained from the stated perspective (local: residents' health; global: emissions adding to climate change)"] }
       ]
     },
     {
@@ -53,6 +59,9 @@
         { "q": "A good written argument is", "o": ["clear, structured and supported by evidence", "long", "full of jargon", "based only on opinion"], "a": 0, "why": "Structure and evidence persuade." },
         { "q": "What makes communication of an argument clear?", "o": ["A logical structure with evidence for each point", "Lots of decoration", "Many unrelated facts", "No conclusion"], "a": 0, "why": "Know your audience." },
         { "q": "Why reference sources?", "o": ["To show where evidence came from and let others check it", "To make the work longer", "Because it looks nice", "It isn't needed"], "a": 0, "why": "Include author, title, date and link." }
+      ],
+      "long": [
+        { "q": "Write a short structured argument (about 150 words) on whether schools should ban mobile phones during lessons. Support your reasons with evidence, respond to another perspective, and reach a conclusion. (Mark yourself with this scheme.)", "marks": 4, "paper": "1", "scheme": ["B1: a clear position stated at the start", "B1: reasons supported by evidence or specific examples", "B1: an opposing perspective acknowledged and answered", "B1: a conclusion that follows from the reasoning, in clear, organised paragraphs"] }
       ]
     }
   ]

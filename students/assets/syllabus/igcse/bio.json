@@ -10,6 +10,9 @@
         { "q": "Which is one of the seven characteristics of living things?", "o": ["Colour", "Excretion", "Size", "Shape"], "a": 1, "why": "MRS GREN: movement, respiration, sensitivity, growth, reproduction, excretion, nutrition." },
         { "q": "In the binomial system, what are the two parts of a name?", "o": ["Kingdom and phylum", "Genus and species", "Class and order", "Family and genus"], "a": 1, "why": "For example Homo sapiens: genus Homo, species sapiens." },
         { "q": "Which group has a body made of segments with jointed legs and an exoskeleton?", "o": ["Arthropods", "Mammals", "Ferns", "Fungi"], "a": 0, "why": "Arthropods (insects, crustaceans, arachnids, myriapods) have jointed legs and an exoskeleton." }
+      ],
+      "long": [
+        { "q": "Explain why viruses are not considered living organisms by biologists.", "marks": 4, "paper": "4", "scheme": ["B1: viruses lack cellular structure (no cytoplasm, cell membrane, or organelles)", "B1: they do not carry out metabolic processes or respiration on their own", "B1: they cannot reproduce independently; they can only replicate inside a host cell by hijacking the host's machinery", "B1: they do not feed, excrete, or grow"] }
       ]
     },
     {
@@ -28,7 +31,8 @@
         { "q": "Osmosis is the movement of…", "o": ["any molecules down a concentration gradient", "water through a partially permeable membrane from dilute to concentrated solution", "ions using energy", "glucose into cells"], "a": 1, "why": "Osmosis is the net movement of water from a higher to a lower water potential across a partially permeable membrane." },
         { "q": "Which process needs energy from respiration?", "o": ["Diffusion", "Osmosis", "Active transport", "Evaporation"], "a": 2, "why": "Active transport moves substances against a concentration gradient, using energy." },
         { "q": "A plant cell is put in concentrated salt solution. What happens?", "o": ["It bursts", "It loses water and becomes plasmolysed", "It gains water and becomes turgid", "Nothing"], "a": 1, "why": "Water leaves by osmosis; the cytoplasm pulls away from the cell wall." },
-        { "q": "A dialysis tubing bag of sucrose solution is placed in water. The bag gets heavier. What has happened?", "o": ["Net movement of water into the bag by osmosis", "Net movement of sucrose out of the bag", "Active transport of water", "Diffusion of sucrose into the water"], "a": 0, "why": "Examiners (2023): some thought sucrose moved out. Sucrose molecules are too large to pass through; water moves in by osmosis." }
+        { "q": "A dialysis tubing bag of sucrose solution is placed in water. The bag gets heavier. What has happened?", "o": ["Net movement of water into the bag by osmosis", "Net movement of sucrose out of the bag", "Active transport of water", "Diffusion of sucrose into the water"], "a": 0, "why": "Examiners (2023): some thought sucrose moved out. Sucrose molecules are too large to pass through; water moves in by osmosis." },
+        { "q": "What is active transport across a biological membrane?", "o": ["Movement of water down a water potential gradient", "Movement of particles against a concentration gradient using energy from respiration", "Diffusion through open protein channels without energy", "Evaporation of water from leaves"], "a": 1, "why": "Active transport moves substances from low to high concentration across a cell membrane using carrier proteins and ATP energy." }
       ],
       "long": [
         { "q": "Define osmosis and explain why potato strips placed in a concentrated sugar solution lose mass.", "marks": 3, "paper": "4", "scheme": ["B1: the net movement of water molecules from a region of higher water potential to a region of lower water potential through a partially permeable membrane", "B1: the solution has a lower water potential than the potato cells", "B1: so water leaves the cells by osmosis"] }
@@ -48,7 +52,8 @@
         { "q": "What is an enzyme?", "o": ["A fat that stores energy", "A protein that acts as a biological catalyst", "A hormone", "A carbohydrate"], "a": 1, "why": "Enzymes are proteins that speed up reactions without being used up." },
         { "q": "Why does an enzyme stop working at high temperatures?", "o": ["It runs out", "Its active site changes shape (it is denatured)", "It becomes too fast", "The substrate melts"], "a": 1, "why": "Heat breaks bonds holding its shape, so the substrate no longer fits the active site." },
         { "q": "What does amylase break down?", "o": ["Protein", "Fat", "Starch", "DNA"], "a": 2, "why": "Amylase digests starch into simple sugars (maltose)." },
-        { "q": "Which statement about enzymes is correct?", "o": ["All enzymes work best at pH 7", "Enzymes are used up in reactions", "Enzymes work fastest at 100 °C", "Different enzymes have different optimum pH values"], "a": 3, "why": "Examiners (2023): many believed all enzymes are most effective at pH 7; pepsin in the stomach works best near pH 2." }
+        { "q": "Which statement about enzymes is correct?", "o": ["All enzymes work best at pH 7", "Enzymes are used up in reactions", "Enzymes work fastest at 100 °C", "Different enzymes have different optimum pH values"], "a": 3, "why": "Examiners (2023): many believed all enzymes are most effective at pH 7; pepsin in the stomach works best near pH 2." },
+        { "q": "Why does the rate of an enzyme-catalysed reaction drop to zero at very high temperatures?", "o": ["Substrate molecules run out of kinetic energy", "The activation energy increases", "The enzyme's active site denatures as bonds maintaining tertiary structure break", "The enzyme turns into substrate"], "a": 2, "why": "Excess thermal energy breaks hydrogen and ionic bonds, distorting the active site shape so the substrate can no longer bind." }
       ],
       "long": [
         { "q": "Explain why the activity of an enzyme falls when the temperature rises above its optimum.", "marks": 3, "paper": "4", "scheme": ["B1: the enzyme is denatured", "B1: the shape of the active site changes", "B1: so the substrate no longer fits / is no longer complementary, and fewer enzyme–substrate complexes form"] }
@@ -59,10 +64,12 @@
       "questions": [
         { "q": "What is the word equation for photosynthesis?", "o": ["glucose + oxygen → carbon dioxide + water", "carbon dioxide + water → glucose + oxygen", "carbon dioxide + oxygen → glucose + water", "water + oxygen → glucose"], "a": 1, "why": "Light energy, absorbed by chlorophyll, converts carbon dioxide and water into glucose and oxygen." },
         { "q": "Which mineral ion is needed to make chlorophyll?", "o": ["Nitrate", "Magnesium", "Iron", "Calcium"], "a": 1, "why": "Magnesium is part of the chlorophyll molecule; a lack causes yellow leaves." },
-        { "q": "Gas exchange in a leaf happens mainly through…", "o": ["the cuticle", "stomata", "xylem", "the epidermis cells' walls"], "a": 1, "why": "Stomata, opened and closed by guard cells, let gases in and out." }
+        { "q": "Gas exchange in a leaf happens mainly through…", "o": ["the cuticle", "stomata", "xylem", "the epidermis cells' walls"], "a": 1, "why": "Stomata, opened and closed by guard cells, let gases in and out." },
+        { "q": "What is the balanced equation for plant photosynthesis?", "o": ["CO₂ + H₂O → CH₂O + O₂", "C₆H₁₂O₆ + 6O₂ → 6CO₂ + 6H₂O", "6CO₂ + 12H₂O → C₆H₁₂O₆ + 6O₂ + 6H₂O", "6CO₂ + 6H₂O → C₆H₁₂O₆ + 6O₂"], "a": 3, "why": "Six molecules of carbon dioxide and six molecules of water yield one molecule of glucose and six molecules of oxygen gas." }
       ],
       "long": [
-        { "q": "Write the balanced chemical equation for photosynthesis and explain why increasing light intensity stops increasing the rate of photosynthesis above a certain point.", "marks": 3, "paper": "4", "scheme": ["B1: 6CO₂ + 6H₂O → C₆H₁₂O₆ + 6O₂ (light, chlorophyll)", "B1: another factor becomes limiting", "B1: e.g. carbon dioxide concentration or temperature"] }
+        { "q": "Write the balanced chemical equation for photosynthesis and explain why increasing light intensity stops increasing the rate of photosynthesis above a certain point.", "marks": 3, "paper": "4", "scheme": ["B1: 6CO₂ + 6H₂O → C₆H₁₂O₆ + 6O₂ (light, chlorophyll)", "B1: another factor becomes limiting", "B1: e.g. carbon dioxide concentration or temperature"] },
+        { "q": "Describe the steps required to test a green leaf for the presence of starch, explaining the purpose of each step.", "marks": 5, "paper": "4", "scheme": ["B1: boil the leaf in water for 1-2 minutes to kill the leaf cells and disrupt the cell membranes", "B1: turn off the Bunsen burner, then warm the leaf in ethanol in a water bath to dissolve and remove the green chlorophyll", "B1: dip the brittle leaf into warm water to soften it", "B1: spread the leaf on a white tile and add drops of iodine solution", "B1: a blue-black colour shows starch is present; it stays yellow-brown if not"], "ans": "Blue-black for positive; yellow-brown for negative" }
       ]
     },
     {
@@ -81,6 +88,9 @@
         { "q": "Which conditions increase the rate of transpiration?", "o": ["Cold, still, humid air", "Warm, windy, dry air", "Darkness", "High humidity"], "a": 1, "why": "Higher temperature and wind speed and lower humidity all speed up water loss." },
         { "q": "Translocation in phloem moves…", "o": ["water only", "sucrose and amino acids", "carbon dioxide", "mineral ions only"], "a": 1, "why": "Phloem moves sucrose and amino acids from sources to sinks." },
         { "q": "Which tissue transports sucrose and amino acids in a plant?", "o": ["Phloem", "Xylem", "Epidermis", "Root hair cells"], "a": 0, "why": "Examiners (2023): many did not understand the functions of xylem (water and ions) and phloem (sucrose and amino acids)." }
+      ],
+      "long": [
+        { "q": "Explain how transpiration in leaves produces a continuous flow of water upwards through the xylem of a plant.", "marks": 5, "paper": "4", "scheme": ["B1: water evaporates from the moist surfaces of mesophyll cells into the air spaces within the leaf", "B1: water vapour diffuses out through open stomata down a water vapour concentration gradient", "B1: this water loss creates a low water potential in the mesophyll cells, drawing water out of the leaf xylem by osmosis", "B1: this creates a negative pressure / transpiration pull that draws water up the xylem vessels", "B1: cohesion between polar water molecules forms a continuous unbroken water column up the stem from the roots"] }
       ]
     },
     {
@@ -121,7 +131,8 @@
         { "q": "Which is the word equation for aerobic respiration?", "o": ["carbon dioxide + water → glucose + oxygen", "glucose → lactic acid", "glucose + oxygen → carbon dioxide + water", "glucose → alcohol + carbon dioxide"], "a": 2, "why": "Examiners (2023): some chose the photosynthesis equation, which is the reverse." }
       ],
       "long": [
-        { "q": "Describe anaerobic respiration in human muscles during vigorous exercise and explain why breathing stays fast after exercise ends.", "marks": 3, "paper": "4", "scheme": ["B1: glucose is broken down to lactic acid without oxygen", "B1: releasing much less energy than aerobic respiration", "B1: afterwards extra oxygen is needed to break down the lactic acid (oxygen debt)"] }
+        { "q": "Describe anaerobic respiration in human muscles during vigorous exercise and explain why breathing stays fast after exercise ends.", "marks": 3, "paper": "4", "scheme": ["B1: glucose is broken down to lactic acid without oxygen", "B1: releasing much less energy than aerobic respiration", "B1: afterwards extra oxygen is needed to break down the lactic acid (oxygen debt)"] },
+        { "q": "Compare aerobic and anaerobic respiration in humans, stating word equations for each.", "marks": 4, "paper": "4", "scheme": ["B1: aerobic equation: glucose + oxygen → carbon dioxide + water (+ high energy release)", "B1: anaerobic equation in muscles: glucose → lactic acid (+ low energy release)", "B1: aerobic respiration breaks glucose down completely, releasing much more energy per glucose molecule", "B1: anaerobic respiration leads to an oxygen debt: lactic acid builds up in muscles and is later broken down in the liver using oxygen"] }
       ]
     },
     {

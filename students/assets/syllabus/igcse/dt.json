@@ -32,6 +32,9 @@
         { "q": "Injection moulding is best suited to", "o": ["mass production of identical plastic parts", "one-off wooden furniture", "casting bronze", "hand-sewing"], "a": 0, "why": "High setup cost, very low unit cost." },
         { "q": "A jig is used to", "o": ["guide a tool so parts are made accurately and repeatably", "hold a drink", "measure temperature", "join wood"], "a": 0, "why": "Useful in batch production." },
         { "q": "Which process is used to shape thin thermoplastic sheet over a mould?", "o": ["Sand casting", "Turning on a lathe", "Forging", "Vacuum forming"], "a": 3, "why": "Heat the sheet, then the vacuum pulls it over the mould." }
+      ],
+      "long": [
+        { "q": "A school workshop must make 30 identical pine boxes. (a) Explain two benefits of using a jig or template for marking out and drilling the parts. (b) Name a suitable corner joint for the boxes and give one reason for your choice.", "marks": 4, "paper": "3", "scheme": ["B1: (a) every part is identical and accurate, so quality is consistent", "B1: (a) faster: no need to measure and mark out each piece", "B1: (b) a suitable joint, e.g. comb (finger), lap (rebate) or dowel joint", "B1: (b) a matching reason, e.g. a comb joint's large gluing area makes it strong; dowel holes are quick to drill with a jig"] }
       ]
     },
     {
@@ -40,6 +43,9 @@
         { "q": "Designing for disassembly helps", "o": ["recycling and repair at the end of a product's life", "make products cheaper to sell", "hide fixings", "speed up delivery"], "a": 0, "why": "Part of the circular economy." },
         { "q": "Which material is most sustainable for a disposable product?", "o": ["Mixed plastics glued together", "Chrome-plated steel", "A biodegradable or recyclable material", "Non-recyclable composite"], "a": 2, "why": "Consider the whole life cycle." },
         { "q": "What is the main purpose of product analysis?", "o": ["To copy it exactly", "To sell it", "To repair it", "To find out how and why an existing product was designed and made"], "a": 3, "why": "Consider function, materials, manufacture, user and sustainability." }
+      ],
+      "long": [
+        { "q": "Explain how a designer could make an electric kettle more sustainable. Give two design changes and say how each one helps.", "marks": 4, "paper": "1", "scheme": ["B1: a change, e.g. recycled or recyclable plastic marked with its recycling code", "B1: explained, e.g. less new material used; easy to sort at end of life", "B1: a second change, e.g. screws not glue so it can be taken apart; a replaceable element; better insulation", "B1: explained, e.g. parts can be repaired or separated for recycling; less energy used to reboil"] }
       ]
     },
     {
@@ -48,6 +54,9 @@
         { "q": "An exploded drawing shows", "o": ["how parts fit together", "a product in use", "a cross-section", "colour schemes"], "a": 0, "why": "Parts are drawn spaced along their assembly lines." },
         { "q": "Orthographic projection shows", "o": ["front, side and plan views to scale", "a 3D view in perspective", "an exploded view", "a free sketch"], "a": 0, "why": "Used for manufacturing drawings." },
         { "q": "What is an exploded drawing used for?", "o": ["To show the price", "To show the colour scheme only", "To replace the specification", "To show how parts fit together"], "a": 3, "why": "Parts are drawn apart along assembly lines." }
+      ],
+      "long": [
+        { "q": "Explain why a manufacturer would want a dimensioned orthographic drawing of a product rather than a 3D sketch.", "marks": 3, "paper": "1", "scheme": ["B1: each view shows the true shape and size, with no distortion", "B1: it can be fully dimensioned to drawing standards, so parts are made accurately", "B1: the conventions are understood by any manufacturer, so there's no ambiguity"] }
       ]
     },
     {
@@ -56,6 +65,9 @@
         { "q": "A potential divider with an LDR can be used to", "o": ["switch on a light when it gets dark", "measure temperature", "store energy", "increase voltage"], "a": 0, "why": "The LDR's resistance rises in the dark." },
         { "q": "A cam converts", "o": ["rotary motion into reciprocating motion", "linear into rotary", "electrical into light", "heat into motion"], "a": 0, "why": "The follower rises and falls." },
         { "q": "In a circuit, what does an LDR do?", "o": ["It produces light", "It stores charge", "It switches at a set temperature", "Its resistance changes with light level"], "a": 3, "why": "Used as a light sensor in a potential divider." }
+      ],
+      "long": [
+        { "q": "A potential divider has a 9 V supply, R1 = 10 kΩ at the top and R2 = 5 kΩ at the bottom. (a) Calculate the output voltage across R2, showing your working. (b) R2 is replaced by an LDR. Explain what happens to the output voltage as it gets darker.", "marks": 5, "paper": "4", "scheme": ["M1: Vout = Vin × R2 ÷ (R1 + R2)", "M1: 9 × 5 ÷ (10 + 5)", "A1: 3 V (with the unit)", "B1: (b) the LDR's resistance increases as light falls", "B1: (b) so it takes a bigger share of the supply and Vout rises"], "ans": "(a) 3 V; (b) Vout rises as it gets darker" }
       ]
     },
     {
