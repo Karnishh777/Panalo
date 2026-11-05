@@ -21,6 +21,9 @@
         { "q": "A compiler", "o": ["translates the whole program before it runs", "translates line by line as it runs", "is an operating system", "is a utility for backups"], "a": 0, "why": "An interpreter works line by line." },
         { "q": "A device driver is:", "o": ["A piece of hardware", "Software that lets the operating system communicate with a hardware device", "A type of cable", "A network card"], "a": 1, "why": "Examiners (2023): the most common mistake was to consider a device driver to be hardware." },
         { "q": "Which software controls the hardware and provides a user interface?", "o": ["The operating system", "A spreadsheet", "A device driver only", "A web browser"], "a": 0, "why": "Device drivers let the operating system talk to particular hardware." }
+      ],
+      "long": [
+        { "q": "Compare a compiler and an interpreter.", "marks": 4, "paper": "1", "scheme": ["B1: a compiler translates the whole source code into machine code before it runs", "B1: it produces an executable that runs without the translator, and runs faster", "B1: an interpreter translates and executes one statement at a time", "B1: it stops at the first error, which helps debugging, but the program runs more slowly and needs the interpreter every time"] }
       ]
     },
     {
@@ -40,6 +43,9 @@
         { "q": "In a flowchart, a decision is shown by", "o": ["a diamond", "a rectangle", "an oval", "a parallelogram"], "a": 0, "why": "Rectangles are processes; parallelograms are input/output." },
         { "q": "In a flowchart, a decision box must have:", "o": ["One output", "A Yes and a No output", "Text describing the decision only", "Three outputs"], "a": 1, "why": "Examiners (2023): candidates are reminded every decision box needs Yes and No outputs, using mathematical expressions rather than text." },
         { "q": "Which flowchart symbol shows a decision?", "o": ["A rectangle", "A parallelogram", "An oval", "A diamond with Yes and No exits"], "a": 3, "why": "Examiners (2023): every decision box needs a Yes and a No output." }
+      ],
+      "long": [
+        { "q": "Draw a flowchart that inputs the marks of 20 students one at a time and, for each, outputs 'Pass' if the mark is 50 or more, otherwise 'Fail'.", "marks": 5, "paper": "1", "scheme": ["B1: start and stop terminators", "B1: a counter set to 0 and incremented each time", "B1: input of the mark in a parallelogram", "B1: decision Mark >= 50 with Yes/No branches to the correct outputs", "B1: a loop back until 20 marks have been processed"] }
       ]
     },
     {
@@ -48,6 +54,9 @@
         { "q": "Which is a safety risk rather than a health risk?", "o": ["trailing cables", "eye strain", "back pain", "RSI"], "a": 0, "why": "Safety risks cause accidents." },
         { "q": "Which is a way to reduce the risk of repetitive strain injury?", "o": ["Use a brighter screen", "Sit closer to the monitor", "Use a wrist rest and take regular breaks", "Install anti-virus software"], "a": 2, "why": "Health risks need health measures, not security measures." },
         { "q": "What is phishing?", "o": ["A virus that deletes files", "Overheating of a computer", "Hacking a Wi-Fi password by guessing", "Fake messages that try to trick people into giving personal details"], "a": 3, "why": "Check the sender and never follow links asking for passwords." }
+      ],
+      "long": [
+        { "q": "Explain the difference between a health risk and a safety risk when using IT, giving one example of each and a precaution for each.", "marks": 4, "paper": "1", "scheme": ["B1: a health risk harms the body over time, e.g. RSI or eye strain", "B1: a precaution, e.g. regular breaks; ergonomic keyboard; anti-glare screen", "B1: a safety risk can cause injury at once, e.g. electrocution, fire from overloaded sockets, tripping over cables", "B1: a precaution, e.g. cable ducts; not overloading sockets; a CO₂ extinguisher nearby"] }
       ]
     },
     {
@@ -56,6 +65,9 @@
         { "q": "The digital divide is", "o": ["the gap between those with and without access to technology", "a type of network", "a security threat", "a coding error"], "a": 0, "why": "Caused by income, location, age, education." },
         { "q": "What is the digital divide?", "o": ["The split between hardware and software", "Dividing a hard disk", "Binary and denary numbers", "The gap between people who have access to IT and the internet and those who don't"], "a": 3, "why": "Causes include income, location, age and education." },
         { "q": "Which would most help to reduce the digital divide in a rural area?", "o": ["Making phones more expensive", "Providing affordable broadband and community IT access", "Closing libraries", "Moving services online only"], "a": 1, "why": "Access and skills both matter." }
+      ],
+      "long": [
+        { "q": "Explain two causes of the digital divide within a country, and one way a government could reduce it.", "marks": 4, "paper": "1", "scheme": ["B1: a cause, e.g. income: poorer households can't afford devices or broadband", "B1: a second cause, e.g. location: rural areas lack broadband infrastructure; age or education: lack of digital skills", "B1: a measure, e.g. funding rural broadband; subsidised devices; free digital-skills courses", "B1: explained: how it gives the excluded group access or skills"] }
       ]
     },
     {
@@ -64,6 +76,9 @@
         { "q": "What does a VPN do?", "o": ["creates an encrypted connection over a public network", "is a type of router", "speeds up the internet", "stores websites"], "a": 0, "why": "Virtual private network." },
         { "q": "What does a router do?", "o": ["Connects devices in a LAN by broadcasting to all", "Stores web pages", "Converts analogue to digital only", "Forwards data packets between different networks using IP addresses"], "a": 3, "why": "Examiners (2023): there was confusion between switches, routers and hubs." },
         { "q": "What does a switch do in a LAN?", "o": ["Sends data to every device", "Sends data only to the device it is addressed to, using MAC addresses", "Connects the LAN to the internet", "Assigns IP addresses"], "a": 1, "why": "A hub sends to every device." }
+      ],
+      "long": [
+        { "q": "A small business wants staff working from home to use the office network securely. Explain how a VPN would help.", "marks": 3, "paper": "1", "scheme": ["B1: it creates an encrypted tunnel across the internet", "B1: so data that is intercepted can't be read", "B1: staff appear to be on the office network, so they can use shared files and services"] }
       ]
     },
     {
@@ -72,6 +87,9 @@
         { "q": "The inference engine of an expert system", "o": ["applies rules to the knowledge base to reach conclusions", "stores facts", "is the user interface", "explains its reasoning only"], "a": 0, "why": "The reasoning part." },
         { "q": "Which part of an expert system applies rules to the facts to reach a conclusion?", "o": ["The knowledge base", "The inference engine", "The user interface", "The explanation system"], "a": 1, "why": "The knowledge base holds the facts and the rule base the IF…THEN rules." },
         { "q": "Which is a use of an expert system?", "o": ["Medical diagnosis", "Word processing", "Video editing", "Sending email"], "a": 0, "why": "Others: mineral prospecting, car fault diagnosis, financial planning." }
+      ],
+      "long": [
+        { "q": "Describe the components of an expert system used for medical diagnosis and how it reaches a conclusion.", "marks": 5, "paper": "1", "scheme": ["B1: knowledge base: facts about illnesses and symptoms", "B1: rules base: IF–THEN rules", "B1: inference engine applies the rules to the facts and the user's answers", "B1: user interface asks questions (e.g. symptoms) and shows the diagnosis", "B1: explanation system shows how the conclusion was reached, often with a probability"] }
       ]
     },
     {
@@ -80,6 +98,9 @@
         { "q": "VLOOKUP searches", "o": ["the first column of a table for a value and returns one from another column", "every cell for a value", "a database", "a chart"], "a": 0, "why": "Vertical lookup." },
         { "q": "A spreadsheet formula should refer to:", "o": ["A cell reference holding the value", "The value typed in", "A text label", "Nothing"], "a": 0, "why": "Examiners (2023): the formula had to reference a cell rather than a value." },
         { "q": "A formula is copied down a column but must keep using cell B1. Which reference is used?", "o": ["B1", "$B$1", "B$", "#B1"], "a": 1, "why": "Absolute references don't change when copied." }
+      ],
+      "long": [
+        { "q": "A sheet named Prices holds product codes in A2:A50 and prices in C2:C50. On another sheet, B2 holds a product code. Write a formula for C2 that returns the matching price and can be copied down, and explain each part.", "marks": 4, "paper": "2", "scheme": ["B1: =VLOOKUP(B2,Prices!$A$2:$C$50,3,FALSE)", "B1: B2 is the value looked up (the product code)", "B1: the absolute range stays fixed when copied; column 3 returns the price", "B1: FALSE returns an exact match only"], "ans": "=VLOOKUP(B2,Prices!$A$2:$C$50,3,FALSE)" }
       ]
     },
     {
@@ -88,6 +109,9 @@
         { "q": "A foreign key", "o": ["links a record to the primary key of another table", "is unique in its own table", "is encrypted", "is a field type"], "a": 0, "why": "Used to create relationships." },
         { "q": "Normalisation aims to", "o": ["reduce data redundancy", "add duplicate data", "speed up printing", "encrypt data"], "a": 0, "why": "Removes repeated data and anomalies." },
         { "q": "In normalisation to third normal form, a table must have:", "o": ["No non-key field that depends on another non-key field", "No primary key", "Repeating groups", "Only one field"], "a": 0, "why": "Examiners (2023): descriptions of normalisation often lacked detail." }
+      ],
+      "long": [
+        { "q": "The table Bookings(BookingID, CustomerID, CustomerName, CustomerPhone, RoomNo, BookingDate) is not in third normal form. Explain why, and normalise it.", "marks": 4, "paper": "2", "scheme": ["B1: CustomerName and CustomerPhone depend on CustomerID, not on the key BookingID (a non-key dependency)", "B1: Customers(CustomerID, CustomerName, CustomerPhone) with CustomerID as primary key", "B1: Bookings(BookingID, CustomerID, RoomNo, BookingDate) with BookingID as primary key", "B1: CustomerID in Bookings is a foreign key linking to Customers"] }
       ]
     },
     {
@@ -96,6 +120,9 @@
         { "q": "Lossy compression", "o": ["permanently removes some data to reduce file size", "keeps every bit of data", "increases file size", "is used for text files"], "a": 0, "why": "e.g. MP3, MP4." },
         { "q": "Why is a sound file normalised (amplified to just below the maximum)?", "o": ["To shorten it", "To make it as loud as possible without clipping", "To remove all noise", "To change its format"], "a": 1, "why": "Examiners (2023): many amplified past the maximum, clipping the waveform." },
         { "q": "What is a transition in video editing?", "o": ["A sound filter", "The file format", "An effect used to move from one clip to the next", "The video resolution"], "a": 2, "why": "Examples: fade, wipe, dissolve." }
+      ],
+      "long": [
+        { "q": "Explain the difference between lossy and lossless compression of an audio file, and say which you would use for a podcast streamed to mobile phones, with a reason.", "marks": 4, "paper": "2", "scheme": ["B1: lossy permanently removes data (sounds people hear least), e.g. MP3", "B1: lossless shrinks the file without losing data, so the original can be rebuilt exactly, e.g. FLAC", "B1: lossy for the podcast", "B1: smaller files stream faster and use less mobile data; for speech the loss is barely noticeable"] }
       ]
     },
     {
@@ -104,6 +131,9 @@
         { "q": "Augmented reality", "o": ["overlays digital content on the real world", "replaces the real world entirely", "is a type of database", "is 3D printing"], "a": 0, "why": "VR replaces; AR overlays." },
         { "q": "Which is an emerging technology?", "o": ["The floppy disk", "Quantum computing", "Dial-up internet", "CRT monitors"], "a": 1, "why": "Others include 3D printing, virtual reality and AI." },
         { "q": "What is augmented reality?", "o": ["A fully computer-generated world", "A faster processor", "A type of printer", "Computer images laid over a live view of the real world"], "a": 3, "why": "Virtual reality replaces the real view completely." }
+      ],
+      "long": [
+        { "q": "Discuss the use of augmented reality (AR) in education.", "marks": 6, "paper": "3", "scheme": ["B1: AR overlays computer-generated images on the real world, seen through a phone, tablet or headset", "B1: benefit: makes abstract ideas visible, e.g. 3D models of organs or molecules", "B1: benefit: interactive and engaging; safe practice of tasks", "B1: drawback: cost of devices and content; not every student has a suitable device", "B1: drawback: can distract; eye strain or motion sickness", "B1: a reasoned conclusion"] }
       ]
     },
     {
@@ -112,6 +142,9 @@
         { "q": "Which is an impact of online banking on society?", "o": ["fewer bank branches and less face-to-face service", "more paper cheques", "slower payments", "no risk of fraud"], "a": 0, "why": "Convenience with social costs." },
         { "q": "Which is a negative impact of IT on employment?", "o": ["New jobs in IT support", "Remote working", "Faster communication", "Some jobs are replaced by automation"], "a": 3, "why": "Discuss both sides when asked about impact." },
         { "q": "Which is an advantage of online banking for customers?", "o": ["Higher risk of fraud", "Needs internet access", "Less personal contact", "Banking at any time without travelling"], "a": 3, "why": "Answer from the viewpoint the question asks for." }
+      ],
+      "long": [
+        { "q": "Evaluate the impact of online shopping on customers and on high-street shops.", "marks": 6, "paper": "3", "scheme": ["B1: customers: wider choice and easy price comparison", "B1: customers: shop at any time with home delivery, helpful for people with limited mobility", "B1: customers: risk of fraud, can't inspect goods, returns are less convenient", "B1: shops: fewer visitors, leading to closures and job losses", "B1: shops that adapt, e.g. click-and-collect or their own websites", "B1: a reasoned judgement"] }
       ]
     },
     {
@@ -120,6 +153,9 @@
         { "q": "TCP/IP is", "o": ["the set of protocols the internet uses", "a type of cable", "a web browser", "an operating system"], "a": 0, "why": "Transmission Control Protocol / Internet Protocol." },
         { "q": "What is a WAN?", "o": ["A network in one building", "A network covering a large geographical area", "A wireless mouse", "A web address"], "a": 1, "why": "The internet is the largest WAN." },
         { "q": "Which transmission medium is least affected by electrical interference?", "o": ["Twisted pair cable", "Coaxial cable", "Radio waves", "Fibre optic cable"], "a": 3, "why": "It carries light rather than electrical signals." }
+      ],
+      "long": [
+        { "q": "Two office buildings 2 km apart are to be connected. Compare fibre-optic cable with copper cable for this link.", "marks": 4, "paper": "3", "scheme": ["B1: fibre has much higher bandwidth", "B1: fibre carries signals much further with less attenuation, so fewer repeaters", "B1: fibre is unaffected by electromagnetic interference and is harder to tap", "B1: copper is cheaper and easier to install but suits shorter runs, so fibre suits 2 km"] }
       ]
     },
     {
@@ -139,6 +175,9 @@
         { "q": "Black-box testing checks", "o": ["inputs and outputs without looking at the code", "each line of code", "the hardware", "user documentation"], "a": 0, "why": "White-box testing looks at internal logic." },
         { "q": "In the system life cycle, what happens during analysis?", "o": ["The current system is studied and requirements are identified", "The new system is installed", "The code is written", "Users are trained"], "a": 0, "why": "Methods include interviews, questionnaires and observation." },
         { "q": "Which changeover method runs the old and new systems together?", "o": ["Direct changeover", "Parallel running", "Phased implementation", "Pilot running"], "a": 1, "why": "It is safe but costly in time and staff." }
+      ],
+      "long": [
+        { "q": "Describe three methods of investigating the current system during analysis, giving an advantage of each.", "marks": 6, "paper": "3", "scheme": ["B1: questionnaires", "B1: reach many users quickly; anonymous answers may be more honest", "B1: interviews", "B1: follow-up questions give detailed answers", "B1: observation (or examining documents)", "B1: shows what really happens rather than what people say happens"] }
       ]
     },
     {
@@ -147,6 +186,9 @@
         { "q": "Vector graphics", "o": ["scale without losing quality", "are made of pixels", "are always photographs", "cannot be edited"], "a": 0, "why": "Stored as shapes and paths." },
         { "q": "Why are vector graphics better than bitmaps for a logo?", "o": ["They store each pixel", "They are always photographs", "They can be resized without losing quality", "They cannot be edited"], "a": 2, "why": "Vectors are stored as shapes and coordinates." },
         { "q": "What does increasing an image's resolution do?", "o": ["Reduces the file size", "Changes it to vector", "Increases the number of pixels and the file size", "Removes colour"], "a": 2, "why": "Higher resolution means more detail." }
+      ],
+      "long": [
+        { "q": "Explain why a company logo should be created as a vector graphic rather than a bitmap.", "marks": 3, "paper": "4", "scheme": ["B1: a vector stores shapes as mathematical objects (lines, curves, fills), not pixels", "B1: it scales to any size without pixelation, from business card to billboard", "B1: the file is usually smaller, and each shape is easy to edit"] }
       ]
     },
     {
@@ -155,6 +197,9 @@
         { "q": "In animation, tweening", "o": ["generates frames between key frames", "deletes frames", "adds sound", "compresses video"], "a": 0, "why": "In-betweening." },
         { "q": "What is tweening in animation?", "o": ["Drawing every frame by hand", "Adding sound", "Compressing video", "Generating the frames between two key frames"], "a": 3, "why": "It saves time and makes motion smooth." },
         { "q": "Frame rate is measured in:", "o": ["Frames per second", "Pixels per inch", "Bits per second", "Frames per minute"], "a": 0, "why": "A higher frame rate gives smoother motion." }
+      ],
+      "long": [
+        { "q": "Explain what tweening is and how it saves time compared with frame-by-frame animation. An animation lasts 4 seconds at 24 frames per second: how many frames does it have?", "marks": 4, "paper": "4", "scheme": ["B1: the animator sets key frames (e.g. start and end positions)", "B1: the software generates the in-between frames", "B1: so far fewer frames are drawn by hand, and motion is smooth", "B1: 4 × 24 = 96 frames"], "ans": "96 frames" }
       ]
     },
     {
@@ -163,6 +208,9 @@
         { "q": "JavaScript in a web page is mainly used to", "o": ["add interactivity in the browser", "store a database", "style text", "host the website"], "a": 0, "why": "HTML structure, CSS style, JavaScript behaviour." },
         { "q": "Which language adds interactivity to a web page in the browser?", "o": ["HTML", "CSS", "SQL", "JavaScript"], "a": 3, "why": "HTML is structure; CSS is presentation." },
         { "q": "In JavaScript, setInterval(f, 1000) runs f:", "o": ["Every 1000 milliseconds (1 second)", "Once after 1000 seconds", "1000 times at once", "Every 1000 seconds"], "a": 0, "why": "Examiners (2023): candidates left a timer at the default 1000 ms instead of the value required." }
+      ],
+      "long": [
+        { "q": "Write JavaScript so that clicking the button with id 'go' changes the text of the paragraph with id 'msg' to 'Hello'.", "marks": 4, "paper": "4", "scheme": ["B1: select the button: document.getElementById(\"go\")", "B1: attach a click handler: addEventListener(\"click\", …) or onclick", "B1: select the paragraph: document.getElementById(\"msg\")", "B1: set its innerHTML (or textContent) to \"Hello\""], "ans": "document.getElementById(\"go\").addEventListener(\"click\", function () { document.getElementById(\"msg\").innerHTML = \"Hello\"; });" }
       ]
     },
     {
@@ -171,6 +219,9 @@
         { "q": "A mail merge field", "o": ["is replaced with data from the source for each record", "is a fixed piece of text", "is a header", "is an image"], "a": 0, "why": "e.g. «FirstName»." },
         { "q": "What is a mail merge?", "o": ["Combining a standard document with a data source to make personalised copies", "Merging two email accounts", "Sending one email to one person", "Compressing attachments"], "a": 0, "why": "Merge fields are replaced by data from each record." },
         { "q": "How can a mail merge send letters only to customers in one city?", "o": ["Delete the other records permanently", "Type each letter by hand", "Sort by name", "Filter the data source on the City field"], "a": 3, "why": "Filters select records without changing the data." }
+      ],
+      "long": [
+        { "q": "A company wants to send a letter only to customers in Paris who have spent over €500. Describe how to set this up as a mail merge.", "marks": 4, "paper": "4", "scheme": ["B1: link the master letter to the customer data source", "B1: insert merge fields (e.g. name, address) in the letter", "B1: filter the records: City = 'Paris' AND Spent > 500", "B1: preview to check, then merge only the selected records to print or email"] }
       ]
     }
   ]
