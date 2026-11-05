@@ -9,7 +9,9 @@
       "questions": [
         { "q": "Recording from first-hand observation means", "o": ["drawing or photographing real objects in front of you", "copying images from the internet", "writing an essay", "tracing a photograph"], "a": 0, "why": "First-hand work is valued over second-hand sources." },
         { "q": "Annotation in a sketchbook should", "o": ["explain your thinking, choices and next steps", "describe the weather", "list materials only", "be avoided"], "a": 0, "why": "It shows your reflection and intentions." },
-        { "q": "Which is first-hand (primary) recording?", "o": ["Drawing a plant you are looking at", "Copying a photo from the internet", "Tracing a magazine picture", "Printing an artist's work"], "a": 0, "why": "Examiners (2023): many portfolios had little recording from primary sources, and second-hand sources were often not credited." }
+        { "q": "Which is first-hand (primary) recording?", "o": ["Drawing a plant you are looking at", "Copying a photo from the internet", "Tracing a magazine picture", "Printing an artist's work"], "a": 0, "why": "Examiners (2023): many portfolios had little recording from primary sources, and second-hand sources were often not credited." },
+        { "q": "Which sketchbook annotation shows the most critical, reflective recording?", "o": ["Drawn from life over three sittings; the raking side light exaggerated the creases, which suggests ageing as a theme, and I want to test this next in drypoint.", "This is a drawing of my grandmother's hands.", "I like this drawing a lot.", "Medium: charcoal. Size: A3."], "a": 0, "why": "It records how the observation was made, reflects on what it revealed and points to a next step. The others only label or give a bare opinion." },
+        { "q": "Why might a student record the same subject in several ways, such as drawing, photography, rubbings and written notes?", "o": ["Because each method earns a separate mark", "To avoid deciding on a direction", "To gather different kinds of visual information that can support different later directions", "Because drawing alone is not accepted"], "a": 2, "why": "Each method captures something different, such as form, light or surface, giving a richer bank of material for developing ideas." }
       ]
     },
     {
@@ -17,7 +19,9 @@
       "questions": [
         { "q": "Exploring media means", "o": ["experimenting with different materials and techniques", "using only pencil", "finishing the final piece first", "copying an artist exactly"], "a": 0, "why": "Experiments show how ideas develop." },
         { "q": "Studying another artist's work helps you", "o": ["understand techniques and ideas to develop your own", "copy their final piece", "avoid making choices", "skip research"], "a": 0, "why": "Contextual study informs your own direction." },
-        { "q": "Why try several media before choosing one?", "o": ["To fill more pages", "To find which best expresses your idea and develop it further", "Because the syllabus bans one medium", "To copy an artist exactly"], "a": 1, "why": "Examiners (2023): candidates often didn't use what they discovered to move the work forward." }
+        { "q": "Why try several media before choosing one?", "o": ["To fill more pages", "To find which best expresses your idea and develop it further", "Because the syllabus bans one medium", "To copy an artist exactly"], "a": 1, "why": "Examiners (2023): candidates often didn't use what they discovered to move the work forward." },
+        { "q": "A student wants to suggest the fragility of memory in a portrait. Which choice of media shows the most purposeful selection?", "o": ["Using whatever paint is left over in the studio", "Using bright acrylics because they dry quickly", "Using only an HB pencil because it is the safest choice", "Layering semi-transparent tissue, faded photo transfers and partly erased graphite, after testing each"], "a": 3, "why": "The media are chosen and tested because their qualities (transparency, fading, erasure) express the idea. The other choices are made for convenience, not meaning." },
+        { "q": "What is the main advantage of oil paint over acrylic paint when blending?", "o": ["It dries much faster", "It stays workable for longer, so colours can be blended wet-into-wet", "It can be thinned with water", "It can never crack"], "a": 1, "why": "Oil paint dries slowly, which allows long blending and soft transitions. Acrylic dries fast and is water-based; oil can crack if layers are applied badly." }
       ]
     },
     {
@@ -25,7 +29,9 @@
       "questions": [
         { "q": "Developing ideas means", "o": ["refining compositions and solutions through a series of studies", "starting a new topic each week", "making one drawing", "choosing at random"], "a": 0, "why": "Show how each step leads to the next." },
         { "q": "How should an artist you research be used?", "o": ["Write their biography", "Analyse how their work is made and use what you learn in your own ideas", "Copy one painting as your final piece", "Paste in their photo"], "a": 1, "why": "Examiners (2023): some gave a biography instead of researching the artwork." },
-        { "q": "What makes annotation useful?", "o": ["It analyses decisions and explains how the work will develop", "It describes what is on the page", "It lists materials only", "It repeats the title"], "a": 0, "why": "Examiners (2023): annotations were mostly descriptive rather than analytical." }
+        { "q": "What makes annotation useful?", "o": ["It analyses decisions and explains how the work will develop", "It describes what is on the page", "It lists materials only", "It repeats the title"], "a": 0, "why": "Examiners (2023): annotations were mostly descriptive rather than analytical." },
+        { "q": "A student's line of development reaches a dead end. What is the best response?", "o": ["Start a completely unrelated project", "Remove the unsuccessful studies from the portfolio", "Record why it is not working, return to earlier strong ideas and test a new direction", "Make the final piece anyway"], "a": 2, "why": "Reflecting on unsuccessful work and redirecting it is evidence of genuine investigation. Hiding it removes evidence of the decision-making that development rewards." },
+        { "q": "Why might a student use photo-editing software during development?", "o": ["To try quick variations in crop, colour and composition before committing to a slower medium", "Because digital work is required for this objective", "To replace all drawing in the portfolio", "To copy a famous image exactly"], "a": 0, "why": "Digital tools are a fast way to test alternatives and refine compositions. They support development rather than replace other recording or investigation." }
       ]
     },
     {
@@ -33,7 +39,9 @@
       "questions": [
         { "q": "A final outcome should", "o": ["realise your intentions and connect to your preparatory work", "be unrelated to your research", "be as large as possible", "copy a famous work"], "a": 0, "why": "The journey to it is assessed too." },
         { "q": "What should a final piece show?", "o": ["A new idea unrelated to the studies", "A copy of an artist's work", "Only technical skill", "A personal response that grows clearly out of the supporting studies"], "a": 3, "why": "The journey from studies to outcome is assessed." },
-        { "q": "How should a 3D piece be submitted in a portfolio?", "o": ["Posted as the object", "As a written description only", "It cannot be submitted", "As photographs"], "a": 3, "why": "Examiners (2023): photograph 3D objects and organic matter rather than sending them." }
+        { "q": "How should a 3D piece be submitted in a portfolio?", "o": ["Posted as the object", "As a written description only", "It cannot be submitted", "As photographs"], "a": 3, "why": "Examiners (2023): photograph 3D objects and organic matter rather than sending them." },
+        { "q": "Which best describes a 'personal' response at this level?", "o": ["It is about the student's own family", "It reflects the student's own ideas and decisions, informed by other artists but not imitating them", "It is made without any research", "It uses the student's favourite colour"], "a": 1, "why": "'Personal' means independent thinking and choices, not autobiographical subject matter. Research should inform the work, not be imitated or avoided." },
+        { "q": "How should work be selected and arranged in the submitted portfolio?", "o": ["Include every scrap in random order", "Show only the final piece", "Arrange it by size from largest to smallest", "Select work that shows the key decisions, ordered so the development is clear"], "a": 3, "why": "Careful selection and sequencing let the examiner follow the journey from recording to outcome, which is part of presenting a coherent response." }
       ]
     },
     {
@@ -41,7 +49,9 @@
       "questions": [
         { "q": "Complementary colours", "o": ["sit opposite each other on the colour wheel", "are next to each other", "are shades of grey", "are only primary colours"], "a": 0, "why": "e.g. red and green." },
         { "q": "Negative space is", "o": ["the space around and between objects", "a dark colour", "a mistake", "the background colour only"], "a": 0, "why": "Using it strengthens composition." },
-        { "q": "Linear perspective uses", "o": ["a horizon line and vanishing points", "only colour", "random lines", "flat shapes"], "a": 0, "why": "To create the illusion of depth." }
+        { "q": "Linear perspective uses", "o": ["a horizon line and vanishing points", "only colour", "random lines", "flat shapes"], "a": 0, "why": "To create the illusion of depth." },
+        { "q": "Chiaroscuro refers to", "o": ["painting onto wet plaster", "building an image from small dots of colour", "strong contrasts of light and dark used to model form and create drama", "applying gold leaf to a surface"], "a": 2, "why": "Chiaroscuro (Italian for light-dark) is strong tonal contrast, used by artists such as Caravaggio. Painting on wet plaster is fresco and dots of colour is pointillism." },
+        { "q": "Which statement about the Impressionists is accurate?", "o": ["They painted mainly mythological scenes in a smooth, highly finished style", "They often painted outdoors, using broken brushstrokes to capture changing light", "They rejected colour in favour of monochrome", "They worked mostly in New York in the mid-20th century"], "a": 1, "why": "Impressionists such as Monet painted en plein air with visible, broken brushwork to record fleeting light. Smooth mythological painting was the academic style they reacted against." }
       ]
     },
     {
@@ -49,7 +59,9 @@
       "questions": [
         { "q": "The A Level personal investigation combines", "o": ["practical work with a related written analysis", "only a written essay", "only an exam piece", "group work"], "a": 0, "why": "Practical and written parts connect." },
         { "q": "In the written personal investigation, what makes the writing strong?", "o": ["A long biography", "Copied text with no references", "Only describing your feelings", "Critical analysis of sources linked to your own practical work"], "a": 3, "why": "Cite sources and connect them to your decisions." },
-        { "q": "How should sources be acknowledged in the written investigation?", "o": ["Every image and quotation is credited in a bibliography or caption", "Only the main artist", "Not at all", "Only if copied exactly"], "a": 0, "why": "Examiners (2023): the origins of visual work were often unclear because sources weren't cited." }
+        { "q": "How should sources be acknowledged in the written investigation?", "o": ["Every image and quotation is credited in a bibliography or caption", "Only the main artist", "Not at all", "Only if copied exactly"], "a": 0, "why": "Examiners (2023): the origins of visual work were often unclear because sources weren't cited." },
+        { "q": "Which is the best focus for a personal investigation?", "o": ["Art", "Everything about Picasso", "A focused question, such as how artists have used urban decay to explore memory, linked to the student's own practice", "My favourite paintings"], "a": 2, "why": "A focused, open question gives the practical and written work a clear direction. Broad topics or lists of favourites lead to description rather than investigation." },
+        { "q": "Which sentence from a written investigation shows critical analysis rather than description?", "o": ["The painting is two metres wide and shows a woman at a window.", "The artist was born in 1950 and later moved to Paris.", "I really like this painting.", "By cropping the figure at the edge of the canvas, the artist makes the viewer feel like an intruder, an idea I then tested in my own photographs."], "a": 3, "why": "It explains how a formal decision creates meaning and connects it to the student's own practice. The others are description, biography or unexplained opinion." }
       ]
     }
   ]
