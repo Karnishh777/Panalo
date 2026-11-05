@@ -9,7 +9,9 @@
       "questions": [
         { "q": "In text analysis, 'register' refers to", "o": ["the level of formality and the language suited to a context", "the length of the text", "the number of paragraphs", "spelling"], "a": 0, "why": "Field, tenor and mode shape register." },
         { "q": "Lexis means", "o": ["the vocabulary of a text", "its sentence structure", "its sound patterns", "its layout"], "a": 0, "why": "Lexis = word choice." },
-        { "q": "A declarative sentence", "o": ["makes a statement", "asks a question", "gives an order", "expresses strong feeling"], "a": 0, "why": "The four sentence functions: declarative, interrogative, imperative, exclamative." }
+        { "q": "A declarative sentence", "o": ["makes a statement", "asks a question", "gives an order", "expresses strong feeling"], "a": 0, "why": "The four sentence functions: declarative, interrogative, imperative, exclamative." },
+        { "q": "An advertisement reads: 'Grab yours today, before they're gone!' Which feature is most prominent?", "o": ["A rhetorical question inviting reflection", "A passive construction that hides the agent", "An imperative that creates urgency and addresses the reader directly", "A formal, impersonal register"], "a": 2, "why": "'Grab' is an imperative with implied second-person address, and 'before they're gone' adds time pressure. There is no question, passive or formality here." },
+        { "q": "A company statement says: 'Mistakes were made.' What is the main effect of this agentless passive?", "o": ["It avoids naming who was responsible", "It makes the statement more informal and friendly", "It stresses the speaker's personal guilt", "It turns the statement into a question"], "a": 0, "why": "The passive lets the writer leave out the agent (who made the mistakes), which deflects blame. Naming oneself as the actor would need the active voice." }
       ],
       "long": [
         { "q": "Analyse the language of an advertisement of your choice, focusing on how it persuades its audience. (Mark yourself with this scheme.)", "marks": 5, "paper": "1", "scheme": ["B1: identifies audience, purpose and context", "B1: analyses lexis with precise terminology", "B1: analyses grammar or sentence structure for effect", "B1: comments on structure and layout", "B1: links every feature to its effect on the audience"] }
@@ -20,7 +22,9 @@
       "questions": [
         { "q": "A directed response asks you to", "o": ["write a new text for a given audience and purpose, using a source", "analyse a poem", "summarise a novel", "write a story of your choice"], "a": 0, "why": "You transform the source for a new context." },
         { "q": "In a directed response, what matters most?", "o": ["Retelling the original text", "Writing for the given audience, purpose and form", "Using as many long words as possible", "Writing a story"], "a": 1, "why": "Examiners (2023): some used a warning tone when the task asked for advice or persuasion." },
-        { "q": "What should the comparison with the original text do?", "o": ["Summarise both texts", "Describe your feelings", "Analyse how language choices differ and why, with examples", "Repeat your own text"], "a": 2, "why": "Examiners (2023): weaker comparisons summarised content with few examples." }
+        { "q": "What should the comparison with the original text do?", "o": ["Summarise both texts", "Describe your feelings", "Analyse how language choices differ and why, with examples", "Repeat your own text"], "a": 2, "why": "Examiners (2023): weaker comparisons summarised content with few examples." },
+        { "q": "You must turn a formal travel-guide extract into a blog post for teenagers. Which change is most appropriate?", "o": ["Keep every formal phrase so that nothing is lost", "Turn the information into a poem", "Replace the information with a story about yourself", "Adopt a conversational first-person voice with direct address, while keeping the key information"], "a": 3, "why": "A directed response reworks the source's content for a new audience, purpose and form. The register changes, but the relevant information must remain." },
+        { "q": "Which is a typical convention of a speech rather than a written article?", "o": ["Footnotes and references", "Direct address to listeners and spoken signposting such as 'Let me turn now to...'", "Headings and subheadings", "A bibliography"], "a": 1, "why": "Speeches are designed to be heard, so they use direct address and oral signposting to guide listeners. Headings and footnotes are features of written layout." }
       ]
     },
     {
@@ -28,7 +32,9 @@
       "questions": [
         { "q": "A reflective commentary should explain", "o": ["the language choices you made and why", "the plot of your piece", "what you would write next", "grammar rules"], "a": 0, "why": "It links your choices to audience and purpose." },
         { "q": "A review task asks about a trip. What is a weakness?", "o": ["Giving a judgement", "Mentioning specific activities", "Writing a recount with no evaluation", "Using a suitable register"], "a": 2, "why": "Examiners (2023): many reviews read like holiday accounts." },
-        { "q": "A story opening is set. What should you avoid?", "o": ["Creating atmosphere", "Introducing a character", "Hinting at conflict", "Writing a whole story"], "a": 3, "why": "Examiners (2023): some wrote a complete story instead of an opening." }
+        { "q": "A story opening is set. What should you avoid?", "o": ["Creating atmosphere", "Introducing a character", "Hinting at conflict", "Writing a whole story"], "a": 3, "why": "Examiners (2023): some wrote a complete story instead of an opening." },
+        { "q": "Which sentence from a reflective commentary is most effective?", "o": ["I used lots of good techniques to make my writing interesting.", "My story is about a girl who gets lost in a forest.", "I used the minor sentence 'Silence.' to slow the pace and mirror the narrator's shock.", "I think my writing turned out quite well."], "a": 2, "why": "It names a precise feature, quotes it and explains its effect in context. The others are vague, retell content or simply give an opinion." },
+        { "q": "In a review, which sentence best combines description with evaluation?", "o": ["We went to the restaurant on Friday at seven o'clock.", "The restaurant has twelve tables and a blue door.", "Everyone should eat out more often.", "The lamb curry, rich with cardamom but let down by tough meat, was the evening's near-miss."], "a": 3, "why": "A review needs judgement as well as detail; this sentence describes the dish precisely and evaluates it. The others are recount, bare description or an unrelated opinion." }
       ]
     },
     {
@@ -36,7 +42,9 @@
       "questions": [
         { "q": "Writing for a specified audience means", "o": ["adapting vocabulary, tone and structure to that audience", "using as many long words as possible", "ignoring the audience", "writing in note form"], "a": 0, "why": "Audience shapes every choice." },
         { "q": "Which is a common sentence error to avoid in extended writing?", "o": ["Joining sentences with commas (comma splicing)", "Using paragraphs", "Varying sentence length", "Using a full stop"], "a": 0, "why": "Examiners (2023): comma splicing and fragments recurred." },
-        { "q": "Which helps an extended piece of writing most?", "o": ["Writing without a plan", "Many unrelated ideas", "One very long paragraph", "A clear structure planned around the purpose and audience"], "a": 3, "why": "Examiners (2023): stronger responses were structured deliberately, not just chronologically." }
+        { "q": "Which helps an extended piece of writing most?", "o": ["Writing without a plan", "Many unrelated ideas", "One very long paragraph", "A clear structure planned around the purpose and audience"], "a": 3, "why": "Examiners (2023): stronger responses were structured deliberately, not just chronologically." },
+        { "q": "Which is the most effective opening for a magazine article arguing that cars should be banned from city centres?", "o": ["Imagine walking down your high street and hearing birdsong instead of engines.", "In this article I will talk about cars.", "Cars were invented in the late nineteenth century.", "There are many points of view on this topic."], "a": 0, "why": "It engages the reader directly and creates an appealing image that supports the argument. The others are flat announcements, irrelevant facts or non-committal." },
+        { "q": "Which technique best creates cohesion between paragraphs?", "o": ["Starting every paragraph with 'And'", "Changing the font for each paragraph", "Topic sentences and discourse markers that link back to the previous point", "Repeating the title at the start of each paragraph"], "a": 2, "why": "Cohesion comes from linguistic links such as discourse markers ('However', 'This suggests') and reference back to earlier ideas, so the argument flows." }
       ]
     },
     {
@@ -44,7 +52,9 @@
       "questions": [
         { "q": "Borrowing (as in 'bungalow' from Hindi) is an example of", "o": ["lexical change through contact", "semantic narrowing", "grammatical change", "phonological change"], "a": 0, "why": "Words enter English from other languages." },
         { "q": "When a word's meaning becomes more negative over time, this is", "o": ["pejoration", "amelioration", "broadening", "narrowing"], "a": 0, "why": "e.g. 'silly' once meant blessed." },
-        { "q": "Which is a theory of language change?", "o": ["Chomsky's LAD", "Halliday's functions", "Skinner's operant conditioning", "Aitchison's damp spoon (and crumbling castle)"], "a": 3, "why": "Others: S-curve, wave model, random fluctuation." }
+        { "q": "Which is a theory of language change?", "o": ["Chomsky's LAD", "Halliday's functions", "Skinner's operant conditioning", "Aitchison's damp spoon (and crumbling castle)"], "a": 3, "why": "Others: S-curve, wave model, random fluctuation." },
+        { "q": "The word 'nice' once meant 'foolish' but now means 'pleasant'. This is an example of", "o": ["pejoration", "amelioration", "narrowing", "borrowing"], "a": 1, "why": "Amelioration is when a word's meaning becomes more positive over time. Pejoration is the opposite, and narrowing is when a meaning becomes more specific." },
+        { "q": "Which word was formed by blending?", "o": ["NASA", "bus (from omnibus)", "kindergarten", "smog (smoke + fog)"], "a": 3, "why": "A blend joins parts of two words, as in sm(oke) + (f)og. NASA is an acronym, bus is a clipping, and kindergarten is a borrowing from German." }
       ]
     },
     {
@@ -52,7 +62,9 @@
       "questions": [
         { "q": "'Holophrastic' speech is", "o": ["one word used to express a whole idea", "two-word combinations", "full sentences", "babbling"], "a": 0, "why": "e.g. 'juice' meaning 'I want juice'." },
         { "q": "Overgeneralisation, as in 'goed', shows that children", "o": ["are learning grammatical rules", "are copying adults exactly", "cannot hear correctly", "know irregular verbs"], "a": 0, "why": "Applying a rule where it doesn't fit shows rule-learning." },
-        { "q": "Which theorist argued children are born with a language acquisition device?", "o": ["Skinner", "Chomsky", "Halliday", "Crystal"], "a": 1, "why": "Use child-language data to support or challenge theories." }
+        { "q": "Which theorist argued children are born with a language acquisition device?", "o": ["Skinner", "Chomsky", "Halliday", "Crystal"], "a": 1, "why": "Use child-language data to support or challenge theories." },
+        { "q": "A child says 'Mummy sock', meaning 'That is Mummy's sock'. Which stage is this typical of?", "o": ["Babbling", "Holophrastic (one-word) stage", "Two-word stage", "Post-telegraphic stage"], "a": 2, "why": "Two content words combined to express a relationship (here, possession) is typical of the two-word stage, at around 18 to 24 months." },
+        { "q": "Bruner's Language Acquisition Support System (LASS) emphasises", "o": ["an innate grammar device in the brain", "the role of caregivers' interaction and routines in supporting language learning", "imitation and reinforcement alone", "the order of cognitive stages a child passes through"], "a": 1, "why": "Bruner stressed scaffolding by caregivers, for example through routines and shared reading, as a social answer to Chomsky's innate LAD. Imitation and reinforcement is Skinner's view." }
       ],
       "long": [
         { "q": "A child of 2 years says 'daddy car go'. Comment on what this shows about the child's language development.", "marks": 4, "paper": "3", "scheme": ["B1: telegraphic stage (about 2;0–2;6)", "B1: content words kept; function words (determiners, auxiliaries) omitted", "B1: correct subject–object–verb meaning order", "B1: links to a theory, e.g. Brown's stages or Chomsky's LAD"] }
@@ -63,7 +75,9 @@
       "questions": [
         { "q": "A pidgin is", "o": ["a simplified contact language with no native speakers", "a regional accent", "a dialect of English", "an extinct language"], "a": 0, "why": "When it gains native speakers it becomes a creole." },
         { "q": "What is Schneider's dynamic model about?", "o": ["Child language", "Pronunciation of RP", "Stages in how new varieties of English develop in former colonies", "Gender and talk"], "a": 2, "why": "Examiners (2023): RP was often wrongly described as the British standard." },
-        { "q": "What does 'acrolect' mean?", "o": ["A dialect spoken by children", "The most prestigious variety, closest to the standard", "A creole only", "Slang"], "a": 1, "why": "Basilect is furthest from it; mesolect is between." }
+        { "q": "What does 'acrolect' mean?", "o": ["A dialect spoken by children", "The most prestigious variety, closest to the standard", "A creole only", "Slang"], "a": 1, "why": "Basilect is furthest from it; mesolect is between." },
+        { "q": "In Kachru's three-circle model, which circle includes India and Nigeria?", "o": ["Inner Circle", "Outer Circle", "Expanding Circle", "Core Circle"], "a": 1, "why": "The Outer Circle covers countries where English has an official or institutional role after colonisation. The Inner Circle is where it is the main first language, and the Expanding Circle is where it is learned as a foreign language." },
+        { "q": "A creole differs from a pidgin because a creole", "o": ["has no consistent grammar", "is used only for trade", "is a regional variety of Standard English", "has native speakers and has become a community's first language"], "a": 3, "why": "When children grow up speaking a pidgin as their first language, it expands and becomes a creole with a fuller grammar and vocabulary." }
       ]
     },
     {
@@ -71,7 +85,9 @@
       "questions": [
         { "q": "Code-switching is", "o": ["moving between languages or varieties within a conversation", "speaking in code", "an accent change over years", "learning a second language"], "a": 0, "why": "Speakers switch for identity, audience or topic." },
         { "q": "In data analysis, what should be checked against the IPA reference table?", "o": ["The spelling only", "The phonemic transcription before commenting on pronunciation", "The speaker's age", "The punctuation"], "a": 1, "why": "Examiners (2023): candidates misread phonemic symbols instead of checking the table." },
-        { "q": "What is meant by a sociolect?", "o": ["A variety of language used by a social group", "A regional accent", "One person's speech", "A dead language"], "a": 0, "why": "An idiolect is one person's language." }
+        { "q": "What is meant by a sociolect?", "o": ["A variety of language used by a social group", "A regional accent", "One person's speech", "A dead language"], "a": 0, "why": "An idiolect is one person's language." },
+        { "q": "Which term describes the language style unique to one individual?", "o": ["Idiolect", "Sociolect", "Dialect", "Register"], "a": 0, "why": "An idiolect is one person's distinctive way of using language. A sociolect belongs to a social group and a dialect to a region." },
+        { "q": "In Communication Accommodation Theory, when speakers adjust their speech to sound more like their listener, this is", "o": ["divergence", "hypercorrection", "convergence", "code-switching"], "a": 2, "why": "Convergence reduces social distance and signals approval or belonging. Divergence is making one's speech more different to emphasise distance." }
       ]
     }
   ]
