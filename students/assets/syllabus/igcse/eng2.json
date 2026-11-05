@@ -10,6 +10,9 @@
         { "q": "When a question asks for 'two' details, you should", "o": ["give exactly two separate points", "give as many as possible", "copy a whole paragraph", "give one point twice"], "a": 0, "why": "Extra points can be ignored or count against you." },
         { "q": "Skimming a text means", "o": ["reading quickly for the general idea", "reading every word carefully", "looking for one fact", "reading the last line only"], "a": 0, "why": "Scanning is looking for specific information." },
         { "q": "A question asks for one detail. What is best?", "o": ["Copying the whole paragraph", "Giving three details", "Guessing from general knowledge", "A short, precise answer taken from the text"], "a": 3, "why": "Read the question carefully: extra wrong details can cancel a right one." }
+      ],
+      "long": [
+        { "q": "Read the text and answer the questions. 'Community gardens are spreading in many cities. In Riverside, a group of neighbours turned an empty car park into a garden in 2019. Volunteers meet every Saturday morning to plant vegetables, and anything they grow is given free to a local food bank. Organiser Maya Patel says the biggest benefit is not the food but the friendships: \"People who had lived on the same street for twenty years had never spoken before.\" The project now plans to add a small classroom so that local schools can visit.' (a) What was the site before it became a garden? (b) When do the volunteers meet? (c) What happens to the food they grow? (d) According to Maya Patel, what is the biggest benefit of the garden? (e) What does the project plan to do next?", "marks": 5, "paper": "2", "scheme": ["B1: (a) an (empty) car park", "B1: (b) (every) Saturday morning", "B1: (c) it is given free to a (local) food bank", "B1: (d) the friendships / neighbours getting to know each other (not 'the food')", "B1: (e) add a (small) classroom (for school visits)"], "ans": "a car park; Saturday mornings; given free to a food bank; the friendships; add a classroom" }
       ]
     },
     {
@@ -18,6 +21,9 @@
         { "q": "Good notes are", "o": ["brief points under the given headings", "full sentences copied from the text", "your opinions", "a summary paragraph"], "a": 0, "why": "Notes should be short and relevant to each heading." },
         { "q": "In note-making, what should notes be?", "o": ["Full sentences copied from the text", "Your own opinions", "Repeated points", "Brief points under the headings given"], "a": 3, "why": "Each note should be a separate, relevant point." },
         { "q": "What is lost if two notes say the same thing?", "o": ["Nothing", "The second note earns no extra mark", "Both marks are lost", "The whole question"], "a": 1, "why": "Make every note a different point." }
+      ],
+      "long": [
+        { "q": "Read the text and make notes under two headings: 'Benefits of cycling to school' (two notes) and 'Problems' (two notes). 'More students at Greenhill School now cycle to school. Cycling is cheaper than taking the bus, and many students say they arrive feeling more awake. It also reduces traffic outside the school gates at 8 a.m. However, there are not enough bike racks, so some bicycles are left against walls, and parents worry about a busy road junction near the school. In winter, rain and dark mornings also put some students off.' (Mark yourself with this scheme.)", "marks": 4, "paper": "2", "scheme": ["B1: a benefit: any of cheaper than the bus / arrive more awake / less traffic at the gates", "B1: a second, different benefit from that list", "B1: a problem: any of too few bike racks / busy junction (safety) / rain and dark winter mornings", "B1: a second, different problem from that list"] }
       ]
     },
     {
@@ -26,6 +32,9 @@
         { "q": "A summary should be written", "o": ["in your own words, as one paragraph within the word limit", "as bullet points", "as a list of quotations", "with an introduction and conclusion"], "a": 0, "why": "Continuous, concise prose is expected." },
         { "q": "What should a summary include?", "o": ["The relevant points, in your own words and in the word limit", "Your opinion", "Quotations from the text", "Every detail"], "a": 0, "why": "Organise points logically." },
         { "q": "Why keep to the word limit?", "o": ["It doesn't matter", "Long summaries are penalised and lose focus", "Shorter always means more marks", "Examiners count every letter"], "a": 1, "why": "Plan the points first." }
+      ],
+      "long": [
+        { "q": "Read the text, then write a summary of the benefits of part-time jobs for teenagers. Write about 80 words, using your own words as far as possible. 'Many teenagers take part-time jobs while they are still at school. Earning their own money teaches them how to budget, and many say they value things more when they have paid for them themselves. Jobs in shops or cafés also build confidence, because young workers must speak to customers and solve problems quickly. Employers say that teenagers who have worked are often more reliable and punctual later in life. Some students also discover what kind of career they would like, or would not like, through these jobs. Critics point out, though, that working too many hours can leave students tired in lessons.' (Mark yourself with this scheme.)", "marks": 6, "paper": "2", "scheme": ["B1: they learn to budget / manage money", "B1: they value things more when they have paid for them", "B1: they gain confidence (dealing with customers, solving problems)", "B1: they become more reliable and punctual", "B1: they find out which careers they would (or would not) like", "B1: own words, about 80 words, and no drawbacks included (tiredness is not a benefit)"] }
       ]
     },
     {
@@ -56,6 +65,9 @@
         { "q": "In a gap-fill listening task, your answer should usually be", "o": ["one or two words heard in the recording", "a full sentence", "a synonym of your choice", "a number only"], "a": 0, "why": "Write the words you hear, spelled correctly." },
         { "q": "In the listening exam, what should you do before the recording starts?", "o": ["Read the questions and note what information is needed", "Write a summary", "Close your eyes", "Answer from memory"], "a": 0, "why": "Spelling of key words still matters." },
         { "q": "Answers in the listening exam should be:", "o": ["Brief, as instructed, with key words spelled recognisably", "Long full sentences", "In a different language", "Copied from the question"], "a": 0, "why": "Listen for the specific detail asked for." }
+      ],
+      "long": [
+        { "q": "Ask someone to read this aloud to you once while you don't look at it, then complete the notes with one or two words or a number. 'Hello everyone, and welcome to the Bayside Aquarium. Our tour today lasts about forty-five minutes. We'll start at the shark tunnel, which opened last year, and finish at the rock pool, where you can touch starfish. Please don't use flash photography, because it upsets the animals. The café is on the second floor and closes at four thirty. Finally, if you'd like to volunteer here, you must be at least sixteen.' Notes: Tour length: ___. First stop: ___. At the rock pool, visitors can touch ___. Not allowed: ___ photography. Café closes at ___. Minimum age for volunteers: ___. (Mark yourself with this scheme.)", "marks": 6, "paper": "4", "scheme": ["B1: (about) 45 minutes", "B1: (the) shark tunnel", "B1: starfish", "B1: flash", "B1: 4.30 / four thirty", "B1: 16 / sixteen"], "ans": "45 minutes; shark tunnel; starfish; flash; 4.30; 16" }
       ]
     },
     {
@@ -64,6 +76,9 @@
         { "q": "In the speaking test it helps to", "o": ["develop answers with reasons and examples", "give one-word answers", "memorise a speech", "speak as fast as possible"], "a": 0, "why": "Extended, relevant answers score best." },
         { "q": "In the speaking test, what helps most?", "o": ["Extending answers with reasons and examples", "Giving one-word answers", "Reciting a memorised speech", "Speaking very fast"], "a": 0, "why": "Respond naturally to the examiner's prompts." },
         { "q": "If you don't understand a question in the speaking test, you should:", "o": ["Stay silent", "Change the topic", "Ask politely for it to be repeated", "Answer a different question"], "a": 2, "why": "Asking for clarification is natural communication." }
+      ],
+      "long": [
+        { "q": "Record yourself speaking for 2–3 minutes on: 'Is it better to grow up in a city or in the countryside?' Talk about transport and facilities, friendships and free time, the environment, and say which you'd choose and why. Then listen back and mark yourself with this scheme.", "marks": 4, "paper": "5", "scheme": ["B1: every prompt developed with reasons or examples, not one-line answers", "B1: both sides considered before a clear choice", "B1: a range of accurate grammar and topic vocabulary (facilities, commute, peaceful, isolated)", "B1: clear pronunciation and keeps going without long pauses"] }
       ]
     },
     {
@@ -72,6 +87,9 @@
         { "q": "Choose the correct sentence.", "o": ["She has lived here since 2019.", "She lives here since 2019.", "She is living here since 2019.", "She lived here since 2019."], "a": 0, "why": "'Since' with an ongoing situation takes the present perfect." },
         { "q": "'Despite ___ tired, he finished the race.'", "o": ["being", "he was", "to be", "of being"], "a": 0, "why": "'Despite' is followed by a noun or -ing form." },
         { "q": "A synonym for 'reluctant' is", "o": ["unwilling", "eager", "careful", "angry"], "a": 0, "why": "Reluctant means not wanting to do something." }
+      ],
+      "long": [
+        { "q": "Each sentence has one mistake. Rewrite it correctly. (a) She don't like coffee. (b) I have lived here since five years. (c) If I will see him, I will tell him. (d) He is more taller than his brother. (e) We discussed about the problem.", "marks": 5, "paper": "2", "scheme": ["B1: (a) She doesn't like coffee.", "B1: (b) I have lived here for five years.", "B1: (c) If I see him, I will tell him.", "B1: (d) He is taller than his brother.", "B1: (e) We discussed the problem."], "ans": "doesn't; for five years; If I see him; taller; discussed the problem" }
       ]
     }
   ]
