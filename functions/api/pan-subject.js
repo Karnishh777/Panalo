@@ -11,7 +11,7 @@
 // Same key, sign-in check and daily limit (30 asks, shared) as
 // functions/api/pan.js; with no key it answers 501 and the app keeps the
 // subject as "your own work" blocks.
-import { MODEL, json, signedIn, takeAsk } from "./pan.js";
+import { json, admit, askClaude } from "./pan.js";
 
 const SCHEMA = {
   type: "object",
@@ -55,45 +55,26 @@ export function cleanSubject(out) {
   return { known: out?.known === true && topics.length > 0, name: clip(out?.name, 60), code: clip(out?.code, 12), board: clip(out?.board, 60), note: clip(out?.note, 300), topics };
 }
 
-export async function onRequestPost({ request, env }) {
-  if (!env.ANTHROPIC_API_KEY) return json({ error: "pan-not-configured" }, 501);
-  if (!(await signedIn(request, env))) return json({ error: "sign-in-required" }, 401);
-  let body;
-  try {
-    body = await request.json();
-  } catch {
-    return json({ error: "bad-request" }, 400);
-  }
+/** The subject asked about, checked; null without a name. */
+function readSubject(body) {
   const name = clip(body?.name, 60);
-  const code = clip(body?.code, 12);
-  if (!name) return json({ error: "bad-request" }, 400);
-  const board = clip(body?.board, 40) || "unknown";
-  const year = clip(body?.year, 60) || "unknown";
+  if (!name) return null;
+  return { name, code: clip(body?.code, 12), board: clip(body?.board, 40) || "unknown", year: clip(body?.year, 60) || "unknown" };
+}
 
-  const left = await takeAsk(request, env);
-  if (left == null) return json({ error: "pan-unavailable" }, 503);
-  if (left < 0) return json({ error: "pan-limit" }, 429);
-
-  const res = await fetch("https://api.anthropic.com/v1/messages", {
-    method: "POST",
-    headers: { "content-type": "application/json", "x-api-key": env.ANTHROPIC_API_KEY, "anthropic-version": "2026-10-21" },
-    body: JSON.stringify({
-      model: MODEL,
-      max_tokens: 3000,
-      system: SYSTEM,
-      output_config: { effort: "low", format: { type: "json_schema", schema: SCHEMA } },
-      messages: [{ role: "user", content: `Board: ${board}\nYear: ${year}\nSyllabus code: ${code || "(none given)"}\n\nThe subject, as the student wrote it:\n${name}` }],
-    }),
+export async function onRequestPost({ request, env }) {
+  const { input, error } = await admit(request, env, readSubject);
+  if (error) return error;
+  const { name, code, board, year } = input;
+  const ans = await askClaude(env, {
+    maxTokens: 3000,
+    system: SYSTEM,
+    schema: SCHEMA,
+    content: `Board: ${board}\nYear: ${year}\nSyllabus code: ${code || "(none given)"}\n\nThe subject, as the student wrote it:\n${name}`,
   });
-  if (!res.ok) return json({ error: res.status === 429 ? "pan-busy" : "pan-unavailable" }, res.status === 429 ? 429 : 502);
-  const msg = await res.json();
-  if (msg.stop_reason === "refusal") return json({ known: false, name, code, board: "", note: "I can only set up a school subject.", topics: [] });
-  const text = (msg.content || []).find((b) => b.type === "text")?.text;
-  try {
-    return json(cleanSubject(JSON.parse(text)));
-  } catch {
-    return json({ error: "pan-unavailable" }, 502);
-  }
+  if (ans.error) return ans.error;
+  if (ans.refusal) return json({ known: false, name, code, board: "", note: "I can only set up a school subject.", topics: [] });
+  return json(cleanSubject(ans.out));
 }
 
 export function onRequest({ request }) {

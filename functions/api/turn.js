@@ -19,17 +19,10 @@
 //
 // With none of them set this answers 501 and calls use STUN only.
 //
-// SUPABASE_URL / SUPABASE_ANON_KEY can be overridden with variables of the
-// same name; the defaults are the public values already in src/config.js.
-const DEFAULT_SUPABASE_URL = "https://zqtvqobonmpxffjxbjpt.supabase.co";
-const DEFAULT_SUPABASE_ANON_KEY = "sb_publishable_TQ1NrHUU3HaIcFRkOWXHuQ_yC3REquy";
-const TTL_SECONDS = 4 * 60 * 60;
+// Who is signed in is asked of Supabase the same way as for Pan (pan.js).
+import { json, signedIn } from "./pan.js";
 
-const json = (body, status = 200) =>
-  new Response(JSON.stringify(body), {
-    status,
-    headers: { "content-type": "application/json", "cache-control": "no-store" },
-  });
+const TTL_SECONDS = 4 * 60 * 60;
 
 function provider(env) {
   if (env.TURN_KEY_ID && env.TURN_KEY_API_TOKEN) return "cloudflare";
@@ -77,14 +70,8 @@ export async function onRequestPost({ request, env }) {
   const kind = provider(env);
   if (!kind) return json({ error: "turn-not-configured" }, 501);
 
-  // Only a signed-in Panalo user: ask Supabase who this token belongs to.
-  const auth = request.headers.get("authorization") || "";
-  if (!/^Bearer \S+$/.test(auth)) return json({ error: "unauthorized" }, 401);
-  const supabaseUrl = env.SUPABASE_URL || DEFAULT_SUPABASE_URL;
-  const who = await fetch(`${supabaseUrl}/auth/v1/user`, {
-    headers: { apikey: env.SUPABASE_ANON_KEY || DEFAULT_SUPABASE_ANON_KEY, authorization: auth },
-  });
-  if (!who.ok) return json({ error: "unauthorized" }, 401);
+  // Only a signed-in Panalo user.
+  if (!(await signedIn(request, env))) return json({ error: "unauthorized" }, 401);
 
   let servers = null;
   try {

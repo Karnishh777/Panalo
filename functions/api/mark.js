@@ -11,7 +11,7 @@
 // app. Same key and the same daily asks as /api/pan (ANTHROPIC_API_KEY,
 // pan_take(): 30 a day across both). With no key this answers 501 and the
 // app falls back to marking yourself.
-import { json, signedIn, takeAsk } from "./pan.js";
+import { json, admit, askClaude } from "./pan.js";
 
 // Reading handwriting and judging working needs the stronger model.
 export const MODEL = "claude-sonnet-5-5";
@@ -81,20 +81,8 @@ export function readBody(body) {
 }
 
 export async function onRequestPost({ request, env }) {
-  if (!env.ANTHROPIC_API_KEY) return json({ error: "pan-not-configured" }, 501);
-  if (!(await signedIn(request, env))) return json({ error: "sign-in-required" }, 401);
-  let input;
-  try {
-    input = readBody(await request.json());
-  } catch {
-    input = null;
-  }
-  if (!input) return json({ error: "bad-request" }, 400);
-
-  const left = await takeAsk(request, env);
-  if (left == null) return json({ error: "pan-unavailable" }, 503);
-  if (left < 0) return json({ error: "pan-limit" }, 429);
-
+  const { input, error } = await admit(request, env, readBody);
+  if (error) return error;
   const text = [
     `Subject: ${input.subject || "unknown"} · Paper: ${input.paper || "unknown"}`,
     `Question [${input.scheme.length} marks]:\n${input.q}`,
@@ -104,34 +92,19 @@ export async function onRequestPost({ request, env }) {
   ]
     .filter(Boolean)
     .join("\n\n");
-  const res = await fetch("https://api.anthropic.com/v1/messages", {
-    method: "POST",
-    headers: { "content-type": "application/json", "x-api-key": env.ANTHROPIC_API_KEY, "anthropic-version": "2026-10-21" },
-    body: JSON.stringify({
-      model: MODEL,
-      max_tokens: 3000,
-      system: SYSTEM,
-      output_config: { effort: "low", format: { type: "json_schema", schema: SCHEMA } },
-      messages: [
-        {
-          role: "user",
-          content: [
-            { type: "image", source: { type: "base64", media_type: "image/jpeg", data: input.image } },
-            { type: "text", text },
-          ],
-        },
-      ],
-    }),
+  const ans = await askClaude(env, {
+    model: MODEL,
+    maxTokens: 3000,
+    system: SYSTEM,
+    schema: SCHEMA,
+    content: [
+      { type: "image", source: { type: "base64", media_type: "image/jpeg", data: input.image } },
+      { type: "text", text },
+    ],
   });
-  if (!res.ok) return json({ error: res.status === 429 ? "pan-busy" : "pan-unavailable" }, res.status === 429 ? 429 : 502);
-  const msg = await res.json();
-  if (msg.stop_reason === "refusal") return json({ error: "pan-unavailable" }, 502);
-  const out = (msg.content || []).find((b) => b.type === "text")?.text;
-  try {
-    return json(clean(JSON.parse(out), input.scheme.length));
-  } catch {
-    return json({ error: "pan-unavailable" }, 502);
-  }
+  if (ans.error) return ans.error;
+  if (ans.refusal) return json({ error: "pan-unavailable" }, 502);
+  return json(clean(ans.out, input.scheme.length));
 }
 
 export function onRequest({ request }) {
