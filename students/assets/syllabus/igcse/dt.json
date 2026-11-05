@@ -9,7 +9,9 @@
       "questions": [
         { "q": "A design specification", "o": ["lists the requirements a product must meet", "is the final product", "is a sketch", "is the evaluation"], "a": 0, "why": "It's written after research and used to evaluate." },
         { "q": "Anthropometrics is", "o": ["the study of human body measurements for design", "the study of materials", "a type of joint", "the cost of production"], "a": 0, "why": "Ergonomics uses this data." },
-        { "q": "Why is a design brief written?", "o": ["To list tools", "To evaluate the product", "To show the final drawing", "To state the problem, the user and the context clearly"], "a": 3, "why": "The specification then turns it into measurable points." }
+        { "q": "Why is a design brief written?", "o": ["To list tools", "To evaluate the product", "To show the final drawing", "To state the problem, the user and the context clearly"], "a": 3, "why": "The specification then turns it into measurable points." },
+        { "q": "Which is the best specification point for a child's lunchbox?", "o": ["It must look nice.", "It must hold a 500 ml drinks bottle and weigh less than 300 g when empty.", "It should be good quality.", "Children should like it."], "a": 1, "why": "A good specification point is measurable, so the final product can be tested against it. 'Nice', 'good quality' and 'like it' cannot be checked objectively." },
+        { "q": "When sizing a chair for adults, why does a designer often use the 5th to 95th percentile of body measurements?", "o": ["Because it is the size of the average person", "Because it covers only the tallest users", "To reduce the cost of materials", "So the chair suits the large majority of users, not just one average size"], "a": 3, "why": "Designing between the 5th and 95th percentiles accommodates about 90% of the population. Designing for the average alone would suit few people well." }
       ],
       "long": [
         { "q": "Explain why a designer would write a specification before producing ideas.", "marks": 3, "paper": "1", "scheme": ["B1: it sets measurable requirements (function, size, cost, users)", "B1: ideas can be judged against it", "B1: the final product is evaluated against it"] }
@@ -20,7 +22,9 @@
       "questions": [
         { "q": "Which is a thermoplastic?", "o": ["acrylic", "urea-formaldehyde", "epoxy resin", "melamine"], "a": 0, "why": "Thermoplastics can be reheated and reshaped." },
         { "q": "A hardwood comes from", "o": ["deciduous, broad-leaved trees", "coniferous trees", "plastic", "metal ore"], "a": 0, "why": "e.g. oak, beech." },
-        { "q": "An alloy is", "o": ["a mixture of a metal with other elements", "a pure metal", "a type of plastic", "a wood joint"], "a": 0, "why": "e.g. brass (copper and zinc)." }
+        { "q": "An alloy is", "o": ["a mixture of a metal with other elements", "a pure metal", "a type of plastic", "a wood joint"], "a": 0, "why": "e.g. brass (copper and zinc)." },
+        { "q": "Which properties make copper suitable for electrical wiring?", "o": ["High hardness and brittleness", "Low density and strong magnetism", "High electrical conductivity and ductility", "It softens when heated and can be remoulded"], "a": 2, "why": "Copper conducts electricity very well and is ductile, so it can be drawn into thin wire. It is not magnetic or brittle." },
+        { "q": "MDF (medium-density fibreboard) is", "o": ["a manufactured board made from wood fibres and resin, with a smooth, stable surface", "a dense hardwood from tropical forests", "an aluminium alloy used for casting", "a thermosetting plastic used for plug sockets"], "a": 0, "why": "MDF is a manufactured board of compressed wood fibres bonded with resin. It has no grain, is stable and takes paint well, but it is not a natural timber." }
       ],
       "long": [
         { "q": "A child's toy is to be made from beech. Give two reasons why beech is suitable and one finish you would apply.", "marks": 3, "paper": "3", "scheme": ["B1: close grain, so it can be shaped and smoothed well", "B1: hard and durable, so it survives rough use", "B1: a non-toxic finish, e.g. food-safe oil or water-based varnish"] }
@@ -31,7 +35,9 @@
       "questions": [
         { "q": "Injection moulding is best suited to", "o": ["mass production of identical plastic parts", "one-off wooden furniture", "casting bronze", "hand-sewing"], "a": 0, "why": "High setup cost, very low unit cost." },
         { "q": "A jig is used to", "o": ["guide a tool so parts are made accurately and repeatably", "hold a drink", "measure temperature", "join wood"], "a": 0, "why": "Useful in batch production." },
-        { "q": "Which process is used to shape thin thermoplastic sheet over a mould?", "o": ["Sand casting", "Turning on a lathe", "Forging", "Vacuum forming"], "a": 3, "why": "Heat the sheet, then the vacuum pulls it over the mould." }
+        { "q": "Which process is used to shape thin thermoplastic sheet over a mould?", "o": ["Sand casting", "Turning on a lathe", "Forging", "Vacuum forming"], "a": 3, "why": "Heat the sheet, then the vacuum pulls it over the mould." },
+        { "q": "Which process is most suitable for making hollow plastic drinks bottles in large numbers?", "o": ["Vacuum forming", "Blow moulding", "Line bending", "Sand casting"], "a": 1, "why": "Blow moulding inflates a heated plastic tube (parison) against a mould to form a hollow shape, and it is fast enough for mass production." },
+        { "q": "Which joint is a strong, traditional choice for joining a wooden table leg to a rail?", "o": ["Butt joint", "Pop rivet", "Mortise and tenon joint", "Comb (finger) joint"], "a": 2, "why": "A mortise and tenon gives a large gluing area and resists racking, which suits leg-and-rail frames. Butt joints are weak, pop rivets join sheet metal, and comb joints suit box corners." }
       ],
       "long": [
         { "q": "A school workshop must make 30 identical pine boxes. (a) Explain two benefits of using a jig or template for marking out and drilling the parts. (b) Name a suitable corner joint for the boxes and give one reason for your choice.", "marks": 4, "paper": "3", "scheme": ["B1: (a) every part is identical and accurate, so quality is consistent", "B1: (a) faster: no need to measure and mark out each piece", "B1: (b) a suitable joint, e.g. comb (finger), lap (rebate) or dowel joint", "B1: (b) a matching reason, e.g. a comb joint's large gluing area makes it strong; dowel holes are quick to drill with a jig"] }
@@ -42,7 +48,9 @@
       "questions": [
         { "q": "Designing for disassembly helps", "o": ["recycling and repair at the end of a product's life", "make products cheaper to sell", "hide fixings", "speed up delivery"], "a": 0, "why": "Part of the circular economy." },
         { "q": "Which material is most sustainable for a disposable product?", "o": ["Mixed plastics glued together", "Chrome-plated steel", "A biodegradable or recyclable material", "Non-recyclable composite"], "a": 2, "why": "Consider the whole life cycle." },
-        { "q": "What is the main purpose of product analysis?", "o": ["To copy it exactly", "To sell it", "To repair it", "To find out how and why an existing product was designed and made"], "a": 3, "why": "Consider function, materials, manufacture, user and sustainability." }
+        { "q": "What is the main purpose of product analysis?", "o": ["To copy it exactly", "To sell it", "To repair it", "To find out how and why an existing product was designed and made"], "a": 3, "why": "Consider function, materials, manufacture, user and sustainability." },
+        { "q": "Which of the 6 Rs means designing a product so it can be mended rather than thrown away?", "o": ["Reduce", "Repair", "Rethink", "Refuse"], "a": 1, "why": "Repair keeps products in use for longer, for example by using replaceable parts and standard fixings. Reduce is about using less material, Rethink is about redesigning the approach, and Refuse is about not using something at all." },
+        { "q": "Planned obsolescence means", "o": ["designing a product to last as long as possible", "recycling old products into new ones", "planning how a product will be packaged", "designing a product so it becomes out of date or stops working after a certain time"], "a": 3, "why": "Planned obsolescence encourages people to replace products sooner, which raises sales but increases waste and resource use." }
       ],
       "long": [
         { "q": "Explain how a designer could make an electric kettle more sustainable. Give two design changes and say how each one helps.", "marks": 4, "paper": "1", "scheme": ["B1: a change, e.g. recycled or recyclable plastic marked with its recycling code", "B1: explained, e.g. less new material used; easy to sort at end of life", "B1: a second change, e.g. screws not glue so it can be taken apart; a replaceable element; better insulation", "B1: explained, e.g. parts can be repaired or separated for recycling; less energy used to reboil"] }
@@ -53,7 +61,9 @@
       "questions": [
         { "q": "An exploded drawing shows", "o": ["how parts fit together", "a product in use", "a cross-section", "colour schemes"], "a": 0, "why": "Parts are drawn spaced along their assembly lines." },
         { "q": "Orthographic projection shows", "o": ["front, side and plan views to scale", "a 3D view in perspective", "an exploded view", "a free sketch"], "a": 0, "why": "Used for manufacturing drawings." },
-        { "q": "What is an exploded drawing used for?", "o": ["To show the price", "To show the colour scheme only", "To replace the specification", "To show how parts fit together"], "a": 3, "why": "Parts are drawn apart along assembly lines." }
+        { "q": "What is an exploded drawing used for?", "o": ["To show the price", "To show the colour scheme only", "To replace the specification", "To show how parts fit together"], "a": 3, "why": "Parts are drawn apart along assembly lines." },
+        { "q": "On an orthographic drawing, what does a thin chain line (long and short dashes) show?", "o": ["Hidden detail", "A centre line", "A visible outline", "A dimension line"], "a": 1, "why": "Thin chain lines mark centre lines, for example through holes. Hidden detail uses thin dashed lines, and outlines use thick continuous lines." },
+        { "q": "Which drawing method shows vertical edges as vertical and horizontal edges at 30° to the horizontal?", "o": ["Oblique projection", "One-point perspective", "Isometric projection", "Orthographic projection"], "a": 2, "why": "Isometric drawing uses 30° lines for horizontal edges. Oblique keeps the front face true and draws depth at 45°, and orthographic shows flat views." }
       ],
       "long": [
         { "q": "Explain why a manufacturer would want a dimensioned orthographic drawing of a product rather than a 3D sketch.", "marks": 3, "paper": "1", "scheme": ["B1: each view shows the true shape and size, with no distortion", "B1: it can be fully dimensioned to drawing standards, so parts are made accurately", "B1: the conventions are understood by any manufacturer, so there's no ambiguity"] }
@@ -64,7 +74,9 @@
       "questions": [
         { "q": "A potential divider with an LDR can be used to", "o": ["switch on a light when it gets dark", "measure temperature", "store energy", "increase voltage"], "a": 0, "why": "The LDR's resistance rises in the dark." },
         { "q": "A cam converts", "o": ["rotary motion into reciprocating motion", "linear into rotary", "electrical into light", "heat into motion"], "a": 0, "why": "The follower rises and falls." },
-        { "q": "In a circuit, what does an LDR do?", "o": ["It produces light", "It stores charge", "It switches at a set temperature", "Its resistance changes with light level"], "a": 3, "why": "Used as a light sensor in a potential divider." }
+        { "q": "In a circuit, what does an LDR do?", "o": ["It produces light", "It stores charge", "It switches at a set temperature", "Its resistance changes with light level"], "a": 3, "why": "Used as a light sensor in a potential divider." },
+        { "q": "In a wheelbarrow, a second-class lever, where is the load?", "o": ["At the fulcrum", "Beyond the effort, at the far end of the handles", "Between the fulcrum and the effort", "There is no load in a second-class lever"], "a": 2, "why": "In a second-class lever the load sits between the fulcrum (the wheel) and the effort (the handles), which gives a mechanical advantage greater than 1." },
+        { "q": "A driver gear with 20 teeth turns a driven gear with 60 teeth. What is the velocity ratio (driven teeth ÷ driver teeth)?", "o": ["3", "0.33", "40", "80"], "a": 0, "why": "60 ÷ 20 = 3, so the driven gear turns three times slower than the driver (and with more torque). Subtracting or adding the teeth is a common mistake." }
       ],
       "long": [
         { "q": "A potential divider has a 9 V supply, R1 = 10 kΩ at the top and R2 = 5 kΩ at the bottom. (a) Calculate the output voltage across R2, showing your working. (b) R2 is replaced by an LDR. Explain what happens to the output voltage as it gets darker.", "marks": 5, "paper": "4", "scheme": ["M1: Vout = Vin × R2 ÷ (R1 + R2)", "M1: 9 × 5 ÷ (10 + 5)", "A1: 3 V (with the unit)", "B1: (b) the LDR's resistance increases as light falls", "B1: (b) so it takes a bigger share of the supply and Vout rises"], "ans": "(a) 3 V; (b) Vout rises as it gets darker" }
@@ -75,7 +87,9 @@
       "questions": [
         { "q": "The project folio should show", "o": ["research, ideas, development, making and evaluation", "only the final product", "only sketches", "only an evaluation"], "a": 0, "why": "Every stage of the design process is marked." },
         { "q": "In coursework, what does good development show?", "o": ["One idea drawn neatly", "Ideas improved through models, tests and feedback", "Photos with no notes", "Copied products"], "a": 1, "why": "Explain each decision." },
-        { "q": "What should testing the final product check?", "o": ["Only its appearance", "How long it took", "The cost of tools", "Each point of the specification"], "a": 3, "why": "Use users and measurements as evidence." }
+        { "q": "What should testing the final product check?", "o": ["Only its appearance", "How long it took", "The cost of tools", "Each point of the specification"], "a": 3, "why": "Use users and measurements as evidence." },
+        { "q": "Why should a folio include a production plan before making begins?", "o": ["To organise the order of tasks, tools, equipment and quality checks", "To replace the final evaluation", "Because it is the only section that is marked", "To show the final colour scheme"], "a": 0, "why": "A production plan sequences the making stages and quality-control checks so that the product is made efficiently and accurately." },
+        { "q": "Which is the most useful evaluation statement?", "o": ["My product is good.", "I enjoyed making it.", "It took me a long time to finish.", "Five users tested it and three found the handle too narrow, so I would widen it to 35 mm to meet specification point 4."], "a": 3, "why": "A good evaluation uses evidence from testing, refers to the specification and suggests a specific improvement. The others are vague or irrelevant." }
       ]
     }
   ]
