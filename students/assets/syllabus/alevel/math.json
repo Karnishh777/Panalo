@@ -9,7 +9,9 @@
       "questions": [
         { "q": "For which values of k does x² + kx + 9 = 0 have equal roots?", "o": ["k = ±3", "k = ±6", "k = 9", "k = 0"], "a": 1, "why": "Equal roots need b² − 4ac = 0: k² − 36 = 0, so k = ±6." },
         { "q": "Write x² − 6x + 11 in completed-square form.", "o": ["(x − 3)² + 2", "(x − 6)² − 25", "(x + 3)² + 2", "(x − 3)² + 11"], "a": 0, "why": "x² − 6x = (x − 3)² − 9, so the expression is (x − 3)² + 2; the minimum point is (3, 2)." },
-        { "q": "Solve x² − 5x + 4 < 0.", "o": ["x < 1 or x > 4", "1 < x < 4", "x < 4", "x > 1"], "a": 1, "why": "(x − 1)(x − 4) < 0 between the roots." }
+        { "q": "Solve x² − 5x + 4 < 0.", "o": ["x < 1 or x > 4", "1 < x < 4", "x < 4", "x > 1"], "a": 1, "why": "(x − 1)(x − 4) < 0 between the roots." },
+        { "q": "The equation 2x² + 3x + k = 0 has no real roots. Which describes the possible values of k?", "o": ["k < 9/8", "k > 9/4", "k > 9/8", "k > −9/8"], "a": 2, "why": "No real roots needs b² − 4ac < 0: 9 − 8k < 0, so k > 9/8." },
+        { "q": "Solve x − 5√x + 6 = 0.", "o": ["x = 4 or x = 9", "x = 2 or x = 3", "x = −2 or x = −3", "x = 4 only"], "a": 0, "why": "Let u = √x: u² − 5u + 6 = 0 gives u = 2 or 3, so x = u² = 4 or 9." }
       ],
       "long": [
         { "q": "Express 2x² − 12x + 23 in the form a(x + b)² + c. Hence state the coordinates of the minimum point of y = 2x² − 12x + 23.", "marks": 4, "paper": "1", "scheme": ["B1: a = 2", "B1: b = −3", "B1: c = 5", "B1: minimum point (3, 5)"], "ans": "2(x − 3)² + 5; minimum (3, 5)" },
@@ -22,7 +24,8 @@
         { "q": "f(x) = 2x + 3. What is f⁻¹(x)?", "o": ["(x − 3)/2", "(x + 3)/2", "2x − 3", "1/(2x + 3)"], "a": 0, "why": "Swap and rearrange: x = 2y + 3, so y = (x − 3)/2." },
         { "q": "f(x) = x² and g(x) = x + 1. What is fg(x)?", "o": ["x² + 1", "(x + 1)²", "x² + x", "2x + 1"], "a": 1, "why": "fg(x) = f(g(x)) = (x + 1)²." },
         { "q": "A function has an inverse only if it is…", "o": ["even", "one-one", "continuous", "quadratic"], "a": 1, "why": "Each output must come from exactly one input." },
-        { "q": "f(x) = x² + 1 for x ≥ 0. Which is the range of f?", "o": ["x ≥ 0", "f(x) ≥ 0", "f(x) ≥ 1", "all real numbers"], "a": 2, "why": "Examiners (2023): there was confusion between range and domain. The domain is x ≥ 0; the range is the set of outputs f(x) ≥ 1." }
+        { "q": "f(x) = x² + 1 for x ≥ 0. Which is the range of f?", "o": ["x ≥ 0", "f(x) ≥ 0", "f(x) ≥ 1", "all real numbers"], "a": 2, "why": "Examiners (2023): there was confusion between range and domain. The domain is x ≥ 0; the range is the set of outputs f(x) ≥ 1." },
+        { "q": "The graph of y = f(x) is stretched by factor 2 parallel to the y-axis, then translated 3 units in the negative x-direction. What is the equation of the new graph?", "o": ["y = 2f(x − 3)", "y = f(2x + 3)", "y = ½f(x + 3)", "y = 2f(x + 3)"], "a": 3, "why": "A y-stretch of factor 2 multiplies the output: 2f(x). Moving 3 units left replaces x by x + 3, giving y = 2f(x + 3)." }
       ],
       "long": [
         { "q": "f(x) = 3x − 2 and g(x) = x² + 1. Find fg(x) and solve fg(x) = 10.", "marks": 3, "paper": "1", "scheme": ["B1: fg(x) = 3x² + 1", "M1: 3x² + 1 = 10, so x² = 3", "A1: x = ±√3"], "ans": "fg(x) = 3x² + 1; x = ±√3" },
@@ -34,7 +37,9 @@
       "questions": [
         { "q": "What is the centre and radius of (x − 2)² + (y + 1)² = 25?", "o": ["(2, −1), 5", "(−2, 1), 5", "(2, −1), 25", "(2, 1), 5"], "a": 0, "why": "(x − a)² + (y − b)² = r² has centre (a, b) and radius r." },
         { "q": "What is the length of the line from (1, 2) to (4, 6)?", "o": ["5", "7", "25", "√7"], "a": 0, "why": "√(3² + 4²) = 5." },
-        { "q": "What is the gradient of the line through (1, 2) and (3, 8)?", "o": ["3", "1/3", "−3", "5"], "a": 0, "why": "(8 − 2) ÷ (3 − 1) = 3." }
+        { "q": "What is the gradient of the line through (1, 2) and (3, 8)?", "o": ["3", "1/3", "−3", "5"], "a": 0, "why": "(8 − 2) ÷ (3 − 1) = 3." },
+        { "q": "A line passes through (2, 5) and is perpendicular to y = 3x − 1. What is its equation?", "o": ["3x + y = 11", "x − 3y = −13", "x + 3y = 13", "x + 3y = 17"], "a": 3, "why": "The perpendicular gradient is −1/3, so y − 5 = −⅓(x − 2), which rearranges to x + 3y = 17." },
+        { "q": "The line y = 2x + c is a tangent to the circle x² + y² = 5. What are the possible values of c?", "o": ["c = ±5", "c = ±√5", "c = ±25", "c = 5 only"], "a": 0, "why": "Substituting gives 5x² + 4cx + c² − 5 = 0; a tangent needs a repeated root, so 16c² − 20(c² − 5) = 0, giving c² = 25 and c = ±5." }
       ],
       "long": [
         { "q": "A is the point (1, 2) and B is the point (7, 10). Find the equation of the perpendicular bisector of AB.", "marks": 4, "paper": "1", "scheme": ["B1: midpoint (4, 6)", "B1: gradient of AB = 4/3", "M1: perpendicular gradient −3/4 through the midpoint", "A1: 3x + 4y = 36 (or equivalent)"], "ans": "3x + 4y = 36" },
@@ -46,7 +51,9 @@
       "questions": [
         { "q": "An arc of a circle of radius 6 cm subtends 0.5 radians. How long is the arc?", "o": ["3 cm", "6 cm", "9 cm", "12 cm"], "a": 0, "why": "s = rθ = 6 × 0.5 = 3 cm." },
         { "q": "The area of a sector of radius 4 and angle 1.2 rad is…", "o": ["4.8", "9.6", "19.2", "2.4"], "a": 1, "why": "A = ½r²θ = ½ × 16 × 1.2 = 9.6." },
-        { "q": "A sector has radius 5 cm and angle 0.8 radians. What is its perimeter?", "o": ["4 cm", "10 cm", "20 cm", "14 cm"], "a": 3, "why": "Examiners (2023): some found an area instead of a perimeter. Arc = 5 × 0.8 = 4, plus two radii." }
+        { "q": "A sector has radius 5 cm and angle 0.8 radians. What is its perimeter?", "o": ["4 cm", "10 cm", "20 cm", "14 cm"], "a": 3, "why": "Examiners (2023): some found an area instead of a perimeter. Arc = 5 × 0.8 = 4, plus two radii." },
+        { "q": "A sector of a circle of radius 4 cm has area 12 cm². What is the angle of the sector?", "o": ["0.75 rad", "3 rad", "1.5 rad", "6 rad"], "a": 2, "why": "Area = ½r²θ, so 12 = ½ × 16 × θ and θ = 1.5 rad. Forgetting the ½ gives 0.75." },
+        { "q": "A chord AB of a circle of radius 6 cm subtends an angle of π/3 at the centre. What is the exact area of the minor segment cut off by AB?", "o": ["12π − 9√3 cm²", "6π − 9√3 cm²", "6π − 18√3 cm²", "3π − 9√3 cm²"], "a": 1, "why": "Sector = ½ × 36 × π/3 = 6π and triangle = ½ × 36 × sin(π/3) = 9√3, so the segment is 6π − 9√3 cm²." }
       ],
       "long": [
         { "q": "The diagram shows a sector OAB of a circle with centre O and radius 8 cm. Angle AOB = 1.2 radians. Find (a) the length of the arc AB, (b) the area of the segment between the arc AB and the chord AB.", "marks": 5, "paper": "1", "scheme": ["B1: arc AB = 8 × 1.2 = 9.6 cm", "B1: sector area = ½ × 8² × 1.2 = 38.4 cm²", "M1: triangle area = ½ × 8² × sin 1.2", "M1: segment = sector − triangle", "A1: 8.58 cm² (3 s.f.)"], "ans": "(a) 9.6 cm (b) 8.58 cm²", "fig": "assets/syllabus/fig/9709-p1-sector.svg" },
@@ -86,7 +93,9 @@
       "questions": [
         { "q": "Differentiate y = 3x⁴ − 2x.", "o": ["12x³ − 2", "12x³", "3x³ − 2", "x⁴ − 2"], "a": 0, "why": "d/dx(axⁿ) = naxⁿ⁻¹." },
         { "q": "At a stationary point, dy/dx equals…", "o": ["1", "0", "−1", "the y-value"], "a": 1, "why": "The gradient is zero; the second derivative tells maximum or minimum." },
-        { "q": "Differentiate y = (2x + 1)³.", "o": ["3(2x + 1)²", "6(2x + 1)²", "6(2x + 1)³", "(2x + 1)²"], "a": 1, "why": "Chain rule: 3(2x + 1)² × 2." }
+        { "q": "Differentiate y = (2x + 1)³.", "o": ["3(2x + 1)²", "6(2x + 1)²", "6(2x + 1)³", "(2x + 1)²"], "a": 1, "why": "Chain rule: 3(2x + 1)² × 2." },
+        { "q": "The radius of a circle increases at 0.5 cm s⁻¹. At what rate is the area increasing when the radius is 4 cm?", "o": ["4π cm² s⁻¹", "2π cm² s⁻¹", "8π cm² s⁻¹", "16π cm² s⁻¹"], "a": 0, "why": "dA/dt = dA/dr × dr/dt = 2πr × 0.5 = 2π × 4 × 0.5 = 4π cm² s⁻¹." },
+        { "q": "What is the gradient of the curve y = 2√x at the point where x = 4?", "o": ["1/4", "1", "4", "1/2"], "a": 3, "why": "y = 2x^(1/2), so dy/dx = x^(−1/2) = 1/√x, which is 1/2 at x = 4." }
       ],
       "long": [
         { "q": "A curve has equation y = x³ − 6x² + 9x + 2. Find the coordinates of the stationary points and determine their nature.", "marks": 6, "paper": "1", "scheme": ["B1: dy/dx = 3x² − 12x + 9", "M1: set dy/dx = 0 and solve", "A1: x = 1 and x = 3", "A1: (1, 6) and (3, 2)", "M1: d²y/dx² = 6x − 12 (or another valid test)", "A1: (1, 6) is a maximum, (3, 2) a minimum"], "ans": "(1, 6) maximum; (3, 2) minimum" },
@@ -98,7 +107,9 @@
       "questions": [
         { "q": "Find ∫ 6x² dx.", "o": ["12x + c", "2x³ + c", "6x³ + c", "3x² + c"], "a": 1, "why": "Raise the power by one and divide: 6x³/3 = 2x³." },
         { "q": "Evaluate ∫₀² 3x² dx.", "o": ["4", "6", "8", "12"], "a": 2, "why": "[x³]₀² = 8." },
-        { "q": "The region under y = f(x) is rotated 360° about the x-axis. The volume is:", "o": ["∫ π y dx", "∫ π y² dx", "∫ 2π y dx", "∫ y² dx"], "a": 1, "why": "Examiners (2023): some integrated y rather than y²." }
+        { "q": "The region under y = f(x) is rotated 360° about the x-axis. The volume is:", "o": ["∫ π y dx", "∫ π y² dx", "∫ 2π y dx", "∫ y² dx"], "a": 1, "why": "Examiners (2023): some integrated y rather than y²." },
+        { "q": "Find ∫ (3x + 2)⁴ dx.", "o": ["(3x + 2)⁵/5 + c", "(3x + 2)⁵/15 + c", "3(3x + 2)⁵/5 + c", "12(3x + 2)³ + c"], "a": 1, "why": "Raise the power by 1 and divide by the new power and by the coefficient of x: (3x + 2)⁵/(5 × 3) + c." },
+        { "q": "The region under y = √x from x = 0 to x = 4 is rotated through 360° about the x-axis. What is the volume generated?", "o": ["16π/3", "8", "8π", "64π/3"], "a": 2, "why": "V = π∫₀⁴ y² dx = π∫₀⁴ x dx = π[x²/2]₀⁴ = 8π. Using ∫y dx instead of ∫y² dx gives 16π/3." }
       ],
       "long": [
         { "q": "The diagram shows the curve y = x² − 4x + 3, which crosses the x-axis at x = 1 and x = 3. Find the area of the shaded region between the curve and the x-axis.", "marks": 4, "paper": "1", "scheme": ["M1: integrate: x³/3 − 2x² + 3x", "M1: use the limits 1 and 3", "A1: value −4/3", "A1: area = 4/3"], "ans": "4/3", "fig": "assets/syllabus/fig/9709-p1-curve.svg" },
@@ -110,7 +121,9 @@
       "questions": [
         { "q": "Solve |x − 3| < 2.", "o": ["x < 5", "1 < x < 5", "x > 1", "−5 < x < 5"], "a": 1, "why": "−2 < x − 3 < 2, so 1 < x < 5." },
         { "q": "What is the remainder when x³ − 2x + 1 is divided by (x − 2)?", "o": ["1", "3", "5", "−3"], "a": 2, "why": "Remainder theorem: f(2) = 8 − 4 + 1 = 5." },
-        { "q": "Solve |2x − 3| < 5.", "o": ["x < 4", "x < −1 or x > 4", "−4 < x < 1", "−1 < x < 4"], "a": 3, "why": "−5 < 2x − 3 < 5, so −2 < 2x < 8." }
+        { "q": "Solve |2x − 3| < 5.", "o": ["x < 4", "x < −1 or x > 4", "−4 < x < 1", "−1 < x < 4"], "a": 3, "why": "−5 < 2x − 3 < 5, so −2 < 2x < 8." },
+        { "q": "Express (5x + 1)/((x − 1)(x + 2)) in partial fractions.", "o": ["3/(x − 1) + 2/(x + 2)", "2/(x − 1) + 3/(x + 2)", "2/(x − 1) − 3/(x + 2)", "6/(x − 1) + 9/(x + 2)"], "a": 1, "why": "5x + 1 = A(x + 2) + B(x − 1). x = 1 gives 6 = 3A so A = 2; x = −2 gives −9 = −3B so B = 3." },
+        { "q": "What is the expansion of (1 − 3x)⁻¹ up to the term in x², and for which x is it valid?", "o": ["1 + 3x + 9x², valid for |x| < 1/3", "1 − 3x + 9x², valid for |x| < 1/3", "1 + 3x + 9x², valid for |x| < 3", "1 + 3x + 6x², valid for |x| < 1/3"], "a": 0, "why": "(1 + u)⁻¹ = 1 − u + u² with u = −3x gives 1 + 3x + 9x²; it is valid when |3x| < 1, i.e. |x| < 1/3." }
       ],
       "long": [
         { "q": "Expand (1 + 2x)^(−1/2) in ascending powers of x, up to and including the term in x², and state the set of values of x for which the expansion is valid.", "marks": 4, "paper": "3", "scheme": ["M1: 1 + (−½)(2x) + (−½)(−3/2)/2 × (2x)²", "A1: 1 − x", "A1: + (3/2)x²", "B1: |x| < ½"], "ans": "1 − x + (3/2)x², |x| < ½" }
@@ -121,7 +134,9 @@
       "questions": [
         { "q": "Solve eˣ = 5.", "o": ["x = 5/e", "x = ln 5", "x = log₁₀ 5", "x = 5e"], "a": 1, "why": "Take natural logs of both sides." },
         { "q": "log 8 + log 2 equals…", "o": ["log 10", "log 16", "log 4", "log 6"], "a": 1, "why": "log a + log b = log(ab) = log 16." },
-        { "q": "Solve 3ˣ = 20, giving x to 3 significant figures.", "o": ["6.67", "2.73", "1.30", "0.367"], "a": 1, "why": "x = ln 20 ÷ ln 3. Examiners (2023): keep brackets when taking logarithms." }
+        { "q": "Solve 3ˣ = 20, giving x to 3 significant figures.", "o": ["6.67", "2.73", "1.30", "0.367"], "a": 1, "why": "x = ln 20 ÷ ln 3. Examiners (2023): keep brackets when taking logarithms." },
+        { "q": "Solve ln(x + 2) = 1 + ln x.", "o": ["x = 2/(e + 1)", "x = e − 2", "x = (e − 1)/2", "x = 2/(e − 1)"], "a": 3, "why": "ln((x + 2)/x) = 1, so x + 2 = ex, giving x(e − 1) = 2 and x = 2/(e − 1)." },
+        { "q": "Variables satisfy y = Axⁿ. A graph of ln y against ln x is a straight line with gradient 1.5 and intercept 0.7 on the ln y axis. What are n and A?", "o": ["n = 0.7, A = e^1.5", "n = 1.5, A = e^0.7", "n = 1.5, A = 0.7", "n = e^1.5, A = 0.7"], "a": 1, "why": "ln y = ln A + n ln x, so the gradient is n = 1.5 and the intercept is ln A = 0.7, giving A = e^0.7 ≈ 2.01." }
       ]
     },
     {
@@ -129,7 +144,9 @@
       "questions": [
         { "q": "cos 2A can be written as…", "o": ["2 sin A cos A", "1 − 2sin²A", "2cos A", "sin²A − cos²A"], "a": 1, "why": "cos 2A = cos²A − sin²A = 1 − 2sin²A = 2cos²A − 1." },
         { "q": "sec θ is…", "o": ["1/sin θ", "1/cos θ", "1/tan θ", "sin θ/cos θ"], "a": 1, "why": "sec = 1/cos, cosec = 1/sin, cot = 1/tan." },
-        { "q": "sec²θ − tan²θ is equal to:", "o": ["0", "1", "cos²θ", "−1"], "a": 1, "why": "From 1 + tan²θ = sec²θ." }
+        { "q": "sec²θ − tan²θ is equal to:", "o": ["0", "1", "cos²θ", "−1"], "a": 1, "why": "From 1 + tan²θ = sec²θ." },
+        { "q": "Given that tan A = 3/4 and A is acute, what is tan 2A?", "o": ["3/2", "24/7", "24/25", "7/24"], "a": 1, "why": "tan 2A = 2tan A/(1 − tan²A) = (3/2)/(1 − 9/16) = (3/2)/(7/16) = 24/7." },
+        { "q": "What is the exact value of sin 75°?", "o": ["(√3 + 1)/4", "(√6 − √2)/4", "(√2 + √3)/2", "(√6 + √2)/4"], "a": 3, "why": "sin(45° + 30°) = sin 45° cos 30° + cos 45° sin 30° = (√2/2)(√3/2) + (√2/2)(1/2) = (√6 + √2)/4." }
       ],
       "long": [
         { "q": "Express 3 sin θ + 4 cos θ in the form R sin(θ + α), where R > 0 and 0° < α < 90°. Hence solve 3 sin θ + 4 cos θ = 2 for 0° < θ < 360°.", "marks": 5, "paper": "3", "scheme": ["B1: R = 5", "M1: tan α = 4/3", "A1: α = 53.13°", "M1: sin(θ + 53.13°) = 0.4", "A1: θ = 103.3°, 330.4°"], "ans": "5 sin(θ + 53.1°); θ = 103.3°, 330.4°" }
@@ -140,7 +157,9 @@
       "questions": [
         { "q": "Differentiate y = x eˣ.", "o": ["eˣ", "x eˣ", "eˣ(1 + x)", "eˣ − x"], "a": 2, "why": "Product rule: eˣ + x eˣ." },
         { "q": "Differentiate y = ln(3x).", "o": ["3/x", "1/x", "1/(3x)", "ln 3"], "a": 1, "why": "ln(3x) = ln 3 + ln x, so the derivative is 1/x." },
-        { "q": "y = x² e^(2x). Which method is needed to find dy/dx?", "o": ["Chain rule only", "Quotient rule", "Implicit differentiation", "Product rule (with the chain rule for e^(2x))"], "a": 3, "why": "Examiners (2023): it was essential that y be differentiated as a product; many did not recognise it as one." }
+        { "q": "y = x² e^(2x). Which method is needed to find dy/dx?", "o": ["Chain rule only", "Quotient rule", "Implicit differentiation", "Product rule (with the chain rule for e^(2x))"], "a": 3, "why": "Examiners (2023): it was essential that y be differentiated as a product; many did not recognise it as one." },
+        { "q": "Differentiate y = (ln x)/x.", "o": ["(1 − ln x)/x²", "(ln x − 1)/x²", "1/x²", "(1 + ln x)/x²"], "a": 0, "why": "Quotient rule: (x × 1/x − ln x × 1)/x² = (1 − ln x)/x²." },
+        { "q": "A curve has equation x² + y² = 25. What is dy/dx at the point (3, 4)?", "o": ["3/4", "−4/3", "4/3", "−3/4"], "a": 3, "why": "Differentiating implicitly: 2x + 2y dy/dx = 0, so dy/dx = −x/y = −3/4." }
       ],
       "long": [
         { "q": "Find dy/dx when y = x² e^(3x), and the exact x-coordinates of the stationary points.", "marks": 4, "paper": "3", "scheme": ["M1: product rule", "A1: dy/dx = 2x e^(3x) + 3x² e^(3x)", "M1: x e^(3x)(2 + 3x) = 0", "A1: x = 0 and x = −2/3"], "ans": "x = 0, x = −2/3" }
@@ -151,7 +170,9 @@
       "questions": [
         { "q": "Find ∫ 1/x dx (x > 0).", "o": ["x⁰ + c", "ln x + c", "−1/x² + c", "eˣ + c"], "a": 1, "why": "The derivative of ln x is 1/x." },
         { "q": "Which method suits ∫ x cos x dx?", "o": ["Substitution u = cos x", "Integration by parts", "Partial fractions", "It can't be integrated"], "a": 1, "why": "u = x, dv = cos x dx gives x sin x + cos x + c." },
-        { "q": "∫ 1/(2x + 1) dx =", "o": ["ln|2x + 1| + c", "2 ln|2x + 1| + c", "½ ln|2x + 1| + c", "−1/(2x + 1)² + c"], "a": 2, "why": "Divide by the derivative of the inside, 2." }
+        { "q": "∫ 1/(2x + 1) dx =", "o": ["ln|2x + 1| + c", "2 ln|2x + 1| + c", "½ ln|2x + 1| + c", "−1/(2x + 1)² + c"], "a": 2, "why": "Divide by the derivative of the inside, 2." },
+        { "q": "Evaluate ∫₀^(π/2) sin²x dx.", "o": ["π/2", "1/2", "π/4", "π/8"], "a": 2, "why": "sin²x = ½(1 − cos 2x), so the integral is [x/2 − (sin 2x)/4] from 0 to π/2 = π/4." },
+        { "q": "Find ∫ 2x/(x² + 1) dx.", "o": ["2 ln(x² + 1) + c", "ln(x² + 1) + c", "½ ln(x² + 1) + c", "x² ln(x² + 1) + c"], "a": 1, "why": "The numerator 2x is exactly the derivative of the denominator, so the integral is ln(x² + 1) + c." }
       ],
       "long": [
         { "q": "Use integration by parts to find ∫ x ln x dx.", "marks": 3, "paper": "3", "scheme": ["M1: u = ln x, dv/dx = x", "A1: (x²/2) ln x − ∫ (x²/2)(1/x) dx", "A1: (x²/2) ln x − x²/4 + c"], "ans": "(x²/2) ln x − x²/4 + c" }
@@ -162,7 +183,9 @@
       "questions": [
         { "q": "f(1) = −2 and f(2) = 3, with f continuous. What can you conclude?", "o": ["No root between 1 and 2", "A root lies between 1 and 2", "f has a maximum at 1.5", "f(1.5) = 0"], "a": 1, "why": "A change of sign shows a root in the interval." },
         { "q": "An iteration converges to 0.79495… What is the root correct to 2 decimal places?", "o": ["0.79", "0.80", "0.795", "0.8"], "a": 0, "why": "Examiners (2023): a common error was rounding the final answer to 0.80 rather than 0.79." },
-        { "q": "A sign change of f(x) between a and b shows a root only if f is:", "o": ["Increasing", "Continuous on the interval", "A polynomial", "Positive at a"], "a": 1, "why": "A function like 1/x changes sign at an asymptote, with no root." }
+        { "q": "A sign change of f(x) between a and b shows a root only if f is:", "o": ["Increasing", "Continuous on the interval", "A polynomial", "Positive at a"], "a": 1, "why": "A function like 1/x changes sign at an asymptote, with no root." },
+        { "q": "The iteration xₙ₊₁ = ½(xₙ + 5/xₙ) converges to a value α. Which equation does α satisfy?", "o": ["x² = 10", "2x² = 5", "x² = 5", "x² = 2.5"], "a": 2, "why": "At the limit x = ½(x + 5/x), so 2x = x + 5/x, giving x = 5/x and x² = 5." },
+        { "q": "Using xₙ₊₁ = ∛(xₙ + 3) with x₁ = 2, what is x₂ to 3 decimal places?", "o": ["1.587", "1.913", "2.080", "1.710"], "a": 3, "why": "x₂ = ∛(2 + 3) = ∛5 = 1.70997…, which is 1.710 to 3 decimal places." }
       ]
     },
     {
@@ -170,7 +193,9 @@
       "questions": [
         { "q": "What is the scalar product of (1, 2, 3) and (4, −1, 0)?", "o": ["2", "4", "6", "0"], "a": 0, "why": "1×4 + 2×(−1) + 3×0 = 2." },
         { "q": "Two non-zero vectors are perpendicular when their scalar product is…", "o": ["1", "0", "−1", "their lengths multiplied"], "a": 1, "why": "a·b = |a||b|cos 90° = 0." },
-        { "q": "a = (1, 2, 2) and b = (2, −1, 0). What is the angle between them?", "o": ["0°", "45°", "90°", "60°"], "a": 2, "why": "a · b = 2 − 2 + 0 = 0, so they are perpendicular." }
+        { "q": "a = (1, 2, 2) and b = (2, −1, 0). What is the angle between them?", "o": ["0°", "45°", "90°", "60°"], "a": 2, "why": "a · b = 2 − 2 + 0 = 0, so they are perpendicular." },
+        { "q": "What is the acute angle between lines with direction vectors (1, 1, 0) and (1, 0, 1)?", "o": ["30°", "45°", "60°", "90°"], "a": 2, "why": "cos θ = (1 + 0 + 0)/(√2 × √2) = 1/2, so θ = 60°." },
+        { "q": "P lies on the line r = (2, 1, 0) + t(1, −1, 2). For which value of t is OP perpendicular to the line?", "o": ["t = 1/6", "t = −1/6", "t = −1/2", "t = 1/4"], "a": 1, "why": "OP = (2 + t, 1 − t, 2t); OP · (1, −1, 2) = 2 + t − 1 + t + 4t = 1 + 6t = 0, so t = −1/6." }
       ],
       "long": [
         { "q": "The lines l₁: r = (1, 2, 3) + s(1, 0, −1) and l₂: r = (2, 1, 0) + t(0, 1, 1). Show that they do not intersect.", "marks": 3, "paper": "3", "scheme": ["M1: equate components: 1 + s = 2, 2 = 1 + t, 3 − s = t", "M1: s = 1, t = 1", "A1: third equation: 3 − 1 = 2 ≠ 1, so no intersection (and not parallel, so skew)"] }
@@ -181,7 +206,9 @@
       "questions": [
         { "q": "The general solution of dy/dx = ky is…", "o": ["y = kx + c", "y = A eᵏˣ", "y = kx²", "y = ln(kx)"], "a": 1, "why": "Separate variables: ∫dy/y = ∫k dx, ln y = kx + c." },
         { "q": "What is the general solution of dy/dx = 2y?", "o": ["y = 2x + c", "y = Ae^(2x)", "y = e^(2x) + c", "y = x² + c"], "a": 1, "why": "Separate: ∫ dy/y = ∫ 2 dx, ln y = 2x + c." },
-        { "q": "Separating the variables in dy/dx = x/y gives:", "o": ["∫ x dy = ∫ y dx", "∫ 1/y dy = ∫ x dx", "y = x + c", "∫ y dy = ∫ x dx"], "a": 3, "why": "Examiners (2023): incorrect separation of variables was a common error." }
+        { "q": "Separating the variables in dy/dx = x/y gives:", "o": ["∫ x dy = ∫ y dx", "∫ 1/y dy = ∫ x dx", "y = x + c", "∫ y dy = ∫ x dx"], "a": 3, "why": "Examiners (2023): incorrect separation of variables was a common error." },
+        { "q": "Solve dy/dx = xy, given that y = 1 when x = 0.", "o": ["y = e^(x²/2)", "y = e^(x²)", "y = e^(2x²)", "y = x²/2 + 1"], "a": 0, "why": "∫ (1/y) dy = ∫ x dx gives ln y = x²/2 + c; y = 1 at x = 0 gives c = 0, so y = e^(x²/2)." },
+        { "q": "A population P decreases at a rate proportional to the square root of P. Which differential equation models this (k > 0)?", "o": ["dP/dt = k√P", "dP/dt = −kP²", "dP/dt = −k√P", "dP/dt = −√(kt)"], "a": 2, "why": "The rate of change is dP/dt; it is proportional to √P and negative because P decreases." }
       ],
       "long": [
         { "q": "Solve the differential equation dy/dx = xy² given that y = 1 when x = 0.", "marks": 4, "paper": "3", "scheme": ["M1: separate: ∫ y⁻² dy = ∫ x dx", "A1: −1/y = x²/2 + c", "M1: c = −1", "A1: y = 2/(2 − x²)"], "ans": "y = 2/(2 − x²)" }
@@ -192,7 +219,9 @@
       "questions": [
         { "q": "What is (2 + 3i)(1 − i)?", "o": ["5 + i", "−1 + i", "2 − 3i", "5 − i"], "a": 0, "why": "2 − 2i + 3i − 3i² = 2 + i + 3 = 5 + i." },
         { "q": "What is the modulus of 3 − 4i?", "o": ["1", "5", "7", "25"], "a": 1, "why": "√(3² + 4²) = 5." },
-        { "q": "(2 + 3i)(2 − 3i) =", "o": ["−5", "4 − 9i", "4 + 9i", "13"], "a": 3, "why": "A number times its conjugate is the modulus squared: 4 + 9." }
+        { "q": "(2 + 3i)(2 − 3i) =", "o": ["−5", "4 − 9i", "4 + 9i", "13"], "a": 3, "why": "A number times its conjugate is the modulus squared: 4 + 9." },
+        { "q": "Express (3 + i)/(1 − i) in the form x + iy.", "o": ["2 + i", "1 + 2i", "1 − 2i", "2 + 4i"], "a": 1, "why": "Multiply top and bottom by 1 + i: (3 + 3i + i + i²)/(1 + 1) = (2 + 4i)/2 = 1 + 2i." },
+        { "q": "In an Argand diagram, what is the locus of z satisfying |z − 2i| = 3?", "o": ["A circle with centre (0, −2) and radius 3", "A circle with centre (0, 2) and radius 9", "The perpendicular bisector of 0 and 2i", "A circle with centre (0, 2) and radius 3"], "a": 3, "why": "|z − a| = r is a circle of radius r centred on the point a; here a = 2i, the point (0, 2), and r = 3." }
       ],
       "long": [
         { "q": "The complex number z = 1 + i√3. Find the modulus and argument of z, and hence find z³.", "marks": 4, "paper": "3", "scheme": ["B1: |z| = 2", "B1: arg z = π/3", "M1: z³ has modulus 8, argument π", "A1: z³ = −8"], "ans": "|z| = 2, arg z = π/3, z³ = −8" }
@@ -217,7 +246,8 @@
         { "q": "A particle moves with constant acceleration from rest to 12 m s⁻¹ in 4 s. How far does it go?", "o": ["12 m", "24 m", "48 m", "3 m"], "a": 1, "why": "s = ½(u + v)t = ½ × 12 × 4 = 24 m." },
         { "q": "On a velocity–time graph, the area under the graph gives the…", "o": ["acceleration", "displacement", "speed", "force"], "a": 1, "why": "Area = velocity × time = displacement; the gradient is the acceleration." },
         { "q": "A stone is dropped from rest (g = 10 m s⁻²). What is its speed after 3 s?", "o": ["10 m s⁻¹", "30 m s⁻¹", "45 m s⁻¹", "90 m s⁻¹"], "a": 1, "why": "v = u + at = 0 + 10 × 3 = 30 m s⁻¹." },
-        { "q": "A particle has velocity v = 3t² − 2t m s⁻¹. What is its acceleration when t = 2?", "o": ["8 m s⁻²", "10 m s⁻²", "12 m s⁻²", "4 m s⁻²"], "a": 1, "why": "a = dv/dt = 6t − 2 = 10 m s⁻²." }
+        { "q": "A particle has velocity v = 3t² − 2t m s⁻¹. What is its acceleration when t = 2?", "o": ["8 m s⁻²", "10 m s⁻²", "12 m s⁻²", "4 m s⁻²"], "a": 1, "why": "a = dv/dt = 6t − 2 = 10 m s⁻²." },
+        { "q": "A ball is thrown vertically upwards at 15 m s⁻¹. Taking g = 10 m s⁻², what is its greatest height above the point of projection?", "o": ["22.5 m", "11.25 m", "1.5 m", "15 m"], "a": 1, "why": "At the top v = 0: 0 = 15² − 2 × 10 × s, so s = 225/20 = 11.25 m. Omitting the factor 2 gives 22.5 m." }
       ],
       "long": [
         { "q": "The diagram shows the velocity–time graph of a cyclist, who accelerates from rest to 12 m s⁻¹ in 4 s, rides at that speed for 6 s, then decelerates uniformly to rest in 3 s. Find the total distance travelled and the deceleration.", "marks": 4, "paper": "4", "scheme": ["M1: distance = area under the graph", "A1: 24 + 72 + 18", "A1: 114 m", "B1: deceleration = 12 ÷ 3 = 4 m s⁻²"], "ans": "114 m; 4 m s⁻²", "fig": "assets/syllabus/fig/9709-m1-vt.svg" }
@@ -228,7 +258,9 @@
       "questions": [
         { "q": "What is the momentum of a 2 kg particle moving at 3 m s⁻¹?", "o": ["1.5 N s", "5 N s", "6 N s", "9 N s"], "a": 2, "why": "Momentum = mv = 2 × 3 = 6 N s." },
         { "q": "A 3 kg particle moving at 4 m s⁻¹ hits a 1 kg particle at rest and they coalesce. Their common speed is…", "o": ["1 m s⁻¹", "3 m s⁻¹", "4 m s⁻¹", "12 m s⁻¹"], "a": 1, "why": "Momentum is conserved: 3 × 4 = 4v, so v = 3 m s⁻¹." },
-        { "q": "In a collision with no external impulse, which is always conserved?", "o": ["Kinetic energy", "Total momentum", "Each particle's speed", "Each particle's velocity"], "a": 1, "why": "Total momentum is conserved; kinetic energy usually isn't (some is lost)." }
+        { "q": "In a collision with no external impulse, which is always conserved?", "o": ["Kinetic energy", "Total momentum", "Each particle's speed", "Each particle's velocity"], "a": 1, "why": "Total momentum is conserved; kinetic energy usually isn't (some is lost)." },
+        { "q": "Particle A (2 kg) moving at 5 m s⁻¹ meets particle B (3 kg) moving towards it at 2 m s⁻¹. After the collision A moves back at 1 m s⁻¹. What is B's velocity after the collision?", "o": ["6 m s⁻¹ in A's original direction", "2/3 m s⁻¹ in A's original direction", "2 m s⁻¹ in A's original direction", "2 m s⁻¹ in B's original direction"], "a": 2, "why": "Taking A's direction as positive: 2(5) + 3(−2) = 2(−1) + 3v, so 4 = −2 + 3v and v = 2 m s⁻¹, in A's original direction." },
+        { "q": "A 2 kg particle moving at 6 m s⁻¹ strikes a 1 kg particle at rest and they coalesce. How much kinetic energy is lost?", "o": ["24 J", "12 J", "36 J", "0 J"], "a": 1, "why": "Common speed = 12/3 = 4 m s⁻¹. KE before = ½ × 2 × 36 = 36 J; after = ½ × 3 × 16 = 24 J; loss = 12 J." }
       ],
       "long": [
         { "q": "A particle P of mass 0.3 kg moving at 5 m s⁻¹ collides with a particle Q of mass 0.2 kg moving towards it at 2 m s⁻¹. After the collision, P moves at 1 m s⁻¹ in its original direction. Find the speed and direction of Q after the collision.", "marks": 4, "paper": "4", "scheme": ["M1: conservation of momentum, with signs for direction", "A1: 0.3 × 5 − 0.2 × 2 = 0.3 × 1 + 0.2v", "A1: v = 4 m s⁻¹", "A1: in P's original direction of motion"], "ans": "4 m s⁻¹, in P's original direction" }
@@ -239,7 +271,9 @@
       "questions": [
         { "q": "A 5 kg box on a smooth floor is pulled by a 20 N horizontal force. What is its acceleration?", "o": ["0.25 m s⁻²", "4 m s⁻²", "25 m s⁻²", "100 m s⁻²"], "a": 1, "why": "F = ma: a = 20 ÷ 5." },
         { "q": "Two particles hang on either side of a smooth, light pulley on a light string. The tension is…", "o": ["the same on both sides", "greater on the heavier side", "zero", "the sum of the weights"], "a": 0, "why": "A light string over a smooth pulley has the same tension throughout." },
-        { "q": "A 60 kg person stands in a lift accelerating upwards at 2 m s⁻² (g = 10 m s⁻²). The floor pushes up with…", "o": ["480 N", "600 N", "720 N", "1200 N"], "a": 2, "why": "R − 600 = 60 × 2, so R = 720 N." }
+        { "q": "A 60 kg person stands in a lift accelerating upwards at 2 m s⁻² (g = 10 m s⁻²). The floor pushes up with…", "o": ["480 N", "600 N", "720 N", "1200 N"], "a": 2, "why": "R − 600 = 60 × 2, so R = 720 N." },
+        { "q": "A 4 kg block slides down a smooth plane inclined at 30° to the horizontal. Taking g = 10 m s⁻², what is its acceleration?", "o": ["8.66 m s⁻²", "10 m s⁻²", "2.5 m s⁻²", "5 m s⁻²"], "a": 3, "why": "The only force along the plane is the weight component mg sin 30°, so a = g sin 30° = 5 m s⁻², whatever the mass." },
+        { "q": "A 3 kg block on a smooth horizontal table is joined by a light string over a smooth pulley at the edge to a 2 kg particle hanging freely. Taking g = 10 m s⁻², what is the acceleration of the system?", "o": ["4 m s⁻²", "6.67 m s⁻²", "10 m s⁻²", "2 m s⁻²"], "a": 0, "why": "The only unbalanced force on the system is the hanging weight 20 N, acting on a total mass of 5 kg, so a = 20/5 = 4 m s⁻²." }
       ],
       "long": [
         { "q": "Particles A of mass 3 kg and B of mass 2 kg are attached to the ends of a light inextensible string that passes over a smooth fixed pulley. They are released from rest with the string taut. Find the acceleration of the particles and the tension in the string. (g = 10 m s⁻²)", "marks": 4, "paper": "4", "scheme": ["M1: Newton's second law for each particle", "A1: 30 − T = 3a and T − 20 = 2a", "A1: a = 2 m s⁻²", "A1: T = 24 N"], "ans": "a = 2 m s⁻², T = 24 N" }
@@ -250,7 +284,9 @@
       "questions": [
         { "q": "A 10 N force moves its point of application 3 m in its own direction. The work done is…", "o": ["3.3 J", "13 J", "30 J", "300 J"], "a": 2, "why": "Work = force × distance in the direction of the force = 30 J." },
         { "q": "A car moves at 20 m s⁻¹ with a driving force of 500 N. Its power is…", "o": ["25 W", "520 W", "10 kW", "100 kW"], "a": 2, "why": "P = Fv = 500 × 20 = 10 000 W." },
-        { "q": "What is the kinetic energy of a 2 kg particle moving at 5 m s⁻¹?", "o": ["10 J", "25 J", "50 J", "100 J"], "a": 1, "why": "KE = ½mv² = ½ × 2 × 25 = 25 J." }
+        { "q": "What is the kinetic energy of a 2 kg particle moving at 5 m s⁻¹?", "o": ["10 J", "25 J", "50 J", "100 J"], "a": 1, "why": "KE = ½mv² = ½ × 2 × 25 = 25 J." },
+        { "q": "A 0.5 kg particle is released from rest and falls 20 m with no air resistance. Using energy, what is its speed at the bottom? (g = 10 m s⁻²)", "o": ["10 m s⁻¹", "14.1 m s⁻¹", "20 m s⁻¹", "400 m s⁻¹"], "a": 2, "why": "Loss of PE = gain of KE: mgh = ½mv², so v² = 2gh = 400 and v = 20 m s⁻¹; the mass cancels." },
+        { "q": "An 800 kg car moves at a constant 15 m s⁻¹ up a slope inclined at α to the horizontal, where sin α = 0.1, against a resistance of 400 N. What is the power of the engine? (g = 10 m s⁻²)", "o": ["6 kW", "12 kW", "120 kW", "18 kW"], "a": 3, "why": "At constant speed the driving force = 400 + 800 × 10 × 0.1 = 1200 N, so P = Fv = 1200 × 15 = 18 000 W = 18 kW." }
       ],
       "long": [
         { "q": "A car of mass 1200 kg moves on a horizontal road against a constant resistance of 600 N. Its engine works at 30 kW. Find the acceleration of the car when its speed is 20 m s⁻¹.", "marks": 3, "paper": "4", "scheme": ["M1: driving force = P ÷ v = 1500 N", "M1: 1500 − 600 = 1200a", "A1: a = 0.75 m s⁻²"], "ans": "0.75 m s⁻²" }
@@ -276,7 +312,8 @@
         { "q": "In how many ways can 5 different books be arranged on a shelf?", "o": ["5", "25", "120", "3125"], "a": 2, "why": "Five choices for the first place, then four, three, two, one: 5! = 120." },
         { "q": "In how many ways can 3 people be chosen from 8?", "o": ["56", "336", "24", "512"], "a": 0, "why": "The order doesn't matter: ⁸C₃ = 56." },
         { "q": "How many different arrangements are there of the letters of LEVEL?", "o": ["120", "60", "30", "20"], "a": 2, "why": "5! ÷ (2! × 2!) for the repeated L and E = 30." },
-        { "q": "Six people sit in a row. Two of them must sit together. How many arrangements?", "o": ["720", "240", "120", "480"], "a": 1, "why": "Treat the pair as one: 5! ways, × 2 for the pair's order = 240." }
+        { "q": "Six people sit in a row. Two of them must sit together. How many arrangements?", "o": ["720", "240", "120", "480"], "a": 1, "why": "Treat the pair as one: 5! ways, × 2 for the pair's order = 240." },
+        { "q": "A team of 5 is chosen from 7 boys and 4 girls. How many teams contain exactly 2 girls?", "o": ["462", "210", "330", "35"], "a": 1, "why": "Choose 2 of the 4 girls and 3 of the 7 boys: ⁴C₂ × ⁷C₃ = 6 × 35 = 210." }
       ],
       "long": [
         { "q": "Find the number of different arrangements of the letters of the word PARALLEL. How many of these begin and end with L?", "marks": 4, "paper": "5", "scheme": ["M1: 8! ÷ (2! × 3!)", "A1: 3360", "M1: fix an L at each end; arrange the other 6 with A repeated: 6! ÷ 2!", "A1: 360"], "ans": "3360; 360" },
@@ -303,7 +340,8 @@
         { "q": "X ~ B(10, 0.3). What is E(X)?", "o": ["0.3", "3", "2.1", "7"], "a": 1, "why": "E(X) = np = 10 × 0.3 = 3." },
         { "q": "X ~ B(5, 0.5). What is P(X = 0)?", "o": ["0", "1/32", "1/5", "1/10"], "a": 1, "why": "P(X = 0) = 0.5⁵ = 1/32." },
         { "q": "X ~ Geo(p). What is P(X = 3)?", "o": ["p³", "(1 − p)²p", "3p", "(1 − p)³"], "a": 1, "why": "Two failures, then the first success on the third try." },
-        { "q": "X takes 1, 2, 3 with probabilities 0.2, 0.5, 0.3. What is E(X)?", "o": ["2", "2.1", "1.9", "6"], "a": 1, "why": "E(X) = 0.2 + 1.0 + 0.9 = 2.1." }
+        { "q": "X takes 1, 2, 3 with probabilities 0.2, 0.5, 0.3. What is E(X)?", "o": ["2", "2.1", "1.9", "6"], "a": 1, "why": "E(X) = 0.2 + 1.0 + 0.9 = 2.1." },
+        { "q": "X ~ B(6, 0.2). What is P(X ≥ 1), to 3 significant figures?", "o": ["0.262", "0.393", "0.738", "0.200"], "a": 2, "why": "P(X ≥ 1) = 1 − P(X = 0) = 1 − 0.8⁶ = 1 − 0.262 = 0.738." }
       ],
       "long": [
         { "q": "X ~ B(8, 0.25). Find P(X ≤ 1).", "marks": 3, "paper": "5", "scheme": ["M1: a binomial term ⁸C₁ × 0.25 × 0.75⁷", "M1: P(0) + P(1), with P(0) = 0.75⁸", "A1: 0.367 (3 s.f.)"], "ans": "0.367" },
@@ -316,7 +354,8 @@
         { "q": "X ~ N(50, 4²). What is P(X > 50)?", "o": ["0", "0.25", "0.5", "1"], "a": 2, "why": "The normal distribution is symmetric about its mean." },
         { "q": "X ~ N(30, 5²). What is the standardised value of X = 40?", "o": ["2", "10", "0.4", "8"], "a": 0, "why": "z = (40 − 30) ÷ 5 = 2." },
         { "q": "When may B(n, p) be approximated by a normal distribution (the 9709 rule)?", "o": ["When n > 30", "When np > 5 and nq > 5", "Only when p = 0.5", "When np < 5"], "a": 1, "why": "Both np and nq must exceed 5." },
-        { "q": "Approximating a binomial X by a normal Y, P(X ≤ 20) becomes…", "o": ["P(Y < 20)", "P(Y < 20.5)", "P(Y < 19.5)", "P(Y ≤ 21)"], "a": 1, "why": "The continuity correction: 20 covers up to 20.5." }
+        { "q": "Approximating a binomial X by a normal Y, P(X ≤ 20) becomes…", "o": ["P(Y < 20)", "P(Y < 20.5)", "P(Y < 19.5)", "P(Y ≤ 21)"], "a": 1, "why": "The continuity correction: 20 covers up to 20.5." },
+        { "q": "X ~ N(100, 15²). What is P(X < 85)?", "o": ["0.8413", "0.3413", "0.0228", "0.1587"], "a": 3, "why": "z = (85 − 100)/15 = −1, and P(Z < −1) = 1 − Φ(1) = 1 − 0.8413 = 0.1587." }
       ],
       "long": [
         { "q": "The masses of apples are normally distributed with mean 150 g and standard deviation 12 g. Find the probability that a randomly chosen apple has a mass between 138 g and 174 g (the shaded region).", "marks": 4, "paper": "5", "scheme": ["M1: standardise: (138 − 150)/12 = −1 and (174 − 150)/12 = 2", "M1: Φ(2) − Φ(−1), or Φ(2) − (1 − Φ(1))", "A1: 0.9772 − 0.1587", "A1: 0.819 (3 s.f.)"], "ans": "0.819", "fig": "assets/syllabus/fig/9709-s1-normal.svg" },
@@ -328,7 +367,9 @@
       "questions": [
         { "q": "X ~ Po(4). What is Var(X)?", "o": ["2", "4", "16", "0.25"], "a": 1, "why": "For a Poisson distribution, mean = variance = λ." },
         { "q": "A Type I error is…", "o": ["accepting a false H₀", "rejecting a true H₀", "a calculation mistake", "using the wrong distribution"], "a": 1, "why": "Its probability equals the significance level (for continuous tests)." },
-        { "q": "X ~ Po(2) and Y ~ Po(3) are independent. What is the distribution of X + Y?", "o": ["Po(6)", "Po(2.5)", "B(5, 0.5)", "Po(5)"], "a": 3, "why": "The sum of independent Poisson variables is Poisson with the means added." }
+        { "q": "X ~ Po(2) and Y ~ Po(3) are independent. What is the distribution of X + Y?", "o": ["Po(6)", "Po(2.5)", "B(5, 0.5)", "Po(5)"], "a": 3, "why": "The sum of independent Poisson variables is Poisson with the means added." },
+        { "q": "X ~ N(20, 9) and Y ~ N(15, 16) are independent. What is Var(X − Y)?", "o": ["−7", "7", "25", "5"], "a": 2, "why": "For independent variables variances add even when subtracting: Var(X − Y) = 9 + 16 = 25." },
+        { "q": "A continuous random variable has pdf f(x) = kx² for 0 ≤ x ≤ 3, and 0 otherwise. What is k?", "o": ["1/9", "1/3", "1/27", "3"], "a": 0, "why": "The total probability is 1: ∫₀³ kx² dx = k × 27/3 = 9k = 1, so k = 1/9." }
       ],
       "long": [
         { "q": "The number of emails a shop receives per hour has a Poisson distribution with mean 3.2. Find the probability that it receives exactly 2 emails in a given hour, and at least 1 email in a 30-minute period.", "marks": 4, "paper": "6", "scheme": ["M1: P(X = 2) = e^(−3.2) × 3.2²/2", "A1: = 0.209", "M1: half-hour mean 1.6; P(Y ≥ 1) = 1 − e^(−1.6)", "A1: = 0.798"], "ans": "0.209; 0.798" },
