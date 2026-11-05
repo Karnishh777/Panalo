@@ -47,11 +47,22 @@ function askBirth() {
   });
 }
 
+// What the wall says, by where the account stands. After a parent's "no"
+// nobody is waiting: only that parent can change it, from the link in their
+// email (phase 40), as Panalo Students says too.
+function blockedCopy(st) {
+  if (st.under13) return { title: "Panalo is for people 13 and over.", body: "We'd love to see you when you're 13. Until then we can't keep an account for you." };
+  if (st.consent === "declined") return { title: "Your parent or guardian said no for now.", body: "Only they can change that: they can open the link in their email again and say yes. Panalo Students can email it to them again." };
+  if (st.parent_email) return { title: "A parent or guardian needs to say yes.", body: `We're waiting for ${st.parent_email}. Finish in Panalo Students, where you can send them the link again.` };
+  return { title: "A parent or guardian needs to say yes.", body: "Because you're under 18, a parent or legal guardian has to agree first. Panalo Students walks you through it." };
+}
+
 function blocked(st, signOut) {
   const under13 = st.under13;
+  const copy = blockedCopy(st);
   wall([
-    el("h2", { id: "age-wall-title", text: under13 ? "Panalo is for people 13 and over." : "A parent or guardian needs to say yes." }),
-    el("p", { text: under13 ? "We'd love to see you when you're 13. Until then we can't keep an account for you." : st.parent_email ? `We're waiting for ${st.parent_email}. Finish in Panalo Students, where you can send them the link again.` : "Because you're under 18, a parent or legal guardian has to agree first. Panalo Students walks you through it." }),
+    el("h2", { id: "age-wall-title", text: copy.title }),
+    el("p", { text: copy.body }),
     under13 ? null : el("a", { class: "btn btn-primary btn-block", href: "students/#login", text: "Continue in Panalo Students" }),
     el("button", { type: "button", class: "btn btn-ghost btn-block", text: "Sign out", onClick: () => signOut() }),
   ].filter(Boolean));
