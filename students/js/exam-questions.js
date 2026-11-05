@@ -57,26 +57,167 @@ export function hasExamQuestions(subjectId) {
   return scopeOf(subjectId).some((tp) => tp.long?.length);
 }
 
-export function openExamQuestions(subjectId) {
-  const all = examQuestionsOf(subjectId);
-  if (!all.length) return showToast("No exam-style questions for this subject yet.");
+// ---- Topical sets (a planned block: one chapter, one paper, timed) ----------------------
+
+/**
+ * The questions of a topical block, in order. A block from the plan names
+ * them (block.qs); one rebuilt from a Study Room link doesn't, so its set
+ * is worked out again the way the plan does.
+ */
+export function topicalQuestions(block) {
+  const tp = scopeOf(block.subject).find((t) => t.id === block.topic);
+  if (!tp?.long?.length) return [];
+  const keys = block.qs?.length
+    ? block.qs
+    : P.topicalSet(tp, { code: syllabi()[block.subject]?.code, papers: profile().subjects.find((s) => s.id === block.subject)?.papers || [], turn: stateOf(block.subject, block.topic)?.n || 0 })?.keys || [];
+  return keys
+    .map((key) => ({ key, i: Number(String(key).split("#")[1]) }))
+    .filter(({ i }) => tp.long[i])
+    .map(({ key, i }) => ({ ...tp.long[i], key, topic: tp.id, topicName: tp.name }));
+}
+
+/** A topical block with everything its labels need, however it arrived. */
+export function topicalBlock(block) {
+  const qs = topicalQuestions(block);
+  const tp = scopeOf(block.subject).find((t) => t.id === block.topic);
+  return {
+    ...block,
+    subjectName: block.subjectName || nameOf(block.subject),
+    topicName: block.topicName || tp?.name || "",
+    chapter: P.chapterOf(block.topic),
+    paper: qs[0]?.paper || block.paper,
+    qs: qs.map((q) => q.key),
+    count: qs.length,
+    marks: qs.reduce((n, q) => n + q.marks, 0),
+  };
+}
+
+/**
+ * A topical block, read like a short paper: every question in full, then
+ * the timer (the Study Room's, so the time counts) or straight to marking.
+ * `during`: opened from a running timer, so only the questions are shown.
+ */
+export function openTopical(block, { during = false } = {}) {
+  const b = topicalBlock(block);
+  const qs = topicalQuestions(b);
+  if (!qs.length) return showToast("This chapter has no exam-style questions on your papers yet.");
+  const code = syllabi()[b.subject]?.code;
+  const tips = tipsFor(code, b.paper);
+  const sheet = openSheet({
+    title: `Topical questions · ${b.subjectName}`,
+    lead: P.blockLabel(b),
+    form: false,
+    wide: true,
+    body: [
+      el("p", { class: "faint small", text: during ? "Answer on paper. Your timer is still running." : `Answer on paper in ${b.minutes} minutes, no notes, then mark yourself with the scheme.` }),
+      el(
+        "ol",
+        { class: "xq-paper" },
+        qs.map((q) => el("li", {}, [el("p", { class: "xq-meta" }, [el("b", { text: `[${q.marks}]` }), ` Paper ${q.paper}`]), el("p", { class: "xq-text", text: q.q }), q.fig ? el("figure", { class: "xq-fig" }, [el("img", { src: q.fig, alt: "Diagram for the question", decoding: "async" })]) : null]))
+      ),
+      tips.length ? el("details", { class: "xq-tips" }, [el("summary", { text: "What the examiners say about this paper" }), el("ul", {}, tips.map((t) => el("li", { text: t }))), el("p", { class: "faint small", text: SOURCE })]) : null,
+    ],
+    actions: during
+      ? [{ label: "Back to the timer", kind: "btn-primary" }]
+      : [
+          { label: "Mark my answers", kind: "btn-quiet", id: "tq-mark", onClick: () => (sheet.close(), openExamQuestions(b.subject, { block: b }), false) },
+          {
+            label: `Start the timer · ${b.minutes} min`,
+            kind: "btn-primary",
+            id: "tq-start",
+            onClick: () => {
+              location.hash = `#/study/block=${encodeURIComponent([b.subject, b.topic, "topical", b.minutes].join("~"))}`;
+            },
+          },
+        ],
+  });
+  sheet.dialog.classList.add("exam-questions");
+  sheet.dialog.style.setProperty("--subj", colourOf(b.subject));
+  return sheet;
+}
+
+/**
+ * Exam-style questions for a subject, filtered by paper, marks and topic;
+ * or, with `block`, just that topical set: a jump grid, flags, and a
+ * running total as each answer is marked.
+ */
+export function openExamQuestions(subjectId, { block = null } = {}) {
+  const set = block ? topicalQuestions(block) : null;
+  const all = set || examQuestionsOf(subjectId);
+  if (!all.length) return showToast(set ? "This chapter has no exam-style questions on your papers yet." : "No exam-style questions for this subject yet.");
   const code = syllabi()[subjectId]?.code;
   const mine = profile().subjects.find((s) => s.id === subjectId)?.papers || [];
   const paperIds = [...new Set(all.map((q) => q.paper))].filter((id) => !mine.length || mine.includes(id)).sort();
   const done = new Map(); // key -> marks got, this time
+  const flagged = new Set();
   let paper = "all";
   let band = "all";
   let topic = "all";
 
   const stage = el("div", { class: "xq-stage" });
-  const sheet = openSheet({ title: `Exam-style questions · ${nameOf(subjectId)}`, lead: "Answer on paper, then mark yourself with the scheme.", form: false, wide: true, body: [stage] });
+  const sheet = openSheet({
+    title: set ? `Mark your answers · ${nameOf(subjectId)}` : `Exam-style questions · ${nameOf(subjectId)}`,
+    lead: set ? `${P.blockLabel(topicalBlock(block))}. Tick each mark you earned; flag any to come back to.` : "Answer on paper, then mark yourself with the scheme.",
+    form: false,
+    wide: true,
+    body: [stage],
+  });
   sheet.dialog.classList.add("exam-questions");
   sheet.dialog.style.setProperty("--subj", colourOf(subjectId));
 
   const chips = (label, options, value, onPick, cls) =>
     el("div", { class: `chips ${cls}`, role: "radiogroup", "aria-label": label }, options.map(([v, text]) => el("button", { type: "button", role: "radio", class: "chip", "data-value": v, "aria-checked": String(v === value), text, onClick: () => onPick(v) })));
 
+  // The set's jump grid: each question, marked or flagged at a glance.
+  const grid = (current = null) =>
+    el(
+      "div",
+      { class: "xq-grid", role: "group", "aria-label": "Jump to a question" },
+      all.map((q, i) =>
+        el("button", {
+          type: "button",
+          class: `xq-cell${done.has(q.key) ? " done" : ""}${flagged.has(q.key) ? " flagged" : ""}`,
+          "aria-current": q === current ? "true" : null,
+          "aria-label": `Question ${i + 1}${done.has(q.key) ? `, ${done.get(q.key)} of ${q.marks}` : ""}${flagged.has(q.key) ? ", flagged" : ""}`,
+          text: String(i + 1),
+          onClick: () => one(q, all),
+        })
+      )
+    );
+  const flagButton = (q, redraw) =>
+    el("button", {
+      type: "button",
+      class: "btn btn-quiet btn-sm xq-flag",
+      "aria-pressed": String(flagged.has(q.key)),
+      text: flagged.has(q.key) ? "Flagged" : "Flag it",
+      onClick: () => (flagged.has(q.key) ? flagged.delete(q.key) : flagged.add(q.key), redraw()),
+    });
+
+  function setList() {
+    const got = [...done.values()].reduce((n, m) => n + m, 0);
+    const marked = all.filter((q) => done.has(q.key));
+    stage.replaceChildren(
+      grid(),
+      el("p", { class: "faint small", "aria-live": "polite", text: marked.length ? `${marked.length} of ${all.length} marked · ${got} of ${marked.reduce((n, q) => n + q.marks, 0)} marks${flagged.size ? ` · ${flagged.size} flagged` : ""}` : `${all.length} question${all.length === 1 ? "" : "s"} · ${all.reduce((n, q) => n + q.marks, 0)} marks` }),
+      el(
+        "ol",
+        { class: "xq-list" },
+        all.map((q) =>
+          el("li", { class: "xq-set-item" }, [
+            el("button", { type: "button", class: "xq-item", "data-key": q.key, onClick: () => one(q, all) }, [
+              el("span", { class: "xq-meta" }, [el("b", { text: `[${q.marks}]` }), ` Paper ${q.paper}`, flagged.has(q.key) ? " · flagged" : ""]),
+              el("span", { class: "xq-q", text: q.q }),
+              done.has(q.key) ? el("span", { class: "xq-done", text: `${done.get(q.key)}/${q.marks}` }) : null,
+            ]),
+            flagButton(q, setList),
+          ])
+        )
+      )
+    );
+  }
+
   function list() {
+    if (set) return setList();
     const shown = all.filter((q) => (paper === "all" || q.paper === paper) && inBand(q.marks, band) && (topic === "all" || q.topic === topic) && (!mine.length || mine.includes(q.paper)));
     const topics = [...new Map(all.map((q) => [q.topic, q.topicName])).entries()];
     const topicSel = el("select", { class: "input xq-topic", "aria-label": "Topic" }, [el("option", { value: "all", text: "All topics" }), ...topics.map(([id, name]) => el("option", { value: id, text: name }))]);
@@ -195,8 +336,11 @@ export function openExamQuestions(subjectId) {
       if (i >= 0 && i + 1 < shown.length) one(shown[i + 1], shown);
       else list();
     });
+    const at = shown.indexOf(q);
     stage.replaceChildren(
-      el("button", { type: "button", class: "link-btn xq-back", text: "← All questions", onClick: list }),
+      el("button", { type: "button", class: "link-btn xq-back", text: set ? "← The whole set" : "← All questions", onClick: list }),
+      set ? grid(q) : null,
+      set ? el("div", { class: "xq-nav" }, [el("span", { class: "faint small", text: `Question ${at + 1} of ${shown.length}` }), flagButton(q, () => one(q, shown))]) : null,
       el("p", { class: "xq-meta" }, [el("b", { text: `[${q.marks} mark${q.marks === 1 ? "" : "s"}]` }), ` Paper ${q.paper} · ${q.topicName}`]),
       el("p", { class: "xq-text", text: q.q }),
       fig,

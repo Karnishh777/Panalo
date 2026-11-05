@@ -19,7 +19,7 @@ import { todayEntry, rhythm, rhythmLine, dayPart, MOODS } from "../model/daily.j
 import { openCheckin, openIntention } from "../checkin.js";
 import { parseQuickAdd } from "../model/quick-add.js";
 import { hasPlan, currentPlan, loadBanks, banksReady, colourOf, focusedToday, worldInput } from "../planner.js";
-import { KINDS, nextBlock } from "../model/plan.js";
+import { nextBlock, blockTitle, blockSub, blockTask } from "../model/plan.js";
 import { startBlock } from "../block-check.js";
 import { onArt } from "../art.js";
 
@@ -273,7 +273,7 @@ function planPanel(now, w) {
             el("li", { style: `--subj:${colourOf(b.subject)}` }, [
               el("span", { class: "num faint", text: hhmm(b.start) }),
               el("i", { class: "pl-dot", "aria-hidden": "true" }),
-              el("span", {}, [el("b", { text: b.own ? b.subjectName : b.topicName }), el("small", { class: "faint", text: ` ${b.own ? "" : `${b.subjectName} · `}${KINDS[b.kind].label}` })]),
+              el("span", {}, [el("b", { text: blockTitle(b) }), el("small", { class: "faint", text: ` ${b.own ? blockTask(b) : blockSub(b)}` })]),
               el("span", { class: "num faint", text: `${b.minutes}m` }),
             ])
           )
@@ -308,8 +308,8 @@ function nextStep(now) {
       stepEl.style.setProperty("--subj", colourOf(b.subject));
       return [
         el("span", { class: "step-label", text: `Next step · ${clockOf(b.start)}` }),
-        el("b", { class: "step-subj", text: b.own ? b.subjectName : b.topicName }),
-        el("span", { class: "muted step-meta", text: `${b.own ? "" : `${b.subjectName} · `}${KINDS[b.kind].label}, ${b.minutes} min` }),
+        el("b", { class: "step-subj", text: blockTitle(b) }),
+        el("span", { class: "muted step-meta", text: `${b.own ? blockTask(b) : blockSub(b)}, ${b.minutes} min` }),
         el("button", { type: "button", class: "btn btn-primary btn-sm", id: "now-plan-go", text: "Start", onClick: () => startBlock(b) }),
       ];
     }

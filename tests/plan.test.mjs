@@ -89,7 +89,7 @@ for (const s of profile.subjects) syllabi[s.id] = load(P.syllabusPath(profile.st
   const events = [{ kind: "exam", title: "Physics test", starts_at: exam.toISOString() }];
   const plan = P.buildPlan({ profile, syllabi, events, now: NOW });
   const phyToday = plan[0].blocks.filter((b) => b.subject === "phy");
-  ok("nothing new in a subject two days before its exam", phyToday.every((b) => b.kind === "review" || b.kind === "practice"));
+  ok("nothing new in a subject two days before its exam", phyToday.every((b) => b.kind === "review" || b.kind === "practice" || b.kind === "topical"));
   ok("nothing at all for it on the exam day", plan[2].blocks.every((b) => b.subject !== "phy"), JSON.stringify(plan[2].blocks.map((b) => b.subject)));
   const reviewed = {};
   for (const t of P.topicsInScope(syllabi.phy, "as").slice(0, 4)) reviewed[t.id] = L.review({ ...L.newTopic(3), covered: 1 }, 3, NOW - 20 * DAY);
@@ -178,6 +178,47 @@ for (const s of profile.subjects) syllabi[s.id] = load(P.syllabusPath(profile.st
   const repeats = P.afterBlock(t, { kind: "review", answers: [{ correct: true, id: "a", repeat: true }, { correct: true, id: "b", repeat: true }], now: NOW });
   ok("all right on repeats is Good, not Easy: a shorter interval", repeats.S < fresh.S, `${repeats.S} vs ${fresh.S}`);
   ok("the questions asked are remembered", fresh.asked.map((x) => x[0]).join() === "a,b");
+}
+
+// Topical blocks: a chapter's exam-style questions on one paper, timed.
+{
+  const kin = syllabi.phy.topics.find((t) => t.id === "2");
+  const set = P.topicalSet(kin, { code: "9702" });
+  ok("a topical set takes the chapter's exam-style questions", set && set.count >= 1 && set.keys.every((k) => k.startsWith("2#")), JSON.stringify(set));
+  ok("…its marks add up", set && set.marks === set.keys.reduce((n, k) => n + kin.long[Number(k.split("#")[1])].marks, 0));
+  ok("…its minutes are 15 to 50, in fives", set && set.minutes >= 15 && set.minutes <= 50 && set.minutes % 5 === 0, String(set?.minutes));
+  ok("…all from one paper", set && set.keys.every((k) => kin.long[Number(k.split("#")[1])].paper === set.paper));
+  ok("a paper the student doesn't sit gives no set", P.topicalSet(kin, { code: "9702", papers: ["5"] }) === null);
+  ok("a chapter without exam-style questions gives no set", P.topicalSet({ id: "x", long: [] }, { code: "9702" }) === null);
+  const many = { id: "7", long: [1, 2, 3].map((m) => ({ q: `q${m}`, marks: 30, paper: "2", scheme: [] })) };
+  const a = P.topicalSet(many, { turn: 0 });
+  const b = P.topicalSet(many, { turn: 1 });
+  ok("a long set stops at 50 minutes but keeps at least one question", a.count === 1 && a.minutes === 50, JSON.stringify(a));
+  ok("a known paper sets the pace: 9702 P2 is 75 min for 60 marks", P.topicalSet(many, { code: "9702" }).minutes === 45);
+  ok("the next turn starts on a different question", a.keys[0] !== b.keys[0]);
+
+  ok("chapters: numbers read 'Ch n', codes stay as they are", P.chapterOf("2") === "Ch 2" && P.chapterOf("3.1") === "Ch 3.1" && P.chapterOf("P1.2") === "P1.2" && P.chapterOf("*") === "");
+  const block = { kind: "topical", subject: "phy", subjectName: "Physics", topic: "2", topicName: "Kinematics", chapter: "Ch 2", paper: "2", count: 3, marks: 12, minutes: 25 };
+  ok("a topical block says exactly what to do", P.blockLabel(block) === "Physics P2 · Ch 2 Kinematics · topical Q1–3 (12 marks) · 25 min", P.blockLabel(block));
+  ok("…and a one-question set says Q1", P.blockTask({ ...block, count: 1, marks: 4 }) === "topical Q1 (4 marks)");
+  ok("other blocks name their chapter too", P.blockLabel({ ...block, kind: "practice", paper: undefined, count: undefined, marks: undefined }) === "Physics · Ch 2 Kinematics · Practise · 25 min");
+  ok("own-work blocks keep the subject alone", P.blockTitle({ own: true, subjectName: "History", topicName: "Your own work", kind: "practice" }) === "History");
+
+  // A student who has learnt most of AS physics, its paper 2 in three weeks.
+  const learnt = {};
+  for (const t of P.topicsInScope(syllabi.phy, "as")) learnt[t.id] = L.review({ ...L.newTopic(2), covered: 1, n: 4, theta: 0.6 }, 3, NOW - 12 * DAY);
+  const prof = { ...profile, subjects: [{ id: "phy", level: 2, papers: ["2"], dates: { "2": "2026-11-09" } }] };
+  const plan = P.buildPlan({ profile: prof, syllabi, topics: { phy: learnt }, now: NOW, days: 7 });
+  const topicals = plan.flatMap((d) => d.blocks).filter((bk) => bk.kind === "topical");
+  ok("near an exam, learnt chapters get topical blocks", topicals.length > 0, JSON.stringify(plan.flatMap((d) => d.blocks).map((bk) => bk.kind + bk.topic)));
+  ok("…on the paper the student sits", topicals.every((bk) => bk.paper === "2"));
+  ok("…with real questions from the bank", topicals.every((bk) => bk.qs.length === bk.count && bk.qs.every((k) => syllabi.phy.topics.find((t) => t.id === bk.topic).long[Number(k.split("#")[1])])));
+  ok("…and the minutes of their set", topicals.every((bk) => bk.minutes >= 15 && bk.minutes <= 50 && bk.minutes % 5 === 0));
+  ok("every block carries its chapter", plan.flatMap((d) => d.blocks).every((bk) => bk.chapter === P.chapterOf(bk.topic) || bk.kind === "paper"));
+
+  const pinned = P.buildPlan({ profile: prof, syllabi, topics: { phy: learnt }, now: NOW, days: 1, rules: { off: [], minutes: {}, start: null, weight: {}, dates: {}, skips: [], away: {}, pins: [{ date: "2026-10-19", subject: "phy", topic: "2", kind: "topical" }] } });
+  const moved = pinned[0].blocks.find((bk) => bk.pinned);
+  ok("a topical block moved to today keeps its set and minutes", moved?.kind === "topical" && moved.qs?.length >= 1 && moved.minutes >= 15, JSON.stringify(moved));
 }
 
 console.log(`\n${passed} passed, ${failures.length} failed`);
