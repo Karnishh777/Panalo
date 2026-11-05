@@ -307,6 +307,14 @@ export const SYLLABUS_PAPERS = {
     ],
     routes: { igcse: ["1", "2", "3"] },
   },
+  "3226": {
+    // Tamil (Cambridge O Level, taken alongside IGCSEs; June series only)
+    papers: [
+      { id: "1", name: "Composition", kind: "written", minutes: 90, marks: 45, level: "any", topics: ["1", "2", "6", "7"] },
+      { id: "2", name: "Translation and Reading Comprehension", kind: "written", minutes: 90, marks: 55, level: "any", topics: ["3", "4", "5", "6", "7"] },
+    ],
+    routes: { igcse: ["1", "2"] },
+  },
   "0520": {
     // French (Cambridge IGCSE)
     papers: [

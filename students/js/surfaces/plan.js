@@ -148,8 +148,16 @@ function stage(plan, fams) {
     const x = firstFor(f) || lead;
     info.replaceChildren(...heroText(plan, x.b, x.di));
   };
+  // A picture can stand for several subjects (English and Tamil are both
+  // "words"): its name is the subject it shows when picked (its next block),
+  // and how many more share it, so the name always matches the block.
+  const labelOf = (f, names) => {
+    const shown = firstFor(f) ? nameOf(firstFor(f).b.subject) : names[0];
+    return names.length > 1 ? `${shown} +${names.length - 1}` : shown;
+  };
   fams.forEach((f, i) => {
-    const subj = profile().subjects.filter((s) => guardianOf(s.id) === f).map((s) => nameOf(s.id)).join(", ");
+    const names = profile().subjects.filter((s) => guardianOf(s.id) === f).map((s) => nameOf(s.id));
+    const subj = names.join(", ");
     row.append(
       el(
         "button",
@@ -166,7 +174,7 @@ function stage(plan, fams) {
             if (k !== fams.indexOf(f) && fams[k]) (e.preventDefault(), pick(fams[k], true));
           },
         },
-        [painted ? artImg(`guardian-${f}`, { cls: "st-img" }) : el("span", { class: "st-emblem" }, [createEmblem(f, GUARDIANS[f], { width: 64, height: 64 }).canvas]), painted ? null : el("small", { class: "st-name", text: subj.split(",")[0] })]
+        [painted ? artImg(`guardian-${f}`, { cls: "st-img" }) : el("span", { class: "st-emblem" }, [createEmblem(f, GUARDIANS[f], { width: 64, height: 64 }).canvas]), painted ? null : el("small", { class: "st-name", text: labelOf(f, names) })]
       )
     );
   });

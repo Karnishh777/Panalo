@@ -171,6 +171,13 @@ export const EXAMINER = {
     3: ["Listen for the specific detail asked for and ignore distractors; keep within word limits."],
     4: ["Predict the answers in gap-fill tasks, then check them at the end of each section."],
   },
+  // Tamil 3226: general advice for its two papers in our own words, not
+  // taken from a 3226 report.
+  "3226": {
+    "*": ["Cover every point the task asks for, then leave a few minutes to check agreement, tense and case endings."],
+    1: ["Match the form to the task: a letter needs its greeting and close, a report a heading, a speech an opening to the audience.", "Keep close to the word count; a planned, shorter piece does better than a long one that wanders."],
+    2: ["Translate the meaning, not word by word, and keep the tense of the original.", "In comprehension, answer in your own words where asked, with as many points as there are marks."],
+  },
   "0457": {
     1: ["Practise explaining the strengths and weaknesses of sources, and using evidence to support a claim."],
     3: ["Set an aim the team can actually meet; keep a reflective log and use project examples in the reflection."],

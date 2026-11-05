@@ -46,6 +46,8 @@ const IGCSE = [
   ["art", "Art and Design", "0400"],
   ["dt", "Design and Technology", "0445"],
   ["hindi", "Hindi as a Second Language", "0549"],
+  // There is no IGCSE Tamil: Cambridge O Level Tamil 3226 is taken alongside IGCSEs.
+  ["tamil", "Tamil (O Level)", "3226"],
   ["french", "French", "0520"],
 ];
 
