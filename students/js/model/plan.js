@@ -37,7 +37,6 @@ import * as PP from "./papers.js";
 const DAY = 86400000;
 const BREAK = 5;
 const CRASH = 360; // minutes a crash day may hold
-const DAY_MS = 86400000;
 // Calendar entries that take the student's time (deadlines don't, and a
 // study entry is study).
 const BLOCKING = new Set(["class", "event", "personal", "exam"]);
@@ -52,7 +51,7 @@ export function busyOf(profile, events, dayStart) {
   const out = activitiesOn(profile, date.getDay());
   const dinner = dinnerOn(profile);
   if (dinner) out.push(dinner);
-  const end = dayStart + DAY_MS;
+  const end = dayStart + DAY;
   for (const e of events || []) {
     if (!BLOCKING.has(e.kind)) continue;
     const s = new Date(e.starts_at);
@@ -100,32 +99,31 @@ export function chapterOf(id) {
   return /^\d+(\.\d+)*$/.test(id) ? `Ch ${id}` : String(id);
 }
 
-const marksOf = (qs) => qs.reduce((n, q) => n + q.marks, 0);
-
 /**
  * A topical set for chapter `tp`: its exam-style questions on one paper
- * (the one with the most marks among the student's papers, or any), as
- * many as fit TOPICAL_MAX minutes but at least one, starting at question
- * `turn` so the next set differs. null when it has none.
+ * (of the student's papers, the one with the most marks not yet done),
+ * questions not done lately first (`asked`, as for checks), as many as fit
+ * TOPICAL_MAX minutes but at least one. null when it has none.
  */
-export function topicalSet(tp, { code = null, papers = [], turn = 0 } = {}) {
+export function topicalSet(tp, { code = null, papers = [], asked = [] } = {}) {
   const pool = (tp?.long || []).map((q, i) => ({ ...q, key: `${tp.id}#${i}` })).filter((q) => !papers.length || papers.includes(q.paper));
   if (!pool.length) return null;
-  const byPaper = new Map();
-  for (const q of pool) byPaper.set(q.paper, [...(byPaper.get(q.paper) || []), q]);
-  const [paper, qs] = [...byPaper.entries()].sort((a, b) => marksOf(b[1]) - marksOf(a[1]) || String(a[0]).localeCompare(String(b[0])))[0];
+  const done = new Set(L.cleanAsked(asked).map(([id]) => id));
+  const fresh = pool.filter((q) => !done.has(L.questionId(q)));
+  const marksBy = new Map();
+  for (const q of fresh.length ? fresh : pool) marksBy.set(q.paper, (marksBy.get(q.paper) || 0) + q.marks);
+  const [[paper]] = [...marksBy].sort((a, b) => b[1] - a[1] || String(a[0]).localeCompare(String(b[0])));
   const p = PP.paperOf(code, paper);
   const rate = p?.minutes && p?.marks ? p.minutes / p.marks : MIN_PER_MARK;
-  const from = Math.abs(Math.trunc(turn)) % qs.length;
   const picked = [];
   let marks = 0;
-  for (const q of [...qs.slice(from), ...qs.slice(0, from)]) {
+  for (const q of L.staleFirst(pool.filter((q) => q.paper === paper), asked)) {
     if (picked.length && (marks + q.marks) * rate + MARKING_MINUTES > TOPICAL_MAX) break;
     picked.push(q);
     marks += q.marks;
   }
   const minutes = Math.min(TOPICAL_MAX, Math.max(TOPICAL_MIN, Math.ceil((marks * rate + MARKING_MINUTES) / 5) * 5));
-  return { paper, keys: picked.map((q) => q.key), count: picked.length, marks, minutes };
+  return { paper, keys: picked.map((q) => q.key), ids: picked.map(L.questionId), count: picked.length, marks, minutes };
 }
 
 /** Whether practice on a topic should be a topical set: half known, or its exam near. */
@@ -217,22 +215,21 @@ function examNames(subject) {
   }
   return [...out].filter((n) => n.length >= 3);
 }
-const wordIn = (title, n) => new RegExp(`(^|[^a-z0-9])${n.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}([^a-z0-9]|$)`).test(title);
+/** The times (ms, earliest first) of calendar exams naming a subject. */
+function examDates(subject, events) {
+  const alt = examNames(subject).map((n) => n.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")).join("|");
+  if (!alt) return [];
+  const re = new RegExp(`(^|[^a-z0-9])(${alt})([^a-z0-9]|$)`);
+  return (events || [])
+    .filter((e) => e.kind === "exam" && re.test(String(e.title || "").toLowerCase()))
+    .map((e) => Date.parse(e.starts_at))
+    .filter(Number.isFinite)
+    .sort((a, b) => a - b);
+}
+const examFrom = (dates, now) => dates.find((at) => at >= now - DAY / 2) ?? null;
 
 /** The next exam in a subject: an exam event naming it (as a whole word). */
-export function nextExam(subject, events, now) {
-  const names = examNames(subject);
-  let best = null;
-  for (const e of events || []) {
-    if (e.kind !== "exam") continue;
-    const at = Date.parse(e.starts_at);
-    if (!(at >= now - DAY / 2)) continue;
-    const title = String(e.title || "").toLowerCase();
-    if (!names.some((n) => wordIn(title, n))) continue;
-    if (!best || at < best) best = at;
-  }
-  return best;
-}
+export const nextExam = (subject, events, now) => examFrom(examDates(subject, events), now);
 
 /** Padding on early time estimates: 1.5× with no data, 1× after five blocks. */
 export const pad = (p) => 1 + 0.5 * Math.max(0, 1 - (p?.n || 0) / 5);
@@ -319,11 +316,24 @@ export function buildPlan({ profile, syllabi = {}, topics = {}, pace = {}, event
     // Its last exam, when every chosen paper has a date: after that day,
     // the subject is done and isn't planned.
     const lastExam = papers.length && papers.every((p) => p.at != null) ? Math.max(...papers.map((p) => p.at)) : null;
-    return { id: s.id, code: syllabus?.code, name: (s.custom && s.name) || subjectName(profile.stage, s.id) || syllabus?.name || s.id, level: s.level ?? 2, list, own, perTopic, state, papers, examOf, lastPaper, sittings, lastExam };
+    const name = (s.custom && s.name) || subjectName(profile.stage, s.id) || syllabus?.name || s.id;
+    const exams = examDates({ name, code: syllabus?.code }, events);
+    return { id: s.id, code: syllabus?.code, name, level: s.level ?? 2, list, own, perTopic, state, papers, examOf, lastPaper, sittings, lastExam, exams };
   });
-  // Does subject `s` sit an exam (a paper, or a calendar exam naming it)
-  // in [a, b)?
-  const examIn = (s, a, b) => s.sittings.some((x) => x.at >= a && x.at < b) || (events || []).some((e) => e.kind === "exam" && Date.parse(e.starts_at) >= a && Date.parse(e.starts_at) < b && examNames(s).some((n) => wordIn(String(e.title || "").toLowerCase(), n)));
+  // Does subject `s` sit an exam (a paper, or a calendar exam naming it) in [a, b)?
+  const examIn = (s, a, b) => [...s.sittings.map((x) => x.at), ...s.exams].some((at) => at >= a && at < b);
+  // A topical set for one of a subject's topics, from the questions it has
+  // done; worked out again only once that changes.
+  const sets = new Map();
+  const setFor = (s, tp) => {
+    if (s.own) return null;
+    const { asked } = s.state[tp.id];
+    const hit = sets.get(`${s.id}/${tp.id}`);
+    if (hit?.asked === asked) return hit.set;
+    const set = topicalSet(tp, { code: s.code, papers: s.papers.map((p) => p.id), asked });
+    sets.set(`${s.id}/${tp.id}`, { asked, set });
+    return set;
+  };
 
   const out = [];
   const midnight = new Date(now);
@@ -390,14 +400,14 @@ export function buildPlan({ profile, syllabi = {}, topics = {}, pace = {}, event
       }
       return null;
     };
-    // A topical set for one of a subject's topics, rotated by how often it's been practised.
-    const setFor = (s, tp) => (s.own ? null : topicalSet(tp, { code: s.code, papers: s.papers.map((p) => p.id), turn: s.state[tp.id]?.n || 0 }));
     const place = (s, tp, kind, minutes, set = null) => {
       start = slot(minutes) ?? start;
       const what = set ? { paper: set.paper, qs: set.keys, count: set.count, marks: set.marks } : tp.paper ? { paper: tp.paper } : {};
       day.blocks.push({ kind, subject: s.id, subjectName: s.name, topic: tp.id, topicName: tp.name, chapter: chapterOf(tp.id), minutes, start, own: s.own, ...what });
       if (kind === "paper") s.lastPaper[tp.paper] = at;
       else s.state[tp.id] = simulate(s.state[tp.id], kind, minutes, at, s.perTopic);
+      // A planned set counts as done, so the next one moves on.
+      if (set) s.state[tp.id] = { ...s.state[tp.id], asked: L.noteAsked(s.state[tp.id].asked, set.ids, at) };
       perSubject.set(s.id, (perSubject.get(s.id) || 0) + minutes);
       blocksOf.set(s.id, (blocksOf.get(s.id) || 0) + 1);
       if (kind === "check") checksOf.set(s.id, (checksOf.get(s.id) || 0) + 1);
@@ -422,6 +432,7 @@ export function buildPlan({ profile, syllabi = {}, topics = {}, pace = {}, event
 
     while (room >= 10) {
       let best = null;
+      const papersToday = day.blocks.filter((b) => b.kind === "paper").length;
       for (const s of subjects) {
         const weight = R.weight[s.id] ?? 1;
         // Its exam day rests it, and after its last exam it's done.
@@ -429,10 +440,9 @@ export function buildPlan({ profile, syllabi = {}, topics = {}, pace = {}, event
         const used = perSubject.get(s.id) || 0;
         const count = blocksOf.get(s.id) || 0;
         const checks = checksOf.get(s.id) || 0;
-        const calendarExam = nextExam(s, events, date.getTime());
-        const examFor = (tp) => [calendarExam, s.examOf[tp.id]].filter((x) => x != null).reduce((a, b) => Math.min(a, b), Infinity);
+        const calendarExam = examFrom(s.exams, t0);
+        const examFor = (tp) => Math.min(calendarExam ?? Infinity, s.examOf[tp.id] ?? Infinity);
         // A timed past paper of each chosen paper, as its date nears.
-        const papersToday = day.blocks.filter((b) => b.kind === "paper").length;
         for (const p of s.papers) {
           // No timed past paper the day before, of, or after a real one.
           if (p.at == null || !PP.timedPaper(p) || nearExam.has(s.id) || papersToday >= (own.crash ? 2 : 1) || skipped.has(`${s.id}|paper-${p.id}`)) continue;

@@ -60,16 +60,26 @@ export function noteAsked(asked, ids, now) {
 }
 
 /**
- * Pick `n` of a topic's questions: never asked first (in random order),
- * then the ones asked longest ago. Each comes back with `id` and `repeat`
- * (asked within REPEAT_DAYS). `rand` is for tests.
+ * Questions never asked first, then the ones asked longest ago; ties keep
+ * their order (shuffle first for a random one). A new array.
+ */
+export function staleFirst(questions, asked) {
+  const last = new Map(cleanAsked(asked));
+  const when = (q) => last.get(questionId(q)) ?? -Infinity;
+  return [...(questions || [])].sort((a, b) => (when(a) === when(b) ? 0 : when(a) - when(b)));
+}
+
+/**
+ * Pick `n` of a topic's questions, stale first (ties at random). Each comes
+ * back with `id` and `repeat` (asked within REPEAT_DAYS). `rand` is for tests.
  */
 export function pickQuestions(questions, asked, n, now, rand = Math.random) {
-  const last = new Map(cleanAsked(asked).map(([id, day]) => [id, day]));
-  const today = dayNo(now);
-  const all = (questions || []).map((q) => ({ q, id: questionId(q), r: rand() }));
-  all.sort((a, b) => (last.get(a.id) ?? -Infinity) - (last.get(b.id) ?? -Infinity) || a.r - b.r);
-  return all.slice(0, n).map(({ q, id }) => ({ ...q, id, repeat: last.has(id) && today - last.get(id) < REPEAT_DAYS }));
+  const last = new Map(cleanAsked(asked));
+  const shuffled = (questions || []).map((q) => [rand(), q]).sort((a, b) => a[0] - b[0]).map(([, q]) => q);
+  return staleFirst(shuffled, asked).slice(0, n).map((q) => {
+    const id = questionId(q);
+    return { ...q, id, repeat: last.has(id) && dayNo(now) - last.get(id) < REPEAT_DAYS };
+  });
 }
 
 /** How well the topic is known: chance of getting a typical question right. */

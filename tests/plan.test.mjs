@@ -191,11 +191,19 @@ for (const s of profile.subjects) syllabi[s.id] = load(P.syllabusPath(profile.st
   ok("a paper the student doesn't sit gives no set", P.topicalSet(kin, { code: "9702", papers: ["5"] }) === null);
   ok("a chapter without exam-style questions gives no set", P.topicalSet({ id: "x", long: [] }, { code: "9702" }) === null);
   const many = { id: "7", long: [1, 2, 3].map((m) => ({ q: `q${m}`, marks: 30, paper: "2", scheme: [] })) };
-  const a = P.topicalSet(many, { turn: 0 });
-  const b = P.topicalSet(many, { turn: 1 });
+  const a = P.topicalSet(many);
+  const b = P.topicalSet(many, { asked: L.noteAsked([], a.ids, NOW) });
   ok("a long set stops at 50 minutes but keeps at least one question", a.count === 1 && a.minutes === 50, JSON.stringify(a));
   ok("a known paper sets the pace: 9702 P2 is 75 min for 60 marks", P.topicalSet(many, { code: "9702" }).minutes === 45);
-  ok("the next turn starts on a different question", a.keys[0] !== b.keys[0]);
+  ok("a set names its questions' ids", a.ids.length === a.count && a.ids[0] === L.questionId(many.long[0]));
+  ok("questions done lately go to the back, so the next set differs", !a.keys.includes(b.keys[0]), `${a.keys} / ${b.keys}`);
+  ok("the same state always gives the same set", JSON.stringify(P.topicalSet(many)) === JSON.stringify(a));
+
+  // A week of topical practice on one chapter works through its questions.
+  const six = { id: "1", name: "Forces", questions: [], long: [1, 2, 3, 4, 5, 6].map((m) => ({ q: `Force question ${m}`, marks: 12, paper: "2", scheme: [] })) };
+  const week = P.buildPlan({ profile: { ...profile, subjects: [{ id: "zz", level: 2 }] }, syllabi: { zz: { name: "Mechanics", topics: [six] } }, topics: { zz: { 1: L.review({ ...L.newTopic(2), covered: 1, n: 4, theta: 0.6 }, 3, NOW - 12 * DAY) } }, now: NOW, days: 7 });
+  const sets = week.flatMap((d) => d.blocks).filter((bk) => bk.kind === "topical");
+  ok("a chapter's next topical set uses questions not yet done", sets.length >= 2 && !sets[1].qs.some((k) => sets[0].qs.includes(k)), JSON.stringify(sets.map((bk) => bk.qs)));
 
   ok("chapters: numbers read 'Ch n', codes stay as they are", P.chapterOf("2") === "Ch 2" && P.chapterOf("3.1") === "Ch 3.1" && P.chapterOf("P1.2") === "P1.2" && P.chapterOf("*") === "");
   const block = { kind: "topical", subject: "phy", subjectName: "Physics", topic: "2", topicName: "Kinematics", chapter: "Ch 2", paper: "2", count: 3, marks: 12, minutes: 25 };

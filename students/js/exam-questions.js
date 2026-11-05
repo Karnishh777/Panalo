@@ -6,6 +6,7 @@
 import { el, openSheet, reportError, showToast } from "./ui.js";
 import * as P from "./model/plan.js";
 import * as PP from "./model/papers.js";
+import * as L from "./model/learner.js";
 import { nameOf, syllabi, scopeOf, stateOf, saveTopic, colourOf, profile } from "./planner.js";
 import { api } from "./store.js";
 import { dayKey } from "./model/time.js";
@@ -69,7 +70,7 @@ export function topicalQuestions(block) {
   if (!tp?.long?.length) return [];
   const keys = block.qs?.length
     ? block.qs
-    : P.topicalSet(tp, { code: syllabi()[block.subject]?.code, papers: profile().subjects.find((s) => s.id === block.subject)?.papers || [], turn: stateOf(block.subject, block.topic)?.n || 0 })?.keys || [];
+    : P.topicalSet(tp, { code: syllabi()[block.subject]?.code, papers: profile().subjects.find((s) => s.id === block.subject)?.papers || [], asked: stateOf(block.subject, block.topic)?.asked })?.keys || [];
   return keys
     .map((key) => ({ key, i: Number(String(key).split("#")[1]) }))
     .filter(({ i }) => tp.long[i])
@@ -324,6 +325,8 @@ export function openExamQuestions(subjectId, { block = null } = {}) {
       let t = stateOf(subjectId, q.topic);
       if (got * 2 >= q.marks) t = { ...t, covered: 1 };
       t = P.afterBlock(t, { kind: "practice", answers: ticks.map((correct) => ({ correct, options: 0 })), now });
+      // Remembered as done, so the next topical set moves on to others.
+      t = { ...t, asked: L.noteAsked(t.asked, [L.questionId(q)], now) };
       const { error } = await saveTopic(subjectId, q.topic, t);
       save.disabled = false;
       if (error) return reportError(error, "Couldn't save your marks.");

@@ -106,6 +106,8 @@ const T0 = Date.UTC(2026, 9, 1, 4, 30);
   const later = L.pickQuestions(bank, L.noteAsked(asked, ids.slice(3), T0 + DAY), 3, T0 + 2 * DAY);
   ok("then the ones asked longest ago, marked as repeats", later.every((p) => ids.slice(0, 3).includes(p.id)) && later.every((p) => p.repeat));
   ok("a question asked weeks ago isn't a repeat", L.pickQuestions(bank, asked, 5, T0 + 20 * DAY).every((p) => !p.repeat));
+  const order = L.staleFirst(bank, L.noteAsked(asked, [ids[0]], T0 + DAY)).map(L.questionId);
+  ok("stale first: never asked in their own order, then the oldest asked", order.join() === [ids[3], ids[4], ids[1], ids[2], ids[0]].join(), order.join());
   ok("the list stays small", L.noteAsked(Array.from({ length: 80 }, (_, k) => [`q${k}`, 1]), ["new"], T0).length === 60);
   const t = L.newTopic(2);
   const fresh = L.answer(t, { correct: true, now: T0 });
