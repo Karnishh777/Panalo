@@ -646,8 +646,10 @@
       const a = db.account_age.find((r) => r.user_id === me());
       const mail = String(args.p_parent_email || "").trim().toLowerCase();
       if (mail === String(session?.user?.email || "").toLowerCase()) return { data: null, error: { message: "That's your own email. Enter your parent's." } };
+      // Phase 40: a parent's "no" stands. Only the parent who said it can be
+      // asked again, and the consent stays declined until they say yes.
+      if (a.consent === "declined" && mail !== a.parent_email) return { data: null, error: { message: "Your parent or guardian said no. Only they can change that, from the link in their email." } };
       a.parent_email = mail;
-      if (a.consent === "declined") a.consent = "pending";
       persist();
       return { data: null, error: null };
     }
