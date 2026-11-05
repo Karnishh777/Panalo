@@ -19,7 +19,8 @@
         { "q": "What is the electronic configuration of chlorine (proton number 17)?", "o": ["2,8,7", "2,8,8", "2,7,8", "8,8,1"], "a": 0, "why": "Shells fill 2, then 8, then the remaining 7." },
         { "q": "What type of bonding is in sodium chloride?", "o": ["Covalent", "Ionic", "Metallic", "Hydrogen"], "a": 1, "why": "Electrons transfer from sodium to chlorine, forming Na⁺ and Cl⁻ ions held by electrostatic attraction." },
         { "q": "Why does graphite conduct electricity?", "o": ["It is a metal", "Each carbon has one delocalised electron that can move", "It contains ions", "It is soft"], "a": 1, "why": "Each carbon bonds to three others, leaving one electron free to move between the layers." },
-        { "q": "Why do simple molecular substances have low melting points?", "o": ["Their covalent bonds are weak", "The forces between molecules are weak", "They contain ions", "They have no electrons"], "a": 1, "why": "Melting overcomes the weak intermolecular forces, not the strong covalent bonds inside molecules." }
+        { "q": "Why do simple molecular substances have low melting points?", "o": ["Their covalent bonds are weak", "The forces between molecules are weak", "They contain ions", "They have no electrons"], "a": 1, "why": "Melting overcomes the weak intermolecular forces, not the strong covalent bonds inside molecules." },
+        { "q": "What are isotopes of an element?", "o": ["Atoms with different numbers of protons", "Atoms with the same number of protons but different numbers of neutrons", "Atoms with different numbers of electrons", "Molecules with different chemical formulas"], "a": 1, "why": "Isotopes share atomic number (protons) and chemical behaviour, but differ in nucleon number (mass) due to neutron count." }
       ]
     },
     {
@@ -33,7 +34,8 @@
         { "q": "What is the relative formula mass of magnesium hydroxide, Mg(OH)₂? (Ar: Mg = 24, O = 16, H = 1)", "o": ["58", "41", "42", "57"], "a": 0, "why": "Examiners (2023): some ignored the brackets and worked out 'MgOH₂'. 24 + 2 × (16 + 1) = 58." }
       ],
       "long": [
-        { "q": "Calcium carbonate decomposes on heating: CaCO₃ → CaO + CO₂. Calculate the mass of calcium oxide made from 25 g of calcium carbonate. (Ar: Ca = 40, C = 12, O = 16)", "marks": 3, "paper": "4", "scheme": ["M1: Mr(CaCO₃) = 100, so moles = 25 ÷ 100 = 0.25", "M1: moles of CaO = 0.25 (1 : 1)", "A1: mass = 0.25 × 56 = 14 g"], "ans": "14 g" }
+        { "q": "Calcium carbonate decomposes on heating: CaCO₃ → CaO + CO₂. Calculate the mass of calcium oxide made from 25 g of calcium carbonate. (Ar: Ca = 40, C = 12, O = 16)", "marks": 3, "paper": "4", "scheme": ["M1: Mr(CaCO₃) = 100, so moles = 25 ÷ 100 = 0.25", "M1: moles of CaO = 0.25 (1 : 1)", "A1: mass = 0.25 × 56 = 14 g"], "ans": "14 g" },
+        { "q": "Explain the difference in melting points between sodium chloride (801 °C) and chlorine (−101 °C) in terms of structure and bonding.", "marks": 4, "paper": "4", "scheme": ["B1: sodium chloride has a giant ionic lattice structure with strong electrostatic attractions between oppositely charged Na⁺ and Cl⁻ ions", "B1: breaking these strong ionic bonds requires a large amount of thermal energy, giving a very high melting point", "B1: chlorine consists of small simple molecules (Cl₂) held together by weak intermolecular van der Waals forces", "B1: only a small amount of thermal energy is needed to overcome the weak intermolecular forces (covalent bonds within molecules remain unbroken)"] }
       ]
     },
     {
@@ -44,10 +46,12 @@
         { "q": "In the electrolysis of concentrated aqueous sodium chloride, what forms at the anode?", "o": ["Sodium", "Oxygen", "Chlorine", "Hydrogen"], "a": 2, "why": "With concentrated chloride, chloride ions are discharged at the anode as chlorine." },
         { "q": "In a hydrogen–oxygen fuel cell, what is the only product?", "o": ["Carbon dioxide", "Water", "Hydrogen peroxide", "Methane"], "a": 1, "why": "Hydrogen and oxygen combine to form water, releasing electrical energy." },
         { "q": "Which are the inputs to a hydrogen–oxygen fuel cell?", "o": ["Water only", "Hydrogen and water", "Hydrogen and oxygen", "Oxygen and electricity"], "a": 2, "why": "Examiners (2023): most candidates thought hydrogen and oxygen were outputs. They are the fuels; water and electrical energy come out." },
-        { "q": "What forms at the cathode when concentrated aqueous sodium chloride is electrolysed?", "o": ["2H", "Na", "H₂", "Cl₂"], "a": 2, "why": "Examiners (2023): a common error was 2H instead of H₂. Hydrogen is diatomic; sodium is too reactive to be discharged from water." }
+        { "q": "What forms at the cathode when concentrated aqueous sodium chloride is electrolysed?", "o": ["2H", "Na", "H₂", "Cl₂"], "a": 2, "why": "Examiners (2023): a common error was 2H instead of H₂. Hydrogen is diatomic; sodium is too reactive to be discharged from water." },
+        { "q": "In the electrolysis of molten lead(II) bromide using inert electrodes, what forms at the cathode?", "o": ["Bromine gas (Br₂)", "Lead oxide", "Hydrogen gas (H₂)", "Molten lead metal (Pb)"], "a": 3, "why": "Positively charged lead ions (Pb²⁺) gain electrons at the negative cathode to form lead metal: Pb²⁺ + 2e⁻ → Pb." }
       ],
       "long": [
-        { "q": "Concentrated aqueous sodium chloride is electrolysed using inert electrodes. Name the products at each electrode and write the ionic half-equation at the cathode.", "marks": 4, "paper": "4", "scheme": ["B1: anode (positive): chlorine", "B1: cathode (negative): hydrogen", "B1: 2H⁺ + 2e⁻ → H₂", "B1: the solution left contains sodium hydroxide"] }
+        { "q": "Concentrated aqueous sodium chloride is electrolysed using inert electrodes. Name the products at each electrode and write the ionic half-equation at the cathode.", "marks": 4, "paper": "4", "scheme": ["B1: anode (positive): chlorine", "B1: cathode (negative): hydrogen", "B1: 2H⁺ + 2e⁻ → H₂", "B1: the solution left contains sodium hydroxide"] },
+        { "q": "2.43 g of magnesium ribbon is reacted completely with excess dilute hydrochloric acid: Mg(s) + 2HCl(aq) → MgCl₂(aq) + H₂(g). Calculate the mass of magnesium chloride formed and the volume of hydrogen gas evolved at r.t.p. (Ar: Mg = 24.3, Cl = 35.5; molar gas volume = 24.0 dm³ mol⁻¹).", "marks": 4, "paper": "4", "scheme": ["M1: moles of Mg = 2.43 ÷ 24.3 = 0.100 mol", "M1: Mr of MgCl₂ = 24.3 + 2(35.5) = 95.3", "A1: mass of MgCl₂ = 0.100 × 95.3 = 9.53 g", "A1: volume of H₂ = 0.100 × 24.0 = 2.40 dm³"], "ans": "9.53 g MgCl₂; 2.40 dm³ H₂" }
       ]
     },
     {
@@ -80,10 +84,12 @@
         { "q": "Acid + metal carbonate gives a salt, water and…", "o": ["hydrogen", "oxygen", "carbon dioxide", "chlorine"], "a": 2, "why": "Carbonates fizz with acids, releasing carbon dioxide." },
         { "q": "Which salt is insoluble in water?", "o": ["Sodium chloride", "Potassium nitrate", "Barium sulfate", "Ammonium chloride"], "a": 2, "why": "Most sulfates dissolve, but barium, calcium and lead sulfates don't." },
         { "q": "How is an insoluble salt made?", "o": ["Titration", "Precipitation from two solutions", "Adding excess metal", "Evaporating seawater"], "a": 1, "why": "Mixing two soluble salts that swap ions forms the insoluble salt as a precipitate." },
-        { "q": "A salt is made by adding excess copper(II) carbonate to dilute sulfuric acid. What is the next step?", "o": ["Crystallise the solution straight away", "Filter to remove the excess copper(II) carbonate", "Add more acid until it fizzes again", "Evaporate to dryness"], "a": 1, "why": "Examiners (2023): many crystallised before removing the excess solid. Filter first, then heat the filtrate to the crystallising point." }
+        { "q": "A salt is made by adding excess copper(II) carbonate to dilute sulfuric acid. What is the next step?", "o": ["Crystallise the solution straight away", "Filter to remove the excess copper(II) carbonate", "Add more acid until it fizzes again", "Evaporate to dryness"], "a": 1, "why": "Examiners (2023): many crystallised before removing the excess solid. Filter first, then heat the filtrate to the crystallising point." },
+        { "q": "Which salt can be prepared by a precipitation reaction between two aqueous solutions?", "o": ["Sodium chloride", "Potassium nitrate", "Ammonium chloride", "Barium sulfate (BaSO₄)"], "a": 3, "why": "Insoluble salts like BaSO₄ are prepared by mixing two soluble solutions (e.g. BaCl₂ and Na₂SO₄) to form a solid precipitate." }
       ],
       "long": [
-        { "q": "Describe how to prepare pure, dry crystals of copper(II) sulfate from copper(II) oxide and dilute sulfuric acid.", "marks": 5, "paper": "4", "scheme": ["B1: warm the acid and add copper(II) oxide until some is left over (excess)", "B1: filter to remove the excess copper(II) oxide", "B1: heat the filtrate to evaporate some water, to the point of crystallisation", "B1: leave to cool so crystals form", "B1: filter off the crystals and dry them between filter papers"] }
+        { "q": "Describe how to prepare pure, dry crystals of copper(II) sulfate from copper(II) oxide and dilute sulfuric acid.", "marks": 5, "paper": "4", "scheme": ["B1: warm the acid and add copper(II) oxide until some is left over (excess)", "B1: filter to remove the excess copper(II) oxide", "B1: heat the filtrate to evaporate some water, to the point of crystallisation", "B1: leave to cool so crystals form", "B1: filter off the crystals and dry them between filter papers"] },
+        { "q": "Use collision theory to explain how increasing the temperature of a reaction mixture increases the rate of reaction.", "marks": 4, "paper": "4", "scheme": ["B1: particles gain kinetic energy and move faster", "B1: collision frequency increases (more collisions per unit time)", "B1: significantly more colliding particles possess energy greater than or equal to the activation energy (E ≥ Ea)", "B1: a much higher proportion of collisions are successful, which produces a large increase in the reaction rate"] }
       ]
     },
     {
@@ -108,6 +114,9 @@
         { "q": "What two things are needed for iron to rust?", "o": ["Oxygen and water", "Carbon dioxide and water", "Oxygen and salt", "Heat and water"], "a": 0, "why": "Rusting needs both oxygen (air) and water." },
         { "q": "Galvanising protects iron by coating it with…", "o": ["copper", "zinc", "paint", "tin"], "a": 1, "why": "Zinc is more reactive and corrodes in place of the iron (sacrificial protection)." },
         { "q": "Which metal does not react with dilute hydrochloric acid?", "o": ["Magnesium", "Zinc", "Copper", "Iron"], "a": 2, "why": "Examiners (2023): many did not recall that copper does not react with dilute acids; it is below hydrogen in the reactivity series." }
+      ],
+      "long": [
+        { "q": "Explain why potassium is more reactive than sodium, referring to their electronic configurations.", "marks": 4, "paper": "4", "scheme": ["B1: sodium has electron configuration 2,8,1; potassium has 2,8,8,1", "B1: potassium's outer valence electron is in a higher principal energy level (fourth shell vs third shell)", "B1: potassium's outer electron is further from the positive nucleus and more shielded by inner electron shells", "B1: the electrostatic attraction between the nucleus and the outer electron is weaker, so potassium loses its outer electron more readily"] }
       ]
     },
     {
@@ -117,7 +126,8 @@
         { "q": "What is the main gas in clean dry air?", "o": ["Oxygen", "Carbon dioxide", "Nitrogen", "Argon"], "a": 2, "why": "Air is about 78% nitrogen and 21% oxygen." },
         { "q": "Which two gases are greenhouse gases?", "o": ["Oxygen and nitrogen", "Carbon dioxide and methane", "Argon and helium", "Hydrogen and oxygen"], "a": 1, "why": "Carbon dioxide and methane absorb and re-emit infrared radiation." },
         { "q": "Why is chlorine added to drinking water?", "o": ["To improve taste", "To kill microbes", "To remove salt", "To make it softer"], "a": 1, "why": "Chlorine kills bacteria in water treatment." },
-        { "q": "How does methane add to the enhanced greenhouse effect?", "o": ["It destroys the ozone layer", "It reflects sunlight back to space", "It absorbs thermal energy emitted by the Earth and re-emits some back towards the Earth", "It causes acid rain"], "a": 2, "why": "Examiners (2023): answers often confused the greenhouse effect with ozone or acid rain." }
+        { "q": "How does methane add to the enhanced greenhouse effect?", "o": ["It destroys the ozone layer", "It reflects sunlight back to space", "It absorbs thermal energy emitted by the Earth and re-emits some back towards the Earth", "It causes acid rain"], "a": 2, "why": "Examiners (2023): answers often confused the greenhouse effect with ozone or acid rain." },
+        { "q": "What is the general formula for the homologous series of alkanes?", "o": ["C_n H_{2n+2}", "C_n H_{2n}", "C_n H_{2n−2}", "C_n H_{2n+1}OH"], "a": 0, "why": "Alkanes are saturated hydrocarbons with single C–C bonds, sharing the general formula C_n H_{2n+2}." }
       ]
     },
     {

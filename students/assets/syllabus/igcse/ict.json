@@ -9,10 +9,12 @@
       "questions": [
         { "q": "Which is an example of system software?", "o": ["an operating system", "a word processor", "a spreadsheet", "a web browser"], "a": 0, "why": "System software runs the computer; application software does user tasks." },
         { "q": "RAM is best described as", "o": ["volatile memory that holds data in use", "permanent storage", "a type of ROM", "an output device"], "a": 0, "why": "Its contents are lost when power is off." },
-        { "q": "Which type of memory holds the start-up instructions and is not lost when power is off?", "o": ["ROM", "RAM", "Cache", "Virtual memory"], "a": 0, "why": "Examiners (2023): some candidates gave RAM rather than ROM; RAM is volatile." }
+        { "q": "Which type of memory holds the start-up instructions and is not lost when power is off?", "o": ["ROM", "RAM", "Cache", "Virtual memory"], "a": 0, "why": "Examiners (2023): some candidates gave RAM rather than ROM; RAM is volatile." },
+        { "q": "What is a major advantage of a Graphical User Interface (GUI) over a Command Line Interface (CLI)?", "o": ["It uses significantly less RAM and CPU processing power", "It executes batch operations faster for advanced administrators", "It is intuitive and accessible with icons and pointers without memorising commands", "It does not require a visual monitor"], "a": 2, "why": "GUIs use WIMP (windows, icons, menus, pointer) metaphors that allow everyday users to interact visually without typing command syntax." }
       ],
       "long": [
-        { "q": "Describe the differences between RAM and ROM, and give one use of each.", "marks": 4, "paper": "1", "scheme": ["B1: RAM is volatile: its contents are lost when the power is off", "B1: RAM holds the programs and data currently in use, and can be read and written", "B1: ROM is non-volatile and read-only: contents are kept without power", "B1: ROM holds the start-up (boot) instructions"] }
+        { "q": "Describe the differences between RAM and ROM, and give one use of each.", "marks": 4, "paper": "1", "scheme": ["B1: RAM is volatile: its contents are lost when the power is off", "B1: RAM holds the programs and data currently in use, and can be read and written", "B1: ROM is non-volatile and read-only: contents are kept without power", "B1: ROM holds the start-up (boot) instructions"] },
+        { "q": "Compare a Graphical User Interface (GUI) with a Command Line Interface (CLI), and explain why network administrators often prefer a CLI.", "marks": 4, "paper": "1", "scheme": ["B1: GUI uses visual elements (windows, icons, menus, pointer - WIMP), making it accessible for non-technical users", "B1: CLI requires users to type specific syntax commands from memory, demanding higher technical training", "B1: CLI requires far less RAM and processor overhead, allowing it to run over low-bandwidth remote connections", "B1: CLI supports powerful scripting and batch execution of administrative tasks across hundreds of remote servers"] }
       ]
     },
     {
@@ -20,7 +22,8 @@
       "questions": [
         { "q": "Which is a direct data entry device?", "o": ["a barcode reader", "a keyboard", "a mouse", "a monitor"], "a": 0, "why": "It captures data without typing." },
         { "q": "A sensor in a greenhouse is an", "o": ["input device", "output device", "storage device", "processor"], "a": 0, "why": "It sends readings to the computer." },
-        { "q": "Which is an input device?", "o": ["Speaker", "Printer", "Actuator", "Microphone"], "a": 3, "why": "Actuators and speakers are output devices." }
+        { "q": "Which is an input device?", "o": ["Speaker", "Printer", "Actuator", "Microphone"], "a": 3, "why": "Actuators and speakers are output devices." },
+        { "q": "Which input technology is used to read bank cheques quickly and reliably even if written over?", "o": ["Magnetic Ink Character Recognition (MICR)", "Optical Mark Recognition (OMR)", "Barcode scanner", "Radio Frequency Identification (RFID)"], "a": 0, "why": "Cheques use magnetic ink with iron oxide; MICR readers sense magnetic fields so signatures or dirt across the line do not hinder reading." }
       ],
       "long": [
         { "q": "A supermarket uses barcode readers at its checkouts. Give two advantages of barcode readers over typing in product codes, and one disadvantage.", "marks": 3, "paper": "1", "scheme": ["B1: faster data entry, so shorter queues", "B1: more accurate: avoids typing errors", "B1: a disadvantage, e.g. damaged or dirty barcodes won't scan and must be typed; cost of the equipment"] }
@@ -31,7 +34,8 @@
       "questions": [
         { "q": "Which has no moving parts?", "o": ["a solid-state drive", "a hard disk drive", "a DVD", "magnetic tape"], "a": 0, "why": "SSDs use flash memory." },
         { "q": "Magnetic tape is best for", "o": ["large backups accessed rarely", "fast random access", "booting a computer", "a phone's storage"], "a": 0, "why": "Serial access suits archives." },
-        { "q": "Why is a solid-state drive faster than a hard disk drive?", "o": ["It has no moving parts, so data is accessed electronically", "It spins faster", "It uses magnetic tape", "It is larger"], "a": 0, "why": "SSDs also use less power and are more robust." }
+        { "q": "Why is a solid-state drive faster than a hard disk drive?", "o": ["It has no moving parts, so data is accessed electronically", "It spins faster", "It uses magnetic tape", "It is larger"], "a": 0, "why": "SSDs also use less power and are more robust." },
+        { "q": "Why are Solid State Drives (SSDs) preferred over magnetic hard disk drives (HDDs) in laptops?", "o": ["They have infinite read-write rewrite cycles", "They cost less per gigabyte than optical discs", "They require magnetic tape readers", "They have no moving parts, lower latency, and higher shock resistance"], "a": 3, "why": "SSDs use flash memory with zero mechanical latency, consume less power, and withstand physical drops far better than spinning HDDs." }
       ],
       "long": [
         { "q": "Give three reasons why a laptop is more likely to have a solid-state drive (SSD) than a hard disk drive (HDD).", "marks": 3, "paper": "1", "scheme": ["B1: no moving parts, so it's less likely to be damaged if dropped", "B1: faster access to data, so quicker start-up and loading", "B1: lighter, smaller or uses less power, so longer battery life"] }
@@ -42,10 +46,12 @@
       "questions": [
         { "q": "What does a router do?", "o": ["connects a local network to other networks such as the internet", "stores web pages", "prints documents", "only connects two computers"], "a": 0, "why": "It forwards packets between networks." },
         { "q": "Which is a benefit of cloud storage?", "o": ["files can be accessed from anywhere with internet", "it never needs internet", "it can't be hacked", "it is always free"], "a": 0, "why": "Access anywhere; relies on connection and the provider." },
-        { "q": "What does a router do on a home network?", "o": ["Connects the home network to the internet and forwards packets", "Stores the files", "Prints documents", "Displays web pages"], "a": 0, "why": "Many routers include a wireless access point." }
+        { "q": "What does a router do on a home network?", "o": ["Connects the home network to the internet and forwards packets", "Stores the files", "Prints documents", "Displays web pages"], "a": 0, "why": "Many routers include a wireless access point." },
+        { "q": "What is the main difference between a Local Area Network (LAN) and a Wide Area Network (WAN)?", "o": ["A LAN always uses satellite links while a WAN uses copper cables", "A LAN covers a small geographic site while a WAN spans multiple distant geographic locations", "A LAN cannot connect to the internet", "A WAN is owned and managed by a single private individual"], "a": 1, "why": "LANs are confined to a single building, campus, or home; WANs (like the internet or multinational corporate nets) connect geographically dispersed sites." }
       ],
       "long": [
-        { "q": "Describe two advantages and two disadvantages of storing files in the cloud rather than on a computer's own hard drive.", "marks": 4, "paper": "1", "scheme": ["B1: advantage, e.g. files can be reached from any device with an internet connection", "B1: a second advantage, e.g. the provider backs up the data; easy to share and work together", "B1: disadvantage, e.g. needs a reliable internet connection", "B1: a second disadvantage, e.g. security depends on a third party; ongoing subscription cost"] }
+        { "q": "Describe two advantages and two disadvantages of storing files in the cloud rather than on a computer's own hard drive.", "marks": 4, "paper": "1", "scheme": ["B1: advantage, e.g. files can be reached from any device with an internet connection", "B1: a second advantage, e.g. the provider backs up the data; easy to share and work together", "B1: disadvantage, e.g. needs a reliable internet connection", "B1: a second disadvantage, e.g. security depends on a third party; ongoing subscription cost"] },
+        { "q": "Explain how a proxy server operates to provide security and caching on an educational institution's network.", "marks": 4, "paper": "1", "scheme": ["B1: the proxy server acts as an intermediary between local client computers and external internet web servers", "B1: clients send web requests to the proxy, which hides the client's internal private IP address from the outside world", "B1: proxy server caches frequently visited web pages on local storage, reducing external WAN bandwidth consumption", "B1: proxy server checks requested URLs against blacklists and content filters, blocking prohibited material"] }
       ]
     },
     {
@@ -75,10 +81,12 @@
       "questions": [
         { "q": "The correct order is", "o": ["analysis, design, development and testing, implementation, documentation, evaluation", "design, analysis, implementation, testing", "testing, design, analysis", "implementation, analysis, design"], "a": 0, "why": "Analyse first, evaluate last." },
         { "q": "Parallel running means", "o": ["the old and new systems run together for a time", "the new system replaces the old at once", "one department changes first", "the system is changed in stages"], "a": 0, "why": "Safer but more costly." },
-        { "q": "Test data for a field 'Age' that accepts 11 to 18. Which is extreme data?", "o": ["15", "25", "abc", "18"], "a": 3, "why": "Examiners (2023): candidates gave explanations instead of test data. Extreme data is on the boundary of what is accepted." }
+        { "q": "Test data for a field 'Age' that accepts 11 to 18. Which is extreme data?", "o": ["15", "25", "abc", "18"], "a": 3, "why": "Examiners (2023): candidates gave explanations instead of test data. Extreme data is on the boundary of what is accepted." },
+        { "q": "Which system implementation strategy runs the new system and old system simultaneously until the new one proves reliable?", "o": ["Direct changeover", "Parallel running", "Pilot running", "Phased implementation"], "a": 1, "why": "Parallel running provides a safety net: if the new system fails, the old system continues operation with zero data loss, despite higher running costs." }
       ],
       "long": [
-        { "q": "Describe two methods of implementing a new system and give one advantage of each.", "marks": 4, "paper": "1", "scheme": ["B1: direct changeover: the old system is replaced at once", "B1: advantage: fast and cheap, benefits immediately", "B1: parallel running: both systems run together", "B1: advantage: if the new system fails, the old one is still there"] }
+        { "q": "Describe two methods of implementing a new system and give one advantage of each.", "marks": 4, "paper": "1", "scheme": ["B1: direct changeover: the old system is replaced at once", "B1: advantage: fast and cheap, benefits immediately", "B1: parallel running: both systems run together", "B1: advantage: if the new system fails, the old one is still there"] },
+        { "q": "A hospital is switching to a new electronic patient records system. Evaluate direct changeover versus parallel running.", "marks": 4, "paper": "1", "scheme": ["B1: direct changeover stops the old system overnight and starts the new system immediately: fast and avoids duplicate data entry", "B1: high risk with direct changeover: if the new system has critical bugs, patient care could be disrupted with no fallback", "B1: parallel running runs both systems side by side until the new one is proven, so there is a fallback if it fails", "B1: disadvantage of parallel running: hospital staff must duplicate all entries in both systems, doubling workload and costs"] }
       ]
     },
     {
@@ -86,10 +94,12 @@
       "questions": [
         { "q": "Phishing is", "o": ["fake emails trying to trick you into giving personal details", "a virus that deletes files", "a firewall", "a type of encryption"], "a": 0, "why": "Check sender and links." },
         { "q": "Encryption", "o": ["makes data unreadable without the key", "deletes data", "blocks all viruses", "speeds up a network"], "a": 0, "why": "It protects data if intercepted." },
-        { "q": "What is a physical safety risk when using computers?", "o": ["Data being hacked", "A virus deleting files", "Tripping over trailing cables", "The computer crashing"], "a": 2, "why": "Examiners (2023): many thought 'safety' meant damage to the equipment rather than harm to the user." }
+        { "q": "What is a physical safety risk when using computers?", "o": ["Data being hacked", "A virus deleting files", "Tripping over trailing cables", "The computer crashing"], "a": 2, "why": "Examiners (2023): many thought 'safety' meant damage to the equipment rather than harm to the user." },
+        { "q": "What encryption mechanism uses a public key to encrypt data and a private key to decrypt it?", "o": ["Symmetric encryption", "Caesar cipher", "Asymmetric encryption", "Hashing without salt"], "a": 2, "why": "Asymmetric cryptography uses mathematically linked key pairs: anyone can encrypt using the public key, but only the recipient's private key can decrypt." }
       ],
       "long": [
-        { "q": "Explain two ways a student could protect their personal data online.", "marks": 4, "paper": "1", "scheme": ["B1: one method, e.g. strong passwords / two-factor authentication", "B1: explained: makes unauthorised access harder", "B1: a second method, e.g. not opening links in unexpected emails (phishing) / privacy settings", "B1: explained"] }
+        { "q": "Explain two ways a student could protect their personal data online.", "marks": 4, "paper": "1", "scheme": ["B1: one method, e.g. strong passwords / two-factor authentication", "B1: explained: makes unauthorised access harder", "B1: a second method, e.g. not opening links in unexpected emails (phishing) / privacy settings", "B1: explained"] },
+        { "q": "Explain how two-factor authentication (2FA) significantly improves security when accessing online financial accounts.", "marks": 4, "paper": "1", "scheme": ["B1: 2FA requires two distinct authentication factors: something you know (password/PIN) and something you have (phone/token) or are (biometric)", "B1: if a cybercriminal steals or guesses the password via phishing or data breaches, they cannot gain access without the second factor", "B1: the second factor usually generates a time-sensitive, one-time passcode (OTP) that expires rapidly", "B1: an unexpected code request warns the genuine owner that someone else has their password"] }
       ]
     },
     {
@@ -196,7 +206,8 @@
       "questions": [
         { "q": "A primary key", "o": ["uniquely identifies each record", "is always a name", "links to another table only", "is optional"], "a": 0, "why": "No two records share it." },
         { "q": "Which field type suits a phone number?", "o": ["text", "integer", "Boolean", "date"], "a": 0, "why": "Leading zeros and '+' signs must be kept." },
-        { "q": "Which field type should store a phone number such as 09876543210?", "o": ["Number", "Text", "Boolean", "Date/time"], "a": 1, "why": "Leading zeros would be lost in a number field, and no arithmetic is done on it." }
+        { "q": "Which field type should store a phone number such as 09876543210?", "o": ["Number", "Text", "Boolean", "Date/time"], "a": 1, "why": "Leading zeros would be lost in a number field, and no arithmetic is done on it." },
+        { "q": "Which database validation check ensures that a student mark entered is between 0 and 100?", "o": ["Range check", "Format check", "Length check", "Presence check"], "a": 0, "why": "A range check verifies that a numeric or date value falls between specified upper and lower allowable boundary values." }
       ],
       "long": [
         { "q": "A library database stores details of its books. Design a table with four fields, give a suitable data type for each, and identify the primary key.", "marks": 5, "paper": "2", "scheme": ["B1: a unique identifier field, e.g. BookID or ISBN (text/alphanumeric)", "B1: it's the primary key because its value is different for every book", "B1: Title: text", "B1: e.g. DatePublished: date/time (or Price: currency)", "B1: e.g. OnLoan: Boolean (Yes/No)"] }
@@ -218,7 +229,8 @@
       "questions": [
         { "q": "Which formula adds cells A1 to A10?", "o": ["=SUM(A1:A10)", "=ADD(A1-A10)", "=A1+A10", "=TOTAL(A1,A10)"], "a": 0, "why": "SUM with a range." },
         { "q": "$A$1 in a formula is", "o": ["an absolute reference", "a relative reference", "a range", "a function"], "a": 0, "why": "It doesn't change when copied." },
-        { "q": "=IF(B2>=50,\"Pass\",\"Fail\") returns 'Pass' when B2 is", "o": ["50 or more", "less than 50", "exactly 49", "empty"], "a": 0, "why": ">= means greater than or equal to." }
+        { "q": "=IF(B2>=50,\"Pass\",\"Fail\") returns 'Pass' when B2 is", "o": ["50 or more", "less than 50", "exactly 49", "empty"], "a": 0, "why": ">= means greater than or equal to." },
+        { "q": "What is the result of the spreadsheet formula =IF(B2>=50, \"Pass\", \"Fail\") when B2 contains 50?", "o": ["Pass", "Fail", "Error", "50"], "a": 0, "why": "Because the comparison operator is >= (greater than or equal to), a value of 50 satisfies the condition and returns the true branch 'Pass'." }
       ],
       "long": [
         { "q": "Cells B2:B31 hold the test marks of 30 students. Write formulas to: (a) find the average mark; (b) find the highest mark; (c) count how many students scored 50 or more; (d) in C2, show 'Pass' if B2 is 50 or more, otherwise 'Fail'.", "marks": 4, "paper": "3", "scheme": ["B1: (a) =AVERAGE(B2:B31)", "B1: (b) =MAX(B2:B31)", "B1: (c) =COUNTIF(B2:B31,\">=50\")", "B1: (d) =IF(B2>=50,\"Pass\",\"Fail\")"], "ans": "=AVERAGE(B2:B31); =MAX(B2:B31); =COUNTIF(B2:B31,\">=50\"); =IF(B2>=50,\"Pass\",\"Fail\")" }

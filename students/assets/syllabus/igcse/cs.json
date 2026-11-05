@@ -13,11 +13,13 @@
         { "q": "Why does lossy compression make files smaller than lossless?", "o": ["It removes data permanently that is less noticeable", "It encrypts the file", "It stores data twice", "It uses hexadecimal"], "a": 0, "why": "Lossy discards some data (e.g. detail in an image); lossless can rebuild the original exactly." },
         { "q": "An image is 100 × 100 pixels with a colour depth of 8 bits. What is its file size?", "o": ["10 000 bits", "10 000 bytes", "80 000 bytes", "800 bytes"], "a": 1, "why": "100 × 100 × 8 bits = 80 000 bits = 10 000 bytes." },
         { "q": "How many bits are needed to store the denary number 200 as an unsigned binary integer?", "o": ["8", "11001000", "3", "200"], "a": 0, "why": "Examiners (2023): some gave the binary number rather than the number of bits. 200 needs 8 bits (2⁷ = 128 ≤ 200 < 256)." },
-        { "q": "Which is a type of compression, rather than an example?", "o": ["Zipping a file", "MP3", "Making a photo smaller", "Lossless"], "a": 3, "why": "Examiners (2023): some gave an example of compression rather than a type. The types are lossy and lossless." }
+        { "q": "Which is a type of compression, rather than an example?", "o": ["Zipping a file", "MP3", "Making a photo smaller", "Lossless"], "a": 3, "why": "Examiners (2023): some gave an example of compression rather than a type. The types are lossy and lossless." },
+        { "q": "What is the hexadecimal representation of the 8-bit byte 11011010?", "o": ["DA", "DB", "D8", "CA"], "a": 0, "why": "Split into two 4-bit nibbles: 1101 = 13 = D, and 1010 = 10 = A. Together, 11011010 is DA in hexadecimal." }
       ],
       "long": [
         { "q": "Convert the hexadecimal number 3F into 8-bit binary and into denary.", "marks": 2, "paper": "1", "scheme": ["B1: 00111111", "B1: 63"], "ans": "00111111; 63" },
-        { "q": "A 10-second sound recording is sampled 44 100 times a second with a sample resolution of 16 bits, in mono. Calculate the file size in bytes.", "marks": 3, "paper": "1", "scheme": ["M1: 44 100 × 16 × 10 = 7 056 000 bits", "M1: ÷ 8", "A1: = 882 000 bytes"], "ans": "882 000 bytes" }
+        { "q": "A 10-second sound recording is sampled 44 100 times a second with a sample resolution of 16 bits, in mono. Calculate the file size in bytes.", "marks": 3, "paper": "1", "scheme": ["M1: 44 100 × 16 × 10 = 7 056 000 bits", "M1: ÷ 8", "A1: = 882 000 bytes"], "ans": "882 000 bytes" },
+        { "q": "The denary number 181 is to be stored in an 8-bit register. (a) Convert 181 to 8-bit unsigned binary. (b) Convert 181 to hexadecimal. (c) Give one reason why developers prefer hexadecimal over binary.", "marks": 3, "paper": "1", "scheme": ["B1: (a) 128 + 32 + 16 + 4 + 1, so 10110101", "B1: (b) 181 ÷ 16 = 11 remainder 5; 11 = B, so B5", "B1: hexadecimal is much more compact and human-readable, reducing transcription errors when reading memory addresses"], "ans": "10110101; B5" }
       ]
     },
     {
@@ -25,7 +27,8 @@
       "questions": [
         { "q": "Which method sends bits one at a time down a single wire?", "o": ["Parallel", "Serial", "Duplex", "Simplex only"], "a": 1, "why": "Serial transmission uses one channel; parallel uses several at once." },
         { "q": "What does a parity bit help detect?", "o": ["Viruses", "Errors in transmission", "Lost packets only", "Encryption keys"], "a": 1, "why": "An odd or even count of 1s that doesn't match shows a bit has changed." },
-        { "q": "Symmetric encryption uses…", "o": ["one shared key to encrypt and decrypt", "a public and a private key", "no key", "a parity bit"], "a": 0, "why": "Asymmetric encryption uses a public/private key pair." }
+        { "q": "Symmetric encryption uses…", "o": ["one shared key to encrypt and decrypt", "a public and a private key", "no key", "a parity bit"], "a": 0, "why": "Asymmetric encryption uses a public/private key pair." },
+        { "q": "Which method of error detection uses an extra bit added to a byte to ensure the total number of 1s is even or odd?", "o": ["Checksum", "Echo check", "Check digit", "Parity check"], "a": 3, "why": "A parity bit (even or odd parity) flags single-bit transmission errors when the count of 1s does not match the rule." }
       ],
       "long": [
         { "q": "Describe how an even parity check is used to detect errors in data transmission.", "marks": 3, "paper": "1", "scheme": ["B1: sender and receiver agree to use even parity", "B1: a parity bit is set so that each byte has an even number of 1s", "B1: the receiver counts the 1s; an odd number means an error has occurred"] }
@@ -38,6 +41,9 @@
         { "q": "Which is volatile memory?", "o": ["ROM", "RAM", "SSD", "Hard disk"], "a": 1, "why": "RAM loses its contents when the power is off." },
         { "q": "What is the main advantage of an SSD over an HDD?", "o": ["Cheaper per GB", "Faster access with no moving parts", "Holds more data always", "Never wears out"], "a": 1, "why": "Solid-state storage uses flash memory, so access is faster and it is more robust." },
         { "q": "What is the role of the program counter (PC)?", "o": ["It counts how many programs are open", "It holds the address of the next instruction to be fetched", "It stores the result of a calculation", "It decodes instructions"], "a": 1, "why": "Examiners (2023): candidates mostly named registers instead of describing their role." }
+      ],
+      "long": [
+        { "q": "Describe the role of registers during the Fetch stage of the Fetch–Decode–Execute cycle.", "marks": 5, "paper": "1", "scheme": ["B1: the Program Counter (PC) holds the address of the next instruction to be fetched from memory", "B1: the address is copied from the PC to the Memory Address Register (MAR) via the address bus", "B1: the PC is incremented by 1 to point to the subsequent instruction", "B1: the instruction at that memory address is fetched along the data bus and copied into the Memory Data Register (MDR)", "B1: the instruction is copied from the MDR to the Current Instruction Register (CIR) for decoding"] }
       ]
     },
     {
@@ -73,7 +79,8 @@
         { "q": "A range check on an age field rejects 150. This is…", "o": ["verification", "validation", "encryption", "decomposition"], "a": 1, "why": "Validation checks data is sensible; verification checks it was entered correctly." }
       ],
       "long": [
-        { "q": "Write pseudocode that inputs 10 numbers and outputs the largest.", "marks": 5, "paper": "2", "scheme": ["M1: initialise Largest with the first number (or a very small value)", "M1: a loop that runs 10 times", "M1: INPUT a number inside the loop", "M1: IF Number > Largest THEN Largest ← Number", "M1: OUTPUT Largest after the loop"] }
+        { "q": "Write pseudocode that inputs 10 numbers and outputs the largest.", "marks": 5, "paper": "2", "scheme": ["M1: initialise Largest with the first number (or a very small value)", "M1: a loop that runs 10 times", "M1: INPUT a number inside the loop", "M1: IF Number > Largest THEN Largest ← Number", "M1: OUTPUT Largest after the loop"] },
+        { "q": "Write pseudocode to input 20 test scores (0 to 100), calculate the average score, count how many students scored 80 or above, and output both values.", "marks": 7, "paper": "2", "scheme": ["B1: Total ← 0, Count80 ← 0", "B1: FOR i ← 1 TO 20 ... NEXT i (or WHILE loop counting to 20)", "B1: INPUT Score", "B1: Total ← Total + Score", "B1: IF Score >= 80 THEN Count80 ← Count80 + 1", "B1: Average ← Total / 20", "B1: OUTPUT Average, Count80"] }
       ]
     },
     {
@@ -81,7 +88,8 @@
       "questions": [
         { "q": "Which loop is best when you know exactly how many times to repeat?", "o": ["WHILE", "REPEAT…UNTIL", "FOR (count-controlled)", "IF"], "a": 2, "why": "FOR loops run a fixed number of times; WHILE and REPEAT are condition-controlled." },
         { "q": "What does MOD return for 17 MOD 5?", "o": ["3", "2", "3.4", "12"], "a": 1, "why": "MOD gives the remainder: 17 = 3 × 5 + 2." },
-        { "q": "A local variable is…", "o": ["available anywhere in the program", "only available inside the subroutine where it is declared", "a constant", "stored in ROM"], "a": 1, "why": "Global variables are available throughout the program." }
+        { "q": "A local variable is…", "o": ["available anywhere in the program", "only available inside the subroutine where it is declared", "a constant", "stored in ROM"], "a": 1, "why": "Global variables are available throughout the program." },
+        { "q": "In programming, what is a variable's scope?", "o": ["The region of a program where the variable is recognised and accessible", "The total amount of memory it occupies", "Its initial default value", "The data type it stores"], "a": 0, "why": "Scope determines variable visibility: local variables exist only within their function/block, while global variables are accessible everywhere." }
       ]
     },
     {

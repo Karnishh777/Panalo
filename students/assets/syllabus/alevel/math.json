@@ -59,7 +59,8 @@
         { "q": "Which identity is always true?", "o": ["sin θ + cos θ = 1", "sin²θ + cos²θ = 1", "tan θ = cos θ / sin θ", "sin 2θ = 2 sin θ"], "a": 1, "why": "This is the fundamental Pythagorean identity." },
         { "q": "Solve sin x = 0.5 for 0° ≤ x ≤ 360°.", "o": ["30° only", "30° and 150°", "30° and 330°", "60° and 120°"], "a": 1, "why": "Sine is positive in the first and second quadrants: 30° and 180° − 30°." },
         { "q": "What is the period of y = cos 2x?", "o": ["90°", "180°", "360°", "720°"], "a": 1, "why": "The period of cos kx is 360°/k." },
-        { "q": "Solve sin θ = 0.6 for 0° ≤ θ ≤ 360°. How many solutions are there?", "o": ["Two", "One", "Three", "Four"], "a": 0, "why": "Examiners (2023): candidates often gave too few answers. Sine is positive in the first and second quadrants: 36.9° and 143.1°." }
+        { "q": "Solve sin θ = 0.6 for 0° ≤ θ ≤ 360°. How many solutions are there?", "o": ["Two", "One", "Three", "Four"], "a": 0, "why": "Examiners (2023): candidates often gave too few answers. Sine is positive in the first and second quadrants: 36.9° and 143.1°." },
+        { "q": "What is the derivative of y = (3x − 2)⁴ with respect to x?", "o": ["4(3x − 2)³", "3(3x − 2)³", "12(3x − 2)³", "12(3x − 2)⁵"], "a": 2, "why": "By the chain rule, dy/dx = 4(3x − 2)³ × d/dx(3x − 2) = 4(3x − 2)³ × 3 = 12(3x − 2)³." }
       ],
       "long": [
         { "q": "Solve the equation 2 sin²θ + 3 cos θ = 3 for 0° ≤ θ ≤ 360°.", "marks": 5, "paper": "1", "scheme": ["M1: use sin²θ = 1 − cos²θ", "A1: 2cos²θ − 3cos θ + 1 = 0", "M1: solve the quadratic in cos θ", "A1: θ = 60°, 300°", "A1: θ = 0°, 360°"], "ans": "θ = 0°, 60°, 300°, 360°" },
@@ -72,7 +73,8 @@
         { "q": "What is the coefficient of x² in (1 + 2x)⁵?", "o": ["10", "20", "40", "80"], "a": 2, "why": "⁵C₂ × 2² = 10 × 4 = 40." },
         { "q": "A geometric series has a = 8 and r = ½. What is its sum to infinity?", "o": ["4", "8", "16", "∞"], "a": 2, "why": "S∞ = a/(1 − r) = 8 ÷ ½ = 16, valid because |r| < 1." },
         { "q": "The 10th term of the arithmetic progression 3, 7, 11, … is…", "o": ["39", "40", "43", "36"], "a": 0, "why": "uₙ = a + (n − 1)d = 3 + 9 × 4 = 39." },
-        { "q": "In the expansion of (3 + ax)⁴, what is the coefficient of x²?", "o": ["54a", "6a²", "54a²", "9a²"], "a": 2, "why": "Examiners (2023): the coefficient was often given as 54a rather than 54a². 4C2 × 3² × a² = 6 × 9 × a²." }
+        { "q": "In the expansion of (3 + ax)⁴, what is the coefficient of x²?", "o": ["54a", "6a²", "54a²", "9a²"], "a": 2, "why": "Examiners (2023): the coefficient was often given as 54a rather than 54a². 4C2 × 3² × a² = 6 × 9 × a²." },
+        { "q": "Evaluate the definite integral ∫₀² (3x² + 2x) dx.", "o": ["12", "8", "10", "16"], "a": 0, "why": "∫ (3x² + 2x) dx = [x³ + x²]₀² = (2³ + 2²) − 0 = 8 + 4 = 12." }
       ],
       "long": [
         { "q": "Find the coefficient of x³ in the expansion of (2 − x)⁶.", "marks": 3, "paper": "1", "scheme": ["M1: the term ⁶C₃ × 2³ × (−x)³", "A1: ⁶C₃ = 20 and 2³ = 8 used", "A1: −160"], "ans": "−160" },
@@ -260,7 +262,8 @@
         { "q": "What is the median of 3, 7, 7, 9, 12, 15?", "o": ["7", "8", "9", "7.5"], "a": 1, "why": "Six values: the median is halfway between the 3rd and 4th, (7 + 9) ÷ 2 = 8." },
         { "q": "In a histogram, the area of each bar is proportional to the…", "o": ["frequency density", "frequency", "class width", "cumulative frequency"], "a": 1, "why": "Height is frequency density, so area = density × width = frequency." },
         { "q": "n = 10, Σx = 60 and Σx² = 400. What is the variance?", "o": ["4", "40", "2", "34"], "a": 0, "why": "Mean = 6; variance = Σx²/n − mean² = 40 − 36 = 4." },
-        { "q": "A box plot has lower quartile 12 and upper quartile 20. Using 1.5 × IQR beyond a quartile, which value is an outlier?", "o": ["28", "31", "33", "25"], "a": 2, "why": "IQR = 8, so the limit is 20 + 12 = 32: only 33 is beyond it." }
+        { "q": "A box plot has lower quartile 12 and upper quartile 20. Using 1.5 × IQR beyond a quartile, which value is an outlier?", "o": ["28", "31", "33", "25"], "a": 2, "why": "IQR = 8, so the limit is 20 + 12 = 32: only 33 is beyond it." },
+        { "q": "Which average is least affected by extreme outliers in a skewed data distribution?", "o": ["Mean", "Median", "Midrange", "Root mean square"], "a": 1, "why": "The median depends only on rank order and position, making it resistant to extreme outliers, unlike the mean." }
       ],
       "long": [
         { "q": "The times, in minutes, taken by 8 students to finish a puzzle are 12, 15, 9, 20, 14, 11, 16, 23. Find the mean and the standard deviation.", "marks": 4, "paper": "5", "scheme": ["B1: mean = 15", "M1: Σx² = 1952 (or Σ(x − 15)² = 152)", "M1: variance = 1952/8 − 15² = 19", "A1: standard deviation = 4.36 (3 s.f.)"], "ans": "mean 15, sd 4.36" },
@@ -286,7 +289,8 @@
         { "q": "Events A and B are independent when…", "o": ["P(A ∩ B) = 0", "P(A ∩ B) = P(A) × P(B)", "P(A) + P(B) = 1", "A and B can't both happen"], "a": 1, "why": "Mutually exclusive events are a different idea (P(A ∩ B) = 0)." },
         { "q": "P(A) = 0.4, P(B) = 0.5 and P(A ∪ B) = 0.7. What is P(A ∩ B)?", "o": ["0.2", "0.9", "0.1", "0.3"], "a": 0, "why": "P(A ∪ B) = P(A) + P(B) − P(A ∩ B), so P(A ∩ B) = 0.9 − 0.7 = 0.2." },
         { "q": "P(A | B) is…", "o": ["P(A ∩ B) ÷ P(B)", "P(A ∩ B) ÷ P(A)", "P(A) × P(B)", "P(B) ÷ P(A)"], "a": 0, "why": "Given B, only the part of A inside B counts, out of all of B." },
-        { "q": "Two fair dice are thrown. What is the probability that the total is 7?", "o": ["1/12", "1/6", "7/36", "1/3"], "a": 1, "why": "Six of the 36 equally likely outcomes give 7: 6/36 = 1/6." }
+        { "q": "Two fair dice are thrown. What is the probability that the total is 7?", "o": ["1/12", "1/6", "7/36", "1/3"], "a": 1, "why": "Six of the 36 equally likely outcomes give 7: 6/36 = 1/6." },
+        { "q": "If events A and B are mutually exclusive with P(A) = 0.3 and P(B) = 0.4, what is P(A ∩ B)?", "o": ["0", "0.12", "0.7", "0.1"], "a": 0, "why": "Mutually exclusive events cannot occur simultaneously, so their intersection probability P(A ∩ B) is identically 0." }
       ],
       "long": [
         { "q": "A bag contains 3 red counters and 2 blue counters. Two counters are taken at random, without replacement, as shown in the tree diagram. Find the probability that (a) both are red, (b) they are different colours, (c) the first is red, given that they are different colours.", "marks": 6, "paper": "5", "scheme": ["B1: correct branch probabilities", "M1: multiply along the branches", "A1: (a) 3/10", "A1: (b) 3/5", "M1: P(first red and different) ÷ P(different)", "A1: (c) 1/2"], "ans": "(a) 3/10 (b) 3/5 (c) 1/2", "fig": "assets/syllabus/fig/9709-s1-tree.svg" },

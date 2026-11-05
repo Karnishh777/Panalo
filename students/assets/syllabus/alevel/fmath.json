@@ -9,7 +9,8 @@
       "questions": [
         { "q": "If α, β, γ are the roots of x³ − 4x² + 2x − 7 = 0, then α + β + γ =", "o": ["4", "−4", "7", "2"], "a": 0, "why": "Sum of roots = −b/a." },
         { "q": "For the same cubic, αβγ =", "o": ["7", "−7", "2", "4"], "a": 0, "why": "Product of roots of ax³ + bx² + cx + d is −d/a." },
-        { "q": "α, β, γ are the roots of x³ − 4x² + 2x − 7 = 0. What is α + β + γ?", "o": ["−4", "2", "7", "4"], "a": 3, "why": "Sum of roots = −b/a." }
+        { "q": "α, β, γ are the roots of x³ − 4x² + 2x − 7 = 0. What is α + β + γ?", "o": ["−4", "2", "7", "4"], "a": 3, "why": "Sum of roots = −b/a." },
+        { "q": "For a cubic equation x³ + px² + qx + r = 0 with roots α, β, γ, what is the sum of the roots α + β + γ?", "o": ["p", "q", "−r", "−p"], "a": 3, "why": "By Vieta's formulas, the coefficient of x² in a monic polynomial equals the negative of the sum of the roots: Σα = −p." }
       ],
       "long": [
         { "q": "The roots of x³ + 2x² − 3x + 5 = 0 are α, β and γ. Find the value of α² + β² + γ².", "marks": 3, "paper": "1", "scheme": ["M1: α + β + γ = −2, αβ + βγ + γα = −3", "M1: α² + β² + γ² = (α + β + γ)² − 2(αβ + βγ + γα)", "A1: = 4 + 6 = 10"], "ans": "10" }
@@ -41,7 +42,8 @@
         { "q": "A matrix has no inverse when", "o": ["its determinant is 0", "it is square", "its determinant is 1", "it is symmetric"], "a": 0, "why": "A singular matrix has determinant zero." },
         { "q": "For invertible A and B, (AB)⁻¹ =", "o": ["B⁻¹A⁻¹", "A⁻¹B⁻¹", "AB", "BA"], "a": 0, "why": "Inverses reverse the order." },
         { "q": "Transformation A then transformation B is represented by:", "o": ["AB", "A + B", "A⁻¹B", "BA"], "a": 3, "why": "Examiners (2023): the most common error was getting the order of the matrices wrong. The first transformation is on the right." },
-        { "q": "An invariant point of a transformation M satisfies:", "o": ["M(x, y) = k(x, y)", "M(x, y) = (x, y)", "det M = 1", "M is singular"], "a": 1, "why": "Examiners (2023): most found invariant lines rather than the invariant points required." }
+        { "q": "An invariant point of a transformation M satisfies:", "o": ["M(x, y) = k(x, y)", "M(x, y) = (x, y)", "det M = 1", "M is singular"], "a": 1, "why": "Examiners (2023): most found invariant lines rather than the invariant points required." },
+        { "q": "A square matrix M has determinant det(M) = 0. What does this imply about M?", "o": ["M is the identity matrix", "M is singular and has no multiplicative inverse", "M is an orthogonal matrix", "All entries of M must be 0"], "a": 1, "why": "A matrix with zero determinant cannot be inverted; its columns are linearly dependent and it maps space to lower dimensions." }
       ],
       "long": [
         { "q": "M = [[3, 1], [2, 4]]. Find M⁻¹ and the image of the point (1, 1) under M.", "marks": 3, "paper": "1", "scheme": ["M1: det M = 12 − 2 = 10", "A1: M⁻¹ = (1/10)[[4, −1], [−2, 3]]", "B1: image (4, 6)"] }
@@ -52,7 +54,8 @@
       "questions": [
         { "q": "The area enclosed by r = f(θ) between θ = α and θ = β is", "o": ["½∫ r² dθ", "∫ r dθ", "∫ r² dθ", "½∫ r dθ"], "a": 0, "why": "Each thin sector has area ½r² δθ." },
         { "q": "The point with Cartesian coordinates (0, 2) has polar coordinates", "o": ["(2, π/2)", "(2, 0)", "(0, 2)", "(2, π)"], "a": 0, "why": "r = 2 along the positive y-axis, θ = π/2." },
-        { "q": "The area enclosed by a polar curve between θ = α and θ = β is:", "o": ["∫ r dθ", "∫ r² dθ", "π ∫ r² dθ", "½ ∫ r² dθ"], "a": 3, "why": "Examiners (2023): forgetting the factor ½ was the most common error." }
+        { "q": "The area enclosed by a polar curve between θ = α and θ = β is:", "o": ["∫ r dθ", "∫ r² dθ", "π ∫ r² dθ", "½ ∫ r² dθ"], "a": 3, "why": "Examiners (2023): forgetting the factor ½ was the most common error." },
+        { "q": "What is the Cartesian equivalent of the polar equation r = 4 cos θ?", "o": ["x² + y² = 16", "y = 4x", "x² − y² = 4", "x² + y² − 4x = 0"], "a": 3, "why": "Multiply both sides by r: r² = 4r cos θ. Since r² = x² + y² and x = r cos θ, this gives x² + y² = 4x, which is a circle centred at (2,0)." }
       ]
     },
     {
@@ -68,7 +71,8 @@
       "questions": [
         { "q": "Proof by induction needs a base case and", "o": ["the inductive step from k to k + 1", "a counter-example", "proof by contradiction", "the case n = 0 only"], "a": 0, "why": "Assume true for k, show true for k + 1." },
         { "q": "In proof by induction, the inductive step begins by:", "o": ["Assuming it is true for n = k, then showing it is true for n = k + 1", "Assuming the statement is true for all n", "Checking n = 1 only", "Assuming it is false"], "a": 0, "why": "Examiners (2023): candidates need to assume the statement for some k, not that it is true in general." },
-        { "q": "What is the first step of a proof by induction?", "o": ["Show the statement is true for the first value, e.g. n = 1", "Assume it is true for all n", "Show it is false for n = 0", "Differentiate both sides"], "a": 0, "why": "Then assume true for n = k and prove for n = k + 1, and conclude." }
+        { "q": "What is the first step of a proof by induction?", "o": ["Show the statement is true for the first value, e.g. n = 1", "Assume it is true for all n", "Show it is false for n = 0", "Differentiate both sides"], "a": 0, "why": "Then assume true for n = k and prove for n = k + 1, and conclude." },
+        { "q": "In proof by mathematical induction, what is the purpose of the inductive step?", "o": ["To verify that the statement is true for n = 1", "To find the numerical value of the infinite sum", "To generate counterexamples", "To prove that if the statement holds for n = k, it necessarily holds for n = k + 1"], "a": 3, "why": "The inductive step establishes the chain of truth: P(k) ⇒ P(k + 1). Together with the base case P(1), truth follows for all integers n ≥ 1." }
       ],
       "long": [
         { "q": "Prove by induction that Σ r from r = 1 to n = ½n(n + 1) for all positive integers n.", "marks": 4, "paper": "1", "scheme": ["B1: n = 1: both sides equal 1", "M1: assume true for n = k", "M1: add (k + 1): ½k(k + 1) + (k + 1) = ½(k + 1)(k + 2)", "A1: so true for n = k + 1, hence for all n by induction"] }
@@ -79,7 +83,8 @@
       "questions": [
         { "q": "By definition, cosh x =", "o": ["½(eˣ + e⁻ˣ)", "½(eˣ − e⁻ˣ)", "eˣ − e⁻ˣ", "1/sinh x"], "a": 0, "why": "The definition of cosh." },
         { "q": "cosh²x − sinh²x =", "o": ["1", "0", "−1", "cosh 2x"], "a": 0, "why": "The hyperbolic identity (compare cos² + sin² = 1)." },
-        { "q": "sinh x is defined as:", "o": ["(eˣ + e⁻ˣ)/2", "eˣ − e⁻ˣ", "1/cosh x", "(eˣ − e⁻ˣ)/2"], "a": 3, "why": "cosh x = (eˣ + e⁻ˣ)/2." }
+        { "q": "sinh x is defined as:", "o": ["(eˣ + e⁻ˣ)/2", "eˣ − e⁻ˣ", "1/cosh x", "(eˣ − e⁻ˣ)/2"], "a": 3, "why": "cosh x = (eˣ + e⁻ˣ)/2." },
+        { "q": "Which fundamental identity connects the hyperbolic functions cosh(x) and sinh(x)?", "o": ["cosh²(x) − sinh²(x) = 1", "cosh²(x) + sinh²(x) = 1", "sinh(2x) = cosh²(x) + sinh²(x)", "tanh(x) = cosh(x) / sinh(x)"], "a": 0, "why": "Unlike trigonometric cos²x + sin²x = 1, hyperbolic geometry obeys cosh²x − sinh²x = 1 since ((e^x + e^-x)/2)² − ((e^x − e^-x)/2)² = 1." }
       ]
     },
     {
@@ -87,7 +92,8 @@
       "questions": [
         { "q": "The eigenvalues of a matrix A satisfy", "o": ["det(A − λI) = 0", "A − λ = 0", "det A = λ", "Ax = 0"], "a": 0, "why": "The characteristic equation." },
         { "q": "The eigenvalues λ of a matrix M satisfy:", "o": ["M − λI = 0", "det M = λ", "Mλ = I", "det(M − λI) = 0"], "a": 3, "why": "This is the characteristic equation." },
-        { "q": "If M = PDP⁻¹ with D diagonal, then Mⁿ =", "o": ["PⁿDⁿP⁻ⁿ", "DⁿPP⁻¹", "PDⁿP⁻¹", "nPDP⁻¹"], "a": 2, "why": "The P⁻¹P pairs in the middle cancel." }
+        { "q": "If M = PDP⁻¹ with D diagonal, then Mⁿ =", "o": ["PⁿDⁿP⁻ⁿ", "DⁿPP⁻¹", "PDⁿP⁻¹", "nPDP⁻¹"], "a": 2, "why": "The P⁻¹P pairs in the middle cancel." },
+        { "q": "How are the eigenvalues λ of a square matrix A found?", "o": ["By finding the trace of A divided by its determinant", "By solving the characteristic equation det(A − λI) = 0", "By calculating A multiplied by the identity matrix", "By finding the row reduced echelon form of A"], "a": 1, "why": "An eigenvalue satisfies Av = λv for non-zero v, which requires (A − λI)v = 0, meaning det(A − λI) = 0." }
       ]
     },
     {
@@ -111,7 +117,8 @@
       "questions": [
         { "q": "By de Moivre's theorem, (cos θ + i sin θ)ⁿ =", "o": ["cos nθ + i sin nθ", "cosⁿθ + i sinⁿθ", "n cos θ + i n sin θ", "cos θⁿ + i sin θⁿ"], "a": 0, "why": "de Moivre's theorem." },
         { "q": "The cube roots of unity sum to", "o": ["0", "1", "3", "−1"], "a": 0, "why": "1 + ω + ω² = 0." },
-        { "q": "What are the nth roots of unity?", "o": ["1 and −1 only", "n, 2n, 3n", "k/n for k = 1 to n", "e^(2πik/n) for k = 0, 1, …, n − 1"], "a": 3, "why": "They are equally spaced on the unit circle and sum to 0." }
+        { "q": "What are the nth roots of unity?", "o": ["1 and −1 only", "n, 2n, 3n", "k/n for k = 1 to n", "e^(2πik/n) for k = 0, 1, …, n − 1"], "a": 3, "why": "They are equally spaced on the unit circle and sum to 0." },
+        { "q": "According to De Moivre's theorem, what is (cos θ + i sin θ)^n for an integer n?", "o": ["cos^n(θ) + i sin^n(θ)", "cos(nθ) + i sin(nθ)", "n cos(θ) + i n sin(θ)", "cos(θ/n) + i sin(θ/n)"], "a": 1, "why": "By Euler's identity (e^(iθ))^n = e^(inθ), De Moivre's theorem establishes (cos θ + i sin θ)^n = cos(nθ) + i sin(nθ)." }
       ]
     },
     {
@@ -154,7 +161,8 @@
       "questions": [
         { "q": "The elastic potential energy stored in a string of modulus λ, natural length l, extension x is", "o": ["λx²/(2l)", "λx/l", "½λx", "λl/x"], "a": 0, "why": "The standard result." },
         { "q": "An elastic string has natural length l and modulus λ. Its tension at extension x is:", "o": ["λx", "λx/l", "λ(l + x)/l", "λl/x"], "a": 1, "why": "Examiners (2023): use the modulus as given (e.g. λ = mg) and the extension, not the extended length." },
-        { "q": "The elastic potential energy stored in the string is:", "o": ["λx/l", "λx²/(2l)", "½λx²", "λl²/(2x)"], "a": 1, "why": "x is the extension, not the total length." }
+        { "q": "The elastic potential energy stored in the string is:", "o": ["λx/l", "λx²/(2l)", "½λx²", "λl²/(2x)"], "a": 1, "why": "x is the extension, not the total length." },
+        { "q": "What is the elastic potential energy stored in an elastic spring of natural length L and modulus of elasticity λ when extended by x?", "o": ["λ x / L", "2 λ x² / L", "λ x² / (2L)", "λ L / (2x)"], "a": 2, "why": "Hooke's law states T = λx / L. Integrating work done W = ∫ T dx gives E_p = λx² / (2L)." }
       ]
     },
     {
@@ -178,7 +186,8 @@
       "questions": [
         { "q": "For a probability density function f, ∫ f(x) dx over all x =", "o": ["1", "0", "the mean", "the median"], "a": 0, "why": "Total probability is 1." },
         { "q": "Given a pdf on 0 ≤ x ≤ 27, the CDF must state:", "o": ["F(x) = 0 otherwise", "F(x) = 1 otherwise", "F(x) = 0 for x < 0 and F(x) = 1 for x > 27", "Only the middle part"], "a": 2, "why": "Examiners (2023): these were often wrongly combined as 'F(x) = 0 otherwise'." },
-        { "q": "The median m of a continuous random variable satisfies:", "o": ["f(m) = 0.5", "F(m) = 0.5", "f'(m) = 0", "E(X) = m"], "a": 1, "why": "Examiners (2023): some set the pdf, not the cdf, equal to 0.5." }
+        { "q": "The median m of a continuous random variable satisfies:", "o": ["f(m) = 0.5", "F(m) = 0.5", "f'(m) = 0", "E(X) = m"], "a": 1, "why": "Examiners (2023): some set the pdf, not the cdf, equal to 0.5." },
+        { "q": "If f(x) is a valid continuous probability density function on the real line, what must evaluate to 1?", "o": ["f(1)", "∫_{-∞}^{∞} f(x) dx", "The derivative f'(x) at the mean", "The maximum value of f(x)"], "a": 1, "why": "The total probability of the entire sample space must equal 1, meaning the integral of the probability density function over all real numbers equals 1." }
       ]
     },
     {
