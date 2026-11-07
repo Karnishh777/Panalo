@@ -101,6 +101,7 @@ For each: **SQL Editor → New query** → paste the whole file → **Run**.
 | 37 | [`supabase-phase39.sql`](supabase-phase39.sql) | A more detailed day: `student_profiles.routine` (weekend times, dinner, best study time, focus length, weekly life wishes); `journey_import` restores it | Required by Students v0.3 |
 | 38 | [`supabase-phase40.sql`](supabase-phase40.sql) | Safety: the consent gate fails closed (no date of birth, no storing); a parent's no stands; Pan checks consent and has a service-wide daily cap; erased accounts' files are queued for the `erase-files` Edge Function (`supabase/functions/erase-files`, scheduled hourly with pg_cron + pg_net) | Required by Students v0.3 |
 | 39 | [`supabase-phase41.sql`](supabase-phase41.sql) | Which questions each topic asked (`student_topics.asked`), so checks ask unseen ones first | Required by Students v0.3 |
+| 40 | [`supabase-phase42.sql`](supabase-phase42.sql) | ICSE / ISC (CISCE) as a board: `student_profiles` allows board `icse` and stages `icse9`, `icse10`, `isc11`, `isc12` | Required for ICSE students |
 
 Phase 8 is self-contained and re-applies everything phase 7 does, so running 8
 is enough if you are starting fresh. Run 7 anyway if you prefer the history to

@@ -145,7 +145,7 @@ export function toRow(a, now = new Date()) {
     .map(({ s, own }) => ({ id: s.id, ...(own || {}), level: clamp(s.level ?? 2, 1, 4), ...(s.grade ? { grade: String(s.grade).slice(0, 8) } : {}), ...(own ? {} : cleanPapers(s)) }));
   const days = [...new Set((a.schoolDays || []).map(Number).filter((d) => Number.isInteger(d) && d >= 0 && d <= 6))].sort();
   return {
-    board: ["cambridge", "cbse", "other"].includes(a.board) ? a.board : null,
+    board: ["cambridge", "cbse", "icse", "other"].includes(a.board) ? a.board : null,
     stage,
     subjects,
     aim: ["pass", "good", "top"].includes(a.aim) ? a.aim : null,

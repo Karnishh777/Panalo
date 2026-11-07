@@ -36,6 +36,23 @@ const igcseSci = [
 
 /** By syllabus code: the papers, and the usual route for each stage. */
 export const SYLLABUS_PAPERS = {
+  // ---- ICSE (CISCE, Class 10) ----
+  // One external paper per subject (internal assessment is the school's own
+  // work, so it isn't a paper to sit). Lengths and marks follow the CISCE
+  // regulations; check the year's specimen paper for any change.
+  "icse-eng": { papers: [{ id: "1", name: "English Language (English Paper 1)", kind: "written", minutes: 120, marks: 80, level: "any", topics: "all" }], routes: { icse: ["1"] } },
+  "icse-lit": { papers: [{ id: "1", name: "Literature in English (English Paper 2)", kind: "written", minutes: 120, marks: 80, level: "any", topics: "all" }], routes: { icse: ["1"] } },
+  "icse-hindi": { papers: [{ id: "1", name: "Hindi", kind: "written", minutes: 180, marks: 80, level: "any", topics: "all" }], routes: { icse: ["1"] } },
+  "icse-hist": { papers: [{ id: "1", name: "History and Civics (H.C.G. Paper 1)", kind: "written", minutes: 120, marks: 80, level: "any", topics: "all" }], routes: { icse: ["1"] } },
+  "icse-geo": { papers: [{ id: "1", name: "Geography (H.C.G. Paper 2)", kind: "written", minutes: 120, marks: 80, level: "any", topics: "all" }], routes: { icse: ["1"] } },
+  "icse-math": { papers: [{ id: "1", name: "Mathematics", kind: "written", minutes: 150, marks: 80, level: "any", topics: "all" }], routes: { icse: ["1"] } },
+  "icse-phy": { papers: [{ id: "1", name: "Physics (Science Paper 1)", kind: "written", minutes: 120, marks: 80, level: "any", topics: "all" }], routes: { icse: ["1"] } },
+  "icse-chem": { papers: [{ id: "1", name: "Chemistry (Science Paper 2)", kind: "written", minutes: 120, marks: 80, level: "any", topics: "all" }], routes: { icse: ["1"] } },
+  "icse-bio": { papers: [{ id: "1", name: "Biology (Science Paper 3)", kind: "written", minutes: 120, marks: 80, level: "any", topics: "all" }], routes: { icse: ["1"] } },
+  "icse-ca": { papers: [{ id: "1", name: "Computer Applications", kind: "written", minutes: 120, marks: 100, level: "any", topics: "all" }], routes: { icse: ["1"] } },
+  "icse-eco": { papers: [{ id: "1", name: "Economics", kind: "written", minutes: 120, marks: 80, level: "any", topics: "all" }], routes: { icse: ["1"] } },
+  "icse-comm": { papers: [{ id: "1", name: "Commercial Studies", kind: "written", minutes: 120, marks: 80, level: "any", topics: "all" }], routes: { icse: ["1"] } },
+
   // ---- AS & A Level ----
   9709: {
     papers: [

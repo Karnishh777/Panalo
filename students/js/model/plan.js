@@ -164,7 +164,7 @@ const LEVEL_BOOST = { 1: 1.3, 2: 1.15, 3: 1, 4: 0.9 };
 /** Where a subject's question bank lives, or null if there is none yet. */
 export function syllabusPath(stageId, subjectId) {
   const level = stageOf(stageId)?.level;
-  const dir = level === "igcse" ? "igcse" : level === "as" || level === "a2" ? "alevel" : null;
+  const dir = level === "igcse" ? "igcse" : level === "as" || level === "a2" ? "alevel" : level === "icse" ? "icse" : null;
   return dir ? `assets/syllabus/${dir}/${subjectId}.json` : null;
 }
 
@@ -174,9 +174,12 @@ export function syllabusPath(stageId, subjectId) {
  */
 export function topicsInScope(syllabus, stageId, papers = []) {
   if (!syllabus?.topics?.length) return [{ id: "*", name: "Your own work", questions: [] }];
-  const byPapers = papers?.length ? PP.topicsForPapers(syllabus, papers) : null;
+  // An ICSE class studies its own year's chapters (a topic's stage "9" or "10").
+  const year = { icse9: "9", icse10: "10" }[stageId];
+  const inYear = (t) => !year || !t.stage || t.stage === year;
+  const byPapers = papers?.length ? PP.topicsForPapers(syllabus, papers)?.filter(inYear) : null;
   if (byPapers?.length) return byPapers;
-  return stageId === "as" ? syllabus.topics.filter((t) => t.stage !== "a2") : syllabus.topics;
+  return stageId === "as" ? syllabus.topics.filter((t) => t.stage !== "a2") : syllabus.topics.filter(inYear);
 }
 
 /**

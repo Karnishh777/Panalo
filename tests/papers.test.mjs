@@ -26,6 +26,7 @@ const DAY = 86400000;
   ok("AS students are offered only AS papers", PP.papersForLevel("9709", "as").map((p) => p.id).join() === "1,2,4,5");
   ok("every paper names a kind and examines at least one topic", Object.entries(PP.SYLLABUS_PAPERS).every(([code, s]) => s.papers.every((p) => ["mcq", "written", "practical", "coursework"].includes(p.kind))));
   ok("coursework and day-long assignments get no timed past papers", !PP.timedPaper(PP.paperOf("0400", "1")) && !PP.timedPaper(PP.paperOf("0400", "2")) && PP.timedPaper(PP.paperOf("0606", "1")));
+  ok("every ICSE subject has its paper", subjectsFor("icse10").every((x) => PP.papersOf(x.code).length > 0 && PP.defaultPapers(x.code, "icse").length > 0), subjectsFor("icse10").filter((x) => !PP.papersOf(x.code).length).map((x) => x.code).join());
   ok("every Cambridge subject in the setup has its papers", ["igcse1", "as"].every((st) => subjectsFor(st).every((x) => PP.papersOf(x.code).length > 0)), ["igcse1", "as"].flatMap((st) => subjectsFor(st).filter((x) => !PP.papersOf(x.code).length).map((x) => x.code)).join());
   ok("a paper's label", PP.paperLabel(PP.paperOf("9709", "5")) === "Paper 5 · Probability & Statistics 1");
   // every paper of every bank examines something
@@ -79,7 +80,7 @@ const DAY = 86400000;
 {
   const { existsSync, readdirSync } = await import("node:fs");
   let n = 0;
-  for (const dir of ["alevel", "igcse"]) {
+  for (const dir of ["alevel", "igcse", "icse"]) {
     for (const f of readdirSync(new URL(`../students/assets/syllabus/${dir}/`, import.meta.url))) {
       const bank = load(`assets/syllabus/${dir}/${f}`);
       for (const t of bank.topics) {

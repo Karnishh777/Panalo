@@ -353,8 +353,14 @@ ok("anything else is just bytes", T_("application/zip", "a.zip") === "applicatio
   const alevel = ["bus", "psy", "acc", "art", "eco", "eng", "bio", "cs", "dt", "math", "soc", "chem", "phy"];
   ok("every A Level subject on it too", alevel.every((id) => as.some((x) => x.id === id)));
   ok("CBSE has its own lists", S.subjectsFor("cbse10").some((x) => x.id === "sci") && S.subjectsFor("cbse12").some((x) => x.id === "bst"));
+  ok("ICSE and ISC are a board with Classes 9 to 12", S.BOARDS.some((b) => b.id === "icse") && S.STAGES.icse.map((x) => x.id).join() === "icse9,icse10,isc11,isc12");
+  const icse = S.subjectsFor("icse10");
+  ok("ICSE offers the usual Class 10 subjects", ["eng", "lit", "hindi", "hist", "geo", "math", "phy", "chem", "bio", "ca", "eco", "comm"].every((id) => icse.some((x) => x.id === id)), icse.map((x) => x.id).join());
+  ok("…each with a key for its paper", icse.every((x) => x.code === "icse-" + x.id) && S.subjectsFor("icse9").length === icse.length);
+  ok("ISC has its own lists", S.subjectsFor("isc12").some((x) => x.id === "acc") && S.subjectsFor("isc11").some((x) => x.id === "cs"));
+  ok("ICSE grades are percentages", S.gradesFor("icse10")[0] === "90+");
   ok("an unknown stage offers nothing", S.subjectsFor("nope").length === 0);
-  ok("ids are unique within each list", ["igcse1", "as", "cbse9", "cbse11", "other"].every((st) => new Set(S.subjectsFor(st).map((x) => x.id)).size === S.subjectsFor(st).length));
+  ok("ids are unique within each list", ["igcse1", "as", "cbse9", "cbse11", "icse9", "isc11", "other"].every((st) => new Set(S.subjectsFor(st).map((x) => x.id)).size === S.subjectsFor(st).length));
   ok("grades follow the level", S.gradesFor("igcse2")[0] === "A*" && S.gradesFor("as")[0] === "a" && S.gradesFor("cbse12")[0] === "90+");
   ok("a subject's name is looked up", S.subjectName("a2", "psy") === "Psychology" && S.subjectName("a2", "zzz") === "zzz");
 

@@ -1423,6 +1423,17 @@ async function studyWorldTests() {
   ok("a topic keeps the questions it asked", askedOk.ok, askedOk.error);
   ok("…as a list", await bad(`insert into student_topics (subject, topic, asked) values ('phy', '2', '{}')`));
   ok("…of at most 60", await bad(`insert into student_topics (subject, topic, asked) values ('phy', '3', (select jsonb_agg(jsonb_build_array('x' || g, 1)) from generate_series(1, 61) g))`));
+  // Phase 42: ICSE and ISC as a board.
+  const r42 = await runFile(db, "supabase-phase42.sql");
+  ok("phase 42 applies", r42.ok, r42.error);
+  const icse = await as(db, me, async (tx) => (await tx.query("update student_profiles set board = 'icse', stage = 'icse10' where user_id = auth.uid() returning board, stage")).rows[0]);
+  ok("an ICSE Class 10 student can be saved", icse?.board === "icse" && icse?.stage === "icse10", JSON.stringify(icse));
+  const isc = await as(db, me, async (tx) => (await tx.query("update student_profiles set stage = 'isc12' where user_id = auth.uid() returning stage")).rows[0]);
+  ok("…and an ISC Class 12 one", isc?.stage === "isc12", JSON.stringify(isc));
+  ok("an unknown board is still refused", await bad("update student_profiles set board = 'mars' where user_id = auth.uid()"));
+  ok("an unknown stage is still refused", await bad("update student_profiles set stage = 'icse11' where user_id = auth.uid()"));
+  const again42 = await runFile(db, "supabase-phase42.sql");
+  ok("phase 42 is safe to re-run", again42.ok, again42.error);
 }
 
 async function main() {

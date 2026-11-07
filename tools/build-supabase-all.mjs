@@ -58,6 +58,7 @@ const SOURCES = [
   "supabase-phase39.sql",
   "supabase-phase40.sql",
   "supabase-phase41.sql",
+  "supabase-phase42.sql",
 ];
 
 async function build() {
