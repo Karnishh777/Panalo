@@ -1413,6 +1413,34 @@ try {
     check("the parent is emailed a code, and the student sees they're waiting", (await t.evaluate(() => window.__qa.otpSent || [])).includes("mum@panalo.test") && /Waiting for mum@panalo.test/.test(await t.textContent("#guardian-status")));
     await shot(t, "ask-a-parent");
 
+    // If the parent says no, nobody is waiting any more: the screen says so,
+    // the email stays theirs, and the button only sends them the link again.
+    const setConsent = (consent) => t.evaluate((c) => (window.__qa.db.account_age.find((a) => a.parent_email === "mum@panalo.test").consent = c), consent);
+    await setConsent("declined");
+    await t.click("#guardian-check");
+    await t.waitForSelector("#guardian-wait", { state: "hidden", timeout: 5000 }).catch(() => {});
+    const declinedView = await t.evaluate(() => ({
+      lead: document.querySelector("#guardian-lead").textContent,
+      status: document.querySelector("#guardian-status").textContent,
+      button: document.querySelector("#guardian-submit").textContent,
+      email: document.querySelector("#guardian-email").value,
+      locked: document.querySelector("#guardian-email").readOnly,
+      message: document.querySelector("#auth-message").textContent,
+    }));
+    check("after a parent says no, nothing says they're still waiting", /said no/.test(declinedView.lead) && !(await t.isVisible("#guardian-wait")) && declinedView.status === "" && !/Not yet/.test(declinedView.message), JSON.stringify(declinedView));
+    check("the email stays the parent's who said no, and the button only resends to them", declinedView.locked && declinedView.email === "mum@panalo.test" && declinedView.button === "Email them the link again", JSON.stringify(declinedView));
+    await t.evaluate(() => {
+      window.__qa.otpSent = [];
+      document.querySelector("#auth-message").textContent = "";
+    });
+    await t.click("#guardian-submit");
+    await t.waitForFunction(() => /Sent to/.test(document.querySelector("#auth-message")?.textContent || ""), null, { timeout: 5000 }).catch(() => {});
+    const resent = await t.evaluate(() => ({ otp: window.__qa.otpSent || [], consent: window.__qa.db.account_age.find((a) => a.parent_email === "mum@panalo.test")?.consent }));
+    check("resending reaches the same parent, and their no still stands", resent.otp.includes("mum@panalo.test") && resent.consent === "declined" && !(await t.isVisible("#guardian-wait")), JSON.stringify(resent));
+    await shot(t, "parent-said-no");
+    // Back to the open request, for the parent's page below.
+    await setConsent("pending");
+
     // The parent, on the same device: #parent.
     await t.evaluate(() => (location.hash = "#parent"));
     await t.reload();

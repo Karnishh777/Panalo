@@ -139,11 +139,15 @@ async function run(manual = false) {
   if (st.minor && st.consent !== "approved") {
     showFormHook("guardian-form");
     $("guardian-link-text").textContent = PARENT_LINK().replace(/^https?:\/\//, "");
-    const waiting = Boolean(st.parent_email);
-    $("guardian-wait").hidden = !waiting;
-    if (st.parent_email && !$("guardian-email").value) $("guardian-email").value = st.parent_email;
-    $("guardian-submit").textContent = waiting ? "Send again" : "Send to my parent";
+    // After a "no" nobody is waiting: only the parent who said it can change
+    // it (phase 40), so the email is locked to theirs and the button only
+    // sends them the link again.
     const declined = st.consent === "declined";
+    const waiting = Boolean(st.parent_email) && !declined;
+    $("guardian-wait").hidden = !waiting;
+    if (declined && st.parent_email) $("guardian-email").value = st.parent_email;
+    else if (st.parent_email && !$("guardian-email").value) $("guardian-email").value = st.parent_email;
+    $("guardian-submit").textContent = declined ? "Email them the link again" : waiting ? "Send again" : "Send to my parent";
     $("guardian-email").readOnly = declined;
     $("guardian-lead").textContent = declined
       ? "Your parent or guardian said no for now. Only they can change that: they can open the link in their email again and say yes. If something's wrong, write to us from the Contact page."
