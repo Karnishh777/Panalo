@@ -17,7 +17,11 @@
         { "q": "Which of these is the smallest: 7%, 0.0704, 1/14, 0.0699?", "o": ["7%", "0.0704", "1/14", "0.0699"], "a": 3, "why": "Examiners (2023): some treated 7% as the largest, and close values were not checked to enough digits. As decimals: 0.07, 0.0704, 0.0714…, 0.0699." }
       ],
       "long": [
-        { "q": "Write 0.000 384 in standard form. Work out (3 × 10⁵) × (4 × 10⁻²), giving your answer in standard form.", "marks": 2, "paper": "2", "scheme": ["B1: 3.84 × 10⁻⁴", "B1: 1.2 × 10⁴"], "ans": "3.84 × 10⁻⁴; 1.2 × 10⁴" }
+        { "q": "Write 0.000 384 in standard form. Work out (3 × 10⁵) × (4 × 10⁻²), giving your answer in standard form.", "marks": 2, "paper": "2", "scheme": ["B1: 3.84 × 10⁻⁴", "B1: 1.2 × 10⁴"], "ans": "3.84 × 10⁻⁴; 1.2 × 10⁴" },
+        { "q": "Priya invests $4500 at a rate of 3.2% per year compound interest. (a) Calculate the value of her investment at the end of 6 years. (b) Find the number of complete years it takes for the investment to first exceed $6000.", "marks": 4, "paper": "4", "scheme": ["M1: 4500 × 1.032⁶", "A1: $5436.14", "M1: trial values, e.g. 4500 × 1.032⁹ = 5974.89 and 4500 × 1.032¹⁰ = 6166.08", "A1: 10 years"], "ans": "$5436.14; 10 years" },
+        { "q": "In a sale, the price of a jacket is reduced by 15% to $646. (a) Find the original price of the jacket. (b) The shop bought the jacket for $500. Calculate the percentage profit the shop makes when it sells the jacket for $646.", "marks": 4, "paper": "4", "scheme": ["M1: 646 ÷ 0.85", "A1: $760", "M1: (646 − 500)/500 × 100", "A1: 29.2%"], "ans": "$760; 29.2%" },
+        { "q": "Without using a calculator: (a) simplify √75 − √12, (b) write 6/(3 − √3) in the form a + √b, (c) find the value of 27^(−2/3).", "marks": 4, "paper": "2", "scheme": ["B1: 5√3 − 2√3 = 3√3", "M1: multiply numerator and denominator by (3 + √3): 6(3 + √3)/(9 − 3)", "A1: 3 + √3", "B1: 1/9"], "ans": "3√3; 3 + √3; 1/9" },
+        { "q": "A rectangle has length 12.4 cm, correct to the nearest 0.1 cm, and width 7 cm, correct to the nearest centimetre. Calculate (a) the upper bound of the area of the rectangle, (b) the lower bound of its perimeter.", "marks": 4, "paper": "2", "scheme": ["B1: bounds 12.35 ≤ length < 12.45 and 6.5 ≤ width < 7.5", "M1: upper bound of area = 12.45 × 7.5", "A1: 93.375 cm²", "B1: lower bound of perimeter = 2(12.35 + 6.5) = 37.7 cm"], "ans": "93.375 cm²; 37.7 cm" }
       ]
     },
     {
@@ -31,7 +35,11 @@
         { "q": "Solve the simultaneous equations x + y = 10 and x − y = 4.", "o": ["x = 6, y = 4", "x = 7, y = 3", "x = 3, y = 7", "x = 5, y = 5"], "a": 1, "why": "Adding gives 2x = 14, so x = 7 and y = 3." }
       ],
       "long": [
-        { "q": "Solve the simultaneous equations 3x + 2y = 12 and x − y = −1.", "marks": 3, "paper": "2", "scheme": ["M1: eliminate one variable correctly", "A1: x = 2", "A1: y = 3"], "ans": "x = 2, y = 3" }
+        { "q": "Solve the simultaneous equations 3x + 2y = 12 and x − y = −1.", "marks": 3, "paper": "2", "scheme": ["M1: eliminate one variable correctly", "A1: x = 2", "A1: y = 3"], "ans": "x = 2, y = 3" },
+        { "q": "Solve the equation 2x² − 5x − 4 = 0, showing all your working and giving your answers correct to 2 decimal places.", "marks": 4, "paper": "4", "scheme": ["B1: discriminant √(25 + 32) = √57 seen", "M1: x = (5 ± √57)/4", "A1: x = 3.14", "A1: x = −0.64"], "ans": "x = 3.14 or x = −0.64" },
+        { "q": "Simplify fully (x² − 9)/(2x² + 5x − 3).", "marks": 3, "paper": "2", "scheme": ["B1: numerator (x − 3)(x + 3)", "B1: denominator (2x − 1)(x + 3)", "B1: (x − 3)/(2x − 1)"], "ans": "(x − 3)/(2x − 1)" },
+        { "q": "f(x) = 3x − 2 and g(x) = x² + 1. (a) Find gf(2). (b) Find f⁻¹(x). (c) Solve ff(x) = 13.", "marks": 4, "paper": "2", "scheme": ["B1: gf(2) = g(4) = 17", "B1: f⁻¹(x) = (x + 2)/3", "M1: ff(x) = 3(3x − 2) − 2 = 9x − 8, set equal to 13", "A1: x = 7/3"], "ans": "17; (x + 2)/3; x = 7/3" },
+        { "q": "The first five terms of a sequence are 5, 11, 21, 35, 53. (a) Find an expression for the nth term. (b) Show that 203 is a term of the sequence and state which term it is.", "marks": 4, "paper": "2", "scheme": ["M1: second differences are 4, so the nth term contains 2n²", "A1: nth term = 2n² + 3", "M1: 2n² + 3 = 203 gives n² = 100", "A1: n = 10, so 203 is the 10th term"], "ans": "2n² + 3; 10th term" }
       ]
     },
     {
@@ -44,7 +52,11 @@
         { "q": "A line has gradient 2/3. What is the gradient of a line perpendicular to it?", "o": ["2/3", "3/2", "−2/3", "−3/2"], "a": 3, "why": "Examiners (2023): many drew a parallel line instead of a perpendicular one. Perpendicular gradients multiply to −1." }
       ],
       "long": [
-        { "q": "Find the gradient and the y-intercept of the line 2y − 6x = 8.", "marks": 2, "paper": "2", "scheme": ["B1: gradient 3", "B1: y-intercept 4"], "ans": "gradient 3, y-intercept 4" }
+        { "q": "Find the gradient and the y-intercept of the line 2y − 6x = 8.", "marks": 2, "paper": "2", "scheme": ["B1: gradient 3", "B1: y-intercept 4"], "ans": "gradient 3, y-intercept 4" },
+        { "q": "A is the point (−1, 7) and B is the point (3, −1). Find (a) the equation of the line AB in the form y = mx + c, (b) the coordinates of the midpoint of AB, (c) the length of AB, correct to 3 significant figures.", "marks": 4, "paper": "4", "scheme": ["M1: gradient = (−1 − 7)/(3 − (−1)) = −2", "A1: y = −2x + 5", "B1: midpoint (1, 3)", "B1: length = √(4² + 8²) = √80 = 8.94"], "ans": "y = −2x + 5; (1, 3); 8.94" },
+        { "q": "Find the equation of the line that passes through (4, 1) and is perpendicular to the line y = 2x − 3. Find the coordinates of the point where the two lines meet.", "marks": 5, "paper": "2", "scheme": ["B1: perpendicular gradient −½", "M1: y − 1 = −½(x − 4)", "A1: y = −½x + 3", "M1: solve −½x + 3 = 2x − 3", "A1: (2.4, 1.8)"], "ans": "y = −½x + 3; (2.4, 1.8)" },
+        { "q": "The line L has equation 3x + 4y = 24. (a) Find the coordinates of the points where L crosses the x-axis and the y-axis. (b) Find the area of the triangle formed by L and the two axes. (c) Find the gradient of L.", "marks": 4, "paper": "2", "scheme": ["B1: crosses the x-axis at (8, 0)", "B1: crosses the y-axis at (0, 6)", "B1: area = ½ × 8 × 6 = 24 units²", "B1: gradient = −¾"], "ans": "(8, 0), (0, 6); 24; −¾" },
+        { "q": "Find the equation of the line through (−2, 3) that is parallel to the line 2x − 5y = 7. Give your answer in the form ax + by = c.", "marks": 3, "paper": "2", "scheme": ["B1: gradient 2/5", "M1: y − 3 = (2/5)(x + 2)", "A1: 2x − 5y = −19"], "ans": "2x − 5y = −19" }
       ]
     },
     {
@@ -57,7 +69,11 @@
         { "q": "A bearing is measured from north in which direction?", "o": ["Anticlockwise", "Either, whichever is smaller", "Clockwise", "From east"], "a": 2, "why": "Examiners (2023): a common error was measuring anticlockwise. Bearings go clockwise from north, written with three figures." }
       ],
       "long": [
-        { "q": "Each interior angle of a regular polygon is 156°. How many sides does the polygon have?", "marks": 2, "paper": "2", "scheme": ["M1: exterior angle = 180 − 156 = 24°", "A1: 360 ÷ 24 = 15 sides"], "ans": "15" }
+        { "q": "Each interior angle of a regular polygon is 156°. How many sides does the polygon have?", "marks": 2, "paper": "2", "scheme": ["M1: exterior angle = 180 − 156 = 24°", "A1: 360 ÷ 24 = 15 sides"], "ans": "15" },
+        { "q": "ABCD is a cyclic quadrilateral. Angle DAB = (2x + 10)° and angle BCD = (3x − 5)°. Find the value of x and the size of angle DAB, giving a reason.", "marks": 4, "paper": "2", "scheme": ["B1: opposite angles of a cyclic quadrilateral add up to 180°", "M1: 2x + 10 + 3x − 5 = 180", "A1: x = 35", "A1: angle DAB = 80°"], "ans": "x = 35; 80°" },
+        { "q": "A and B are points on a circle with centre O. The tangents to the circle at A and B meet at the point T, and angle ATB = 48°. Find angle AOB and angle OAB, giving reasons.", "marks": 4, "paper": "2", "scheme": ["B1: angle OAT = angle OBT = 90° because a tangent is perpendicular to the radius", "B1: angle AOB = 360° − 90° − 90° − 48° = 132°", "M1: triangle OAB is isosceles because OA = OB (radii)", "A1: angle OAB = (180° − 132°)/2 = 24°"], "ans": "132°; 24°" },
+        { "q": "Two bottles are mathematically similar. The smaller bottle has height 12 cm and volume 320 cm³. The larger bottle has height 18 cm and surface area 405 cm². Calculate the volume of the larger bottle and the surface area of the smaller bottle.", "marks": 4, "paper": "4", "scheme": ["M1: volume scale factor (18/12)³ = 3.375", "A1: 1080 cm³", "M1: area scale factor (12/18)² or divide by 2.25", "A1: 180 cm²"], "ans": "1080 cm³; 180 cm²" },
+        { "q": "A, B and C are points on a circle with centre O, and AB is a diameter. Angle CAB = 34°. The tangent to the circle at C meets AB extended beyond B at the point T. Find, giving a reason for each, (a) angle ACB, (b) angle ABC, (c) angle BCT, (d) angle CTB.", "marks": 5, "paper": "2", "scheme": ["B1: angle ACB = 90° (angle in a semicircle)", "B1: angle ABC = 180° − 90° − 34° = 56° (angles in a triangle)", "B1: angle BCT = 34° (alternate segment theorem)", "M1: angle CBT = 180° − 56° = 124° (angles on a straight line), then angles in triangle BCT", "A1: angle CTB = 22°"], "ans": "90°; 56°; 34°; 22°" }
       ]
     },
     {
@@ -70,7 +86,11 @@
         { "q": "A sector of a circle has radius 6 cm and angle 60°. What is its arc length? (Use π = 3.142)", "o": ["3.14 cm", "6.28 cm", "18.8 cm", "37.7 cm"], "a": 1, "why": "Arc length = (60/360) × 2π × 6 = 2π ≈ 6.28 cm. 37.7 cm is the whole circumference and 18.8 is the sector's area in cm²." }
       ],
       "long": [
-        { "q": "A cylinder has radius 5 cm and height 12 cm. Find its volume and its total surface area, giving each answer correct to 3 significant figures.", "marks": 4, "paper": "4", "scheme": ["M1: V = πr²h", "A1: 942 cm³", "M1: surface area = 2πr² + 2πrh", "A1: 534 cm²"], "ans": "942 cm³; 534 cm²" }
+        { "q": "A cylinder has radius 5 cm and height 12 cm. Find its volume and its total surface area, giving each answer correct to 3 significant figures.", "marks": 4, "paper": "4", "scheme": ["M1: V = πr²h", "A1: 942 cm³", "M1: surface area = 2πr² + 2πrh", "A1: 534 cm²"], "ans": "942 cm³; 534 cm²" },
+        { "q": "A sector of a circle has radius 9 cm and angle 140°. Calculate the perimeter and the area of the sector.", "marks": 4, "paper": "4", "scheme": ["M1: arc length = 140/360 × 2π × 9 = 21.99 cm", "A1: perimeter = 21.99 + 18 = 40.0 cm", "M1: area = 140/360 × π × 9²", "A1: 99.0 cm²"], "ans": "40.0 cm; 99.0 cm²" },
+        { "q": "A solid cone has base radius 6 cm and slant height 10 cm. Calculate (a) the vertical height of the cone, (b) the volume of the cone, (c) the curved surface area of the cone.", "marks": 5, "paper": "4", "scheme": ["M1: h = √(10² − 6²)", "A1: h = 8 cm", "M1: V = ⅓ × π × 6² × 8", "A1: 302 cm³", "B1: curved surface area = π × 6 × 10 = 188 cm²"], "ans": "8 cm; 302 cm³; 188 cm²" },
+        { "q": "A solid metal sphere of radius 3 cm is melted down and recast, with no metal wasted, into a solid cylinder of radius 2 cm. Find the height of the cylinder.", "marks": 3, "paper": "2", "scheme": ["M1: volume of sphere = 4/3 × π × 3³ = 36π cm³", "M1: π × 2² × h = 36π", "A1: h = 9 cm"], "ans": "9 cm" },
+        { "q": "A water trough is a prism of length 2.5 m. Its cross-section is a trapezium with parallel sides 40 cm and 60 cm and perpendicular height 30 cm. (a) Calculate the capacity of the trough in litres. (b) The empty trough is filled at a rate of 12 litres per minute. Find the time taken to fill it, in minutes and seconds.", "marks": 4, "paper": "4", "scheme": ["M1: cross-section area = ½ × (40 + 60) × 30 = 1500 cm²", "M1: volume = 1500 × 250 = 375 000 cm³", "A1: 375 litres", "B1: 375 ÷ 12 = 31.25 minutes = 31 minutes 15 seconds"], "ans": "375 litres; 31 min 15 s" }
       ]
     },
     {
@@ -83,7 +103,11 @@
         { "q": "From a point 20 m from the foot of a tree, the angle of elevation of the top is 35°. How tall is the tree, to 3 significant figures?", "o": ["16.4 m", "11.5 m", "28.6 m", "14.0 m"], "a": 3, "why": "The height is opposite the angle and 20 m is adjacent, so h = 20 × tan 35° ≈ 14.0 m. Using sin or cos, or dividing by tan, gives the other values." }
       ],
       "long": [
-        { "q": "In the right-angled triangle ABC, angle ACB = 90°, AB = 13 cm and BC = 5 cm. Calculate angle BAC and the length AC.", "marks": 3, "paper": "4", "scheme": ["M1: sin A = 5/13", "A1: angle BAC = 22.6°", "B1: AC = 12 cm"], "ans": "22.6°; 12 cm", "fig": "assets/syllabus/fig/0580-triangle.svg" }
+        { "q": "In the right-angled triangle ABC, angle ACB = 90°, AB = 13 cm and BC = 5 cm. Calculate angle BAC and the length AC.", "marks": 3, "paper": "4", "scheme": ["M1: sin A = 5/13", "A1: angle BAC = 22.6°", "B1: AC = 12 cm"], "ans": "22.6°; 12 cm", "fig": "assets/syllabus/fig/0580-triangle.svg" },
+        { "q": "In triangle ABC, AB = 8.5 cm, angle ACB = 47° and angle ABC = 68°. Calculate the length of AC and the area of the triangle.", "marks": 5, "paper": "4", "scheme": ["M1: AC/sin 68° = 8.5/sin 47°", "A1: AC = 10.8 cm", "B1: angle BAC = 65°", "M1: area = ½ × 8.5 × 10.78 × sin 65°", "A1: 41.5 cm²"], "ans": "10.8 cm; 41.5 cm²" },
+        { "q": "A triangle has sides of length 7 cm, 9 cm and 12 cm. Calculate the size of its largest angle.", "marks": 3, "paper": "4", "scheme": ["M1: largest angle is opposite the 12 cm side: cos θ = (7² + 9² − 12²)/(2 × 7 × 9)", "A1: cos θ = −14/126 = −1/9", "A1: θ = 96.4°"], "ans": "96.4°" },
+        { "q": "A ship sails 14 km from port P on a bearing of 060° to a point Q. It then sails 9 km on a bearing of 150° to a point R. (a) Explain why angle PQR = 90°. (b) Calculate the distance PR. (c) Calculate the bearing of R from P.", "marks": 5, "paper": "4", "scheme": ["B1: the bearing of P from Q is 240°, and 240° − 150° = 90°", "M1: PR = √(14² + 9²)", "A1: PR = 16.6 km", "M1: angle QPR = tan⁻¹(9/14) = 32.7°", "A1: bearing 060° + 32.7° = 092.7° (093°)"], "ans": "16.6 km; 092.7°" },
+        { "q": "A cuboid has a rectangular base 8 cm by 6 cm and a height of 5 cm. Calculate (a) the length of the diagonal of the base, (b) the angle between a space diagonal of the cuboid and its base, (c) the length of the space diagonal.", "marks": 4, "paper": "4", "scheme": ["M1: base diagonal = √(8² + 6²) = 10 cm", "M1: tan θ = 5/10", "A1: θ = 26.6°", "B1: space diagonal = √(10² + 5²) = 11.2 cm"], "ans": "10 cm; 26.6°; 11.2 cm" }
       ]
     },
     {
@@ -96,7 +120,11 @@
         { "q": "The point (3, 1) is rotated 90° clockwise about the origin. What are the coordinates of its image?", "o": ["(1, −3)", "(−1, 3)", "(−3, −1)", "(3, −1)"], "a": 0, "why": "A 90° clockwise rotation about the origin maps (x, y) to (y, −x), so (3, 1) goes to (1, −3). (−1, 3) is the anticlockwise image and (−3, −1) is a half turn." }
       ],
       "long": [
-        { "q": "a is the column vector (3, −2) and b is the column vector (−1, 4). Find 2a − b and |2a − b|.", "marks": 3, "paper": "2", "scheme": ["B1: 2a − b = (7, −8)", "M1: √(7² + 8²)", "A1: 10.6"], "ans": "(7, −8); 10.6" }
+        { "q": "a is the column vector (3, −2) and b is the column vector (−1, 4). Find 2a − b and |2a − b|.", "marks": 3, "paper": "2", "scheme": ["B1: 2a − b = (7, −8)", "M1: √(7² + 8²)", "A1: 10.6"], "ans": "(7, −8); 10.6" },
+        { "q": "Triangle T has vertices (2, 1), (5, 1) and (5, 3). Triangle U has vertices (1, −2), (1, −5) and (3, −5). Describe fully the single transformation that maps triangle T onto triangle U.", "marks": 3, "paper": "2", "scheme": ["B1: rotation", "B1: 90° clockwise", "B1: centre (0, 0)"], "ans": "rotation 90° clockwise about (0, 0)" },
+        { "q": "Triangle A has vertices (2, 2), (6, 2) and (2, 4). Triangle B has vertices (1, 1), (3, 1) and (1, 2). (a) Describe fully the single transformation that maps triangle A onto triangle B. (b) Find the area of triangle B.", "marks": 4, "paper": "2", "scheme": ["B1: enlargement", "B1: scale factor ½", "B1: centre (0, 0)", "B1: area of B = ½ × 2 × 1 = 1 unit² (a quarter of the area of A, which is 4 units²)"], "ans": "enlargement, scale factor ½, centre (0, 0); 1 unit²" },
+        { "q": "OABC is a parallelogram with OA = a and OC = c. M is the midpoint of AB. P is the point on OM such that OP : PM = 2 : 1. (a) Find OM and OP in terms of a and c. (b) Find CP in terms of a and c and hence show that P lies on the line CA, stating the ratio CP : PA.", "marks": 5, "paper": "4", "scheme": ["B1: OM = a + ½c", "B1: OP = ⅔a + ⅓c", "M1: CP = OP − OC", "A1: CP = ⅔a − ⅔c = ⅔(a − c)", "A1: CA = a − c, so CP = ⅔CA: P lies on CA and CP : PA = 2 : 1"], "ans": "a + ½c; ⅔a + ⅓c; ⅔(a − c); 2 : 1" },
+        { "q": "p is the column vector (4, k) and q is the column vector (6, −9). Given that p is parallel to q, find the value of k and the number t for which p = tq.", "marks": 3, "paper": "2", "scheme": ["M1: k/4 = −9/6", "A1: k = −6", "B1: t = ⅔"], "ans": "k = −6; t = ⅔" }
       ]
     },
     {
@@ -109,7 +137,11 @@
         { "q": "A biased coin lands on heads with probability 0.6. It is thrown 50 times. How many heads would you expect?", "o": ["20", "25", "30", "35"], "a": 2, "why": "Expected frequency = probability × number of trials = 0.6 × 50 = 30. 25 would be expected only for a fair coin." }
       ],
       "long": [
-        { "q": "A spinner lands on red with probability 0.35. It is spun twice. Find the probability that it lands on red exactly once.", "marks": 3, "paper": "4", "scheme": ["M1: 0.35 × 0.65", "M1: × 2 for the two orders", "A1: 0.455"], "ans": "0.455" }
+        { "q": "A spinner lands on red with probability 0.35. It is spun twice. Find the probability that it lands on red exactly once.", "marks": 3, "paper": "4", "scheme": ["M1: 0.35 × 0.65", "M1: × 2 for the two orders", "A1: 0.455"], "ans": "0.455" },
+        { "q": "A bag contains 5 red counters and 3 blue counters. Two counters are taken at random without replacement. Find the probability that (a) both counters are the same colour, (b) at least one counter is blue.", "marks": 5, "paper": "2", "scheme": ["M1: P(both red) = 5/8 × 4/7 = 20/56", "M1: add P(both blue) = 3/8 × 2/7 = 6/56", "A1: 26/56 = 13/28", "M1: 1 − P(both red) = 1 − 20/56", "A1: 36/56 = 9/14"], "ans": "13/28; 9/14" },
+        { "q": "In a class of 40 students, 23 study French, 18 study Spanish and 7 study neither language. (a) Find the number of students who study both languages. (b) A student is chosen at random. Find the probability that the student studies French only. (c) A student who studies French is chosen at random. Find the probability that this student also studies Spanish.", "marks": 4, "paper": "2", "scheme": ["M1: 23 + 18 − x + 7 = 40, or use a Venn diagram", "A1: 8 students study both", "B1: P(French only) = 15/40 = 3/8", "B1: P(Spanish given French) = 8/23"], "ans": "8; 3/8; 8/23" },
+        { "q": "A biased six-sided dice is thrown. The probability of a 6 is 0.15, the probability of a 5 is 0.2 and the numbers 1, 2, 3 and 4 are equally likely. (a) Find the probability of throwing a 1. (b) The dice is thrown 300 times. Find the expected number of 6s.", "marks": 3, "paper": "4", "scheme": ["M1: (1 − 0.15 − 0.2) ÷ 4", "A1: 0.1625", "B1: 300 × 0.15 = 45"], "ans": "0.1625; 45" },
+        { "q": "The probability that it rains on a Monday is 0.3. If it rains, the probability that Sam is late for school is 0.4; if it does not rain, the probability that he is late is 0.1. (a) Find the probability that Sam is late on a Monday. (b) Given that Sam is late on a Monday, find the probability that it rained.", "marks": 5, "paper": "4", "scheme": ["M1: P(rain and late) = 0.3 × 0.4 = 0.12", "M1: P(no rain and late) = 0.7 × 0.1 = 0.07", "A1: P(late) = 0.19", "M1: 0.12 ÷ 0.19", "A1: 12/19 = 0.632"], "ans": "0.19; 0.632" }
       ]
     },
     {
@@ -122,7 +154,11 @@
         { "q": "20 students were asked how many pets they own: 5 own 0, 8 own 1, 4 own 2 and 3 own 3. What is the mean number of pets per student?", "o": ["1", "1.25", "1.5", "5"], "a": 1, "why": "Total pets = 0×5 + 1×8 + 2×4 + 3×3 = 25, and 25 ÷ 20 = 1.25. 1 is the mode and median, and 1.5 is just the mean of 0, 1, 2 and 3." }
       ],
       "long": [
-        { "q": "The mean of 6 numbers is 14. A seventh number is added and the mean becomes 15. Find the seventh number.", "marks": 2, "paper": "2", "scheme": ["M1: totals 6 × 14 = 84 and 7 × 15 = 105", "A1: 21"], "ans": "21" }
+        { "q": "The mean of 6 numbers is 14. A seventh number is added and the mean becomes 15. Find the seventh number.", "marks": 2, "paper": "2", "scheme": ["M1: totals 6 × 14 = 84 and 7 × 15 = 105", "A1: 21"], "ans": "21" },
+        { "q": "The heights of 40 plants are recorded. 6 plants have height h cm with 140 < h ≤ 150, 14 have 150 < h ≤ 160, 15 have 160 < h ≤ 170 and 5 have 170 < h ≤ 180. (a) Write down the modal class. (b) Calculate an estimate of the mean height.", "marks": 4, "paper": "4", "scheme": ["B1: modal class 160 < h ≤ 170", "M1: use the midpoints 145, 155, 165, 175", "M1: Σfx ÷ 40 = 6390 ÷ 40", "A1: 159.75 cm"], "ans": "160 < h ≤ 170; 159.75 cm" },
+        { "q": "The times, t minutes, that 54 people waited for a bus are grouped as follows: 12 people with 0 < t ≤ 10, 18 people with 10 < t ≤ 15 and 24 people with 15 < t ≤ 30. Calculate the frequency density of each class, ready to draw a histogram.", "marks": 4, "paper": "4", "scheme": ["M1: frequency density = frequency ÷ class width", "A1: 0 < t ≤ 10: 12 ÷ 10 = 1.2", "A1: 10 < t ≤ 15: 18 ÷ 5 = 3.6", "A1: 15 < t ≤ 30: 24 ÷ 15 = 1.6"], "ans": "1.2; 3.6; 1.6" },
+        { "q": "80 students took a test marked out of 100. The cumulative frequencies are: mark ≤ 20: 6, mark ≤ 40: 22, mark ≤ 60: 50, mark ≤ 80: 72, mark ≤ 100: 80. (a) Find how many students scored more than 60. (b) Estimate the median mark, assuming the marks are spread evenly within each class (or from a cumulative frequency curve).", "marks": 4, "paper": "4", "scheme": ["B1: 80 − 50 = 30 students", "B1: the median is the 40th value, which lies in the class 40 < mark ≤ 60", "M1: 40 + (40 − 22)/(50 − 22) × 20", "A1: about 53 (accept 51 to 55 from a curve)"], "ans": "30; about 53" },
+        { "q": "The number of goals scored in 20 football matches is recorded: 0 goals in 5 matches, 1 goal in 8 matches, 2 goals in 4 matches, 3 goals in 2 matches and 4 goals in 1 match. Find the mean, the median, the mode and the range of the number of goals.", "marks": 4, "paper": "2", "scheme": ["M1: total goals Σfx = 0 + 8 + 8 + 6 + 4 = 26", "A1: mean = 26 ÷ 20 = 1.3", "B1: median = 1 (the 10th and 11th values are both 1)", "B1: mode = 1 and range = 4"], "ans": "mean 1.3, median 1, mode 1, range 4" }
       ]
     }
   ]
