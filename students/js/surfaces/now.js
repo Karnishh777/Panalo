@@ -38,7 +38,9 @@ let navigate;
 function greeting() {
   const h = new Date().getHours();
   const part = h < 5 ? "Still up" : h < 12 ? "Good morning" : h < 17 ? "Good afternoon" : h < 22 ? "Good evening" : "Late night";
-  return `${part}, ${state.currentUsername}.`;
+  // Sentence case shows a name as typed, so give it its capital.
+  const name = String(state.currentUsername || "");
+  return `${part}, ${name.charAt(0).toUpperCase()}${name.slice(1)}.`;
 }
 
 function allEvents() {

@@ -21,12 +21,12 @@
   transition: border-color var(--dur-1, 0.15s), box-shadow var(--dur-1, 0.15s);
 }
 .capture:focus-within {
-  border-color: var(--focus);
-  box-shadow: 0 0 0 3px rgba(154, 216, 255, 0.18);
-  box-shadow: 0 0 0 3px color-mix(in srgb, var(--focus) 18%, transparent);
+  border-color: var(--ring);
+  box-shadow: 0 0 0 3px rgba(255, 122, 47, 0.18);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--ring) 18%, transparent);
 }
 .capture-plus {
-  color: var(--focus);
+  color: var(--accent);
   font-size: 20px;
   line-height: 1;
 }
@@ -63,13 +63,13 @@
   width: 32px;
   height: 32px;
   border-radius: 50%;
-  color: var(--focus);
-  font-size: 11px;
+  color: var(--accent-text);
+  font-size: var(--t-xs);
   text-decoration: none;
 }
 .focus-on:hover {
-  background: rgba(154, 216, 255, 0.16);
-  background: color-mix(in srgb, var(--focus) 16%, transparent);
+  background: rgba(255, 122, 47, 0.16);
+  background: color-mix(in srgb, var(--accent) 16%, transparent);
 }
 
 /* ===== Study: a checklist ==================================================== */
@@ -99,17 +99,17 @@
   background: none;
   color: var(--text-3);
   font: inherit;
-  font-size: 12.5px;
+  font-size: 13px;
   font-weight: 600;
   cursor: pointer;
 }
 .seg-btn[aria-checked="true"] {
-  background: rgba(154, 216, 255, 0.22);
-  background: color-mix(in srgb, var(--focus) 22%, transparent);
+  background: rgba(255, 122, 47, 0.22);
+  background: color-mix(in srgb, var(--accent) 22%, transparent);
   color: var(--text);
 }
 .seg-btn:focus-visible {
-  outline: 2px solid var(--focus);
+  outline: 2px solid var(--ring);
   outline-offset: 1px;
 }
 .task-filter {
@@ -138,7 +138,7 @@
   min-width: 0.9em;
   text-align: center;
   font-size: 16px;
-  color: var(--focus);
+  color: var(--accent);
 }
 .task-grip {
   flex: none;
@@ -173,7 +173,7 @@
 }
 .task-list li.dragging .task-grip {
   cursor: grabbing;
-  color: var(--focus);
+  color: var(--accent);
 }
 .task-edit {
   opacity: 0.6;
@@ -203,10 +203,10 @@
   border-radius: 3px;
   background: var(--surface-3, rgba(255, 255, 255, 0.07));
 }
-.fm-cell.l1 { background: color-mix(in srgb, var(--focus) 30%, transparent); }
-.fm-cell.l2 { background: color-mix(in srgb, var(--focus) 52%, transparent); }
-.fm-cell.l3 { background: color-mix(in srgb, var(--focus) 76%, transparent); }
-.fm-cell.l4 { background: var(--focus); box-shadow: 0 0 6px color-mix(in srgb, var(--focus) 60%, transparent); }
+.fm-cell.l1 { background: color-mix(in srgb, var(--accent) 30%, transparent); }
+.fm-cell.l2 { background: color-mix(in srgb, var(--accent) 52%, transparent); }
+.fm-cell.l3 { background: color-mix(in srgb, var(--accent) 76%, transparent); }
+.fm-cell.l4 { background: var(--accent); box-shadow: 0 0 6px color-mix(in srgb, var(--accent) 60%, transparent); }
 .fm-cell.lfuture { background: transparent; }
 .fm-cell.today {
   outline: 1px solid var(--text-2);
@@ -258,7 +258,7 @@ html[data-look="verse"] .fm-cell.l4 {
 }
 .month-head span {
   padding: 0 8px 6px;
-  font-size: 11px;
+  font-size: var(--t-xs);
   letter-spacing: 0.1em;
   text-transform: uppercase;
   color: var(--text-3);
@@ -311,7 +311,7 @@ html[data-look="verse"] .fm-cell.l4 {
   box-shadow: 0 0 6px color-mix(in srgb, var(--tone, var(--time)) 60%, transparent);
 }
 .month-dots small {
-  font-size: 10.5px;
+  font-size: var(--t-xs);
   color: var(--text-3);
 }
 .month-first {
@@ -359,7 +359,7 @@ html[data-look="verse"] .fm-cell.l4 {
   .month-head span {
     padding: 0 0 4px;
     text-align: center;
-    font-size: 10px;
+    font-size: var(--t-xs);
   }
 }
 
@@ -385,7 +385,9 @@ html[data-look="verse"] .fm-cell.l4 {
   background: var(--surface);
 }
 .wn-v {
-  font: 400 26px/1.1 var(--f-display);
+  font: 600 22px/1.15 var(--f-mono);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.03em;
   color: var(--text);
 }
 .wn-u {
@@ -393,7 +395,7 @@ html[data-look="verse"] .fm-cell.l4 {
   color: var(--text-2);
 }
 .wn-h {
-  font-size: 11.5px;
+  font-size: var(--t-xs);
 }
 .postcard-img {
   display: block;
@@ -492,7 +494,7 @@ html[data-look="verse"] .fm-cell.l4 {
 }
 .help-list p {
   margin: 0;
-  font-size: 13.5px;
+  font-size: 14px;
 }
 @media (max-width: 560px) {
   .help-list li {
@@ -578,21 +580,21 @@ html[data-text="larger"] body {
   max-width: 640px;
   margin: 14px 0 0;
   padding: 10px 12px 10px 16px;
-  border: 1px solid rgba(154, 216, 255, 0.35);
-  border: 1px solid color-mix(in srgb, var(--focus) 35%, transparent);
+  border: 1px solid rgba(255, 122, 47, 0.35);
+  border: 1px solid color-mix(in srgb, var(--accent) 35%, transparent);
   border-radius: var(--r-2);
-  background: rgba(154, 216, 255, 0.06);
-  background: color-mix(in srgb, var(--focus) 6%, transparent);
+  background: rgba(255, 122, 47, 0.06);
+  background: color-mix(in srgb, var(--accent) 6%, transparent);
 }
 .now-step:empty {
   display: none;
 }
 .now-step .step-label {
-  font-size: 11.5px;
+  font-size: var(--t-xs);
   font-weight: 600;
   letter-spacing: 0.14em;
   text-transform: uppercase;
-  color: var(--focus);
+  color: var(--accent-text);
 }
 .now-step b {
   min-width: 0;

@@ -14,11 +14,9 @@
   gap: 28px;
 }
 .pl-h {
-  font-size: 13px;
-  font-weight: 600;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-  color: var(--text-3);
+  font: 700 clamp(20px, 2.2vw, 26px) / 1.1 var(--f-display);
+  letter-spacing: -0.03em;
+  color: var(--text);
   margin: 0 0 12px;
 }
 .pl-row-head {
@@ -64,14 +62,15 @@
   margin: 0 0 6px;
   font-size: 12px;
   font-weight: 600;
-  letter-spacing: 0.16em;
+  letter-spacing: var(--track-eyebrow);
   text-transform: uppercase;
   color: var(--subj, var(--text-3));
 }
 .pl-hero-title {
   margin: 0;
   font-family: var(--f-display);
-  font-weight: 400;
+  font-weight: 700;
+  letter-spacing: -0.035em;
   font-size: clamp(22px, 4vw, 34px);
   line-height: 1.15;
   color: var(--text);
@@ -121,7 +120,7 @@
   font-size: 14px;
 }
 .pl-day.today .pl-day-head b {
-  color: var(--focus);
+  color: var(--accent-text);
 }
 .pl-day.light .pl-day-head span {
   color: var(--world);
@@ -362,9 +361,9 @@
   display: none;
 }
 .study-block .sb-kind {
-  font-size: 11px;
+  font-size: var(--t-xs);
   font-weight: 600;
-  letter-spacing: 0.18em;
+  letter-spacing: var(--track-eyebrow);
   text-transform: uppercase;
   color: var(--subj, var(--focus));
 }
@@ -492,7 +491,8 @@
 }
 .deck-title {
   font-family: var(--f-display);
-  font-weight: 400;
+  font-weight: 650;
+  letter-spacing: -0.025em;
   font-size: 22px;
   line-height: 1.2;
 }
@@ -869,7 +869,7 @@ body.in-app[data-view="plan"] .wall {
   box-shadow: 0 0 18px color-mix(in srgb, var(--g) 40%, transparent);
 }
 .st-name {
-  font-size: 11px;
+  font-size: var(--t-xs);
   color: var(--text-3);
   max-width: 72px;
   overflow: hidden;
@@ -1109,10 +1109,10 @@ body.in-app[data-view="plan"] .wall {
   justify-content: space-between;
   gap: 14px 20px;
   padding: 16px 18px;
-  border: 1px solid color-mix(in srgb, var(--focus) 40%, var(--line));
+  border: 1px solid color-mix(in srgb, var(--accent) 40%, var(--line));
   border-radius: var(--r-3, 16px);
-  background: rgba(154, 216, 255, 0.07);
-  background: color-mix(in srgb, var(--focus) 7%, transparent);
+  background: rgba(255, 122, 47, 0.07);
+  background: color-mix(in srgb, var(--accent) 7%, transparent);
 }
 .pl-checkin-card > div:first-child {
   flex: 1 1 320px;
@@ -1545,7 +1545,7 @@ body.in-app[data-view="plan"] .wall {
   align-items: baseline;
 }
 .pl-day-chip small {
-  font-size: 11px;
+  font-size: var(--t-xs);
 }
 .pl-day-all {
   margin-left: 4px;
@@ -1562,7 +1562,7 @@ body.in-app[data-view="plan"] .wall {
 }
 .pl-weekend.ask {
   padding: 10px 12px;
-  border: 1px solid color-mix(in srgb, var(--focus) 45%, transparent);
+  border: 1px solid color-mix(in srgb, var(--accent) 45%, transparent);
   border-radius: 12px;
-  background: color-mix(in srgb, var(--focus) 8%, transparent);
+  background: color-mix(in srgb, var(--accent) 8%, transparent);
 }
