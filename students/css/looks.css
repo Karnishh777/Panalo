@@ -271,9 +271,6 @@ html[data-look="glass"] .panel::after {
 html[data-look="glass"] .panel + .panel {
   margin-top: 16px;
 }
-html[data-look="glass"] .now-log .panel {
-  margin-bottom: 16px;
-}
 html[data-look="glass"] .btn-ghost,
 html[data-look="glass"] .chip {
   background: rgba(255, 255, 255, 0.04);
@@ -498,9 +495,6 @@ html[data-look="signal"] .panel {
 }
 html[data-look="signal"] .panel + .panel {
   margin-top: 10px;
-}
-html[data-look="signal"] .now-log .panel {
-  margin-bottom: 10px;
 }
 html[data-look="signal"] .panel-head h2 {
   display: flex;
@@ -780,7 +774,7 @@ html[data-look="verse"] .panel {
 }
 /* Only Now's satellites hang off true: a tilted wide frame steps its ink
    line, and a transform would re-anchor anything fixed inside a panel. */
-html[data-look="verse"] .now-grid .panel {
+html[data-look="verse"] .now-bento .panel {
   transform: rotate(var(--tilt, -0.4deg));
 }
 html[data-look="verse"] .panel::before {
@@ -813,9 +807,6 @@ html[data-look="verse"] .panel:hover {
 }
 html[data-look="verse"] .panel + .panel {
   margin-top: 28px;
-}
-html[data-look="verse"] .now-log .panel {
-  margin-bottom: 28px;
 }
 /* The panel's title: a torn tape label stuck across its top edge. */
 html[data-look="verse"] .panel-head h2 {
@@ -951,32 +942,17 @@ html[data-look="verse"] .toast {
   }
 }
 
-/* Now, in Verse: your day in orbit. On a wide screen the instrument takes
-   the middle of the page and the log's panels hang around it like
-   satellites, frames on either side. */
-@media (min-width: 1100px) {
-  html[data-look="verse"] .now-grid {
-    grid-template-columns: minmax(0, 1fr) minmax(400px, 1.15fr) minmax(0, 1fr);
-    grid-auto-flow: dense;
-    gap: 40px 30px;
-  }
-  html[data-look="verse"] .now-log {
-    display: contents;
-  }
-  html[data-look="verse"] .now-instrument {
-    grid-column: 2;
-    grid-row: 1 / span 4;
-    position: sticky;
-  }
-  html[data-look="verse"] .now-log > * {
-    margin: 0;
-  }
-  html[data-look="verse"] .now-log > *:nth-child(odd) {
-    grid-column: 1;
-  }
-  html[data-look="verse"] .now-log > *:nth-child(even) {
-    grid-column: 3;
-  }
+/* Now, in Verse: the bento's frames hang a little off true, with room
+   between them for the tape labels stuck across their tops. */
+html[data-look="verse"] .now-bento {
+  gap: 44px 26px;
+  padding-top: 18px;
+}
+/* The next step keeps Verse's ink frame, its shadow in the subject's colour. */
+html[data-look="verse"] body .now-top .now-step.panel {
+  border: 2px solid var(--paper);
+  border-radius: 2px;
+  box-shadow: 8px 8px 0 var(--subj, var(--hot));
 }
 html[data-look="verse"] .orbit-svg text {
   font-family: var(--f-mono);
@@ -1071,7 +1047,7 @@ html[data-look="verse"] .surface.look-enter .panel {
   40% { opacity: 1; transform: scale(0.96) rotate(1deg); }
   100% { transform: var(--rest, none); }
 }
-html[data-look="verse"] .now-grid .panel {
+html[data-look="verse"] .now-bento .panel {
   --rest: rotate(var(--tilt, -0.4deg));
 }
 html[data-look="verse"] .surface.look-enter .s-head h1 {

@@ -345,9 +345,6 @@
   text-overflow: ellipsis;
   white-space: nowrap;
 }
-.now-step .step-subj {
-  color: var(--subj, var(--text));
-}
 
 /* ---- Study: the planned block ---- */
 .study-block {
@@ -560,37 +557,6 @@
 }
 
 /* ---- Now, around the plan ---- */
-/* The next block as the hero: its subject's glow behind it. */
-.now-step.plan-step {
-  position: relative;
-  isolation: isolate;
-  overflow: hidden;
-  padding: 16px 16px 16px 20px;
-  border-color: color-mix(in srgb, var(--subj) 30%, var(--line));
-  background: var(--surface);
-}
-.now-step.plan-step::before {
-  content: "";
-  position: absolute;
-  inset: -60% -20% auto auto;
-  width: 60%;
-  height: 220%;
-  z-index: -1;
-  background: radial-gradient(closest-side, color-mix(in srgb, var(--subj) 24%, transparent), transparent);
-  pointer-events: none;
-}
-.now-step.plan-step .step-label {
-  flex-basis: 100%;
-  color: var(--subj);
-}
-.now-step.plan-step .step-subj {
-  font-size: 19px;
-  font-weight: 500;
-  color: var(--text);
-}
-.plan-studied {
-  margin: 10px 0 0;
-}
 /* The day's areas of life (profile.routine goals): kept free, a reminder. */
 .pl-life {
   margin: 8px 0 0;
@@ -600,23 +566,26 @@
   color: var(--text-2, inherit);
 }
 
-/* Idle: everything but your world and its day fades away. */
-.now .now-head,
-.now .now-log,
-.now .orbit-legend {
+/* Idle: everything but your world and its day fades away, the orbit's
+   tile included (its plate and its words), so the ring floats alone. */
+.now :is(.now-top, .now-tile:not(.now-t-orbit), .now-t-orbit > .panel-head, .orbit-legend, .today-hero) {
   transition: opacity 1.2s ease;
 }
-.now.is-idle .now-head,
-.now.is-idle .now-log,
-.now.is-idle .orbit-legend {
+html[data-look] .now .now-bento .now-t-orbit {
+  transition: background-color 1.2s ease, box-shadow 1.2s ease, border-color 1.2s ease;
+}
+.now.is-idle :is(.now-top, .now-tile:not(.now-t-orbit), .now-t-orbit > .panel-head, .orbit-legend, .today-hero) {
   opacity: 0;
   pointer-events: none;
 }
+html[data-look] .now.is-idle .now-bento .now-t-orbit {
+  border-color: transparent;
+  background: transparent;
+  box-shadow: none;
+}
 @media (prefers-reduced-motion: reduce) {
-  .now .now-head,
-  .now .now-log,
-  .now .orbit-legend {
-    transition: none;
+  .now :is(.now-top, .now-tile, .now-t-orbit > .panel-head, .orbit-legend, .today-hero) {
+    transition: none !important;
   }
 }
 
@@ -657,9 +626,6 @@ body.in-app[data-view="plan"] .wall {
   }
 }
 
-.now-instrument {
-  position: relative;
-}
 
 /* The stage: guardians in a row, black and white until chosen. */
 .pl-stage {

@@ -72,22 +72,115 @@
   color: var(--time);
 }
 
-/* ---- Now --------------------------------------------------------------------- */
+/* ---- Now: a hero and a bento --------------------------------------------------- */
+/* The hero: the greeting on the left, the next step as a big tile on the
+   right. Under it a 12-column bento of tiles of different sizes; the log
+   (.now-log) is `display: contents`, so its panels are tiles too, kept in
+   their reading order in the markup and placed here. On a phone, one
+   column in priority order: greeting, next step, plan, the day, the rest. */
 
-.now-grid {
+.now-top {
   display: grid;
-  grid-template-columns: minmax(320px, 1.05fr) minmax(300px, 0.95fr);
-  gap: clamp(24px, 4vw, 64px);
-  align-items: start;
+  grid-template-columns: minmax(0, 1.08fr) minmax(0, 0.92fr);
+  align-items: end;
+  gap: clamp(20px, 3vw, 44px);
+  margin: 6px 0 clamp(18px, 2.2vw, 28px);
 }
+.now-top > .now-head {
+  padding-bottom: 6px;
+}
+.now-top .s-sub {
+  font-size: var(--t-body);
+}
+
+.now-bento {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  grid-auto-flow: row dense;
+  gap: 16px;
+  align-items: stretch;
+}
+.now-log {
+  display: contents;
+}
+/* In a grid the gap is the spacing: no look's panel margins here. */
+html[data-look] .now-bento .now-tile.panel {
+  min-width: 0;
+  margin: 0;
+}
+/* Priority order, for the phone's one column and the grid's flow. */
+.now-t-plan { order: 1; }
+.now-t-orbit { order: 2; }
+.now-t-today { order: 3; }
+.now-t-focus { order: 4; }
+.now-t-capture { order: 5; }
+.now-t-due { order: 6; }
+.now-t-next { order: 7; }
+.now-t-exams { order: 8; }
+.now-t-world { order: 9; }
+@media (min-width: 900px) {
+  .now-bento {
+    grid-template-columns: repeat(12, minmax(0, 1fr));
+  }
+  .now-t-plan { grid-column: span 7; }
+  .now-t-orbit { grid-column: span 5; grid-row: span 2; }
+  .now-t-today { grid-column: span 4; }
+  .now-t-focus { grid-column: span 3; }
+  .now-t-capture { grid-column: span 5; }
+  .now-t-due { grid-column: span 7; }
+  .now-t-next { grid-column: span 5; }
+  .now-t-exams { grid-column: span 4; }
+  .now-t-world { grid-column: span 7; }
+  .now-bento:has(.now-t-exams) :is(.now-t-next, .now-t-world) {
+    grid-column: span 4;
+  }
+  /* No plan yet: the day and the numbers sit beside the orbit instead. */
+  .now-bento:not(:has(.now-t-plan)) .now-t-capture {
+    grid-column: span 7;
+  }
+  .now-bento:not(:has(.now-t-plan)) .now-t-world {
+    grid-column: span 12;
+  }
+  .now-bento:not(:has(.now-t-plan)):has(.now-t-exams) .now-t-world {
+    grid-column: span 7;
+  }
+  .now-bento:not(:has(.now-t-plan)) :is(.now-t-exams, .now-t-next) {
+    grid-column: span 5;
+  }
+}
+
+/* Tiles: a column, the head on top; the plan's numbers sit at its foot. */
+.now-tile {
+  display: flex;
+  flex-direction: column;
+}
+.now-tile > .panel-head {
+  flex: none;
+}
+/* A button in a tile keeps its own width, at the start. */
+.now-tile > :is(.btn, button, .closed-line) {
+  align-self: flex-start;
+}
+.now-tile > .btn:last-child,
+.now-tile > #close-day {
+  margin-top: auto;
+}
+.now-t-today .rhythm-row {
+  margin: 14px 0 16px;
+}
+
+/* The day orbit, whole: the tile is sized so the ring always fits. */
 .now-instrument {
-  position: sticky;
-  top: calc(var(--bar-h) + 16px);
+  position: relative;
+  display: grid;
+  flex: 1;
+  place-items: center;
+  min-height: 0;
 }
 .orbit-wrap {
   position: relative;
   display: block;
-  width: min(100%, 560px);
+  width: min(100%, 440px);
   aspect-ratio: 1;
   margin: 0 auto;
   border-radius: 50%;
@@ -178,9 +271,9 @@
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
-  gap: 16px;
+  gap: 8px 18px;
   margin-top: 14px;
-  font-size: 12px;
+  font-size: var(--t-xs);
 }
 .lg {
   display: inline-flex;
@@ -211,9 +304,6 @@
   background: var(--time);
 }
 
-.now-log .panel {
-  margin-bottom: 26px;
-}
 .now-next {
   display: grid;
   gap: 4px;
@@ -292,12 +382,72 @@
   font-size: 14px;
   color: var(--text-2);
 }
-@media (max-width: 980px) {
-  .now-grid {
-    grid-template-columns: 1fr;
+/* The numbers: today large, the week beside it, both tabular. */
+.now-stats {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: 8px 22px;
+  margin-top: auto;
+}
+.now-stat {
+  display: grid;
+  gap: 2px;
+}
+.now-stat b {
+  font: 500 22px / 1.05 var(--f-mono);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.03em;
+  color: var(--text);
+}
+.now-stat.big {
+  flex-basis: 100%;
+}
+.now-stat.big b {
+  font-size: clamp(36px, 3.4vw, 50px);
+  letter-spacing: -0.05em;
+}
+.now-stat span {
+  font-size: var(--t-xs);
+}
+.now-t-focus .now-live {
+  margin-top: 12px;
+}
+.now-t-focus > .btn {
+  align-self: flex-start;
+  margin-top: 14px;
+}
+
+/* Capture: the field and one line on how dates work. */
+.now-t-capture .capture {
+  max-width: none;
+  margin-top: 4px;
+}
+.capture-help {
+  margin: 10px 0 0;
+  font-size: var(--t-xs);
+}
+
+@media (max-width: 1099px) {
+  .now-top {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
   }
-  .now-instrument {
-    position: static;
+}
+@media (max-width: 899px) {
+  .now-top {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 16px;
+  }
+  /* The plan's rows wrap instead of cutting the chapter off. */
+  .now-bento .now-list.plan-today li > span:nth-child(3) {
+    white-space: normal;
+  }
+  .now-list.plan-today li small {
+    display: block;
+  }
+  /* Thumb-sized: the capture field is a 48 px target. */
+  .now-t-capture .capture .capture-input {
+    min-height: var(--hit-touch);
   }
   .orbit-wrap {
     width: min(100%, 420px);

@@ -259,10 +259,6 @@ html[data-look="glass"] body.in-app .pl-topic.met {
   box-shadow: 0 0 10px color-mix(in srgb, var(--subj) calc(var(--m, 0.5) * 60%), transparent);
 }
 
-/* ---- Now: the next step, lit from its edge ---- */
-html[data-look="glass"] body.in-app .now-step.plan-step {
-  border-radius: var(--r-3);
-}
 
 /* ---- the phone dock: a flat bar with a warm hairline ---- */
 @media (max-width: 899px) {
@@ -390,4 +386,37 @@ html[data-look="glass"] body.in-setup .setup-activity {
   border-radius: var(--r-2);
   border-color: var(--line-2);
   box-shadow: inset 3px 0 0 var(--accent);
+}
+
+/* ---- Now: the bento's tiles catch an edge of light where the pointer is
+   (js/looks.js sets --mx/--my), on the 1px border only ---- */
+html[data-look="glass"] body.in-app :is(.now-tile, .now-step)::before {
+  content: "";
+  position: absolute;
+  inset: -1px;
+  z-index: 1;
+  padding: 1px;
+  border-radius: inherit;
+  background: radial-gradient(240px circle at var(--mx, -999px) var(--my, -999px), rgba(255, 170, 110, 0.6), transparent 65%);
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity var(--dur-2) var(--ease-out);
+}
+html[data-look="glass"] body.in-app :is(.now-tile, .now-step):hover::before {
+  opacity: 1;
+}
+/* Now's tiles: glass over the dark. The layers are spelled out here: a
+   colour can only be the last layer, so `var(--plate) padding-box` (a
+   gradient then a colour) is dropped by the browser and the plate never
+   paints. */
+html[data-look="glass"] body.in-app .now-bento .now-tile.panel {
+  padding: 22px 24px 24px;
+  background:
+    linear-gradient(170deg, rgba(255, 255, 255, 0.06), rgba(255, 255, 255, 0.015) 50%) padding-box,
+    linear-gradient(rgba(13, 15, 22, 0.8), rgba(13, 15, 22, 0.8)) padding-box,
+    linear-gradient(170deg, rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0.06) 40%, rgba(255, 255, 255, 0.04) 75%, rgba(255, 140, 70, 0.28)) border-box;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.05), 0 30px 60px -34px rgba(2, 3, 8, 0.95), 0 18px 40px -30px rgba(255, 106, 38, 0.18);
 }

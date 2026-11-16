@@ -571,42 +571,119 @@ html[data-text="larger"] body {
 
 /* ===== Now: the next step ==================================================== */
 /* The one thing Now is for: the next piece of work, one tap from a focus
-   block on it. */
-.now-step {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 6px 12px;
-  max-width: 640px;
-  margin: 14px 0 0;
-  padding: 10px 12px 10px 16px;
-  border: 1px solid rgba(255, 122, 47, 0.35);
-  border: 1px solid color-mix(in srgb, var(--accent) 35%, transparent);
-  border-radius: var(--r-2);
-  background: rgba(255, 122, 47, 0.06);
-  background: color-mix(in srgb, var(--accent) 6%, transparent);
+   block on it. The hero's big tile: an eyebrow on top, the work as the
+   headline at the foot, what and how long, and the button. A planned block
+   brings its subject: its colour lights the tile from the top right and
+   its emblem sits there, soft (.step-art). */
+html[data-look] .now-top .now-step.panel {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  grid-template-rows: auto minmax(24px, 1fr) auto auto;
+  grid-template-areas:
+    "label label"
+    ". ."
+    "title title"
+    "meta go";
+  align-items: end;
+  gap: 8px 18px;
+  min-height: 252px;
+  margin: 0;
+  padding: 24px 24px 22px 26px;
+  border: 0;
+  border-radius: var(--r-3);
+  background:
+    radial-gradient(90% 110% at 100% 0%, color-mix(in srgb, var(--subj, var(--accent)) 30%, transparent), transparent 62%),
+    radial-gradient(60% 80% at 0% 110%, color-mix(in srgb, var(--subj, var(--accent)) 10%, transparent), transparent 70%),
+    linear-gradient(165deg, rgba(255, 255, 255, 0.06), rgba(255, 255, 255, 0.01) 55%),
+    var(--surface);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.1),
+    inset 0 0 0 1px color-mix(in srgb, var(--subj, var(--accent)) 28%, var(--line)),
+    0 36px 70px -40px color-mix(in srgb, var(--subj, var(--accent)) 60%, transparent);
 }
-.now-step:empty {
-  display: none;
-}
-.now-step .step-label {
+html[data-look] .now-step > .step-label {
+  grid-area: label;
+  align-self: start;
   font-size: var(--t-xs);
   font-weight: 600;
-  letter-spacing: 0.14em;
+  letter-spacing: var(--track-eyebrow);
   text-transform: uppercase;
-  color: var(--accent-text);
+  color: color-mix(in srgb, var(--subj, var(--accent-text)) 80%, var(--text));
 }
-.now-step b {
+html[data-look] .now-step > .step-subj {
+  grid-area: title;
   min-width: 0;
+  max-width: 22ch;
+  font: 650 clamp(24px, 2.3vw, 34px) / 1.08 var(--f-display);
+  letter-spacing: -0.03em;
+  color: var(--text);
   overflow-wrap: anywhere;
+  text-wrap: balance;
+  text-shadow: 0 2px 18px color-mix(in srgb, var(--bg) 70%, transparent);
 }
-.now-step .btn {
-  margin-left: auto;
+html[data-look] .now-step > .step-meta {
+  grid-area: meta;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 4px 12px;
+  min-width: 0;
+  color: var(--text-2);
+  font-size: var(--t-ui);
 }
-@media (max-width: 560px) {
-  .now-step .btn {
+.now-step .step-min {
+  font-family: var(--f-mono);
+  font-variant-numeric: tabular-nums;
+  color: var(--text);
+}
+html[data-look] .now-step > .step-go {
+  grid-area: go;
+}
+.now-step .step-go .btn {
+  --h: 48px;
+  padding: 0 28px;
+  font-size: var(--t-body);
+}
+/* The subject's emblem, large and soft behind the top right. */
+html[data-look] .now-step > .step-art {
+  position: absolute;
+  top: -64px;
+  right: -72px;
+  z-index: -1;
+  width: 320px;
+  height: 320px;
+  opacity: 0.45;
+  pointer-events: none;
+  -webkit-mask-image: radial-gradient(closest-side, #000 35%, transparent 100%);
+  mask-image: radial-gradient(closest-side, #000 35%, transparent 100%);
+}
+.now-step .step-art canvas {
+  display: block;
+  width: 100% !important;
+  height: 100% !important;
+}
+@media (max-width: 899px) {
+  html[data-look] .now-top .now-step.panel {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: auto minmax(12px, 1fr) auto auto auto;
+    grid-template-areas: "label" "." "title" "meta" "go";
+    min-height: 228px;
+    padding: 20px;
+  }
+  html[data-look] .now-step > .step-go {
+    margin-top: 8px;
+  }
+  .now-step .step-go .btn {
     width: 100%;
-    margin-left: 0;
+  }
+  html[data-look] .now-step > .step-art {
+    width: 220px;
+    height: 220px;
+    top: -36px;
+    right: -48px;
   }
 }
 

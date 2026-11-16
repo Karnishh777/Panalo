@@ -272,28 +272,17 @@ html:is([data-look="night"], [data-look="day"]) .today-hero .kicker {
   font-size: var(--t-xs);
   color: var(--text-2);
 }
-/* The next step: the one card that glows. */
-html:is([data-look="night"], [data-look="day"]) .now-step {
-  padding: 18px;
-  border-radius: var(--r-3);
-  background: linear-gradient(140deg, rgba(139, 124, 255, 0.24), rgba(255, 255, 255, 0.04));
-  border: 1px solid rgba(155, 140, 255, 0.38);
+/* The next step: the one tile that glows (css/features.css lays it out).
+   The photo above already makes the occasion, so the hero row is calmer. */
+html:is([data-look="night"], [data-look="day"]) .now-top {
+  align-items: center;
 }
-html:is([data-look="night"], [data-look="day"]) .now-step .step-label {
-  color: var(--violet-soft);
-  font-weight: 700;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  font-size: 12px;
-}
-html:is([data-look="night"], [data-look="day"]) .now-step b {
-  font: 800 clamp(20px, 4.6vw, 26px) / 1.1 var(--f-display);
-  letter-spacing: -0.01em;
+html:is([data-look="night"], [data-look="day"]) .now-top .now-step.panel {
+  min-height: 216px;
 }
 html:is([data-look="night"], [data-look="day"]) .now-step .btn-primary {
   --h: 52px;
-  padding: 0 26px;
-  font: 700 16px var(--f-body);
+  font-weight: 700;
 }
 /* Calm-by-default still holds: no glow when motion is reduced. */
 html:is([data-look="night"], [data-look="day"])[data-motion="reduce"] .btn-primary,
@@ -593,4 +582,15 @@ html:is([data-look="night"], [data-look="day"]) .pl-ready .meter {
 html:is([data-look="night"], [data-look="day"]) .pl-ready .meter i {
   border-radius: 4px;
   box-shadow: 0 0 12px color-mix(in srgb, var(--subj) 60%, transparent);
+}
+
+/* Now: a fine grain over the dark, never in the way (Glass has its own). */
+html[data-look="night"] body.in-app[data-view="now"]::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: 90;
+  pointer-events: none;
+  opacity: 0.04;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 0.9 0'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)'/%3E%3C/svg%3E");
 }

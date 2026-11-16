@@ -119,10 +119,6 @@ html[data-look="day"] .sheet-journal input.ink {
 html[data-look="day"] dialog.sheet::backdrop {
   background: rgba(23, 20, 42, 0.35);
 }
-html[data-look="day"] .now-step {
-  background: linear-gradient(140deg, rgba(106, 88, 242, 0.12), #ffffff);
-  border-color: rgba(106, 88, 242, 0.32);
-}
 html[data-look="day"] .pl-shelf {
   border-bottom-color: rgba(106, 88, 242, 0.35);
   box-shadow: 0 12px 24px -16px rgba(106, 88, 242, 0.45);
@@ -149,4 +145,9 @@ html[data-look="day"][data-lite] :is(.bar, .dock, .land-bar.scrolled, .globe-doc
 /* The Study Room keeps Night's bar and dock, like the room itself. */
 html[data-look="day"][data-lite] body[data-view="study"] :is(.bar, .dock) {
   background: rgba(11, 10, 18, 0.96) !important;
+}
+
+/* Now: on white, the next step's eyebrow takes mostly ink so it reads (4.5:1). */
+html[data-look="day"] .now-step > .step-label {
+  color: color-mix(in srgb, var(--subj, var(--accent)) 30%, var(--text));
 }
