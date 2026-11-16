@@ -95,6 +95,29 @@ try {
     await page.context().close();
   }
 
+  // ---- A 15-year-old whose parent said no (phases 22, 40) ----
+  {
+    const page = await qa.open({ viewport: "desktop" });
+    await page.evaluate(async () => {
+      await window.__qa.ready;
+      const db = window.__qa.db;
+      const alex = db.profiles.find((p) => p.username === "alex");
+      const row = db.account_age.find((a) => a.user_id === alex.id);
+      Object.assign(row, { birth_year: new Date().getFullYear() - 15, birth_month: 1, consent: "declined", parent_email: "mum@panalo.test" });
+    });
+    await page.goto(page.url().split("#")[0] + "#login");
+    await page.fill("#login-email", "qa@panalo.test");
+    await page.fill("#login-password", "correct-horse-42");
+    await page.click("#login-btn");
+    await page.waitForSelector(".age-wall", { timeout: 15000 });
+    const wallText = await page.textContent(".age-wall");
+    check("after a parent says no, Chat says so and not that it's waiting", /said no/.test(wallText) && /only they can change that/i.test(wallText) && !/waiting/i.test(wallText));
+    check("Chat stays closed after a parent's no", !(await page.isVisible("#chat-app:not(.hidden)")));
+    await shot(page, "chat-parent-said-no");
+    check("no console errors (parent said no)", page.errors.length === 0 || (console.log(page.errors), false));
+    await page.context().close();
+  }
+
   // ---- Phone ----
   {
     const page = await qa.open({ viewport: "mobile", colorScheme: "dark" });
