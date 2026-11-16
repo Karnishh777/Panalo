@@ -1,0 +1,603 @@
+{
+  "subject": "math",
+  "name": "Mathematics",
+  "board": "CISCE ICSE",
+  "code": "icse-math",
+  "topics": [
+    {
+      "id": "9.1", "stage": "9", "name": "Rational and irrational numbers",
+      "questions": [
+        { "q": "Which of these numbers is irrational?", "o": ["√16", "0.333…", "√7", "22/7"], "a": 2, "why": "7 is not a perfect square, so √7 is non-terminating and non-recurring. √16 = 4, 0.333… = 1/3 and 22/7 are all rational." },
+        { "q": "The recurring decimal 0.363636… written in the form p/q is:", "o": ["36/100", "4/11", "9/25", "3/11"], "a": 1, "why": "Let x = 0.3636…; then 100x − x = 36, so x = 36/99 = 4/11." },
+        { "q": "The rationalising factor of 1/(√5 − √2) is:", "o": ["√5 + √2", "√5 − √2", "√3", "√10"], "a": 0, "why": "(√5 − √2)(√5 + √2) = 5 − 2 = 3, which is rational." },
+        { "q": "The value of (√3 + √2)(√3 − √2) is:", "o": ["5", "√6", "2√6", "1"], "a": 3, "why": "Using (a + b)(a − b) = a² − b²: 3 − 2 = 1." },
+        { "q": "Which rational number lies between 1/3 and 1/2?", "o": ["1/4", "5/12", "3/5", "2/3"], "a": 1, "why": "The mean of 1/3 and 1/2 is (4/12 + 6/12) ÷ 2 = 5/12 ≈ 0.417, which lies between 0.333 and 0.5." }
+      ],
+      "long": [
+        { "q": "Express 0.2333… (the 3 recurring) as a fraction in its lowest terms.", "marks": 3, "paper": "1", "scheme": ["M1: let x = 0.2333…; then 10x = 2.333… and 100x = 23.333…", "M1: 100x − 10x = 21, so 90x = 21", "A1: x = 21/90 = 7/30"], "ans": "7/30" },
+        { "q": "Prove that √3 is irrational.", "marks": 4, "paper": "1", "scheme": ["B1: suppose √3 = p/q, where p and q are integers with no common factor and q ≠ 0", "M1: then p² = 3q², so 3 divides p², hence 3 divides p", "M1: put p = 3k: 9k² = 3q², so q² = 3k² and 3 divides q", "A1: so p and q have the common factor 3, a contradiction; hence √3 is irrational"] },
+        { "q": "Rationalise the denominator and simplify: (3 + √2)/(3 − √2).", "marks": 3, "paper": "1", "scheme": ["M1: multiply numerator and denominator by (3 + √2)", "A1: numerator (3 + √2)² = 9 + 6√2 + 2 = 11 + 6√2", "A1: denominator 9 − 2 = 7, giving (11 + 6√2)/7"], "ans": "(11 + 6√2)/7" },
+        { "q": "If x = 2 + √3, find the values of x + 1/x and x² + 1/x².", "marks": 5, "paper": "1", "scheme": ["M1: 1/x = 1/(2 + √3) × (2 − √3)/(2 − √3) = (2 − √3)/(4 − 3)", "A1: 1/x = 2 − √3", "A1: x + 1/x = 4", "M1: x² + 1/x² = (x + 1/x)² − 2", "A1: = 16 − 2 = 14"], "ans": "4; 14" },
+        { "q": "Find rational numbers a and b if (√5 + 1)/(√5 − 1) = a + b√5.", "marks": 3, "paper": "1", "scheme": ["M1: multiply numerator and denominator by (√5 + 1)", "A1: = (6 + 2√5)/4", "A1: = 3/2 + (1/2)√5, so a = 3/2 and b = 1/2"], "ans": "a = 3/2, b = 1/2" }
+      ]
+    },
+    {
+      "id": "9.2", "stage": "9", "name": "Compound interest",
+      "questions": [
+        { "q": "The compound interest on ₹10,000 for 2 years at 10% per annum, compounded annually, is:", "o": ["₹2,000", "₹2,100", "₹2,200", "₹1,100"], "a": 1, "why": "Amount = 10000 × 1.1² = ₹12,100, so CI = ₹2,100. Simple interest would be only ₹2,000." },
+        { "q": "The amount on ₹8,000 for 1 year at 10% per annum, compounded half-yearly, is:", "o": ["₹8,800", "₹9,680", "₹8,820", "₹8,840"], "a": 2, "why": "Half-yearly means 5% per half-year for 2 half-years: 8000 × 1.05² = 8000 × 1.1025 = ₹8,820." },
+        { "q": "A town of 20,000 people grows at 5% per year. Its population after 2 years will be:", "o": ["22,050", "22,000", "21,000", "22,100"], "a": 0, "why": "20000 × 1.05² = 20000 × 1.1025 = 22,050." },
+        { "q": "A machine worth ₹50,000 depreciates by 10% each year. Its value after 2 years is:", "o": ["₹40,000", "₹41,000", "₹45,000", "₹40,500"], "a": 3, "why": "50000 × 0.9² = 50000 × 0.81 = ₹40,500." },
+        { "q": "The difference between CI and SI on ₹5,000 for 2 years at 8% per annum is:", "o": ["₹16", "₹32", "₹64", "₹320"], "a": 1, "why": "For 2 years the difference is P(r/100)² = 5000 × 0.08² = 5000 × 0.0064 = ₹32." }
+      ],
+      "long": [
+        { "q": "Calculate, year by year, the compound interest on ₹15,000 for 3 years at 8% per annum, compounded annually.", "marks": 4, "paper": "1", "scheme": ["M1: interest for year 1 = 8% of 15000 = ₹1,200; principal for year 2 = ₹16,200", "M1: interest for year 2 = 8% of 16200 = ₹1,296; principal for year 3 = ₹17,496", "A1: interest for year 3 = 8% of 17496 = ₹1,399.68; amount = ₹18,895.68", "A1: compound interest = 18895.68 − 15000 = ₹3,895.68"], "ans": "₹3,895.68" },
+        { "q": "What sum of money will amount to ₹13,230 in 2 years at 5% per annum compound interest?", "marks": 3, "paper": "1", "scheme": ["M1: 13230 = P(1 + 5/100)²", "A1: P = 13230 ÷ 1.1025", "A1: P = ₹12,000"], "ans": "₹12,000" },
+        { "q": "At what rate per cent per annum will ₹6,250 amount to ₹7,290 in 2 years, interest compounded annually?", "marks": 3, "paper": "1", "scheme": ["M1: (1 + r/100)² = 7290/6250", "A1: = 729/625 = (27/25)²", "A1: 1 + r/100 = 27/25, so r = 8%"], "ans": "8%" },
+        { "q": "Ramesh borrows ₹20,000 at 10% per annum compound interest. At the end of the first year he repays ₹7,000. How much must he pay at the end of the second year to clear the loan?", "marks": 4, "paper": "1", "scheme": ["M1: amount at end of year 1 = 20000 × 1.1 = ₹22,000", "A1: principal for year 2 = 22000 − 7000 = ₹15,000", "M1: interest for year 2 = 10% of 15000 = ₹1,500", "A1: amount to pay = ₹16,500"], "ans": "₹16,500" },
+        { "q": "The difference between the compound interest and the simple interest on a sum for 2 years at 10% per annum is ₹65. Find the sum.", "marks": 3, "paper": "1", "scheme": ["M1: SI = 0.2P and CI = P(1.1² − 1) = 0.21P", "M1: 0.21P − 0.2P = 0.01P = 65", "A1: P = ₹6,500"], "ans": "₹6,500" }
+      ]
+    },
+    {
+      "id": "9.3", "stage": "9", "name": "Expansions",
+      "questions": [
+        { "q": "(2x + 3)² equals:", "o": ["4x² + 9", "4x² + 6x + 9", "4x² + 12x + 9", "2x² + 12x + 9"], "a": 2, "why": "(a + b)² = a² + 2ab + b² = 4x² + 2(2x)(3) + 9 = 4x² + 12x + 9." },
+        { "q": "If a + b = 7 and ab = 10, the value of a² + b² is:", "o": ["29", "39", "69", "49"], "a": 0, "why": "a² + b² = (a + b)² − 2ab = 49 − 20 = 29." },
+        { "q": "If x + 1/x = 3, the value of x² + 1/x² is:", "o": ["9", "7", "11", "5"], "a": 1, "why": "x² + 1/x² = (x + 1/x)² − 2 = 9 − 2 = 7." },
+        { "q": "The expansion of (a − b)³ is:", "o": ["a³ − b³", "a³ + 3a²b − 3ab² − b³", "a³ − 3ab − b³", "a³ − 3a²b + 3ab² − b³"], "a": 3, "why": "(a − b)³ = a³ − 3a²b + 3ab² − b³; the signs alternate." },
+        { "q": "Using a suitable identity, 103 × 97 equals:", "o": ["9999", "9909", "9991", "10009"], "a": 2, "why": "103 × 97 = (100 + 3)(100 − 3) = 10000 − 9 = 9991." }
+      ],
+      "long": [
+        { "q": "If a − b = 4 and ab = 21, find the values of a² + b² and a³ − b³.", "marks": 4, "paper": "1", "scheme": ["M1: a² + b² = (a − b)² + 2ab", "A1: = 16 + 42 = 58", "M1: a³ − b³ = (a − b)³ + 3ab(a − b)", "A1: = 64 + 252 = 316"], "ans": "58; 316" },
+        { "q": "If x − 1/x = 5, find the values of x² + 1/x² and x⁴ + 1/x⁴.", "marks": 4, "paper": "1", "scheme": ["M1: (x − 1/x)² = x² + 1/x² − 2", "A1: x² + 1/x² = 25 + 2 = 27", "M1: x⁴ + 1/x⁴ = (x² + 1/x²)² − 2", "A1: = 729 − 2 = 727"], "ans": "27; 727" },
+        { "q": "Expand (2a − 3b + c)².", "marks": 3, "paper": "1", "scheme": ["B1: square terms 4a² + 9b² + c²", "B1: product term 2(2a)(−3b) = −12ab", "B1: product terms 2(−3b)(c) + 2(c)(2a) = −6bc + 4ca"], "ans": "4a² + 9b² + c² − 12ab − 6bc + 4ca" },
+        { "q": "Use a suitable identity to evaluate 98³.", "marks": 3, "paper": "1", "scheme": ["M1: 98³ = (100 − 2)³ = 100³ − 3(100)²(2) + 3(100)(2)² − 2³", "A1: = 1000000 − 60000 + 1200 − 8", "A1: = 941192"], "ans": "941192" },
+        { "q": "If a + b + c = 12 and a² + b² + c² = 50, find ab + bc + ca.", "marks": 3, "paper": "1", "scheme": ["M1: (a + b + c)² = a² + b² + c² + 2(ab + bc + ca)", "A1: 144 = 50 + 2(ab + bc + ca)", "A1: ab + bc + ca = 47"], "ans": "47" }
+      ]
+    },
+    {
+      "id": "9.4", "stage": "9", "name": "Factorisation",
+      "questions": [
+        { "q": "The factors of x² − 5x + 6 are:", "o": ["(x − 2)(x − 3)", "(x + 2)(x + 3)", "(x − 1)(x − 6)", "(x − 6)(x + 1)"], "a": 0, "why": "Two numbers with product 6 and sum −5 are −2 and −3." },
+        { "q": "9a² − 16b² factorises as:", "o": ["(3a − 4b)²", "(9a − 16b)(a + b)", "(3a + 4b)(3a − 4b)", "(3a + 4b)²"], "a": 2, "why": "It is a difference of two squares: (3a)² − (4b)² = (3a + 4b)(3a − 4b)." },
+        { "q": "a³ + 8 factorises as:", "o": ["(a + 2)(a² + 2a + 4)", "(a + 2)(a² − 2a + 4)", "(a − 2)(a² + 2a + 4)", "(a + 2)³"], "a": 1, "why": "a³ + b³ = (a + b)(a² − ab + b²) with b = 2." },
+        { "q": "2x² + 7x + 3 factorises as:", "o": ["(2x + 3)(x + 1)", "(2x − 1)(x − 3)", "(x + 7)(2x − 3)", "(2x + 1)(x + 3)"], "a": 3, "why": "Split 7x as 6x + x: 2x² + 6x + x + 3 = 2x(x + 3) + 1(x + 3) = (2x + 1)(x + 3)." },
+        { "q": "ax + bx + ay + by factorises as:", "o": ["(a + b)(x + y)", "(a + x)(b + y)", "ab(x + y)", "(a − b)(x − y)"], "a": 0, "why": "Group: x(a + b) + y(a + b) = (a + b)(x + y)." }
+      ],
+      "long": [
+        { "q": "Factorise 6x² − 5x − 6.", "marks": 3, "paper": "1", "scheme": ["M1: product 6 × (−6) = −36; split −5x as −9x + 4x", "A1: 3x(2x − 3) + 2(2x − 3)", "A1: (2x − 3)(3x + 2)"], "ans": "(2x − 3)(3x + 2)" },
+        { "q": "Factorise a² − b² − 2b − 1.", "marks": 3, "paper": "1", "scheme": ["M1: group as a² − (b² + 2b + 1)", "A1: a² − (b + 1)²", "A1: (a + b + 1)(a − b − 1)"], "ans": "(a + b + 1)(a − b − 1)" },
+        { "q": "Factorise 27x³ − 64y³.", "marks": 3, "paper": "1", "scheme": ["B1: write as (3x)³ − (4y)³", "M1: use a³ − b³ = (a − b)(a² + ab + b²)", "A1: (3x − 4y)(9x² + 12xy + 16y²)"], "ans": "(3x − 4y)(9x² + 12xy + 16y²)" },
+        { "q": "Factorise (x² + 3x)² − 2(x² + 3x) − 8 completely.", "marks": 4, "paper": "1", "scheme": ["M1: put y = x² + 3x: y² − 2y − 8", "A1: (y − 4)(y + 2)", "M1: substitute back: (x² + 3x − 4)(x² + 3x + 2)", "A1: (x + 4)(x − 1)(x + 1)(x + 2)"], "ans": "(x + 4)(x − 1)(x + 1)(x + 2)" },
+        { "q": "Factorise x³ + x² − x − 1 completely.", "marks": 3, "paper": "1", "scheme": ["M1: group as x²(x + 1) − 1(x + 1)", "A1: (x + 1)(x² − 1)", "A1: (x + 1)²(x − 1)"], "ans": "(x + 1)²(x − 1)" }
+      ]
+    },
+    {
+      "id": "9.5", "stage": "9", "name": "Simultaneous linear equations",
+      "questions": [
+        { "q": "The solution of x + y = 10 and x − y = 2 is:", "o": ["x = 4, y = 6", "x = 6, y = 4", "x = 5, y = 5", "x = 8, y = 2"], "a": 1, "why": "Adding gives 2x = 12, so x = 6 and y = 4." },
+        { "q": "The pair 2x + 3y = 12 and 4x + 6y = 24 has:", "o": ["Exactly one solution", "No solution", "Exactly two solutions", "Infinitely many solutions"], "a": 3, "why": "The second equation is twice the first, so both describe the same line and every point on it is a solution." },
+        { "q": "If 3x − y = 7 and x + y = 5, then x equals:", "o": ["3", "2", "4", "1"], "a": 0, "why": "Adding gives 4x = 12, so x = 3 (and y = 2)." },
+        { "q": "The sum of two numbers is 50 and their difference is 14. The larger number is:", "o": ["36", "18", "32", "25"], "a": 2, "why": "Larger = (50 + 14) ÷ 2 = 32; smaller = 18." },
+        { "q": "The solution of 2x + y = 7 and x + 2y = 8 is:", "o": ["x = 3, y = 1", "x = 1, y = 5", "x = 2, y = 3", "x = 3, y = 2"], "a": 2, "why": "Adding: 3x + 3y = 15, so x + y = 5; subtracting: x − y = −1. Hence x = 2, y = 3." }
+      ],
+      "long": [
+        { "q": "Solve by substitution: 3x + 2y = 11 and 2x − y = 5.", "marks": 4, "paper": "1", "scheme": ["M1: from the second equation, y = 2x − 5", "M1: 3x + 2(2x − 5) = 11", "A1: 7x = 21, x = 3", "A1: y = 1"], "ans": "x = 3, y = 1" },
+        { "q": "Solve by cross-multiplication: 2x + 3y − 8 = 0 and 3x − y − 1 = 0.", "marks": 3, "paper": "1", "scheme": ["M1: x/(b₁c₂ − b₂c₁) = y/(c₁a₂ − c₂a₁) = 1/(a₁b₂ − a₂b₁)", "A1: x/(−3 − 8) = y/(−24 + 2) = 1/(−2 − 9), i.e. x/(−11) = y/(−22) = 1/(−11)", "A1: x = 1, y = 2"], "ans": "x = 1, y = 2" },
+        { "q": "If 1 is added to both the numerator and the denominator of a fraction, it becomes 4/5. If 5 is subtracted from both, it becomes 1/2. Find the fraction.", "marks": 4, "paper": "1", "scheme": ["B1: (x + 1)/(y + 1) = 4/5 gives 5x − 4y = −1", "B1: (x − 5)/(y − 5) = 1/2 gives 2x − y = 5", "M1: substitute y = 2x − 5: 5x − 8x + 20 = −1", "A1: x = 7, y = 9; the fraction is 7/9"], "ans": "7/9" },
+        { "q": "Solve: 2/x + 3/y = 13 and 5/x − 4/y = −2.", "marks": 4, "paper": "1", "scheme": ["M1: put a = 1/x and b = 1/y: 2a + 3b = 13 and 5a − 4b = −2", "M1: multiply by 4 and 3 and add: 8a + 15a = 52 − 6, so 23a = 46", "A1: a = 2, b = 3", "A1: x = 1/2, y = 1/3"], "ans": "x = 1/2, y = 1/3" },
+        { "q": "A man is three times as old as his son. Ten years ago he was five times as old as his son. Find their present ages.", "marks": 3, "paper": "1", "scheme": ["B1: let son = y, man = x: x = 3y and x − 10 = 5(y − 10)", "M1: 3y − 10 = 5y − 50", "A1: y = 20; son is 20 years and man is 60 years"], "ans": "son 20 years, man 60 years" }
+      ]
+    },
+    {
+      "id": "9.6", "stage": "9", "name": "Indices",
+      "questions": [
+        { "q": "The value of 8^(2/3) is:", "o": ["2", "4", "16/3", "64"], "a": 1, "why": "8^(2/3) = (∛8)² = 2² = 4." },
+        { "q": "The value of 27^(−1/3) is:", "o": ["−3", "3", "−1/3", "1/3"], "a": 3, "why": "27^(−1/3) = 1/∛27 = 1/3. A negative index gives a reciprocal, not a negative number." },
+        { "q": "For any a ≠ 0, a⁰ equals:", "o": ["0", "a", "1", "undefined"], "a": 2, "why": "aⁿ ÷ aⁿ = a⁰ = 1." },
+        { "q": "If 2ˣ = 32, then x equals:", "o": ["5", "4", "6", "16"], "a": 0, "why": "32 = 2⁵, so x = 5." },
+        { "q": "(x³)² × x⁻⁴ simplifies to:", "o": ["x", "x²", "x³", "x¹⁰"], "a": 1, "why": "(x³)² = x⁶ and x⁶ × x⁻⁴ = x²." }
+      ],
+      "long": [
+        { "q": "Evaluate (81/16)^(−3/4).", "marks": 3, "paper": "1", "scheme": ["M1: (81/16)^(−3/4) = (16/81)^(3/4)", "M1: = ((2/3)⁴)^(3/4)", "A1: = (2/3)³ = 8/27"], "ans": "8/27" },
+        { "q": "Solve: 3^(x + 1) = 9^(x − 2).", "marks": 3, "paper": "1", "scheme": ["M1: write 9 as 3²: 3^(x + 1) = 3^(2x − 4)", "M1: equate the powers: x + 1 = 2x − 4", "A1: x = 5"], "ans": "x = 5" },
+        { "q": "Simplify (2ⁿ⁺³ − 2 × 2ⁿ) ÷ 2ⁿ⁺².", "marks": 3, "paper": "1", "scheme": ["M1: numerator = 2ⁿ(2³ − 2) = 6 × 2ⁿ", "M1: denominator = 2ⁿ × 2² = 4 × 2ⁿ", "A1: = 6/4 = 3/2"], "ans": "3/2" },
+        { "q": "Solve: 2^(2x) − 5 × 2ˣ + 4 = 0.", "marks": 4, "paper": "1", "scheme": ["M1: put y = 2ˣ: y² − 5y + 4 = 0", "A1: (y − 1)(y − 4) = 0", "A1: 2ˣ = 1 gives x = 0", "A1: 2ˣ = 4 gives x = 2"], "ans": "x = 0 or x = 2" },
+        { "q": "Prove that (xᵃ/xᵇ)^(a + b) × (xᵇ/xᶜ)^(b + c) × (xᶜ/xᵃ)^(c + a) = 1.", "marks": 3, "paper": "1", "scheme": ["M1: the expression = x^((a − b)(a + b)) × x^((b − c)(b + c)) × x^((c − a)(c + a))", "M1: total power = (a² − b²) + (b² − c²) + (c² − a²)", "A1: = 0, so the expression = x⁰ = 1"] }
+      ]
+    },
+    {
+      "id": "9.7", "stage": "9", "name": "Logarithms",
+      "questions": [
+        { "q": "The value of log₂ 64 is:", "o": ["6", "8", "32", "5"], "a": 0, "why": "2⁶ = 64, so log₂ 64 = 6." },
+        { "q": "For any valid base, log 1 equals:", "o": ["1", "10", "0", "undefined"], "a": 2, "why": "Any base raised to the power 0 gives 1, so log 1 = 0." },
+        { "q": "The value of log₁₀ 0.01 is:", "o": ["2", "−2", "0.2", "−1/2"], "a": 1, "why": "0.01 = 10⁻², so log₁₀ 0.01 = −2." },
+        { "q": "log a + log b equals:", "o": ["log(a + b)", "log a × log b", "log(a/b)", "log(ab)"], "a": 3, "why": "The product law: the log of a product is the sum of the logs." },
+        { "q": "If log₁₀ x = 3, then x equals:", "o": ["30", "300", "1000", "103"], "a": 2, "why": "log₁₀ x = 3 means x = 10³ = 1000." }
+      ],
+      "long": [
+        { "q": "Express log(75/16) − 2 log(5/9) + log(32/243) as the logarithm of a single number and simplify.", "marks": 3, "paper": "1", "scheme": ["M1: 2 log(5/9) = log(25/81)", "M1: expression = log(75/16 × 81/25 × 32/243)", "A1: = log(3 × 1/3 × 2) = log 2"], "ans": "log 2" },
+        { "q": "Given log 2 = 0.3010 and log 3 = 0.4771, find log 12 and log 1.5.", "marks": 4, "paper": "1", "scheme": ["M1: log 12 = 2 log 2 + log 3", "A1: = 0.6020 + 0.4771 = 1.0791", "M1: log 1.5 = log 3 − log 2", "A1: = 0.1761"], "ans": "1.0791; 0.1761" },
+        { "q": "Solve: log(x + 3) + log(x − 3) = log 16.", "marks": 3, "paper": "1", "scheme": ["M1: log[(x + 3)(x − 3)] = log 16", "A1: x² − 9 = 16, so x² = 25", "A1: x = 5 (x = −5 is rejected because log of a negative number is not defined)"], "ans": "x = 5" },
+        { "q": "(a) Write 2⁵ = 32 in logarithmic form. (b) Write log₃ 81 = 4 in exponential form. (c) Find x if logₓ 125 = 3.", "marks": 3, "paper": "1", "scheme": ["B1: (a) log₂ 32 = 5", "B1: (b) 3⁴ = 81", "B1: (c) x³ = 125, so x = 5"], "ans": "log₂ 32 = 5; 3⁴ = 81; x = 5" },
+        { "q": "If a² + b² = 7ab, prove that log((a + b)/3) = ½(log a + log b).", "marks": 4, "paper": "1", "scheme": ["M1: add 2ab to both sides: (a + b)² = 9ab", "A1: ((a + b)/3)² = ab", "M1: take logs: 2 log((a + b)/3) = log a + log b", "A1: so log((a + b)/3) = ½(log a + log b)"] }
+      ]
+    },
+    {
+      "id": "9.8", "stage": "9", "name": "Triangles: congruence, isosceles triangles and inequalities",
+      "questions": [
+        { "q": "Which of these is NOT a test for congruence of triangles?", "o": ["SSS", "AAA", "SAS", "RHS"], "a": 1, "why": "Triangles with equal angles may be different sizes, so AAA proves only similarity." },
+        { "q": "In triangle ABC, AB = AC and ∠B = 65°. Then ∠A equals:", "o": ["65°", "115°", "50°", "25°"], "a": 2, "why": "∠C = ∠B = 65° (angles opposite equal sides), so ∠A = 180° − 130° = 50°." },
+        { "q": "An exterior angle of a triangle is equal to:", "o": ["The sum of the two interior opposite angles", "The difference of the two interior opposite angles", "180°", "The adjacent interior angle"], "a": 0, "why": "The exterior angle and the adjacent interior angle add to 180°, as do all three interior angles." },
+        { "q": "Each angle of an equilateral triangle measures:", "o": ["45°", "90°", "30°", "60°"], "a": 3, "why": "All three angles are equal and add to 180°." },
+        { "q": "In triangle PQR, ∠P = 40° and ∠Q = 70°. Which two sides are equal?", "o": ["PQ = QR", "QR = PR", "PQ = PR", "All three sides"], "a": 2, "why": "∠R = 70° = ∠Q. The side opposite ∠Q is PR and the side opposite ∠R is PQ, so PQ = PR." }
+      ],
+      "long": [
+        { "q": "In triangle ABC, AB = AC and D is the mid-point of BC. Prove that triangle ABD ≅ triangle ACD and hence that AD is perpendicular to BC.", "marks": 4, "paper": "1", "scheme": ["B1: AB = AC (given), BD = DC (D is the mid-point) and AD is common", "B1: so triangle ABD ≅ triangle ACD (SSS)", "M1: ∠ADB = ∠ADC (corresponding parts) and they form a linear pair, adding to 180°", "A1: so each is 90° and AD ⊥ BC"] },
+        { "q": "The vertical angle of an isosceles triangle is 100° less than twice each base angle. Find all the angles.", "marks": 3, "paper": "1", "scheme": ["M1: base angle b: b + b + (2b − 100) = 180", "A1: 4b = 280, b = 70°", "A1: vertical angle = 40°; the angles are 70°, 70°, 40°"], "ans": "70°, 70°, 40°" },
+        { "q": "Line segments AB and CD bisect each other at O. Prove that AC = BD.", "marks": 4, "paper": "1", "scheme": ["B1: AO = OB and CO = OD (given)", "B1: ∠AOC = ∠BOD (vertically opposite angles)", "M1: triangle AOC ≅ triangle BOD (SAS)", "A1: so AC = BD (corresponding parts of congruent triangles)"] },
+        { "q": "In triangle ABC, ∠B = 2∠C and the exterior angle at A is 120°. Find all three angles of the triangle.", "marks": 3, "paper": "1", "scheme": ["M1: exterior angle at A = ∠B + ∠C, so 2∠C + ∠C = 120°", "A1: ∠C = 40° and ∠B = 80°", "A1: ∠BAC = 180° − 120° = 60°"], "ans": "∠A = 60°, ∠B = 80°, ∠C = 40°" },
+        { "q": "In triangle ABC, AB = 6 cm, BC = 8 cm and CA = 5 cm. Name the largest and the smallest angles, giving a reason.", "marks": 2, "paper": "1", "scheme": ["B1: largest angle is ∠A, because it is opposite the longest side BC", "B1: smallest angle is ∠B, because it is opposite the shortest side CA"], "ans": "largest ∠A, smallest ∠B" }
+      ]
+    },
+    {
+      "id": "9.9", "stage": "9", "name": "Mid-point and intercept theorems",
+      "questions": [
+        { "q": "The line joining the mid-points of two sides of a triangle is parallel to the third side and equal to:", "o": ["Half of it", "Twice it", "The third side itself", "One-third of it"], "a": 0, "why": "This is the mid-point theorem." },
+        { "q": "In triangle ABC, D and E are the mid-points of AB and AC, and BC = 12 cm. Then DE equals:", "o": ["12 cm", "24 cm", "6 cm", "4 cm"], "a": 2, "why": "By the mid-point theorem DE = ½BC = 6 cm." },
+        { "q": "A triangle has perimeter 30 cm. The triangle formed by joining the mid-points of its sides has perimeter:", "o": ["10 cm", "15 cm", "30 cm", "60 cm"], "a": 1, "why": "Each side of the new triangle is half of a side of the original, so its perimeter is half: 15 cm." },
+        { "q": "In triangle PQR, M is the mid-point of PQ and the line through M parallel to QR meets PR at N. Then:", "o": ["MN = QR", "PN = 2NR", "MN ⊥ PR", "N is the mid-point of PR"], "a": 3, "why": "By the converse of the mid-point theorem, a line through the mid-point of one side parallel to another side bisects the third side." },
+        { "q": "The quadrilateral formed by joining, in order, the mid-points of the sides of any quadrilateral is always a:", "o": ["Parallelogram", "Square", "Kite", "Rhombus"], "a": 0, "why": "Each pair of opposite sides is parallel to, and half of, the same diagonal." }
+      ],
+      "long": [
+        { "q": "D, E and F are the mid-points of sides AB, BC and CA of triangle ABC, in which AB = 8 cm, BC = 10 cm and CA = 6 cm. Find the perimeter of triangle DEF.", "marks": 3, "paper": "1", "scheme": ["M1: each side of triangle DEF is half the side of triangle ABC parallel to it (mid-point theorem)", "A1: DE = ½CA = 3 cm, EF = ½AB = 4 cm, FD = ½BC = 5 cm", "A1: perimeter = 12 cm"], "ans": "12 cm" },
+        { "q": "P, Q, R and S are the mid-points of sides AB, BC, CD and DA of quadrilateral ABCD. Prove that PQRS is a parallelogram.", "marks": 4, "paper": "1", "scheme": ["B1: join the diagonal AC", "M1: in triangle ABC, PQ ∥ AC and PQ = ½AC (mid-point theorem)", "M1: in triangle ADC, SR ∥ AC and SR = ½AC", "A1: so PQ ∥ SR and PQ = SR; a pair of opposite sides is equal and parallel, so PQRS is a parallelogram"] },
+        { "q": "Three parallel lines are cut by a transversal at A, B and C so that AB = BC = 4 cm. Another transversal cuts the same lines at D, E and F with DE = 5 cm. State the theorem you use, and find EF and DF.", "marks": 3, "paper": "1", "scheme": ["B1: equal intercept theorem: if three or more parallel lines make equal intercepts on one transversal, they make equal intercepts on any other transversal", "B1: EF = DE = 5 cm", "B1: DF = 10 cm"], "ans": "EF = 5 cm, DF = 10 cm" },
+        { "q": "ABCD is a trapezium with AB ∥ DC. E is the mid-point of AD, and a line through E parallel to AB meets BC at F. Prove that F is the mid-point of BC and that EF = ½(AB + DC).", "marks": 4, "paper": "1", "scheme": ["B1: join AC, meeting EF at G", "M1: in triangle ADC, E is the mid-point of AD and EG ∥ DC, so G is the mid-point of AC and EG = ½DC", "M1: in triangle CAB, G is the mid-point of AC and GF ∥ AB, so F is the mid-point of BC and GF = ½AB", "A1: EF = EG + GF = ½(AB + DC)"] },
+        { "q": "In triangle ABC, AD is a median and E is the mid-point of AD. BE produced meets AC at F. Prove that AF = ⅓AC.", "marks": 4, "paper": "1", "scheme": ["B1: through D draw DG parallel to BF, meeting AC at G", "M1: in triangle BCF, D is the mid-point of BC and DG ∥ BF, so G is the mid-point of FC: FG = GC", "M1: in triangle ADG, E is the mid-point of AD and EF ∥ DG, so F is the mid-point of AG: AF = FG", "A1: AF = FG = GC, so AF = ⅓AC"] }
+      ]
+    },
+    {
+      "id": "9.10", "stage": "9", "name": "Pythagoras theorem",
+      "questions": [
+        { "q": "Which set of numbers is a Pythagorean triplet?", "o": ["4, 5, 6", "3, 5, 7", "5, 12, 13", "6, 8, 11"], "a": 2, "why": "5² + 12² = 25 + 144 = 169 = 13²." },
+        { "q": "A 13 m ladder reaches a window 12 m above the ground. How far is the foot of the ladder from the wall?", "o": ["5 m", "25 m", "1 m", "√313 m"], "a": 0, "why": "Distance = √(13² − 12²) = √25 = 5 m." },
+        { "q": "The diagonal of a rectangle 8 cm long and 6 cm wide is:", "o": ["14 cm", "10 cm", "12 cm", "48 cm"], "a": 1, "why": "√(8² + 6²) = √100 = 10 cm." },
+        { "q": "A triangle has sides 7 cm, 24 cm and 25 cm. It is:", "o": ["Acute-angled", "Obtuse-angled", "Equilateral", "Right-angled"], "a": 3, "why": "7² + 24² = 49 + 576 = 625 = 25², so by the converse of Pythagoras the angle opposite 25 cm is 90°." },
+        { "q": "In triangle ABC, ∠B = 90°, AB = 9 cm and AC = 15 cm. BC equals:", "o": ["6 cm", "18 cm", "12 cm", "24 cm"], "a": 2, "why": "BC = √(15² − 9²) = √144 = 12 cm." }
+      ],
+      "long": [
+        { "q": "A man walks 15 m due west and then 8 m due north. How far is he from his starting point?", "marks": 3, "paper": "1", "scheme": ["M1: distance² = 15² + 8²", "A1: = 225 + 64 = 289", "A1: distance = 17 m"], "ans": "17 m" },
+        { "q": "In triangle ABC, AD is perpendicular to BC. Prove that AB² − AC² = BD² − CD².", "marks": 3, "paper": "1", "scheme": ["M1: in right triangle ABD, AB² = AD² + BD²", "M1: in right triangle ACD, AC² = AD² + CD²", "A1: subtracting, AB² − AC² = BD² − CD²"] },
+        { "q": "The diagonals of a rhombus are 24 cm and 10 cm. Find the length of a side and the perimeter of the rhombus.", "marks": 4, "paper": "1", "scheme": ["B1: the diagonals bisect each other at right angles, giving halves of 12 cm and 5 cm", "M1: side² = 12² + 5²", "A1: side = 13 cm", "A1: perimeter = 52 cm"], "ans": "13 cm; 52 cm" },
+        { "q": "Prove that the sum of the squares of the sides of a rhombus is equal to the sum of the squares of its diagonals.", "marks": 4, "paper": "1", "scheme": ["B1: in rhombus ABCD the diagonals AC and BD bisect each other at right angles at O", "M1: in right triangle AOB, AB² = (AC/2)² + (BD/2)²", "A1: so 4AB² = AC² + BD²", "A1: all four sides are equal, so AB² + BC² + CD² + DA² = 4AB² = AC² + BD²"] },
+        { "q": "In triangle PQR, ∠Q = 90° and S is any point on QR. Prove that PS² + QR² = PR² + QS².", "marks": 3, "paper": "1", "scheme": ["M1: in right triangle PQS, PS² = PQ² + QS²", "M1: in right triangle PQR, PR² = PQ² + QR²", "A1: so PS² + QR² = PQ² + QS² + QR² = PR² + QS²"] }
+      ]
+    },
+    {
+      "id": "9.11", "stage": "9", "name": "Rectilinear figures and theorems on area",
+      "questions": [
+        { "q": "The sum of the interior angles of a hexagon is:", "o": ["540°", "720°", "900°", "360°"], "a": 1, "why": "Sum = (n − 2) × 180° = 4 × 180° = 720°." },
+        { "q": "Each exterior angle of a regular polygon is 30°. The number of sides is:", "o": ["6", "10", "15", "12"], "a": 3, "why": "Exterior angles of any polygon add to 360°, so n = 360 ÷ 30 = 12." },
+        { "q": "The diagonals of a rectangle are:", "o": ["Equal and bisect each other", "Perpendicular to each other", "Bisectors of the angles", "Unequal"], "a": 0, "why": "A rectangle is a parallelogram (diagonals bisect each other) with equal diagonals; they are perpendicular only in a square." },
+        { "q": "A triangle and a parallelogram stand on the same base and between the same parallels. The area of the triangle is:", "o": ["Equal to that of the parallelogram", "Twice that of the parallelogram", "Half that of the parallelogram", "A quarter of that of the parallelogram"], "a": 2, "why": "Both have the same base and height; the triangle's area is ½ × base × height." },
+        { "q": "In parallelogram ABCD, ∠A = 70°. Then ∠B equals:", "o": ["70°", "110°", "20°", "140°"], "a": 1, "why": "Adjacent angles of a parallelogram are supplementary: 180° − 70° = 110°." }
+      ],
+      "long": [
+        { "q": "The interior angle of a regular polygon is four times its exterior angle. Find the number of sides.", "marks": 3, "paper": "1", "scheme": ["M1: exterior x, interior 4x: x + 4x = 180°", "A1: exterior angle = 36°", "A1: n = 360 ÷ 36 = 10"], "ans": "10" },
+        { "q": "Prove that the diagonals of a parallelogram bisect each other.", "marks": 4, "paper": "1", "scheme": ["B1: let the diagonals AC and BD of parallelogram ABCD meet at O", "B1: AB = CD (opposite sides), and since AB ∥ DC, ∠OAB = ∠OCD and ∠OBA = ∠ODC (alternate angles)", "M1: triangle AOB ≅ triangle COD (ASA)", "A1: so OA = OC and OB = OD; the diagonals bisect each other"] },
+        { "q": "ABCD is a parallelogram of area 60 cm² and P is any point on side DC. Find the area of triangle APB, giving a reason.", "marks": 2, "paper": "1", "scheme": ["B1: triangle APB and parallelogram ABCD are on the same base AB and between the same parallels AB and DC", "B1: area of triangle APB = ½ × 60 = 30 cm²"], "ans": "30 cm²" },
+        { "q": "Prove that a median of a triangle divides it into two triangles of equal area.", "marks": 3, "paper": "1", "scheme": ["B1: let AD be a median of triangle ABC; draw AL ⊥ BC, with AL = h", "M1: area of triangle ABD = ½ × BD × h and area of triangle ADC = ½ × DC × h", "A1: BD = DC, so the two areas are equal"] },
+        { "q": "The angles of a pentagon are x°, (x + 20)°, (x + 40)°, (x + 60)° and (x + 80)°. Find x and the largest angle.", "marks": 3, "paper": "1", "scheme": ["B1: the angles of a pentagon add to (5 − 2) × 180° = 540°", "M1: 5x + 200 = 540", "A1: x = 68; largest angle = 148°"], "ans": "x = 68; 148°" }
+      ]
+    },
+    {
+      "id": "9.12", "stage": "9", "name": "Circles: chords and arcs",
+      "questions": [
+        { "q": "A chord 16 cm long is 6 cm from the centre of a circle. The radius is:", "o": ["10 cm", "8 cm", "12 cm", "14 cm"], "a": 0, "why": "The perpendicular from the centre bisects the chord: r = √(8² + 6²) = 10 cm." },
+        { "q": "Equal chords of a circle are:", "o": ["Perpendicular to each other", "Equidistant from the centre", "Always parallel", "Always diameters"], "a": 1, "why": "Equal chords lie at equal distances from the centre, and chords equidistant from the centre are equal." },
+        { "q": "A circle has radius 13 cm and a chord of length 24 cm. The distance of the chord from the centre is:", "o": ["12 cm", "7 cm", "5 cm", "11 cm"], "a": 2, "why": "Half-chord = 12 cm; distance = √(13² − 12²) = 5 cm." },
+        { "q": "How many circles can pass through three points that are not in a straight line?", "o": ["None", "Two", "Infinitely many", "Exactly one"], "a": 3, "why": "The perpendicular bisectors of the joining segments meet at a single point, the only possible centre." },
+        { "q": "Chord AB of a circle subtends 70° at the centre. An equal chord CD of the same circle subtends at the centre:", "o": ["35°", "140°", "70°", "110°"], "a": 2, "why": "Equal chords of a circle subtend equal angles at the centre." }
+      ],
+      "long": [
+        { "q": "Two parallel chords of a circle of radius 13 cm are 10 cm and 24 cm long and lie on opposite sides of the centre. Find the distance between them.", "marks": 4, "paper": "1", "scheme": ["M1: the perpendicular from the centre bisects each chord", "A1: distance of the 10 cm chord = √(13² − 5²) = 12 cm", "A1: distance of the 24 cm chord = √(13² − 12²) = 5 cm", "A1: distance between the chords = 12 + 5 = 17 cm"], "ans": "17 cm" },
+        { "q": "Prove that the perpendicular drawn from the centre of a circle to a chord bisects the chord.", "marks": 4, "paper": "1", "scheme": ["B1: let O be the centre and OM ⊥ chord AB; join OA and OB", "B1: in triangles OMA and OMB: OA = OB (radii), OM is common and ∠OMA = ∠OMB = 90°", "M1: triangle OMA ≅ triangle OMB (RHS)", "A1: so AM = MB"] },
+        { "q": "Find the length of a chord that is 8 cm from the centre of a circle of radius 17 cm.", "marks": 3, "paper": "1", "scheme": ["M1: (half-chord)² = 17² − 8²", "A1: half-chord = √225 = 15 cm", "A1: chord = 30 cm"], "ans": "30 cm" },
+        { "q": "AB and CD are equal chords of a circle with centre O. OM ⊥ AB and ON ⊥ CD. If OM = 4 cm and AB = 6 cm, find ON and the radius of the circle.", "marks": 3, "paper": "1", "scheme": ["B1: equal chords are equidistant from the centre, so ON = 4 cm", "M1: r² = 3² + 4²", "A1: r = 5 cm"], "ans": "ON = 4 cm; r = 5 cm" },
+        { "q": "Explain why two different circles cannot meet in more than two points.", "marks": 2, "paper": "1", "scheme": ["B1: if they met in three points, those points could not lie in a straight line, since a line meets a circle in at most two points", "B1: only one circle passes through three non-collinear points, so the two circles would be the same circle"] }
+      ]
+    },
+    {
+      "id": "9.13", "stage": "9", "name": "Statistics",
+      "questions": [
+        { "q": "The mean of 4, 6, 8, 10 and 12 is:", "o": ["6", "8", "10", "40"], "a": 1, "why": "Sum = 40 and there are 5 values, so the mean is 8." },
+        { "q": "The median of 3, 7, 2, 9, 5 and 8 is:", "o": ["5", "7", "6.5", "6"], "a": 3, "why": "In order: 2, 3, 5, 7, 8, 9. With six values the median is the mean of the 3rd and 4th: (5 + 7) ÷ 2 = 6." },
+        { "q": "The class mark of the class 20–30 is:", "o": ["25", "10", "20", "30"], "a": 0, "why": "Class mark = (lower limit + upper limit) ÷ 2 = 25." },
+        { "q": "A frequency polygon can be drawn from a histogram by joining:", "o": ["The corners of each bar", "The bases of the bars", "The mid-points of the tops of the bars", "The upper class limits only"], "a": 2, "why": "The mid-points of the tops are the points (class mark, frequency)." },
+        { "q": "The mean of 5 numbers is 20. If the number 30 is removed, the mean of the remaining four is:", "o": ["18", "17.5", "20", "15"], "a": 1, "why": "Total = 100; without 30 the total is 70, and 70 ÷ 4 = 17.5." }
+      ],
+      "long": [
+        { "q": "Find the mean of the distribution: x = 10, 20, 30, 40, 50 with frequencies f = 3, 5, 8, 3, 1.", "marks": 3, "paper": "1", "scheme": ["M1: Σfx = 30 + 100 + 240 + 120 + 50 = 540", "B1: Σf = 20", "A1: mean = 540 ÷ 20 = 27"], "ans": "27" },
+        { "q": "The marks of 10 students are 45, 62, 38, 71, 55, 49, 62, 80, 58 and 66. Find the median and the mode.", "marks": 3, "paper": "1", "scheme": ["M1: arrange in order: 38, 45, 49, 55, 58, 62, 62, 66, 71, 80", "A1: median = (5th + 6th) ÷ 2 = (58 + 62) ÷ 2 = 60", "B1: mode = 62 (it occurs twice)"], "ans": "median 60, mode 62" },
+        { "q": "The classes 0–10, 10–20, 20–30, 30–40 and 40–50 have frequencies 5, 8, 12, 7 and 3. Describe in words how to draw a histogram and a frequency polygon on the same axes.", "marks": 4, "paper": "1", "scheme": ["B1: mark class intervals on the x-axis and frequency on the y-axis with a suitable scale", "B1: draw adjacent rectangles of width 10 and heights 5, 8, 12, 7 and 3", "B1: mark the mid-points of the tops of the rectangles: (5, 5), (15, 8), (25, 12), (35, 7), (45, 3)", "B1: join them with straight lines, closing the polygon at the mid-points of the empty classes on either side, (−5, 0) and (55, 0)"] },
+        { "q": "The mean of 6, 8, x, 10 and 12 is 9. Find x.", "marks": 2, "paper": "1", "scheme": ["M1: (36 + x) ÷ 5 = 9", "A1: x = 9"], "ans": "9" },
+        { "q": "The mean of 30 observations was found to be 18. Later it was found that one observation, 32, had been copied as 23. Find the correct mean.", "marks": 3, "paper": "1", "scheme": ["M1: incorrect total = 30 × 18 = 540", "M1: correct total = 540 − 23 + 32 = 549", "A1: correct mean = 549 ÷ 30 = 18.3"], "ans": "18.3" }
+      ]
+    },
+    {
+      "id": "9.14", "stage": "9", "name": "Mensuration",
+      "questions": [
+        { "q": "The area of a triangle with sides 3 cm, 4 cm and 5 cm is:", "o": ["6 cm²", "12 cm²", "7.5 cm²", "10 cm²"], "a": 0, "why": "It is right-angled (3² + 4² = 5²), so area = ½ × 3 × 4 = 6 cm²." },
+        { "q": "The volume of a cube of edge 5 cm is:", "o": ["25 cm³", "150 cm³", "125 cm³", "75 cm³"], "a": 2, "why": "Volume = a³ = 125 cm³; 150 cm² is its total surface area." },
+        { "q": "The circumference of a circle of radius 7 cm (π = 22/7) is:", "o": ["22 cm", "44 cm", "154 cm", "49 cm"], "a": 1, "why": "C = 2πr = 2 × 22/7 × 7 = 44 cm; 154 cm² is its area." },
+        { "q": "The total surface area of a cuboid 5 cm × 4 cm × 3 cm is:", "o": ["60 cm²", "47 cm²", "120 cm²", "94 cm²"], "a": 3, "why": "2(lb + bh + hl) = 2(20 + 12 + 15) = 94 cm²." },
+        { "q": "The area of an equilateral triangle of side 4 cm is:", "o": ["16√3 cm²", "4√3 cm²", "8√3 cm²", "2√3 cm²"], "a": 1, "why": "Area = (√3/4) × a² = (√3/4) × 16 = 4√3 cm²." }
+      ],
+      "long": [
+        { "q": "Find the area of a triangle with sides 13 cm, 14 cm and 15 cm.", "marks": 3, "paper": "1", "scheme": ["B1: s = (13 + 14 + 15) ÷ 2 = 21 cm", "M1: area = √(21 × 8 × 7 × 6)", "A1: = √7056 = 84 cm²"], "ans": "84 cm²" },
+        { "q": "A room is 8 m long, 6 m wide and 4 m high. Find the cost of painting its four walls and ceiling at ₹40 per m², ignoring doors and windows.", "marks": 4, "paper": "1", "scheme": ["M1: area of four walls = 2(l + b)h = 2(8 + 6) × 4 = 112 m²", "B1: area of ceiling = 8 × 6 = 48 m²", "A1: total area = 160 m²", "A1: cost = 160 × 40 = ₹6,400"], "ans": "₹6,400" },
+        { "q": "A circular park of radius 35 m has a path 7 m wide running round it on the outside. Find the area of the path (π = 22/7).", "marks": 3, "paper": "1", "scheme": ["B1: outer radius = 35 + 7 = 42 m", "M1: area of path = π(42² − 35²)", "A1: = 22/7 × 539 = 1694 m²"], "ans": "1694 m²" },
+        { "q": "A wheel has a diameter of 70 cm. How many complete revolutions does it make in covering 1.1 km? (π = 22/7)", "marks": 3, "paper": "1", "scheme": ["M1: circumference = π × 70 = 220 cm", "A1: = 2.2 m", "A1: revolutions = 1100 ÷ 2.2 = 500"], "ans": "500" },
+        { "q": "A cuboidal water tank measures 2.5 m × 1.6 m × 1.2 m. Find its capacity in litres. How long will a pipe delivering 40 litres per minute take to fill it?", "marks": 3, "paper": "1", "scheme": ["M1: volume = 2.5 × 1.6 × 1.2", "A1: = 4.8 m³ = 4800 litres", "A1: time = 4800 ÷ 40 = 120 minutes (2 hours)"], "ans": "4800 litres; 2 hours" }
+      ]
+    },
+    {
+      "id": "9.15", "stage": "9", "name": "Trigonometry",
+      "questions": [
+        { "q": "If sin θ = 3/5 and θ is acute, then cos θ equals:", "o": ["3/4", "4/5", "5/4", "5/3"], "a": 1, "why": "With opposite 3 and hypotenuse 5, the adjacent side is 4, so cos θ = 4/5." },
+        { "q": "The value of tan 45° is:", "o": ["0", "√3", "1", "1/√3"], "a": 2, "why": "In a right isosceles triangle the opposite and adjacent sides are equal." },
+        { "q": "sin 30° + cos 60° equals:", "o": ["1", "√3", "½", "0"], "a": 0, "why": "sin 30° = ½ and cos 60° = ½." },
+        { "q": "Which ratio equals 1/cos θ?", "o": ["sin θ", "cosec θ", "cot θ", "sec θ"], "a": 3, "why": "sec θ is the reciprocal of cos θ; cosec θ is the reciprocal of sin θ." },
+        { "q": "tan 60° equals:", "o": ["1/√3", "√3", "√3/2", "1"], "a": 1, "why": "tan 60° = sin 60° ÷ cos 60° = (√3/2) ÷ (1/2) = √3." }
+      ],
+      "long": [
+        { "q": "If tan A = 5/12 and A is acute, find sin A and cos A.", "marks": 3, "paper": "1", "scheme": ["M1: hypotenuse = √(5² + 12²) = 13", "A1: sin A = 5/13", "A1: cos A = 12/13"], "ans": "sin A = 5/13, cos A = 12/13" },
+        { "q": "Evaluate: 2 sin² 45° + 3 tan² 30° − cos 0°.", "marks": 3, "paper": "1", "scheme": ["B1: sin 45° = 1/√2, so 2 sin² 45° = 1", "B1: tan 30° = 1/√3, so 3 tan² 30° = 1", "B1: cos 0° = 1, so the value is 1 + 1 − 1 = 1"], "ans": "1" },
+        { "q": "In triangle ABC, ∠B = 90°, ∠C = 30° and AC = 20 cm. Find AB and BC.", "marks": 4, "paper": "1", "scheme": ["M1: AB = AC sin 30° = 20 × ½", "A1: AB = 10 cm", "M1: BC = AC cos 30° = 20 × √3/2", "A1: BC = 10√3 ≈ 17.32 cm"], "ans": "AB = 10 cm, BC = 10√3 ≈ 17.32 cm" },
+        { "q": "Solve for x, given that 3x is acute: 2 cos 3x − 1 = 0.", "marks": 3, "paper": "1", "scheme": ["M1: cos 3x = ½", "A1: 3x = 60°", "A1: x = 20°"], "ans": "20°" },
+        { "q": "A kite is flying on a straight string 60 m long that makes an angle of 60° with the level ground. Find the height of the kite.", "marks": 3, "paper": "1", "scheme": ["M1: sin 60° = h/60", "A1: h = 60 × √3/2 = 30√3 m", "A1: ≈ 51.96 m"], "ans": "30√3 ≈ 51.96 m" }
+      ]
+    },
+    {
+      "id": "9.16", "stage": "9", "name": "Coordinate geometry",
+      "questions": [
+        { "q": "The distance between the points (0, 0) and (6, 8) is:", "o": ["14", "10", "48", "100"], "a": 1, "why": "√(6² + 8²) = √100 = 10." },
+        { "q": "The point (−3, 4) lies in the:", "o": ["First quadrant", "Third quadrant", "Second quadrant", "Fourth quadrant"], "a": 2, "why": "x is negative and y is positive in the second quadrant." },
+        { "q": "The graph of y = 3 is a straight line:", "o": ["Parallel to the x-axis", "Parallel to the y-axis", "Through the origin", "Along the y-axis"], "a": 0, "why": "Every point on it has y-coordinate 3, whatever x is." },
+        { "q": "Which point lies on the line 2x + y = 7?", "o": ["(1, 4)", "(3, 2)", "(0, 6)", "(2, 3)"], "a": 3, "why": "2 × 2 + 3 = 7. The others give 6, 8 and 6." },
+        { "q": "The distance of the point (5, −12) from the origin is:", "o": ["7", "13", "17", "169"], "a": 1, "why": "√(5² + 12²) = √169 = 13." }
+      ],
+      "long": [
+        { "q": "Find x if the distance between (x, 2) and (3, −2) is 5 units.", "marks": 3, "paper": "1", "scheme": ["M1: (x − 3)² + (2 + 2)² = 25", "A1: (x − 3)² = 9", "A1: x = 6 or x = 0"], "ans": "x = 6 or 0" },
+        { "q": "Show that A(1, 1), B(4, 5) and C(8, 2) are the vertices of a right-angled isosceles triangle.", "marks": 4, "paper": "1", "scheme": ["M1: AB = √(3² + 4²) = 5", "A1: BC = √(4² + 3²) = 5", "A1: AC = √(7² + 1²) = √50", "A1: AB = BC and AB² + BC² = 50 = AC², so the triangle is right-angled (at B) and isosceles"] },
+        { "q": "Describe in words how to solve x + y = 5 and x − y = 1 graphically, and state the solution.", "marks": 4, "paper": "1", "scheme": ["B1: table for x + y = 5, e.g. (0, 5), (2, 3), (5, 0)", "B1: table for x − y = 1, e.g. (1, 0), (3, 2), (0, −1)", "B1: plot both sets of points on the same axes and draw the two straight lines", "B1: the lines meet at (3, 2), so x = 3 and y = 2"], "ans": "x = 3, y = 2" },
+        { "q": "Find the point on the x-axis that is equidistant from (2, −5) and (−2, 9).", "marks": 3, "paper": "1", "scheme": ["B1: let the point be (x, 0)", "M1: (x − 2)² + 25 = (x + 2)² + 81", "A1: −8x = 56, x = −7; the point is (−7, 0)"], "ans": "(−7, 0)" },
+        { "q": "Make a table of values for y = 2x − 1 for x from −1 to 3, describe its graph and state where it cuts the axes.", "marks": 3, "paper": "1", "scheme": ["B1: points (−1, −3), (0, −1), (1, 1), (2, 3), (3, 5)", "B1: the graph is a straight line through these points", "B1: it cuts the y-axis at (0, −1) and the x-axis at (½, 0)"] }
+      ]
+    },
+    {
+      "id": "10.1", "stage": "10", "name": "Goods and Services Tax (GST)",
+      "questions": [
+        { "q": "An article priced at ₹2,000 is sold within the same state with GST at 12%. The CGST charged is:", "o": ["₹240", "₹120", "₹60", "₹12"], "a": 1, "why": "Within a state, GST is split equally: CGST = SGST = 6% of 2000 = ₹120 each." },
+        { "q": "For a sale from a dealer in one state to a buyer in another state, GST is charged as:", "o": ["IGST", "CGST and SGST", "UTGST only", "SGST only"], "a": 0, "why": "Inter-state sales attract Integrated GST (IGST) at the full rate." },
+        { "q": "A shirt is marked ₹1,500. A discount of 20% is given and GST at 5% is charged on the reduced price. The customer pays:", "o": ["₹1,200", "₹1,575", "₹1,260", "₹1,275"], "a": 2, "why": "Price after discount = ₹1,200; GST = 5% of 1200 = ₹60; total ₹1,260. GST is charged on the price after discount." },
+        { "q": "A dealer buys goods for ₹5,000 and sells them for ₹6,000, both within the state, with GST at 18%. The net GST he pays to the government is:", "o": ["₹1,080", "₹900", "₹1,980", "₹180"], "a": 3, "why": "Output GST = ₹1,080 and input tax credit = ₹900, so net GST = ₹180 (that is, 18% of the ₹1,000 value added)." },
+        { "q": "A customer pays ₹2,360 for an article including GST at 18%. The price before GST is:", "o": ["₹1,935.20", "₹2,000", "₹2,342", "₹1,980"], "a": 1, "why": "Price × 1.18 = 2360, so price = ₹2,000. Taking 18% of ₹2,360 off gives the wrong answer." }
+      ],
+      "long": [
+        { "q": "A shopkeeper in Mumbai buys an article for ₹8,000 from a wholesaler in Mumbai and sells it to a customer in Mumbai at a profit of 25%. GST is 12%. Find (a) the CGST and SGST paid by the shopkeeper on his purchase; (b) the amount the customer pays; (c) the CGST and SGST the shopkeeper must pay to the government.", "marks": 5, "paper": "1", "scheme": ["B1: (a) CGST = SGST = 6% of 8000 = ₹480 each", "M1: selling price = 8000 × 1.25 = ₹10,000", "A1: (b) customer pays 10000 + 12% of 10000 = ₹11,200", "M1: net GST = output GST − input GST = 1200 − 960 = ₹240", "A1: (c) net CGST = net SGST = ₹120 each"], "ans": "(a) ₹480 each; (b) ₹11,200; (c) ₹120 each" },
+        { "q": "A dealer A in Delhi sells goods to dealer B in Delhi for ₹20,000. B sells the same goods to a consumer in Delhi for ₹24,000. GST is 18%. Find the net GST paid by B and the total GST received by the government.", "marks": 4, "paper": "1", "scheme": ["M1: GST on A's sale = 18% of 20000 = ₹3,600", "M1: GST on B's sale = 18% of 24000 = ₹4,320", "A1: B pays net 4320 − 3600 = ₹720 (CGST ₹360 and SGST ₹360)", "B1: total GST received by the government = 3600 + 720 = ₹4,320"], "ans": "₹720; ₹4,320" },
+        { "q": "A manufacturer in Kolkata sells a machine to a dealer in Patna for ₹15,000. The dealer sells it to a consumer in Patna for ₹18,000. GST is 28%. Find the IGST paid by the dealer, the CGST and SGST charged to the consumer, and the net GST payable by the dealer.", "marks": 4, "paper": "1", "scheme": ["B1: IGST paid by dealer (inter-state purchase) = 28% of 15000 = ₹4,200", "M1: GST on the intra-state sale = 28% of 18000 = ₹5,040", "A1: CGST = SGST = ₹2,520 each", "A1: net GST payable by the dealer = 5040 − 4200 = ₹840"], "ans": "₹4,200; ₹2,520 each; ₹840" },
+        { "q": "A customer paid ₹13,216 for a washing machine, including GST at 18%, after a discount of 20% on the list price. Find the list price.", "marks": 4, "paper": "1", "scheme": ["M1: price before GST = 13216 ÷ 1.18", "A1: = ₹11,200", "M1: list price × 0.8 = 11200", "A1: list price = ₹14,000"], "ans": "₹14,000" },
+        { "q": "A retailer buys an article for ₹4,000 and sells it for ₹5,000, both prices before tax, within the same state. The net GST he pays to the government is ₹120. Find the rate of GST.", "marks": 3, "paper": "1", "scheme": ["M1: net GST = r% of (5000 − 4000)", "A1: r/100 × 1000 = 120", "A1: r = 12%"], "ans": "12%" }
+      ]
+    },
+    {
+      "id": "10.2", "stage": "10", "name": "Banking (recurring deposit accounts)",
+      "questions": [
+        { "q": "The interest on a recurring deposit of ₹500 per month for 12 months at 8% per annum is:", "o": ["₹260", "₹480", "₹520", "₹240"], "a": 0, "why": "I = P × n(n + 1)/2 × r/(100 × 12) = 500 × 78 × 8/1200 = ₹260." },
+        { "q": "The maturity value of a recurring deposit of ₹500 per month for 12 months at 8% per annum is:", "o": ["₹6,000", "₹6,260", "₹6,480", "₹6,520"], "a": 1, "why": "Total deposited = ₹6,000 and interest = ₹260, so maturity value = ₹6,260." },
+        { "q": "For a recurring deposit of ₹P per month for n months, the equivalent principal for one month is:", "o": ["P × n", "P × n(n − 1)/2", "P × n(n + 1)/2", "P × n²"], "a": 2, "why": "The first instalment earns interest for n months, the next for n − 1, and so on down to 1: total n(n + 1)/2 months." },
+        { "q": "The interest on ₹1,000 deposited every month for 2 years at 6% per annum in a recurring deposit is:", "o": ["₹1,440", "₹1,800", "₹3,000", "₹1,500"], "a": 3, "why": "n = 24, n(n + 1)/2 = 300; I = 1000 × 300 × 6/1200 = ₹1,500." },
+        { "q": "The interest on ₹200 per month for 36 months at 10% per annum in a recurring deposit is:", "o": ["₹1,200", "₹1,110", "₹720", "₹7,200"], "a": 1, "why": "n(n + 1)/2 = 36 × 37/2 = 666; I = 200 × 666 × 10/1200 = ₹1,110." }
+      ],
+      "long": [
+        { "q": "Mr Sharma deposits ₹1,500 per month in a recurring deposit account for 3 years at 7.5% per annum. Find the interest and the maturity value.", "marks": 4, "paper": "1", "scheme": ["M1: equivalent principal for one month = 1500 × 36 × 37/2 = ₹9,99,000", "M1: I = 999000 × 7.5/(100 × 12)", "A1: I = ₹6,243.75", "A1: maturity value = 1500 × 36 + 6243.75 = ₹60,243.75"], "ans": "₹6,243.75; ₹60,243.75" },
+        { "q": "A recurring deposit account for 2 years at 8% per annum has a maturity value of ₹26,000. Find the monthly instalment.", "marks": 3, "paper": "1", "scheme": ["M1: n = 24, n(n + 1)/2 = 300, so I = P × 300 × 8/1200 = 2P", "M1: 24P + 2P = 26000", "A1: P = ₹1,000"], "ans": "₹1,000" },
+        { "q": "Ms Iyer deposits ₹600 per month for 20 months in a recurring deposit and receives ₹12,630 at maturity. Find the rate of interest.", "marks": 3, "paper": "1", "scheme": ["B1: interest = 12630 − 600 × 20 = ₹630", "M1: I = 600 × (20 × 21/2) × r/1200 = 105r", "A1: 105r = 630, r = 6%"], "ans": "6%" },
+        { "q": "Kiran deposits ₹400 per month in a recurring deposit at 10% per annum. The interest at maturity is ₹1,260. Find the number of months.", "marks": 4, "paper": "1", "scheme": ["M1: 400 × n(n + 1)/2 × 10/1200 = 1260", "A1: n(n + 1) = 756", "M1: n² + n − 756 = 0, (n + 28)(n − 27) = 0", "A1: n = 27 months"], "ans": "27 months" },
+        { "q": "Ravi deposits ₹2,000 per month for 1 year in a recurring deposit at 9% per annum. Find the maturity value.", "marks": 3, "paper": "1", "scheme": ["M1: I = 2000 × (12 × 13/2) × 9/1200", "A1: I = ₹1,170", "A1: maturity value = 24000 + 1170 = ₹25,170"], "ans": "₹25,170" }
+      ]
+    },
+    {
+      "id": "10.3", "stage": "10", "name": "Shares and dividends",
+      "questions": [
+        { "q": "A ₹100 share is quoted at ₹120. It is said to be:", "o": ["At par", "At a discount of ₹20", "At a premium of ₹20", "Below par"], "a": 2, "why": "Market value above face value means the share is at a premium." },
+        { "q": "A dividend of 10% is declared on 50 shares of ₹100 each. The total dividend is:", "o": ["₹50", "₹500", "₹5,000", "₹1,000"], "a": 1, "why": "Dividend = 10% of face value × number of shares = ₹10 × 50 = ₹500." },
+        { "q": "How many ₹10 shares quoted at ₹15 can be bought for ₹4,500?", "o": ["300", "450", "150", "30"], "a": 0, "why": "Shares are bought at market value: 4500 ÷ 15 = 300." },
+        { "q": "A ₹100 share bought at ₹125 pays a 10% dividend. The rate of return on the investment is:", "o": ["10%", "12.5%", "12%", "8%"], "a": 3, "why": "Income per share = ₹10 on an outlay of ₹125: 10 ÷ 125 × 100 = 8%." },
+        { "q": "The dividend on a share is always calculated on its:", "o": ["Market value", "Face (nominal) value", "Total investment", "Premium"], "a": 1, "why": "The dividend rate is a percentage of the face value, whatever price was paid." }
+      ],
+      "long": [
+        { "q": "Ankit invests ₹36,000 in ₹100 shares quoted at ₹120. The dividend is 15%. Find (a) the number of shares; (b) his annual dividend; (c) his rate of return.", "marks": 5, "paper": "1", "scheme": ["M1: number of shares = 36000 ÷ 120", "A1: (a) 300 shares", "A1: (b) dividend = 300 × 15% of ₹100 = ₹4,500", "M1: return = 4500 ÷ 36000 × 100", "A1: (c) 12.5%"], "ans": "300; ₹4,500; 12.5%" },
+        { "q": "A man buys ₹50 shares at a discount of 10% and gets a return of 12% on his money. Find the rate of dividend.", "marks": 3, "paper": "1", "scheme": ["B1: market value = 50 − 5 = ₹45", "M1: income per share = 12% of 45 = ₹5.40", "A1: dividend rate = 5.40 ÷ 50 × 100 = 10.8%"], "ans": "10.8%" },
+        { "q": "Which is the better investment: 9% ₹100 shares at ₹120, or 7% ₹10 shares at ₹8? Show your working.", "marks": 4, "paper": "1", "scheme": ["M1: return on the first = 9 ÷ 120 × 100", "A1: = 7.5%", "A1: return on the second = 0.70 ÷ 8 × 100 = 8.75%", "B1: the second (7% ₹10 shares at ₹8) is the better investment"], "ans": "the 7% ₹10 shares at ₹8 (8.75% against 7.5%)" },
+        { "q": "Mrs Rao holds 400 shares of ₹100 each paying a 12% dividend. She sells them at ₹150 each and invests the proceeds in ₹50 shares at ₹40 paying a 10% dividend. Find the change in her annual income.", "marks": 5, "paper": "1", "scheme": ["B1: original income = 400 × ₹12 = ₹4,800", "M1: sale proceeds = 400 × 150 = ₹60,000", "A1: new shares = 60000 ÷ 40 = 1500", "A1: new income = 1500 × ₹5 = ₹7,500", "A1: her income increases by ₹2,700"], "ans": "increase of ₹2,700" },
+        { "q": "How much must a person invest in ₹20 shares quoted at ₹25, paying an 8% dividend, to get an annual income of ₹1,200?", "marks": 3, "paper": "1", "scheme": ["B1: dividend per share = 8% of 20 = ₹1.60", "M1: number of shares = 1200 ÷ 1.60 = 750", "A1: investment = 750 × 25 = ₹18,750"], "ans": "₹18,750" }
+      ]
+    },
+    {
+      "id": "10.4", "stage": "10", "name": "Linear inequations",
+      "questions": [
+        { "q": "The solution set of 3x − 5 < 7, x ∈ N, is:", "o": ["{1, 2, 3}", "{1, 2, 3, 4}", "{0, 1, 2, 3}", "{4, 5, 6, …}"], "a": 0, "why": "3x < 12 gives x < 4; the natural numbers less than 4 are 1, 2 and 3." },
+        { "q": "When both sides of an inequation are multiplied by a negative number, the inequality sign:", "o": ["Stays the same", "Is reversed", "Becomes an equals sign", "Is removed"], "a": 1, "why": "For example 2 < 3 but −2 > −3." },
+        { "q": "The solution set of −2 ≤ x < 1, x ∈ Z, is:", "o": ["{−2, −1, 0, 1}", "{−1, 0}", "{−2, −1, 0}", "{−1, 0, 1}"], "a": 2, "why": "−2 is included (≤) and 1 is excluded (<)." },
+        { "q": "The solution of −3x > 9, x ∈ R, is:", "o": ["x > −3", "x > 3", "x < 3", "x < −3"], "a": 3, "why": "Dividing by −3 reverses the sign: x < −3." },
+        { "q": "The solution of 2x + 1 ≥ x + 4 is:", "o": ["x ≤ 3", "x ≥ 3", "x ≥ 5", "x > 3"], "a": 1, "why": "Subtract x and 1 from both sides: x ≥ 3." }
+      ],
+      "long": [
+        { "q": "Solve 2x − 3 < x + 2 ≤ 3x + 5, x ∈ R, and describe the graph of the solution on a number line.", "marks": 4, "paper": "1", "scheme": ["M1: 2x − 3 < x + 2 gives x < 5", "M1: x + 2 ≤ 3x + 5 gives −3 ≤ 2x, so x ≥ −1.5", "A1: −1.5 ≤ x < 5", "B1: number line: a filled circle at −1.5, an open circle at 5 and a thick line joining them"], "ans": "−1.5 ≤ x < 5" },
+        { "q": "Solve −4 ≤ 2 − 3x < 8, x ∈ W, and write the solution set.", "marks": 3, "paper": "1", "scheme": ["M1: subtract 2: −6 ≤ −3x < 6", "A1: divide by −3 and reverse: −2 < x ≤ 2", "A1: x ∈ W: {0, 1, 2}"], "ans": "{0, 1, 2}" },
+        { "q": "Find the solution set of 3x + 5 ≤ 2x + 11 and 5x − 3 > 7, x ∈ Z.", "marks": 3, "paper": "1", "scheme": ["M1: 3x + 5 ≤ 2x + 11 gives x ≤ 6", "M1: 5x − 3 > 7 gives x > 2", "A1: solution set {3, 4, 5, 6}"], "ans": "{3, 4, 5, 6}" },
+        { "q": "Solve x/2 + 5 ≤ x/3 + 6, x ∈ N.", "marks": 3, "paper": "1", "scheme": ["M1: multiply by 6: 3x + 30 ≤ 2x + 36", "A1: x ≤ 6", "A1: solution set {1, 2, 3, 4, 5, 6}"], "ans": "{1, 2, 3, 4, 5, 6}" },
+        { "q": "P = {x : 5 < 2x − 1 ≤ 11, x ∈ R} and Q = {x : −1 ≤ 3 + 4x < 23, x ∈ I}. Find P, Q and P ∩ Q.", "marks": 4, "paper": "1", "scheme": ["M1: P: 6 < 2x ≤ 12, so 3 < x ≤ 6", "M1: Q: −4 ≤ 4x < 20, so −1 ≤ x < 5", "A1: Q = {−1, 0, 1, 2, 3, 4}", "A1: P ∩ Q = {4}"], "ans": "P: 3 < x ≤ 6; Q = {−1, 0, 1, 2, 3, 4}; P ∩ Q = {4}" }
+      ]
+    },
+    {
+      "id": "10.5", "stage": "10", "name": "Quadratic equations",
+      "questions": [
+        { "q": "The roots of x² − 7x + 12 = 0 are:", "o": ["3, 4", "−3, −4", "2, 6", "1, 12"], "a": 0, "why": "(x − 3)(x − 4) = 0, so x = 3 or 4." },
+        { "q": "The discriminant of 2x² + 3x − 5 = 0 is:", "o": ["31", "49", "−31", "1"], "a": 1, "why": "b² − 4ac = 9 − 4(2)(−5) = 9 + 40 = 49." },
+        { "q": "If the discriminant of a quadratic equation is negative, its roots are:", "o": ["Real and equal", "Real and distinct", "Not real", "Rational"], "a": 2, "why": "The square root of a negative number is not real, so there are no real roots." },
+        { "q": "If x = 2 is a root of x² + kx − 10 = 0, then k equals:", "o": ["−3", "5", "2", "3"], "a": 3, "why": "4 + 2k − 10 = 0, so k = 3." },
+        { "q": "For which value of k does x² − 6x + k = 0 have equal roots?", "o": ["6", "9", "36", "−9"], "a": 1, "why": "Equal roots need b² − 4ac = 0: 36 − 4k = 0, so k = 9." }
+      ],
+      "long": [
+        { "q": "Solve 2x² − 5x − 4 = 0 using the formula, giving your answers correct to two decimal places.", "marks": 3, "paper": "1", "scheme": ["M1: x = [5 ± √(25 + 32)]/4", "A1: √57 = 7.550", "A1: x = 3.14 or x = −0.64"], "ans": "3.14 or −0.64" },
+        { "q": "The product of two consecutive positive integers is 306. Find the integers.", "marks": 4, "paper": "1", "scheme": ["M1: x(x + 1) = 306", "A1: x² + x − 306 = 0", "M1: (x + 18)(x − 17) = 0", "A1: x = 17 (rejecting −18); the integers are 17 and 18"], "ans": "17 and 18" },
+        { "q": "A train travels 360 km at a uniform speed. If its speed had been 5 km/h more, it would have taken 1 hour less. Find its speed.", "marks": 4, "paper": "1", "scheme": ["M1: 360/x − 360/(x + 5) = 1", "A1: x² + 5x − 1800 = 0", "M1: (x + 45)(x − 40) = 0", "A1: speed = 40 km/h (rejecting −45)"], "ans": "40 km/h" },
+        { "q": "Find the value of k for which kx² − 4x + 1 = 0 has equal roots, and find the root.", "marks": 3, "paper": "1", "scheme": ["M1: b² − 4ac = 16 − 4k = 0", "A1: k = 4", "A1: 4x² − 4x + 1 = 0 gives (2x − 1)² = 0, so x = ½ (repeated)"], "ans": "k = 4; x = ½" },
+        { "q": "Solve x − 3/x = 2, x ≠ 0.", "marks": 3, "paper": "1", "scheme": ["M1: multiply by x: x² − 2x − 3 = 0", "M1: (x − 3)(x + 1) = 0", "A1: x = 3 or x = −1"], "ans": "3 or −1" }
+      ]
+    },
+    {
+      "id": "10.6", "stage": "10", "name": "Ratio and proportion",
+      "questions": [
+        { "q": "The fourth proportional to 3, 5 and 12 is:", "o": ["20", "15", "36", "7.2"], "a": 0, "why": "3 : 5 = 12 : x gives x = 5 × 12 ÷ 3 = 20." },
+        { "q": "The mean proportional between 4 and 9 is:", "o": ["6.5", "6", "36", "13"], "a": 1, "why": "Mean proportional = √(4 × 9) = 6; 6.5 is the arithmetic mean." },
+        { "q": "The third proportional to 2 and 6 is:", "o": ["12", "3", "18", "36"], "a": 2, "why": "2 : 6 = 6 : x gives x = 36 ÷ 2 = 18." },
+        { "q": "The duplicate ratio of 3 : 4 is:", "o": ["6 : 8", "3 : 2", "√3 : 2", "9 : 16"], "a": 3, "why": "The duplicate ratio is the ratio of the squares." },
+        { "q": "If a : b = 2 : 3 and b : c = 4 : 5, then a : c equals:", "o": ["2 : 5", "8 : 15", "6 : 20", "4 : 15"], "a": 1, "why": "a/c = (a/b)(b/c) = (2/3)(4/5) = 8/15." }
+      ],
+      "long": [
+        { "q": "Using componendo and dividendo, solve [√(x + 4) + √(x − 4)] ÷ [√(x + 4) − √(x − 4)] = 2.", "marks": 4, "paper": "1", "scheme": ["M1: componendo and dividendo: 2√(x + 4) ÷ 2√(x − 4) = (2 + 1) ÷ (2 − 1)", "A1: √(x + 4) ÷ √(x − 4) = 3", "M1: squaring: (x + 4) ÷ (x − 4) = 9", "A1: x + 4 = 9x − 36, so x = 5"], "ans": "x = 5" },
+        { "q": "If a : b = 3 : 5, find (3a + 4b) : (5a − 2b).", "marks": 3, "paper": "1", "scheme": ["M1: let a = 3k and b = 5k", "A1: (9k + 20k) : (15k − 10k) = 29k : 5k", "A1: = 29 : 5"], "ans": "29 : 5" },
+        { "q": "What number must be added to each of 6, 15, 20 and 43 so that the results are in proportion?", "marks": 3, "paper": "1", "scheme": ["M1: (6 + x) : (15 + x) = (20 + x) : (43 + x)", "A1: (6 + x)(43 + x) = (15 + x)(20 + x) gives 258 + 49x = 300 + 35x", "A1: x = 3"], "ans": "3" },
+        { "q": "If a, b and c are in continued proportion, prove that (a² + b²) ÷ (b² + c²) = a ÷ c.", "marks": 3, "paper": "1", "scheme": ["B1: b² = ac", "M1: (a² + b²) ÷ (b² + c²) = (a² + ac) ÷ (ac + c²)", "A1: = a(a + c) ÷ [c(a + c)] = a ÷ c"] },
+        { "q": "If x/a = y/b = z/c, prove that (x³ + y³ + z³) ÷ (a³ + b³ + c³) = xyz ÷ (abc).", "marks": 4, "paper": "1", "scheme": ["B1: let each ratio = k, so x = ak, y = bk, z = ck", "M1: left side = k³(a³ + b³ + c³) ÷ (a³ + b³ + c³) = k³", "M1: right side = (ak)(bk)(ck) ÷ (abc) = k³", "A1: both sides equal k³, so they are equal"] }
+      ]
+    },
+    {
+      "id": "10.7", "stage": "10", "name": "Factorisation of polynomials (remainder and factor theorems)",
+      "questions": [
+        { "q": "The remainder when x³ − 2x² + 4 is divided by (x − 2) is:", "o": ["0", "4", "8", "−4"], "a": 1, "why": "By the remainder theorem, f(2) = 8 − 8 + 4 = 4." },
+        { "q": "(x + 1) is a factor of a polynomial f(x) if:", "o": ["f(−1) = 0", "f(1) = 0", "f(0) = 0", "f(1) = 1"], "a": 0, "why": "By the factor theorem, (x − a) is a factor when f(a) = 0; here a = −1." },
+        { "q": "If (x − 3) is a factor of x² − kx + 6, then k equals:", "o": ["3", "2", "5", "−5"], "a": 2, "why": "9 − 3k + 6 = 0, so k = 5." },
+        { "q": "The remainder when 2x² + 3x − 1 is divided by (2x − 1) is:", "o": ["0", "2", "½", "1"], "a": 3, "why": "Put x = ½: 2(¼) + 3(½) − 1 = ½ + 3/2 − 1 = 1." },
+        { "q": "Which of these is a factor of x³ − 7x + 6?", "o": ["(x + 1)", "(x − 1)", "(x + 2)", "(x − 3)"], "a": 1, "why": "f(1) = 1 − 7 + 6 = 0. Testing −1, −2 and 3 each gives 12, not 0." }
+      ],
+      "long": [
+        { "q": "Use the factor theorem to show that (x − 2) is a factor of x³ − 3x² − 4x + 12, and hence factorise it completely.", "marks": 4, "paper": "1", "scheme": ["M1: f(2) = 8 − 12 − 8 + 12", "A1: = 0, so (x − 2) is a factor", "M1: dividing gives the quotient x² − x − 6", "A1: x³ − 3x² − 4x + 12 = (x − 2)(x − 3)(x + 2)"], "ans": "(x − 2)(x − 3)(x + 2)" },
+        { "q": "(x − 1) and (x + 2) are both factors of x³ + ax² + bx − 6. Find a and b.", "marks": 4, "paper": "1", "scheme": ["M1: f(1) = 0 gives 1 + a + b − 6 = 0, so a + b = 5", "M1: f(−2) = 0 gives −8 + 4a − 2b − 6 = 0, so 2a − b = 7", "A1: a = 4", "A1: b = 1"], "ans": "a = 4, b = 1" },
+        { "q": "When x³ + 3x² − mx + 4 is divided by (x − 2), the remainder is m + 3. Find m.", "marks": 3, "paper": "1", "scheme": ["M1: f(2) = 8 + 12 − 2m + 4 = 24 − 2m", "M1: 24 − 2m = m + 3", "A1: m = 7"], "ans": "7" },
+        { "q": "Factorise 2x³ + x² − 13x + 6 completely.", "marks": 3, "paper": "1", "scheme": ["M1: f(2) = 16 + 4 − 26 + 6 = 0, so (x − 2) is a factor", "A1: quotient = 2x² + 5x − 3", "A1: 2x³ + x² − 13x + 6 = (x − 2)(2x − 1)(x + 3)"], "ans": "(x − 2)(2x − 1)(x + 3)" },
+        { "q": "The polynomial px³ + 4x² − 3x + q is exactly divisible by x² − 1. Find p and q.", "marks": 4, "paper": "1", "scheme": ["B1: x² − 1 = (x − 1)(x + 1), so f(1) = 0 and f(−1) = 0", "M1: p + 4 − 3 + q = 0 gives p + q = −1; −p + 4 + 3 + q = 0 gives q − p = −7", "A1: q = −4", "A1: p = 3"], "ans": "p = 3, q = −4" }
+      ]
+    },
+    {
+      "id": "10.8", "stage": "10", "name": "Matrices",
+      "questions": [
+        { "q": "A matrix with 2 rows and 3 columns has order:", "o": ["3 × 2", "2 × 3", "6 × 1", "5"], "a": 1, "why": "The order is written as rows × columns." },
+        { "q": "The product AB of matrices A and B is defined only if:", "o": ["The number of columns of A equals the number of rows of B", "A and B have the same number of rows", "Both are square", "A and B have the same number of columns"], "a": 0, "why": "Each row of A is multiplied element by element with each column of B, so these lengths must match." },
+        { "q": "If A = [1 2; 3 4] (rows separated by a semicolon), then 2A is:", "o": ["[2 2; 3 4]", "[3 4; 5 6]", "[2 4; 6 8]", "[1 4; 6 8]"], "a": 2, "why": "Multiplying a matrix by a number multiplies every element." },
+        { "q": "The identity matrix of order 2 is:", "o": ["[0 1; 1 0]", "[1 1; 1 1]", "[0 0; 0 0]", "[1 0; 0 1]"], "a": 3, "why": "The identity matrix has 1s on the leading diagonal and 0s elsewhere; AI = IA = A." },
+        { "q": "The product [1 2; 0 1] × [3; 4] is:", "o": ["[3; 4]", "[11; 4]", "[3 8; 0 4]", "[7; 4]"], "a": 1, "why": "Row 1: 1 × 3 + 2 × 4 = 11; row 2: 0 × 3 + 1 × 4 = 4." }
+      ],
+      "long": [
+        { "q": "A = [2 1; 3 4] and B = [1 −1; 0 2] (rows separated by a semicolon). Find AB and BA. What do you conclude?", "marks": 4, "paper": "1", "scheme": ["M1: multiply rows of the first matrix by columns of the second", "A1: AB = [2 0; 3 5]", "A1: BA = [−1 −3; 6 8]", "B1: AB ≠ BA, so matrix multiplication is not commutative"], "ans": "AB = [2 0; 3 5], BA = [−1 −3; 6 8]" },
+        { "q": "Find x and y if [2 x; y 3] × [1; 2] = [8; 9] (rows separated by a semicolon).", "marks": 3, "paper": "1", "scheme": ["M1: the product is [2 + 2x; y + 6]", "A1: 2 + 2x = 8, x = 3", "A1: y + 6 = 9, y = 3"], "ans": "x = 3, y = 3" },
+        { "q": "A = [3 1; −1 2] (rows separated by a semicolon) and I is the identity matrix of order 2. Find A² − 5A + 7I.", "marks": 4, "paper": "1", "scheme": ["M1: A² = [3 × 3 + 1 × (−1), 3 × 1 + 1 × 2; −1 × 3 + 2 × (−1), −1 × 1 + 2 × 2]", "A1: A² = [8 5; −5 3]", "A1: A² − 5A = [8 − 15, 5 − 5; −5 + 5, 3 − 10] = [−7 0; 0 −7]", "A1: A² − 5A + 7I = [0 0; 0 0], the null matrix"], "ans": "[0 0; 0 0]" },
+        { "q": "Find the matrix X if 3X + [2 −1; 0 4] = [5 2; 6 1] (rows separated by a semicolon).", "marks": 3, "paper": "1", "scheme": ["M1: 3X = [5 − 2, 2 + 1; 6 − 0, 1 − 4]", "A1: 3X = [3 3; 6 −3]", "A1: X = [1 1; 2 −1]"], "ans": "[1 1; 2 −1]" },
+        { "q": "Find the matrix X such that [2 1; 1 3] X = [5; 10] (rows separated by a semicolon).", "marks": 3, "paper": "1", "scheme": ["B1: X must have order 2 × 1; let X = [a; b]", "M1: 2a + b = 5 and a + 3b = 10", "A1: a = 1, b = 3, so X = [1; 3]"], "ans": "[1; 3]" }
+      ]
+    },
+    {
+      "id": "10.9", "stage": "10", "name": "Arithmetic and geometric progressions",
+      "questions": [
+        { "q": "The 10th term of the AP 3, 7, 11, … is:", "o": ["39", "43", "40", "37"], "a": 0, "why": "a + 9d = 3 + 9 × 4 = 39." },
+        { "q": "The sum of the first 20 natural numbers is:", "o": ["200", "210", "220", "190"], "a": 1, "why": "n(n + 1)/2 = 20 × 21/2 = 210." },
+        { "q": "The common ratio of the GP 2, −6, 18, … is:", "o": ["3", "−1/3", "−3", "4"], "a": 2, "why": "r = −6 ÷ 2 = −3." },
+        { "q": "The 6th term of the GP 3, 6, 12, … is:", "o": ["48", "192", "64", "96"], "a": 3, "why": "ar⁵ = 3 × 2⁵ = 96." },
+        { "q": "Which term of the AP 5, 8, 11, … is 50?", "o": ["15th", "16th", "17th", "18th"], "a": 1, "why": "5 + (n − 1) × 3 = 50 gives n − 1 = 15, so n = 16." }
+      ],
+      "long": [
+        { "q": "The 4th term of an AP is 13 and its 9th term is 28. Find the first term, the common difference and the sum of the first 20 terms.", "marks": 5, "paper": "1", "scheme": ["M1: a + 3d = 13 and a + 8d = 28", "A1: d = 3", "A1: a = 4", "M1: S₂₀ = 20/2 × [2(4) + 19(3)]", "A1: = 10 × 65 = 650"], "ans": "a = 4, d = 3, S₂₀ = 650" },
+        { "q": "How many terms of the AP 24, 21, 18, … must be taken so that their sum is 78? Explain the double answer.", "marks": 4, "paper": "1", "scheme": ["M1: n/2 × [48 + (n − 1)(−3)] = 78", "A1: n² − 17n + 52 = 0", "A1: (n − 4)(n − 13) = 0, so n = 4 or n = 13", "B1: both are valid: the 5th to 13th terms (12, 9, 6, 3, 0, −3, −6, −9, −12) add up to zero"], "ans": "4 or 13" },
+        { "q": "Find the sum of the first 6 terms of the GP 2, 6, 18, ….", "marks": 3, "paper": "1", "scheme": ["B1: a = 2, r = 3", "M1: S₆ = 2(3⁶ − 1) ÷ (3 − 1)", "A1: = 729 − 1 = 728"], "ans": "728" },
+        { "q": "The 3rd term of a GP is 12 and its 6th term is 96. Find the first term, the common ratio and the 10th term.", "marks": 4, "paper": "1", "scheme": ["M1: ar⁵ ÷ ar² = 96 ÷ 12, so r³ = 8", "A1: r = 2", "A1: a = 12 ÷ 4 = 3", "A1: T₁₀ = 3 × 2⁹ = 1536"], "ans": "a = 3, r = 2, T₁₀ = 1536" },
+        { "q": "Priya saves ₹500 in the first month and increases her savings by ₹100 every month. How much does she save in 2 years?", "marks": 3, "paper": "1", "scheme": ["B1: the monthly savings form an AP with a = 500, d = 100, n = 24", "M1: S₂₄ = 24/2 × [2(500) + 23(100)]", "A1: = 12 × 3300 = ₹39,600"], "ans": "₹39,600" }
+      ]
+    },
+    {
+      "id": "10.10", "stage": "10", "name": "Reflection",
+      "questions": [
+        { "q": "The image of the point (3, −5) on reflection in the x-axis is:", "o": ["(−3, −5)", "(3, 5)", "(−3, 5)", "(5, 3)"], "a": 1, "why": "Reflection in the x-axis keeps x and changes the sign of y: (x, y) → (x, −y)." },
+        { "q": "The image of (−2, 4) on reflection in the y-axis is:", "o": ["(2, 4)", "(−2, −4)", "(2, −4)", "(4, −2)"], "a": 0, "why": "Reflection in the y-axis changes the sign of x only: (x, y) → (−x, y)." },
+        { "q": "The image of (4, −1) on reflection in the origin is:", "o": ["(4, 1)", "(−4, −1)", "(−4, 1)", "(1, −4)"], "a": 2, "why": "Reflection in the origin changes the signs of both coordinates." },
+        { "q": "Which points are invariant under reflection in the x-axis?", "o": ["Points on the y-axis", "Only the origin", "No points at all", "All points on the x-axis"], "a": 3, "why": "A point on the mirror line is its own image, and the x-axis is the mirror line." },
+        { "q": "The image of (5, 2) on reflection in the line x = 3 is:", "o": ["(−5, 2)", "(1, 2)", "(5, 4)", "(11, 2)"], "a": 1, "why": "The point is 2 units to the right of x = 3, so its image is 2 units to the left: x = 1, with y unchanged." }
+      ],
+      "long": [
+        { "q": "The point P(4, 3) is reflected in the x-axis to P′, and P′ is then reflected in the origin to P″. Write the coordinates of P′ and P″, and name the single transformation that maps P to P″.", "marks": 3, "paper": "1", "scheme": ["B1: P′ = (4, −3)", "B1: P″ = (−4, 3)", "B1: P → P″ is a reflection in the y-axis"], "ans": "P′(4, −3); P″(−4, 3); reflection in the y-axis" },
+        { "q": "A(2, 1) and B(4, 3) are reflected in the x-axis to A′ and B′. Write the coordinates of A′ and B′, name the figure ABB′A′ and find its area.", "marks": 5, "paper": "1", "scheme": ["B1: A′ = (2, −1)", "B1: B′ = (4, −3)", "B1: AA′ and BB′ are both vertical, hence parallel, and AB = A′B′ = √8, so ABB′A′ is an isosceles trapezium", "M1: area = ½ × (AA′ + BB′) × distance between them = ½ × (2 + 6) × 2", "A1: = 8 square units"], "ans": "A′(2, −1), B′(4, −3); isosceles trapezium; 8 square units" },
+        { "q": "A point P(a, b) is reflected in the x-axis to P′(5, −2). Find a and b, and find the image of P on reflection in the line y = −1.", "marks": 3, "paper": "1", "scheme": ["B1: a = 5, b = 2", "M1: P is 3 units above the line y = −1, so its image is 3 units below it", "A1: the image is (5, −4)"], "ans": "a = 5, b = 2; (5, −4)" },
+        { "q": "State the invariant point or points when a figure is reflected: (a) in the origin; (b) in the line y = 2.", "marks": 2, "paper": "1", "scheme": ["B1: (a) only the origin (0, 0)", "B1: (b) every point on the line y = 2, for example (5, 2)"] },
+        { "q": "A(3, 4) is reflected in the origin to A′. Write the coordinates of A′ and find the length AA′.", "marks": 3, "paper": "1", "scheme": ["B1: A′ = (−3, −4)", "M1: AA′ = √(6² + 8²)", "A1: = 10 units"], "ans": "A′(−3, −4); 10 units" }
+      ]
+    },
+    {
+      "id": "10.11", "stage": "10", "name": "Section formula, mid-point and the equation of a straight line",
+      "questions": [
+        { "q": "The mid-point of the line joining (2, 3) and (6, 7) is:", "o": ["(4, 5)", "(8, 10)", "(2, 2)", "(3, 4)"], "a": 0, "why": "Mid-point = ((2 + 6)/2, (3 + 7)/2) = (4, 5)." },
+        { "q": "The slope of the line through (1, 2) and (3, 8) is:", "o": ["1/3", "3", "2", "6"], "a": 1, "why": "m = (8 − 2) ÷ (3 − 1) = 6 ÷ 2 = 3." },
+        { "q": "The slope of the line 2x + 3y = 6 is:", "o": ["2/3", "3/2", "−2/3", "−3/2"], "a": 2, "why": "Write it as y = −(2/3)x + 2; the coefficient of x is the slope." },
+        { "q": "Two lines with slopes m₁ and m₂ are perpendicular when:", "o": ["m₁ = m₂", "m₁ + m₂ = 0", "m₁m₂ = 1", "m₁m₂ = −1"], "a": 3, "why": "Perpendicular lines have slopes that are negative reciprocals; equal slopes mean parallel lines." },
+        { "q": "The y-intercept of the line y = 4x − 7 is:", "o": ["4", "−7", "7", "7/4"], "a": 1, "why": "In y = mx + c, c is the y-intercept; 4 is the slope and 7/4 is the x-intercept." }
+      ],
+      "long": [
+        { "q": "Find the coordinates of the point that divides the line joining A(−1, 7) and B(4, −3) in the ratio 2 : 3.", "marks": 3, "paper": "1", "scheme": ["M1: x = [2 × 4 + 3 × (−1)] ÷ (2 + 3)", "A1: x = 1", "A1: y = [2 × (−3) + 3 × 7] ÷ 5 = 3; the point is (1, 3)"], "ans": "(1, 3)" },
+        { "q": "In what ratio does the x-axis divide the line joining A(2, −3) and B(5, 6)? Find the point of division.", "marks": 3, "paper": "1", "scheme": ["M1: let the ratio be k : 1; the y-coordinate of the point is (6k − 3) ÷ (k + 1) = 0", "A1: k = ½, so the ratio is 1 : 2", "A1: x = (1 × 5 + 2 × 2) ÷ 3 = 3; the point is (3, 0)"], "ans": "1 : 2; (3, 0)" },
+        { "q": "Find the equation of the line through (2, −3) parallel to 3x − y + 4 = 0.", "marks": 3, "paper": "1", "scheme": ["B1: the slope of the given line is 3", "M1: y + 3 = 3(x − 2)", "A1: y = 3x − 9 (or 3x − y − 9 = 0)"], "ans": "y = 3x − 9" },
+        { "q": "A(1, 4), B(3, −2) and C(5, 6) are the vertices of a triangle. Find the equation of the median through A.", "marks": 3, "paper": "1", "scheme": ["M1: mid-point of BC = (4, 2)", "M1: slope of the median = (2 − 4) ÷ (4 − 1) = −2/3", "A1: y − 4 = −(2/3)(x − 1), i.e. 2x + 3y = 14"], "ans": "2x + 3y = 14" },
+        { "q": "Find the equation of the perpendicular bisector of the line joining P(2, 5) and Q(6, 1).", "marks": 4, "paper": "1", "scheme": ["B1: mid-point of PQ = (4, 3)", "B1: slope of PQ = (1 − 5) ÷ (6 − 2) = −1", "M1: slope of the perpendicular bisector = 1", "A1: y − 3 = x − 4, i.e. y = x − 1"], "ans": "y = x − 1" }
+      ]
+    },
+    {
+      "id": "10.12", "stage": "10", "name": "Similarity",
+      "questions": [
+        { "q": "Two triangles are similar if:", "o": ["Two angles of one are equal to two angles of the other", "Two sides and a non-included angle are equal", "Their areas are equal", "Their perimeters are equal"], "a": 0, "why": "By the AA test, if two pairs of angles are equal, the third pair is equal too, so the triangles are similar." },
+        { "q": "Triangle ABC is similar to triangle PQR and AB : PQ = 2 : 3. The ratio of their areas is:", "o": ["2 : 3", "4 : 9", "8 : 27", "3 : 2"], "a": 1, "why": "Areas of similar triangles are in the ratio of the squares of corresponding sides." },
+        { "q": "In triangle ABC, DE ∥ BC with D on AB and E on AC. AD = 3 cm, DB = 2 cm and AE = 6 cm. EC equals:", "o": ["3 cm", "6 cm", "4 cm", "9 cm"], "a": 2, "why": "By the basic proportionality theorem AD/DB = AE/EC, so 3/2 = 6/EC and EC = 4 cm." },
+        { "q": "On a map drawn to a scale of 1 : 50,000, a distance of 4 cm represents:", "o": ["20 km", "200 m", "0.2 km", "2 km"], "a": 3, "why": "4 × 50000 = 200000 cm = 2000 m = 2 km." },
+        { "q": "A model of a water tank is made to the scale 1 : 20. If the model holds 3 litres, the actual tank holds:", "o": ["60 litres", "1,200 litres", "24,000 litres", "8,000 litres"], "a": 2, "why": "Volumes scale by the cube of the scale factor: 3 × 20³ = 3 × 8000 = 24,000 litres." }
+      ],
+      "long": [
+        { "q": "In triangle ABC, DE ∥ BC with D on AB and E on AC. AD = 4 cm, DB = 6 cm and BC = 15 cm. Find DE and the ratio of the area of triangle ADE to the area of trapezium DBCE.", "marks": 5, "paper": "1", "scheme": ["B1: triangle ADE ~ triangle ABC (AA: corresponding angles, since DE ∥ BC)", "M1: DE/BC = AD/AB = 4/10", "A1: DE = 6 cm", "M1: area ADE : area ABC = (4/10)² = 4 : 25", "A1: area ADE : area DBCE = 4 : (25 − 4) = 4 : 21"], "ans": "DE = 6 cm; 4 : 21" },
+        { "q": "In triangle ABC, ∠B = 90° and BD is perpendicular to AC. Prove that BD² = AD × DC.", "marks": 4, "paper": "1", "scheme": ["B1: in triangles ADB and BDC, ∠ADB = ∠BDC = 90°", "M1: ∠DAB = 90° − ∠ABD = ∠DBC, since ∠ABD + ∠DBC = 90°", "A1: so triangle ADB ~ triangle BDC (AA)", "A1: AD/BD = BD/DC, so BD² = AD × DC"] },
+        { "q": "A map is drawn to a scale of 1 : 25,000. Find (a) the actual distance in km represented by 8 cm on the map; (b) the actual area in km² of a field shown as 6 cm² on the map.", "marks": 4, "paper": "1", "scheme": ["M1: 1 cm represents 25000 cm = 0.25 km", "A1: (a) 8 × 0.25 = 2 km", "M1: 1 cm² represents (0.25 km)² = 0.0625 km²", "A1: (b) 6 × 0.0625 = 0.375 km²"], "ans": "2 km; 0.375 km²" },
+        { "q": "A vertical stick 1.5 m tall casts a shadow 2 m long. At the same time a tower casts a shadow 36 m long. Find the height of the tower.", "marks": 3, "paper": "1", "scheme": ["B1: the triangles formed are similar, since the sun's rays make the same angle with the ground", "M1: h/36 = 1.5/2", "A1: h = 27 m"], "ans": "27 m" },
+        { "q": "Triangles ABC and DEF are similar, with perimeters 36 cm and 24 cm. If AB = 9 cm, find DE.", "marks": 2, "paper": "1", "scheme": ["B1: the ratio of perimeters equals the ratio of corresponding sides = 36 : 24 = 3 : 2", "B1: DE = 9 × 2/3 = 6 cm"], "ans": "6 cm" }
+      ]
+    },
+    {
+      "id": "10.13", "stage": "10", "name": "Loci",
+      "questions": [
+        { "q": "The locus of points equidistant from two fixed points A and B is:", "o": ["The perpendicular bisector of AB", "A circle with AB as diameter", "The line AB", "A line parallel to AB"], "a": 0, "why": "Every point on the perpendicular bisector of AB is the same distance from A as from B." },
+        { "q": "The locus of points equidistant from two intersecting lines is:", "o": ["A circle", "The pair of lines bisecting the angles between them", "A line parallel to both", "The perpendicular bisector of the lines"], "a": 1, "why": "Any point on an angle bisector is equidistant from the two arms, and there are two bisectors at right angles." },
+        { "q": "The locus of a point that is always 3 cm from a fixed point O is:", "o": ["A line 3 cm from O", "Two parallel lines", "A circle with centre O and radius 3 cm", "A square with centre O"], "a": 2, "why": "All points at a fixed distance from a fixed point lie on a circle." },
+        { "q": "The locus of points 2 cm from a given straight line is:", "o": ["A circle of radius 2 cm", "A line perpendicular to it", "A single line parallel to it", "A pair of lines parallel to it, 2 cm away on each side"], "a": 3, "why": "There are points 2 cm away on both sides of the line." },
+        { "q": "The point equidistant from all three vertices of a triangle is its:", "o": ["Incentre", "Circumcentre", "Centroid", "Orthocentre"], "a": 1, "why": "The circumcentre lies where the perpendicular bisectors of the sides meet; the incentre is equidistant from the sides." }
+      ],
+      "long": [
+        { "q": "Describe in words how to construct triangle ABC with AB = 6 cm, BC = 5 cm and ∠ABC = 60°, and then to find a point P that is equidistant from A and B and also equidistant from BA and BC.", "marks": 4, "paper": "1", "scheme": ["B1: draw AB = 6 cm; at B construct an angle of 60° and cut off BC = 5 cm; join AC", "B1: draw the perpendicular bisector of AB (the locus of points equidistant from A and B)", "B1: draw the bisector of ∠ABC (the locus of points equidistant from BA and BC)", "B1: P is the point where these two loci meet"] },
+        { "q": "Prove that a point which is equidistant from two intersecting lines lies on the bisector of the angle between them.", "marks": 3, "paper": "1", "scheme": ["B1: let the lines OA and OB meet at O, and let P be a point with PM ⊥ OA, PN ⊥ OB and PM = PN", "M1: triangles OMP and ONP are right-angled with common hypotenuse OP and PM = PN, so they are congruent (RHS)", "A1: so ∠POM = ∠PON and P lies on the bisector of ∠AOB"] },
+        { "q": "State the locus of: (a) the centre of a wheel rolling along a straight level road; (b) a point equidistant from two parallel lines; (c) the centres of all circles that touch a given line at a given point.", "marks": 3, "paper": "1", "scheme": ["B1: (a) a line parallel to the road, at a height equal to the radius of the wheel", "B1: (b) a line parallel to both, midway between them", "B1: (c) the line perpendicular to the given line at the given point"] },
+        { "q": "Explain how to find the centre of the circle that passes through three non-collinear points A, B and C.", "marks": 2, "paper": "1", "scheme": ["B1: draw the perpendicular bisectors of AB and BC", "B1: their point of intersection O is equidistant from A, B and C, so it is the centre; the radius is OA"] },
+        { "q": "Explain how to find the point inside triangle ABC that is equidistant from all three sides, and state what this point is the centre of.", "marks": 2, "paper": "1", "scheme": ["B1: draw the bisectors of two of the angles; they meet at the point I, which is equidistant from all three sides", "B1: I is the incentre, the centre of the circle inscribed in the triangle; its radius is the perpendicular distance from I to any side"] }
+      ]
+    },
+    {
+      "id": "10.14", "stage": "10", "name": "Circles: angle properties and tangents",
+      "questions": [
+        { "q": "The angle in a semicircle is:", "o": ["45°", "60°", "180°", "90°"], "a": 3, "why": "The angle at the centre is 180°, and the angle at the circumference is half of it." },
+        { "q": "An arc subtends 110° at the centre of a circle. The angle it subtends at a point on the remaining part of the circle is:", "o": ["55°", "110°", "220°", "70°"], "a": 0, "why": "The angle at the centre is twice the angle at the circumference standing on the same arc." },
+        { "q": "One angle of a cyclic quadrilateral is 75°. The opposite angle is:", "o": ["75°", "105°", "15°", "285°"], "a": 1, "why": "Opposite angles of a cyclic quadrilateral add up to 180°." },
+        { "q": "A tangent to a circle meets the radius at the point of contact:", "o": ["In parallel", "At 45°", "At right angles", "At 60°"], "a": 2, "why": "The tangent at any point is perpendicular to the radius through that point." },
+        { "q": "A point P is 13 cm from the centre of a circle of radius 5 cm. The length of the tangent from P to the circle is:", "o": ["8 cm", "12 cm", "18 cm", "√194 cm"], "a": 1, "why": "The radius meets the tangent at 90°, so the length = √(13² − 5²) = √144 = 12 cm." }
+      ],
+      "long": [
+        { "q": "A, B, C and D are points on a circle, with AB a diameter and ∠ADC = 120°. Find ∠ABC, ∠ACB and ∠BAC, giving reasons.", "marks": 3, "paper": "1", "scheme": ["B1: ∠ABC = 180° − 120° = 60° (opposite angles of cyclic quadrilateral ABCD)", "B1: ∠ACB = 90° (angle in a semicircle)", "B1: ∠BAC = 180° − 90° − 60° = 30° (angle sum of triangle ABC)"], "ans": "60°, 90°, 30°" },
+        { "q": "Prove that the two tangents drawn to a circle from an external point are equal in length.", "marks": 4, "paper": "1", "scheme": ["B1: let PA and PB be tangents from P to the circle with centre O; join OA, OB and OP", "B1: ∠OAP = ∠OBP = 90° (a tangent is perpendicular to the radius)", "M1: OA = OB (radii) and OP is common, so triangle OAP ≅ triangle OBP (RHS)", "A1: so PA = PB"] },
+        { "q": "PA and PB are tangents from P to a circle with centre O, and ∠APB = 50°. Find ∠AOB and ∠OAB.", "marks": 4, "paper": "1", "scheme": ["B1: ∠OAP = ∠OBP = 90°", "A1: ∠AOB = 360° − 90° − 90° − 50° = 130°", "M1: OA = OB, so triangle OAB is isosceles", "A1: ∠OAB = (180° − 130°) ÷ 2 = 25°"], "ans": "130°; 25°" },
+        { "q": "TA is the tangent at A to a circle with centre O, and the chord AB makes ∠BAT = 65°. C is a point on the major arc. Find ∠ACB and ∠AOB, giving reasons.", "marks": 2, "paper": "1", "scheme": ["B1: ∠ACB = ∠BAT = 65° (angles in the alternate segment)", "B1: ∠AOB = 2 × ∠ACB = 130° (angle at the centre is twice the angle at the circumference)"], "ans": "65°; 130°" },
+        { "q": "(a) Chords AB and CD of a circle meet at P inside the circle. PA = 6 cm, PB = 4 cm and PC = 3 cm. Find PD. (b) From an external point Q, a line cuts a circle at R and S, with QR = 4 cm and RS = 5 cm. Find the length of the tangent QT from Q.", "marks": 4, "paper": "1", "scheme": ["M1: (a) PA × PB = PC × PD", "A1: 6 × 4 = 3 × PD, so PD = 8 cm", "M1: (b) QT² = QR × QS = 4 × 9", "A1: QT = 6 cm"], "ans": "8 cm; 6 cm" }
+      ]
+    },
+    {
+      "id": "10.15", "stage": "10", "name": "Constructions",
+      "questions": [
+        { "q": "To draw the circle inscribed in a triangle, we first construct:", "o": ["The bisectors of two of its angles", "The perpendicular bisectors of two sides", "One angle bisector and one side bisector", "All three medians"], "a": 0, "why": "The incentre, where the angle bisectors meet, is equidistant from all three sides." },
+        { "q": "To draw the circle circumscribing a triangle, we first construct:", "o": ["The bisectors of two angles", "The perpendicular bisectors of two sides", "Two medians", "Two altitudes"], "a": 1, "why": "The circumcentre, where the perpendicular bisectors meet, is equidistant from all three vertices." },
+        { "q": "A regular hexagon is inscribed in a circle of radius 4 cm. The length of each side is:", "o": ["2 cm", "8 cm", "4 cm", "6 cm"], "a": 2, "why": "The hexagon is made of six equilateral triangles meeting at the centre, so each side equals the radius." },
+        { "q": "When drawing tangents from an external point P to a circle with centre O, we draw a circle on OP as diameter because:", "o": ["Tangents are always parallel", "OP is a chord of the circle", "It makes the tangents equal", "The angle in a semicircle is a right angle"], "a": 3, "why": "The points where it cuts the given circle make ∠OAP = 90°, so PA is perpendicular to the radius and is a tangent." },
+        { "q": "The circumcentre of a right-angled triangle lies:", "o": ["Inside the triangle", "At the mid-point of the hypotenuse", "At the vertex with the right angle", "Outside the triangle"], "a": 1, "why": "The hypotenuse is a diameter of the circumcircle, since the angle in a semicircle is 90°." }
+      ],
+      "long": [
+        { "q": "Describe in words how to construct the tangents from a point P to a circle of radius 3 cm whose centre O is 7 cm from P. Calculate the length of each tangent.", "marks": 5, "paper": "1", "scheme": ["B1: draw a circle with centre O and radius 3 cm, and mark P so that OP = 7 cm", "B1: bisect OP to find its mid-point M", "B1: with centre M and radius MO, draw a circle cutting the given circle at A and B", "B1: join PA and PB; these are the required tangents", "B1: PA = PB = √(7² − 3²) = √40 ≈ 6.3 cm"], "ans": "√40 ≈ 6.3 cm" },
+        { "q": "Describe in words how to construct triangle ABC with AB = 6 cm, BC = 8 cm and ∠B = 90°, and draw its circumcircle. State the radius you expect.", "marks": 4, "paper": "1", "scheme": ["B1: draw BC = 8 cm, construct 90° at B, cut off BA = 6 cm and join AC", "B1: draw the perpendicular bisectors of AB and BC, meeting at O", "B1: O lies at the mid-point of the hypotenuse AC; with centre O and radius OA draw the circle", "B1: AC = √(6² + 8²) = 10 cm, so the radius is 5 cm"], "ans": "5 cm" },
+        { "q": "Describe in words how to construct the circle inscribed in an equilateral triangle of side 6 cm, and calculate its radius.", "marks": 4, "paper": "1", "scheme": ["B1: construct an equilateral triangle of side 6 cm (all angles 60°)", "B1: bisect two of its angles; the bisectors meet at I", "B1: draw IM perpendicular to one side and, with centre I and radius IM, draw the circle", "B1: the radius = 6 ÷ (2√3) = √3 ≈ 1.73 cm"], "ans": "√3 ≈ 1.73 cm" },
+        { "q": "Describe in words how to construct a regular hexagon of side 3.5 cm together with its circumcircle.", "marks": 3, "paper": "1", "scheme": ["B1: draw a circle of radius 3.5 cm, since the side of a regular hexagon equals the radius of its circumcircle", "B1: starting from any point on the circle, step off arcs of radius 3.5 cm six times round the circle", "B1: join the consecutive points to form the hexagon; the circle drawn is its circumcircle"] },
+        { "q": "Explain why the lines PA and PB obtained using the circle on OP as diameter are tangents to the given circle.", "marks": 2, "paper": "1", "scheme": ["B1: A lies on the circle with diameter OP, so ∠OAP = 90° (angle in a semicircle)", "B1: a line perpendicular to a radius at its end on the circle is a tangent; the same holds for PB"] }
+      ]
+    },
+    {
+      "id": "10.16", "stage": "10", "name": "Mensuration: cylinder, cone and sphere",
+      "questions": [
+        { "q": "The volume of a cylinder of radius 7 cm and height 10 cm (π = 22/7) is:", "o": ["1540 cm³", "440 cm³", "154 cm³", "3080 cm³"], "a": 0, "why": "V = πr²h = 22/7 × 49 × 10 = 1540 cm³; 440 cm² is its curved surface area." },
+        { "q": "The curved surface area of a cone with radius 3 cm and slant height 5 cm is:", "o": ["9π cm²", "15π cm²", "24π cm²", "12π cm²"], "a": 1, "why": "CSA = πrl = π × 3 × 5 = 15π cm²; 24π includes the base." },
+        { "q": "The volume of a sphere of radius 3 cm is:", "o": ["12π cm³", "27π cm³", "36π cm³", "108π cm³"], "a": 2, "why": "V = (4/3)πr³ = (4/3)π × 27 = 36π cm³." },
+        { "q": "The slant height of a cone with radius 6 cm and height 8 cm is:", "o": ["14 cm", "7 cm", "48 cm", "10 cm"], "a": 3, "why": "l = √(r² + h²) = √(36 + 64) = 10 cm." },
+        { "q": "How many spheres of radius 1 cm can be made by melting a solid sphere of radius 3 cm?", "o": ["3", "27", "9", "81"], "a": 1, "why": "Volume scales with the cube of the radius: 3³ ÷ 1³ = 27." }
+      ],
+      "long": [
+        { "q": "A toy is a cone mounted on a hemisphere of the same radius, 3.5 cm. The total height of the toy is 15.5 cm. Find its volume and total surface area (π = 22/7).", "marks": 5, "paper": "1", "scheme": ["B1: height of the cone = 15.5 − 3.5 = 12 cm", "M1: volume = ⅓πr²h + ⅔πr³", "A1: = 154 + 89.83 = 243.83 cm³ (approx.)", "M1: slant height = √(12² + 3.5²) = √156.25 = 12.5 cm", "A1: surface area = πrl + 2πr² = 137.5 + 77 = 214.5 cm²"], "ans": "243.83 cm³; 214.5 cm²" },
+        { "q": "A solid metal sphere of radius 6 cm is melted and recast into a cylinder of radius 4 cm. Find the height of the cylinder.", "marks": 3, "paper": "1", "scheme": ["M1: (4/3)π × 6³ = π × 4² × h", "A1: 288π = 16πh", "A1: h = 18 cm"], "ans": "18 cm" },
+        { "q": "A conical tent is 8 m high and the radius of its base is 6 m. Find the area of canvas needed and its cost at ₹120 per m² (π = 3.14).", "marks": 4, "paper": "1", "scheme": ["M1: slant height = √(8² + 6²) = 10 m", "M1: canvas = πrl = 3.14 × 6 × 10", "A1: = 188.4 m²", "A1: cost = 188.4 × 120 = ₹22,608"], "ans": "188.4 m²; ₹22,608" },
+        { "q": "A hollow metal pipe is 1 m long, with external diameter 10 cm and internal diameter 8 cm. Find the volume of metal in it (π = 22/7).", "marks": 3, "paper": "1", "scheme": ["B1: R = 5 cm, r = 4 cm, h = 100 cm", "M1: volume = π(R² − r²)h = π × 9 × 100", "A1: = 900π ≈ 2828.57 cm³"], "ans": "≈ 2828.57 cm³" },
+        { "q": "A cylindrical vessel of radius 6 cm contains water. A solid sphere of radius 3 cm is dropped in and is completely submerged. By how much does the water level rise?", "marks": 3, "paper": "1", "scheme": ["M1: volume of the sphere = (4/3)π × 3³ = 36π cm³", "M1: π × 6² × h = 36π", "A1: h = 1 cm"], "ans": "1 cm" }
+      ]
+    },
+    {
+      "id": "10.17", "stage": "10", "name": "Trigonometry: identities, and heights and distances",
+      "questions": [
+        { "q": "1 + tan²θ equals:", "o": ["sec²θ", "cosec²θ", "cot²θ", "1"], "a": 0, "why": "Divide sin²θ + cos²θ = 1 by cos²θ." },
+        { "q": "From a point 30 m from the foot of a tower, the angle of elevation of its top is 45°. The height of the tower is:", "o": ["15 m", "30 m", "30√3 m", "10√3 m"], "a": 1, "why": "tan 45° = h/30 = 1, so h = 30 m." },
+        { "q": "The value of sin 50° ÷ cos 40° is:", "o": ["0", "2", "1", "tan 50°"], "a": 2, "why": "sin 50° = sin(90° − 40°) = cos 40°, so the ratio is 1." },
+        { "q": "(1 − cos²θ) sec²θ simplifies to:", "o": ["1", "sin²θ", "cot²θ", "tan²θ"], "a": 3, "why": "1 − cos²θ = sin²θ, and sin²θ ÷ cos²θ = tan²θ." },
+        { "q": "From the top of a cliff 50 m high, the angle of depression of a boat is 30°. The distance of the boat from the foot of the cliff is:", "o": ["50 m", "50√3 m", "100 m", "50/√3 m"], "a": 1, "why": "tan 30° = 50/d, so d = 50 ÷ (1/√3) = 50√3 ≈ 86.6 m." }
+      ],
+      "long": [
+        { "q": "Prove that sin θ ÷ (1 − cos θ) = (1 + cos θ) ÷ sin θ.", "marks": 3, "paper": "1", "scheme": ["M1: multiply numerator and denominator of the left side by (1 + cos θ)", "A1: = sin θ(1 + cos θ) ÷ (1 − cos²θ)", "A1: = sin θ(1 + cos θ) ÷ sin²θ = (1 + cos θ) ÷ sin θ"] },
+        { "q": "Prove that √[(1 − sin A) ÷ (1 + sin A)] = sec A − tan A.", "marks": 4, "paper": "1", "scheme": ["M1: multiply numerator and denominator inside the root by (1 − sin A)", "A1: = √[(1 − sin A)² ÷ (1 − sin²A)]", "A1: = (1 − sin A) ÷ cos A", "A1: = sec A − tan A"] },
+        { "q": "From the top of a building 60 m high, the angles of depression of the top and the bottom of a tower are 30° and 60°. Find the height of the tower.", "marks": 5, "paper": "1", "scheme": ["M1: tan 60° = 60/d, where d is the distance between the building and the tower", "A1: d = 60/√3 = 20√3 m", "M1: tan 30° = (60 − h)/d", "A1: 60 − h = 20√3 × 1/√3 = 20", "A1: h = 40 m"], "ans": "40 m" },
+        { "q": "From a point A on level ground, the angle of elevation of the top of a tower is 30°. On walking 40 m towards the tower to a point B, the angle becomes 60°. Find the height of the tower.", "marks": 4, "paper": "1", "scheme": ["M1: from B, h = x tan 60° = x√3, where x = distance from B to the tower", "M1: from A, h = (x + 40) tan 30° = (x + 40)/√3", "A1: 3x = x + 40, so x = 20 m", "A1: h = 20√3 ≈ 34.64 m"], "ans": "20√3 ≈ 34.64 m" },
+        { "q": "Without using tables, evaluate sin 35° × sec 55° + tan 20° × tan 70°.", "marks": 3, "paper": "1", "scheme": ["M1: sec 55° = cosec 35°, so sin 35° × sec 55° = 1", "M1: tan 70° = cot 20°, so tan 20° × tan 70° = 1", "A1: the value is 2"], "ans": "2" }
+      ]
+    },
+    {
+      "id": "10.18", "stage": "10", "name": "Statistics",
+      "questions": [
+        { "q": "An ogive (cumulative frequency curve) is drawn by plotting:", "o": ["Cumulative frequencies against the upper class boundaries", "Frequencies against class marks", "Frequencies against lower limits", "Class widths against frequencies"], "a": 0, "why": "Each cumulative frequency counts the values up to the upper boundary of its class." },
+        { "q": "For 60 observations, the median is read from an ogive at a cumulative frequency of:", "o": ["15", "30", "45", "31"], "a": 1, "why": "The median is the n/2 th value: 60 ÷ 2 = 30." },
+        { "q": "For 80 observations, the upper quartile is read from an ogive at a cumulative frequency of:", "o": ["20", "40", "60", "70"], "a": 2, "why": "The upper quartile is the 3n/4 th value: 3 × 80 ÷ 4 = 60." },
+        { "q": "The mode of 2, 4, 4, 5, 7, 7, 7, 9 is:", "o": ["4", "5", "9", "7"], "a": 3, "why": "7 occurs three times, more often than any other value." },
+        { "q": "For a distribution, Q₁ = 22 and Q₃ = 46. The interquartile range is:", "o": ["34", "24", "68", "12"], "a": 1, "why": "IQR = Q₃ − Q₁ = 46 − 22 = 24; 12 is the semi-interquartile range." }
+      ],
+      "long": [
+        { "q": "Use the step-deviation method to find the mean of this distribution. Classes: 0–20, 20–40, 40–60, 60–80, 80–100; frequencies: 6, 10, 14, 8, 2.", "marks": 5, "paper": "1", "scheme": ["B1: class marks 10, 30, 50, 70, 90", "M1: with A = 50 and i = 20, t = −2, −1, 0, 1, 2 and Σft = −12 − 10 + 0 + 8 + 4 = −10", "B1: Σf = 40", "M1: mean = A + (Σft ÷ Σf) × i = 50 + (−10 ÷ 40) × 20", "A1: = 45"], "ans": "45" },
+        { "q": "For the data 3, 5, 6, 8, 9, 10, 12, 14, 15, 17, 20, find the median, the lower quartile, the upper quartile and the interquartile range.", "marks": 4, "paper": "1", "scheme": ["B1: n = 11; median = 6th value = 10", "B1: Q₁ = ((n + 1)/4)th = 3rd value = 6", "B1: Q₃ = (3(n + 1)/4)th = 9th value = 15", "B1: IQR = 15 − 6 = 9"], "ans": "median 10, Q₁ 6, Q₃ 15, IQR 9" },
+        { "q": "The marks of 100 students are grouped as 0–20: 10, 20–40: 25, 40–60: 35, 60–80: 20, 80–100: 10. Describe in words how to draw an ogive, and use it to estimate the median.", "marks": 4, "paper": "1", "scheme": ["B1: cumulative frequencies are 10, 35, 70, 90, 100", "B1: plot (20, 10), (40, 35), (60, 70), (80, 90) and (100, 100), starting from (0, 0), and join them with a smooth curve", "M1: from 50 on the cumulative frequency axis, draw a horizontal line to the curve and then drop to the marks axis", "A1: median ≈ 48.6 marks (about 48 to 49 from the graph)"], "ans": "≈ 48.6 marks" },
+        { "q": "Describe in words how to estimate the mode of a grouped distribution from its histogram.", "marks": 3, "paper": "1", "scheme": ["B1: draw the histogram, with class intervals on the x-axis and frequencies on the y-axis", "B1: in the tallest bar, join its top right corner to the top right corner of the bar on its left, and its top left corner to the top left corner of the bar on its right", "B1: from the point where these two lines cross, drop a perpendicular to the x-axis; the value read there is the mode"] },
+        { "q": "The mean of the following distribution is 27. Find p. Classes: 0–10, 10–20, 20–30, 30–40, 40–50; frequencies: 5, p, 20, 15, 5.", "marks": 3, "paper": "1", "scheme": ["M1: with class marks 5, 15, 25, 35, 45: Σfx = 1275 + 15p and Σf = 45 + p", "M1: (1275 + 15p) ÷ (45 + p) = 27", "A1: 1275 + 15p = 1215 + 27p, so p = 5"], "ans": "5" }
+      ]
+    },
+    {
+      "id": "10.19", "stage": "10", "name": "Probability",
+      "questions": [
+        { "q": "The probability of getting a head when a fair coin is tossed is:", "o": ["½", "1", "0", "¼"], "a": 0, "why": "There are two equally likely outcomes and one is favourable." },
+        { "q": "A fair die is thrown. The probability of getting a prime number is:", "o": ["⅓", "½", "⅔", "⅙"], "a": 1, "why": "The primes on a die are 2, 3 and 5: 3 of 6 outcomes. 1 is not prime." },
+        { "q": "A card is drawn at random from a well-shuffled pack of 52. The probability that it is a king is:", "o": ["1/4", "1/52", "1/13", "4/13"], "a": 2, "why": "There are 4 kings: 4/52 = 1/13." },
+        { "q": "The probability of an impossible event is:", "o": ["1", "½", "−1", "0"], "a": 3, "why": "Probability ranges from 0 (impossible) to 1 (certain); it is never negative." },
+        { "q": "Two fair coins are tossed together. The probability of getting at least one head is:", "o": ["1/4", "3/4", "1/2", "1"], "a": 1, "why": "The outcomes are HH, HT, TH and TT; three contain at least one head." }
+      ],
+      "long": [
+        { "q": "A bag contains 5 red, 8 blue and 7 green balls. One ball is drawn at random. Find the probability that it is (a) red; (b) not blue; (c) white.", "marks": 4, "paper": "1", "scheme": ["B1: total number of balls = 20", "B1: (a) P(red) = 5/20 = ¼", "B1: (b) P(not blue) = 12/20 = 3/5", "B1: (c) P(white) = 0, since there are no white balls"], "ans": "¼; 3/5; 0" },
+        { "q": "Two dice are thrown together. Find the probability of getting (a) a sum of 8; (b) a doublet; (c) a sum greater than 10.", "marks": 4, "paper": "1", "scheme": ["B1: there are 36 equally likely outcomes", "B1: (a) sum 8: (2, 6), (3, 5), (4, 4), (5, 3), (6, 2), so P = 5/36", "B1: (b) doublets: 6 outcomes, so P = 6/36 = 1/6", "B1: (c) sum 11 or 12: (5, 6), (6, 5), (6, 6), so P = 3/36 = 1/12"], "ans": "5/36; 1/6; 1/12" },
+        { "q": "Cards numbered 1 to 30 are put in a box and one is drawn at random. Find the probability that the number is a multiple of 3 or 5.", "marks": 3, "paper": "1", "scheme": ["M1: multiples of 3: 10; multiples of 5: 6; multiples of both (15 and 30): 2", "A1: favourable outcomes = 10 + 6 − 2 = 14", "A1: P = 14/30 = 7/15"], "ans": "7/15" },
+        { "q": "A card is drawn from a well-shuffled pack of 52 cards. Find the probability that it is (a) a red face card; (b) neither a king nor a queen.", "marks": 4, "paper": "1", "scheme": ["B1: there are 6 red face cards (jack, queen and king of hearts and of diamonds)", "B1: (a) P = 6/52 = 3/26", "M1: cards that are neither kings nor queens = 52 − 8 = 44", "A1: (b) P = 44/52 = 11/13"], "ans": "3/26; 11/13" },
+        { "q": "A box contains 4 defective bulbs and 16 good ones. One bulb is drawn at random. Find the probability that it is good. If this bulb is good and is not replaced, find the probability that a second bulb drawn is also good.", "marks": 3, "paper": "1", "scheme": ["B1: P(good) = 16/20 = 4/5", "M1: after one good bulb is removed, 15 good bulbs remain out of 19", "A1: P(second good) = 15/19"], "ans": "4/5; 15/19" }
+      ]
+    }
+  ]
+}

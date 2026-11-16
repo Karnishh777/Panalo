@@ -29,6 +29,10 @@ for (const s of profile.subjects) syllabi[s.id] = load(P.syllabusPath(profile.st
 {
   ok("IGCSE and A Level banks have their own folders", P.syllabusPath("igcse2", "phy") === "assets/syllabus/igcse/phy.json" && P.syllabusPath("a2", "phy") === "assets/syllabus/alevel/phy.json");
   ok("CBSE has no bank yet", P.syllabusPath("cbse10", "phy") === null);
+  ok("ICSE banks have their own folder; ISC has none yet", P.syllabusPath("icse9", "phy") === "assets/syllabus/icse/phy.json" && P.syllabusPath("isc12", "phy") === null);
+  const years = { code: "icse-phy", topics: [{ id: "9.1", stage: "9", name: "a" }, { id: "10.1", stage: "10", name: "b" }, { id: "x", name: "c" }] };
+  ok("an ICSE class studies its own year's chapters", P.topicsInScope(years, "icse9").map((t) => t.id).join() === "9.1,x" && P.topicsInScope(years, "icse10").map((t) => t.id).join() === "10.1,x");
+  ok("…with its paper chosen too", P.topicsInScope(years, "icse10", ["1"]).map((t) => t.id).join() === "10.1,x");
   const as = P.topicsInScope(syllabi.phy, "as");
   const a2 = P.topicsInScope(syllabi.phy, "a2");
   ok("AS students study the AS topics only", as.length > 0 && as.every((t) => t.stage === "as"));
