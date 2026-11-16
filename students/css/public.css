@@ -1193,15 +1193,20 @@ input[type="range"].range {
 }
 .setup-side {
   position: relative;
+  isolation: isolate;
   align-self: stretch;
   display: flex;
   flex-direction: column;
-  justify-content: flex-end;
+  justify-content: center;
   min-height: 100vh;
   min-height: 100dvh;
-  padding: 48px clamp(24px, 4vw, 56px);
+  padding: 56px clamp(28px, 4.5vw, 72px) 30vh;
   overflow: hidden;
-  background: radial-gradient(60% 50% at 30% 70%, rgba(255, 120, 50, 0.16), transparent 70%), #05070e;
+  background:
+    linear-gradient(90deg, transparent 65%, var(--bg)),
+    radial-gradient(60% 40% at 15% 0%, rgba(140, 160, 210, 0.08), transparent 70%),
+    radial-gradient(80% 40% at 30% 100%, color-mix(in srgb, var(--accent) 18%, transparent), transparent 70%),
+    #05070e;
 }
 .setup-side.painted {
   background:
@@ -1209,13 +1214,65 @@ input[type="range"].range {
     linear-gradient(to top, rgba(5, 7, 14, 0.92), rgba(5, 7, 14, 0) 55%),
     var(--setup-wall) center 35% / cover no-repeat;
 }
-
+.setup-side-text {
+  position: relative;
+  z-index: 1;
+  max-width: 32rem;
+}
+/* Where you are: the step in the mono, its number large and outlined. */
+.setup-side-step {
+  margin: 0;
+  font: 500 var(--t-xs) / 1.2 var(--f-mono);
+  letter-spacing: var(--track-eyebrow);
+  text-transform: uppercase;
+  color: var(--text-2);
+}
+.setup-side-num {
+  margin: 14px 0 26px;
+  font: 700 clamp(96px, 11vw, 168px) / 0.8 var(--f-display);
+  letter-spacing: -0.06em;
+  color: transparent;
+  -webkit-text-stroke: 1.5px var(--accent);
+  font-variant-numeric: tabular-nums;
+}
+/* A line for each step, in the display face. */
 .setup-side-line {
-  max-width: 28ch;
-  margin: 14px 0 0;
-  font: italic 400 clamp(18px, 1.7vw, 24px) / 1.35 var(--f-serif);
+  max-width: 17ch;
+  margin: 0;
+  font: 650 clamp(24px, 2.4vw, 36px) / 1.12 var(--f-display);
+  letter-spacing: -0.03em;
   color: var(--text);
   text-wrap: balance;
+}
+/* The world, waiting below: an Earth's horizon with its air lit. */
+.setup-planet {
+  position: absolute;
+  left: -20%;
+  top: 70%;
+  z-index: 0;
+  width: 140%;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background:
+    radial-gradient(circle at 50% 50%, #05070e 50%, rgba(5, 7, 14, 0.82) 60%, rgba(5, 7, 14, 0.35) 68%, rgba(5, 7, 14, 0.2) 71%),
+    linear-gradient(160deg, rgba(120, 170, 255, 0.22), transparent 35%),
+    url("../assets/earth/earth-albedo-1024.jpg") 60% 46% / 220% auto;
+  box-shadow:
+    inset 0 16px 34px -14px rgba(170, 210, 255, 0.6),
+    0 -8px 50px -8px rgba(110, 160, 255, 0.4),
+    0 -40px 140px -20px color-mix(in srgb, var(--accent) 28%, transparent);
+  /* fades out before the side's edge, so nothing is cut off square */
+  -webkit-mask-image: linear-gradient(90deg, #000 45%, transparent 84%);
+  mask-image: linear-gradient(90deg, #000 45%, transparent 84%);
+}
+.setup-side.painted .setup-planet {
+  display: none;
+}
+/* With the side showing where you are, the card needn't count too. */
+@media (min-width: 861px) {
+  html[data-look] body.in-setup .setup.has-side .setup-count {
+    display: none;
+  }
 }
 .setup-num {
   display: none;
@@ -1387,19 +1444,40 @@ input[type="range"].range {
     align-items: center;
     justify-content: flex-start;
     gap: 12px;
-    padding: 18px 16px 6px;
+    padding: 20px 20px 4px;
+    background: none;
+  }
+  .setup-side-step,
+  .setup-side-num,
+  .setup-planet {
+    display: none;
   }
   .setup-side.painted {
     background: linear-gradient(to top, var(--bg), rgba(5, 7, 14, 0.4)), var(--setup-wall) center 30% / cover no-repeat;
   }
 
   .setup-side-line {
+    max-width: none;
     margin: 0;
-    font-size: 16px;
+    font-size: 17px;
+    color: var(--text-2);
   }
   .setup-form {
     margin: 8px 16px 24px;
     width: auto;
+  }
+  html[data-look] body.in-setup .setup.has-side .setup-form {
+    padding: 22px 18px 18px;
+  }
+  /* Back and Next stay in reach while a long step scrolls. */
+  html[data-look] body.in-setup .setup.has-side .setup-actions {
+    position: sticky;
+    bottom: 0;
+    z-index: 2;
+    margin: 20px -18px -18px;
+    padding: 14px 18px max(18px, env(safe-area-inset-bottom, 0px));
+    border-radius: 0 0 var(--r-3) var(--r-3);
+    background: linear-gradient(to bottom, rgba(10, 12, 19, 0), rgba(10, 12, 19, 0.96) 28%);
   }
 }
 @media (max-width: 520px) {

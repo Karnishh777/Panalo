@@ -280,6 +280,23 @@ html:is([data-look="night"], [data-look="day"]) .now-top {
 html:is([data-look="night"], [data-look="day"]) .now-top .now-step.panel {
   min-height: 216px;
 }
+/* On a wide screen the next step rises into the photo's dark foot, so the
+   greeting and the tile read as one row under the climb, with no gap. */
+@media (min-width: 900px) {
+  html:is([data-look="night"], [data-look="day"]) .today-hero {
+    padding-bottom: 76px;
+    margin-bottom: 0;
+  }
+  html:is([data-look="night"], [data-look="day"]) .now-top {
+    position: relative;
+    z-index: 1;
+    align-items: end;
+    margin-top: -58px;
+  }
+  html:is([data-look="night"], [data-look="day"]) .now-top > .now-head {
+    padding-bottom: 10px;
+  }
+}
 html:is([data-look="night"], [data-look="day"]) .now-step .btn-primary {
   --h: 52px;
   font-weight: 700;
@@ -372,7 +389,7 @@ html:is([data-look="night"], [data-look="day"]) body[data-view="study"].in-app::
   pointer-events: none;
 }
 html:is([data-look="night"], [data-look="day"]) .study-dial {
-  width: min(68vw, 300px);
+  width: min(82vw, 400px);
 }
 html:is([data-look="night"], [data-look="day"]) .ring-track {
   fill: rgba(11, 10, 18, 0.55);
@@ -392,7 +409,7 @@ html:is([data-look="night"], [data-look="day"]) .ring-body {
   r: 6;
 }
 html:is([data-look="night"], [data-look="day"]) .study-readout {
-  font: 500 clamp(52px, 14vw, 72px) / 1 var(--f-mono);
+  font: 500 clamp(56px, 9vw, 92px) / 1 var(--f-mono);
   font-variant-numeric: tabular-nums;
   letter-spacing: -0.03em;
   font-variant-numeric: tabular-nums;
@@ -457,8 +474,11 @@ html:is([data-look="night"], [data-look="day"]) .sheet-journal input.ink::placeh
 
 html:is([data-look="night"], [data-look="day"]) .legend {
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 210px), 1fr));
   gap: 8px;
+}
+html:is([data-look="night"], [data-look="day"]) .world-legend .legend-row {
+  border-top: 1px solid var(--line);
 }
 html:is([data-look="night"], [data-look="day"]) .legend-row,
 html:is([data-look="night"], [data-look="day"]) .legend-row:first-child {
@@ -515,61 +535,6 @@ html:is([data-look="night"], [data-look="day"]) .panel-head h2::after {
   display: none;
 }
 
-/* ---- Your shelf: a spine per subject --------------------------------------- */
-
-.pl-shelf {
-  display: flex;
-  align-items: flex-end;
-  gap: 8px;
-  height: 168px;
-  margin: 6px 0 18px;
-  padding: 0 4px;
-  overflow-x: auto;
-  border-bottom: 4px solid rgba(155, 140, 255, 0.45);
-  box-shadow: 0 12px 30px -14px rgba(106, 88, 242, 0.6);
-  scrollbar-width: none;
-}
-.pl-spine {
-  position: relative;
-  flex: 0 0 48px;
-  display: grid;
-  place-items: center;
-  height: 150px;
-  overflow: hidden;
-  border: 1px solid var(--line-2);
-  border-radius: 10px 10px 2px 2px;
-  background: rgba(255, 255, 255, 0.05);
-  color: var(--text);
-  text-decoration: none;
-}
-.pl-spine:nth-child(3n + 2) {
-  height: 136px;
-}
-.pl-spine:nth-child(3n) {
-  height: 160px;
-}
-.pl-spine i {
-  position: absolute;
-  inset: auto 0 0;
-  height: calc(var(--fill) * 100%);
-  background: linear-gradient(to top, color-mix(in srgb, var(--subj) 75%, transparent), color-mix(in srgb, var(--subj) 18%, transparent));
-}
-.pl-spine span {
-  position: relative;
-  max-height: 128px;
-  overflow: hidden;
-  writing-mode: vertical-rl;
-  transform: rotate(180deg);
-  font: 650 var(--t-sm) var(--f-display);
-  letter-spacing: -0.01em;
-  white-space: nowrap;
-  text-overflow: ellipsis;
-}
-.pl-spine:hover,
-.pl-spine:focus-visible {
-  border-color: var(--violet);
-  box-shadow: 0 0 18px rgba(139, 124, 255, 0.5);
-}
 html:is([data-look="night"], [data-look="day"]) .wn-v {
   font-weight: 800;
   letter-spacing: -0.02em;

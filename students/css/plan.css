@@ -1532,3 +1532,166 @@ body.in-app[data-view="plan"] .wall {
   border-radius: 12px;
   background: color-mix(in srgb, var(--accent) 8%, transparent);
 }
+
+/* ===== The plan in tiles (the Now page's language) ========================= */
+/* Day by day on the left, your subjects on the right: each a tile in the
+   look's own finish (.panel), the gap between them the only spacing. */
+.plan-body {
+  gap: 20px;
+}
+.pl-grid {
+  grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
+  gap: 20px;
+}
+.pl-side {
+  align-content: start;
+  gap: 20px;
+}
+html[data-look] .plan :is(.pl-week, .pl-results, .pl-subject).panel {
+  min-width: 0;
+  margin: 0;
+}
+/* A tile's own head: the size of Now's tile heads. */
+html[data-look] .plan .panel > .pl-h:first-child,
+html[data-look] .plan .panel > .pl-row-head .pl-h {
+  margin: 0 0 14px;
+  font: 650 var(--t-lg) / 1.2 var(--f-display);
+  letter-spacing: -0.02em;
+}
+html[data-look] .plan .pl-results .pl-row-head {
+  align-items: center;
+}
+html[data-look] .plan .pl-results .pl-row-head .pl-h {
+  margin: 0;
+}
+.pl-results > p {
+  margin: 10px 0 0;
+}
+html[data-look] .plan .pl-week .pl-h-sm {
+  margin: 20px 0 0;
+  font: 600 var(--t-xs) / 1.2 var(--f-body);
+  letter-spacing: var(--track-eyebrow);
+  text-transform: uppercase;
+  color: var(--text-2);
+}
+.pl-subjects {
+  gap: 14px;
+}
+.pl-subjects-wrap > .pl-row-head {
+  align-items: center;
+  margin-bottom: 14px;
+}
+.pl-subjects-wrap > .pl-row-head .pl-h {
+  margin: 0;
+}
+
+/* The shelf: a spine per subject, readable at a glance. Its name, how
+   ready it is in the mono, and a line along its foot filled that far. */
+.pl-shelf {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 176px), 1fr));
+  gap: 10px;
+  margin: 0 0 14px;
+}
+.pl-spine {
+  position: relative;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: baseline;
+  gap: 10px;
+  min-height: var(--hit-touch, 48px);
+  padding: 14px 16px 17px;
+  overflow: hidden;
+  border: 1px solid var(--line-2);
+  border-radius: var(--r-2);
+  background: linear-gradient(100deg, color-mix(in srgb, var(--subj) 10%, transparent), transparent 70%), var(--surface);
+  color: var(--text);
+  text-decoration: none;
+  transition: transform var(--dur-1) var(--ease-out), border-color var(--dur-1) var(--ease-out);
+}
+.pl-spine-name {
+  overflow: hidden;
+  font: 600 var(--t-ui) / 1.25 var(--f-body);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.pl-spine-pct {
+  font: 500 20px / 1 var(--f-mono);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.03em;
+  color: color-mix(in srgb, var(--subj) 70%, var(--text));
+}
+.pl-spine i {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 3px;
+  background: color-mix(in srgb, var(--subj) 16%, transparent);
+}
+.pl-spine i::after {
+  content: "";
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: calc(var(--fill, 0) * 100%);
+  background: var(--subj);
+  box-shadow: 0 0 10px color-mix(in srgb, var(--subj) 70%, transparent);
+}
+.pl-spine:hover {
+  border-color: color-mix(in srgb, var(--subj) 55%, var(--line-2));
+}
+.pl-spine:active {
+  transform: scale(0.98);
+}
+.pl-spine:focus-visible {
+  outline: 2px solid var(--ring);
+  outline-offset: 2px;
+}
+/* Signal keeps it monochrome; Verse prints it. */
+html[data-look="signal"] .pl-spine {
+  background: var(--surface);
+}
+html[data-look="verse"] .pl-spine {
+  border: 2px solid var(--paper);
+  border-radius: 2px;
+  box-shadow: 4px 4px 0 var(--subj);
+}
+@media (prefers-reduced-motion: reduce) {
+  .pl-spine {
+    transition: none;
+  }
+}
+:root[data-motion="reduce"] .pl-spine {
+  transition: none;
+}
+
+/* Sections you jump to clear the sticky bar. */
+.pl-subject,
+.pl-week,
+.pl-results {
+  scroll-margin-top: calc(var(--bar-h, 64px) + 16px);
+}
+
+@media (max-width: 860px) {
+  .pl-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+/* On white, a subject's colour as text takes mostly ink, so it reads (4.5:1). */
+html[data-look="day"] :is(.pl-spine-pct, .pl-checkin.todo span) {
+  color: color-mix(in srgb, var(--subj) 40%, var(--text));
+}
+@media (max-width: 520px) {
+  .pl-shelf {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  /* A phone's day rows wrap the chapter instead of cutting it off. */
+  .pl-week .pl-what b {
+    overflow: visible;
+    white-space: normal;
+    text-wrap: pretty;
+  }
+  .pl-spine {
+    padding: 12px 14px 15px;
+  }
+}

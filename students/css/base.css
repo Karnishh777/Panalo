@@ -340,12 +340,38 @@ button {
   box-shadow: 0 0 0 3px var(--accent-soft);
 }
 .field select,
-.birth-row select {
+.birth-row select,
+select.input {
   appearance: none;
+  padding-right: 38px;
   background-image: linear-gradient(45deg, transparent 50%, var(--text-3) 50%), linear-gradient(135deg, var(--text-3) 50%, transparent 50%);
   background-position: calc(100% - 20px) 50%, calc(100% - 15px) 50%;
   background-size: 5px 5px;
   background-repeat: no-repeat;
+}
+/* Dates: the same field, its digits in the mono, the picker a quiet icon. */
+input[type="date"]:is(.input, .field input) {
+  font-family: var(--f-mono);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.01em;
+}
+input[type="date"]::-webkit-datetime-edit {
+  padding: 0;
+}
+input[type="date"]::-webkit-datetime-edit-fields-wrapper {
+  padding: 0;
+}
+input[type="date"]::-webkit-calendar-picker-indicator {
+  margin-left: 6px;
+  padding: 4px;
+  border-radius: 6px;
+  opacity: 0.6;
+  cursor: pointer;
+  transition: opacity var(--dur-1) var(--ease-out);
+}
+input[type="date"]:hover::-webkit-calendar-picker-indicator,
+input[type="date"]:focus::-webkit-calendar-picker-indicator {
+  opacity: 1;
 }
 .field-row {
   display: grid;

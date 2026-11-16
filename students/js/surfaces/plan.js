@@ -257,8 +257,8 @@ function week(plan) {
     );
   };
   draw();
-  return el("section", { class: "pl-week", "aria-labelledby": "pl-week-h" }, [
-    el("h2", { id: "pl-week-h", class: "pl-h", text: "Today" }),
+  return el("section", { class: "pl-week panel", "aria-labelledby": "pl-week-h" }, [
+    el("h2", { id: "pl-week-h", class: "pl-h", text: "Day by day" }),
     list,
     el("p", { class: "pl-h pl-h-sm faint", text: "Other days" }),
     chips,
@@ -326,7 +326,7 @@ function subjectCard(s, now, v = subjectView(s, now)) {
         })
       );
   const ready = v.readiness;
-  return el("article", { class: "pl-subject", id: `pl-subj-${s.id}`, style: `--subj:${colour}` }, [
+  return el("article", { class: "pl-subject panel", id: `pl-subj-${s.id}`, style: `--subj:${colour}` }, [
     el("div", { class: "pl-subject-head" }, [
       el("h3", {}, [v.name, v.code ? el("span", { class: "faint num", text: ` ${v.code}` }) : null]),
       examLine(v, now),
@@ -413,8 +413,8 @@ function subjects(now) {
   ]);
 }
 
-// The shelf: a spine per subject, filled as far as you're ready. A spine
-// takes you to its subject.
+// The shelf: a spine per subject, its name, how ready it is and a line
+// filled that far in its colour. A spine takes you to its subject.
 function shelf(views) {
   if (views.length < 2) return null;
   return el(
@@ -425,7 +425,7 @@ function shelf(views) {
       return el(
         "a",
         { href: `#pl-subj-${s.id}`, class: "pl-spine", style: `--subj:${colourOf(s.id)};--fill:${ready == null ? 0 : Math.max(0.04, ready).toFixed(2)}`, "aria-label": ready == null ? v.name : `${v.name}: ${pct(ready)} ready`, onClick: (e) => { e.preventDefault(); document.getElementById(`pl-subj-${s.id}`)?.scrollIntoView({ behavior: "smooth", block: "start" }); } },
-        [el("i", { "aria-hidden": "true" }), el("span", { text: v.name })]
+        [el("span", { class: "pl-spine-name", text: v.name }), el("b", { class: "pl-spine-pct num", text: ready == null ? "Own work" : pct(ready) }), el("i", { "aria-hidden": "true" })]
       );
     })
   );
@@ -433,7 +433,7 @@ function shelf(views) {
 
 function results() {
   const list = store.results.slice(0, 8);
-  return el("section", { class: "pl-results", "aria-labelledby": "pl-res-h" }, [
+  return el("section", { class: "pl-results panel", "aria-labelledby": "pl-res-h" }, [
     el("div", { class: "pl-row-head" }, [
       el("h2", { id: "pl-res-h", class: "pl-h", text: "Results" }),
       el("button", { type: "button", class: "btn btn-quiet btn-sm", id: "plan-add-result", text: "Add a result", onClick: resultSheet, disabled: store.progressMissing || null }),

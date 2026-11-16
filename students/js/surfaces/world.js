@@ -282,7 +282,7 @@ function numbers(w) {
 function renderNumbers(w) {
   if (!numbersEl) return;
   numbersEl.replaceChildren(
-    ...numbers(w).map((n) => el("li", { class: "wn-stat" }, [el("b", { class: "wn-v" }, [el("span", { class: n.v.includes(" ") ? "" : "num", text: n.v })]), el("span", { class: "wn-u", text: n.u }), el("small", { class: "wn-h faint", text: n.hint })]))
+    ...numbers(w).map((n) => el("li", { class: "wn-stat panel" }, [el("b", { class: "wn-v" }, [el("span", { class: n.v.includes(" ") ? "" : "num", text: n.v })]), el("span", { class: "wn-u", text: n.u }), el("small", { class: "wn-h faint", text: n.hint })]))
   );
 }
 
@@ -409,11 +409,9 @@ export function mount(section) {
         el("a", { class: "btn btn-primary", href: "#/plan", text: "Study" }),
       ]),
     ]),
-    el("div", { class: "world-grid" }, [
-      stage,
-      el("section", { class: "panel tone-world", "aria-labelledby": "w-legend" }, [el("div", { class: "panel-head" }, [el("h2", { id: "w-legend", text: "What shapes it" })]), legendEl]),
-    ]),
-    el("section", { class: "world-numbers", "aria-label": "Your world in numbers" }, [(numbersEl = el("ul", { class: "wn-stats" }))]),
+    // The Earth large, its numbers beside it; what shapes it under both.
+    el("div", { class: "world-grid" }, [stage, el("section", { class: "world-numbers", "aria-label": "Your world in numbers" }, [(numbersEl = el("ul", { class: "wn-stats" }))])]),
+    el("section", { class: "panel tone-world world-legend", "aria-labelledby": "w-legend" }, [el("div", { class: "panel-head" }, [el("h2", { id: "w-legend", text: "What shapes it" })]), legendEl]),
     el("div", { class: "world-lower" }, [
       el("section", { class: "panel tone-world" }, [el("div", { class: "panel-head" }, [el("h2", { text: "Moons — your goals" }), el("button", { type: "button", class: "link-btn", text: "Add a moon", onClick: openGoal })]), moonsEl]),
       el("section", { class: "panel tone-time" }, [el("div", { class: "panel-head" }, [el("h2", { text: "Discoveries" })]), discEl]),

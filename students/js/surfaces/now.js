@@ -106,7 +106,7 @@ function todayPanel(now) {
   const evening = dayPart(now) === "evening";
   const close = entry?.closed_at
     ? el("p", { class: "closed-line" }, [el("span", { class: "tag tone-drift", text: `Day closed${closedMood ? ` · ${closedMood}` : ""}` }), " ", el("button", { type: "button", class: "link-btn", text: "Edit", onClick: () => openCheckin() })])
-    : el("button", { type: "button", class: `btn btn-sm ${evening ? "btn-primary" : "btn-quiet"}`, id: "close-day", text: "Close the day", onClick: () => openCheckin() });
+    : el("button", { type: "button", class: `btn btn-sm ${evening ? "btn-primary" : "btn-ghost"}`, id: "close-day", text: "Close the day", onClick: () => openCheckin() });
 
   return panel("tone-drift", "Today", { href: "#/world/journal", label: "Journal" }, [
     intention,

@@ -12,8 +12,16 @@ html[data-look="glass"] body.in-setup {
   --forge: var(--accent);
   --forge-2: var(--accent-hi);
   --forge-ink: var(--on-accent);
-  --plate: linear-gradient(170deg, rgba(255, 255, 255, 0.045), rgba(255, 255, 255, 0.015) 45%), rgba(12, 14, 20, 0.82);
-  --plate-edge: linear-gradient(170deg, rgba(255, 255, 255, 0.16), rgba(255, 255, 255, 0.05) 40%, rgba(255, 255, 255, 0.04) 75%, rgba(255, 140, 70, 0.22));
+  /* A plate is two layers inside the border (a sheen over a tint) and an
+     edge under it. Every layer is a gradient: a plain colour may only be a
+     background's last layer, and `var(--plate), var(--plate-edge)` puts
+     the plate first, so a colour there would void the whole declaration
+     and the plate would never paint. */
+  --plate:
+    linear-gradient(170deg, rgba(255, 255, 255, 0.06), rgba(255, 255, 255, 0.015) 50%) padding-box,
+    linear-gradient(rgba(13, 15, 22, 0.8), rgba(13, 15, 22, 0.8)) padding-box;
+  --plate-edge: linear-gradient(170deg, rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0.06) 40%, rgba(255, 255, 255, 0.04) 75%, rgba(255, 140, 70, 0.28)) border-box;
+  --plate-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.05), 0 30px 60px -34px rgba(2, 3, 8, 0.95), 0 18px 40px -30px rgba(255, 106, 38, 0.18);
   background:
     radial-gradient(70% 40% at 50% 112%, rgba(255, 96, 32, 0.15), transparent 70%),
     radial-gradient(40% 35% at 100% 0%, rgba(140, 160, 210, 0.07), transparent 70%),
@@ -88,8 +96,8 @@ html[data-look="glass"] body.in-app .s-head h1 {
 html[data-look="glass"] body.in-app .panel {
   border: 1px solid transparent;
   border-radius: var(--r-3);
-  background: var(--plate) padding-box, var(--plate-edge) border-box;
-  box-shadow: 0 30px 60px -36px rgba(2, 3, 8, 0.9);
+  background: var(--plate), var(--plate-edge);
+  box-shadow: var(--plate-shadow);
   backdrop-filter: none;
   -webkit-backdrop-filter: none;
 }
@@ -124,34 +132,17 @@ html[data-look="glass"] body.in-app .toast {
 }
 
 /* ---- the plan ---- */
-/* section heads: the display face, with a quiet count in the mono */
-html[data-look="glass"] body.in-app .plan-body {
-  counter-reset: sec;
-}
+/* section heads: the display face; no numbers (the order says it) */
 html[data-look="glass"] body.in-app .pl-h {
-  display: flex;
-  align-items: baseline;
-  gap: 12px;
   font: 700 clamp(24px, 2.6vw, 34px) / 1.05 var(--f-display);
   letter-spacing: -0.035em;
   text-transform: none;
   color: var(--text);
 }
-html[data-look="glass"] body.in-app .pl-h::before {
-  counter-increment: sec;
-  content: counter(sec, decimal-leading-zero);
-  font: 500 var(--t-sm) / 1 var(--f-mono);
-  letter-spacing: 0;
-  color: var(--accent-text);
-  transform: translateY(-0.5em);
-}
 html[data-look="glass"] body.in-app .pl-h-sm {
   font: 600 var(--t-ui) / 1.2 var(--f-body);
   letter-spacing: 0;
   color: var(--text-2);
-}
-html[data-look="glass"] body.in-app .pl-h-sm::before {
-  content: none;
 }
 html[data-look="glass"] body.in-app .pl-checkin-h {
   font: 700 clamp(20px, 2.2vw, 26px) / 1.1 var(--f-display);
@@ -217,11 +208,10 @@ html[data-look="glass"] body.in-app .pl-dot {
 html[data-look="glass"] body.in-app .pl-subject {
   position: relative;
   overflow: hidden;
-  padding: 18px 20px 20px 24px;
-  border-top: 0;
+  padding: 20px 22px 22px 26px;
   border-radius: var(--r-3);
-  background: linear-gradient(100deg, color-mix(in srgb, var(--subj) 9%, transparent), transparent 55%), rgba(12, 14, 20, 0.72);
-  box-shadow: inset 0 0 0 1px var(--line);
+  background: linear-gradient(100deg, color-mix(in srgb, var(--subj) 10%, transparent), transparent 55%) padding-box, var(--plate), var(--plate-edge);
+  box-shadow: var(--plate-shadow);
 }
 html[data-look="glass"] body.in-app .pl-subject::before {
   content: "";
@@ -310,8 +300,8 @@ html[data-look="glass"] body.in-setup .setup-form {
   padding: 30px 32px 26px;
   border: 1px solid transparent;
   border-radius: var(--r-3);
-  background: var(--plate) padding-box, var(--plate-edge) border-box;
-  box-shadow: 0 40px 80px -40px rgba(2, 3, 8, 0.95);
+  background: var(--plate), var(--plate-edge);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.05), 0 40px 80px -40px rgba(2, 3, 8, 0.95);
 }
 html[data-look="glass"] body.in-setup .setup-steps {
   gap: 6px;
@@ -408,15 +398,7 @@ html[data-look="glass"] body.in-app :is(.now-tile, .now-step)::before {
 html[data-look="glass"] body.in-app :is(.now-tile, .now-step):hover::before {
   opacity: 1;
 }
-/* Now's tiles: glass over the dark. The layers are spelled out here: a
-   colour can only be the last layer, so `var(--plate) padding-box` (a
-   gradient then a colour) is dropped by the browser and the plate never
-   paints. */
+/* Now's tiles: the plate, with a little more room inside. */
 html[data-look="glass"] body.in-app .now-bento .now-tile.panel {
   padding: 22px 24px 24px;
-  background:
-    linear-gradient(170deg, rgba(255, 255, 255, 0.06), rgba(255, 255, 255, 0.015) 50%) padding-box,
-    linear-gradient(rgba(13, 15, 22, 0.8), rgba(13, 15, 22, 0.8)) padding-box,
-    linear-gradient(170deg, rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0.06) 40%, rgba(255, 255, 255, 0.04) 75%, rgba(255, 140, 70, 0.28)) border-box;
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.05), 0 30px 60px -34px rgba(2, 3, 8, 0.95), 0 18px 40px -30px rgba(255, 106, 38, 0.18);
 }

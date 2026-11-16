@@ -87,7 +87,16 @@ function svgRing() {
   const body = document.createElementNS(NS, "circle");
   body.setAttribute("r", "4.5");
   body.setAttribute("class", "ring-body");
-  svg.append(track, arc, body);
+  // A minute scale outside the ring, every fifth mark longer.
+  const ticks = document.createElementNS(NS, "path");
+  ticks.setAttribute("class", "ring-ticks");
+  ticks.setAttribute("d", Array.from({ length: 60 }, (_, i) => {
+    const a = (i / 60) * Math.PI * 2;
+    const [r0, r1] = i % 5 ? [R + 7.5, R + 10] : [R + 6, R + 11];
+    const p = (r) => `${(130 + Math.cos(a) * r).toFixed(2)} ${(130 + Math.sin(a) * r).toFixed(2)}`;
+    return `M${p(r0)}L${p(r1)}`;
+  }).join(""));
+  svg.append(ticks, track, arc, body);
   return { svg, arc, body };
 }
 
@@ -151,12 +160,15 @@ function renderBlock() {
   blockEl.hidden = !b;
   if (!b) return blockEl.replaceChildren();
   blockEl.style.setProperty("--subj", colourOf(b.subject));
+  // (Filtered: replaceChildren would print a null as the word "null".)
   blockEl.replaceChildren(
-    el("span", { class: "sb-kind", text: KINDS[b.kind]?.label || "" }),
-    el("b", { text: [chapterOf(b.topic), topicName(b.subject, b.topic)].filter(Boolean).join(" ") }),
-    el("span", { class: "faint", text: KINDS[b.kind]?.verb || "" }),
-    // A topical set's questions stay a tap away while the timer runs.
-    b.kind === "topical" ? el("button", { type: "button", class: "btn btn-quiet btn-sm", id: "sb-questions", text: "See the questions", onClick: () => openTopical(b, { during: true }) }) : null
+    ...[
+      el("span", { class: "sb-kind", text: KINDS[b.kind]?.label || "" }),
+      el("b", { text: [chapterOf(b.topic), topicName(b.subject, b.topic)].filter(Boolean).join(" ") }),
+      el("span", { class: "faint", text: KINDS[b.kind]?.verb || "" }),
+      // A topical set's questions stay a tap away while the timer runs.
+      b.kind === "topical" ? el("button", { type: "button", class: "btn btn-quiet btn-sm", id: "sb-questions", text: "See the questions", onClick: () => openTopical(b, { during: true }) }) : null,
+    ].filter(Boolean)
   );
 }
 
@@ -661,15 +673,15 @@ export function mount(section, ctx) {
       noticeEl,
     ]),
     el("div", { class: "study-low" }, [
-      el("section", { class: "study-panel", "aria-labelledby": "st-tasks" }, [el("h2", { id: "st-tasks", text: "Tasks" }), form, tasksEl]),
-      el("section", { class: "study-panel", "aria-labelledby": "st-set" }, [
+      el("section", { class: "study-panel study-set panel", "aria-labelledby": "st-set" }, [
         el("h2", { id: "st-set", text: "Length and sound" }),
         el("div", { class: "study-field" }, [el("span", { class: "field-label", "aria-hidden": "true", text: "Each block" }), presetGroup]),
         el("div", { class: "study-field" }, [el("span", { class: "field-label", "aria-hidden": "true", text: "Blocks today" }), planGroup]),
         el("div", { class: "study-field" }, [el("span", { class: "field-label", "aria-hidden": "true", text: "Sound" }), el("div", { class: "sound-row" }, [sound, volume])]),
-        el("p", { class: "faint small", text: "Sounds are generated on your device. Nothing to download. Space starts and pauses." }),
+        el("p", { class: "faint small study-set-note", text: "Sounds are generated on your device. Nothing to download. Space starts and pauses." }),
       ]),
-      el("section", { class: "study-panel", "aria-labelledby": "st-hist" }, [el("h2", { id: "st-hist", text: "Your sessions" }), historyEl]),
+      el("section", { class: "study-panel study-tasks panel", "aria-labelledby": "st-tasks" }, [el("h2", { id: "st-tasks", text: "Tasks" }), form, tasksEl]),
+      el("section", { class: "study-panel study-hist panel", "aria-labelledby": "st-hist" }, [el("h2", { id: "st-hist", text: "Your sessions" }), historyEl]),
     ])
   );
   section.append(root);

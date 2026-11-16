@@ -119,13 +119,6 @@ html[data-look="day"] .sheet-journal input.ink {
 html[data-look="day"] dialog.sheet::backdrop {
   background: rgba(23, 20, 42, 0.35);
 }
-html[data-look="day"] .pl-shelf {
-  border-bottom-color: rgba(106, 88, 242, 0.35);
-  box-shadow: 0 12px 24px -16px rgba(106, 88, 242, 0.45);
-}
-html[data-look="day"] .pl-spine {
-  background: #ffffff;
-}
 html[data-look="day"] .setting input[type="checkbox"]::after {
   background: #ffffff;
   box-shadow: 0 1px 3px rgba(23, 20, 42, 0.3);
