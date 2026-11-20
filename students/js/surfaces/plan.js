@@ -486,19 +486,25 @@ function render() {
   const own = R.describe(planRules(now), { nameOf, now });
   // Busy today (a function, a trip, a bad day)? One tap takes it off;
   // the rest of the week re-plans around it.
+  // Undo only what this button did: a day already off by a weekly rule
+  // ("Sundays off") is off anyway, so there's nothing to tap.
   const todayKey = R.dateKey(now);
-  const todayOff = R.dayRule(planRules(now), now).off;
-  const busyBtn = el("button", {
-    type: "button",
-    class: "btn btn-quiet btn-sm",
-    id: "plan-busy-today",
-    text: todayOff ? "Today's off · undo" : "Busy today? Take it off",
-    onClick: async () => {
-      const { error } = await changePlan([todayOff ? { op: "date_clear", date: todayKey } : { op: "date_off", date: todayKey }]);
-      if (error) return reportError(error, "Couldn't change the plan. Try again.");
-      showToast(todayOff ? "Today's back in the plan" : "Today's off. The week has re-planned around it.");
-    },
-  });
+  const rules = planRules(now);
+  const takenOff = !!rules.dates?.[todayKey]?.off;
+  const offAnyway = !takenOff && R.dayRule(rules, now).off;
+  const busyBtn = offAnyway
+    ? null
+    : el("button", {
+        type: "button",
+        class: "btn btn-quiet btn-sm",
+        id: "plan-busy-today",
+        text: takenOff ? "Today's off · undo" : "Busy today? Take it off",
+        onClick: async () => {
+          const { error } = await changePlan([takenOff ? { op: "date_clear", date: todayKey } : { op: "date_off", date: todayKey }]);
+          if (error) return reportError(error, "Couldn't change the plan. Try again.");
+          showToast(takenOff ? "Today's back in the plan" : "Today's off. The week has re-planned around it.");
+        },
+      });
   const custom = el("div", { class: "pl-custom" }, [
     el("button", { type: "button", class: "btn btn-ghost", id: "plan-customize", text: "Customize", onClick: () => openCustomize() }),
     el("button", { type: "button", class: "btn btn-quiet pl-tell", id: "plan-tell", onClick: () => openCustomize() }, [el("span", { text: "Tell Pan what to change…" })]),

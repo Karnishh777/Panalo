@@ -425,10 +425,15 @@ try {
     await page.click("#blk-skip");
     await page.waitForTimeout(400);
     check("…and skipping it is saved", (await rulesOf()).skips?.length === 1);
-    // A busy day: one tap takes today off, and the plan says so.
-    await page.click("#plan-busy-today");
-    await page.waitForTimeout(400);
-    check("busy today? one tap takes it off", (await rulesOf()).dates?.[await page.evaluate(() => { const d = new Date(); return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`; })]?.off === true && /day off/.test(await page.textContent(".pl-day.today .pl-day-head")));
+    // A busy day: one tap takes today off, and the plan says so. On a
+    // Sunday, today is already off by the rule above, so there's no button.
+    if (new Date().getDay() === 0) {
+      check("busy today? not offered when today is off anyway", !(await page.isVisible("#plan-busy-today")) && /day off/.test(await page.textContent(".pl-day.today .pl-day-head")));
+    } else {
+      await page.click("#plan-busy-today");
+      await page.waitForTimeout(400);
+      check("busy today? one tap takes it off", (await rulesOf()).dates?.[await page.evaluate(() => { const d = new Date(); return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`; })]?.off === true && /day off/.test(await page.textContent(".pl-day.today .pl-day-head")));
+    }
     // Football is on Tuesdays and Thursdays; at least one of them isn't today.
     const footballDay = await page.evaluate(() => [...document.querySelectorAll('.pl-day:not(.today):is([data-weekday="2"], [data-weekday="4"]) .pl-day-head')].map((h) => h.textContent).join(" | "));
     check("football's times are kept clear", /taken/.test(footballDay), footballDay);

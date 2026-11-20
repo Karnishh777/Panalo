@@ -215,7 +215,7 @@ export function updatePace(p, { minutes, typical, covered }) {
 // 130, AS about 180, a full A Level about 360. Independent study is taken
 // as half the taught time, shared evenly by the syllabus's topics. This is
 // a starting estimate; each student's pace corrects it.
-const GLH = { igcse: 130, as: 180, a2: 180, "cbse-secondary": 120, "cbse-senior": 160, other: 120 };
+const GLH = { igcse: 130, as: 180, a2: 180, "cbse-secondary": 120, "cbse-senior": 160, icse: 130, isc: 160, other: 120 };
 
 /** A typical student's independent-study minutes for one topic. */
 export function typicalMinutes(level, topics) {

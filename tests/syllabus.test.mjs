@@ -11,7 +11,7 @@ let passed = 0;
 const failures = [];
 const ok = (label, cond, detail = "") => (cond ? passed++ : failures.push(detail ? `${label} (${detail})` : label));
 
-const LEVELS = { igcse: "igcse1", alevel: "as" };
+const LEVELS = { igcse: "igcse1", alevel: "as", icse: "icse10" };
 let files = 0;
 let questions = 0;
 for (const [dir, stage] of Object.entries(LEVELS)) {
@@ -35,6 +35,7 @@ for (const [dir, stage] of Object.entries(LEVELS)) {
       ok(`${where}: topic ids are unique`, !ids.has(t.id), t.id);
       ids.add(t.id);
       ok(`${where} ${t.id}: has a name`, typeof t.name === "string" && t.name.length > 2);
+      if (dir === "icse") ok(`${where} ${t.id}: says whether it is Class 9 or 10`, t.stage === "9" || t.stage === "10", String(t.stage));
       if (dir === "alevel") ok(`${where} ${t.id}: says whether it is AS or A2`, t.stage === "as" || t.stage === "a2", String(t.stage));
       for (const [i, q] of (t.questions || []).entries()) {
         questions++;
@@ -51,7 +52,7 @@ for (const [dir, stage] of Object.entries(LEVELS)) {
 ok("there is a question bank", files > 0 && questions > 0);
 for (const [dir, stage] of Object.entries(LEVELS)) {
   const missing = subjectsFor(stage).filter((x) => !fs.existsSync(path.join(ROOT, dir, `${x.id}.json`))).map((x) => x.code);
-  ok(`every Cambridge subject at ${dir} has a bank`, !missing.length, missing.join());
+  ok(`every subject at ${dir} has a bank`, !missing.length, missing.join());
 }
 
 console.log(`\n${files} files, ${questions} questions`);

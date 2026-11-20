@@ -2,11 +2,14 @@
 // Node): the setup offers these, and the planner reads them.
 //
 // Cambridge first (IGCSE, then AS and A Level), with each syllabus's own
-// code, then CBSE. Topic lists for each syllabus live in model/syllabus.js.
+// code, then CBSE, then CISCE (ICSE for Classes 9-10, ISC for 11-12). CISCE
+// subjects have no syllabus numbers, so each gets a key of ours for its
+// papers ("icse-phy"). Topic lists for each syllabus live in model/syllabus.js.
 
 export const BOARDS = [
   { id: "cambridge", label: "Cambridge", sub: "IGCSE, AS and A Level" },
   { id: "cbse", label: "CBSE", sub: "Classes 9 to 12" },
+  { id: "icse", label: "ICSE / ISC", sub: "CISCE, Classes 9 to 12" },
   { id: "other", label: "Something else", sub: "Another board or none" },
 ];
 
@@ -22,6 +25,12 @@ export const STAGES = {
     { id: "cbse10", label: "Class 10", sub: "Board exam year", grade: 10, level: "cbse-secondary" },
     { id: "cbse11", label: "Class 11", grade: 11, level: "cbse-senior" },
     { id: "cbse12", label: "Class 12", sub: "Board exam year", grade: 12, level: "cbse-senior" },
+  ],
+  icse: [
+    { id: "icse9", label: "Class 9", sub: "ICSE", grade: 9, level: "icse" },
+    { id: "icse10", label: "Class 10", sub: "ICSE board exam year", grade: 10, level: "icse" },
+    { id: "isc11", label: "Class 11", sub: "ISC", grade: 11, level: "isc" },
+    { id: "isc12", label: "Class 12", sub: "ISC board exam year", grade: 12, level: "isc" },
   ],
   other: [{ id: "other", label: "My own grade", level: "other" }],
 };
@@ -101,6 +110,43 @@ const CBSE_SENIOR = [
   ["pe", "Physical Education"],
 ];
 
+// ICSE (Classes 9 and 10): one bank per subject, its chapters marked by class.
+const ICSE = [
+  ["eng", "English Language"],
+  ["lit", "Literature in English"],
+  ["hindi", "Hindi"],
+  ["hist", "History and Civics"],
+  ["geo", "Geography"],
+  ["math", "Mathematics"],
+  ["phy", "Physics"],
+  ["chem", "Chemistry"],
+  ["bio", "Biology"],
+  ["ca", "Computer Applications"],
+  ["eco", "Economics"],
+  ["comm", "Commercial Studies"],
+].map(([id, name]) => [id, name, `icse-${id}`]);
+
+// ISC (Classes 11 and 12): no banks yet, so these plan as the student's own work.
+const ISC = [
+  ["eng", "English"],
+  ["math", "Mathematics"],
+  ["phy", "Physics"],
+  ["chem", "Chemistry"],
+  ["bio", "Biology"],
+  ["cs", "Computer Science"],
+  ["acc", "Accounts"],
+  ["comm", "Commerce"],
+  ["eco", "Economics"],
+  ["bus", "Business Studies"],
+  ["hist", "History"],
+  ["pol", "Political Science"],
+  ["geo", "Geography"],
+  ["psy", "Psychology"],
+  ["soc", "Sociology"],
+  ["pe", "Physical Education"],
+  ["hindi", "Hindi"],
+].map(([id, name]) => [id, name, `isc-${id}`]);
+
 const OTHER = [
   ["eng", "English"],
   ["math", "Mathematics"],
@@ -124,6 +170,8 @@ const BY_LEVEL = {
   a2: ALEVEL,
   "cbse-secondary": CBSE_SECONDARY,
   "cbse-senior": CBSE_SENIOR,
+  icse: ICSE,
+  isc: ISC,
   other: OTHER,
 };
 
