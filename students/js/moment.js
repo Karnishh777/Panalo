@@ -60,8 +60,11 @@ function show(d, w) {
     const still = reducedMotion();
     const canvas = el("canvas", { class: "moment-world", "aria-hidden": "true" });
     const on = el("button", { type: "button", class: "btn btn-primary", id: "moment-on", text: "Onward", onClick: () => close() });
-    // Letter by letter for the eye; one label for screen readers.
-    const title = el("h2", { class: "moment-title", "aria-label": d.title }, [...d.title].map((ch, i) => el("span", { style: `--i:${i}`, "aria-hidden": "true", text: ch === " " ? " " : ch })));
+    // Letter by letter for the eye, grouped in words so a line only breaks
+    // between them; one label for screen readers.
+    let n = 0;
+    const words = d.title.split(" ").map((w) => el("span", { class: "moment-word" }, [...w].map((ch) => el("span", { style: `--i:${n++}`, "aria-hidden": "true", text: ch }))));
+    const title = el("h2", { class: "moment-title", "aria-label": d.title }, words.flatMap((w, i) => (i ? [" ", w] : [w])));
     const root = el("div", { class: `moment${still ? " still" : ""}`, role: "dialog", "aria-modal": "true", "aria-label": `Discovery: ${d.title}` }, [
       el("div", { class: "moment-flash", "aria-hidden": "true" }),
       canvas,

@@ -25,10 +25,13 @@ import * as D from "../model/diagnose.js";
 import { art, artImg, onArt, GUARDIANS, guardianOf } from "../art.js";
 import { createEmblem, createAura } from "../motion-art.js";
 import { lifeText } from "../model/world-model.js";
+import { createFills } from "../fill-in.js";
 
 let root;
 let body;
 let unsubs = [];
+// The shelf's lines and the subjects' meters fill in as they come into view.
+const fills = createFills("[data-fill]");
 
 const hhmm = (m) => clockOf(m);
 const pct = (x) => `${Math.round(x * 100)}%`;
@@ -78,7 +81,7 @@ function heroText(plan, next, di) {
   return [
     el("p", { class: "pl-hero-kicker" }, [el("span", { text: di === 0 ? "Next" : "Today's plan is done · next" }), el("span", { class: "num faint", text: ` · ${when}` })]),
     el("h2", { class: "pl-hero-title", id: "pl-next", text: P.blockTitle(next) }),
-    el("p", { class: "pl-hero-sub" }, [next.own ? "" : `${next.subjectName}${next.kind === "topical" ? ` P${next.paper}` : ""} · `, el("b", { text: P.blockTask(next) }), ` · ${next.minutes} min — ${P.KINDS[next.kind].verb.toLowerCase()}`]),
+    el("p", { class: "pl-hero-sub" }, [next.own ? "" : `${next.subjectName}${next.kind === "topical" ? ` P${next.paper}` : ""} · `, el("b", { text: P.blockTask(next) }), ` · ${next.minutes} min: ${P.KINDS[next.kind].verb.toLowerCase()}`]),
     el("div", { class: "pl-hero-go" }, [
       el("button", { type: "button", class: di === 0 ? "btn btn-primary" : "btn btn-ghost", id: "plan-start", text: di === 0 ? "Start" : "Start it now", onClick: () => startBlock(next) }),
       plan[di].blocks.length > 1 ? el("button", { type: "button", class: "btn btn-quiet", id: "plan-unsure", text: "Not sure? Pick from three", onClick: () => deck(plan[di].blocks.slice(0, 3)) }) : null,
@@ -257,8 +260,8 @@ function week(plan) {
     );
   };
   draw();
-  return el("section", { class: "pl-week", "aria-labelledby": "pl-week-h" }, [
-    el("h2", { id: "pl-week-h", class: "pl-h", text: "Today" }),
+  return el("section", { class: "pl-week panel", "aria-labelledby": "pl-week-h" }, [
+    el("h2", { id: "pl-week-h", class: "pl-h", text: "Day by day" }),
     list,
     el("p", { class: "pl-h pl-h-sm faint", text: "Other days" }),
     chips,
@@ -319,14 +322,14 @@ function subjectCard(s, now, v = subjectView(s, now)) {
               class: `pl-topic${met ? " met" : ""}${due && due <= now ? " due" : ""}`,
               style: met ? `--m:${m.toFixed(2)}` : null,
               "aria-label": `${tp.name}: ${state}`,
-              title: `${tp.name} — ${state}`,
+              title: `${tp.name}: ${state}`,
               onClick: () => topicSheet(s.id, tp),
             })
           );
         })
       );
   const ready = v.readiness;
-  return el("article", { class: "pl-subject", id: `pl-subj-${s.id}`, style: `--subj:${colour}` }, [
+  return el("article", { class: "pl-subject panel", id: `pl-subj-${s.id}`, style: `--subj:${colour}` }, [
     el("div", { class: "pl-subject-head" }, [
       el("h3", {}, [v.name, v.code ? el("span", { class: "faint num", text: ` ${v.code}` }) : null]),
       examLine(v, now),
@@ -334,7 +337,7 @@ function subjectCard(s, now, v = subjectView(s, now)) {
     v.own
       ? null
       : el("div", { class: "pl-ready" }, [
-          el("span", { class: "meter", role: "progressbar", "aria-valuemin": "0", "aria-valuemax": "100", "aria-valuenow": String(Math.round(ready * 100)), "aria-label": `${v.name}: ready` }, [el("i", { style: `width:${pct(ready)}` }), el("b", { class: "pl-aim", style: `left:${pct(v.target)}`, title: "Your aim" })]),
+          el("span", { class: "meter", role: "progressbar", "aria-valuemin": "0", "aria-valuemax": "100", "aria-valuenow": String(Math.round(ready * 100)), "aria-label": `${v.name}: ready` }, [el("i", { "data-fill": `meter-${s.id}`, style: `width:${pct(ready)}` }), el("b", { class: "pl-aim", style: `left:${pct(v.target)}`, title: "Your aim" })]),
           el("span", { class: "num small", text: pct(ready) }),
         ]),
     dots,
@@ -413,8 +416,8 @@ function subjects(now) {
   ]);
 }
 
-// The shelf: a spine per subject, filled as far as you're ready. A spine
-// takes you to its subject.
+// The shelf: a spine per subject, its name, how ready it is and a line
+// filled that far in its colour. A spine takes you to its subject.
 function shelf(views) {
   if (views.length < 2) return null;
   return el(
@@ -425,7 +428,7 @@ function shelf(views) {
       return el(
         "a",
         { href: `#pl-subj-${s.id}`, class: "pl-spine", style: `--subj:${colourOf(s.id)};--fill:${ready == null ? 0 : Math.max(0.04, ready).toFixed(2)}`, "aria-label": ready == null ? v.name : `${v.name}: ${pct(ready)} ready`, onClick: (e) => { e.preventDefault(); document.getElementById(`pl-subj-${s.id}`)?.scrollIntoView({ behavior: "smooth", block: "start" }); } },
-        [el("i", { "aria-hidden": "true" }), el("span", { text: v.name })]
+        [el("span", { class: "pl-spine-name", text: v.name }), el("b", { class: "pl-spine-pct num", text: ready == null ? "Own work" : pct(ready) }), el("i", { "aria-hidden": "true", "data-fill": ready == null ? null : `spine-${s.id}` })]
       );
     })
   );
@@ -433,7 +436,7 @@ function shelf(views) {
 
 function results() {
   const list = store.results.slice(0, 8);
-  return el("section", { class: "pl-results", "aria-labelledby": "pl-res-h" }, [
+  return el("section", { class: "pl-results panel", "aria-labelledby": "pl-res-h" }, [
     el("div", { class: "pl-row-head" }, [
       el("h2", { id: "pl-res-h", class: "pl-h", text: "Results" }),
       el("button", { type: "button", class: "btn btn-quiet btn-sm", id: "plan-add-result", text: "Add a result", onClick: resultSheet, disabled: store.progressMissing || null }),
@@ -521,6 +524,7 @@ function render() {
       el("div", { class: "pl-grid" }, [week(plan), el("div", { class: "pl-side" }, [subjects(now), results()])]),
     ].filter(Boolean)
   );
+  fills.watch(body);
 }
 
 // ---- Sheets ------------------------------------------------------------------------------
@@ -671,6 +675,7 @@ export function mount(section) {
 }
 
 export function show() {
+  fills.reset();
   loadBanks();
   onArt(render);
   render();
@@ -679,6 +684,7 @@ export function show() {
 export function hide() {}
 
 export function destroy() {
+  fills.disconnect();
   unsubs.forEach((u) => u());
   unsubs = [];
   root = null;

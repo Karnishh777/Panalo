@@ -87,7 +87,16 @@ function svgRing() {
   const body = document.createElementNS(NS, "circle");
   body.setAttribute("r", "4.5");
   body.setAttribute("class", "ring-body");
-  svg.append(track, arc, body);
+  // A minute scale outside the ring, every fifth mark longer.
+  const ticks = document.createElementNS(NS, "path");
+  ticks.setAttribute("class", "ring-ticks");
+  ticks.setAttribute("d", Array.from({ length: 60 }, (_, i) => {
+    const a = (i / 60) * Math.PI * 2;
+    const [r0, r1] = i % 5 ? [R + 7.5, R + 10] : [R + 6, R + 11];
+    const p = (r) => `${(130 + Math.cos(a) * r).toFixed(2)} ${(130 + Math.sin(a) * r).toFixed(2)}`;
+    return `M${p(r0)}L${p(r1)}`;
+  }).join(""));
+  svg.append(ticks, track, arc, body);
   return { svg, arc, body };
 }
 
@@ -151,12 +160,15 @@ function renderBlock() {
   blockEl.hidden = !b;
   if (!b) return blockEl.replaceChildren();
   blockEl.style.setProperty("--subj", colourOf(b.subject));
+  // (Filtered: replaceChildren would print a null as the word "null".)
   blockEl.replaceChildren(
-    el("span", { class: "sb-kind", text: KINDS[b.kind]?.label || "" }),
-    el("b", { text: [chapterOf(b.topic), topicName(b.subject, b.topic)].filter(Boolean).join(" ") }),
-    el("span", { class: "faint", text: KINDS[b.kind]?.verb || "" }),
-    // A topical set's questions stay a tap away while the timer runs.
-    b.kind === "topical" ? el("button", { type: "button", class: "btn btn-quiet btn-sm", id: "sb-questions", text: "See the questions", onClick: () => openTopical(b, { during: true }) }) : null
+    ...[
+      el("span", { class: "sb-kind", text: KINDS[b.kind]?.label || "" }),
+      el("b", { text: [chapterOf(b.topic), topicName(b.subject, b.topic)].filter(Boolean).join(" ") }),
+      el("span", { class: "faint", text: KINDS[b.kind]?.verb || "" }),
+      // A topical set's questions stay a tap away while the timer runs.
+      b.kind === "topical" ? el("button", { type: "button", class: "btn btn-quiet btn-sm", id: "sb-questions", text: "See the questions", onClick: () => openTopical(b, { during: true }) }) : null,
+    ].filter(Boolean)
   );
 }
 
@@ -172,7 +184,7 @@ async function endEarly() {
     const row = T.sessionRow(timer, now);
     if (row) {
       const { error, transient } = await recordSession(row);
-      if (error && transient) return reportError(error, "You're offline — the session wasn't saved yet. Try again.");
+      if (error && transient) return reportError(error, "You're offline, so the session wasn't saved yet. Try again.");
       if (error) {
         reportError(error, "That session couldn't be saved.");
         return update(T.idle());
@@ -184,7 +196,7 @@ async function endEarly() {
         update(T.idle());
         return openBlockCheck(was.block, { minutes: row.focused_minutes, sessionId: sessionFor(was)?.id });
       }
-    } else showToast("Under a minute — nothing recorded.", "");
+    } else showToast("Under a minute, so nothing was recorded.", "");
   }
   update(T.idle());
 }
@@ -214,7 +226,7 @@ async function finishOnce() {
   draw();
   if (was.phase === "focus" && was.block) {
     // A planned block: its check, then the plan moves on by itself.
-    noticeEl.replaceChildren(el("p", { class: "study-notice-text" }, [el("b", { text: `${formatMinutes(Math.round(was.plannedMs / 60000))} on ${topicName(was.block.subject, was.block.topic)} — added to your world.` })]));
+    noticeEl.replaceChildren(el("p", { class: "study-notice-text" }, [el("b", { text: `${formatMinutes(Math.round(was.plannedMs / 60000))} on ${topicName(was.block.subject, was.block.topic)}, added to your world.` })]));
     openBlockCheck(was.block, { minutes: Math.round(was.plannedMs / 60000), sessionId: sessionFor(was)?.id });
     return;
   }
@@ -224,7 +236,7 @@ async function finishOnce() {
     const allDone = p && p.done >= p.total;
     noticeEl.replaceChildren(
       el("p", { class: "study-notice-text" }, [
-        el("b", { text: `${formatMinutes(Math.round(was.plannedMs / 60000))} of focus — added to your world.` }),
+        el("b", { text: `${formatMinutes(Math.round(was.plannedMs / 60000))} of focus, added to your world.` }),
         p ? ` Block ${p.done} of ${p.total}.` : "",
         allDone ? " That's the plan, kept." : " Rest your eyes for a few minutes.",
       ]),
@@ -376,7 +388,7 @@ function renderTasks() {
   const tools = open.length
     ? el("div", { class: "task-tools" }, [
         seg("Order", "taskSort", [["mine", "My order", "Your order"], ["due", "By due", "By due date"]], tp.sort),
-        seg("List style", "taskMarks", [["numbers", "1.", "Numbered"], ["bullets", "•", "Bulleted"], ["none", "—", "No markers"]], tp.marks),
+        seg("List style", "taskMarks", [["numbers", "1.", "Numbered"], ["bullets", "•", "Bulleted"], ["none", "None", "No markers"]], tp.marks),
       ])
     : null;
   const filter = subjects.length > 1
@@ -459,7 +471,7 @@ function editTask(t) {
   const due = el("input", { type: "date", value: t.due_at ? dayKey(new Date(t.due_at)) : "" });
   openSheet({
     title: "Edit task",
-    body: [field("Task", title), field("Subject", subject, "Optional"), field("Due", due, "Optional — leave empty for no date")],
+    body: [field("Task", title), field("Subject", subject, "Optional"), field("Due", due, "Optional. Leave empty for no date.")],
     actions: [
       { label: "Cancel", kind: "btn-quiet" },
       {
@@ -661,15 +673,15 @@ export function mount(section, ctx) {
       noticeEl,
     ]),
     el("div", { class: "study-low" }, [
-      el("section", { class: "study-panel", "aria-labelledby": "st-tasks" }, [el("h2", { id: "st-tasks", text: "Tasks" }), form, tasksEl]),
-      el("section", { class: "study-panel", "aria-labelledby": "st-set" }, [
+      el("section", { class: "study-panel study-set panel", "aria-labelledby": "st-set" }, [
         el("h2", { id: "st-set", text: "Length and sound" }),
         el("div", { class: "study-field" }, [el("span", { class: "field-label", "aria-hidden": "true", text: "Each block" }), presetGroup]),
         el("div", { class: "study-field" }, [el("span", { class: "field-label", "aria-hidden": "true", text: "Blocks today" }), planGroup]),
         el("div", { class: "study-field" }, [el("span", { class: "field-label", "aria-hidden": "true", text: "Sound" }), el("div", { class: "sound-row" }, [sound, volume])]),
-        el("p", { class: "faint small", text: "Sounds are generated on your device. Nothing to download. Space starts and pauses." }),
+        el("p", { class: "faint small study-set-note", text: "Sounds are generated on your device. Nothing to download. Space starts and pauses." }),
       ]),
-      el("section", { class: "study-panel", "aria-labelledby": "st-hist" }, [el("h2", { id: "st-hist", text: "Your sessions" }), historyEl]),
+      el("section", { class: "study-panel study-tasks panel", "aria-labelledby": "st-tasks" }, [el("h2", { id: "st-tasks", text: "Tasks" }), form, tasksEl]),
+      el("section", { class: "study-panel study-hist panel", "aria-labelledby": "st-hist" }, [el("h2", { id: "st-hist", text: "Your sessions" }), historyEl]),
     ])
   );
   section.append(root);
@@ -694,7 +706,7 @@ export function mount(section, ctx) {
 
 export function show(param) {
   // Reconcile anything that finished while we were away.
-  settleTimer().then((r) => r?.minutes && showToast(`A ${formatMinutes(r.minutes)} session finished while you were away — recorded.`, "success"));
+  settleTimer().then((r) => r?.minutes && showToast(`A ${formatMinutes(r.minutes)} session finished while you were away. It's recorded.`, "success"));
   timer = loadTimer();
   if (timer.phase === "focus" && T.isDone(timer, Date.now())) {
     timer = T.idle();

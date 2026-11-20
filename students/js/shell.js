@@ -44,7 +44,7 @@ let ambient = null;
 // Where effects belong. The expressive places -- your day and your world --
 // get the ink and the drifting petals. Everywhere
 // you read, file, plan or configure stays still: effects there were noise.
-// The Study Room is the quietest of all (css/surfaces.css).
+// The Study Room is the quietest of all (css/study.css).
 const EXPRESSIVE = new Set(["now", "world"]);
 
 // Arriving somewhere expressive: an ink slash in that surface's colour, and
@@ -433,7 +433,7 @@ export async function enterShell({ firstTime = false } = {}) {
     startModeration();
     startSync();
     // A focus block that ended while the app was elsewhere still counts.
-    const settle = () => document.body.dataset.view !== "study" && settleTimer(Date.now(), { clear: true }).then((r) => r?.minutes && showToast(`Focus session finished — ${r.minutes} min recorded.`, "success"));
+    const settle = () => document.body.dataset.view !== "study" && settleTimer(Date.now(), { clear: true }).then((r) => r?.minutes && showToast(`Focus session finished: ${r.minutes} min recorded.`, "success"));
     settle();
     settleTimerId = setInterval(settle, 20000);
   }

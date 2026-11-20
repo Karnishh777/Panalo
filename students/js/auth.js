@@ -51,10 +51,10 @@ export function showForm(id) {
 function reportKeyStatus(status) {
   if (status === "ready") return;
   const text = {
-    unsupported: "This browser can't encrypt messages — chats will be unencrypted here.",
+    unsupported: "This browser can't encrypt messages, so chats here won't be encrypted.",
     "setup-failed": "Couldn't set up your encryption keys. Messages won't be encrypted until this is fixed.",
     "needs-unlock": "Your messages are locked on this device until you unlock them.",
-  }[status] || "Encryption isn't available right now — messages won't be encrypted.";
+  }[status] || "Encryption isn't available right now, so messages won't be encrypted.";
   showToast(text, "");
 }
 
@@ -212,8 +212,8 @@ export function initAuth(h) {
     e.preventDefault();
     withBusy($("otp-submit"), "Verifying…", async () => {
       const token = cleanCode($("otp-code").value);
-      if (!pending.email) return message("Start again from sign-up — this page was reloaded.");
-      if (!validCode(token)) return message("Enter the code from the email — just the digits.");
+      if (!pending.email) return message("This page was reloaded. Start again from sign-up.");
+      if (!validCode(token)) return message("Enter the code from the email, just the digits.");
       const { data, error } = await supabaseClient.auth.verifyOtp({ email: pending.email, token, type: "signup" });
       if (error) return message(authErrorText(error));
       if (!data.session) return message("That code didn't sign you in. Try logging in.");
@@ -249,7 +249,7 @@ export function initAuth(h) {
       if (pending.rewrap) {
         const r = await rewrapPrivateKey(pending.rewrap);
         pending.rewrap = "";
-        showToast(r === "ready" ? "Unlocked — your messages now use your current password." : "Unlocked, but your key couldn't move to the new password. You'll be asked again next time.", r === "ready" ? "success" : "");
+        showToast(r === "ready" ? "Unlocked. Your messages now use your current password." : "Unlocked, but your key couldn't move to the new password. You'll be asked again next time.", r === "ready" ? "success" : "");
       }
       $("unlock-password").value = "";
       const session = pending.session;
@@ -274,7 +274,7 @@ export function initAuth(h) {
     const cached = uid ? await idbGetKey(uid) : null;
     $("recovery-lead").textContent = cached
       ? "Your encryption key is cached on this device, so your messages will move to the new password."
-      : "Your encryption key isn't cached on this device. A new password means new keys — older encrypted messages will no longer be readable.";
+      : "Your encryption key isn't cached on this device. A new password means new keys, and older encrypted messages will no longer be readable.";
     showForm("recovery-form");
   });
 
@@ -294,7 +294,7 @@ export function initAuth(h) {
       const moved = await keysAfterPasswordReset(next);
       if (moved === "move-failed") return message("Password set, but your key didn't move with it. Try again while signed in.");
       if (moved === "regenerate-failed") return message("Password set, but new keys couldn't be created. Try again.");
-      showToast(moved === "moved" ? "Password updated — your messages moved with it." : "New password and new keys. Older encrypted messages can't be read any more.", moved === "moved" ? "success" : "");
+      showToast(moved === "moved" ? "Password updated. Your messages moved with it." : "New password and new keys. Older encrypted messages can't be read any more.", moved === "moved" ? "success" : "");
       inRecovery = false;
       history.replaceState(null, "", location.pathname);
       const { data: { session } } = await supabaseClient.auth.getSession();

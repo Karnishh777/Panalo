@@ -96,8 +96,8 @@ html[data-effects="lively"][data-look="verse"] .brand .mark {
   letter-spacing: -0.03em;
 }
 .wm-sub {
-  font: 600 10px/1 var(--f-body);
-  letter-spacing: 0.22em;
+  font: 600 var(--t-xs)/1 var(--f-body);
+  letter-spacing: var(--track-eyebrow);
   text-transform: uppercase;
   color: var(--time);
   padding: 4px 7px;
@@ -197,7 +197,7 @@ html[data-effects="lively"][data-look="verse"] .brand .mark {
   position: absolute;
   inset: 10% -20% 30% -30%;
   z-index: -1;
-  background: repeating-linear-gradient(180deg, transparent 0 9px, rgba(154, 216, 255, 0.16) 9px 10px, transparent 10px 23px, rgba(255, 196, 122, 0.1) 23px 24px);
+  background: repeating-linear-gradient(180deg, transparent 0 9px, rgba(255, 255, 255, 0.1) 9px 10px, transparent 10px 23px, rgba(255, 160, 90, 0.1) 23px 24px);
   -webkit-mask-image: linear-gradient(90deg, transparent, #000 30%, #000 60%, transparent);
   mask-image: linear-gradient(90deg, transparent, #000 30%, #000 60%, transparent);
   opacity: 0;
@@ -218,12 +218,12 @@ html[data-effects="lively"][data-look="verse"] .brand .mark {
   }
 }
 .hero-kicker {
-  color: var(--time);
+  color: var(--accent-text);
   animation: rise var(--dur-3) var(--ease-out) 0.2s both;
 }
 .hero-title {
   margin: 20px 0 22px;
-  font: 400 clamp(34px, 5.4vw, 88px) / 1 var(--f-display);
+  font: 700 clamp(34px, 5.2vw, 80px) / 1 var(--f-display);
   letter-spacing: -0.05em;
 }
 .ht-line {
@@ -234,18 +234,18 @@ html[data-effects="lively"][data-look="verse"] .brand .mark {
   animation-delay: 0.4s;
 }
 .ht-serif {
-  margin-top: 0.08em;
-  font-size: 1.32em;
-  letter-spacing: -0.01em;
-  line-height: 0.95;
-  background: linear-gradient(100deg, #9ad8ff 0%, #f4f6ff 35%, #ffc47a 60%, #ff7aa8 100%);
+  margin-top: 0.04em;
+  padding-bottom: 0.08em;
+  font-size: 1em;
+  line-height: 1;
+  background: linear-gradient(100deg, #fff 0%, #ffe1c8 35%, var(--accent-hi) 62%, #fff 100%);
   background-size: 200% 100%;
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
-  animation: slam 0.9s cubic-bezier(0.2, 1.4, 0.4, 1) 0.7s both, sheen 6s linear 1.6s infinite;
+  animation: slam 0.9s cubic-bezier(0.2, 1.4, 0.4, 1) 0.7s both, sheen 6s linear 1.6s;
   text-shadow: none;
-  filter: drop-shadow(0 0 22px rgba(154, 216, 255, 0.25));
+  filter: drop-shadow(0 0 22px rgba(255, 122, 47, 0.2));
 }
 @keyframes slam {
   0% {
@@ -369,7 +369,7 @@ html[data-effects="lively"][data-look="verse"] .brand .mark {
   cursor: grabbing;
 }
 #hero-globe:focus-visible {
-  outline: 2px solid var(--focus);
+  outline: 2px solid var(--ring);
   outline-offset: -12%;
 }
 .hero-world .rib-front {
@@ -475,7 +475,7 @@ html[data-effects="lively"][data-look="verse"] .brand .mark {
 }
 .gd-hint {
   padding: 0 8px 0 4px;
-  font-size: 11.5px;
+  font-size: var(--t-xs);
   color: var(--text-3);
   white-space: nowrap;
 }
@@ -576,7 +576,7 @@ html[data-effects="lively"][data-look="verse"] .brand .mark {
   left: 130%;
 }
 .slash-card h3 {
-  font: 400 clamp(19px, 2vw, 26px) / 1.1 var(--f-display);
+  font: 650 clamp(19px, 2vw, 26px) / 1.1 var(--f-display);
   letter-spacing: -0.03em;
   color: var(--tone);
   margin-bottom: 10px;
@@ -627,12 +627,12 @@ html[data-effects="lively"][data-look="verse"] .brand .mark {
 }
 .wd-slider small {
   color: var(--text-3);
-  font-size: 12.5px;
+  font-size: 13px;
 }
 .wd-slider input,
 input[type="range"].range {
   width: 100%;
-  accent-color: var(--tone, var(--focus));
+  accent-color: var(--accent);
 }
 @media (max-width: 820px) {
   .world-demo {
@@ -683,7 +683,7 @@ input[type="range"].range {
 }
 .sys-n {
   display: block;
-  font: 400 clamp(19px, 2vw, 24px) / 1.2 var(--f-display);
+  font: 650 clamp(19px, 2vw, 24px) / 1.2 var(--f-display);
   letter-spacing: -0.03em;
   color: var(--tone);
   margin-bottom: 10px;
@@ -790,7 +790,7 @@ input[type="range"].range {
   color: var(--text-2);
 }
 .safety-grid a {
-  color: var(--focus);
+  color: var(--accent-text);
 }
 @media (max-width: 900px) {
   .safety-grid {
@@ -832,7 +832,7 @@ input[type="range"].range {
   line-height: 1;
 }
 .final-note {
-  font-size: 13.5px;
+  font-size: 14px;
   color: var(--text-3);
 }
 
@@ -875,7 +875,7 @@ input[type="range"].range {
   gap: 20px;
 }
 .land-foot a {
-  font-size: 13.5px;
+  font-size: 14px;
   color: var(--text-2);
   text-decoration: none;
 }
@@ -883,7 +883,7 @@ input[type="range"].range {
   color: var(--text);
 }
 .land-version {
-  font-size: 12.5px;
+  font-size: 13px;
   color: var(--text-3);
   font-variant-numeric: tabular-nums;
 }
@@ -963,7 +963,7 @@ input[type="range"].range {
   position: absolute;
   top: 22px;
   left: var(--gutter);
-  font-size: 13.5px;
+  font-size: 14px;
   color: var(--text-3);
   text-decoration: none;
 }
@@ -994,7 +994,7 @@ input[type="range"].range {
 }
 .airlock-title {
   margin: 12px 0 8px;
-  font: 400 clamp(24px, 2.6vw, 30px) / 1.15 var(--f-display);
+  font: 700 clamp(24px, 2.6vw, 30px) / 1.15 var(--f-display);
   letter-spacing: -0.035em;
 }
 .airlock-lead {
@@ -1013,21 +1013,32 @@ input[type="range"].range {
 }
 .airlock-switch a,
 .check a {
-  color: var(--focus);
+  color: var(--accent-text);
 }
 .label-row {
   display: flex;
   justify-content: space-between;
   align-items: baseline;
 }
+/* The tertiary action: words in the accent, underlined on hover. */
 .link-btn {
   border: 0;
   padding: 0;
   background: none;
-  color: var(--focus);
-  font-size: 13px;
+  color: var(--accent-text);
+  font-size: var(--t-sm);
+  font-weight: 500;
   text-decoration: underline;
+  text-decoration-color: color-mix(in srgb, currentColor 40%, transparent);
   text-underline-offset: 3px;
+}
+.link-btn:hover {
+  text-decoration-color: currentColor;
+}
+.link-btn:focus-visible {
+  outline: 2px solid var(--ring);
+  outline-offset: 3px;
+  border-radius: 4px;
 }
 .pw {
   position: relative;
@@ -1046,7 +1057,7 @@ input[type="range"].range {
   border-radius: var(--r-1);
   background: none;
   color: var(--text-3);
-  font-size: 12.5px;
+  font-size: 13px;
   font-weight: 600;
 }
 .pw-reveal:hover {
@@ -1116,7 +1127,7 @@ input[type="range"].range {
   padding: 110px var(--gutter) 80px;
 }
 .doc h1 {
-  font: 400 clamp(26px, 4.4vw, 42px) / 1.1 var(--f-display);
+  font: 700 clamp(26px, 4.4vw, 42px) / 1.1 var(--f-display);
   letter-spacing: -0.04em;
   margin: 14px 0 18px;
 }
@@ -1157,7 +1168,7 @@ input[type="range"].range {
   color: var(--text);
 }
 .doc a {
-  color: var(--focus);
+  color: var(--accent-text);
 }
 
 /* ---- The setup (setup.js): about 90 seconds, one question a screen ------ */
@@ -1182,15 +1193,20 @@ input[type="range"].range {
 }
 .setup-side {
   position: relative;
+  isolation: isolate;
   align-self: stretch;
   display: flex;
   flex-direction: column;
-  justify-content: flex-end;
+  justify-content: center;
   min-height: 100vh;
   min-height: 100dvh;
-  padding: 48px clamp(24px, 4vw, 56px);
+  padding: 56px clamp(28px, 4.5vw, 72px) 30vh;
   overflow: hidden;
-  background: radial-gradient(60% 50% at 30% 70%, rgba(255, 120, 50, 0.16), transparent 70%), #05070e;
+  background:
+    linear-gradient(90deg, transparent 65%, var(--bg)),
+    radial-gradient(60% 40% at 15% 0%, rgba(140, 160, 210, 0.08), transparent 70%),
+    radial-gradient(80% 40% at 30% 100%, color-mix(in srgb, var(--accent) 18%, transparent), transparent 70%),
+    #05070e;
 }
 .setup-side.painted {
   background:
@@ -1198,13 +1214,95 @@ input[type="range"].range {
     linear-gradient(to top, rgba(5, 7, 14, 0.92), rgba(5, 7, 14, 0) 55%),
     var(--setup-wall) center 35% / cover no-repeat;
 }
-
+.setup-side-text {
+  position: relative;
+  z-index: 1;
+  max-width: 32rem;
+}
+/* Where you are: the step in the mono, its number large and outlined. */
+.setup-side-step {
+  margin: 0;
+  font: 500 var(--t-xs) / 1.2 var(--f-mono);
+  letter-spacing: var(--track-eyebrow);
+  text-transform: uppercase;
+  color: var(--text-2);
+}
+.setup-side-num {
+  margin: 14px 0 26px;
+  font: 700 clamp(96px, 11vw, 168px) / 0.8 var(--f-display);
+  letter-spacing: -0.06em;
+  color: transparent;
+  -webkit-text-stroke: 1.5px var(--accent);
+  font-variant-numeric: tabular-nums;
+}
+/* A line for each step, in the display face. */
 .setup-side-line {
-  max-width: 28ch;
-  margin: 14px 0 0;
-  font: italic 400 clamp(18px, 1.7vw, 24px) / 1.35 var(--f-serif);
+  max-width: 17ch;
+  margin: 0;
+  font: 650 clamp(24px, 2.4vw, 36px) / 1.12 var(--f-display);
+  letter-spacing: -0.03em;
   color: var(--text);
   text-wrap: balance;
+}
+/* The world, waiting below: an Earth's horizon with its air lit. */
+.setup-planet {
+  position: absolute;
+  left: -20%;
+  top: 70%;
+  z-index: 0;
+  width: 140%;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  overflow: hidden;
+  isolation: isolate;
+  background: #05070e;
+  box-shadow:
+    0 -8px 50px -8px rgba(110, 160, 255, 0.4),
+    0 -40px 140px -20px color-mix(in srgb, var(--accent) 28%, transparent);
+  /* fades out before the side's edge, so nothing is cut off square */
+  -webkit-mask-image: linear-gradient(90deg, #000 45%, transparent 84%);
+  mask-image: linear-gradient(90deg, #000 45%, transparent 84%);
+}
+/* The ground turns, very slowly, under its air: the land on a disc that
+   rotates (::before), the night and the lit rim held still over it (::after). */
+.setup-planet::before,
+.setup-planet::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+}
+.setup-planet::before {
+  z-index: -2;
+  background: url("../assets/earth/earth-albedo-1024.jpg") 60% 46% / 220% auto;
+  animation: planet-turn 480s linear infinite;
+}
+.setup-planet::after {
+  z-index: -1;
+  background:
+    radial-gradient(circle at 50% 50%, #05070e 50%, rgba(5, 7, 14, 0.82) 60%, rgba(5, 7, 14, 0.35) 68%, rgba(5, 7, 14, 0.2) 71%),
+    linear-gradient(160deg, rgba(120, 170, 255, 0.22), transparent 35%);
+  box-shadow: inset 0 16px 34px -14px rgba(170, 210, 255, 0.6);
+}
+@keyframes planet-turn {
+  to { transform: rotate(-360deg); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .setup-planet::before {
+    animation: none;
+  }
+}
+:root[data-motion="reduce"] .setup-planet::before {
+  animation: none;
+}
+.setup-side.painted .setup-planet {
+  display: none;
+}
+/* With the side showing where you are, the card needn't count too. */
+@media (min-width: 861px) {
+  html[data-look] body.in-setup .setup.has-side .setup-count {
+    display: none;
+  }
 }
 .setup-num {
   display: none;
@@ -1220,7 +1318,7 @@ input[type="range"].range {
   animation: rise 0.5s var(--ease-out) both;
 }
 .setup-form h2 {
-  font: 400 clamp(22px, 3.2vw, 28px) / 1.15 var(--f-display);
+  font: 700 clamp(22px, 3.2vw, 28px) / 1.15 var(--f-display);
   letter-spacing: -0.03em;
   margin: 6px 0 6px;
   text-wrap: balance;
@@ -1241,7 +1339,7 @@ input[type="range"].range {
   background: var(--line-2);
 }
 .setup-steps i.on {
-  background: var(--focus);
+  background: var(--accent);
 }
 .setup-count {
   margin-top: 10px;
@@ -1270,9 +1368,9 @@ input[type="range"].range {
   border-color: var(--line-3);
 }
 .setup-choice[aria-checked="true"] {
-  border-color: var(--focus);
-  background: rgba(154, 216, 255, 0.1);
-  background: color-mix(in srgb, var(--focus) 10%, transparent);
+  border-color: var(--accent);
+  background: rgba(255, 122, 47, 0.1);
+  background: color-mix(in srgb, var(--accent) 10%, transparent);
 }
 .setup-subjects .chip small {
   color: var(--text-3);
@@ -1301,6 +1399,24 @@ input[type="range"].range {
 .setup-level select {
   grid-row: 1;
   grid-column: 2;
+}
+/* The setup's loose fields (a last grade, a time): the field system. */
+.setup :is(select, input[type="text"], input[type="time"], input[type="number"]):not(.field *) {
+  min-height: 38px;
+  padding: 6px 12px;
+  border: 1px solid var(--line-2);
+  border-radius: var(--r-2);
+  background-color: rgba(255, 255, 255, 0.04);
+  color: var(--text);
+  font-size: var(--t-ui);
+}
+.setup :is(select, input):not(.field *):focus-visible {
+  outline: 2px solid var(--ring);
+  outline-offset: 2px;
+}
+.setup select:not(.field *) option {
+  background: var(--surface-2);
+  color: var(--text);
 }
 .setup-times {
   display: grid;
@@ -1358,19 +1474,40 @@ input[type="range"].range {
     align-items: center;
     justify-content: flex-start;
     gap: 12px;
-    padding: 18px 16px 6px;
+    padding: 20px 20px 4px;
+    background: none;
+  }
+  .setup-side-step,
+  .setup-side-num,
+  .setup-planet {
+    display: none;
   }
   .setup-side.painted {
     background: linear-gradient(to top, var(--bg), rgba(5, 7, 14, 0.4)), var(--setup-wall) center 30% / cover no-repeat;
   }
 
   .setup-side-line {
+    max-width: none;
     margin: 0;
-    font-size: 16px;
+    font-size: 17px;
+    color: var(--text-2);
   }
   .setup-form {
     margin: 8px 16px 24px;
     width: auto;
+  }
+  html[data-look] body.in-setup .setup.has-side .setup-form {
+    padding: 22px 18px 18px;
+  }
+  /* Back and Next stay in reach while a long step scrolls. */
+  html[data-look] body.in-setup .setup.has-side .setup-actions {
+    position: sticky;
+    bottom: 0;
+    z-index: 2;
+    margin: 20px -18px -18px;
+    padding: 14px 18px max(18px, env(safe-area-inset-bottom, 0px));
+    border-radius: 0 0 var(--r-3) var(--r-3);
+    background: linear-gradient(to bottom, rgba(10, 12, 19, 0), rgba(10, 12, 19, 0.96) 28%);
   }
 }
 @media (max-width: 520px) {
@@ -1411,8 +1548,8 @@ input[type="range"].range {
   display: none;
 }
 .gd-panel-h {
-  font: 600 11px/1 var(--f-body);
-  letter-spacing: 0.18em;
+  font: 600 var(--t-xs)/1 var(--f-body);
+  letter-spacing: var(--track-eyebrow);
   text-transform: uppercase;
   color: var(--time);
 }
@@ -1445,7 +1582,7 @@ input[type="range"].range {
   opacity: 0.4;
 }
 .gd-note {
-  font-size: 11.5px;
+  font-size: var(--t-xs);
   color: var(--text-3);
 }
 
@@ -1456,7 +1593,7 @@ input[type="range"].range {
 .stat dt {
   font-family: var(--f-mono);
   font-weight: 500;
-  letter-spacing: 0.16em;
+  letter-spacing: var(--track-eyebrow);
 }
 
 /* The HUD: four corner brackets, the chapter you're in, how far down you
@@ -1466,7 +1603,7 @@ input[type="range"].range {
   inset: 0;
   z-index: 21; /* above the bar, so the progress hairline shows on it */
   pointer-events: none;
-  font-size: 10.5px;
+  font-size: var(--t-xs);
   text-transform: uppercase;
   color: var(--text-3);
 }
@@ -1592,7 +1729,7 @@ input[type="range"].range {
   position: absolute;
   right: 24px;
   white-space: nowrap;
-  font: 500 10.5px/1 var(--f-mono);
+  font: 500 var(--t-xs)/1 var(--f-mono);
   letter-spacing: 0.14em;
   text-transform: uppercase;
   color: var(--text-2);
@@ -1607,7 +1744,7 @@ input[type="range"].range {
   transform: none;
 }
 .thread-stars a:focus-visible {
-  outline: 2px solid var(--focus);
+  outline: 2px solid var(--ring);
   outline-offset: 0;
   border-radius: 50%;
 }
@@ -1647,14 +1784,15 @@ input[type="range"].range {
 }
 .stat dd {
   margin: 0;
-  font: 300 clamp(56px, 8vw, 104px) / 0.9 var(--f-display);
+  font: 500 clamp(52px, 7.4vw, 96px) / 0.9 var(--f-mono);
+  font-variant-numeric: tabular-nums;
   letter-spacing: -0.05em;
   font-variant-numeric: tabular-nums;
   color: var(--tone);
   text-shadow: 0 0 34px color-mix(in srgb, var(--tone) 35%, transparent);
 }
 .stat dt {
-  font-size: 11px;
+  font-size: var(--t-xs);
   line-height: 1.5;
   text-transform: uppercase;
   color: var(--text-3);
@@ -1723,8 +1861,8 @@ input[type="range"].range {
   color: #1d180f;
 }
 .letter-from {
-  font: 500 11px/1 var(--f-mono);
-  letter-spacing: 0.2em;
+  font: 500 var(--t-xs)/1 var(--f-mono);
+  letter-spacing: var(--track-eyebrow);
   text-transform: uppercase;
   color: #8a6a35;
 }
@@ -1745,7 +1883,7 @@ input[type="range"].range {
   padding: 22px 44px 22px 0;
   cursor: pointer;
   list-style: none;
-  font: 400 clamp(17px, 2vw, 22px) / 1.3 var(--f-display);
+  font: 600 clamp(17px, 2vw, 21px) / 1.3 var(--f-display);
   letter-spacing: -0.02em;
   color: var(--text);
 }
@@ -1770,7 +1908,7 @@ input[type="range"].range {
   color: var(--time);
 }
 .faq summary:focus-visible {
-  outline: 2px solid var(--focus);
+  outline: 2px solid var(--ring);
   outline-offset: 4px;
 }
 .faq details p {
@@ -1784,7 +1922,7 @@ input[type="range"].range {
   animation: rise var(--dur-2) var(--ease-out) both;
 }
 .faq details a {
-  color: var(--focus);
+  color: var(--accent-text);
 }
 
 /* ---- Age and a parent's consent ---------------------------------------------- */
@@ -1856,7 +1994,7 @@ input[type="range"].range {
 }
 .parent-card h2 {
   margin: 0;
-  font: 500 20px/1.2 var(--f-display);
+  font: 650 20px/1.2 var(--f-display);
 }
 .parent-card .field-row {
   display: grid;
@@ -1950,7 +2088,7 @@ input[type="range"].range {
   min-height: 1.5em;
   font-size: 13px;
   font-weight: 600;
-  letter-spacing: 0.16em;
+  letter-spacing: var(--track-eyebrow);
   text-transform: uppercase;
   color: var(--g, var(--time));
 }
@@ -2145,7 +2283,7 @@ input[type="range"].range {
   }
 }
 .land-credit {
-  font-size: 11px;
+  font-size: var(--t-xs);
   color: var(--text-3, #8b8aa6);
 }
 .land-credit a {

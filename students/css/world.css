@@ -1,0 +1,337 @@
+/* Panalo Students: World. Moved out of surfaces.css as it stood and loaded
+   straight after study.css (index.html), so the cascade is unchanged. */
+
+/* ---- World ------------------------------------------------------------------------ */
+
+.world-grid {
+  display: grid;
+  grid-template-columns: 1.15fr 1fr;
+  gap: clamp(20px, 4vw, 56px);
+  align-items: center;
+}
+.world-stage {
+  display: grid;
+  place-items: center;
+}
+.world-globe {
+  width: min(100%, 620px);
+  aspect-ratio: 1;
+  cursor: grab;
+  touch-action: pan-y;
+  border-radius: 50%;
+}
+.world-globe:active {
+  cursor: grabbing;
+}
+.legend {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.legend-row {
+  display: grid;
+  grid-template-columns: 12px 1fr auto;
+  gap: 12px;
+  align-items: start;
+  padding: 10px 0;
+  border-top: 1px solid var(--line);
+}
+.legend-row:first-child {
+  border-top: 0;
+}
+.legend-swatch {
+  width: 10px;
+  height: 10px;
+  margin-top: 6px;
+  border-radius: 50%;
+  background: var(--tone);
+  box-shadow: 0 0 8px var(--tone);
+}
+.legend-row b {
+  display: block;
+  font-size: 14.5px;
+}
+.legend-row small {
+  color: var(--text-3);
+  font-size: var(--t-ui);
+}
+.legend-val {
+  color: var(--tone);
+  font-weight: 600;
+  font-size: 14px;
+  white-space: nowrap;
+}
+.world-lower {
+  display: grid;
+  grid-template-columns: 1.2fr 1fr 1fr;
+  gap: 32px;
+  margin-top: 30px;
+}
+.world-lower .panel + .panel {
+  margin-top: 0;
+}
+.moons {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.moon {
+  display: grid;
+  grid-template-columns: 22px 1fr auto auto;
+  gap: 10px;
+  align-items: center;
+  padding: 10px 0;
+  border-top: 1px solid var(--line);
+}
+.moon:first-child {
+  border-top: 0;
+}
+.moon-dot {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: conic-gradient(#f6f2e4 var(--p), rgba(200, 210, 235, 0.15) 0);
+}
+.moon.full .moon-dot {
+  box-shadow: 0 0 10px rgba(255, 230, 180, 0.7);
+}
+.moon-body {
+  display: grid;
+  gap: 4px;
+  min-width: 0;
+}
+.moon-body small {
+  color: var(--text-3);
+}
+.moon-body .meter {
+  width: 100%;
+}
+.log-line {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  align-items: center;
+}
+.disc-log p {
+  font-size: var(--t-ui);
+}
+@media (max-width: 1000px) {
+  .world-grid,
+  .world-lower {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+/* World: this month, in stars; the journal. */
+.world-days {
+  display: grid;
+  grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr);
+  gap: var(--s-5);
+  margin-top: var(--s-5);
+}
+@media (max-width: 900px) {
+  .world-days {
+    grid-template-columns: 1fr;
+  }
+}
+.sky-wrap {
+  position: relative;
+  z-index: 1;
+}
+.month-sky {
+  display: block;
+  width: 100%;
+  height: auto;
+  max-height: 340px;
+  border: 1px solid var(--line);
+  border-radius: var(--r-2);
+  /* Its own patch of night, so the month never mixes with the ambient stars. */
+  background:
+    radial-gradient(70% 80% at 50% 45%, rgba(255, 196, 122, 0.06), transparent 70%),
+    var(--void);
+}
+.sky-num {
+  font: 600 2.1px var(--f-body);
+  fill: var(--text-3);
+  text-anchor: middle;
+}
+.sky-star.today .sky-num {
+  fill: var(--time);
+}
+.sky-link {
+  stroke: rgba(255, 196, 122, 0.45);
+  stroke: color-mix(in srgb, var(--time) 45%, transparent);
+  stroke-width: 0.22;
+  stroke-linecap: round;
+}
+.sky-star circle:first-child {
+  fill: none;
+  stroke: var(--text-3);
+  stroke-width: 0.18;
+  opacity: 0.7;
+}
+.sky-star.future circle:first-child {
+  opacity: 0.18;
+}
+.sky-star.lit circle:first-child {
+  fill: var(--time);
+  stroke: none;
+  opacity: 1;
+  filter: drop-shadow(0 0 1.2px var(--time));
+}
+.sky-today {
+  fill: none;
+  stroke: rgba(255, 196, 122, 0.6);
+  stroke: color-mix(in srgb, var(--time) 60%, transparent);
+  stroke-width: 0.25;
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: sky-pulse 2.6s var(--ease-out) infinite;
+}
+@keyframes sky-pulse {
+  0% { opacity: 0.9; transform: scale(0.7); }
+  100% { opacity: 0; transform: scale(1.5); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .sky-today { animation: none; }
+}
+html[data-motion="reduce"] .sky-today {
+  animation: none;
+}
+.sky-caption {
+  margin: 10px 0 0;
+  font-size: 13px;
+}
+.journal {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 14px;
+}
+.page {
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--line);
+}
+.page-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 4px;
+}
+.page-date {
+  margin-right: 4px;
+}
+.page-line {
+  margin: 2px 0 0;
+  color: var(--text-2);
+}
+@keyframes meter-in { from { width: 0; } }
+/* ===== World: the Earth as the hero, its numbers beside it =================== */
+.world-grid {
+  grid-template-columns: minmax(0, 7fr) minmax(0, 5fr);
+  gap: clamp(20px, 3vw, 40px);
+  align-items: center;
+  margin-top: 8px;
+}
+.world .world-numbers {
+  margin: 0;
+}
+.world .wn-stats {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+/* Each number a small tile in the look's finish; the value sized to its
+   tile so "1 h 30 min" stays on one line. */
+html[data-look] .wn-stats > .wn-stat.panel {
+  container-type: inline-size;
+  min-width: 0;
+  margin: 0;
+  padding: 16px 18px 15px;
+  gap: 4px;
+}
+.world .wn-v {
+  font-size: clamp(18px, 12.5cqi, 30px);
+  line-height: 1.05;
+  white-space: nowrap;
+}
+.world .wn-u {
+  font-size: var(--t-ui);
+  color: var(--text-2);
+}
+.world .wn-h {
+  font-size: var(--t-xs);
+  color: var(--text-2);
+}
+html[data-look="signal"] .wn-stats > .wn-stat.panel {
+  padding-top: 22px;
+}
+/* What shapes it: one tile across, its rows in columns. */
+html[data-look] .world .world-legend.panel {
+  margin: 20px 0 0;
+}
+.world-legend .legend {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  column-gap: 32px;
+}
+.world-legend .legend-row:nth-child(-n + 3) {
+  border-top: 0;
+}
+.world-legend .legend-row small {
+  color: var(--text-2);
+}
+/* Moons and discoveries: two tiles, side by side; the grid's gap is the
+   only spacing, so no look's panel margin pushes one down. */
+html[data-look] :is(.world-lower, .world-days) > .panel,
+html[data-look] :is(.world-lower, .world-days) > .panel + .panel {
+  margin: 0;
+}
+.world-lower {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 20px;
+  margin-top: 20px;
+}
+.world-days {
+  align-items: start;
+  gap: 20px;
+  margin-top: 20px;
+}
+@media (max-width: 1100px) {
+  .world-legend .legend {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .world-legend .legend-row:nth-child(3) {
+    border-top: 1px solid var(--line);
+  }
+}
+@media (max-width: 1000px) {
+  .world-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .world .wn-stats {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+@media (max-width: 760px) {
+  .world .wn-stats {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
+  }
+  html[data-look] .wn-stats > .wn-stat.panel {
+    padding: 14px 14px 13px;
+  }
+  .world-legend .legend {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .world-legend .legend-row:nth-child(-n + 3) {
+    border-top: 1px solid var(--line);
+  }
+  .world-legend .legend-row:first-child {
+    border-top: 0;
+  }
+  .world-lower {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}

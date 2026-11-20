@@ -47,7 +47,7 @@ const LIFE_EXPLAIN = {
   help: "Chores, helping at home, volunteering: small towns come on between the cities.",
 };
 function lifeRows(s) {
-  return LIFE.map((a) => row(a.tone, a.feature, s.life30?.[a.id] ? formatMinutes(s.life30[a.id]) : "—", `${a.label}, last 30 days. ${LIFE_EXPLAIN[a.id]}`));
+  return LIFE.map((a) => row(a.tone, a.feature, s.life30?.[a.id] ? formatMinutes(s.life30[a.id]) : "None yet", `${a.label}, last 30 days. ${LIFE_EXPLAIN[a.id]}`));
 }
 
 function row(tone, name, value, explain) {
@@ -58,19 +58,19 @@ function render() {
   const w = world();
   const s = w.stats;
   titleEl.textContent = store.student?.world_name || "Your world";
-  subEl.textContent = `${s.ageDays === 0 ? "Born today" : `${s.ageDays} day${s.ageDays === 1 ? "" : "s"} old`}. Study raises its land; the rest of your life lights, greens and colours it. Every feature here is something you actually did — drag to turn it.`;
+  subEl.textContent = `${s.ageDays === 0 ? "Born today" : `${s.ageDays} day${s.ageDays === 1 ? "" : "s"} old`}. Study raises its land; the rest of your life lights, greens and colours it. Every feature here is something you actually did. Drag to turn it.`;
   globe?.setLayers(w.layers, w.moons);
   renderNumbers(w);
 
   legendEl.replaceChildren(
     row("tone-world", "Land", formatMinutes(s.studyMinutesTotal), `Study, all time: focus sessions and exam-style questions. ${landLine(w.layers.earth)} It never sinks again.`),
-    row("tone-world", "Forests", s.chapters ? `${s.covered} of ${s.chapters}` : "—", "Chapters covered: green spreads over the land as your syllabus gets covered. It stays."),
-    row("tone-focus", "Glowing seas", s.chapters ? `${s.known} of ${s.chapters}` : "—", "Chapters you know to your aim. The seas glow with what you know well."),
+    row("tone-world", "Forests", s.chapters ? `${s.covered} of ${s.chapters}` : "None yet", "Chapters covered: green spreads over the land as your syllabus gets covered. It stays."),
+    row("tone-focus", "Glowing seas", s.chapters ? `${s.known} of ${s.chapters}` : "None yet", "Chapters you know to your aim. The seas glow with what you know well."),
     row("tone-drift", "Aurora", `${s.marks30} marks`, "Marks earned in the last 30 days: exam-style questions you marked, and past papers."),
     row("tone-signal", "Atmosphere", `${s.papers60} paper${s.papers60 === 1 ? "" : "s"}`, "Past papers marked in the last 60 days: each one thickens the air."),
     ...lifeRows(s),
     row("tone-time", "Ring", `${s.active7} of 7 days`, w.layers.ring ? "You showed up on five or more of the last seven days." : "Appears when you show up five days out of seven: study or anything you log."),
-    row("tone-signal", "Weather", s.daysSinceActive == null ? "—" : s.daysSinceActive === 0 ? "clear" : `${s.daysSinceActive} d away`, weatherLine(s))
+    row("tone-signal", "Weather", s.daysSinceActive == null ? "Not yet" : s.daysSinceActive === 0 ? "clear" : `${s.daysSinceActive} d away`, weatherLine(s))
   );
 
   // Moons.
@@ -83,7 +83,7 @@ function render() {
             el("span", { class: "moon-dot", "aria-hidden": "true", style: `--p:${pct}%` }),
             el("div", { class: "moon-body" }, [
               el("b", { text: g.title }),
-              el("small", { text: g.weekly_minutes ? `${formatMinutes(m.minutes)} of ${formatMinutes(g.weekly_minutes)} this week${g.subject ? ` · ${g.subject}` : ""} · resets Monday` : g.done_at ? "Done" : "A milestone — mark it done when it's done." }),
+              el("small", { text: g.weekly_minutes ? `${formatMinutes(m.minutes)} of ${formatMinutes(g.weekly_minutes)} this week${g.subject ? ` · ${g.subject}` : ""} · resets Monday` : g.done_at ? "Done" : "A milestone. Mark it done when it's done." }),
               el("span", { class: "meter", role: "progressbar", "aria-valuemin": "0", "aria-valuemax": "100", "aria-valuenow": String(pct), "aria-label": `${g.title} progress` }, [el("i", { style: `width:${pct}%` })]),
             ]),
             !g.weekly_minutes
@@ -188,7 +188,7 @@ function renderJournal() {
                   e.mood ? el("span", { class: "tag tone-drift", text: label(MOODS, e.mood) }) : null,
                   e.energy ? el("span", { class: "tag tone-focus", text: label(ENERGY, e.energy) }) : null,
                 ]),
-                e.intention ? el("p", { class: "page-line" }, [el("span", { class: "faint", text: "One thing: " }), e.intention, e.intention_done ? el("span", { class: "faint", text: ` — ${label(DONE, e.intention_done)?.toLowerCase()}` }) : null]) : null,
+                e.intention ? el("p", { class: "page-line" }, [el("span", { class: "faint", text: "One thing: " }), e.intention, e.intention_done ? el("span", { class: "faint", text: ` (${label(DONE, e.intention_done)?.toLowerCase()})` }) : null]) : null,
                 e.learned ? el("p", { class: "page-line" }, [el("span", { class: "faint", text: "Learned: " }), e.learned]) : null,
                 e.win ? el("p", { class: "page-line" }, [el("span", { class: "faint", text: "Good thing: " }), e.win]) : null,
               ])
@@ -221,7 +221,7 @@ function openGoal() {
   });
   openSheet({
     title: "A new moon",
-    lead: "Weekly targets reset every Monday — no streak to lose. Milestones are things like “finish the robotics demo”.",
+    lead: "Weekly targets reset every Monday, so there's no streak to lose. Milestones are things like “finish the robotics demo”.",
     body: [types.node, el("label", { class: "field", style: "margin-top:14px" }, [el("span", { text: "Name" }), title]), weeklyBits],
     actions: [
       { label: "Cancel", kind: "btn-quiet" },
@@ -249,7 +249,7 @@ function openGoal() {
 // How much of the real Earth has risen, in words.
 function landLine(rise = 0) {
   const pct = Math.round(rise * 100);
-  if (pct <= 0) return "All ocean so far — your first hour of focus raises the first land, in India.";
+  if (pct <= 0) return "All ocean so far. Your first hour of focus raises the first land, in India.";
   if (pct >= 100) return "The whole Earth has risen.";
   return `${pct}% of Earth's land has risen from the sea.`;
 }
@@ -270,8 +270,8 @@ function numbers(w) {
   return [
     { v: String(s.ageDays + 1), u: s.ageDays === 0 ? "day old" : "days old", hint: "Since your world began" },
     { v: formatMinutes(s.studyMinutesTotal), u: "of study", hint: "All time" },
-    { v: best ? formatMinutes(best.m) : "—", u: "best day", hint: best ? parseDayKey(best.k).toLocaleDateString(undefined, { day: "numeric", month: "short" }) : "Not yet" },
-    { v: longest ? formatMinutes(longest) : "—", u: "longest session", hint: "One sitting" },
+    { v: best ? formatMinutes(best.m) : "None yet", u: "best day", hint: best ? parseDayKey(best.k).toLocaleDateString(undefined, { day: "numeric", month: "short" }) : "Not yet" },
+    { v: longest ? formatMinutes(longest) : "None yet", u: "longest session", hint: "One sitting" },
     { v: String(s.tasksDone), u: s.tasksDone === 1 ? "task finished" : "tasks finished", hint: "Lights on the night side" },
     { v: String(s.questionsDone), u: s.questionsDone === 1 ? "question marked" : "questions marked", hint: "Exam-style, by the scheme" },
     { v: String(s.papersDone), u: s.papersDone === 1 ? "past paper" : "past papers", hint: "Marked" },
@@ -282,7 +282,7 @@ function numbers(w) {
 function renderNumbers(w) {
   if (!numbersEl) return;
   numbersEl.replaceChildren(
-    ...numbers(w).map((n) => el("li", { class: "wn-stat" }, [el("b", { class: "wn-v" }, [el("span", { class: n.v.includes(" ") ? "" : "num", text: n.v })]), el("span", { class: "wn-u", text: n.u }), el("small", { class: "wn-h faint", text: n.hint })]))
+    ...numbers(w).map((n) => el("li", { class: "wn-stat panel" }, [el("b", { class: "wn-v" }, [el("span", { class: n.v.includes(" ") ? "" : "num", text: n.v })]), el("span", { class: "wn-u", text: n.u }), el("small", { class: "wn-h faint", text: n.hint })]))
   );
 }
 
@@ -354,7 +354,7 @@ async function postcard() {
   const name = `${(store.student?.world_name || "world").replace(/[^\w-]+/g, "-").toLowerCase()}-day-${s.ageDays + 1}.png`;
   openSheet({
     title: "A postcard of your world",
-    lead: "Saved to your device only — nothing is posted.",
+    lead: "Saved to your device only. Nothing is posted.",
     form: false,
     body: [el("img", { class: "postcard-img", src: url, alt: `A postcard of ${store.student?.world_name || "your world"}, day ${s.ageDays + 1}` })],
     actions: [
@@ -409,13 +409,11 @@ export function mount(section) {
         el("a", { class: "btn btn-primary", href: "#/plan", text: "Study" }),
       ]),
     ]),
-    el("div", { class: "world-grid" }, [
-      stage,
-      el("section", { class: "panel tone-world", "aria-labelledby": "w-legend" }, [el("div", { class: "panel-head" }, [el("h2", { id: "w-legend", text: "What shapes it" })]), legendEl]),
-    ]),
-    el("section", { class: "world-numbers", "aria-label": "Your world in numbers" }, [(numbersEl = el("ul", { class: "wn-stats" }))]),
+    // The Earth large, its numbers beside it; what shapes it under both.
+    el("div", { class: "world-grid" }, [stage, el("section", { class: "world-numbers", "aria-label": "Your world in numbers" }, [(numbersEl = el("ul", { class: "wn-stats" }))])]),
+    el("section", { class: "panel tone-world world-legend", "aria-labelledby": "w-legend" }, [el("div", { class: "panel-head" }, [el("h2", { id: "w-legend", text: "What shapes it" })]), legendEl]),
     el("div", { class: "world-lower" }, [
-      el("section", { class: "panel tone-world" }, [el("div", { class: "panel-head" }, [el("h2", { text: "Moons — your goals" }), el("button", { type: "button", class: "link-btn", text: "Add a moon", onClick: openGoal })]), moonsEl]),
+      el("section", { class: "panel tone-world" }, [el("div", { class: "panel-head" }, [el("h2", { text: "Moons: your goals" }), el("button", { type: "button", class: "link-btn", text: "Add a moon", onClick: openGoal })]), moonsEl]),
       el("section", { class: "panel tone-time" }, [el("div", { class: "panel-head" }, [el("h2", { text: "Discoveries" })]), discEl]),
     ])
   );

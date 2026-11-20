@@ -905,7 +905,7 @@ try {
     await go(u, "#/calendar", 900);
     await u.fill("#quick-add", "Physics test fri 10am");
     await u.waitForTimeout(150);
-    check("quick add previews what it understood", /^Exam · .*10:00 — “Physics test”/.test(await u.textContent("#quick-add-preview")));
+    check("quick add previews what it understood", /^Exam · .*10:00 · “Physics test”/.test(await u.textContent("#quick-add-preview")));
     await u.press("#quick-add", "Enter");
     await u.waitForTimeout(600);
     const ev = await u.evaluate(() => window.__qa.db.student_events.find((e) => e.title === "Physics test"));

@@ -34,12 +34,17 @@ html:is([data-look="night"], [data-look="day"]) {
   --archive: #e7d19b;
   --drift: #ff9fc6;
   --alert: #ff8f80;
-  --accent: #f4f2fb;
+  /* One violet: the thing to press (--go fills it) and keyboard focus. */
+  --accent: #9b8cff;
+  --accent-hi: #c7bdff;
+  --accent-text: #c7bdff;
+  --accent-soft: rgba(155, 140, 255, 0.16);
+  --accent-line: rgba(155, 140, 255, 0.45);
+  --accent-fill: var(--go);
+  --accent-glow: var(--glow);
   --on-accent: #0b0a12;
+  --ring: #c7bdff;
 
-  --f-display: "Inter Tight", "Segoe UI", system-ui, sans-serif;
-  --f-body: "Plus Jakarta Sans", "Segoe UI", system-ui, -apple-system, sans-serif;
-  --f-serif: "Instrument Serif", Georgia, serif;
 
   --r-1: 10px;
   --r-2: 18px;
@@ -104,17 +109,15 @@ html:is([data-look="night"], [data-look="day"]) .bar-nav a[aria-current="page"]:
     color: var(--text);
   }
   html:is([data-look="night"], [data-look="day"]) .dock a[aria-current="page"] .dock-glyph {
-    background: var(--text);
-    border-color: var(--text);
-    box-shadow: none;
+    color: var(--go);
   }
 }
 
 /* ---- Headings and panels -------------------------------------------------- */
 
 html:is([data-look="night"], [data-look="day"]) .s-head h1 {
-  font: 900 clamp(32px, 6vw, 52px) / 1 var(--f-display);
-  letter-spacing: -0.03em;
+  font: 800 clamp(32px, 5.4vw, 56px) / 1 var(--f-display);
+  letter-spacing: -0.045em;
 }
 html:is([data-look="night"], [data-look="day"]) .kicker {
   font-weight: 700;
@@ -131,9 +134,9 @@ html:is([data-look="night"], [data-look="day"]) .panel + .panel {
   margin-top: 14px;
 }
 html:is([data-look="night"], [data-look="day"]) .panel-head h2 {
-  font: 700 12px var(--f-body);
-  letter-spacing: 0.1em;
-  color: var(--text-2);
+  font: 750 var(--t-lg) / 1.2 var(--f-display);
+  letter-spacing: -0.02em;
+  color: var(--text);
 }
 
 /* ---- Buttons, chips, fields ----------------------------------------------- */
@@ -145,9 +148,6 @@ html:is([data-look="night"], [data-look="day"]) .btn-primary {
   background: var(--go);
   color: #fff;
   box-shadow: var(--glow);
-}
-html:is([data-look="night"], [data-look="day"]) .btn-primary:hover:not(:disabled) {
-  background: var(--go-hover);
 }
 html:is([data-look="night"], [data-look="day"]) .btn-ghost,
 html:is([data-look="night"], [data-look="day"]) .chip {
@@ -167,7 +167,7 @@ html:is([data-look="night"], [data-look="day"]) .field select,
 html:is([data-look="night"], [data-look="day"]) .field textarea {
   background: rgba(255, 255, 255, 0.05);
   border-color: var(--line-2);
-  border-radius: 14px;
+  border-radius: var(--r-2);
 }
 html:is([data-look="night"], [data-look="day"]) dialog.sheet,
 html:is([data-look="night"], [data-look="day"]) .menu,
@@ -179,7 +179,7 @@ html:is([data-look="night"], [data-look="day"]) .toast {
   backdrop-filter: blur(24px) saturate(150%);
 }
 html:is([data-look="night"], [data-look="day"]) :focus-visible {
-  outline-color: var(--violet);
+  outline-color: var(--ring);
 }
 
 /* ---- Today: the climb ----------------------------------------------------- */
@@ -215,7 +215,7 @@ html:is([data-look="night"], [data-look="day"]) .today-hero::after {
 }
 html:is([data-look="night"], [data-look="day"]) .today-hero h2 {
   margin: 0;
-  font: 900 clamp(38px, 9vw, 64px) / 0.96 var(--f-display);
+  font: 800 clamp(34px, 7vw, 60px) / 0.98 var(--f-display);
   letter-spacing: -0.03em;
 }
 /* The hero carries the date (or the next exam): no second date below. */
@@ -266,34 +266,40 @@ html:is([data-look="night"], [data-look="day"]) .today-hero .kicker {
   line-height: 1.1;
 }
 .climb-ring b {
-  font: 800 20px var(--f-display);
+  font: 600 20px var(--f-mono);
 }
 .climb-ring small {
-  font-size: 10px;
+  font-size: var(--t-xs);
   color: var(--text-2);
 }
-/* The next step: the one card that glows. */
-html:is([data-look="night"], [data-look="day"]) .now-step {
-  padding: 18px;
-  border-radius: var(--r-3);
-  background: linear-gradient(140deg, rgba(139, 124, 255, 0.24), rgba(255, 255, 255, 0.04));
-  border: 1px solid rgba(155, 140, 255, 0.38);
+/* The next step: the one tile that glows (css/features.css lays it out).
+   The photo above already makes the occasion, so the hero row is calmer. */
+html:is([data-look="night"], [data-look="day"]) .now-top {
+  align-items: center;
 }
-html:is([data-look="night"], [data-look="day"]) .now-step .step-label {
-  color: var(--violet-soft);
-  font-weight: 700;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  font-size: 12px;
+html:is([data-look="night"], [data-look="day"]) .now-top .now-step.panel {
+  min-height: 216px;
 }
-html:is([data-look="night"], [data-look="day"]) .now-step b {
-  font: 800 clamp(20px, 4.6vw, 26px) / 1.1 var(--f-display);
-  letter-spacing: -0.01em;
+/* On a wide screen the next step rises into the photo's dark foot, so the
+   greeting and the tile read as one row under the climb, with no gap. */
+@media (min-width: 900px) {
+  html:is([data-look="night"], [data-look="day"]) .today-hero {
+    padding-bottom: 76px;
+    margin-bottom: 0;
+  }
+  html:is([data-look="night"], [data-look="day"]) .now-top {
+    position: relative;
+    z-index: 1;
+    align-items: end;
+    margin-top: -58px;
+  }
+  html:is([data-look="night"], [data-look="day"]) .now-top > .now-head {
+    padding-bottom: 10px;
+  }
 }
 html:is([data-look="night"], [data-look="day"]) .now-step .btn-primary {
   --h: 52px;
-  padding: 0 26px;
-  font: 800 17px var(--f-display);
+  font-weight: 700;
 }
 /* Calm-by-default still holds: no glow when motion is reduced. */
 html:is([data-look="night"], [data-look="day"])[data-motion="reduce"] .btn-primary,
@@ -336,7 +342,7 @@ html:is([data-look="night"], [data-look="day"]) .hero-kicker {
 }
 html:is([data-look="night"], [data-look="day"]) .hero-title {
   margin: 14px 0 16px;
-  font: 900 clamp(46px, 11vw, 96px) / 0.95 var(--f-display);
+  font: 800 clamp(40px, 7vw, 80px) / 0.98 var(--f-display);
   letter-spacing: -0.035em;
 }
 html:is([data-look="night"], [data-look="day"]) .hero-sub {
@@ -352,7 +358,7 @@ html:is([data-look="night"], [data-look="day"]) .hero-actions .btn {
   --h: 56px;
   border-radius: 28px;
   padding: 0 28px;
-  font: 800 17px var(--f-display);
+  font: 700 16px var(--f-body);
 }
 @media (max-width: 599px) {
   html:is([data-look="night"], [data-look="day"]) .hero-actions {
@@ -383,7 +389,7 @@ html:is([data-look="night"], [data-look="day"]) body[data-view="study"].in-app::
   pointer-events: none;
 }
 html:is([data-look="night"], [data-look="day"]) .study-dial {
-  width: min(68vw, 300px);
+  width: min(82vw, 400px);
 }
 html:is([data-look="night"], [data-look="day"]) .ring-track {
   fill: rgba(11, 10, 18, 0.55);
@@ -403,7 +409,8 @@ html:is([data-look="night"], [data-look="day"]) .ring-body {
   r: 6;
 }
 html:is([data-look="night"], [data-look="day"]) .study-readout {
-  font: 800 clamp(52px, 14vw, 72px) / 1 var(--f-display);
+  font: 500 clamp(56px, 9vw, 92px) / 1 var(--f-mono);
+  font-variant-numeric: tabular-nums;
   letter-spacing: -0.03em;
   font-variant-numeric: tabular-nums;
 }
@@ -415,7 +422,7 @@ html:is([data-look="night"], [data-look="day"]) .study-center .btn-primary {
   --h: 56px;
   min-width: 180px;
   border-radius: 28px;
-  font: 800 17px var(--f-display);
+  font: 700 16px var(--f-body);
 }
 html:is([data-look="night"], [data-look="day"])[data-motion="reduce"] .ring-arc {
   filter: none;
@@ -443,7 +450,7 @@ html:is([data-look="night"], [data-look="day"]) .sheet-journal .sheet-head::befo
   opacity: 0.9;
 }
 html:is([data-look="night"], [data-look="day"]) .sheet-journal .sheet-head h2 {
-  font: 900 30px / 1 var(--f-display);
+  font: 800 30px / 1 var(--f-display);
   letter-spacing: -0.02em;
 }
 /* Your own words, in your own hand. */
@@ -467,8 +474,11 @@ html:is([data-look="night"], [data-look="day"]) .sheet-journal input.ink::placeh
 
 html:is([data-look="night"], [data-look="day"]) .legend {
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 210px), 1fr));
   gap: 8px;
+}
+html:is([data-look="night"], [data-look="day"]) .world-legend .legend-row {
+  border-top: 1px solid var(--line);
 }
 html:is([data-look="night"], [data-look="day"]) .legend-row,
 html:is([data-look="night"], [data-look="day"]) .legend-row:first-child {
@@ -485,7 +495,7 @@ html:is([data-look="night"], [data-look="day"]) .legend-swatch {
 }
 html:is([data-look="night"], [data-look="day"]) .legend-val {
   grid-area: val;
-  font: 800 20px / 1.1 var(--f-display);
+  font: 600 20px / 1.1 var(--f-mono);
   white-space: normal;
 }
 html:is([data-look="night"], [data-look="day"]) .legend-row > div {
@@ -498,7 +508,7 @@ html:is([data-look="night"], [data-look="day"]) .legend-row b {
 html:is([data-look="night"], [data-look="day"]) .legend-row small {
   display: block;
   margin-top: 2px;
-  font-size: 11.5px;
+  font-size: var(--t-xs);
   line-height: 1.4;
 }
 
@@ -525,62 +535,6 @@ html:is([data-look="night"], [data-look="day"]) .panel-head h2::after {
   display: none;
 }
 
-/* ---- Your shelf: a spine per subject --------------------------------------- */
-
-.pl-shelf {
-  display: flex;
-  align-items: flex-end;
-  gap: 8px;
-  height: 168px;
-  margin: 6px 0 18px;
-  padding: 0 4px;
-  overflow-x: auto;
-  border-bottom: 4px solid rgba(155, 140, 255, 0.45);
-  box-shadow: 0 12px 30px -14px rgba(106, 88, 242, 0.6);
-  scrollbar-width: none;
-}
-.pl-spine {
-  position: relative;
-  flex: 0 0 48px;
-  display: grid;
-  place-items: center;
-  height: 150px;
-  overflow: hidden;
-  border: 1px solid var(--line-2);
-  border-radius: 10px 10px 2px 2px;
-  background: rgba(255, 255, 255, 0.05);
-  color: var(--text);
-  text-decoration: none;
-}
-.pl-spine:nth-child(3n + 2) {
-  height: 136px;
-}
-.pl-spine:nth-child(3n) {
-  height: 160px;
-}
-.pl-spine i {
-  position: absolute;
-  inset: auto 0 0;
-  height: calc(var(--fill) * 100%);
-  background: linear-gradient(to top, color-mix(in srgb, var(--subj) 75%, transparent), color-mix(in srgb, var(--subj) 18%, transparent));
-}
-.pl-spine span {
-  position: relative;
-  max-height: 128px;
-  overflow: hidden;
-  writing-mode: vertical-rl;
-  transform: rotate(180deg);
-  font: 800 12.5px var(--f-display);
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  white-space: nowrap;
-  text-overflow: ellipsis;
-}
-.pl-spine:hover,
-.pl-spine:focus-visible {
-  border-color: var(--violet);
-  box-shadow: 0 0 18px rgba(139, 124, 255, 0.5);
-}
 html:is([data-look="night"], [data-look="day"]) .wn-v {
   font-weight: 800;
   letter-spacing: -0.02em;
@@ -593,4 +547,15 @@ html:is([data-look="night"], [data-look="day"]) .pl-ready .meter {
 html:is([data-look="night"], [data-look="day"]) .pl-ready .meter i {
   border-radius: 4px;
   box-shadow: 0 0 12px color-mix(in srgb, var(--subj) 60%, transparent);
+}
+
+/* Now: a fine grain over the dark, never in the way (Glass has its own). */
+html[data-look="night"] body.in-app[data-view="now"]::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: 90;
+  pointer-events: none;
+  opacity: 0.04;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 0.9 0'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)'/%3E%3C/svg%3E");
 }

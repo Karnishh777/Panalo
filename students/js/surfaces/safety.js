@@ -22,7 +22,7 @@ const PROTECTED = [
 
 // People to call, in India, at any hour. Tap to dial on a phone.
 const HELP = [
-  ["112", "Emergency", "Police, fire or ambulance — if you or someone else is in danger right now."],
+  ["112", "Emergency", "Police, fire or ambulance, if you or someone else is in danger right now."],
   ["1098", "CHILDLINE", "For anyone under 18 who needs help or protection. Free, day and night."],
   ["14416", "Tele-MANAS", "Someone to talk to about stress, low mood or anything heavy. Free, 24×7, in many languages."],
   ["1930", "Cyber crime", "Online fraud, threats or someone misusing your photos. Or report at cybercrime.gov.in."],
@@ -49,7 +49,7 @@ function checkPanel() {
     const done = getPrefs().safetyCheck || {};
     const n = CHECKS.filter(([id]) => done[id]).length;
     box.replaceChildren(
-      el("p", { class: "check-score" }, [el("b", { class: "num", text: `${n} of ${CHECKS.length}` }), el("span", { class: "muted", text: n === CHECKS.length ? " — all set. Well done looking after yourself." : " — tick what's true for you." })]),
+      el("p", { class: "check-score" }, [el("b", { class: "num", text: `${n} of ${CHECKS.length}` }), el("span", { class: "muted", text: n === CHECKS.length ? ": all set. Well done looking after yourself." : ": tick what's true for you." })]),
       el("span", { class: "meter", role: "progressbar", "aria-valuemin": "0", "aria-valuemax": String(CHECKS.length), "aria-valuenow": String(n), "aria-label": "Safety check-up" }, [el("i", { style: `width:${(n / CHECKS.length) * 100}%` })]),
       el("ul", { class: "check-list" }, CHECKS.map(([id, text]) => {
         const c = el("input", { type: "checkbox" });
@@ -67,7 +67,7 @@ function checkPanel() {
 }
 
 const TIPS = [
-  "Never share your password or a login code — no real person from Panalo will ever ask for one.",
+  "Never share your password or a login code. Nobody from Panalo will ever ask for one.",
   "Panalo will never message you inside the app or ask you to install anything. Anyone who claims to be from Panalo and asks for your details isn't.",
   "If studying is getting heavy, it's fine to stop for the day. Talk to someone you trust, or call one of the numbers above.",
   "If someone is in immediate danger, contact local emergency services or a trusted adult straight away.",
@@ -89,7 +89,7 @@ function deleteAccount() {
   const input = el("input", { type: "text", autocapitalize: "off", spellcheck: "false", placeholder: state.currentUsername });
   openSheet({
     title: "Delete your account?",
-    lead: "Everything goes: your study data and world, every file you uploaded, your profile and keys — and, if you also use Panalo Chat with this account, every message you sent there. Only your email and username are kept, locked away, for the 180 days the law requires. This can't be undone.",
+    lead: "Everything goes: your study data and world, every file you uploaded, your profile and keys, and every message you sent in Panalo Chat if you also use it with this account. Only your email and username are kept, locked away, for the 180 days the law requires. This can't be undone.",
     body: [el("label", { class: "field" }, [el("span", { text: `Type your username (${state.currentUsername}) to confirm` }), input])],
     actions: [
       { label: "Keep my account", kind: "btn-quiet" },

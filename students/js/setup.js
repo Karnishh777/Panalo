@@ -90,14 +90,24 @@ export function runSetup({ onDone, editing = false }) {
   document.body.classList.add("in-setup");
   stillSky(true);
 
-  // The side: the painted wallpaper, with a line for each step.
+  // The side: the step's number, a line for each step, and the world
+  // waiting at the foot (or the painted wallpaper, when there is one).
   root.querySelector(".setup-side")?.remove();
-  const sideLine = el("p", { class: "setup-side-line", "aria-hidden": "true" });
-  const side = el("aside", { class: "setup-side", "aria-hidden": "true" }, [sideLine]);
+  const sideStep = el("p", { class: "setup-side-step num" });
+  const sideNum = el("p", { class: "setup-side-num" });
+  const sideLine = el("p", { class: "setup-side-line" });
+  const side = el("aside", { class: "setup-side", "aria-hidden": "true" }, [
+    el("div", { class: "setup-side-text" }, [sideStep, sideNum, sideLine]),
+    el("div", { class: "setup-planet" }),
+  ]);
   root.prepend(side);
   root.classList.add("has-side");
-  const showLine = (id) => {
+  let place = [1, 1];
+  const showLine = (id, i = place[0], n = place[1]) => {
+    place = [i, n];
     sideLine.textContent = LINES[id] || LINES.board;
+    sideStep.textContent = `Step ${i} of ${n}`;
+    sideNum.textContent = String(i).padStart(2, "0");
   };
   onArt(() => {
     const wall = art("wall-tall") || art("wall-wide");
@@ -574,7 +584,7 @@ export function runSetup({ onDone, editing = false }) {
       el("div", { class: "setup-actions" }, [back, next])
     );
     form.dataset.step = s.id;
-    showLine(s.id);
+    showLine(s.id, at + 1, list.length);
     form.querySelector("button[role=radio], button.chip, input, select")?.focus();
   };
 

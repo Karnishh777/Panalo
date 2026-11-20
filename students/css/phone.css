@@ -53,14 +53,10 @@
 @media (max-width: 899px) {
   /* One rhythm between panels, on every page and in every look. */
   html[data-look] .panel + .panel,
-  html[data-look] .now-log .panel + .panel,
   html[data-look] .settings-cols .panel + .panel,
   html[data-look] .safety-cols > div .panel + .panel,
   html[data-look] .world-lower .panel + .panel {
     margin-top: 16px;
-  }
-  html[data-look] .now-log .panel {
-    margin-bottom: 0;
   }
   html[data-look] .settings-look {
     margin-bottom: 16px;

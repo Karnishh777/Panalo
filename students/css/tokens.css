@@ -1,38 +1,63 @@
 /* Panalo Students — design tokens.
  *
- * One rule above the others: colour means something. Each part of the
- * universe has ONE hue, used for that part and nothing else, so a glance at
- * the day orbit tells you what kind of thing an arc is before you read it.
+ * Components ask for roles, never for colours: a look (js/looks.js)
+ * changes what the roles are, and everything follows.
+ *
+ * Type, three roles (css/fonts.css):
+ *   --f-body     Geist: everything you read and press
+ *   --f-display  Archivo, wide: page titles and section heads, sentence case
+ *   --f-mono     Geist Mono: numbers and time only, tabular figures
+ * Nothing is smaller than 12px. Caps are for small eyebrow labels only.
+ *
+ * Colour: one warm accent (--accent) for the thing to press and for
+ * keyboard focus. Everything else is a tinted grey from one family. The
+ * hues below are data, not decoration: each part of the universe has ONE,
+ * used in charts, the day orbit and subject chips, so a glance tells you
+ * what kind of thing you are looking at.
  *
  *   time     amber   classes, deadlines, the clock, "now"
- *   focus    ice     the Study Room, focus sessions
+ *   focus    ice     focus sessions on the day orbit and the calendar
  *   signal   violet  people, circles, rooms, unread
  *   world    green   your world, goals, growth
  *   archive  sand    files
  *   drift    rose    rest and play
  *
- * Interactive things are near-white. Glow is reserved for "this is live"
- * (an unread pulse, a running timer), never for decoration.
+ * Shape: controls you press are pills (--r-pill); containers are soft
+ * (--r-3); fields, menus and small cards sit between (--r-2); tags are
+ * tight (--r-1). Glow is reserved for the one thing to press and for
+ * "this is live", never for decoration.
  */
 :root {
   color-scheme: dark;
 
-  /* Space, from deepest to nearest. Never pure black: pure black makes
-     white text vibrate and hides the depth between layers. */
-  --void: #03040a;
-  --bg: #070912;
-  --bg-2: #0a0d19;
-  --surface: #0f1322;
-  --surface-2: #151a2d;
-  --surface-3: #1d2339;
-  --line: rgba(170, 185, 255, 0.1);
-  --line-2: rgba(170, 185, 255, 0.2);
-  --line-3: rgba(170, 185, 255, 0.34);
+  /* Space, from deepest to nearest: one cool grey family. Never pure
+     black: pure black makes white text vibrate and hides the layers. */
+  --void: #04050a;
+  --bg: #07080d;
+  --bg-2: #0b0d14;
+  --surface: #10131b;
+  --surface-2: #161a24;
+  --surface-3: #1f2430;
+  --line: rgba(196, 205, 230, 0.1);
+  --line-2: rgba(196, 205, 230, 0.18);
+  --line-3: rgba(196, 205, 230, 0.32);
 
-  /* Text. --text-3 still clears 4.5:1 on --bg. */
-  --text: #eef0fa;
-  --text-2: #b3bad5;
-  --text-3: #858dad;
+  /* Text, the same family. --text-3 clears 4.5:1 on --surface-3. */
+  --text: #eef0f6;
+  --text-2: #bcc2d0;
+  --text-3: #959cae;
+
+  /* The accent: ember. --accent-text is the accent set as words on the
+     dark (links, a live label); --on-accent is ink on a filled accent. */
+  --accent: #ff7a2f;
+  --accent-hi: #ffa255;
+  --accent-text: #ffa86b;
+  --accent-soft: rgba(255, 122, 47, 0.14);
+  --accent-line: rgba(255, 140, 70, 0.45);
+  --on-accent: #1c0900;
+  --accent-fill: linear-gradient(100deg, #ff6a26, var(--accent) 45%, var(--accent-hi));
+  --accent-glow: 0 10px 28px -10px rgba(255, 106, 38, 0.6);
+  --ring: var(--accent-hi);
 
   --time: #ffc47a;
   --focus: #9ad8ff;
@@ -42,17 +67,23 @@
   --drift: #ff9fc6;
   --alert: #ff8f80;
 
-  --accent: #e4eaff;
-  --on-accent: #070912;
+  --f-display: "Panalo Display", "Archivo", "Segoe UI", system-ui, sans-serif;
+  --f-body: "Geist", "Segoe UI", system-ui, -apple-system, sans-serif;
+  --f-mono: "Geist Mono", ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+  /* Your own words (the journal, an intention): the reading face, italic. */
+  --f-serif: var(--f-body);
 
-  --f-display: "Inter Tight", "Segoe UI", system-ui, sans-serif;
-  --f-serif: "Instrument Serif", "Iowan Old Style", Georgia, serif;
-  --f-body: "Plus Jakarta Sans", "Segoe UI", system-ui, -apple-system, sans-serif;
-  --f-mono: ui-monospace, "SF Mono", "JetBrains Mono", Menlo, Consolas, monospace;
+  /* Type sizes. --t-xs is the floor for any text. */
+  --t-xs: 12px;
+  --t-sm: 13px;
+  --t-ui: 14px;
+  --t-body: 15px;
+  --t-lg: 17px;
+  --track-eyebrow: 0.12em;
 
-  --r-1: 8px;
-  --r-2: 14px;
-  --r-3: 22px;
+  --r-1: 6px;
+  --r-2: 12px;
+  --r-3: 20px;
   --r-pill: 999px;
 
   --s-1: 4px;
@@ -64,14 +95,23 @@
   --s-7: 48px;
   --s-8: 72px;
 
-  --shadow-1: 0 1px 0 rgba(255, 255, 255, 0.04) inset, 0 10px 30px -12px rgba(0, 0, 0, 0.6);
-  --shadow-2: 0 1px 0 rgba(255, 255, 255, 0.05) inset, 0 24px 60px -20px rgba(0, 0, 0, 0.75);
+  /* Shadows carry the background's hue, not plain black. */
+  --shadow-1: 0 1px 0 rgba(255, 255, 255, 0.04) inset, 0 10px 30px -12px rgba(2, 3, 8, 0.7);
+  --shadow-2: 0 1px 0 rgba(255, 255, 255, 0.05) inset, 0 24px 60px -20px rgba(2, 3, 8, 0.85);
 
   --ease-out: cubic-bezier(0.2, 0.8, 0.2, 1);
   --ease-cine: cubic-bezier(0.7, 0, 0.2, 1);
-  --dur-1: 160ms;
+  /* Presses and entrances: a spring with a little overshoot. */
+  --ease-spring: cubic-bezier(0.34, 1.4, 0.5, 1);
+  /* Tiles arriving one after another: the gap between two. */
+  --stagger: 55ms;
+  --dur-1: 200ms;
   --dur-2: 320ms;
   --dur-3: 700ms;
+
+  /* Hit areas: 44px for a pointer, 48px for a thumb. */
+  --hit: 44px;
+  --hit-touch: 48px;
 
   --bar-h: 64px;
   --dock-h: 68px;

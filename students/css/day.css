@@ -35,8 +35,13 @@ html[data-look="day"] {
   --archive: #826519;
   --drift: #b8366f;
   --alert: #c0392b;
-  --accent: #17142a;
+  --accent: #6a58f2;
+  --accent-hi: #7b6af7;
+  --accent-text: #5646d6;
+  --accent-soft: rgba(106, 88, 242, 0.12);
+  --accent-line: rgba(106, 88, 242, 0.4);
   --on-accent: #ffffff;
+  --ring: #5646d6;
 
   --glass-card: #ffffff;
   --glow: 0 10px 28px -10px rgba(106, 88, 242, 0.55);
@@ -114,17 +119,6 @@ html[data-look="day"] .sheet-journal input.ink {
 html[data-look="day"] dialog.sheet::backdrop {
   background: rgba(23, 20, 42, 0.35);
 }
-html[data-look="day"] .now-step {
-  background: linear-gradient(140deg, rgba(106, 88, 242, 0.12), #ffffff);
-  border-color: rgba(106, 88, 242, 0.32);
-}
-html[data-look="day"] .pl-shelf {
-  border-bottom-color: rgba(106, 88, 242, 0.35);
-  box-shadow: 0 12px 24px -16px rgba(106, 88, 242, 0.45);
-}
-html[data-look="day"] .pl-spine {
-  background: #ffffff;
-}
 html[data-look="day"] .setting input[type="checkbox"]::after {
   background: #ffffff;
   box-shadow: 0 1px 3px rgba(23, 20, 42, 0.3);
@@ -144,4 +138,9 @@ html[data-look="day"][data-lite] :is(.bar, .dock, .land-bar.scrolled, .globe-doc
 /* The Study Room keeps Night's bar and dock, like the room itself. */
 html[data-look="day"][data-lite] body[data-view="study"] :is(.bar, .dock) {
   background: rgba(11, 10, 18, 0.96) !important;
+}
+
+/* Now: on white, the next step's eyebrow takes mostly ink so it reads (4.5:1). */
+html[data-look="day"] .now-step > .step-label {
+  color: color-mix(in srgb, var(--subj, var(--accent)) 30%, var(--text));
 }

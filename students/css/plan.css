@@ -14,11 +14,9 @@
   gap: 28px;
 }
 .pl-h {
-  font-size: 13px;
-  font-weight: 600;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-  color: var(--text-3);
+  font: 700 clamp(20px, 2.2vw, 26px) / 1.1 var(--f-display);
+  letter-spacing: -0.03em;
+  color: var(--text);
   margin: 0 0 12px;
 }
 .pl-row-head {
@@ -64,14 +62,15 @@
   margin: 0 0 6px;
   font-size: 12px;
   font-weight: 600;
-  letter-spacing: 0.16em;
+  letter-spacing: var(--track-eyebrow);
   text-transform: uppercase;
   color: var(--subj, var(--text-3));
 }
 .pl-hero-title {
   margin: 0;
   font-family: var(--f-display);
-  font-weight: 400;
+  font-weight: 700;
+  letter-spacing: -0.035em;
   font-size: clamp(22px, 4vw, 34px);
   line-height: 1.15;
   color: var(--text);
@@ -121,7 +120,7 @@
   font-size: 14px;
 }
 .pl-day.today .pl-day-head b {
-  color: var(--focus);
+  color: var(--accent-text);
 }
 .pl-day.light .pl-day-head span {
   color: var(--world);
@@ -346,9 +345,6 @@
   text-overflow: ellipsis;
   white-space: nowrap;
 }
-.now-step .step-subj {
-  color: var(--subj, var(--text));
-}
 
 /* ---- Study: the planned block ---- */
 .study-block {
@@ -362,9 +358,9 @@
   display: none;
 }
 .study-block .sb-kind {
-  font-size: 11px;
+  font-size: var(--t-xs);
   font-weight: 600;
-  letter-spacing: 0.18em;
+  letter-spacing: var(--track-eyebrow);
   text-transform: uppercase;
   color: var(--subj, var(--focus));
 }
@@ -492,7 +488,8 @@
 }
 .deck-title {
   font-family: var(--f-display);
-  font-weight: 400;
+  font-weight: 650;
+  letter-spacing: -0.025em;
   font-size: 22px;
   line-height: 1.2;
 }
@@ -560,37 +557,6 @@
 }
 
 /* ---- Now, around the plan ---- */
-/* The next block as the hero: its subject's glow behind it. */
-.now-step.plan-step {
-  position: relative;
-  isolation: isolate;
-  overflow: hidden;
-  padding: 16px 16px 16px 20px;
-  border-color: color-mix(in srgb, var(--subj) 30%, var(--line));
-  background: var(--surface);
-}
-.now-step.plan-step::before {
-  content: "";
-  position: absolute;
-  inset: -60% -20% auto auto;
-  width: 60%;
-  height: 220%;
-  z-index: -1;
-  background: radial-gradient(closest-side, color-mix(in srgb, var(--subj) 24%, transparent), transparent);
-  pointer-events: none;
-}
-.now-step.plan-step .step-label {
-  flex-basis: 100%;
-  color: var(--subj);
-}
-.now-step.plan-step .step-subj {
-  font-size: 19px;
-  font-weight: 500;
-  color: var(--text);
-}
-.plan-studied {
-  margin: 10px 0 0;
-}
 /* The day's areas of life (profile.routine goals): kept free, a reminder. */
 .pl-life {
   margin: 8px 0 0;
@@ -600,23 +566,26 @@
   color: var(--text-2, inherit);
 }
 
-/* Idle: everything but your world and its day fades away. */
-.now .now-head,
-.now .now-log,
-.now .orbit-legend {
+/* Idle: everything but your world and its day fades away, the orbit's
+   tile included (its plate and its words), so the ring floats alone. */
+.now :is(.now-top, .now-tile:not(.now-t-orbit), .now-t-orbit > .panel-head, .orbit-legend, .today-hero) {
   transition: opacity 1.2s ease;
 }
-.now.is-idle .now-head,
-.now.is-idle .now-log,
-.now.is-idle .orbit-legend {
+html[data-look] .now .now-bento .now-t-orbit {
+  transition: background-color 1.2s ease, box-shadow 1.2s ease, border-color 1.2s ease;
+}
+.now.is-idle :is(.now-top, .now-tile:not(.now-t-orbit), .now-t-orbit > .panel-head, .orbit-legend, .today-hero) {
   opacity: 0;
   pointer-events: none;
 }
+html[data-look] .now.is-idle .now-bento .now-t-orbit {
+  border-color: transparent;
+  background: transparent;
+  box-shadow: none;
+}
 @media (prefers-reduced-motion: reduce) {
-  .now .now-head,
-  .now .now-log,
-  .now .orbit-legend {
-    transition: none;
+  .now :is(.now-top, .now-tile, .now-t-orbit > .panel-head, .orbit-legend, .today-hero) {
+    transition: none !important;
   }
 }
 
@@ -657,9 +626,6 @@ body.in-app[data-view="plan"] .wall {
   }
 }
 
-.now-instrument {
-  position: relative;
-}
 
 /* The stage: guardians in a row, black and white until chosen. */
 .pl-stage {
@@ -869,7 +835,7 @@ body.in-app[data-view="plan"] .wall {
   box-shadow: 0 0 18px color-mix(in srgb, var(--g) 40%, transparent);
 }
 .st-name {
-  font-size: 11px;
+  font-size: var(--t-xs);
   color: var(--text-3);
   max-width: 72px;
   overflow: hidden;
@@ -1109,10 +1075,10 @@ body.in-app[data-view="plan"] .wall {
   justify-content: space-between;
   gap: 14px 20px;
   padding: 16px 18px;
-  border: 1px solid color-mix(in srgb, var(--focus) 40%, var(--line));
+  border: 1px solid color-mix(in srgb, var(--accent) 40%, var(--line));
   border-radius: var(--r-3, 16px);
-  background: rgba(154, 216, 255, 0.07);
-  background: color-mix(in srgb, var(--focus) 7%, transparent);
+  background: rgba(255, 122, 47, 0.07);
+  background: color-mix(in srgb, var(--accent) 7%, transparent);
 }
 .pl-checkin-card > div:first-child {
   flex: 1 1 320px;
@@ -1545,7 +1511,7 @@ body.in-app[data-view="plan"] .wall {
   align-items: baseline;
 }
 .pl-day-chip small {
-  font-size: 11px;
+  font-size: var(--t-xs);
 }
 .pl-day-all {
   margin-left: 4px;
@@ -1562,7 +1528,202 @@ body.in-app[data-view="plan"] .wall {
 }
 .pl-weekend.ask {
   padding: 10px 12px;
-  border: 1px solid color-mix(in srgb, var(--focus) 45%, transparent);
+  border: 1px solid color-mix(in srgb, var(--accent) 45%, transparent);
   border-radius: 12px;
-  background: color-mix(in srgb, var(--focus) 8%, transparent);
+  background: color-mix(in srgb, var(--accent) 8%, transparent);
+}
+
+/* ===== The plan in tiles (the Now page's language) ========================= */
+/* Day by day on the left, your subjects on the right: each a tile in the
+   look's own finish (.panel), the gap between them the only spacing. */
+.plan-body {
+  gap: 20px;
+}
+.pl-grid {
+  grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
+  gap: 20px;
+}
+.pl-side {
+  align-content: start;
+  gap: 20px;
+}
+html[data-look] .plan :is(.pl-week, .pl-results, .pl-subject).panel {
+  min-width: 0;
+  margin: 0;
+}
+/* A tile's own head: the size of Now's tile heads. */
+html[data-look] .plan .panel > .pl-h:first-child,
+html[data-look] .plan .panel > .pl-row-head .pl-h {
+  margin: 0 0 14px;
+  font: 650 var(--t-lg) / 1.2 var(--f-display);
+  letter-spacing: -0.02em;
+}
+html[data-look] .plan .pl-results .pl-row-head {
+  align-items: center;
+}
+html[data-look] .plan .pl-results .pl-row-head .pl-h {
+  margin: 0;
+}
+.pl-results > p {
+  margin: 10px 0 0;
+}
+html[data-look] .plan .pl-week .pl-h-sm {
+  margin: 20px 0 0;
+  font: 600 var(--t-xs) / 1.2 var(--f-body);
+  letter-spacing: var(--track-eyebrow);
+  text-transform: uppercase;
+  color: var(--text-2);
+}
+.pl-subjects {
+  gap: 14px;
+}
+.pl-subjects-wrap > .pl-row-head {
+  align-items: center;
+  margin-bottom: 14px;
+}
+.pl-subjects-wrap > .pl-row-head .pl-h {
+  margin: 0;
+}
+
+/* The shelf: a spine per subject, readable at a glance. Its name, how
+   ready it is in the mono, and a line along its foot filled that far. */
+.pl-shelf {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 176px), 1fr));
+  gap: 10px;
+  margin: 0 0 14px;
+}
+.pl-spine {
+  position: relative;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: baseline;
+  gap: 10px;
+  min-height: var(--hit-touch, 48px);
+  padding: 14px 16px 17px;
+  overflow: hidden;
+  border: 1px solid var(--line-2);
+  border-radius: var(--r-2);
+  background: linear-gradient(100deg, color-mix(in srgb, var(--subj) 10%, transparent), transparent 70%), var(--surface);
+  color: var(--text);
+  text-decoration: none;
+  transition: transform var(--dur-1) var(--ease-spring), border-color var(--dur-1) var(--ease-out);
+}
+.pl-spine-name {
+  overflow: hidden;
+  font: 600 var(--t-ui) / 1.25 var(--f-body);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.pl-spine-pct {
+  font: 500 20px / 1 var(--f-mono);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.03em;
+  color: color-mix(in srgb, var(--subj) 70%, var(--text));
+}
+.pl-spine i {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 3px;
+  background: color-mix(in srgb, var(--subj) 16%, transparent);
+}
+.pl-spine i::after {
+  content: "";
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: calc(var(--fill, 0) * 100%);
+  background: var(--subj);
+  box-shadow: 0 0 10px color-mix(in srgb, var(--subj) 70%, transparent);
+}
+/* Coming into view, a line fills from its start to its value (js/fill-in.js):
+   a shelf line after its spine has arrived, a meter as soon as it's seen.
+   Only the transform moves; with motion reduced nothing waits. */
+.pl-spine i::after,
+.pl-ready .meter > i {
+  transform-origin: 0 50%;
+}
+.pl-spine i.fill-wait::after,
+.pl-ready .meter > i.fill-wait {
+  transform: scaleX(0);
+}
+.pl-spine i.fill-go::after {
+  animation: fill-in 900ms var(--ease-out) calc(var(--i, 0) * var(--stagger) + 240ms) both;
+}
+.pl-ready .meter > i.fill-go {
+  animation: fill-in 900ms var(--ease-out) 120ms both;
+}
+@keyframes fill-in {
+  from { transform: scaleX(0); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .pl-spine i:is(.fill-wait, .fill-go)::after,
+  .pl-ready .meter > i:is(.fill-wait, .fill-go) {
+    transform: none;
+    animation: none;
+  }
+}
+:root[data-motion="reduce"] .pl-spine i:is(.fill-wait, .fill-go)::after,
+:root[data-motion="reduce"] .pl-ready .meter > i:is(.fill-wait, .fill-go) {
+  transform: none;
+  animation: none;
+}
+.pl-spine:hover {
+  border-color: color-mix(in srgb, var(--subj) 55%, var(--line-2));
+}
+.pl-spine:active {
+  transform: scale(0.98);
+}
+.pl-spine:focus-visible {
+  outline: 2px solid var(--ring);
+  outline-offset: 2px;
+}
+/* Signal keeps it monochrome; Verse prints it. */
+html[data-look="signal"] .pl-spine {
+  background: var(--surface);
+}
+html[data-look="verse"] .pl-spine {
+  border: 2px solid var(--paper);
+  border-radius: 2px;
+  box-shadow: 4px 4px 0 var(--subj);
+}
+@media (prefers-reduced-motion: reduce) {
+  .pl-spine {
+    transition: none;
+  }
+}
+:root[data-motion="reduce"] .pl-spine {
+  transition: none;
+}
+
+/* Sections you jump to clear the sticky bar. */
+.pl-subject,
+.pl-week,
+.pl-results {
+  scroll-margin-top: calc(var(--bar-h, 64px) + 16px);
+}
+
+@media (max-width: 860px) {
+  .pl-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+/* On white, a subject's colour as text takes mostly ink, so it reads (4.5:1). */
+html[data-look="day"] :is(.pl-spine-pct, .pl-checkin.todo span) {
+  color: color-mix(in srgb, var(--subj) 40%, var(--text));
+}
+@media (max-width: 520px) {
+  .pl-shelf {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  /* A phone's day rows wrap the chapter instead of cutting it off. */
+  .pl-week .pl-what b {
+    overflow: visible;
+    white-space: normal;
+    text-wrap: pretty;
+  }
+  .pl-spine {
+    padding: 12px 14px 15px;
+  }
 }

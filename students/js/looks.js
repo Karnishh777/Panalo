@@ -2,8 +2,8 @@
 // Look button (on the welcome page too):
 //
 //   glass   Cinematic Glass -- frosted, layered panels floating over your
-//           world; serif headlines; light that catches edges. Calm. The
-//           default.
+//           world; wide display headlines; light that catches edges. The
+//           default, with one ember accent. Calm.
 //   signal  Signal -- pure black, dot-matrix numerals, one red, a strict grid
 //           of rounded tiles. Bold, precise, playful.
 //   verse   Verse -- your day laid out in orbit around your world, drawn
@@ -24,7 +24,7 @@ import { getPrefs, setPrefs, el } from "./ui.js";
 import { reducedMotion, lively } from "./motion.js";
 
 export const LOOKS = [
-  { id: "glass", name: "Glass", line: "Dark glass and ember: poster type, calm by default." },
+  { id: "glass", name: "Glass", line: "Dark glass and ember: wide type, calm by default." },
   { id: "signal", name: "Signal", line: "Black, dot-matrix, one red." },
   { id: "verse", name: "Verse", line: "Your day in orbit, drawn like a comic between universes." },
   { id: "night", name: "Night", line: "Dark, one violet glow." },
@@ -211,10 +211,22 @@ export function initLooks() {
   });
 }
 
+// Groups of tiles that arrive one after another, each from its own first
+// tile: Now's bento, Plan's shelf and subjects, World's numbers. The rest
+// of a page's panels keep their order on the page.
+const TILE_GROUPS = ".now-bento, .pl-shelf, .pl-subjects, .wn-stats";
+// The tiles in a group, in page order (Now's bento keeps some in a wrapper).
+const TILES = ".panel, .pl-spine";
+const MAX_STEP = 8;
+const step = (node, i) => node.style.setProperty("--i", String(Math.min(i, MAX_STEP)));
+
 /** A surface arriving: play the look's entrance on it and its panels. */
 export function enter(section) {
   if (reducedMotion() || !section) return;
-  const index = () => section.querySelectorAll(".panel").forEach((p, i) => p.style.setProperty("--i", String(Math.min(i, 8))));
+  const index = () => {
+    section.querySelectorAll(".panel").forEach(step);
+    section.querySelectorAll(TILE_GROUPS).forEach((group) => group.querySelectorAll(TILES).forEach((tile, i) => step(tile, i + 1)));
+  };
   index();
   // Restart the entrance a frame later rather than forcing a layout now.
   section.classList.remove("look-enter");

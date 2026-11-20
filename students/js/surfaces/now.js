@@ -1,9 +1,11 @@
 // Now: what is happening in my universe right now?
 //
-// One instrument and one log, not a wall of cards. The instrument is the
-// day orbit with your world at its centre. The log answers, in order of
-// urgency: what's on now or next, how today's focus is going, what's due,
-// how your world is doing -- and, last, an offer of rest.
+// A hero and a bento. The hero is the greeting and the next step, one tap
+// from starting. Under it, tiles of different sizes: today's plan, the day
+// orbit with your world at its centre, today's one thing, the capture
+// field, what you've studied, what's on, what's due and how your world is
+// doing. The log's tiles stay in order of urgency in the markup (the
+// browser QA reads it); the grid places them.
 import { el, emptyState, reportError, shortDate, longDate, showToast } from "../ui.js";
 import { store, api, redrawOn } from "../store.js";
 import { dayOrbit } from "../dayorbit.js";
@@ -21,7 +23,9 @@ import { parseQuickAdd } from "../model/quick-add.js";
 import { hasPlan, currentPlan, loadBanks, banksReady, colourOf, focusedToday, worldInput } from "../planner.js";
 import { nextBlock, blockTitle, blockSub, blockTask } from "../model/plan.js";
 import { startBlock } from "../block-check.js";
-import { onArt } from "../art.js";
+import { onArt, guardianOf } from "../art.js";
+import { createEmblem } from "../motion-art.js";
+import { lively } from "../motion.js";
 
 let root;
 let orbitSlot;
@@ -34,11 +38,15 @@ let globe = null;
 let unsubs = [];
 let minuteTimer = null;
 let navigate;
+// The next block's emblem, one per subject family, kept between renders.
+const emblems = new Map();
 
 function greeting() {
   const h = new Date().getHours();
   const part = h < 5 ? "Still up" : h < 12 ? "Good morning" : h < 17 ? "Good afternoon" : h < 22 ? "Good evening" : "Late night";
-  return `${part}, ${state.currentUsername}.`;
+  // Sentence case shows a name as typed, so give it its capital.
+  const name = String(state.currentUsername || "");
+  return `${part}, ${name.charAt(0).toUpperCase()}${name.slice(1)}.`;
 }
 
 function allEvents() {
@@ -49,8 +57,9 @@ function world() {
   return buildWorld(worldInput());
 }
 
-function panel(tone, title, link, children) {
-  return el("section", { class: `panel ${tone}` }, [
+// A tile in the bento: `key` places it (css/surfaces.css, .now-t-*).
+function panel(tone, title, link, children, key = "") {
+  return el("section", { class: `panel now-tile${key ? ` now-t-${key}` : ""} ${tone}` }, [
     el("div", { class: "panel-head" }, [el("h2", { text: title }), link ? el("a", { href: link.href, text: link.label }) : null]),
     ...children,
   ]);
@@ -97,13 +106,13 @@ function todayPanel(now) {
   const evening = dayPart(now) === "evening";
   const close = entry?.closed_at
     ? el("p", { class: "closed-line" }, [el("span", { class: "tag tone-drift", text: `Day closed${closedMood ? ` · ${closedMood}` : ""}` }), " ", el("button", { type: "button", class: "link-btn", text: "Edit", onClick: () => openCheckin() })])
-    : el("button", { type: "button", class: `btn btn-sm ${evening ? "btn-primary" : "btn-quiet"}`, id: "close-day", text: "Close the day", onClick: () => openCheckin() });
+    : el("button", { type: "button", class: `btn btn-sm ${evening ? "btn-primary" : "btn-ghost"}`, id: "close-day", text: "Close the day", onClick: () => openCheckin() });
 
   return panel("tone-drift", "Today", { href: "#/world/journal", label: "Journal" }, [
     intention,
     el("div", { class: "rhythm-row" }, [dots, el("p", { class: "rhythm-line faint", text: rhythmLine(r.count, r.week[6].active) })]),
     close,
-  ]);
+  ], "today");
 }
 
 // Capture: a task in one line, from wherever you are. A date in the line
@@ -111,7 +120,7 @@ function todayPanel(now) {
 // the list without one. The field lives outside the log, so typing in it
 // survives the log re-rendering.
 function captureForm() {
-  const input = el("input", { type: "text", class: "input capture-input", placeholder: "Capture a task — “Chemistry worksheet fri”", maxlength: "200", "aria-label": "Capture a task", enterkeyhint: "done", autocomplete: "off" });
+  const input = el("input", { type: "text", class: "input capture-input", placeholder: "Chemistry worksheet fri", maxlength: "200", "aria-label": "Capture a task", enterkeyhint: "done", autocomplete: "off" });
   const hint = el("span", { class: "capture-hint faint", "aria-live": "polite" });
   const preview = () => {
     const v = input.value.trim();
@@ -130,7 +139,7 @@ function captureForm() {
     if (error) return reportError(error);
     input.value = "";
     hint.textContent = "";
-    showToast(t.due_at ? `Added — due ${shortDate(t.due_at)}.` : "Added to your list.", "success");
+    showToast(t.due_at ? `Added, due ${shortDate(t.due_at)}.` : "Added to your list.", "success");
   });
   return form;
 }
@@ -154,7 +163,7 @@ function renderLog() {
 
   // 00. Today's plan (v0.2): what the planner has for the rest of today,
   // with today's focus (and a running block) folded in.
-  if (hasPlan() && banksReady()) parts.push(planPanel(now, w));
+  if (hasPlan() && banksReady()) parts.push(planPanel(now));
 
   // 0. Today: the intention, the week's rhythm, closing the day (phase 24).
   if (!store.entriesMissing) parts.push(todayPanel(now));
@@ -169,7 +178,7 @@ function renderLog() {
           { class: "now-list exams" },
           exams.map((c) => el("li", {}, [el("b", { class: "num exam-days", text: c.days === 0 ? "Today" : c.days === 1 ? "1 day" : `${c.days} days` }), el("span", { text: c.title }), el("span", { class: "faint", text: c.at.toLocaleDateString(undefined, { weekday: "short", day: "numeric", month: "short" }) })]))
         ),
-      ])
+      ], "exams")
     );
   }
 
@@ -179,27 +188,19 @@ function renderLog() {
       el("span", { class: `tag tone-${EVENT_KINDS[o.event.kind]?.tone || "time"}`, text: EVENT_KINDS[o.event.kind]?.label || "" }),
       el("b", { class: "now-title", text: o.event.title }),
       el("span", { class: "now-when" }, [
-        isNow ? `until ${clockTime(o.end)}` : o.event.kind === "deadline" ? `due ${relTime(o.start.getTime(), now)}` : `${clockTime(o.start)} · ${relTime(o.start.getTime(), now)}`,
-        o.event.location ? ` · ${o.event.location}` : "",
+        isNow ? `until ${clockTime(o.end)}` : o.event.kind === "deadline" ? `due ${relTime(o.start.getTime(), now)}` : `${clockTime(o.start)}, ${relTime(o.start.getTime(), now)}`,
+        o.event.location ? `, ${o.event.location}` : "",
       ]),
     ]);
   const scheduled = [];
   if (current) scheduled.push(whenLine(current, true));
   if (next) scheduled.push(whenLine(next, false));
   parts.push(
-    panel("tone-time", current ? "Right now" : "Next", { href: "#/calendar", label: "Calendar" }, scheduled.length ? scheduled : [el("p", { class: "muted", text: hasPlan() ? "No classes or events on your calendar yet (your study blocks are in today's plan). " : "Nothing scheduled. " }, [el("a", { href: "#/calendar/add", text: "Add your timetable" }), " and it appears on the orbit."])])
+    panel("tone-time", current ? "Right now" : "Next", { href: "#/calendar", label: "Calendar" }, scheduled.length ? scheduled : [el("p", { class: "muted", text: hasPlan() ? "No classes or events on your calendar yet (your study blocks are in today's plan). " : "Nothing scheduled. " }, [el("a", { href: "#/calendar/add", text: "Add your timetable" }), " and it appears on the orbit."])], "next")
   );
 
-  // 2. Focus.
-  const t = loadTimer();
-  const live = t.phase !== "idle" ? el("p", { class: "now-live" }, [el("span", { class: "live-dot", "aria-hidden": "true" }), `${t.phase === "focus" ? "Focusing" : "Resting"}${t.subject ? ` on ${t.subject}` : ""} — ${T.readout(T.remaining(t, now))} left${t.status === "paused" ? " (paused)" : ""}`]) : null;
-  if (!(hasPlan() && banksReady())) parts.push(
-    panel("tone-focus", "Focus today", { href: "#/study", label: "Study Room" }, [
-      el("p", { class: "now-big" }, [el("b", { class: "num", text: formatMinutes(w.stats.focusMinutesToday) }), el("span", { class: "muted", text: ` · ${formatMinutes(w.stats.focusMinutesWeek)} this week` })]),
-      live,
-      !live ? el("a", { class: "btn btn-toned tone-focus btn-sm", href: "#/study/start-25", text: "Begin a 25-minute focus" }) : null,
-    ])
-  );
+  // 2. Focus: what you've studied, as numbers.
+  parts.push(statPanel(now, w));
 
   // 3. Due soon.
   const due = store.tasks
@@ -225,7 +226,7 @@ function renderLog() {
             })
           )
         : el("p", { class: "muted", text: "Nothing due in the next week." }),
-    ])
+    ], "due")
   );
 
   // 4. World.
@@ -241,7 +242,7 @@ function renderLog() {
         ])
       ),
       w.discoveries[0] && Date.parse(w.discoveries[0].at) > now - 3 * DAY ? el("p", { class: "now-disc" }, [el("b", { text: `Discovery: ${w.discoveries[0].title}. ` }), w.discoveries[0].detail]) : null,
-    ])
+    ], "world")
   );
 
   logEl.replaceChildren(...parts);
@@ -258,12 +259,10 @@ function renderLog() {
 
 const hhmm = (m) => clockOf(m);
 
-function planPanel(now, w) {
+function planPanel(now) {
   const today = currentPlan({ now, days: 1 })[0];
   const done = focusedToday(now);
   const blocks = today?.blocks || [];
-  const t = loadTimer();
-  const live = t.phase !== "idle" ? el("p", { class: "now-live" }, [el("span", { class: "live-dot", "aria-hidden": "true" }), `${t.phase === "focus" ? "Focusing" : "Resting"}${t.subject ? ` on ${t.subject}` : ""} — ${T.readout(T.remaining(t, now))} left${t.status === "paused" ? " (paused)" : ""}`]) : null;
   return panel("tone-focus", "Today's plan", { href: "#/plan", label: "The week" }, [
     blocks.length
       ? el(
@@ -274,28 +273,49 @@ function planPanel(now, w) {
               el("span", { class: "num faint", text: hhmm(b.start) }),
               el("i", { class: "pl-dot", "aria-hidden": "true" }),
               el("span", {}, [el("b", { text: blockTitle(b) }), el("small", { class: "faint", text: ` ${b.own ? blockTask(b) : blockSub(b)}` })]),
-              el("span", { class: "num faint", text: `${b.minutes}m` }),
+              el("span", { class: "num faint", text: `${b.minutes} min` }),
             ])
           )
         )
       : el("p", { class: "muted", text: done ? "That's today's plan done. The rest of the evening is yours." : "Nothing more planned for today." }),
-    live,
     today?.life?.length ? el("p", { class: "small now-life", text: `Also today: ${lifeText(today.life, formatMinutes)}` }) : null,
-    el("p", { class: "faint small plan-studied", text: `${formatMinutes(done)} studied today · ${formatMinutes(w.stats.focusMinutesWeek)} this week` }),
-  ]);
+  ], "plan");
+}
+
+// The studied-today numbers as a small stat tile: today big, the week
+// beside it, and a running block (or a way to start one) under them.
+// With a plan, today counts the plan's own minutes (focusedToday).
+function statPanel(now, w) {
+  const planned = hasPlan() && banksReady();
+  const today = planned ? focusedToday(now) : w.stats.focusMinutesToday;
+  const left = planned ? (currentPlan({ now, days: 1 })[0]?.blocks || []).reduce((n, b) => n + b.minutes, 0) : 0;
+  const t = loadTimer();
+  const live = t.phase !== "idle" ? el("p", { class: "now-live" }, [el("span", { class: "live-dot", "aria-hidden": "true" }), `${t.phase === "focus" ? "Focusing" : "Resting"}${t.subject ? ` on ${t.subject}` : ""}, ${T.readout(T.remaining(t, now))} left${t.status === "paused" ? " (paused)" : ""}`]) : null;
+  const stat = (value, label, cls) => el("div", { class: `now-stat ${cls}` }, [el("b", { class: "num", text: value }), el("span", { class: "faint", text: label })]);
+  return panel("tone-focus", "Focus today", { href: "#/study", label: "Study Room" }, [
+    el("div", { class: "now-stats" }, [stat(formatMinutes(today), planned ? "studied today" : "focus today", "big"), stat(formatMinutes(w.stats.focusMinutesWeek), "this week", ""), planned ? stat(formatMinutes(left), "left in the plan", "") : null].filter(Boolean)),
+    live,
+    !live && !planned ? el("a", { class: "btn btn-ghost btn-sm", href: "#/study/start-25", text: "Begin a 25-minute focus" }) : null,
+  ], "focus");
 }
 
 // The one thing Now is for: the next piece of work, one tap from starting.
 // A block already running comes first; then homework due by tomorrow
 // (it pre-empts the plan); then the plan's next block; then the newest
 // open task; with nothing to do, a plain focus block.
+//
+// It is the hero's big tile: an eyebrow, the work as the headline, a line
+// of what and how long, and the button. Behind a planned block sits its
+// subject's colour and emblem (motion-art.js; the painted guardians in
+// art.js take over when they exist), still unless effects are lively.
 function nextStep(now) {
   stepEl.classList.remove("plan-step");
   stepEl.style.removeProperty("--subj");
+  emblems.forEach((e) => e.setActive(false));
   const t = loadTimer();
   if (t.phase === "focus") {
     const task = t.taskId ? store.tasks.find((x) => x.id === t.taskId) : null;
-    return [el("span", { class: "step-label", text: t.status === "paused" ? "Paused" : "Focusing" }), el("b", { text: task?.title || t.subject || "your block" }), el("a", { class: "btn btn-primary btn-sm", href: "#/study", text: "Back to it" })];
+    return stepTile(t.status === "paused" ? "Paused" : "Focusing", task?.title || t.subject || "your block", `${T.readout(T.remaining(t, now))} left`, el("a", { class: "btn btn-primary", href: "#/study", text: "Back to it" }));
   }
   const endOfTomorrow = new Date(now);
   endOfTomorrow.setHours(23, 59, 59, 999);
@@ -307,10 +327,8 @@ function nextStep(now) {
       stepEl.classList.add("plan-step");
       stepEl.style.setProperty("--subj", colourOf(b.subject));
       return [
-        el("span", { class: "step-label", text: `Next step · ${clockOf(b.start)}` }),
-        el("b", { class: "step-subj", text: blockTitle(b) }),
-        el("span", { class: "muted step-meta", text: `${b.own ? blockTask(b) : blockSub(b)}, ${b.minutes} min` }),
-        el("button", { type: "button", class: "btn btn-primary btn-sm", id: "now-plan-go", text: "Start", onClick: () => startBlock(b) }),
+        stepArt(b),
+        ...stepTile(`Next step · ${clockOf(b.start)}`, blockTitle(b), b.own ? blockTask(b) : blockSub(b), el("button", { type: "button", class: "btn btn-primary", id: "now-plan-go", text: "Start", onClick: () => startBlock(b) }), `${b.minutes} min`),
       ];
     }
   }
@@ -318,14 +336,32 @@ function nextStep(now) {
   const pick =
     open.filter((tk) => tk.due_at).sort((a, b) => Date.parse(a.due_at) - Date.parse(b.due_at))[0] ||
     open.sort((a, b) => Date.parse(b.created_at || 0) - Date.parse(a.created_at || 0))[0];
-  if (!pick) return [el("span", { class: "step-label", text: "Next step" }), el("span", { class: "muted", text: "Nothing on your list." }), el("a", { class: "btn btn-primary btn-sm", href: "#/study/start-25", text: "Begin a 25-minute focus" })];
-  const due = pick.due_at ? (Date.parse(pick.due_at) < now ? ` · was due ${relTime(Date.parse(pick.due_at), now)}` : ` · due ${shortDate(pick.due_at)}`) : "";
+  if (!pick) return stepTile("Next step", "Nothing on your list.", "A short block to warm up the day.", el("a", { class: "btn btn-primary", href: "#/study/start-25", text: "Begin a 25-minute focus" }));
+  const due = pick.due_at ? (Date.parse(pick.due_at) < now ? `Was due ${relTime(Date.parse(pick.due_at), now)}` : `Due ${shortDate(pick.due_at)}`) : "On your list";
+  return stepTile("Next step", pick.title, due, el("a", { class: "btn btn-primary", id: "now-step-go", href: `#/study/focus=${encodeURIComponent(pick.id)}`, text: "Focus on it" }));
+}
+
+function stepTile(label, title, meta, action, minutes = "") {
   return [
-    el("span", { class: "step-label", text: "Next step" }),
-    el("b", { text: pick.title }),
-    due ? el("span", { class: "muted", text: due }) : null,
-    el("a", { class: "btn btn-primary btn-sm", id: "now-step-go", href: `#/study/focus=${encodeURIComponent(pick.id)}`, text: "Focus on it" }),
-  ].filter(Boolean);
+    el("span", { class: "step-label", text: label }),
+    el("b", { class: "step-subj", text: title }),
+    el("span", { class: "step-meta" }, [meta ? el("span", { text: meta }) : null, minutes ? el("span", { class: "num step-min", text: minutes }) : null].filter(Boolean)),
+    el("span", { class: "step-go" }, [action]),
+  ];
+}
+
+// The block's subject behind the tile: its emblem, large and soft.
+function stepArt(b) {
+  const fam = guardianOf(b.subject);
+  // One left off the page drops out of the animation loop: draw a new one.
+  if (emblems.has(fam) && !emblems.get(fam).canvas.isConnected) {
+    emblems.get(fam).destroy();
+    emblems.delete(fam);
+  }
+  if (!emblems.has(fam)) emblems.set(fam, createEmblem(fam, colourOf(b.subject), { width: 260, height: 260 }));
+  const em = emblems.get(fam);
+  em.setActive(lively());
+  return el("span", { class: "step-art", "aria-hidden": "true" }, [em.canvas]);
 }
 
 // Today's climb (the Night look): how much of today's plan is done, as a
@@ -343,7 +379,7 @@ function renderHero() {
   heroEl.replaceChildren(
     el("div", {}, [el("p", { class: "kicker", text: exam ? `${exam.title} ${exam.days === 0 ? "today" : exam.days === 1 ? "tomorrow" : `in ${exam.days} days`}` : longDate(new Date()) }), el("h2", {}, ["Today's", el("br"), "climb"])]),
     el("div", { class: "climb-ring", role: "img", "aria-label": total ? `${pct}% of today's plan done: ${done} of ${total} minutes` : "Nothing planned today" }, [
-      el("span", {}, [el("b", { text: total ? `${pct}%` : "—" }), el("small", { text: total ? `${done} of ${total} min` : "no plan yet" })]),
+      el("span", {}, [el("b", { text: total ? `${pct}%` : "Free" }), el("small", { text: total ? `${done} of ${total} min` : "no plan yet" })]),
     ])
   );
   // SVG needs its own namespace (el() makes HTML elements).
@@ -380,14 +416,26 @@ export function mount(section, ctx) {
   greetEl = el("h1");
   heroEl = el("section", { class: "today-hero", "aria-label": "Today's climb" });
   subEl = el("p", { class: "s-sub" });
-  stepEl = el("p", { class: "now-step", "aria-live": "polite" });
+  stepEl = el("section", { class: "panel now-step", "aria-live": "polite", "aria-label": "Next step" });
   const globeCanvas = el("canvas", { class: "orbit-world", role: "img", "aria-label": "Your world. Open World for what shapes it." });
   orbitSlot = el("a", { class: "orbit-wrap", href: "#/world", "aria-label": "Your day and your world" }, [globeCanvas]);
+  // The log's tiles; in the bento it is `display: contents`, so each of its
+  // panels is a tile of the grid.
   logEl = el("div", { class: "now-log" });
+  const orbitTile = el("section", { class: "panel now-tile now-t-orbit tone-time", "aria-labelledby": "now-orbit-h" }, [
+    el("div", { class: "panel-head" }, [el("h2", { id: "now-orbit-h", text: "Your day" }), el("a", { href: "#/world", text: "World" })]),
+    el("div", { class: "now-instrument" }, [orbitSlot]),
+    el("p", { class: "orbit-legend faint" }, [legend("time", "classes & events"), legend("focus", "focus done"), legend("alert", "deadlines"), legend("hand", "now")]),
+  ]);
+  const captureTile = el("section", { class: "panel now-tile now-t-capture tone-time", "aria-labelledby": "now-capture-h" }, [
+    el("div", { class: "panel-head" }, [el("h2", { id: "now-capture-h", text: "Capture a task" })]),
+    captureForm(),
+    el("p", { class: "capture-help faint", text: "Put a day in it, like fri or tomorrow, and that's its due date." }),
+  ]);
   root.append(
     heroEl,
-    el("div", { class: "s-head" }, [el("div", { class: "now-head" }, [el("p", { class: "kicker toned tone-time", text: longDate(new Date()) }), greetEl, subEl, stepEl, captureForm()])]),
-    el("div", { class: "now-grid" }, [el("div", { class: "now-instrument" }, [orbitSlot, el("p", { class: "orbit-legend faint" }, [legend("time", "classes & events"), legend("focus", "focus done"), legend("alert", "deadlines"), legend("hand", "now")])]), logEl])
+    el("div", { class: "s-head now-top" }, [el("div", { class: "now-head" }, [el("p", { class: "kicker toned tone-time", text: longDate(new Date()) }), greetEl, subEl]), stepEl]),
+    el("div", { class: "now-bento" }, [logEl, orbitTile, captureTile])
   );
   section.append(root);
   try {
@@ -429,6 +477,7 @@ export function show() {
 
 export function hide() {
   clearInterval(minuteTimer);
+  emblems.forEach((e) => e.setActive(false));
   clearTimeout(idleTimer);
   WAKE.forEach((e) => window.removeEventListener(e, wake));
   root?.classList.remove("is-idle");
@@ -439,4 +488,6 @@ export function destroy() {
   unsubs.forEach((u) => u());
   unsubs = [];
   globe?.destroy();
+  emblems.forEach((e) => e.destroy());
+  emblems.clear();
 }

@@ -282,7 +282,7 @@ export function discoveries({ sessions = [], tasks = [], logs = [], goals = [], 
   }
 
   const moon = goals.filter((g) => g.done_at).sort((a, b) => Date.parse(a.done_at) - Date.parse(b.done_at))[0];
-  if (moon) out.push({ id: "first-moon", title: "A moon, completed", detail: `“${moon.title}” — done.`, at: moon.done_at });
+  if (moon) out.push({ id: "first-moon", title: "A moon, completed", detail: `“${moon.title}” is done.`, at: moon.done_at });
 
   return out.filter((d) => Date.parse(d.at) <= now + DAY).sort((a, b) => Date.parse(b.at) - Date.parse(a.at));
 }
@@ -290,10 +290,10 @@ export function discoveries({ sessions = [], tasks = [], logs = [], goals = [], 
 // One sentence about the weather, for the World page.
 export function weatherLine(stats) {
   const d = stats.daysSinceActive;
-  if (d === null) return "Clear skies. Nothing has happened here yet — that's what a new world looks like.";
+  if (d === null) return "Clear skies. Nothing has happened here yet. That's what a new world looks like.";
   if (stats.due && d !== null && d < 1) return `A little mist over ${stats.due} chapter${stats.due > 1 ? "s" : ""} due for review. It clears as you review them.`;
   if (d === 0) return "Clear skies. You studied today.";
   if (d === 1) return "A few clouds. You were here yesterday.";
   if (d < 7) return `Clouds have drifted in over ${d} days. They clear the moment you do anything here.`;
-  return "Overcast. Your world kept everything you built — it's just waiting under the clouds.";
+  return "Overcast. Your world kept everything you built. It's waiting under the clouds.";
 }

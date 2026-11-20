@@ -13,6 +13,35 @@ AI, runs as "Pan Lite" (our own planner code does the planning; the AI
 only where nothing else can).
 
 **0.2.0 (in progress)**
+- **A new look: cinematic, and calmer to read.** Every page was redone
+  in steps from a design audit; nothing about how the app behaves changed.
+  - **Three typefaces, not twelve:** Geist for reading and the interface,
+    a wide Archivo for headlines, Geist Mono for numbers and times (their
+    digits line up). Signal keeps its dot-matrix face and Verse a narrow
+    cut of the same Archivo. Sentence case instead of capitals, no text
+    under 12px, and grey text that's dark or light enough to read.
+  - **One accent and one set of buttons:** a single warm colour for what
+    you can press and where the keyboard is; subject colours only for
+    subjects. Buttons are filled (the one thing to do), outlined (the
+    other choices) or plain words, all pills, all pressing in the same
+    way. The phone's tab bar has a different icon for each page, and
+    messages no longer cover buttons.
+  - **Now as a bento:** the next block large at the top in its subject's
+    colour, then tiles of different sizes for today's plan, your day's
+    orbit, today, focus, capturing a task and what's due.
+  - **Plan, Study, World and the setup:** Plan's week, subjects and
+    results as tiles and a shelf with one card per subject; Study with the
+    timer at the centre of the page; World with the Earth large and its
+    numbers beside it; the setup's empty half showing the step you're on
+    over an Earth's horizon.
+  - **Motion, calm by default:** tiles arrive one after another, Plan's
+    lines fill as you reach them, a pressed button sinks slightly, and the
+    setup's Earth turns very slowly. Only movement and fading are animated;
+    the landing's shine plays once instead of looping; with reduced motion (the
+    device's setting or the app's) all of it stays still.
+  - **Fixes:** Glass panels now all paint their glass plate (one bad
+    background layer had dropped it everywhere but Now), and the stray
+    word "null" under a study block is gone.
 - **Checks stop re-asking the same questions.** Each topic remembers the
   questions it asked and when; a check asks unseen ones first, then the
   ones asked longest ago, and asks fewer at a time where a topic has few.

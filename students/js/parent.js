@@ -87,7 +87,7 @@ function requestCard(r) {
       el("summary", { text: "What Panalo keeps about your child" }),
       el("ul", {}, [
         el("li", { text: "Their email (never shown to anyone), username, and month and year of birth." }),
-        el("li", { text: "Their study plan, tasks, focus sessions, calendar, goals, journal and what they log about their day — visible only to them." }),
+        el("li", { text: "Their study plan, tasks, focus sessions, calendar, goals, journal and what they log about their day, visible only to them." }),
         el("li", { text: "No ads, no tracking, no selling data, no feed, no chat. Only what your child sends to Pan, the optional AI helper, goes to an AI service (Anthropic), one request at a time, and none of it is kept." }),
         el("li", { text: "They, or you, can delete everything at any time." }),
       ]),

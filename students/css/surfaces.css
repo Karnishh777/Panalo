@@ -1,4 +1,5 @@
-/* Panalo Students — the surfaces. */
+/* Panalo Students — the surfaces. The Study Room and World have their own
+   files (study.css, world.css), loaded right after this one. */
 
 /* ---- Shared bits ------------------------------------------------------------- */
 
@@ -26,7 +27,7 @@
   min-width: 0;
 }
 .small {
-  font-size: 12.5px;
+  font-size: 13px;
 }
 .member-list {
   list-style: none;
@@ -60,7 +61,7 @@
 .task input {
   width: 18px;
   height: 18px;
-  accent-color: var(--focus);
+  accent-color: var(--accent);
   flex: none;
 }
 .task-due {
@@ -72,22 +73,115 @@
   color: var(--time);
 }
 
-/* ---- Now --------------------------------------------------------------------- */
+/* ---- Now: a hero and a bento --------------------------------------------------- */
+/* The hero: the greeting on the left, the next step as a big tile on the
+   right. Under it a 12-column bento of tiles of different sizes; the log
+   (.now-log) is `display: contents`, so its panels are tiles too, kept in
+   their reading order in the markup and placed here. On a phone, one
+   column in priority order: greeting, next step, plan, the day, the rest. */
 
-.now-grid {
+.now-top {
   display: grid;
-  grid-template-columns: minmax(320px, 1.05fr) minmax(300px, 0.95fr);
-  gap: clamp(24px, 4vw, 64px);
-  align-items: start;
+  grid-template-columns: minmax(0, 1.08fr) minmax(0, 0.92fr);
+  align-items: end;
+  gap: clamp(20px, 3vw, 44px);
+  margin: 6px 0 clamp(18px, 2.2vw, 28px);
 }
+.now-top > .now-head {
+  padding-bottom: 6px;
+}
+.now-top .s-sub {
+  font-size: var(--t-body);
+}
+
+.now-bento {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  grid-auto-flow: row dense;
+  gap: 16px;
+  align-items: stretch;
+}
+.now-log {
+  display: contents;
+}
+/* In a grid the gap is the spacing: no look's panel margins here. */
+html[data-look] .now-bento .now-tile.panel {
+  min-width: 0;
+  margin: 0;
+}
+/* Priority order, for the phone's one column and the grid's flow. */
+.now-t-plan { order: 1; }
+.now-t-orbit { order: 2; }
+.now-t-today { order: 3; }
+.now-t-focus { order: 4; }
+.now-t-capture { order: 5; }
+.now-t-due { order: 6; }
+.now-t-next { order: 7; }
+.now-t-exams { order: 8; }
+.now-t-world { order: 9; }
+@media (min-width: 900px) {
+  .now-bento {
+    grid-template-columns: repeat(12, minmax(0, 1fr));
+  }
+  .now-t-plan { grid-column: span 7; }
+  .now-t-orbit { grid-column: span 5; grid-row: span 2; }
+  .now-t-today { grid-column: span 4; }
+  .now-t-focus { grid-column: span 3; }
+  .now-t-capture { grid-column: span 5; }
+  .now-t-due { grid-column: span 7; }
+  .now-t-next { grid-column: span 5; }
+  .now-t-exams { grid-column: span 4; }
+  .now-t-world { grid-column: span 7; }
+  .now-bento:has(.now-t-exams) :is(.now-t-next, .now-t-world) {
+    grid-column: span 4;
+  }
+  /* No plan yet: the day and the numbers sit beside the orbit instead. */
+  .now-bento:not(:has(.now-t-plan)) .now-t-capture {
+    grid-column: span 7;
+  }
+  .now-bento:not(:has(.now-t-plan)) .now-t-world {
+    grid-column: span 12;
+  }
+  .now-bento:not(:has(.now-t-plan)):has(.now-t-exams) .now-t-world {
+    grid-column: span 7;
+  }
+  .now-bento:not(:has(.now-t-plan)) :is(.now-t-exams, .now-t-next) {
+    grid-column: span 5;
+  }
+}
+
+/* Tiles: a column, the head on top; the plan's numbers sit at its foot. */
+.now-tile {
+  display: flex;
+  flex-direction: column;
+}
+.now-tile > .panel-head {
+  flex: none;
+}
+/* A button in a tile keeps its own width, at the start. */
+.now-tile > :is(.btn, button, .closed-line) {
+  align-self: flex-start;
+}
+.now-tile > .btn:last-child,
+.now-tile > #close-day {
+  margin-top: auto;
+}
+.now-t-today .rhythm-row {
+  margin: 14px 0 16px;
+}
+
+/* The day orbit, whole: the tile is sized so the ring always fits. */
 .now-instrument {
-  position: sticky;
-  top: calc(var(--bar-h) + 16px);
+  position: relative;
+  display: grid;
+  flex: 1;
+  place-items: center;
+  min-height: 0;
 }
 .orbit-wrap {
   position: relative;
   display: block;
-  width: min(100%, 560px);
+  width: min(100%, 440px);
   aspect-ratio: 1;
   margin: 0 auto;
   border-radius: 50%;
@@ -128,7 +222,7 @@
 }
 .orbit-label {
   fill: var(--text-3);
-  font: 600 9px var(--f-body);
+  font: 500 13px var(--f-mono);
   letter-spacing: 0.06em;
 }
 .orbit-lane {
@@ -178,9 +272,9 @@
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
-  gap: 16px;
+  gap: 8px 18px;
   margin-top: 14px;
-  font-size: 12px;
+  font-size: var(--t-xs);
 }
 .lg {
   display: inline-flex;
@@ -211,9 +305,6 @@
   background: var(--time);
 }
 
-.now-log .panel {
-  margin-bottom: 26px;
-}
 .now-next {
   display: grid;
   gap: 4px;
@@ -235,22 +326,23 @@
   margin-bottom: 10px;
 }
 .now-big b {
-  font: 400 24px/1.1 var(--f-display);
+  font: 600 24px/1.1 var(--f-mono);
+  font-variant-numeric: tabular-nums;
   letter-spacing: -0.03em;
 }
 .now-live {
   display: flex;
   align-items: center;
   gap: 8px;
-  color: var(--focus);
+  color: var(--accent-text);
   font-size: 14px;
 }
 .live-dot {
   width: 8px;
   height: 8px;
   border-radius: 50%;
-  background: var(--focus);
-  box-shadow: 0 0 10px var(--focus);
+  background: var(--accent);
+  box-shadow: 0 0 10px var(--accent);
   animation: breathe 2s ease-in-out infinite;
 }
 .now-list {
@@ -291,275 +383,83 @@
   font-size: 14px;
   color: var(--text-2);
 }
-@media (max-width: 980px) {
-  .now-grid {
-    grid-template-columns: 1fr;
+/* The numbers: today large, the week beside it, both tabular. */
+.now-stats {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: 8px 22px;
+  margin-top: auto;
+}
+.now-stat {
+  display: grid;
+  gap: 2px;
+}
+.now-stat b {
+  font: 500 22px / 1.05 var(--f-mono);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.03em;
+  color: var(--text);
+}
+.now-stat.big {
+  flex-basis: 100%;
+}
+.now-stat.big b {
+  font-size: clamp(36px, 3.4vw, 50px);
+  letter-spacing: -0.05em;
+}
+.now-stat span {
+  font-size: var(--t-xs);
+}
+/* The big number under the head, the week and what's left at the foot:
+   when a taller neighbour stretches the tile, the space falls between. */
+.now-t-focus .now-stats {
+  flex: 1 0 auto;
+  align-content: space-between;
+  margin-top: 6px;
+}
+.now-t-focus .now-live {
+  margin-top: 12px;
+}
+.now-t-focus > .btn {
+  align-self: flex-start;
+  margin-top: 14px;
+}
+
+/* Capture: the field and one line on how dates work. */
+.now-t-capture .capture {
+  max-width: none;
+  margin-top: 4px;
+}
+.capture-help {
+  margin: 10px 0 0;
+  font-size: var(--t-xs);
+}
+
+@media (max-width: 1099px) {
+  .now-top {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
   }
-  .now-instrument {
-    position: static;
+}
+@media (max-width: 899px) {
+  .now-top {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 16px;
+  }
+  /* The plan's rows wrap instead of cutting the chapter off. */
+  .now-bento .now-list.plan-today li > span:nth-child(3) {
+    white-space: normal;
+  }
+  .now-list.plan-today li small {
+    display: block;
+  }
+  /* Thumb-sized: the capture field is a 48 px target. */
+  .now-t-capture .capture .capture-input {
+    min-height: var(--hit-touch);
   }
   .orbit-wrap {
     width: min(100%, 420px);
   }
-}
-
-/* ---- Study Room: deep space at midnight --------------------------------------- */
-/* Everything is dimmer and slower here, on purpose. */
-
-body[data-view="study"].in-app {
-  background: radial-gradient(ellipse 60% 50% at 50% 30%, rgba(154, 216, 255, 0.05), transparent 70%), #04050b;
-}
-body[data-view="study"] .sky {
-  opacity: 0.18;
-}
-.study {
-  max-width: 1080px;
-  margin: 0 auto;
-}
-.study-top {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-.study-center {
-  display: grid;
-  justify-items: center;
-  gap: 18px;
-  padding: 8px 0 36px;
-}
-.study-dial {
-  position: relative;
-  width: min(74vw, 340px);
-  aspect-ratio: 1;
-}
-.study-ring {
-  width: 100%;
-  height: 100%;
-  transform: rotate(0deg);
-}
-.ring-track {
-  fill: none;
-  stroke: rgba(154, 216, 255, 0.1);
-  stroke-width: 2;
-}
-.ring-arc {
-  fill: none;
-  stroke: var(--focus);
-  stroke-width: 3;
-  stroke-linecap: round;
-  transform: rotate(-90deg);
-  transform-origin: 130px 130px;
-  transition: stroke-dashoffset 0.25s linear;
-}
-.study[data-phase="rest"] .ring-arc {
-  stroke: var(--world);
-}
-.ring-body {
-  fill: #fff;
-  filter: drop-shadow(0 0 6px var(--focus));
-}
-.study[data-status="idle"] .ring-body {
-  opacity: 0;
-}
-.study-dial-text {
-  position: absolute;
-  inset: 0;
-  display: grid;
-  place-content: center;
-  text-align: center;
-}
-.study-readout {
-  font: 300 clamp(48px, 11vw, 70px) / 1 var(--f-display);
-  letter-spacing: -0.04em;
-}
-.study[data-status="paused"] .study-readout {
-  opacity: 0.55;
-}
-.study-phase {
-  margin-top: 8px;
-  font-size: 12px;
-  letter-spacing: 0.2em;
-  text-transform: uppercase;
-  color: var(--text-3);
-}
-.study-what {
-  display: grid;
-  grid-template-columns: 1.2fr 1fr;
-  gap: 10px;
-  width: min(100%, 560px);
-}
-.study-what .input {
-  background: transparent;
-  border-color: var(--line);
-  text-align: center;
-}
-.study-what select.input {
-  text-align: left;
-}
-.study-controls {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: 10px;
-  align-items: center;
-}
-.study-notice {
-  max-width: 520px;
-  text-align: center;
-  display: grid;
-  justify-items: center;
-  gap: 10px;
-}
-.study-notice-text b {
-  color: var(--focus);
-}
-.study-low {
-  display: grid;
-  grid-template-columns: 1.3fr 1fr 1fr;
-  gap: 28px;
-  padding-top: 22px;
-  border-top: 1px solid var(--line);
-  opacity: 0.78;
-  transition: opacity var(--dur-2);
-}
-.study-low:hover,
-.study-low:focus-within {
-  opacity: 1;
-}
-/* No hover on a touch screen: never leave it looking switched off. */
-@media (hover: none) {
-  .study-low {
-    opacity: 1;
-  }
-}
-.study-panel h2 {
-  font-size: 12px;
-  letter-spacing: 0.16em;
-  text-transform: uppercase;
-  color: var(--focus);
-  margin-bottom: 12px;
-}
-.task-form {
-  display: grid;
-  grid-template-columns: 1fr 140px auto;
-  gap: 8px;
-  margin-bottom: 10px;
-}
-.task-form .input {
-  min-height: 38px;
-  padding: 7px 12px;
-}
-.task-list {
-  list-style: none;
-  margin: 0;
-  padding: 0;
-}
-.task-list li {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 7px 0;
-  border-top: 1px solid var(--line);
-}
-.task-list li .task {
-  flex: 1;
-}
-.task-title {
-  flex: 1;
-  min-width: 0;
-}
-.task-list li.done .task-title {
-  text-decoration: line-through;
-  color: var(--text-3);
-}
-.task-x {
-  opacity: 0;
-}
-.task-list li:hover .task-x,
-.task-x:focus-visible {
-  opacity: 1;
-}
-.done-list {
-  margin-top: 8px;
-}
-.sound-row {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 10px;
-  align-items: center;
-  margin: 14px 0 6px;
-}
-.preset-custom {
-  width: 90px;
-  min-height: 34px !important;
-  padding: 4px 10px !important;
-}
-.hist-bars {
-  display: grid;
-  grid-template-columns: repeat(7, 1fr);
-  align-items: end;
-  gap: 6px;
-  height: 78px;
-}
-.hist-bar {
-  display: grid;
-  justify-items: center;
-  gap: 4px;
-  align-content: end;
-  height: 100%;
-}
-.hist-bar i {
-  width: 100%;
-  max-width: 18px;
-  border-radius: 3px 3px 1px 1px;
-  background: rgba(154, 216, 255, 0.35);
-}
-.hist-bar.today i {
-  background: var(--focus);
-}
-.hist-bar span {
-  font-size: 10.5px;
-  color: var(--text-3);
-}
-.hist-sum {
-  margin: 10px 0;
-  font-size: 13.5px;
-  color: var(--text-2);
-}
-.hist-log > li {
-  grid-template-columns: 52px 1fr;
-  font-size: 13.5px;
-}
-@media (max-width: 900px) {
-  .study-low {
-    grid-template-columns: 1fr;
-  }
-  .study-what {
-    grid-template-columns: 1fr;
-  }
-}
-
-/* Go dark: only the ring remains. */
-body.midnight .bar,
-body.midnight .dock,
-body.midnight .study-low,
-body.midnight .study-what,
-body.midnight .study-top .kicker,
-body.midnight .schema-banner {
-  opacity: 0;
-  pointer-events: none;
-  visibility: hidden;
-}
-body.midnight .study-center {
-  min-height: calc(100vh - 140px);
-  align-content: center;
-}
-body.midnight .sky {
-  opacity: 0;
-}
-.bar,
-.dock {
-  transition: opacity var(--dur-3), visibility var(--dur-3);
 }
 
 /* ---- Archive ------------------------------------------------------------------- */
@@ -590,9 +490,8 @@ body.midnight .sky {
   align-items: baseline;
   gap: 12px;
   margin-bottom: 6px;
-  font-size: 13px;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
+  font: 650 var(--t-body) / 1.2 var(--f-display);
+  letter-spacing: -0.015em;
   color: var(--archive);
 }
 .stratum-h small {
@@ -643,7 +542,7 @@ body.midnight .sky {
 }
 .artifact-file,
 .artifact-prov {
-  font-size: 12.5px;
+  font-size: 13px;
   color: var(--text-3);
   overflow: hidden;
   text-overflow: ellipsis;
@@ -653,7 +552,7 @@ body.midnight .sky {
   color: var(--signal);
 }
 .artifact-note {
-  font-size: 13px;
+  font-size: var(--t-ui);
   color: var(--text-2);
   font-style: italic;
 }
@@ -685,7 +584,7 @@ body.midnight .sky {
   padding: 14px;
   border-radius: var(--r-2);
   background: var(--bg);
-  font-size: 13px;
+  font-size: var(--t-ui);
   white-space: pre-wrap;
   overflow-wrap: anywhere;
 }
@@ -702,127 +601,6 @@ body.midnight .sky {
   }
   .stratum {
     padding-left: 12px;
-  }
-}
-
-/* ---- World ------------------------------------------------------------------------ */
-
-.world-grid {
-  display: grid;
-  grid-template-columns: 1.15fr 1fr;
-  gap: clamp(20px, 4vw, 56px);
-  align-items: center;
-}
-.world-stage {
-  display: grid;
-  place-items: center;
-}
-.world-globe {
-  width: min(100%, 620px);
-  aspect-ratio: 1;
-  cursor: grab;
-  touch-action: pan-y;
-  border-radius: 50%;
-}
-.world-globe:active {
-  cursor: grabbing;
-}
-.legend {
-  list-style: none;
-  margin: 0;
-  padding: 0;
-}
-.legend-row {
-  display: grid;
-  grid-template-columns: 12px 1fr auto;
-  gap: 12px;
-  align-items: start;
-  padding: 10px 0;
-  border-top: 1px solid var(--line);
-}
-.legend-row:first-child {
-  border-top: 0;
-}
-.legend-swatch {
-  width: 10px;
-  height: 10px;
-  margin-top: 6px;
-  border-radius: 50%;
-  background: var(--tone);
-  box-shadow: 0 0 8px var(--tone);
-}
-.legend-row b {
-  display: block;
-  font-size: 14.5px;
-}
-.legend-row small {
-  color: var(--text-3);
-  font-size: 12.5px;
-}
-.legend-val {
-  color: var(--tone);
-  font-weight: 600;
-  font-size: 14px;
-  white-space: nowrap;
-}
-.world-lower {
-  display: grid;
-  grid-template-columns: 1.2fr 1fr 1fr;
-  gap: 32px;
-  margin-top: 30px;
-}
-.world-lower .panel + .panel {
-  margin-top: 0;
-}
-.moons {
-  list-style: none;
-  margin: 0;
-  padding: 0;
-}
-.moon {
-  display: grid;
-  grid-template-columns: 22px 1fr auto auto;
-  gap: 10px;
-  align-items: center;
-  padding: 10px 0;
-  border-top: 1px solid var(--line);
-}
-.moon:first-child {
-  border-top: 0;
-}
-.moon-dot {
-  width: 16px;
-  height: 16px;
-  border-radius: 50%;
-  background: conic-gradient(#f6f2e4 var(--p), rgba(200, 210, 235, 0.15) 0);
-}
-.moon.full .moon-dot {
-  box-shadow: 0 0 10px rgba(255, 230, 180, 0.7);
-}
-.moon-body {
-  display: grid;
-  gap: 4px;
-  min-width: 0;
-}
-.moon-body small {
-  color: var(--text-3);
-}
-.moon-body .meter {
-  width: 100%;
-}
-.log-line {
-  display: flex;
-  justify-content: space-between;
-  gap: 8px;
-  align-items: center;
-}
-.disc-log p {
-  font-size: 13px;
-}
-@media (max-width: 1000px) {
-  .world-grid,
-  .world-lower {
-    grid-template-columns: minmax(0, 1fr);
   }
 }
 
@@ -882,7 +660,7 @@ body.midnight .sky {
   padding-top: 58px;
 }
 .week-hours span {
-  font-size: 11px;
+  font-size: var(--t-xs);
   color: var(--text-3);
   transform: translateY(-7px);
 }
@@ -928,7 +706,7 @@ body.midnight .sky {
   border-left: 3px solid var(--tone);
   border-radius: 6px;
   background: color-mix(in srgb, var(--tone) 16%, var(--bg));
-  font-size: 11.5px;
+  font-size: var(--t-xs);
   text-align: left;
 }
 .week-ev b {
@@ -1029,7 +807,7 @@ body.midnight .sky {
   filter: drop-shadow(0 0 2px var(--world));
 }
 .sl-star:focus-visible circle:not(.sl-hit) {
-  stroke: var(--focus);
+  stroke: var(--ring);
   stroke-width: 0.8;
 }
 .starlink line {
@@ -1129,7 +907,7 @@ body.midnight .sky {
 }
 .setting small {
   color: var(--text-3);
-  font-size: 12.5px;
+  font-size: var(--t-ui);
 }
 .setting input[type="checkbox"] {
   appearance: none;
@@ -1155,7 +933,7 @@ body.midnight .sky {
   transition: transform var(--dur-1);
 }
 .setting input[type="checkbox"]:checked {
-  background: var(--focus);
+  background: var(--accent);
 }
 .setting input[type="checkbox"]:checked::after {
   transform: translateX(18px);
@@ -1304,11 +1082,12 @@ body.midnight .sky {
   background: var(--surface);
 }
 .mod-stats b {
-  font: 500 26px/1 var(--f-display);
+  font: 600 26px/1 var(--f-mono);
+  font-variant-numeric: tabular-nums;
   font-variant-numeric: tabular-nums;
 }
 .mod-stats span {
-  font-size: 12.5px;
+  font-size: 13px;
   color: var(--text-3);
 }
 .mod-list {
@@ -1339,7 +1118,7 @@ body.midnight .sky {
 }
 .mod-card-head time {
   margin-left: auto;
-  font-size: 12.5px;
+  font-size: 13px;
 }
 .mod-reason,
 .mod-status {
@@ -1363,11 +1142,11 @@ body.midnight .sky {
   font-size: 16px;
 }
 .mod-repeat {
-  font-size: 12.5px;
+  font-size: 13px;
   color: var(--time);
 }
 .mod-banned {
-  font-size: 12.5px;
+  font-size: 13px;
   color: var(--alert);
 }
 .mod-details {
@@ -1387,7 +1166,7 @@ body.midnight .sky {
 }
 .mod-evidence small,
 .mod-note small {
-  font-size: 11.5px;
+  font-size: var(--t-xs);
   color: var(--text-3);
 }
 .mod-actions {
@@ -1408,7 +1187,7 @@ body.midnight .sky {
   margin: 0;
   padding: 0;
   list-style: none;
-  font-size: 13.5px;
+  font-size: 14px;
   max-height: 360px;
   overflow: auto;
 }
@@ -1429,7 +1208,7 @@ body.midnight .sky {
   width: 9px;
   height: 9px;
   border-radius: 50%;
-  background: var(--alert);
+  background: var(--accent);
   box-shadow: 0 0 0 2px var(--bg);
 }
 
@@ -1460,7 +1239,7 @@ body.midnight .sky {
   border-radius: var(--r-pill);
   background: color-mix(in srgb, var(--tone) 9%, var(--surface));
   color: var(--text);
-  font: 600 13.5px/1 var(--f-body);
+  font: 600 14px/1 var(--f-body);
   cursor: pointer;
   transition: background var(--dur-1), border-color var(--dur-1), transform var(--dur-1);
 }
@@ -1502,7 +1281,7 @@ body.midnight .sky {
 }
 .archive-empty h3 {
   margin: 0 0 8px;
-  font: 500 clamp(22px, 2.4vw, 30px) / 1.15 var(--f-display);
+  font: 700 clamp(22px, 2.4vw, 30px) / 1.15 var(--f-display);
   letter-spacing: -0.02em;
 }
 .archive-empty p {
@@ -1527,7 +1306,7 @@ body.midnight .sky {
   aspect-ratio: 4 / 5;
   padding: 9px;
   border-radius: 6px 14px 6px 6px;
-  font: 600 11px/1 var(--f-mono, monospace);
+  font: 600 var(--t-xs)/1 var(--f-mono, monospace);
   letter-spacing: 0.08em;
   text-transform: uppercase;
   color: var(--text-2);
@@ -1555,10 +1334,6 @@ body.midnight .sky {
   }
 }
 
-/* The Study Room: quieter still. */
-body[data-view="study"] .sky {
-  opacity: 0.1;
-}
 .mod-due {
   font-size: 12px;
   color: var(--time);
@@ -1581,7 +1356,7 @@ body[data-view="study"] .sky {
 }
 .rules-card p {
   margin: 0;
-  font-size: 13.5px;
+  font-size: 14px;
   color: var(--text-2);
 }
 .rules-card-actions {
@@ -1637,7 +1412,7 @@ body[data-view="study"] .sky {
 }
 .dawn-title {
   margin: 10px 0 6px;
-  font: 400 clamp(34px, 5vw, 64px) / 1.02 var(--f-display);
+  font: 700 clamp(34px, 5vw, 64px) / 1.02 var(--f-display);
   letter-spacing: -0.04em;
 }
 .dawn-day {
@@ -1780,7 +1555,7 @@ body.in-dawn .fx-ambient {
   display: grid;
   justify-items: center;
   gap: 4px;
-  font-size: 11px;
+  font-size: var(--t-xs);
   color: var(--text-3);
 }
 .rhythm i {
@@ -1834,112 +1609,6 @@ body.in-dawn .fx-ambient {
   margin-top: 4px;
 }
 
-/* World: this month, in stars; the journal. */
-.world-days {
-  display: grid;
-  grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr);
-  gap: var(--s-5);
-  margin-top: var(--s-5);
-}
-@media (max-width: 900px) {
-  .world-days {
-    grid-template-columns: 1fr;
-  }
-}
-.sky-wrap {
-  position: relative;
-  z-index: 1;
-}
-.month-sky {
-  display: block;
-  width: 100%;
-  height: auto;
-  max-height: 340px;
-  border: 1px solid var(--line);
-  border-radius: var(--r-2);
-  /* Its own patch of night, so the month never mixes with the ambient stars. */
-  background:
-    radial-gradient(70% 80% at 50% 45%, rgba(255, 196, 122, 0.06), transparent 70%),
-    var(--void);
-}
-.sky-num {
-  font: 600 2.1px var(--f-body);
-  fill: var(--text-3);
-  text-anchor: middle;
-}
-.sky-star.today .sky-num {
-  fill: var(--time);
-}
-.sky-link {
-  stroke: rgba(255, 196, 122, 0.45);
-  stroke: color-mix(in srgb, var(--time) 45%, transparent);
-  stroke-width: 0.22;
-  stroke-linecap: round;
-}
-.sky-star circle:first-child {
-  fill: none;
-  stroke: var(--text-3);
-  stroke-width: 0.18;
-  opacity: 0.7;
-}
-.sky-star.future circle:first-child {
-  opacity: 0.18;
-}
-.sky-star.lit circle:first-child {
-  fill: var(--time);
-  stroke: none;
-  opacity: 1;
-  filter: drop-shadow(0 0 1.2px var(--time));
-}
-.sky-today {
-  fill: none;
-  stroke: rgba(255, 196, 122, 0.6);
-  stroke: color-mix(in srgb, var(--time) 60%, transparent);
-  stroke-width: 0.25;
-  transform-box: fill-box;
-  transform-origin: center;
-  animation: sky-pulse 2.6s var(--ease-out) infinite;
-}
-@keyframes sky-pulse {
-  0% { opacity: 0.9; transform: scale(0.7); }
-  100% { opacity: 0; transform: scale(1.5); }
-}
-@media (prefers-reduced-motion: reduce) {
-  .sky-today { animation: none; }
-}
-html[data-motion="reduce"] .sky-today {
-  animation: none;
-}
-.sky-caption {
-  margin: 10px 0 0;
-  font-size: 13px;
-}
-.journal {
-  list-style: none;
-  margin: 0;
-  padding: 0;
-  display: grid;
-  gap: 14px;
-}
-.page {
-  padding-bottom: 12px;
-  border-bottom: 1px solid var(--line);
-}
-.page-head {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 6px;
-  margin-bottom: 4px;
-}
-.page-date {
-  margin-right: 4px;
-}
-.page-line {
-  margin: 2px 0 0;
-  color: var(--text-2);
-}
-@keyframes meter-in { from { width: 0; } }
 
 /* A discovery moment. */
 .moment {
@@ -1983,11 +1652,15 @@ html[data-motion="reduce"] .sky-today {
 }
 .moment-title {
   margin: 0;
-  font: 400 clamp(36px, 7vw, 76px) / 1 var(--f-display);
+  font: 700 clamp(30px, 4.6vw, 56px) / 1.05 var(--f-display);
   letter-spacing: -0.04em;
   text-shadow: 0 0 40px rgba(255, 196, 122, 0.45);
 }
-.moment-title span {
+.moment-word {
+  display: inline-block;
+  white-space: nowrap;
+}
+.moment-word > span {
   display: inline-block;
   animation: moment-letter 600ms var(--ease-out) calc(250ms + var(--i) * 35ms) both;
 }
@@ -2053,7 +1726,8 @@ html[data-motion="reduce"] .sky-today {
   text-align: left;
 }
 .countdown b {
-  font: 400 28px / 1 var(--f-display);
+  font: 600 28px / 1 var(--f-mono);
+  font-variant-numeric: tabular-nums;
   letter-spacing: -0.03em;
   color: var(--drift);
 }
@@ -2072,10 +1746,6 @@ html[data-motion="reduce"] .sky-today {
   color: var(--drift);
 }
 
-/* Study: plan, reflection, subjects. */
-.study-field + .study-field {
-  margin-top: 14px;
-}
 .field-label {
   display: block;
   margin-bottom: 7px;
@@ -2083,57 +1753,6 @@ html[data-motion="reduce"] .sky-today {
   letter-spacing: 0.04em;
   color: var(--text-3);
 }
-.study-field .sound-row {
-  margin-top: 0;
-}
-.reflect {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 8px 12px;
-  margin: 10px 0;
-}
-.subj-bars {
-  list-style: none;
-  margin: 10px 0 0;
-  padding: 0;
-  display: grid;
-  gap: 6px;
-  font-size: 13px;
-}
-.subj-bars li {
-  display: grid;
-  grid-template-columns: minmax(5rem, 9rem) 1fr auto;
-  gap: 8px;
-  align-items: center;
-}
-.subj-name {
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-.subj-bar {
-  height: 6px;
-  border-radius: 3px;
-  background: var(--line);
-  overflow: hidden;
-}
-.subj-bar i {
-  display: block;
-  height: 100%;
-  background: var(--focus);
-}
-.saved-list {
-  list-style: none;
-  margin: 12px 0 0;
-  padding: 0;
-  display: grid;
-  gap: 12px;
-}
-.saved-list p {
-  margin: 0 0 2px;
-}
-
 /* Archive: kinds and the count. */
 .kind-chips {
   margin-top: 8px;
@@ -2145,4 +1764,12 @@ html[data-motion="reduce"] .sky-today {
 .archive-empty-copy .btn {
   max-width: 100%;
   white-space: normal;
+}
+
+.field-label {
+  font-size: var(--t-xs);
+  font-weight: 600;
+  letter-spacing: var(--track-eyebrow);
+  text-transform: uppercase;
+  color: var(--text-2);
 }

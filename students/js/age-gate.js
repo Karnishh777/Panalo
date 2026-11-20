@@ -85,7 +85,7 @@ function wire() {
       const { error } = await supabaseClient.rpc("request_parent_consent", { p_parent_email: email });
       if (error) return message(error.message || "Couldn't send that.");
       const sent = await emailParentCode(email);
-      if (sent.error) message(/rate|seconds/i.test(sent.error.message) ? "Saved. The email can't go out again for a minute — or send them the link below." : "Saved, but the email didn't go out. Send them the link below.");
+      if (sent.error) message(/rate|seconds/i.test(sent.error.message) ? "Saved. The email can't go out again for a minute. You can send them the link below instead." : "Saved, but the email didn't go out. Send them the link below.");
       else message(`Sent to ${email}.`, true);
       run();
     });
