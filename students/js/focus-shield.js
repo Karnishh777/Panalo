@@ -39,7 +39,7 @@ function render() {
   line.setAttribute("aria-label", `Focusing${what ? ` on ${what}` : ""}, ${left} minutes left. Back to the Study Room.`);
   line.replaceChildren(
     el("span", { class: "focus-line-dot", "aria-hidden": "true" }),
-    el("span", { "aria-hidden": "true" }, ["Focusing", what ? ` on ${what}` : "", " — ", el("b", { text: `${left} min left` })]),
+    el("span", { "aria-hidden": "true" }, ["Focusing", what ? ` on ${what}` : "", ", ", el("b", { text: `${left} min left` })]),
     el("u", { "aria-hidden": "true", text: "Back to it" })
   );
 }

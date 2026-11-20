@@ -102,6 +102,10 @@
   font-size: 13px;
   font-weight: 600;
   cursor: pointer;
+  transition: transform var(--dur-1) var(--ease-spring);
+}
+.seg-btn:active {
+  transform: scale(0.98);
 }
 .seg-btn[aria-checked="true"] {
   background: rgba(255, 122, 47, 0.22);

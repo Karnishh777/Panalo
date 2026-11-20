@@ -1,0 +1,506 @@
+/* Panalo Students: the Study Room. Moved out of surfaces.css as it stood and
+   loaded straight after it (index.html), so the cascade is unchanged. */
+
+/* ---- Study Room: deep space at midnight --------------------------------------- */
+/* Everything is dimmer and slower here, on purpose. */
+
+body[data-view="study"].in-app {
+  background: radial-gradient(ellipse 60% 50% at 50% 30%, rgba(154, 216, 255, 0.05), transparent 70%), #04050b;
+}
+body[data-view="study"] .sky {
+  opacity: 0.18;
+}
+.study {
+  max-width: 1080px;
+  margin: 0 auto;
+}
+.study-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.study-center {
+  display: grid;
+  justify-items: center;
+  gap: 18px;
+  padding: 8px 0 36px;
+}
+.study-dial {
+  position: relative;
+  width: min(74vw, 340px);
+  aspect-ratio: 1;
+}
+.study-ring {
+  width: 100%;
+  height: 100%;
+  transform: rotate(0deg);
+}
+.ring-track {
+  fill: none;
+  stroke: color-mix(in srgb, var(--accent) 12%, transparent);
+  stroke-width: 2;
+}
+.ring-arc {
+  fill: none;
+  stroke: var(--accent);
+  stroke-width: 3;
+  stroke-linecap: round;
+  transform: rotate(-90deg);
+  transform-origin: 130px 130px;
+  transition: stroke-dashoffset 0.25s linear;
+}
+.study[data-phase="rest"] .ring-arc {
+  stroke: var(--world);
+}
+.ring-body {
+  fill: #fff;
+  filter: drop-shadow(0 0 6px var(--accent));
+}
+.study[data-status="idle"] .ring-body {
+  opacity: 0;
+}
+.study-dial-text {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-content: center;
+  text-align: center;
+}
+.study-readout {
+  font: 400 clamp(48px, 11vw, 72px) / 1 var(--f-mono);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.04em;
+}
+.study[data-status="paused"] .study-readout {
+  opacity: 0.55;
+}
+.study-phase {
+  margin-top: 8px;
+  font-size: 12px;
+  letter-spacing: var(--track-eyebrow);
+  text-transform: uppercase;
+  color: var(--text-3);
+}
+.study-what {
+  display: grid;
+  grid-template-columns: 1.2fr 1fr;
+  gap: 10px;
+  width: min(100%, 560px);
+}
+.study-what .input {
+  background: transparent;
+  border-color: var(--line);
+  text-align: center;
+}
+.study-what select.input {
+  text-align: left;
+}
+.study-controls {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 10px;
+  align-items: center;
+}
+.study-notice {
+  max-width: 520px;
+  text-align: center;
+  display: grid;
+  justify-items: center;
+  gap: 10px;
+}
+.study-notice-text b {
+  color: var(--accent-text);
+}
+.study-low {
+  display: grid;
+  grid-template-columns: 1.3fr 1fr 1fr;
+  gap: 28px;
+  padding-top: 22px;
+  border-top: 1px solid var(--line);
+  opacity: 0.78;
+  transition: opacity var(--dur-2);
+}
+.study-low:hover,
+.study-low:focus-within {
+  opacity: 1;
+}
+/* No hover on a touch screen: never leave it looking switched off. */
+@media (hover: none) {
+  .study-low {
+    opacity: 1;
+  }
+}
+.study-panel h2 {
+  font: 650 var(--t-lg) / 1.2 var(--f-display);
+  letter-spacing: -0.02em;
+  color: var(--text);
+  margin-bottom: 12px;
+}
+.task-form {
+  display: grid;
+  grid-template-columns: 1fr 140px auto;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+.task-form .input {
+  min-height: 38px;
+  padding: 7px 12px;
+}
+.task-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.task-list li {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 7px 0;
+  border-top: 1px solid var(--line);
+}
+.task-list li .task {
+  flex: 1;
+}
+.task-title {
+  flex: 1;
+  min-width: 0;
+}
+.task-list li.done .task-title {
+  text-decoration: line-through;
+  color: var(--text-3);
+}
+.task-x {
+  opacity: 0;
+}
+.task-list li:hover .task-x,
+.task-x:focus-visible {
+  opacity: 1;
+}
+.done-list {
+  margin-top: 8px;
+}
+.sound-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  align-items: center;
+  margin: 14px 0 6px;
+}
+.preset-custom {
+  width: 90px;
+  min-height: 34px !important;
+  padding: 4px 10px !important;
+}
+.hist-bars {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  align-items: end;
+  gap: 6px;
+  height: 78px;
+}
+.hist-bar {
+  display: grid;
+  justify-items: center;
+  gap: 4px;
+  align-content: end;
+  height: 100%;
+}
+.hist-bar i {
+  width: 100%;
+  max-width: 18px;
+  border-radius: 3px 3px 1px 1px;
+  background: color-mix(in srgb, var(--accent) 35%, transparent);
+}
+.hist-bar.today i {
+  background: var(--accent);
+}
+.hist-bar span {
+  font-size: var(--t-xs);
+  color: var(--text-3);
+}
+.hist-sum {
+  margin: 10px 0;
+  font-size: 14px;
+  color: var(--text-2);
+}
+.hist-log > li {
+  grid-template-columns: 52px 1fr;
+  font-size: 14px;
+}
+@media (max-width: 900px) {
+  .study-low {
+    grid-template-columns: 1fr;
+  }
+  .study-what {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Go dark: only the ring remains. */
+body.midnight .bar,
+body.midnight .dock,
+body.midnight .study-low,
+body.midnight .study-what,
+body.midnight .study-top .kicker,
+body.midnight .schema-banner {
+  opacity: 0;
+  pointer-events: none;
+  visibility: hidden;
+}
+body.midnight .study-center {
+  min-height: calc(100vh - 140px);
+  align-content: center;
+}
+body.midnight .sky {
+  opacity: 0;
+}
+.bar,
+.dock {
+  transition: opacity var(--dur-3), visibility var(--dur-3);
+}
+
+/* The Study Room: quieter still. */
+body[data-view="study"] .sky {
+  opacity: 0.1;
+}
+/* Study: plan, reflection, subjects. */
+.study-field + .study-field {
+  margin-top: 14px;
+}
+.study-field .sound-row {
+  margin-top: 0;
+}
+.reflect {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 12px;
+  margin: 10px 0;
+}
+.subj-bars {
+  list-style: none;
+  margin: 10px 0 0;
+  padding: 0;
+  display: grid;
+  gap: 6px;
+  font-size: 13px;
+}
+.subj-bars li {
+  display: grid;
+  grid-template-columns: minmax(5rem, 9rem) 1fr auto;
+  gap: 8px;
+  align-items: center;
+}
+.subj-name {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.subj-bar {
+  height: 6px;
+  border-radius: 3px;
+  background: var(--line);
+  overflow: hidden;
+}
+.subj-bar i {
+  display: block;
+  height: 100%;
+  background: var(--focus);
+}
+.saved-list {
+  list-style: none;
+  margin: 12px 0 0;
+  padding: 0;
+  display: grid;
+  gap: 12px;
+}
+.saved-list p {
+  margin: 0 0 2px;
+}
+
+/* ===== The Study Room: the timer at the centre ================================ */
+/* The dial is the page: large, a minute scale around it, the ring lit from
+   inside. Under it what you're on and the button; then the session's
+   settings in one calm strip, and two tiles: your tasks, your sessions. */
+.study {
+  max-width: 1120px;
+}
+.study-center {
+  gap: 20px;
+  padding: 0 0 40px;
+}
+.study-dial {
+  isolation: isolate;
+  width: min(84vw, 440px);
+}
+/* The dial's face: a soft disc of the accent, deepest at the middle. */
+.study-dial::before {
+  content: "";
+  position: absolute;
+  inset: 9%;
+  z-index: -1;
+  border-radius: 50%;
+  background:
+    radial-gradient(circle at 50% 38%, color-mix(in srgb, var(--accent) 10%, transparent), transparent 62%),
+    radial-gradient(circle, rgba(255, 255, 255, 0.025), transparent 70%);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.05),
+    0 50px 120px -50px color-mix(in srgb, var(--accent) 45%, transparent);
+}
+.ring-ticks {
+  fill: none;
+  stroke: var(--text-3);
+  stroke-width: 1;
+  stroke-linecap: round;
+  opacity: 0.45;
+}
+.ring-track {
+  stroke-width: 5;
+}
+.ring-arc {
+  stroke-width: 5;
+  filter: drop-shadow(0 0 6px color-mix(in srgb, var(--accent) 70%, transparent));
+}
+.study[data-phase="rest"] .ring-arc {
+  filter: drop-shadow(0 0 6px color-mix(in srgb, var(--world) 70%, transparent));
+}
+.study-readout {
+  font: 400 clamp(64px, 9vw, 96px) / 1 var(--f-mono);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.05em;
+}
+.study-phase {
+  margin-top: 12px;
+  font-size: var(--t-xs);
+  font-weight: 600;
+  color: var(--text-2);
+}
+/* What you're on: two fields of the field system, side by side. */
+.study-what {
+  grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr);
+  gap: 10px;
+  width: min(100%, 600px);
+}
+.study-what .input {
+  min-height: var(--hit-touch);
+  background: rgba(255, 255, 255, 0.04);
+  border-color: var(--line-2);
+}
+.study-what .input:disabled {
+  opacity: 0.6;
+}
+.study-controls {
+  gap: 12px;
+}
+.study-controls .btn-lg {
+  min-width: 180px;
+}
+
+/* The tiles under it: no rule, no dimming; the settings strip across. */
+.study-low {
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  align-items: start;
+  gap: 16px;
+  padding-top: 0;
+  border-top: 0;
+  opacity: 1;
+}
+html[data-look] .study-low > .panel {
+  min-width: 0;
+  margin: 0;
+}
+.study-set {
+  grid-column: 1 / -1;
+  display: grid;
+  grid-template-columns: minmax(0, 1.25fr) minmax(0, 1.05fr) minmax(0, 1fr);
+  align-items: start;
+  gap: 4px 28px;
+}
+.study-set > h2,
+.study-set > .study-set-note {
+  grid-column: 1 / -1;
+}
+.study-set > .study-set-note {
+  margin: 10px 0 0;
+}
+.study-set .study-field + .study-field {
+  margin-top: 0;
+}
+.study-tasks {
+  grid-column: span 7;
+}
+.study-hist {
+  grid-column: span 5;
+}
+.study-panel h2 {
+  margin-bottom: 14px;
+}
+.task-form {
+  grid-template-columns: minmax(0, 1fr) 160px auto;
+}
+.task-form .input {
+  min-height: 44px;
+}
+.task-form .btn {
+  --h: 44px;
+}
+/* Twelve weeks of focus, across the tile: a square you can see. */
+.study-hist .fm-grid,
+.study-hist .focus-map figcaption {
+  max-width: none;
+}
+.study-hist .fm-grid {
+  gap: 4px;
+}
+.study-hist .fm-cell {
+  border-radius: 4px;
+}
+.study-hist .hist-bars {
+  height: 72px;
+}
+.study-hist .hist-bar i {
+  max-width: 22px;
+}
+
+@media (max-width: 1000px) {
+  .study-set {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  }
+  .study-set .study-field:last-of-type {
+    grid-column: 1 / -1;
+  }
+  .study-tasks,
+  .study-hist {
+    grid-column: 1 / -1;
+  }
+}
+@media (max-width: 899px) {
+  .study-low {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .study-tasks { order: 1; }
+  .study-set { order: 2; }
+  .study-hist { order: 3; }
+  .study-set {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 16px;
+  }
+  .study-set .study-field:last-of-type {
+    grid-column: auto;
+  }
+  .study-set > .study-set-note {
+    margin-top: 0;
+  }
+  .study-dial {
+    width: min(82vw, 360px);
+  }
+  .study-what {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .study-controls .btn-lg {
+    min-width: 0;
+    flex: 1 1 auto;
+  }
+}
+

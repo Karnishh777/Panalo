@@ -204,8 +204,9 @@ body:not([data-view="study"]) .panel:hover .panel-head h2::after {
   transform: scaleX(1);
 }
 
-/* A glint sweeps across the big buttons on the outside, and in the
-   expressive places inside (not on every button on every page). */
+/* A glint sweeps once across the big buttons on the outside, and in the
+   expressive places inside (not on every button on every page), a moment
+   after they arrive. It never loops. */
 body[data-view="now"] .stage .btn-primary,
 body[data-view="world"] .stage .btn-primary,
 #landing .btn-primary,
@@ -225,7 +226,7 @@ body[data-view="world"] .stage .btn-primary::after,
   height: 200%;
   transform: translateX(-175%) rotate(22deg);
   background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.75), transparent);
-  animation: btn-glint 3.6s ease-in-out infinite;
+  animation: btn-glint 3.6s ease-in-out both;
   pointer-events: none;
 }
 /* Its own name: looks.css has a different "glint" for .fx-glint. */

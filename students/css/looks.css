@@ -145,6 +145,31 @@
   background: #f7f4ff;
   box-shadow: -2px 0 0 #29f0ff, 2px 0 0 #ff2e63;
 }
+.look-opt-night .look-swatch,
+.look-btn[data-now="night"] .look-swatch {
+  background: radial-gradient(circle at 30% 80%, rgba(155, 140, 255, 0.55), transparent 60%), #0b0a12;
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.12);
+}
+.look-opt-night .look-swatch i:nth-child(1),
+.look-btn[data-now="night"] .look-swatch i:nth-child(1) {
+  right: 22%;
+  top: 20%;
+  width: 30%;
+  height: 30%;
+  border-radius: 50%;
+  box-shadow: -3px 2px 0 0 #e9e6ff;
+}
+.look-opt-day .look-swatch,
+.look-btn[data-now="day"] .look-swatch {
+  background: #f6f4fb;
+  box-shadow: inset 0 0 0 1px rgba(20, 16, 40, 0.16);
+}
+.look-opt-day .look-swatch i:nth-child(1),
+.look-btn[data-now="day"] .look-swatch i:nth-child(1) {
+  inset: 30%;
+  border-radius: 50%;
+  background: #6a58f2;
+}
 
 /* Switching looks: a cut in the new look's style covers the swap. */
 .look-cut {
@@ -311,6 +336,7 @@ html[data-look="glass"] .surface.look-enter {
   animation: glass-in 900ms var(--ease-out) both;
 }
 html[data-look="glass"] .surface.look-enter .panel,
+html[data-look="glass"] .surface.look-enter .pl-spine,
 html[data-look="glass"] .surface.look-enter .s-head {
   animation: glass-rise 900ms var(--ease-out) both;
   animation-delay: calc(var(--i, 0) * 70ms + 80ms);
@@ -587,7 +613,7 @@ html[data-look="signal"] .surface.look-enter {
   from { --dot: 0px; }
   to { --dot: 8px; }
 }
-html[data-look="signal"] .surface.look-enter .panel {
+html[data-look="signal"] .surface.look-enter :is(.panel, .pl-spine) {
   animation: signal-tile 420ms steps(4) both;
   animation-delay: calc(var(--i, 0) * 60ms + 200ms);
 }
@@ -1038,7 +1064,7 @@ html[data-look="verse"] .surface.look-enter {
   60% { transform: none; clip-path: none; filter: none; }
   100% { opacity: 1; }
 }
-html[data-look="verse"] .surface.look-enter .panel {
+html[data-look="verse"] .surface.look-enter :is(.panel, .pl-spine) {
   animation: verse-slam 400ms steps(5) both;
   animation-delay: calc(var(--i, 0) * 90ms + 240ms);
 }
@@ -1084,6 +1110,17 @@ html[data-look="verse"] .surface.look-enter .s-head h1 {
   30% { opacity: 1; scale: 1.15; rotate: 4deg; }
   70% { opacity: 1; scale: 1; rotate: 0deg; }
   100% { opacity: 0; scale: 1.3; }
+}
+
+/* ===== Night and Day ====================================================== */
+/* Arriving: the calm looks' tiles rise into place one after another, on a
+   spring that settles with the smallest overshoot. */
+html:is([data-look="night"], [data-look="day"]) .surface.look-enter :is(.panel, .pl-spine) {
+  animation: tile-rise 560ms var(--ease-spring) both;
+  animation-delay: calc(var(--i, 0) * var(--stagger) + 60ms);
+}
+@keyframes tile-rise {
+  from { opacity: 0; transform: translateY(14px) scale(0.985); }
 }
 
 /* ===== Stillness ========================================================== */

@@ -63,7 +63,7 @@ function renderDay() {
                 el("p", { class: "cal-empty-lead", text: "No classes or events on this day yet. Your study blocks are on the Plan; add classes, tests and plans here." }),
                 el("div", { class: "quick-add" }, Object.entries(EVENT_KINDS).map(([k, v]) =>
                   el("button", { type: "button", class: `quick-chip tone-${v.tone}`, onClick: () => openEvent(null, k) }, [el("i", { "aria-hidden": "true" }), el("span", { text: v.label })]))),
-                el("p", { class: "faint", text: "Classes can repeat every week — add your timetable once and it fills every orbit." }),
+                el("p", { class: "faint", text: "Classes can repeat every week. Add your timetable once and it fills every orbit." }),
               ]),
         ]),
         el("section", { class: "panel tone-focus" }, [
@@ -215,7 +215,7 @@ function openEvent(ev, presetKind = null, draft = null) {
     return d;
   })();
   const end = ev?.ends_at ? new Date(ev.ends_at) : draft?.end ? new Date(draft.end) : new Date(start.getTime() + HOUR);
-  const title = el("input", { type: "text", maxlength: "120", value: ev?.title || draft?.title || "", placeholder: "e.g. Physics — Lab 2" });
+  const title = el("input", { type: "text", maxlength: "120", value: ev?.title || draft?.title || "", placeholder: "e.g. Physics lab" });
   const date = el("input", { type: "date", value: toLocalInput(start, "date") });
   const from = el("input", { type: "time", value: toLocalInput(start, "time") });
   const to = el("input", { type: "time", value: toLocalInput(end, "time") });
@@ -223,7 +223,7 @@ function openEvent(ev, presetKind = null, draft = null) {
   repeat.checked = ev ? !!ev.repeat_weekly : draft ? !!draft.repeat_weekly : true;
   const location = el("input", { type: "text", maxlength: "80", value: ev?.location || "", placeholder: "Room, building or link (optional)" });
   const toField = el("label", { class: "field" }, [el("span", { text: "Ends" }), to]);
-  const repeatRow = el("label", { class: "check" }, [repeat, el("span", { text: "Every week — part of my timetable" })]);
+  const repeatRow = el("label", { class: "check" }, [repeat, el("span", { text: "Every week, as part of my timetable" })]);
   const sync = () => {
     toField.hidden = kind === "deadline";
     repeatRow.hidden = kind === "deadline";
@@ -302,7 +302,7 @@ export function mount(section, ctx) {
   const describe = (d) => {
     const when = d.start.toLocaleDateString(undefined, { weekday: "short", day: "numeric", month: "short" });
     const time = d.kind === "deadline" ? (d.timed ? `due ${clockTime(d.start)}` : "end of the day") : `${clockTime(d.start)}${d.end ? `–${clockTime(d.end)}` : ""}`;
-    return `${EVENT_KINDS[d.kind]?.label} · ${d.repeat_weekly ? `every ${d.start.toLocaleDateString(undefined, { weekday: "long" })}, from ${when}` : when} · ${time} — “${d.title}”`;
+    return `${EVENT_KINDS[d.kind]?.label} · ${d.repeat_weekly ? `every ${d.start.toLocaleDateString(undefined, { weekday: "long" })}, from ${when}` : when} · ${time} · “${d.title}”`;
   };
   qInput.addEventListener("input", () => {
     draft = parseQuickAdd(qInput.value);

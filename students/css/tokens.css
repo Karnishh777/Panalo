@@ -101,6 +101,10 @@
 
   --ease-out: cubic-bezier(0.2, 0.8, 0.2, 1);
   --ease-cine: cubic-bezier(0.7, 0, 0.2, 1);
+  /* Presses and entrances: a spring with a little overshoot. */
+  --ease-spring: cubic-bezier(0.34, 1.4, 0.5, 1);
+  /* Tiles arriving one after another: the gap between two. */
+  --stagger: 55ms;
   --dur-1: 200ms;
   --dur-2: 320ms;
   --dur-3: 700ms;

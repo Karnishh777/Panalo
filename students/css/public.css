@@ -243,7 +243,7 @@ html[data-effects="lively"][data-look="verse"] .brand .mark {
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
-  animation: slam 0.9s cubic-bezier(0.2, 1.4, 0.4, 1) 0.7s both, sheen 6s linear 1.6s infinite;
+  animation: slam 0.9s cubic-bezier(0.2, 1.4, 0.4, 1) 0.7s both, sheen 6s linear 1.6s;
   text-shadow: none;
   filter: drop-shadow(0 0 22px rgba(255, 122, 47, 0.2));
 }
@@ -1253,17 +1253,47 @@ input[type="range"].range {
   width: 140%;
   aspect-ratio: 1;
   border-radius: 50%;
-  background:
-    radial-gradient(circle at 50% 50%, #05070e 50%, rgba(5, 7, 14, 0.82) 60%, rgba(5, 7, 14, 0.35) 68%, rgba(5, 7, 14, 0.2) 71%),
-    linear-gradient(160deg, rgba(120, 170, 255, 0.22), transparent 35%),
-    url("../assets/earth/earth-albedo-1024.jpg") 60% 46% / 220% auto;
+  overflow: hidden;
+  isolation: isolate;
+  background: #05070e;
   box-shadow:
-    inset 0 16px 34px -14px rgba(170, 210, 255, 0.6),
     0 -8px 50px -8px rgba(110, 160, 255, 0.4),
     0 -40px 140px -20px color-mix(in srgb, var(--accent) 28%, transparent);
   /* fades out before the side's edge, so nothing is cut off square */
   -webkit-mask-image: linear-gradient(90deg, #000 45%, transparent 84%);
   mask-image: linear-gradient(90deg, #000 45%, transparent 84%);
+}
+/* The ground turns, very slowly, under its air: the land on a disc that
+   rotates (::before), the night and the lit rim held still over it (::after). */
+.setup-planet::before,
+.setup-planet::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+}
+.setup-planet::before {
+  z-index: -2;
+  background: url("../assets/earth/earth-albedo-1024.jpg") 60% 46% / 220% auto;
+  animation: planet-turn 480s linear infinite;
+}
+.setup-planet::after {
+  z-index: -1;
+  background:
+    radial-gradient(circle at 50% 50%, #05070e 50%, rgba(5, 7, 14, 0.82) 60%, rgba(5, 7, 14, 0.35) 68%, rgba(5, 7, 14, 0.2) 71%),
+    linear-gradient(160deg, rgba(120, 170, 255, 0.22), transparent 35%);
+  box-shadow: inset 0 16px 34px -14px rgba(170, 210, 255, 0.6);
+}
+@keyframes planet-turn {
+  to { transform: rotate(-360deg); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .setup-planet::before {
+    animation: none;
+  }
+}
+:root[data-motion="reduce"] .setup-planet::before {
+  animation: none;
 }
 .setup-side.painted .setup-planet {
   display: none;

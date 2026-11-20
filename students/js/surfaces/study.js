@@ -184,7 +184,7 @@ async function endEarly() {
     const row = T.sessionRow(timer, now);
     if (row) {
       const { error, transient } = await recordSession(row);
-      if (error && transient) return reportError(error, "You're offline — the session wasn't saved yet. Try again.");
+      if (error && transient) return reportError(error, "You're offline, so the session wasn't saved yet. Try again.");
       if (error) {
         reportError(error, "That session couldn't be saved.");
         return update(T.idle());
@@ -196,7 +196,7 @@ async function endEarly() {
         update(T.idle());
         return openBlockCheck(was.block, { minutes: row.focused_minutes, sessionId: sessionFor(was)?.id });
       }
-    } else showToast("Under a minute — nothing recorded.", "");
+    } else showToast("Under a minute, so nothing was recorded.", "");
   }
   update(T.idle());
 }
@@ -226,7 +226,7 @@ async function finishOnce() {
   draw();
   if (was.phase === "focus" && was.block) {
     // A planned block: its check, then the plan moves on by itself.
-    noticeEl.replaceChildren(el("p", { class: "study-notice-text" }, [el("b", { text: `${formatMinutes(Math.round(was.plannedMs / 60000))} on ${topicName(was.block.subject, was.block.topic)} — added to your world.` })]));
+    noticeEl.replaceChildren(el("p", { class: "study-notice-text" }, [el("b", { text: `${formatMinutes(Math.round(was.plannedMs / 60000))} on ${topicName(was.block.subject, was.block.topic)}, added to your world.` })]));
     openBlockCheck(was.block, { minutes: Math.round(was.plannedMs / 60000), sessionId: sessionFor(was)?.id });
     return;
   }
@@ -236,7 +236,7 @@ async function finishOnce() {
     const allDone = p && p.done >= p.total;
     noticeEl.replaceChildren(
       el("p", { class: "study-notice-text" }, [
-        el("b", { text: `${formatMinutes(Math.round(was.plannedMs / 60000))} of focus — added to your world.` }),
+        el("b", { text: `${formatMinutes(Math.round(was.plannedMs / 60000))} of focus, added to your world.` }),
         p ? ` Block ${p.done} of ${p.total}.` : "",
         allDone ? " That's the plan, kept." : " Rest your eyes for a few minutes.",
       ]),
@@ -388,7 +388,7 @@ function renderTasks() {
   const tools = open.length
     ? el("div", { class: "task-tools" }, [
         seg("Order", "taskSort", [["mine", "My order", "Your order"], ["due", "By due", "By due date"]], tp.sort),
-        seg("List style", "taskMarks", [["numbers", "1.", "Numbered"], ["bullets", "•", "Bulleted"], ["none", "—", "No markers"]], tp.marks),
+        seg("List style", "taskMarks", [["numbers", "1.", "Numbered"], ["bullets", "•", "Bulleted"], ["none", "None", "No markers"]], tp.marks),
       ])
     : null;
   const filter = subjects.length > 1
@@ -471,7 +471,7 @@ function editTask(t) {
   const due = el("input", { type: "date", value: t.due_at ? dayKey(new Date(t.due_at)) : "" });
   openSheet({
     title: "Edit task",
-    body: [field("Task", title), field("Subject", subject, "Optional"), field("Due", due, "Optional — leave empty for no date")],
+    body: [field("Task", title), field("Subject", subject, "Optional"), field("Due", due, "Optional. Leave empty for no date.")],
     actions: [
       { label: "Cancel", kind: "btn-quiet" },
       {
@@ -706,7 +706,7 @@ export function mount(section, ctx) {
 
 export function show(param) {
   // Reconcile anything that finished while we were away.
-  settleTimer().then((r) => r?.minutes && showToast(`A ${formatMinutes(r.minutes)} session finished while you were away — recorded.`, "success"));
+  settleTimer().then((r) => r?.minutes && showToast(`A ${formatMinutes(r.minutes)} session finished while you were away. It's recorded.`, "success"));
   timer = loadTimer();
   if (timer.phase === "focus" && T.isDone(timer, Date.now())) {
     timer = T.idle();

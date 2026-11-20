@@ -5,7 +5,7 @@
 
 :root {
   --glide: cubic-bezier(0.65, 0, 0.25, 1);
-  --spring: cubic-bezier(0.34, 1.4, 0.5, 1);
+  --spring: var(--ease-spring);
 }
 
 /* ===== The nav's marker ===================================================== */
@@ -185,11 +185,14 @@ html[data-look="verse"] .bar-nav a[aria-current="page"] {
   to { transform: scale(1.15) rotate(8deg); opacity: 0; }
 }
 /* Something to hold, too: a press dips the button a little. */
-html[data-look="glass"] :is(.btn, .chip, .icon-btn):active {
+html[data-look="glass"] :is(.btn, .chip, .seg-btn):active {
+  transform: scale(0.98);
+}
+html[data-look="glass"] .icon-btn:active {
   transform: scale(0.965);
 }
-html[data-look="glass"] :is(.btn, .chip, .icon-btn) {
-  transition: transform 0.25s var(--spring), background 0.2s, box-shadow 0.2s, color 0.2s;
+html[data-look="glass"] :is(.btn, .chip, .seg-btn, .icon-btn) {
+  transition: transform var(--dur-1) var(--spring), background 0.2s, box-shadow 0.2s, color 0.2s;
 }
 
 /* ===== A task, done ========================================================= */

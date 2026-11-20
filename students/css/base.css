@@ -174,7 +174,7 @@ button {
   line-height: 1;
   text-decoration: none;
   white-space: nowrap;
-  transition: transform var(--dur-1) var(--ease-out), opacity var(--dur-1) var(--ease-out);
+  transition: transform var(--dur-1) var(--ease-spring), opacity var(--dur-1) var(--ease-out);
 }
 .btn::before {
   content: "";
@@ -420,7 +420,7 @@ input[type="date"]:focus::-webkit-calendar-picker-indicator {
   color: var(--text-2);
   font-size: var(--t-sm);
   font-weight: 500;
-  transition: transform var(--dur-1) var(--ease-out);
+  transition: transform var(--dur-1) var(--ease-spring);
 }
 @media (pointer: coarse) {
   .chip {

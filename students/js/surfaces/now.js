@@ -379,7 +379,7 @@ function renderHero() {
   heroEl.replaceChildren(
     el("div", {}, [el("p", { class: "kicker", text: exam ? `${exam.title} ${exam.days === 0 ? "today" : exam.days === 1 ? "tomorrow" : `in ${exam.days} days`}` : longDate(new Date()) }), el("h2", {}, ["Today's", el("br"), "climb"])]),
     el("div", { class: "climb-ring", role: "img", "aria-label": total ? `${pct}% of today's plan done: ${done} of ${total} minutes` : "Nothing planned today" }, [
-      el("span", {}, [el("b", { text: total ? `${pct}%` : "—" }), el("small", { text: total ? `${done} of ${total} min` : "no plan yet" })]),
+      el("span", {}, [el("b", { text: total ? `${pct}%` : "Free" }), el("small", { text: total ? `${done} of ${total} min` : "no plan yet" })]),
     ])
   );
   // SVG needs its own namespace (el() makes HTML elements).

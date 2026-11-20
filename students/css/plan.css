@@ -1607,7 +1607,7 @@ html[data-look] .plan .pl-week .pl-h-sm {
   background: linear-gradient(100deg, color-mix(in srgb, var(--subj) 10%, transparent), transparent 70%), var(--surface);
   color: var(--text);
   text-decoration: none;
-  transition: transform var(--dur-1) var(--ease-out), border-color var(--dur-1) var(--ease-out);
+  transition: transform var(--dur-1) var(--ease-spring), border-color var(--dur-1) var(--ease-out);
 }
 .pl-spine-name {
   overflow: hidden;
@@ -1636,6 +1636,38 @@ html[data-look] .plan .pl-week .pl-h-sm {
   width: calc(var(--fill, 0) * 100%);
   background: var(--subj);
   box-shadow: 0 0 10px color-mix(in srgb, var(--subj) 70%, transparent);
+}
+/* Coming into view, a line fills from its start to its value (js/fill-in.js):
+   a shelf line after its spine has arrived, a meter as soon as it's seen.
+   Only the transform moves; with motion reduced nothing waits. */
+.pl-spine i::after,
+.pl-ready .meter > i {
+  transform-origin: 0 50%;
+}
+.pl-spine i.fill-wait::after,
+.pl-ready .meter > i.fill-wait {
+  transform: scaleX(0);
+}
+.pl-spine i.fill-go::after {
+  animation: fill-in 900ms var(--ease-out) calc(var(--i, 0) * var(--stagger) + 240ms) both;
+}
+.pl-ready .meter > i.fill-go {
+  animation: fill-in 900ms var(--ease-out) 120ms both;
+}
+@keyframes fill-in {
+  from { transform: scaleX(0); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .pl-spine i:is(.fill-wait, .fill-go)::after,
+  .pl-ready .meter > i:is(.fill-wait, .fill-go) {
+    transform: none;
+    animation: none;
+  }
+}
+:root[data-motion="reduce"] .pl-spine i:is(.fill-wait, .fill-go)::after,
+:root[data-motion="reduce"] .pl-ready .meter > i:is(.fill-wait, .fill-go) {
+  transform: none;
+  animation: none;
 }
 .pl-spine:hover {
   border-color: color-mix(in srgb, var(--subj) 55%, var(--line-2));
